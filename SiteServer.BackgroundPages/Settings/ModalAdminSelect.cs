@@ -80,7 +80,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (ltlHtml != null)
             {
-                ltlHtml.Text = PageDepartment.GetDepartmentRowHtml(departmentInfo, EDepartmentLoadingType.DepartmentSelect, _additional);
+                ltlHtml.Text = PageAdminDepartment.GetDepartmentRowHtml(departmentInfo, EDepartmentLoadingType.DepartmentSelect, _additional);
             }
         }
 

@@ -12,19 +12,14 @@
 			<form runat="server">
 				<ctrl:alerts runat="server" />
 
-				<div class="form-horizontal">
+				<h4 class="text-center" style="margin-top: 20px; margin-bottom: 40px; color: #1d9e74;">
+					<asp:Literal id="LtlTips" runat="server" />
+				</h4>
 
-					<h4 class="text-center" style="margin-top: 20px; margin-bottom: 40px; color: #1d9e74;">
-						<asp:Literal id="LtlTips" runat="server" />
-					</h4>
+				<hr />
 
-					<hr />
-
-					<div class="form-group m-b-0">
-						<div class="col-xs-12 text-center">
-							<button type="button" class="btn btn-primary m-l-10" onclick="window.parent.layer.closeAll()">确 定</button>
-						</div>
-					</div>
+				<div class="text-right mr-1">
+					<button type="button" class="btn btn-primary m-l-5" onclick="window.parent.layer.closeAll()">确 定</button>
 				</div>
 
 			</form>

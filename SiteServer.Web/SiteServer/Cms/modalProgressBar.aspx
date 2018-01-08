@@ -45,33 +45,29 @@
       <form runat="server">
         <ctrl:alerts runat="server" />
 
-        <div class="form-horizontal">
-
-          <div id="progressBar" style="margin: 1em 2em 2em 2em;">
-            <div id="theMeter">
-              <div id="progressBarText" style="font-weight: bold; padding: 5px;">任务完成:
-                <span id="prgressBarPercetage">0</span>%</div>
-              <div id="progressBarBox" style="width: 350px; height: 20px; border: 1px inset; background: #eee;">
-                <div id="progressBarBoxContent" style="width: 0; height: 20px; border-right: 1px solid #444; background: #9ACB34;"></div>
-              </div>
+        <div id="progressBar" style="margin: 1em 2em 2em 2em;">
+          <div id="theMeter">
+            <div id="progressBarText" style="font-weight: bold; padding: 5px;">任务完成:
+              <span id="prgressBarPercetage">0</span>%</div>
+            <div id="progressBarBox" style="width: 350px; height: 20px; border: 1px inset; background: #eee;">
+              <div id="progressBarBoxContent" style="width: 0; height: 20px; border-right: 1px solid #444; background: #9ACB34;"></div>
             </div>
           </div>
-          <div id="progressError" style="position:relative; margin: 2em; display:none;">
-            <p style=" padding-left: 25px; padding-bottom: 5px; color:red; text-align: left; vertical-align: middle; background:url(Pic/icon/error.jpg) no-repeat left top;">
-              执行出错，错误信息为：
-              <span id="progressErrorText"></span>
-            </p>
-          </div>
-          <div id="progressWarning" style="position:relative; margin: 2em;">
-            <p style=" padding-left: 25px; padding-bottom: 5px; text-align: left; vertical-align: middle; background:url(Pic/icon/warn.jpg) no-repeat left top;">
-              进度：
-              <span id="progressWarningText">任务初始化...</span>
-            </p>
-          </div>
-
-          <asp:Literal id="LtlScripts" runat="server" />
-
         </div>
+        <div id="progressError" style="position:relative; margin: 2em; display:none;">
+          <p style=" padding-left: 25px; padding-bottom: 5px; color:red; text-align: left; vertical-align: middle; background:url(Pic/icon/error.jpg) no-repeat left top;">
+            执行出错，错误信息为：
+            <span id="progressErrorText"></span>
+          </p>
+        </div>
+        <div id="progressWarning" style="position:relative; margin: 2em;">
+          <p style=" padding-left: 25px; padding-bottom: 5px; text-align: left; vertical-align: middle; background:url(Pic/icon/warn.jpg) no-repeat left top;">
+            进度：
+            <span id="progressWarningText">任务初始化...</span>
+          </p>
+        </div>
+
+        <asp:Literal id="LtlScripts" runat="server" />
 
       </form>
     </body>

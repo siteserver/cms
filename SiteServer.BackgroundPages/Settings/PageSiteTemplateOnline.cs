@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Settings
 			
 			if (!Page.IsPostBack)
             {
-                VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteManagement);
+                VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
 
                 try
                 {

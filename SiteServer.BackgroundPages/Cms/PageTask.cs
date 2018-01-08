@@ -9,9 +9,10 @@ using SiteServer.CMS.Model.Enumerations;
 namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageTask : BasePageCms
-    {
-        public DataGrid DgContents;
-        public Button AddTask;
+	{
+	    public Literal LtlNavItems;
+        public Repeater RptContents;
+        public Button BtnAdd;
 
         private EServiceType _serviceType;
 
@@ -23,8 +24,6 @@ namespace SiteServer.BackgroundPages.Cms
                 {"ServiceType", EServiceTypeUtils.GetValue(serviceType)}
             });
         }
-
-        public string ServiceType => EServiceTypeUtils.GetText(_serviceType);
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -54,54 +53,37 @@ namespace SiteServer.BackgroundPages.Cms
                 var isEnabled = Body.GetQueryBool("IsEnabled");
                 var func = isEnabled ? "启用" : "禁用";
 
-                try
-                {
-                    DataProvider.TaskDao.UpdateState(taskId, isEnabled);
-                    SuccessMessage($"{func}定时任务成功。");
-                }
-                catch (Exception ex)
-                {
-                    FailMessage(ex, $"{func}定时任务失败。");
-                }
+                DataProvider.TaskDao.UpdateState(taskId, isEnabled);
+                SuccessMessage($"{func}定时任务成功。");
             }
 
-			if (!IsPostBack)
-			{
-                var taskName = EServiceTypeUtils.GetText(_serviceType);
+            if (IsPostBack) return;
 
-                if (PublishmentSystemId > 0)
-                {
-                    VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
-                }
-                else
-                {
-                    VerifyAdministratorPermissions(AppManager.Permissions.Settings.Service);
-                }
+            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
 
-                AddTask.Text = $"添加{taskName}任务";
-                AddTask.Attributes.Add("onclick", ModalTaskAdd.GetOpenWindowStringToAdd(_serviceType, PublishmentSystemId));
-                BindGrid();
-			}
-		}
+            LtlNavItems.Text = $@"
+<li class=""nav-item {(_serviceType == EServiceType.Create ? "active": string.Empty)}"">
+    <a class=""nav-link"" href=""{GetRedirectUrl(PublishmentSystemId, EServiceType.Create)}"">定时生成</a>
+</li>
+<li class=""nav-item {(_serviceType == EServiceType.Gather ? "active" : string.Empty)}"">
+    <a class=""nav-link"" href=""{GetRedirectUrl(PublishmentSystemId, EServiceType.Gather)}"">定时采集</a>
+</li>
+<li class=""nav-item {(_serviceType == EServiceType.Backup ? "active" : string.Empty)}"">
+    <a class=""nav-link"" href=""{GetRedirectUrl(PublishmentSystemId, EServiceType.Backup)}"">定时备份</a>
+</li>";
 
-        public void BindGrid()
-        {
-            if (PublishmentSystemId != 0)
-            {
-                DgContents.DataSource = DataProvider.TaskDao.GetTaskInfoList(_serviceType, PublishmentSystemId);
-                DgContents.Columns.RemoveAt(0);
-            }
-            else
-            {
-                DgContents.DataSource = DataProvider.TaskDao.GetTaskInfoList(_serviceType);
-            }
-            DgContents.ItemDataBound += DgContents_ItemDataBound;
-            DgContents.DataBind();
+            RptContents.DataSource = DataProvider.TaskDao.GetTaskInfoList(_serviceType, PublishmentSystemId);
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
+            RptContents.DataBind();
+
+            BtnAdd.Text = $"添加{EServiceTypeUtils.GetText(_serviceType)}任务";
+            BtnAdd.Attributes.Add("onclick", ModalTaskAdd.GetOpenWindowStringToAdd(_serviceType, PublishmentSystemId));
         }
 
-        private void DgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
+        private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
+
             var taskInfo = (TaskInfo)e.Item.DataItem;
 
             var ltlSite = (Literal)e.Item.FindControl("ltlSite");
@@ -113,10 +95,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlEnabledHtml = (Literal)e.Item.FindControl("ltlEnabledHtml");
             var ltlDeleteHtml = (Literal)e.Item.FindControl("ltlDeleteHtml");
 
-            if (ltlSite != null)
-            {
-                ltlSite.Text = GetSiteHtml(taskInfo.PublishmentSystemId);
-            }
+            ltlSite.Text = GetSiteHtml(taskInfo.PublishmentSystemId);
             ltlTaskName.Text = taskInfo.TaskName;
             ltlIsEnabled.Text = StringUtils.GetTrueOrFalseImageHtml(taskInfo.IsEnabled.ToString());
             ltlFrequencyType.Text = EFrequencyTypeUtils.GetText(taskInfo.FrequencyType);

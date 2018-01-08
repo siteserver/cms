@@ -24,9 +24,7 @@ namespace SiteServer.BackgroundPages.Core
             {
                 rowHtml = $@"
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
-	<td align=""left"" nowrap>
-		{title}
-	</td>
+	<td nowrap>{title}</td>
 </tr>
 ";
             }
@@ -67,19 +65,11 @@ namespace SiteServer.BackgroundPages.Core
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
     <td>{title}</td>
     <td>{nodeInfo.NodeGroupNameCollection}</td>
-    <td><nobr>{nodeInfo.NodeIndexName}</nobr></td>
-    <td class=""text-center"">
-	    {upLink}
-    </td>
-    <td class=""text-center"">
-	    {downLink}
-    </td>
-    <td class=""text-center"">
-	    {editUrl}
-    </td>
-    <td class=""text-center"">
-	    {checkBoxHtml}
-    </td>
+    <td>{nodeInfo.NodeIndexName}</td>
+    <td class=""text-center"">{upLink}</td>
+    <td class=""text-center"">{downLink}</td>
+    <td class=""text-center"">{editUrl}</td>
+    <td class=""text-center"">{checkBoxHtml}</td>
 </tr>
 ";
             }
@@ -97,15 +87,9 @@ namespace SiteServer.BackgroundPages.Core
 
                 rowHtml = $@"
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
-	<td>
-		<nobr>{title}</nobr>
-	</td>
-	<td>
-		{contentAddNum}
-	</td>
-	<td>
-		{contentUpdateNum}
-	</td>
+	<td>{title}</td>
+	<td class=""text-center"">{contentAddNum}</td>
+	<td class=""text-center"">{contentUpdateNum}</td>
 </tr>
 ";
             }
@@ -122,15 +106,9 @@ namespace SiteServer.BackgroundPages.Core
 
                 rowHtml = $@"
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
-	<td>
-		<nobr>{title}</nobr>
-	</td>
-	<td>
-		<nobr>{filePath}</nobr>
-	</td>
-	<td class=""text-center"">
-		{editLink}
-	</td>
+	<td>{title}</td>
+	<td>{filePath}</td>
+	<td class=""text-center"">{editLink}</td>
 </tr>
 ";
             }
@@ -167,15 +145,9 @@ namespace SiteServer.BackgroundPages.Core
 
                 rowHtml = $@"
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
-	<td>
-		<nobr>{title}</nobr>
-	</td>
-	<td>
-		{nodeNames}
-	</td>
-	<td class=""text-center"">
-		{editChannelLink}
-	</td>
+	<td>{title}</td>
+	<td>{nodeNames}</td>
+	<td class=""text-center"">{editChannelLink}</td>
 </tr>
 ";
             }
@@ -195,7 +167,7 @@ namespace SiteServer.BackgroundPages.Core
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
 	<td>{title}</td>
 	<td>{contribute}</td>
-	<td class=""text-center"" width=""50"">{editLink}</td>
+	<td class=""text-center"">{editLink}</td>
 </tr>
 ";
             }
@@ -203,7 +175,7 @@ namespace SiteServer.BackgroundPages.Core
             {
                 rowHtml = $@"
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
-	<td nowrap>{title}</td>
+	<td>{title}</td>
 </tr>
 ";
             }
@@ -218,24 +190,21 @@ namespace SiteServer.BackgroundPages.Core
 
         public static string GetScriptOnLoad(int publishmentSystemId, int currentNodeId)
         {
-            if (currentNodeId != 0 && currentNodeId != publishmentSystemId)
+            if (currentNodeId == 0 || currentNodeId == publishmentSystemId) return string.Empty;
+
+            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, currentNodeId);
+            if (nodeInfo == null) return string.Empty;
+
+            string path;
+            if (nodeInfo.ParentId == publishmentSystemId)
             {
-                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, currentNodeId);
-                if (nodeInfo != null)
-                {
-                    string path;
-                    if (nodeInfo.ParentId == publishmentSystemId)
-                    {
-                        path = currentNodeId.ToString();
-                    }
-                    else
-                    {
-                        path = nodeInfo.ParentsPath.Substring(nodeInfo.ParentsPath.IndexOf(",", StringComparison.Ordinal) + 1) + "," + currentNodeId;
-                    }
-                    return NodeTreeItem.GetScriptOnLoad(path);
-                }
+                path = currentNodeId.ToString();
             }
-            return string.Empty;
+            else
+            {
+                path = nodeInfo.ParentsPath.Substring(nodeInfo.ParentsPath.IndexOf(",", StringComparison.Ordinal) + 1) + "," + currentNodeId;
+            }
+            return NodeTreeItem.GetScriptOnLoad(path);
         }
     }
 }

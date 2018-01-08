@@ -8,24 +8,22 @@ namespace SiteServer.BackgroundPages.Settings
 {
 	public class PageAdministratorAdd : BasePage
     {
-        public Literal ltlPageTitle;
-        public DropDownList ddlDepartmentID;
-        public TextBox tbUserName;
-        public TextBox tbDisplayName;
-        public PlaceHolder phPassword;
-        public TextBox tbPassword;
+        public Literal LtlPageTitle;
+        public DropDownList DdlDepartmentId;
+        public TextBox TbUserName;
+        public TextBox TbDisplayName;
+        public PlaceHolder PhPassword;
+        public TextBox TbPassword;
+        public DropDownList DdlAreaId;
+        public TextBox TbEmail;
+        public TextBox TbMobile;
+        public Button BtnReturn;
 
-        public DropDownList ddlAreaID;
-        public TextBox tbEmail;
-        public TextBox tbMobile;
-        
-        public Button btnReturn;
-
-        private int departmentID;
-        private int areaID;
-        private string userName;
-        private bool[] isLastNodeArrayOfDepartment;
-        private bool[] isLastNodeArrayOfArea;
+        private int _departmentId;
+        private int _areaId;
+        private string _userName;
+        private bool[] _isLastNodeArrayOfDepartment;
+        private bool[] _isLastNodeArrayOfArea;
 
         public static string GetRedirectUrlToAdd(int departmentId)
         {
@@ -48,206 +46,174 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            departmentID = Body.GetQueryInt("departmentID");
-            areaID = Body.GetQueryInt("areaID");
-            userName = Body.GetQueryString("userName");
+            _departmentId = Body.GetQueryInt("departmentID");
+            _areaId = Body.GetQueryInt("areaID");
+            _userName = Body.GetQueryString("userName");
 
-            if (!Page.IsPostBack)
+            if (Page.IsPostBack) return;
+
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Admin);
+
+            LtlPageTitle.Text = string.IsNullOrEmpty(_userName) ? "添加管理员" : "编辑管理员";
+
+            DdlDepartmentId.Items.Add(new ListItem("<无所属部门>", "0"));
+            var departmentIdList = DepartmentManager.GetDepartmentIdList();
+            var count = departmentIdList.Count;
+            _isLastNodeArrayOfDepartment = new bool[count];
+            foreach (var theDepartmentId in departmentIdList)
             {
-                var pageTitle = string.IsNullOrEmpty(userName) ? "添加管理员" : "编辑管理员";
-                VerifyAdministratorPermissions(AppManager.Permissions.Settings.AdminManagement);
-
-                ltlPageTitle.Text = pageTitle;
-
-                ddlDepartmentID.Items.Add(new ListItem("<无所属部门>", "0"));
-                var departmentIdList = DepartmentManager.GetDepartmentIdList();
-                var count = departmentIdList.Count;
-                isLastNodeArrayOfDepartment = new bool[count];
-                foreach (var theDepartmentId in departmentIdList)
+                var departmentInfo = DepartmentManager.GetDepartmentInfo(theDepartmentId);
+                var listitem = new ListItem(GetDepartment(departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode), theDepartmentId.ToString());
+                if (_departmentId == theDepartmentId)
                 {
-                    var departmentInfo = DepartmentManager.GetDepartmentInfo(theDepartmentId);
-                    var listitem = new ListItem(GetDepartment(departmentInfo.DepartmentId, departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode), theDepartmentId.ToString());
-                    if (departmentID == theDepartmentId)
-                    {
-                        listitem.Selected = true;
-                    }
-                    ddlDepartmentID.Items.Add(listitem);
+                    listitem.Selected = true;
                 }
-
-                ddlAreaID.Items.Add(new ListItem("<无所在区域>", "0"));
-                var areaIdList = AreaManager.GetAreaIdList();
-                count = areaIdList.Count;
-                isLastNodeArrayOfArea = new bool[count];
-                foreach (var theAreaId in areaIdList)
-                {
-                    var areaInfo = AreaManager.GetAreaInfo(theAreaId);
-                    var listitem = new ListItem(GetArea(areaInfo.AreaId, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode), theAreaId.ToString());
-                    if (areaID == theAreaId)
-                    {
-                        listitem.Selected = true;
-                    }
-                    ddlAreaID.Items.Add(listitem);
-                }
-
-                if (!string.IsNullOrEmpty(userName))
-                {
-                    var adminInfo = BaiRongDataProvider.AdministratorDao.GetByUserName(userName);
-                    if (adminInfo != null)
-                    {
-                        ControlUtils.SelectSingleItem(ddlDepartmentID, adminInfo.DepartmentId.ToString());
-                        tbUserName.Text = adminInfo.UserName;
-                        tbUserName.Enabled = false;
-                        tbDisplayName.Text = adminInfo.DisplayName;
-                        phPassword.Visible = false;
-                        ControlUtils.SelectSingleItem(ddlAreaID, adminInfo.AreaId.ToString());
-                        tbEmail.Text = adminInfo.Email;
-                        tbMobile.Text = adminInfo.Mobile;
-                    }
-                }
-
-                var urlReturn = PageAdministrator.GetRedirectUrl(departmentID);
-                btnReturn.Attributes.Add("onclick", $"location.href='{urlReturn}';return false;");
+                DdlDepartmentId.Items.Add(listitem);
             }
-		}
 
-        public string GetDepartment(int departmentID, string departmentName, int parentsCount, bool isLastNode)
-        {
-            var str = "";
-            if (isLastNode == false)
+            DdlAreaId.Items.Add(new ListItem("<无所在区域>", "0"));
+            var areaIdList = AreaManager.GetAreaIdList();
+            count = areaIdList.Count;
+            _isLastNodeArrayOfArea = new bool[count];
+            foreach (var theAreaId in areaIdList)
             {
-                isLastNodeArrayOfDepartment[parentsCount] = false;
-            }
-            else
-            {
-                isLastNodeArrayOfDepartment[parentsCount] = true;
-            }
-            for (var i = 0; i < parentsCount; i++)
-            {
-                if (isLastNodeArrayOfDepartment[i])
+                var areaInfo = AreaManager.GetAreaInfo(theAreaId);
+                var listitem = new ListItem(GetArea(areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode), theAreaId.ToString());
+                if (_areaId == theAreaId)
                 {
-                    str = string.Concat(str, "　");
+                    listitem.Selected = true;
                 }
-                else
+                DdlAreaId.Items.Add(listitem);
+            }
+
+            if (!string.IsNullOrEmpty(_userName))
+            {
+                var adminInfo = BaiRongDataProvider.AdministratorDao.GetByUserName(_userName);
+                if (adminInfo != null)
                 {
-                    str = string.Concat(str, "│");
+                    ControlUtils.SelectSingleItem(DdlDepartmentId, adminInfo.DepartmentId.ToString());
+                    TbUserName.Text = adminInfo.UserName;
+                    TbUserName.Enabled = false;
+                    TbDisplayName.Text = adminInfo.DisplayName;
+                    PhPassword.Visible = false;
+                    ControlUtils.SelectSingleItem(DdlAreaId, adminInfo.AreaId.ToString());
+                    TbEmail.Text = adminInfo.Email;
+                    TbMobile.Text = adminInfo.Mobile;
                 }
             }
-            if (isLastNode)
-            {
-                str = string.Concat(str, "└");
-            }
-            else
-            {
-                str = string.Concat(str, "├");
-            }
-            str = string.Concat(str, departmentName);
-            return str;
-        }
 
-        public string GetArea(int areaID, string areaName, int parentsCount, bool isLastNode)
-        {
-            var str = "";
-            if (isLastNode == false)
-            {
-                isLastNodeArrayOfArea[parentsCount] = false;
-            }
-            else
-            {
-                isLastNodeArrayOfArea[parentsCount] = true;
-            }
-            for (var i = 0; i < parentsCount; i++)
-            {
-                if (isLastNodeArrayOfArea[i])
-                {
-                    str = string.Concat(str, "　");
-                }
-                else
-                {
-                    str = string.Concat(str, "│");
-                }
-            }
-            if (isLastNode)
-            {
-                str = string.Concat(str, "└");
-            }
-            else
-            {
-                str = string.Concat(str, "├");
-            }
-            str = string.Concat(str, areaName);
-            return str;
+            BtnReturn.Attributes.Add("onclick", $"location.href='{PageAdministrator.GetRedirectUrl()}';return false;");
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            if (Page.IsPostBack && Page.IsValid)
+            if (!Page.IsPostBack || !Page.IsValid) return;
+
+            if (string.IsNullOrEmpty(_userName))
             {
-                if (string.IsNullOrEmpty(userName))
+                var adminInfo = new AdministratorInfo
                 {
-                    var adminInfo = new AdministratorInfo
-                    {
-                        UserName = tbUserName.Text.Trim(),
-                        Password = tbPassword.Text,
-                        CreatorUserName = Body.AdminName,
-                        DisplayName = tbDisplayName.Text,
-                        Email = tbEmail.Text,
-                        Mobile = tbMobile.Text,
-                        DepartmentId = TranslateUtils.ToInt(ddlDepartmentID.SelectedValue),
-                        AreaId = TranslateUtils.ToInt(ddlAreaID.SelectedValue)
-                    };
+                    UserName = TbUserName.Text.Trim(),
+                    Password = TbPassword.Text,
+                    CreatorUserName = Body.AdminName,
+                    DisplayName = TbDisplayName.Text,
+                    Email = TbEmail.Text,
+                    Mobile = TbMobile.Text,
+                    DepartmentId = TranslateUtils.ToInt(DdlDepartmentId.SelectedValue),
+                    AreaId = TranslateUtils.ToInt(DdlAreaId.SelectedValue)
+                };
 
-                    if (!string.IsNullOrEmpty(BaiRongDataProvider.AdministratorDao.GetUserNameByEmail(tbEmail.Text)))
-                    {
-                        FailMessage("管理员添加失败，邮箱地址已存在");
-                        return;
-                    }
-
-                    if (!string.IsNullOrEmpty(BaiRongDataProvider.AdministratorDao.GetUserNameByMobile(tbMobile.Text)))
-                    {
-                        FailMessage("管理员添加失败，手机号码已存在");
-                        return;
-                    }
-
-                    string errorMessage;
-                    if (!AdminManager.CreateAdministrator(adminInfo, out errorMessage))
-                    {
-                        FailMessage($"管理员添加失败：{errorMessage}");
-                        return;   
-                    }
-
-                    Body.AddAdminLog("添加管理员", $"管理员:{tbUserName.Text.Trim()}");
-                    SuccessMessage("管理员添加成功！");
-                    AddWaitAndRedirectScript(PageAdministrator.GetRedirectUrl(TranslateUtils.ToInt(ddlDepartmentID.SelectedValue)));
-                }
-                else
+                if (!string.IsNullOrEmpty(BaiRongDataProvider.AdministratorDao.GetUserNameByEmail(TbEmail.Text)))
                 {
-                    var adminInfo = BaiRongDataProvider.AdministratorDao.GetByUserName(userName);
-
-                    if (adminInfo.Email != tbEmail.Text && !string.IsNullOrEmpty(BaiRongDataProvider.AdministratorDao.GetUserNameByEmail(tbEmail.Text)))
-                    {
-                        FailMessage("管理员设置失败，邮箱地址已存在");
-                        return;
-                    }
-
-                    if (adminInfo.Mobile != tbMobile.Text && !string.IsNullOrEmpty(BaiRongDataProvider.AdministratorDao.GetUserNameByMobile(adminInfo.Mobile)))
-                    {
-                        FailMessage("管理员设置失败，手机号码已存在");
-                        return;
-                    }
-
-                    adminInfo.DisplayName = tbDisplayName.Text;
-                    adminInfo.Email = tbEmail.Text;
-                    adminInfo.Mobile = tbMobile.Text;
-                    adminInfo.DepartmentId = TranslateUtils.ToInt(ddlDepartmentID.SelectedValue);
-                    adminInfo.AreaId = TranslateUtils.ToInt(ddlAreaID.SelectedValue);
-
-                    BaiRongDataProvider.AdministratorDao.Update(adminInfo);
-
-                    Body.AddAdminLog("修改管理员属性", $"管理员:{tbUserName.Text.Trim()}");
-                    SuccessMessage("管理员设置成功！");
-                    AddWaitAndRedirectScript(PageAdministrator.GetRedirectUrl(TranslateUtils.ToInt(ddlDepartmentID.SelectedValue)));
+                    FailMessage("管理员添加失败，邮箱地址已存在");
+                    return;
                 }
+
+                if (!string.IsNullOrEmpty(BaiRongDataProvider.AdministratorDao.GetUserNameByMobile(TbMobile.Text)))
+                {
+                    FailMessage("管理员添加失败，手机号码已存在");
+                    return;
+                }
+
+                string errorMessage;
+                if (!AdminManager.CreateAdministrator(adminInfo, out errorMessage))
+                {
+                    FailMessage($"管理员添加失败：{errorMessage}");
+                    return;   
+                }
+
+                Body.AddAdminLog("添加管理员", $"管理员:{TbUserName.Text.Trim()}");
+                SuccessMessage("管理员添加成功！");
+                AddWaitAndRedirectScript(PageAdministrator.GetRedirectUrl());
+            }
+            else
+            {
+                var adminInfo = BaiRongDataProvider.AdministratorDao.GetByUserName(_userName);
+
+                if (adminInfo.Email != TbEmail.Text && !string.IsNullOrEmpty(BaiRongDataProvider.AdministratorDao.GetUserNameByEmail(TbEmail.Text)))
+                {
+                    FailMessage("管理员设置失败，邮箱地址已存在");
+                    return;
+                }
+
+                if (adminInfo.Mobile != TbMobile.Text && !string.IsNullOrEmpty(BaiRongDataProvider.AdministratorDao.GetUserNameByMobile(adminInfo.Mobile)))
+                {
+                    FailMessage("管理员设置失败，手机号码已存在");
+                    return;
+                }
+
+                adminInfo.DisplayName = TbDisplayName.Text;
+                adminInfo.Email = TbEmail.Text;
+                adminInfo.Mobile = TbMobile.Text;
+                adminInfo.DepartmentId = TranslateUtils.ToInt(DdlDepartmentId.SelectedValue);
+                adminInfo.AreaId = TranslateUtils.ToInt(DdlAreaId.SelectedValue);
+
+                BaiRongDataProvider.AdministratorDao.Update(adminInfo);
+
+                Body.AddAdminLog("修改管理员属性", $"管理员:{TbUserName.Text.Trim()}");
+                SuccessMessage("管理员设置成功！");
+                AddWaitAndRedirectScript(PageAdministrator.GetRedirectUrl());
             }
         }
-	}
+
+        private string GetDepartment(string departmentName, int parentsCount, bool isLastNode)
+        {
+            var str = "";
+            if (isLastNode == false)
+            {
+                _isLastNodeArrayOfDepartment[parentsCount] = false;
+            }
+            else
+            {
+                _isLastNodeArrayOfDepartment[parentsCount] = true;
+            }
+            for (var i = 0; i < parentsCount; i++)
+            {
+                str = string.Concat(str, _isLastNodeArrayOfDepartment[i] ? "　" : "│");
+            }
+            str = string.Concat(str, isLastNode ? "└" : "├");
+            str = string.Concat(str, departmentName);
+            return str;
+        }
+
+        private string GetArea(string areaName, int parentsCount, bool isLastNode)
+        {
+            var str = "";
+            if (isLastNode == false)
+            {
+                _isLastNodeArrayOfArea[parentsCount] = false;
+            }
+            else
+            {
+                _isLastNodeArrayOfArea[parentsCount] = true;
+            }
+            for (var i = 0; i < parentsCount; i++)
+            {
+                str = string.Concat(str, _isLastNodeArrayOfArea[i] ? "　" : "│");
+            }
+            str = string.Concat(str, isLastNode ? "└" : "├");
+            str = string.Concat(str, areaName);
+            return str;
+        }
+    }
 }

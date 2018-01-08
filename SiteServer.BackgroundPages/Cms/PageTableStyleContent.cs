@@ -13,7 +13,7 @@ namespace SiteServer.BackgroundPages.Cms
     public class PageTableStyleContent : BasePageCms
     {
         public DropDownList DdlNodeId;
-        public DataGrid DgContents;
+        public Repeater RptContents;
 
         public Button BtnAddStyle;
         public Button BtnAddStyles;
@@ -72,11 +72,9 @@ namespace SiteServer.BackgroundPages.Cms
             NodeManager.AddListItems(DdlNodeId.Items, PublishmentSystemInfo, false, true, Body.AdminName);
             ControlUtils.SelectSingleItem(DdlNodeId, nodeId.ToString());
 
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);
-
-            DgContents.DataSource = styleInfoList;
-            DgContents.ItemDataBound += DgContents_ItemDataBound;
-            DgContents.DataBind();
+            RptContents.DataSource = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
+            RptContents.DataBind();
 
             BtnAddStyle.Attributes.Add("onclick", ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, 0, _relatedIdentities, _tableName, string.Empty, _redirectUrl));
             BtnAddStyles.Attributes.Add("onclick", ModalTableStylesAdd.GetOpenWindowString(PublishmentSystemId, _relatedIdentities, _tableName, _redirectUrl));
@@ -89,7 +87,7 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.Redirect(GetRedirectUrl(PublishmentSystemId, TranslateUtils.ToInt(DdlNodeId.SelectedValue)));
         }
 
-        private void DgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
+        private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 

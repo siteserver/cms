@@ -32,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
         }
 
 
-        private string GetElementsString(SortedList<string, StlAttribute> elementsDictionary, SortedList<string, SortedList<string, string>> attributesDictionary, bool isEntities)
+        private static string GetElementsString(SortedList<string, StlAttribute> elementsDictionary, SortedList<string, SortedList<string, string>> attributesDictionary, bool isEntities)
 		{
 			var retval = string.Empty;
 

@@ -9,15 +9,13 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class PageTemplatePreview : BasePageCms
     {
-        public Literal LtlMessage;
         public DropDownList DdlTemplateType;
         public PlaceHolder PhTemplateChannel;
         public DropDownList DdlNodeId;
+        public TextBox TbCode;
+        public Literal LtlPreview;
         public TextBox TbTemplate;
         public Button BtnReturn;
-
-        public PlaceHolder PhPreview;
-        public Literal LtlPreview;
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -55,15 +53,10 @@ namespace SiteServer.BackgroundPages.Cms
         }
 
         public void BtnPreview_OnClick(object sender, EventArgs e)
-        {
-            PhPreview.Visible = false;
-            LtlMessage.Text = string.Empty;
-
+        {           
             if (string.IsNullOrEmpty(TbTemplate.Text))
             {
-                LtlMessage.Text = @"<div class=""alert alert-danger"">
-                                        请输入STL标签
-                                    </div>";
+                FailMessage("请输入STL标签");
                 return;
             }
 
@@ -84,16 +77,15 @@ namespace SiteServer.BackgroundPages.Cms
 
                     if (contentId == 0)
                     {
-                        LtlMessage.Text = @"<div class=""alert alert-danger"">
-                                        所选栏目下无内容，请选择有内容的栏目
-                                    </div>";
+                        FailMessage("所选栏目下无内容，请选择有内容的栏目");
                         return;
                     }
                 }
             }
 
-            PhPreview.Visible = true;
-            LtlPreview.Text = StlParserManager.ParseTemplateContent(TbTemplate.Text, PublishmentSystemId, channelId, contentId);
+            TbCode.Text = LtlPreview.Text = StlParserManager.ParseTemplateContent(TbTemplate.Text, PublishmentSystemId, channelId, contentId);
+
+            LtlPreview.Text += "<script>$('#linkCode').click();</script>";
         }
 
         public void BtnReturn_OnClick(object sender, EventArgs e)

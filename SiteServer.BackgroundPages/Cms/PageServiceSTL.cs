@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public string GetLoadingTemplates(int publishmentSystemId, string templateType)
         {
-            var arraylist = new ArrayList();
+            var list = new List<string>();
 
             var eTemplateType = ETemplateTypeUtils.GetEnumType(templateType);
 
@@ -48,17 +48,17 @@ namespace SiteServer.BackgroundPages.Cms
             foreach (var templateInfo in templateInfoList)
             {
                 var templateAddUrl = PageTemplateAdd.GetRedirectUrl(publishmentSystemId, templateInfo.TemplateId, eTemplateType);
-                arraylist.Add($@"
+                list.Add($@"
 <tr treeitemlevel=""3"">
 	<td align=""left"" nowrap="""">
-		<img align=""absmiddle"" src=""../assets/icons/tree/empty.gif""><img align=""absmiddle"" src=""../assets/icons/tree/empty.gif""><img align=""absmiddle"" src=""../assets/icons/menu/template.gif"">&nbsp;<a href=""{templateAddUrl}"" onclick=""fontWeightLink(this)"" target=""management"">{templateInfo.TemplateName}</a>
+		<img align=""absmiddle"" src=""../assets/icons/tree/empty.gif""><img align=""absmiddle"" src=""../assets/icons/tree/empty.gif""><img align=""absmiddle"" src=""../assets/icons/tree/empty.gif""><img align=""absmiddle"" src=""../assets/icons/menu/template.gif"">&nbsp;<a href=""{templateAddUrl}"" onclick=""fontWeightLink(this)"" target=""management"">{templateInfo.TemplateName}</a>
 	</td>
 </tr>
 ");
             }
 
             var builder = new StringBuilder();
-            foreach (string html in arraylist)
+            foreach (string html in list)
             {
                 builder.Append(html);
             }

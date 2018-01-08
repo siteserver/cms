@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Settings
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
             if (string.IsNullOrEmpty(_returnUrl))
             {
-                _returnUrl = PageDepartment.GetRedirectUrl(0);
+                _returnUrl = PageAdminDepartment.GetRedirectUrl(0);
             }
 
             if (IsPostBack) return;

@@ -2,16 +2,16 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Data;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageRelatedField : BasePageCms
     {
-        public DataGrid DgContents;
-		public Button AddButton;
-        public Button ImportButton;
+        public Repeater RptContents;
+		public Button BtnAdd;
+        public Button BtnImport;
 
         public static string GetRedirectUrl(int publishmentSystemId)
         {
@@ -28,67 +28,56 @@ namespace SiteServer.BackgroundPages.Cms
 			if (Body.IsQueryExists("Delete"))
 			{
                 var relatedFieldId = Body.GetQueryInt("RelatedFieldID");
-			
-				try
-				{
-                    var relatedFieldName = DataProvider.RelatedFieldDao.GetRelatedFieldName(relatedFieldId);
-                    DataProvider.RelatedFieldDao.Delete(relatedFieldId);
-                    Body.AddSiteLog(PublishmentSystemId, "删除联动字段", $"联动字段:{relatedFieldName}");
-					SuccessDeleteMessage();
-				}
-				catch(Exception ex)
-				{
-					FailDeleteMessage(ex);
-				}
-			}
+
+                var relatedFieldName = DataProvider.RelatedFieldDao.GetRelatedFieldName(relatedFieldId);
+                DataProvider.RelatedFieldDao.Delete(relatedFieldId);
+                Body.AddSiteLog(PublishmentSystemId, "删除联动字段", $"联动字段:{relatedFieldName}");
+                SuccessDeleteMessage();
+            }
 
             if (IsPostBack) return;
 
             VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
 
-            DgContents.DataSource = DataProvider.RelatedFieldDao.GetDataSource(PublishmentSystemId);
-            DgContents.ItemDataBound += dgContents_ItemDataBound;
-            DgContents.DataBind();
+            RptContents.DataSource = DataProvider.RelatedFieldDao.GetRelatedFieldInfoList(PublishmentSystemId);
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
+            RptContents.DataBind();
 
-            var showPopWinString = ModalRelatedFieldAdd.GetOpenWindowString(PublishmentSystemId);
-            AddButton.Attributes.Add("onclick", showPopWinString);
-            ImportButton.Attributes.Add("onclick", ModalImport.GetOpenWindowString(PublishmentSystemId, ModalImport.TypeRelatedField));
+            BtnAdd.Attributes.Add("onclick", ModalRelatedFieldAdd.GetOpenWindowString(PublishmentSystemId));
+            BtnImport.Attributes.Add("onclick", ModalImport.GetOpenWindowString(PublishmentSystemId, ModalImport.TypeRelatedField));
         }
 
-        void dgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
+        private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
-            {
-                var relatedFieldID = SqlUtils.EvalInt(e.Item.DataItem, "RelatedFieldID");
-                var relatedFieldName = SqlUtils.EvalString(e.Item.DataItem, "RelatedFieldName");
-                var totalLevel = SqlUtils.EvalInt(e.Item.DataItem, "TotalLevel");
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-                var ltlRelatedFieldName = (Literal)e.Item.FindControl("ltlRelatedFieldName");
-                var ltlTotalLevel = (Literal)e.Item.FindControl("ltlTotalLevel");
-                var ltlItemsUrl = (Literal)e.Item.FindControl("ltlItemsUrl");
-                var ltlEditUrl = (Literal)e.Item.FindControl("ltlEditUrl");
-                var ltlExportUrl = (Literal)e.Item.FindControl("ltlExportUrl");
-                var ltlDeleteUrl = (Literal)e.Item.FindControl("ltlDeleteUrl");
+            var relatedFieldInfo = (RelatedFieldInfo) e.Item.DataItem;
 
-                ltlRelatedFieldName.Text = relatedFieldName;
-                ltlTotalLevel.Text = totalLevel.ToString();
-                var urlItems = PageRelatedFieldMain.GetRedirectUrl(PublishmentSystemId, relatedFieldID, totalLevel);
-                ltlItemsUrl.Text = $@"<a href=""{urlItems}"">管理字段项</a>";
+            var ltlRelatedFieldName = (Literal)e.Item.FindControl("ltlRelatedFieldName");
+            var ltlTotalLevel = (Literal)e.Item.FindControl("ltlTotalLevel");
+            var ltlItemsUrl = (Literal)e.Item.FindControl("ltlItemsUrl");
+            var ltlEditUrl = (Literal)e.Item.FindControl("ltlEditUrl");
+            var ltlExportUrl = (Literal)e.Item.FindControl("ltlExportUrl");
+            var ltlDeleteUrl = (Literal)e.Item.FindControl("ltlDeleteUrl");
 
-                ltlEditUrl.Text =
-                    $@"<a href=""javascript:;"" onclick=""{ModalRelatedFieldAdd.GetOpenWindowString(
-                        PublishmentSystemId, relatedFieldID)}"">编辑</a>";
-                ltlExportUrl.Text =
-                    $@"<a href=""javascript:;"" onclick=""{ModalExportMessage.GetOpenWindowStringToRelatedField(PublishmentSystemId, relatedFieldID)}"">导出</a>";
-                ltlDeleteUrl.Text =
-                    $@"<a href=""javascript:;"" onclick=""{PageUtils.GetRedirectStringWithConfirm(
-                        PageUtils.GetCmsUrl(nameof(PageRelatedField), new NameValueCollection
-                        {
-                            {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                            {"RelatedFieldID", relatedFieldID.ToString()},
-                            {"Delete", true.ToString()}
-                        }), "确认删除此联动字段吗？")}"">删除</a>";
-            }
+            ltlRelatedFieldName.Text = relatedFieldInfo.RelatedFieldName;
+            ltlTotalLevel.Text = relatedFieldInfo.TotalLevel.ToString();
+            var urlItems = PageRelatedFieldMain.GetRedirectUrl(PublishmentSystemId, relatedFieldInfo.RelatedFieldId, relatedFieldInfo.TotalLevel);
+            ltlItemsUrl.Text = $@"<a href=""{urlItems}"">管理字段项</a>";
+
+            ltlEditUrl.Text =
+                $@"<a href=""javascript:;"" onclick=""{ModalRelatedFieldAdd.GetOpenWindowString(
+                    PublishmentSystemId, relatedFieldInfo.RelatedFieldId)}"">编辑</a>";
+            ltlExportUrl.Text =
+                $@"<a href=""javascript:;"" onclick=""{ModalExportMessage.GetOpenWindowStringToRelatedField(PublishmentSystemId, relatedFieldInfo.RelatedFieldId)}"">导出</a>";
+            ltlDeleteUrl.Text =
+                $@"<a href=""javascript:;"" onclick=""{PageUtils.GetRedirectStringWithConfirm(
+                    PageUtils.GetCmsUrl(nameof(PageRelatedField), new NameValueCollection
+                    {
+                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                        {"RelatedFieldID", relatedFieldInfo.RelatedFieldId.ToString()},
+                        {"Delete", true.ToString()}
+                    }), "确认删除此联动字段吗？")}"">删除</a>";
         }
 	}
 }

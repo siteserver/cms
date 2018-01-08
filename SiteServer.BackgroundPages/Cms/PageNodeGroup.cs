@@ -2,15 +2,15 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Data;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageNodeGroup : BasePageCms
     {
-		public DataGrid DgContents;
-		public Button BtnAddGroup;
+        public Repeater RptContents;
+        public Button BtnAddGroup;
 
         public static string GetRedirectUrl(int publishmentSystemId)
         {
@@ -39,83 +39,79 @@ namespace SiteServer.BackgroundPages.Cms
                     FailDeleteMessage(ex);
 				}
 			}
-			if (!IsPostBack)
+            if (Body.IsQueryExists("SetTaxis"))
             {
-                VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+                var groupName = Body.GetQueryString("GroupName");
+                var direction = Body.GetQueryString("Direction");
 
-                if (Body.IsQueryExists("SetTaxis"))
+                switch (direction.ToUpper())
                 {
-                    var groupName = Body.GetQueryString("GroupName");
-                    var direction = Body.GetQueryString("Direction");
-
-                    switch (direction.ToUpper())
-                    {
-                        case "UP":
-                            DataProvider.NodeGroupDao.UpdateTaxisToUp(PublishmentSystemId, groupName);
-                            break;
-                        case "DOWN":
-                            DataProvider.NodeGroupDao.UpdateTaxisToDown(PublishmentSystemId, groupName);
-                            break;
-                    }
-                    AddWaitAndRedirectScript(GetRedirectUrl(PublishmentSystemId));
+                    case "UP":
+                        DataProvider.NodeGroupDao.UpdateTaxisToUp(PublishmentSystemId, groupName);
+                        break;
+                    case "DOWN":
+                        DataProvider.NodeGroupDao.UpdateTaxisToDown(PublishmentSystemId, groupName);
+                        break;
                 }
+                AddWaitAndRedirectScript(GetRedirectUrl(PublishmentSystemId));
+            }
 
-                DgContents.DataSource = DataProvider.NodeGroupDao.GetDataSource(PublishmentSystemId);
-                DgContents.ItemDataBound += DgContents_ItemDataBound;
-                DgContents.DataBind();
+            if (IsPostBack) return;
 
-                var showPopWinString = ModalNodeGroupAdd.GetOpenWindowString(PublishmentSystemId);
-                BtnAddGroup.Attributes.Add("onclick", showPopWinString);
-			}
-		}
+            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);    
 
-        public string GetChannelHtml(string groupName)
-        {
-            var publishmentSystemId = PublishmentSystemId;
-            return $"<a href=\"{PageChannelsGroup.GetRedirectUrl(publishmentSystemId, groupName)}\">查看栏目</a>";
+            RptContents.DataSource = DataProvider.NodeGroupDao.GetNodeGroupInfoList(PublishmentSystemId);
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
+            RptContents.DataBind();
+
+            BtnAddGroup.Attributes.Add("onclick", ModalNodeGroupAdd.GetOpenWindowString(PublishmentSystemId));
         }
 
-		public string GetEditHtml(string groupName)
-		{
-            var showPopWinString = ModalNodeGroupAdd.GetOpenWindowString(PublishmentSystemId, groupName);            
-            return $"<a href=\"javascript:;\" onClick=\"{showPopWinString}\">修改</a>";
-		}
+        private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-		public string GetDeleteHtml(string groupName)
-		{
-            var urlDelete = PageUtils.GetCmsUrl(nameof(PageNodeGroup), new NameValueCollection
+            var groupInfo = (NodeGroupInfo)e.Item.DataItem;
+
+            var ltlNodeGroupName = (Literal)e.Item.FindControl("ltlNodeGroupName");
+            var ltlDescription = (Literal)e.Item.FindControl("ltlDescription");
+            var hlUp = (HyperLink)e.Item.FindControl("hlUp");
+            var hlDown = (HyperLink)e.Item.FindControl("hlDown");
+            var ltlChannels = (Literal)e.Item.FindControl("ltlChannels");
+            var ltlEdit = (Literal)e.Item.FindControl("ltlEdit");
+            var ltlDelete = (Literal)e.Item.FindControl("ltlDelete");
+
+            ltlNodeGroupName.Text = groupInfo.NodeGroupName;
+            ltlDescription.Text = groupInfo.Description;
+
+            hlUp.NavigateUrl = PageUtils.GetCmsUrl(nameof(PageNodeGroup), new NameValueCollection
             {
                 {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                {"GroupName", groupName},
-                {"Delete", true.ToString()}
+                {"GroupName", groupInfo.NodeGroupName},
+                {"SetTaxis", true.ToString()},
+                {"Direction", "UP"}
             });
-			return $"<a href=\"{urlDelete}\" onClick=\"javascript:return confirm('此操作将删除栏目组“{groupName}”，确认吗？');\">删除</a>";
-		}
-
-        private void DgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
-        {
-            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+            hlDown.NavigateUrl = PageUtils.GetCmsUrl(nameof(PageNodeGroup), new NameValueCollection
             {
-                var groupName = SqlUtils.EvalString(e.Item.DataItem, "NodeGroupName");
+                {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                {"GroupName", groupInfo.NodeGroupName},
+                {"SetTaxis", true.ToString()},
+                {"Direction", "DOWN"}
+            });
 
-                var upLinkButton = (HyperLink)e.Item.FindControl("UpLinkButton");
-                var downLinkButton = (HyperLink)e.Item.FindControl("DownLinkButton");
+            ltlChannels.Text =
+                $@"<a href=""{PageChannelsGroup.GetRedirectUrl(PublishmentSystemId, groupInfo.NodeGroupName)}"">查看栏目</a>";
 
-                upLinkButton.NavigateUrl = PageUtils.GetCmsUrl(nameof(PageNodeGroup), new NameValueCollection
-                {
-                    {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                    {"GroupName", groupName},
-                    {"SetTaxis", true.ToString()},
-                    {"Direction", "UP"}
-                });
-                downLinkButton.NavigateUrl = PageUtils.GetCmsUrl(nameof(PageNodeGroup), new NameValueCollection
-                {
-                    {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                    {"GroupName", groupName},
-                    {"SetTaxis", true.ToString()},
-                    {"Direction", "DOWN"}
-                });
-            }
+            ltlEdit.Text =
+                $@"<a href=""javascript:;"" onClick=""{ModalNodeGroupAdd.GetOpenWindowString(PublishmentSystemId,
+                    groupInfo.NodeGroupName)}"">修改</a>";
+
+            ltlDelete.Text = $@"<a href=""{PageUtils.GetCmsUrl(nameof(PageNodeGroup), new NameValueCollection
+            {
+                {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                {"GroupName", groupInfo.NodeGroupName},
+                {"Delete", true.ToString()}
+            })}"" onClick=""javascript:return confirm('此操作将删除栏目组“{groupInfo.NodeGroupName}”，确认吗？');"">删除</a>";
         }
 	}
 }

@@ -32,84 +32,84 @@ namespace SiteServer.CMS.Core
             return builder.ToString();
         }
 
-        public static void SendSms(PublishmentSystemInfo publishmentSystemInfo, ITagStyleMailSmsBaseInfo mailSmsInfo, string tableName, int relatedIdentity, ExtendedAttributes contentInfo)
-        {
-            try
-            {
-                if (mailSmsInfo.IsSms)
-                {
-                    var styleInfoList = RelatedIdentities.GetTableStyleInfoList(publishmentSystemInfo, relatedIdentity);
+        //public static void SendSms(PublishmentSystemInfo publishmentSystemInfo, ITagStyleMailSmsBaseInfo mailSmsInfo, string tableName, int relatedIdentity, ExtendedAttributes contentInfo)
+        //{
+        //    try
+        //    {
+        //        if (mailSmsInfo.IsSms)
+        //        {
+        //            var styleInfoList = RelatedIdentities.GetTableStyleInfoList(publishmentSystemInfo, relatedIdentity);
 
-                    var smsToArrayList = new ArrayList();
-                    if (mailSmsInfo.SmsReceiver == ETriState.All || mailSmsInfo.SmsReceiver == ETriState.True)
-                    {
-                        if (!string.IsNullOrEmpty(mailSmsInfo.SmsTo))
-                        {
-                            var mobiles = mailSmsInfo.SmsTo.Split(';', ',');
-                            foreach (var mobile in mobiles)
-                            {
-                                if (!string.IsNullOrEmpty(mobile) && StringUtils.IsMobile(mobile) && !smsToArrayList.Contains(mobile))
-                                {
-                                    smsToArrayList.Add(mobile);
-                                }
-                            }
-                        }
-                    }
-                    if (mailSmsInfo.SmsReceiver == ETriState.All || mailSmsInfo.SmsReceiver == ETriState.False)
-                    {
-                        var smsTo = contentInfo.GetString(mailSmsInfo.SmsFiledName);
-                        if (!string.IsNullOrEmpty(smsTo))
-                        {
-                            var mobiles = smsTo.Split(';', ',');
-                            foreach (var mobile in mobiles)
-                            {
-                                if (!string.IsNullOrEmpty(mobile) && StringUtils.IsMobile(mobile) && !smsToArrayList.Contains(mobile))
-                                {
-                                    smsToArrayList.Add(mobile);
-                                }
-                            }
-                        }
-                    }
+        //            var smsToArrayList = new ArrayList();
+        //            if (mailSmsInfo.SmsReceiver == ETriState.All || mailSmsInfo.SmsReceiver == ETriState.True)
+        //            {
+        //                if (!string.IsNullOrEmpty(mailSmsInfo.SmsTo))
+        //                {
+        //                    var mobiles = mailSmsInfo.SmsTo.Split(';', ',');
+        //                    foreach (var mobile in mobiles)
+        //                    {
+        //                        if (!string.IsNullOrEmpty(mobile) && StringUtils.IsMobile(mobile) && !smsToArrayList.Contains(mobile))
+        //                        {
+        //                            smsToArrayList.Add(mobile);
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            if (mailSmsInfo.SmsReceiver == ETriState.All || mailSmsInfo.SmsReceiver == ETriState.False)
+        //            {
+        //                var smsTo = contentInfo.GetString(mailSmsInfo.SmsFiledName);
+        //                if (!string.IsNullOrEmpty(smsTo))
+        //                {
+        //                    var mobiles = smsTo.Split(';', ',');
+        //                    foreach (var mobile in mobiles)
+        //                    {
+        //                        if (!string.IsNullOrEmpty(mobile) && StringUtils.IsMobile(mobile) && !smsToArrayList.Contains(mobile))
+        //                        {
+        //                            smsToArrayList.Add(mobile);
+        //                        }
+        //                    }
+        //                }
+        //            }
 
-                    var builder = new StringBuilder();
+        //            var builder = new StringBuilder();
 
-                    if (mailSmsInfo.IsSmsTemplate && !string.IsNullOrEmpty(mailSmsInfo.SmsContent))
-                    {
-                        builder.Append(mailSmsInfo.SmsContent);
-                    }
-                    else
-                    {
-                        builder.Append(GetSmsContent(styleInfoList));
-                    }
+        //            if (mailSmsInfo.IsSmsTemplate && !string.IsNullOrEmpty(mailSmsInfo.SmsContent))
+        //            {
+        //                builder.Append(mailSmsInfo.SmsContent);
+        //            }
+        //            else
+        //            {
+        //                builder.Append(GetSmsContent(styleInfoList));
+        //            }
 
-                    var content = builder.ToString();
-                    content = StringUtils.ReplaceIgnoreCase(content, "[AddDate]", DateUtils.GetDateAndTimeString(TranslateUtils.ToDateTime(contentInfo.GetString(ContentAttribute.AddDate))));
+        //            var content = builder.ToString();
+        //            content = StringUtils.ReplaceIgnoreCase(content, "[AddDate]", DateUtils.GetDateAndTimeString(TranslateUtils.ToDateTime(contentInfo.GetString(ContentAttribute.AddDate))));
 
-                    foreach (var styleInfo in styleInfoList)
-                    {
-                        var theValue = InputParserUtility.GetContentByTableStyle(contentInfo.GetString(styleInfo.AttributeName), publishmentSystemInfo, styleInfo);
-                        content = StringUtils.ReplaceIgnoreCase(content, $"[{styleInfo.AttributeName}]", theValue);
-                    }
+        //            foreach (var styleInfo in styleInfoList)
+        //            {
+        //                var theValue = InputParserUtility.GetContentByTableStyle(contentInfo.GetString(styleInfo.AttributeName), publishmentSystemInfo, styleInfo);
+        //                content = StringUtils.ReplaceIgnoreCase(content, $"[{styleInfo.AttributeName}]", theValue);
+        //            }
 
-                    var attributeNameList = TableMetadataManager.GetAttributeNameList(tableName);
-                    foreach (var attributeName in attributeNameList)
-                    {
-                        var theValue = contentInfo.GetString(attributeName);
-                        content = StringUtils.ReplaceIgnoreCase(content, $"[{attributeName}]", theValue);
-                    }
+        //            var attributeNameList = TableMetadataManager.GetAttributeNameList(tableName);
+        //            foreach (var attributeName in attributeNameList)
+        //            {
+        //                var theValue = contentInfo.GetString(attributeName);
+        //                content = StringUtils.ReplaceIgnoreCase(content, $"[{attributeName}]", theValue);
+        //            }
 
-                    //var errorMessage = string.Empty;
-                    //var providerInfo = BaiRongDataProvider.SmsProviderDAO.GetFirstSmsProviderInfo();
-                    //if (providerInfo != null)
-                    //{
-                    //    SmsProviderManager.Send(providerInfo, smsToArrayList, content, out errorMessage);
-                    //}
-                }
-            }
-            catch
-            {
-                // ignored
-            }
-        }
+        //            //var errorMessage = string.Empty;
+        //            //var providerInfo = BaiRongDataProvider.SmsProviderDAO.GetFirstSmsProviderInfo();
+        //            //if (providerInfo != null)
+        //            //{
+        //            //    SmsProviderManager.Send(providerInfo, smsToArrayList, content, out errorMessage);
+        //            //}
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        // ignored
+        //    }
+        //}
     }
 }

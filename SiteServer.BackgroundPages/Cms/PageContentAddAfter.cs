@@ -10,11 +10,11 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageContentAddAfter : BasePageCms
     {
-        public RadioButtonList Operation;
-        public DropDownList PublishmentSystemIDDropDownList;
-        public ListBox NodeIDListBox;
-        public PlaceHolder phPublishmentSystemID;
-        public PlaceHolder phSubmit;
+        public RadioButtonList RblOperation;
+        public PlaceHolder PhPublishmentSystemId;
+        public DropDownList DdlPublishmentSystemId;
+        public ListBox LbNodeId;
+        public PlaceHolder PhSubmit;
 
         private NodeInfo _nodeInfo;
         private int _contentId;
@@ -51,8 +51,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            Operation.Items.Add(new ListItem("继续添加内容", EContentAddAfter.ContinueAdd.ToString()));
-            Operation.Items.Add(new ListItem("返回管理界面", EContentAddAfter.ManageContents.ToString()));
+            RblOperation.Items.Add(new ListItem("继续添加内容", EContentAddAfter.ContinueAdd.ToString()));
+            RblOperation.Items.Add(new ListItem("返回管理界面", EContentAddAfter.ManageContents.ToString()));
 
             var isCrossSiteTrans = CrossSiteTransUtility.IsCrossSiteTrans(PublishmentSystemInfo, _nodeInfo);
             var isAutomatic = CrossSiteTransUtility.IsAutomatic(_nodeInfo);
@@ -60,17 +60,17 @@ namespace SiteServer.BackgroundPages.Cms
             var isTranslated = ContentUtility.AfterContentAdded(PublishmentSystemInfo, _nodeInfo, _contentId, isCrossSiteTrans, isAutomatic);
             if (isCrossSiteTrans && !isAutomatic)
             {
-                Operation.Items.Add(new ListItem("转发到其他站点", EContentAddAfter.Contribute.ToString()));
+                RblOperation.Items.Add(new ListItem("转发到其他站点", EContentAddAfter.Contribute.ToString()));
             }
 
             SuccessMessage(isTranslated ? "内容添加成功并已转发到指定站点，请选择后续操作。" : "内容添加成功，请选择后续操作。");
 
-            phPublishmentSystemID.Visible = phSubmit.Visible = false;
+            PhPublishmentSystemId.Visible = PhSubmit.Visible = false;
         }
 
-        public void Operation_SelectedIndexChanged(object sender, EventArgs e)
+        public void RblOperation_SelectedIndexChanged(object sender, EventArgs e)
 		{
-            var after = (EContentAddAfter)TranslateUtils.ToEnum(typeof(EContentAddAfter), Operation.SelectedValue, EContentAddAfter.ContinueAdd);
+            var after = (EContentAddAfter)TranslateUtils.ToEnum(typeof(EContentAddAfter), RblOperation.SelectedValue, EContentAddAfter.ContinueAdd);
             if (after == EContentAddAfter.ContinueAdd)
             {
                 PageUtils.Redirect(WebUtils.GetContentAddAddUrl(PublishmentSystemId, _nodeInfo, Body.GetQueryString("ReturnUrl")));
@@ -81,31 +81,31 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else if (after == EContentAddAfter.Contribute)
             {
-                CrossSiteTransUtility.LoadPublishmentSystemIdDropDownList(PublishmentSystemIDDropDownList, PublishmentSystemInfo, _nodeInfo.NodeId);
+                CrossSiteTransUtility.LoadPublishmentSystemIdDropDownList(DdlPublishmentSystemId, PublishmentSystemInfo, _nodeInfo.NodeId);
 
-                if (PublishmentSystemIDDropDownList.Items.Count > 0)
+                if (DdlPublishmentSystemId.Items.Count > 0)
                 {
-                    PublishmentSystemID_SelectedIndexChanged(sender, e);
+                    DdlPublishmentSystemId_SelectedIndexChanged(sender, e);
                 }
-                phPublishmentSystemID.Visible = phSubmit.Visible = true;
+                PhPublishmentSystemId.Visible = PhSubmit.Visible = true;
             }
 		}
 
-        public void PublishmentSystemID_SelectedIndexChanged(object sender, EventArgs e)
+        public void DdlPublishmentSystemId_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var psId = int.Parse(PublishmentSystemIDDropDownList.SelectedValue);
-            CrossSiteTransUtility.LoadNodeIdListBox(NodeIDListBox, PublishmentSystemInfo, psId, _nodeInfo, Body.AdminName);
+            var psId = int.Parse(DdlPublishmentSystemId.SelectedValue);
+            CrossSiteTransUtility.LoadNodeIdListBox(LbNodeId, PublishmentSystemInfo, psId, _nodeInfo, Body.AdminName);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var targetPublishmentSystemId = int.Parse(PublishmentSystemIDDropDownList.SelectedValue);
+            var targetPublishmentSystemId = int.Parse(DdlPublishmentSystemId.SelectedValue);
             var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
             try
             {
-                foreach (ListItem listItem in NodeIDListBox.Items)
+                foreach (ListItem listItem in LbNodeId.Items)
                 {
                     if (!listItem.Selected) continue;
                     var targetNodeId = TranslateUtils.ToInt(listItem.Value);
@@ -118,11 +118,11 @@ namespace SiteServer.BackgroundPages.Cms
                 Body.AddSiteLog(PublishmentSystemId, _nodeInfo.NodeId, _contentId, "内容跨站转发", $"转发到站点:{targetPublishmentSystemInfo.PublishmentSystemName}");
 
                 SuccessMessage("内容跨站转发成功，请选择后续操作。");
-                Operation.Items.Clear();
-                Operation.Items.Add(new ListItem("继续添加内容", EContentAddAfter.ContinueAdd.ToString()));
-                Operation.Items.Add(new ListItem("返回管理界面", EContentAddAfter.ManageContents.ToString()));
-                Operation.Items.Add(new ListItem("转发到其他站点", EContentAddAfter.Contribute.ToString()));
-                phPublishmentSystemID.Visible = phSubmit.Visible = false;
+                RblOperation.Items.Clear();
+                RblOperation.Items.Add(new ListItem("继续添加内容", EContentAddAfter.ContinueAdd.ToString()));
+                RblOperation.Items.Add(new ListItem("返回管理界面", EContentAddAfter.ManageContents.ToString()));
+                RblOperation.Items.Add(new ListItem("转发到其他站点", EContentAddAfter.Contribute.ToString()));
+                PhPublishmentSystemId.Visible = PhSubmit.Visible = false;
             }
             catch (Exception ex)
             {

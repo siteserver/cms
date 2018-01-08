@@ -191,18 +191,22 @@ input.app-search-input:-ms-input-placeholder {
   background: #eeeeee;
   box-shadow: -4px 4px 40px rgba(0, 0, 0, 0.15);
   position: absolute;
-  top: 65px;
+  top: 62px;
 }
 body.fixed-left .side-menu.left {
   bottom: 50px;
   height: 100%;
-  margin-top: 0px;
+  margin-top: 0;
   position: fixed;
 }
 .content-page {
   margin-left: 200px;
   overflow: hidden;
   background: #fff;
+  width: 100%;
+  height: 100%;
+  margin-top: 0;
+  position: fixed;
 }
 .content-page > .content {
   margin-bottom: 60px;
@@ -589,6 +593,7 @@ body.fixed-left .side-menu.left {
 }
 #topnav .topbar-main {
   background-color: #00b19d;
+  height: 62px;
 }
 #topnav .topbar-main .logo {
   color: #ffffff !important;
@@ -906,7 +911,7 @@ body.fixed-left .side-menu.left {
 @media (min-width: 992px) {
   #topnav .navigation-menu > li > a {
     padding-top: 22px;
-    padding-bottom: 22px;
+    padding-bottom: 12px;
   }
 }
 /*

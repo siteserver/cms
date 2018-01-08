@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
@@ -16,23 +15,19 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class PageContentView : BasePageCms
     {
-        public Literal ltlScripts;
-        public Literal ltlNodeName;
-
-        public Literal ltlContentGroup;
-        public Literal ltlTags;
-
-        public Literal ltlLastEditDate;
-        public Literal ltlAddUserName;
-        public Literal ltlLastEditUserName;
-        public Literal ltlContentLevel;
-
-        public Repeater MyRepeater;
-
-        public Control RowTags;
-        public Control RowContentGroup;
-
-        public Button Submit;
+        public Literal LtlScripts;
+        public Literal LtlNodeName;
+        public Literal LtlContentGroup;
+        public Literal LtlTags;
+        public Literal LtlLastEditDate;
+        public Literal LtlAddUserName;
+        public Literal LtlLastEditUserName;
+        public Literal LtlContentLevel;
+        public Repeater RptContents;
+        public PlaceHolder PhTags;
+        public PlaceHolder PhContentGroup;
+        public Button BtnSubmit;
+        public HyperLink HlPreview;
 
         private int _nodeId;
         private string _tableName;
@@ -80,36 +75,29 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            MyRepeater.DataSource = myStyleInfoArrayList;
-            MyRepeater.ItemDataBound += MyRepeater_ItemDataBound;
-            MyRepeater.DataBind();
+            RptContents.DataSource = myStyleInfoArrayList;
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
+            RptContents.DataBind();
 
-            ltlNodeName.Text = NodeManager.GetNodeName(PublishmentSystemId, _nodeId);
-            ltlNodeName.Text += $@"
-<script>
-function submitPreview(){{
-    window.open(""{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeId, _contentId)}"");
-}}
-</script>
-";
+            LtlNodeName.Text = NodeManager.GetNodeName(PublishmentSystemId, _nodeId);
 
-            ltlTags.Text = _contentInfo.Tags;
-            if (string.IsNullOrEmpty(ltlTags.Text))
+            LtlTags.Text = _contentInfo.Tags;
+            if (string.IsNullOrEmpty(LtlTags.Text))
             {
-                RowTags.Visible = false;
+                PhTags.Visible = false;
             }
 
-            ltlContentGroup.Text = _contentInfo.ContentGroupNameCollection;
-            if (string.IsNullOrEmpty(ltlContentGroup.Text))
+            LtlContentGroup.Text = _contentInfo.ContentGroupNameCollection;
+            if (string.IsNullOrEmpty(LtlContentGroup.Text))
             {
-                RowContentGroup.Visible = false;
+                PhContentGroup.Visible = false;
             }
 
-            ltlLastEditDate.Text = DateUtils.GetDateAndTimeString(_contentInfo.LastEditDate);
-            ltlAddUserName.Text = AdminManager.GetDisplayName(_contentInfo.AddUserName, true);
-            ltlLastEditUserName.Text = AdminManager.GetDisplayName(_contentInfo.LastEditUserName, true);
+            LtlLastEditDate.Text = DateUtils.GetDateAndTimeString(_contentInfo.LastEditDate);
+            LtlAddUserName.Text = AdminManager.GetDisplayName(_contentInfo.AddUserName, true);
+            LtlLastEditUserName.Text = AdminManager.GetDisplayName(_contentInfo.LastEditUserName, true);
 
-            ltlContentLevel.Text = CheckManager.GetCheckState(PublishmentSystemInfo, _contentInfo.IsChecked, _contentInfo.CheckedLevel);
+            LtlContentLevel.Text = CheckManager.GetCheckState(PublishmentSystemInfo, _contentInfo.IsChecked, _contentInfo.CheckedLevel);
 
             if (_contentInfo.ReferenceId > 0 && _contentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
             {
@@ -126,31 +114,33 @@ function submitPreview(){{
                         WebUtils.GetContentAddEditUrl(referencePublishmentSystemInfo.PublishmentSystemId,
                             referenceNodeInfo, _contentInfo.ReferenceId, Body.GetQueryString("ReturnUrl"));
 
-                    ltlScripts.Text += $@"
+                    LtlScripts.Text += $@"
 <div class=""tips"">此内容为对内容 （站点：{referencePublishmentSystemInfo.PublishmentSystemName},栏目：{referenceNodeInfo.NodeName}）“<a href=""{pageUrl}"" target=""_blank"">{_contentInfo.Title}</a>”（<a href=""{addEditUrl}"">编辑</a>） 的引用，内容链接将和原始内容链接一致</div>";
                 }
             }
 
-            Submit.Attributes.Add("onclick", ModalContentCheck.GetOpenWindowString(PublishmentSystemInfo.PublishmentSystemId, _nodeId, _contentId, _returnUrl));
+            BtnSubmit.Attributes.Add("onclick", ModalContentCheck.GetOpenWindowString(PublishmentSystemInfo.PublishmentSystemId, _nodeId, _contentId, _returnUrl));
+            HlPreview.NavigateUrl = PreviewApi.GetContentUrl(PublishmentSystemId, _contentInfo.NodeId, _contentInfo.Id);
         }
 
-        void MyRepeater_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
             var styleInfo = (TableStyleInfo)e.Item.DataItem;
-
-            var helpHtml = $"{styleInfo.DisplayName}：";
 
             var inputHtml = InputParserUtility.GetContentByTableStyle(_contentInfo.GetString(styleInfo.AttributeName), PublishmentSystemInfo, styleInfo);
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
             ltlHtml.Text = $@"
-<tr>
-  <td>{helpHtml}</td>
-  <td colspan=""2"">{inputHtml}</td>
-</tr>
+<div class=""form-group form-row"">
+    <label class=""col-sm-1 col-form-label"">{styleInfo.DisplayName}</label>
+    <div class=""col-sm-10 form-control-plaintext"">
+        {inputHtml}
+    </div>
+    <div class=""col-sm-1""></div>
+</div>
 ";
         }
 

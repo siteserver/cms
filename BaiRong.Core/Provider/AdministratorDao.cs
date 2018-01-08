@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
-using BaiRong.Core.Cryptography;
+using BaiRong.Core.Auth;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
@@ -489,29 +489,16 @@ namespace BaiRong.Core.Provider
             return areaId;
         }
 
-        public string GetSelectCommand(bool isConsoleAdministrator, string creatorUserName, int departmentId)
+        public string GetSelectCommand(bool isConsoleAdministrator, string creatorUserName)
         {
-            string sqlString;
-            if (departmentId == 0)
-            {
-                sqlString =
+            var sqlString =
                     "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator";
-                if (!isConsoleAdministrator)
-                {
-                    sqlString =
-                        $"SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator WHERE CreatorUserName = '{PageUtils.FilterSql(creatorUserName)}'";
-                }
-            }
-            else
+            if (!isConsoleAdministrator)
             {
                 sqlString =
-                    $"SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator WHERE DepartmentID = {departmentId}";
-                if (!isConsoleAdministrator)
-                {
-                    sqlString =
-                        $"SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator WHERE CreatorUserName = '{PageUtils.FilterSql(creatorUserName)}' AND DepartmentID = {departmentId}";
-                }
+                    $"SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator WHERE CreatorUserName = '{PageUtils.FilterSql(creatorUserName)}'";
             }
+
             return sqlString;
         }
 
@@ -921,7 +908,7 @@ namespace BaiRong.Core.Provider
             {
                 passwordSalt = GenerateSalt();
 
-                var encryptor = new DESEncryptor
+                var encryptor = new DesEncryptor
                 {
                     InputString = password,
                     EncryptKey = passwordSalt
@@ -1096,7 +1083,7 @@ namespace BaiRong.Core.Provider
             }
             else if (passwordFormat == EPasswordFormat.Encrypted)
             {
-                var encryptor = new DESEncryptor
+                var encryptor = new DesEncryptor
                 {
                     InputString = password,
                     DecryptKey = passwordSalt

@@ -20,6 +20,83 @@ namespace SiteServer.API.Controllers.Preview
     [RoutePrefix("api")]
     public class PreviewController : ApiController
     {
+        [HttpGet, Route(PreviewApi.Route)]
+        public HttpResponseMessage Get(int publishmentSystemId)
+        {
+            try
+            {
+                var pageIndex = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["pageIndex"]);
+
+                var response = GetResponseMessage(VisualInfo.GetInstance(publishmentSystemId, 0, 0, 0, pageIndex, 0));
+                return response ?? Request.CreateResponse(HttpStatusCode.NotFound);
+            }
+            catch (Exception ex)
+            {
+                var logId = LogUtils.AddSystemErrorLog(ex);
+                PageUtils.RedirectToErrorPage(logId);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.NotFound);
+        }
+
+        [HttpGet, Route(PreviewApi.RouteChannel)]
+        public HttpResponseMessage GetChannel(int publishmentSystemId, int channelId)
+        {
+            try
+            {
+                var pageIndex = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["pageIndex"]);
+
+                var response = GetResponseMessage(VisualInfo.GetInstance(publishmentSystemId, channelId, 0, 0, pageIndex, 0));
+                return response ?? Request.CreateResponse(HttpStatusCode.NotFound);
+            }
+            catch (Exception ex)
+            {
+                var logId = LogUtils.AddSystemErrorLog(ex);
+                PageUtils.RedirectToErrorPage(logId);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.NotFound);
+        }
+
+        [HttpGet, Route(PreviewApi.RouteContent)]
+        public HttpResponseMessage GetContent(int publishmentSystemId, int channelId, int contentId)
+        {
+            try
+            {
+                var pageIndex = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["pageIndex"]);
+                var previewId = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["previewId"]);
+
+                var response = GetResponseMessage(VisualInfo.GetInstance(publishmentSystemId, channelId, contentId, 0, pageIndex, previewId));
+                return response ?? Request.CreateResponse(HttpStatusCode.NotFound);
+            }
+            catch (Exception ex)
+            {
+                var logId = LogUtils.AddSystemErrorLog(ex);
+                PageUtils.RedirectToErrorPage(logId);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.NotFound);
+        }
+
+        [HttpGet, Route(PreviewApi.RouteFile)]
+        public HttpResponseMessage GetFile(int publishmentSystemId, int fileTemplateId)
+        {
+            try
+            {
+                var pageIndex = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["pageIndex"]);
+
+                var response = GetResponseMessage(VisualInfo.GetInstance(publishmentSystemId, 0, 0, fileTemplateId, pageIndex, 0));
+                return response ?? Request.CreateResponse(HttpStatusCode.NotFound);
+            }
+            catch (Exception ex)
+            {
+                var logId = LogUtils.AddSystemErrorLog(ex);
+                PageUtils.RedirectToErrorPage(logId);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.NotFound);
+        }
+
         private HttpResponseMessage Response(string html, PublishmentSystemInfo publishmentSystemInfo)
         {
             return new HttpResponseMessage(HttpStatusCode.OK)
@@ -374,75 +451,6 @@ namespace SiteServer.API.Controllers.Preview
             }
 
             return null;
-        }
-
-        [HttpGet, Route(PreviewApi.Route)]
-        public HttpResponseMessage Get(int publishmentSystemId)
-        {
-            try
-            {
-                var pageIndex = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["pageIndex"]);
-
-                var response = GetResponseMessage(VisualInfo.GetInstance(publishmentSystemId, 0, 0, 0, pageIndex, 0));
-                return response ?? Request.CreateResponse(HttpStatusCode.NotFound);
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddSystemErrorLog(ex);
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-        }
-
-        [HttpGet, Route(PreviewApi.RouteChannel)]
-        public HttpResponseMessage GetChannel(int publishmentSystemId, int channelId)
-        {
-            try
-            {
-                var pageIndex = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["pageIndex"]);
-
-                var response = GetResponseMessage(VisualInfo.GetInstance(publishmentSystemId, channelId, 0, 0, pageIndex, 0));
-                return response ?? Request.CreateResponse(HttpStatusCode.NotFound);
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddSystemErrorLog(ex);
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-        }
-
-        [HttpGet, Route(PreviewApi.RouteContent)]
-        public HttpResponseMessage GetContent(int publishmentSystemId, int channelId, int contentId)
-        {
-            try
-            {
-                var pageIndex = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["pageIndex"]);
-                var previewId = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["previewId"]);
-
-                var response = GetResponseMessage(VisualInfo.GetInstance(publishmentSystemId, channelId, contentId, 0, pageIndex, previewId));
-                return response ?? Request.CreateResponse(HttpStatusCode.NotFound);
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddSystemErrorLog(ex);
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-        }
-
-        [HttpGet, Route(PreviewApi.RouteFile)]
-        public HttpResponseMessage GetFile(int publishmentSystemId, int fileTemplateId)
-        {
-            try
-            {
-                var pageIndex = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["pageIndex"]);
-
-                var response = GetResponseMessage(VisualInfo.GetInstance(publishmentSystemId, 0, 0, fileTemplateId, pageIndex, 0));
-                return response ?? Request.CreateResponse(HttpStatusCode.NotFound);
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddSystemErrorLog(ex);
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
         }
     }
 }

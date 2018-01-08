@@ -10,8 +10,8 @@ using System.Runtime.Serialization.Json;
 using System.IO;
 using System.Linq;
 using System.Web.Script.Serialization;
-using BaiRong.Core.Cryptography;
 using System.Text.RegularExpressions;
+using BaiRong.Core.Auth;
 using BaiRong.Core.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -1192,7 +1192,7 @@ namespace BaiRong.Core
         {
             if (string.IsNullOrEmpty(inputString)) return string.Empty;
 
-            var encryptor = new DESEncryptor
+            var encryptor = new DesEncryptor
             {
                 InputString = inputString,
                 EncryptKey = WebConfigUtils.SecretKey
@@ -1211,7 +1211,7 @@ namespace BaiRong.Core
 
             inputString = inputString.Replace("0add0", "+").Replace("0equals0", "=").Replace("0and0", "&").Replace("0question0", "?").Replace("0quote0", "'").Replace("0slash0", "/");
 
-            var encryptor = new DESEncryptor
+            var encryptor = new DesEncryptor
             {
                 InputString = inputString,
                 DecryptKey = WebConfigUtils.SecretKey

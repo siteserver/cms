@@ -13,7 +13,6 @@ namespace SiteServer.BackgroundPages.Settings
         public TextBox TbLoginFailCount;
         public PlaceHolder PhLockingTime;
         public TextBox TbLockingTime;
-
         public RadioButtonList RblIsFindPassword;
         public PlaceHolder PhFindPassword;
         public TextBox TbFindPasswordSmsTplId;
@@ -23,7 +22,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.UserManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.User);
 
             EBooleanUtils.AddListItems(RblIsFailToLock, "是", "否");
             ControlUtils.SelectSingleItemIgnoreCase(RblIsFailToLock, ConfigManager.SystemConfigInfo.IsUserLockLogin.ToString());
@@ -63,32 +62,24 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            if (Page.IsPostBack && Page.IsValid)
-            {
-                try
-                {
-                    ConfigManager.SystemConfigInfo.IsUserLockLogin = TranslateUtils.ToBool(RblIsFailToLock.SelectedValue);
+            if (!Page.IsPostBack || !Page.IsValid) return;
 
-                    ConfigManager.SystemConfigInfo.UserLockLoginCount = TranslateUtils.ToInt(TbLoginFailCount.Text, 3);
+            ConfigManager.SystemConfigInfo.IsUserLockLogin = TranslateUtils.ToBool(RblIsFailToLock.SelectedValue);
 
-                    ConfigManager.SystemConfigInfo.UserLockLoginType = DdlLockType.SelectedValue;
+            ConfigManager.SystemConfigInfo.UserLockLoginCount = TranslateUtils.ToInt(TbLoginFailCount.Text, 3);
 
-                    ConfigManager.SystemConfigInfo.UserLockLoginHours = TranslateUtils.ToInt(TbLockingTime.Text);
+            ConfigManager.SystemConfigInfo.UserLockLoginType = DdlLockType.SelectedValue;
 
-                    ConfigManager.SystemConfigInfo.IsUserFindPassword = TranslateUtils.ToBool(RblIsFindPassword.SelectedValue);
-                    ConfigManager.SystemConfigInfo.UserFindPasswordSmsTplId = TbFindPasswordSmsTplId.Text;
+            ConfigManager.SystemConfigInfo.UserLockLoginHours = TranslateUtils.ToInt(TbLockingTime.Text);
 
-                    BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
+            ConfigManager.SystemConfigInfo.IsUserFindPassword = TranslateUtils.ToBool(RblIsFindPassword.SelectedValue);
+            ConfigManager.SystemConfigInfo.UserFindPasswordSmsTplId = TbFindPasswordSmsTplId.Text;
 
-                    Body.AddAdminLog("修改用户登录设置");
+            BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
 
-                    SuccessMessage("设置修改成功！");
-                }
-                catch (Exception ex)
-                {
-                    FailMessage(ex, "设置修改失败！");
-                }
-            }
+            Body.AddAdminLog("修改用户登录设置");
+
+            SuccessMessage("设置修改成功！");
         }
     }
 }

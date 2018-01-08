@@ -14,10 +14,6 @@
       <script type="text/javascript">
         $(document).ready(function () {
 
-          $('#myTab a').click(function (e) {
-            e.preventDefault();
-            $(this).tab('show');
-          });
           if (imageUrl) {
             $('img#imgSize').attr('src', imageUrl);
             $('img#imgRotateAndFlip').attr('src', imageUrl);
@@ -162,13 +158,13 @@
       <form runat="server">
         <ctrl:alerts runat="server" />
 
-        <div class="raw">
+        <div class="row">
           <ul class="nav nav-tabs tabs m-b-10" id="myTab">
             <li class="active tab">
-              <a href="#size">图片裁剪</a>
+              <a href="javascript:;" onclick="$('#size').show();$('#rotateAndFlip').hide();$('.tab').removeClass('active');$(this).parent().addClass('active')">图片裁剪</a>
             </li>
             <li class="tab">
-              <a href="#rotateAndFlip">图片旋转</a>
+              <a href="#rotateAndFlip" onclick="$('#size').hide();$('#rotateAndFlip').show();$('.tab').removeClass('active');$(this).parent().addClass('active')">图片旋转</a>
             </li>
             <!-- <li class="tab">
                 <a href="#compression">图片压缩</a>
@@ -183,8 +179,8 @@
         <div class="tab-content">
           <div class="tab-pane active" id="size">
 
-            <div class="raw">
-              <div class="col-sm-6">
+            <div class="row">
+              <div class="col-6">
                 <input type="hidden" id="x1" name="x1" value="" class="input-mini">
                 <input type="hidden" value="" id="w" name="w" class="input-mini">
                 <input type="hidden" id="y1" name="y1" value="" class="input-mini">
@@ -192,43 +188,39 @@
                 <input type="hidden" id="x2" value="" class="input-mini">
                 <input type="hidden" id="y2" value="" class="input-mini">
 
-                <div class="form-horizontal">
-
-                  <div class="form-group">
-                    <label class="col-xs-2 control-label text-right">比例</label>
-                    <div class="col-xs-9">
-                      <select id="aspect" class="form-control">
-                        <option>不设置图片比例</option>
-                        <option>1:1</option>
-                        <option>2:1</option>
-                        <option>1:2</option>
-                        <option>4:3</option>
-                        <option>3:4</option>
-                        <option>16:9</option>
-                        <option>9:16</option>
-                      </select>
-                    </div>
-                    <div class="col-xs-1"></div>
+                <div class="form-group form-row">
+                  <label class="col-2 col-form-label text-right">比例</label>
+                  <div class="col-9">
+                    <select id="aspect" class="form-control">
+                      <option>不设置图片比例</option>
+                      <option>1:1</option>
+                      <option>2:1</option>
+                      <option>1:2</option>
+                      <option>4:3</option>
+                      <option>3:4</option>
+                      <option>16:9</option>
+                      <option>9:16</option>
+                    </select>
                   </div>
-                  <div class="form-group">
-                    <label class="col-xs-2 control-label text-right">宽（比值）</label>
-                    <div class="col-xs-9">
-                      <input type="number" id="aspectWidth" value="" class="form-control">
-                    </div>
-                    <div class="col-xs-1"></div>
+                  <div class="col-1"></div>
+                </div>
+                <div class="form-group form-row">
+                  <label class="col-2 col-form-label text-right">宽（比值）</label>
+                  <div class="col-9">
+                    <input type="number" id="aspectWidth" value="" class="form-control">
                   </div>
-                  <div class="form-group">
-                    <label class="col-xs-2 control-label text-right">高（比值）</label>
-                    <div class="col-xs-9">
-                      <input type="number" value="" id="aspectHeight" class="form-control">
-                    </div>
-                    <div class="col-xs-1"></div>
+                  <div class="col-1"></div>
+                </div>
+                <div class="form-group form-row">
+                  <label class="col-2 col-form-label text-right">高（比值）</label>
+                  <div class="col-9">
+                    <input type="number" value="" id="aspectHeight" class="form-control">
                   </div>
-
+                  <div class="col-1"></div>
                 </div>
 
               </div>
-              <div class="col-sm-6 text-center">
+              <div class="col-6 text-center">
                 <img id="imgSize" />
               </div>
             </div>
@@ -238,40 +230,36 @@
           </div>
           <div class="tab-pane" id="rotateAndFlip">
 
-            <div class="raw">
-              <div class="col-sm-6">
+            <div class="row">
+              <div class="col-6">
 
-                <div class="form-horizontal">
-
-                  <div class="form-group">
-                    <label class="col-xs-2 control-label text-right">旋转方式</label>
-                    <div class="col-xs-8">
-                      <table class="table">
-                        <tr>
-                          <td style="width: 50%;">
-                            <button id="rotateLeft" class="btn btn-success">
-                              左转</button>
-                            <hr />
-                            <button id="rotateFlipH" class="btn btn-success">
-                              水平翻转</button>
-                          </td>
-                          <td style="width: 50%;">
-                            <button id="rotateRight" class="btn btn-success">
-                              右转</button>
-                            <hr />
-                            <button id="rotateFlipV" class="btn btn-success">
-                              垂直翻转</button>
-                          </td>
-                        </tr>
-                      </table>
-                    </div>
-                    <div class="col-xs-2"></div>
+                <div class="form-group form-row">
+                  <label class="col-2 col-form-label text-right">旋转方式</label>
+                  <div class="col-8">
+                    <table class="table">
+                      <tr>
+                        <td style="width: 50%;">
+                          <button id="rotateLeft" class="btn btn-success">
+                            左转</button>
+                          <hr />
+                          <button id="rotateFlipH" class="btn btn-success">
+                            水平翻转</button>
+                        </td>
+                        <td style="width: 50%;">
+                          <button id="rotateRight" class="btn btn-success">
+                            右转</button>
+                          <hr />
+                          <button id="rotateFlipV" class="btn btn-success">
+                            垂直翻转</button>
+                        </td>
+                      </tr>
+                    </table>
                   </div>
-
+                  <div class="col-2"></div>
                 </div>
 
               </div>
-              <div class="col-sm-6 text-center">
+              <div class="col-6 text-center">
                 <img id="imgRotateAndFlip" />
               </div>
             </div>
@@ -326,16 +314,9 @@
 
         <hr />
 
-        <div class="form-horizontal">
-
-          <div class="form-group m-b-0">
-            <div class="col-xs-11 text-right">
-              <asp:Button class="btn btn-primary m-l-10" ID="BtnCheck" Text="确 定" OnClick="Submit_OnClick" runat="server" />
-              <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
-            </div>
-            <div class="col-xs-1"></div>
-          </div>
-
+        <div class="text-right mr-1">
+          <asp:Button class="btn btn-primary m-l-5" ID="BtnCheck" Text="确 定" OnClick="Submit_OnClick" runat="server" />
+          <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
         </div>
 
       </form>

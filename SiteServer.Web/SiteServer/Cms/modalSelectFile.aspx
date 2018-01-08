@@ -13,7 +13,7 @@
         <ctrl:alerts runat="server" />
 
         <div class="row">
-          <div class="col-xs-6">
+          <div class="col-6">
             <div class="btn-group">
               <asp:Button class="btn" ID="BtnUpload" runat="server" text="上传"></asp:Button>
               <asp:Button class="btn" text="后退" runat="server" CommandName="NavigationBar" CommandArgument="Back" OnCommand="LinkButton_Command"></asp:Button>
@@ -21,7 +21,7 @@
               <asp:Button class="btn" text="刷新" runat="server" CommandName="NavigationBar" CommandArgument="Reload" OnCommand="LinkButton_Command"></asp:Button>
             </div>
           </div>
-          <div class="col-xs-6">
+          <div class="col-6">
             <asp:DropDownList ID="DdlListType" class="form-control" runat="server" OnSelectedIndexChanged="ddlListType_SelectedIndexChanged"
               AutoPostBack="true"></asp:DropDownList>
           </div>
@@ -30,7 +30,7 @@
         <hr />
 
         <div class="row">
-          <div class="col-xs-12">
+          <div class="col-12">
             <asp:Literal id="LtlCurrentDirectory" runat="server" />
           </div>
         </div>

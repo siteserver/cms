@@ -123,7 +123,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    var linkUrl = BackgroundPages.PageRedirect.GetRedirectUrlToContent(PublishmentSystemId, commentInfo.NodeId,
+                    var linkUrl = PageRedirect.GetRedirectUrlToContent(PublishmentSystemId, commentInfo.NodeId,
                         commentInfo.ContentId);
                     var tableName = NodeManager.GetTableName(PublishmentSystemInfo,
                         NodeManager.GetNodeInfo(PublishmentSystemId, PublishmentSystemId));

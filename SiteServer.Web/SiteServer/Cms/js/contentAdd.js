@@ -1,5 +1,5 @@
 function translateNodeAdd(name, value){
-  $('#translateContainer').append("<span id='translate_" + value + "' class='label label-primary'>" + name + "&nbsp;<i class='fa fa-times' style='cursor:pointer' onClick=\"translateNodeRemove('" + value + "')\"></i>&nbsp;</span>&nbsp;&nbsp;");
+  $('#translateContainer').append("<span id='translate_" + value + "' class='label label-primary p-1'>" + name + "&nbsp;<i class='ion-android-close' style='cursor:pointer' onClick=\"translateNodeRemove('" + value + "')\"></i>&nbsp;</span>&nbsp;&nbsp;");
   $('#translateCollection').val(value + ',' + $('#translateCollection').val());
   $('#translateType').show();
 }

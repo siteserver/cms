@@ -15,10 +15,8 @@ namespace SiteServer.BackgroundPages.Settings
         public TextBox TbKeyword;
         public DateTimeTextBox TbDateFrom;
         public DateTimeTextBox TbDateTo;
-
         public Repeater RptContents;
         public SqlPager SpContents;
-
 		public Button BtnDelete;
 		public Button BtnDeleteAll;
 
@@ -45,28 +43,27 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.SortMode = SortMode.DESC;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
-			if(!IsPostBack)
-			{
-                if (!string.IsNullOrEmpty(Request.QueryString["Keyword"]))
-                {
-                    TbKeyword.Text = Request.QueryString["Keyword"];
-                    TbDateFrom.Text = Request.QueryString["DateFrom"];
-                    TbDateTo.Text = Request.QueryString["DateTo"];
-                }
+            if (IsPostBack) return;
 
-                BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageRecord), new NameValueCollection
-                {
-                    {"Delete", "True" }
-                }), "IDCollection", "IDCollection", "请选择需要删除的记录！", "此操作将删除所选记录，确认吗？"));
+            if (!string.IsNullOrEmpty(Request.QueryString["Keyword"]))
+            {
+                TbKeyword.Text = Request.QueryString["Keyword"];
+                TbDateFrom.Text = Request.QueryString["DateFrom"];
+                TbDateTo.Text = Request.QueryString["DateTo"];
+            }
 
-                BtnDeleteAll.Attributes.Add("onclick", PageUtils.GetRedirectStringWithConfirm(PageUtils.GetSettingsUrl(nameof(PageRecord), new NameValueCollection
-                {
-                    {"DeleteAll", "True" }
-                }), "此操作将删除所有记录信息，确定吗？"));
+            BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageRecord), new NameValueCollection
+            {
+                {"Delete", "True" }
+            }), "IDCollection", "IDCollection", "请选择需要删除的记录！", "此操作将删除所选记录，确认吗？"));
 
-                SpContents.DataBind();
-			}
-		}
+            BtnDeleteAll.Attributes.Add("onclick", PageUtils.GetRedirectStringWithConfirm(PageUtils.GetSettingsUrl(nameof(PageRecord), new NameValueCollection
+            {
+                {"DeleteAll", "True" }
+            }), "此操作将删除所有记录信息，确定吗？"));
+
+            SpContents.DataBind();
+        }
 
         private static void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {

@@ -12,23 +12,15 @@
 			<form runat="server">
 				<ctrl:alerts runat="server" />
 
-				<div class="form-horizontal">
+				<div class="alert alert-warning">
+					<h5>此操作将归档所选内容，确认吗？</h5>
+				</div>
 
-					<div class="alert alert-warning">
-						<h5>此操作将归档所选内容，确认吗？</h5>
-					</div>
+				<hr />
 
-					<hr />
-
-					<div class="form-group m-b-0">
-						<div class="col-xs-11 text-right">
-							<asp:Button class="btn btn-primary m-l-10" text="确 定" runat="server" onClick="Submit_OnClick" />
-							<button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
-						</div>
-						<div class="col-xs-1"></div>
-					</div>
-
-
+				<div class="text-right mr-1">
+					<asp:Button class="btn btn-primary m-l-5" text="确 定" runat="server" onClick="Submit_OnClick" />
+					<button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
 				</div>
 
 			</form>

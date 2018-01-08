@@ -12,13 +12,11 @@ namespace SiteServer.BackgroundPages.Settings
 	public class PageLogError : BasePage
 	{
 	    public DropDownList DdlPluginId;
-        public TextBox TbKeyword;
         public DateTimeTextBox TbDateFrom;
         public DateTimeTextBox TbDateTo;
-
+        public TextBox TbKeyword;
         public Repeater RptContents;
         public SqlPager SpContents;
-
 		public Button BtnDelete;
 		public Button BtnDeleteAll;
 
@@ -85,10 +83,12 @@ namespace SiteServer.BackgroundPages.Settings
                 {"Delete", "True" }
             }), "IDCollection", "IDCollection", "请选择需要删除的日志！", "此操作将删除所选日志，确认吗？"));
 
-            BtnDeleteAll.Attributes.Add("onclick", PageUtils.GetRedirectStringWithConfirm(PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
-            {
-                {"DeleteAll", "True" }
-            }), "此操作将删除所有日志信息，确定吗？"));
+            BtnDeleteAll.Attributes.Add("onclick",
+                AlertUtils.ConfirmRedirect("删除所有日志", "此操作将删除所有日志信息，确定吗？", "删除全部",
+                    PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+                    {
+                        {"DeleteAll", "True"}
+                    })));
 
             SpContents.DataBind();
         }
@@ -108,17 +108,15 @@ namespace SiteServer.BackgroundPages.Settings
             ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, "Summary");
         }
 
-        public void Search_OnClick(object sender, EventArgs e)
-        {
-            Response.Redirect(PageUrl, true);
-        }
-
-	    private string PageUrl => PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+	    public void Search_OnClick(object sender, EventArgs e)
 	    {
-            {"PluginId", DdlPluginId.SelectedValue},
-            {"Keyword", TbKeyword.Text},
-	        {"DateFrom", TbDateFrom.Text},
-	        {"DateTo", TbDateTo.Text}
-	    });
+	        PageUtils.Redirect(PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+	        {
+	            {"PluginId", DdlPluginId.SelectedValue},
+	            {"Keyword", TbKeyword.Text},
+	            {"DateFrom", TbDateFrom.Text},
+	            {"DateTo", TbDateTo.Text}
+	        }));
+	    }
 	}
 }

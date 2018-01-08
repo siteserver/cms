@@ -14,8 +14,8 @@ namespace SiteServer.BackgroundPages.Settings
 {
     public class PageSiteTemplate : BasePageCms
     {
-        public DataGrid DgDirectories;
-        public DataGrid DgZipFiles;
+        public Repeater RptDirectories;
+        public Repeater RptZipFiles;
         public Button BtnImport;
 
         private SortedList _sortedlist = new SortedList();
@@ -66,7 +66,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (Page.IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
 
             _sortedlist = SiteTemplateManager.Instance.GetSiteTemplateSortedList();
             var directoryList = new List<DirectoryInfo>();
@@ -77,9 +77,9 @@ namespace SiteServer.BackgroundPages.Settings
                 directoryList.Add(dirInfo);
             }
 
-            DgDirectories.DataSource = directoryList;
-            DgDirectories.ItemDataBound += DgDirectories_ItemDataBound;
-            DgDirectories.DataBind();
+            RptDirectories.DataSource = directoryList;
+            RptDirectories.ItemDataBound += RptDirectories_ItemDataBound;
+            RptDirectories.DataBind();
 
             var fileNames = SiteTemplateManager.Instance.GetZipSiteTemplateList();
             var fileList = new List<FileInfo>();
@@ -94,22 +94,23 @@ namespace SiteServer.BackgroundPages.Settings
             }
             if (fileList.Count > 0)
             {
-                DgZipFiles.Visible = true;
-                DgZipFiles.DataSource = fileList;
-                DgZipFiles.ItemDataBound += DgZipFiles_ItemDataBound;
-                DgZipFiles.DataBind();
+                RptZipFiles.Visible = true;
+                RptZipFiles.DataSource = fileList;
+                RptZipFiles.ItemDataBound += RptZipFiles_ItemDataBound;
+                RptZipFiles.DataBind();
             }
             else
             {
-                DgZipFiles.Visible = false;
+                RptZipFiles.Visible = false;
             }
 
             BtnImport.Attributes.Add("onclick", ModalImportZip.GetOpenWindowString(ModalImportZip.TypeSiteTemplate));
         }
 
-        private void DgDirectories_ItemDataBound(object sender, DataGridItemEventArgs e)
+        private void RptDirectories_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
             if (e.Item.ItemType != ListItemType.AlternatingItem && e.Item.ItemType != ListItemType.Item) return;
+
             var dirInfo = (DirectoryInfo)e.Item.DataItem;
 
             var ltlTemplateName = (Literal)e.Item.FindControl("ltlTemplateName");
@@ -157,7 +158,7 @@ namespace SiteServer.BackgroundPages.Settings
                         dirInfo.Name)}"">压缩</a>";
             }
 
-            var urlAdd = PagePublishmentSystemAdd.GetRedirectUrl(dirInfo.Name);
+            var urlAdd = PageSiteAdd.GetRedirectUrl(dirInfo.Name);
             ltlCreateUrl.Text = $@"<a href=""{urlAdd}"">创建站点</a>";
 
             var urlDelete = PageUtils.GetSettingsUrl(nameof(PageSiteTemplate), new NameValueCollection
@@ -170,9 +171,10 @@ namespace SiteServer.BackgroundPages.Settings
                     .SiteTemplateName}”，确认吗？');"">删除</a>";
         }
 
-        private void DgZipFiles_ItemDataBound(object sender, DataGridItemEventArgs e)
+        private void RptZipFiles_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
             if (e.Item.ItemType != ListItemType.AlternatingItem && e.Item.ItemType != ListItemType.Item) return;
+
             var fileInfo = (FileInfo)e.Item.DataItem;
 
             var ltlFileName = (Literal)e.Item.FindControl("ltlFileName");

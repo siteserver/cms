@@ -12,31 +12,30 @@
       <form runat="server">
         <ctrl:alerts runat="server" />
 
-        <div class="form-horizontal">
-
-          <div class="form-group">
-            <label class="col-xs-3 control-label text-right">内容标题</label>
-            <div class="col-xs-8">
-              <asp:Literal ID="LtlTitle" runat="server"></asp:Literal>
-            </div>
-            <div class="col-xs-1"></div>
+        <div class="form-group form-row">
+          <label class="col-2 col-form-label text-right">内容标题</label>
+          <div class="col-10 form-control-plaintext">
+            <asp:Literal ID="LtlTitle" runat="server"></asp:Literal>
           </div>
+        </div>
 
-          <div class="form-group">
-            <label class="col-xs-3 control-label text-right">审核状态</label>
-            <div class="col-xs-8">
-              <asp:Literal ID="LtlState" runat="server"></asp:Literal>
-            </div>
-            <div class="col-xs-1"></div>
+        <div class="form-group form-row">
+          <label class="col-2 col-form-label text-right">审核状态</label>
+          <div class="col-4 form-control-plaintext">
+            <asp:Literal ID="LtlState" runat="server"></asp:Literal>
           </div>
+        </div>
 
-          <asp:PlaceHolder ID="PhCheckReasons" runat="server" Visible="false">
-            <table class="table table-hover">
-              <tr class="head info">
-                <td>审核人</td>
-                <td>审核时间</td>
-                <td>原因</td>
+        <asp:PlaceHolder ID="PhCheckReasons" runat="server" Visible="false">
+          <table class="table tablesaw table-hover m-0">
+            <thead>
+              <tr class="thead">
+                <th>审核人</th>
+                <th>审核时间</th>
+                <th>原因</th>
               </tr>
+            </thead>
+            <tbody>
               <asp:Repeater ID="RptContents" runat="server">
                 <ItemTemplate>
                   <tr>
@@ -52,19 +51,15 @@
                   </tr>
                 </ItemTemplate>
               </asp:Repeater>
-            </table>
-          </asp:PlaceHolder>
+            </tbody>
+          </table>
+        </asp:PlaceHolder>
 
-          <hr />
+        <hr />
 
-          <div class="form-group m-b-0">
-            <div class="col-xs-11 text-right">
-              <asp:Button class="btn btn-primary m-l-10" ID="BtnCheck" Text="审 核" OnClick="Submit_OnClick" runat="server" />
-              <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
-            </div>
-            <div class="col-xs-1"></div>
-          </div>
-
+        <div class="text-right mr-1">
+          <asp:Button class="btn btn-primary m-l-5" ID="BtnCheck" Text="审 核" OnClick="Submit_OnClick" runat="server" />
+          <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
         </div>
 
       </form>

@@ -1,93 +1,117 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.PageAdministratorAdd" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html>
 
-<body>
-<form class="form-inline" runat="server">
-  <asp:Literal id="LtlBreadCrumb" runat="server" />
-  <bairong:alerts runat="server" />
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-  <div class="popover popover-static">
-    <h3 class="popover-title"><asp:Literal id="ltlPageTitle" runat="server" /></h3>
-    <div class="popover-content">
+    <body>
+      <form class="m-l-15 m-r-15" runat="server">
+        <ctrl:alerts runat="server" />
 
-      <table class="table noborder table-hover">
-        <tr>
-          <td width="120">所属部门：</td>
-          <td><asp:DropDownList ID="ddlDepartmentID" runat="server"></asp:DropDownList></td>
-        </tr>
-        <tr>
-          <td>账号：</td>
-          <td>
-            <asp:TextBox ID="tbUserName" MaxLength="50" Size="35" runat="server" />
-            <asp:RequiredFieldValidator ControlToValidate="tbUserName" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server" />
-            <asp:RegularExpressionValidator runat="server" ControlToValidate="tbUserName" ValidationExpression="[^']+" ErrorMessage="不能用单引号" foreColor="red" Display="Dynamic" />
-            <asp:RegularExpressionValidator runat="server" ControlToValidate="tbUserName" ValidationExpression="[^<]+" ErrorMessage="不能用&lt;注册" foreColor="red" Display="Dynamic" />
-            <span>（帐号用于登录系统，由字母、数字组成）</span>
-          </td>
-        </tr>
-        <tr>
-          <td>姓名：</td>
-          <td>
-            <asp:TextBox ID="tbDisplayName" MaxLength="50" Size="35" runat="server" />
-            <asp:RequiredFieldValidator ControlToValidate="tbDisplayName" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server" />
-          </td>
-        </tr>
-        <asp:PlaceHolder ID="phPassword" runat="server">
-        <tr>
-          <td>密码：</td>
-          <td>
-            <asp:TextBox TextMode="Password" ID="tbPassword" MaxLength="50" Size="35" runat="server" />
-            <asp:RequiredFieldValidator ControlToValidate="tbPassword" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server" />
-          </td>
-        </tr>
-        <tr>
-          <td>确认密码：</td>
-          <td>
-            <asp:TextBox TextMode="Password" ID="tbConfirmPassword" MaxLength="50" Size="35" runat="server" />
-            <asp:RequiredFieldValidator ControlToValidate="tbConfirmPassword" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server" />
-            <asp:CompareValidator ID="tbNewPasswordCompare" runat="server" ControlToCompare="tbPassword" ControlToValidate="tbConfirmPassword" Display="Dynamic" foreColor="red" ErrorMessage=" 两次输入的密码不一致！请再输入一遍您上面填写的密码。"></asp:CompareValidator>
-          </td>
-        </tr>
-        </asp:PlaceHolder>
-        <tr>
-          <td>所在区域：</td>
-          <td><asp:DropDownList ID="ddlAreaID" runat="server"></asp:DropDownList></td>
-        </tr>
-        <tr>
-          <td>电子邮箱：</td>
-          <td>
-            <asp:TextBox ID="tbEmail" runat="server" Size="35"></asp:TextBox>
-            <asp:RegularExpressionValidator ControlToValidate="tbEmail" ValidationExpression="(\w[0-9a-zA-Z_-]*@(\w[0-9a-zA-Z-]*\.)+\w{2,})" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server" />
-          </td>
-        </tr>
-        <tr>
-          <td>手机号码：</td>
-          <td>
-            <asp:TextBox ID="tbMobile" runat="server" Size="35"></asp:TextBox>
-            <asp:RegularExpressionValidator ControlToValidate="tbMobile" ValidationExpression="^0?\d{11}$" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server" />
-          </td>
-        </tr>
-      </table>
+        <div class="card-box">
+          <ul class="nav nav-pills">
+            <li class="nav-item active">
+              <a class="nav-link" href="pageAdministrator.aspx">管理员管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageAdminRole.aspx">角色管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageAdminConfiguration.aspx">管理员设置</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageAdminDepartment.aspx">所属部门管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageAdminArea.aspx">所在区域管理</a>
+            </li>
+          </ul>
+        </div>
 
-      <hr />
-      <table class="table noborder">
-        <tr>
-          <td class="center">
-            <asp:Button class="btn btn-primary" OnClick="Submit_OnClick" Text="确 定" runat="server" />
-            <asp:Button class="btn" ID="btnReturn" Text="返 回" runat="server" />
-          </td>
-        </tr>
-      </table>
+        <div class="card-box">
+          <div class="m-t-0 header-title">
+            <asp:Literal id="LtlPageTitle" runat="server" />
+          </div>
+          <p class="text-muted font-13 m-b-25"></p>
 
-    </div>
-  </div>
+          <div class="form-group">
+            <label class="col-form-label">所属部门</label>
+            <asp:DropDownList ID="DdlDepartmentId" class="form-control" runat="server"></asp:DropDownList>
+          </div>
 
-</form>
-</body>
-</html>
+          <div class="form-group">
+            <label class="col-form-label">账号
+              <asp:RequiredFieldValidator ControlToValidate="TbUserName" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+              />
+              <asp:RegularExpressionValidator runat="server" ControlToValidate="TbUserName" ValidationExpression="[^']+" ErrorMessage="不能用单引号"
+                foreColor="red" Display="Dynamic" />
+              <asp:RegularExpressionValidator runat="server" ControlToValidate="TbUserName" ValidationExpression="[^<]+" ErrorMessage="不能用&lt;注册"
+                foreColor="red" Display="Dynamic" />
+            </label>
+            <asp:TextBox ID="TbUserName" cssClass="form-control" runat="server" />
+            <small class="form-text text-muted">帐号用于登录系统，由字母、数字组成</small>
+          </div>
+
+          <div class="form-group">
+            <label class="col-form-label">姓名
+              <asp:RequiredFieldValidator ControlToValidate="TbDisplayName" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+              />
+            </label>
+            <asp:TextBox ID="TbDisplayName" class="form-control" runat="server" />
+          </div>
+
+          <asp:PlaceHolder ID="PhPassword" runat="server">
+            <div class="form-group">
+              <label class="col-form-label">密码
+                <asp:RequiredFieldValidator ControlToValidate="TbPassword" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+                />
+              </label>
+              <asp:TextBox TextMode="Password" ID="TbPassword" class="form-control" runat="server" />
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">确认密码
+                <asp:RequiredFieldValidator ControlToValidate="TbConfirmPassword" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+                />
+                <asp:CompareValidator runat="server" ControlToCompare="TbPassword" ControlToValidate="TbConfirmPassword" Display="Dynamic"
+                  foreColor="red" ErrorMessage=" 两次输入的密码不一致！请再输入一遍您上面填写的密码。"></asp:CompareValidator>
+              </label>
+              <asp:TextBox TextMode="Password" ID="TbConfirmPassword" class="form-control" runat="server" />
+            </div>
+          </asp:PlaceHolder>
+
+          <div class="form-group">
+            <label class="col-form-label">所在区域</label>
+            <asp:DropDownList ID="DdlAreaId" class="form-control" runat="server"></asp:DropDownList>
+          </div>
+
+          <div class="form-group">
+            <label class="col-form-label">电子邮箱
+              <asp:RegularExpressionValidator ControlToValidate="TbEmail" ValidationExpression="(\w[0-9a-zA-Z_-]*@(\w[0-9a-zA-Z-]*\.)+\w{2,})"
+                ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server" />
+            </label>
+            <asp:TextBox ID="TbEmail" runat="server" class="form-control"></asp:TextBox>
+          </div>
+
+          <div class="form-group">
+            <label class="col-form-label">手机号码
+              <asp:RegularExpressionValidator ControlToValidate="TbMobile" ValidationExpression="^0?\d{11}$" ErrorMessage=" *" foreColor="red"
+                Display="Dynamic" runat="server" />
+            </label>
+            <asp:TextBox ID="TbMobile" runat="server" class="form-control"></asp:TextBox>
+          </div>
+
+          <hr />
+
+          <asp:Button class="btn btn-primary" OnClick="Submit_OnClick" Text="确 定" runat="server" />
+          <asp:Button class="btn ml-1" ID="BtnReturn" Text="返 回" runat="server" />
+
+        </div>
+
+      </form>
+    </body>
+
+    </html>

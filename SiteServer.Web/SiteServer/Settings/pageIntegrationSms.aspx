@@ -5,52 +5,46 @@
 
     <head>
       <meta charset="utf-8">
-      <!--#include file="../inc/header.aspx"-->
+      <!--#include file="../inc/head.html"-->
     </head>
 
     <body>
-      <form class="form-inline" runat="server">
-        <asp:Literal ID="LtlBreadCrumb" runat="server" />
-        <bairong:Alerts runat="server" />
+      <form class="m-l-15 m-r-15" runat="server">
 
-        <div class="popover popover-static">
-          <h3 class="popover-title">短信设置</h3>
-          <div class="popover-content">
+        <div class="card-box">
+          <div class="m-t-0 header-title">
+            短信设置
+          </div>
+          <p class="text-muted font-13 m-b-25"></p>
 
-            <table class="table noborder table-hover">
-              <tr>
-                <td width="180">短信服务商：</td>
-                <td>
-                  <asp:DropDownList ID="DdlProviderType" AutoPostBack="true" OnSelectedIndexChanged="DdlProviderType_SelectedIndexChanged"
-                    runat="server"></asp:DropDownList>
-                  <asp:Literal ID="LtlType" runat="server" />
-                </td>
-              </tr>
-              <asp:PlaceHolder id="PhSettings" runat="server">
-                <tr>
-                  <td>App Key：</td>
-                  <td>
-                    <asp:TextBox ID="TbAppKey" width="320" runat="server" />
-                    <asp:RequiredFieldValidator ControlToValidate="TbAppKey" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
-                    />
-                    <asp:RegularExpressionValidator runat="server" ControlToValidate="TbAppKey" ValidationExpression="[^']+" ErrorMessage=" *"
-                      ForeColor="red" Display="Dynamic" />
-                  </td>
-                </tr>
-              </asp:PlaceHolder>
+          <div class="form-group">
+            <label class="col-form-label">短信服务商</label>
+            <asp:DropDownList ID="DdlProviderType" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="DdlProviderType_SelectedIndexChanged"
+              runat="server"></asp:DropDownList>
+            <small class="form-text text-muted">
+              <asp:Literal ID="LtlType" runat="server" />
+            </small>
+          </div>
 
-            </table>
+          <asp:PlaceHolder id="PhSettings" runat="server">
+            <div class="form-group">
+              <label class="col-form-label">App Key
+                <asp:RequiredFieldValidator ControlToValidate="TbAppKey" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
+                />
+                <asp:RegularExpressionValidator runat="server" ControlToValidate="TbAppKey" ValidationExpression="[^']+" ErrorMessage=" *"
+                  ForeColor="red" Display="Dynamic" />
+              </label>
+              <asp:TextBox ID="TbAppKey" class="form-control" runat="server" />
+            </div>
+          </asp:PlaceHolder>
 
-            <hr />
-            <table class="table noborder">
-              <tr>
-                <td class="center">
-                  <asp:Button class="btn btn-primary" ID="Submit" Text="确 定" OnClick="Submit_OnClick" runat="server" />
-                </td>
-              </tr>
-            </table>
+          <hr />
+
+          <div class="text-center">
+            <asp:Button class="btn btn-primary" ID="Submit" Text="确 定" OnClick="Submit_OnClick" runat="server" />
           </div>
         </div>
+
       </form>
     </body>
 

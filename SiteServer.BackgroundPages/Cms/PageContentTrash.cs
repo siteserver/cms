@@ -17,26 +17,27 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageContentTrash : BasePageCms
     {
-        public DropDownList NodeIDDropDownList;
-        public DropDownList PageNum;
-        public DropDownList SearchType;
-        public TextBox Keyword;
-        public DateTimeTextBox DateFrom;
-        public DateTimeTextBox DateTo;
+        public DropDownList DdlChannelId;
+        public DropDownList DdlPageNum;
+        public DropDownList DdlSearchType;
+        public TextBox TbKeyword;
+        public DateTimeTextBox TbDateFrom;
+        public DateTimeTextBox TbDateTo;
 
-		public Repeater rptContents;
-		public SqlPager spContents;
+		public Repeater RptContents;
+		public SqlPager SpContents;
 
-        public Button Restore;
-        public Button RestoreAll;
-		public Button Delete;
-        public Button DeleteAll;
+        public Button BtnRestore;
+        public Button BtnRestoreAll;
+		public Button BtnDelete;
+        public Button BtnDeleteAll;
 
 		private int _nodeId;
         private List<int> _relatedIdentities;
         private List<TableStyleInfo> _tableStyleInfoList;
+        private readonly Hashtable _nodeNameNavigations = new Hashtable();
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -53,33 +54,19 @@ namespace SiteServer.BackgroundPages.Cms
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
             _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, _relatedIdentities);
 
-            spContents.ControlToPaginate = rptContents;
+            SpContents.ControlToPaginate = RptContents;
             if (string.IsNullOrEmpty(Body.GetQueryString("NodeID")))
             {
-                if (TranslateUtils.ToInt(PageNum.SelectedValue) == 0)
-                {
-                    spContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
-                }
-                else
-                {
-                    spContents.ItemsPerPage = TranslateUtils.ToInt(PageNum.SelectedValue);
-                }
-                spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableName, PublishmentSystemId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, SearchType.SelectedValue, Keyword.Text, DateFrom.Text, DateTo.Text, true, ETriState.All, false, true);
+                SpContents.ItemsPerPage = TranslateUtils.ToInt(DdlPageNum.SelectedValue) == 0 ? PublishmentSystemInfo.Additional.PageSize : TranslateUtils.ToInt(DdlPageNum.SelectedValue);
+                SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableName, PublishmentSystemId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, DdlSearchType.SelectedValue, TbKeyword.Text, TbDateFrom.Text, TbDateTo.Text, true, ETriState.All, false, true);
             }
             else
             {
-                if (Body.GetQueryInt("PageNum") == 0)
-                {
-                    spContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
-                }
-                else
-                {
-                    spContents.ItemsPerPage = Body.GetQueryInt("PageNum");
-                }
-                spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableName, PublishmentSystemId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true, ETriState.All, false, true);
+                SpContents.ItemsPerPage = Body.GetQueryInt("PageNum") == 0 ? PublishmentSystemInfo.Additional.PageSize : Body.GetQueryInt("PageNum");
+                SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableName, PublishmentSystemId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true, ETriState.All, false, true);
             }
-            spContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc);
-            rptContents.ItemDataBound += rptContents_ItemDataBound;
+            SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc);
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
 
 			if(!IsPostBack)
             {
@@ -114,95 +101,87 @@ namespace SiteServer.BackgroundPages.Cms
                     AddWaitAndRedirectScript(PageUrl);
                     return;
                 }
-                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, true, false, Body.AdminName);
+                NodeManager.AddListItems(DdlChannelId.Items, PublishmentSystemInfo, true, false, Body.AdminName);
 
                 if (_tableStyleInfoList != null)
                 {
                     foreach (var styleInfo in _tableStyleInfoList)
                     {
                         var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
-                        SearchType.Items.Add(listitem);
+                        DdlSearchType.Items.Add(listitem);
                     }
                 }
                 //添加隐藏属性
-                SearchType.Items.Add(new ListItem("内容ID", ContentAttribute.Id));
-                SearchType.Items.Add(new ListItem("添加者", ContentAttribute.AddUserName));
-                SearchType.Items.Add(new ListItem("最后修改者", ContentAttribute.LastEditUserName));
+                DdlSearchType.Items.Add(new ListItem("内容ID", ContentAttribute.Id));
+                DdlSearchType.Items.Add(new ListItem("添加者", ContentAttribute.AddUserName));
+                DdlSearchType.Items.Add(new ListItem("最后修改者", ContentAttribute.LastEditUserName));
 
                 if (Body.IsQueryExists("NodeID"))
                 {
                     if (PublishmentSystemId != _nodeId)
                     {
-                        ControlUtils.SelectSingleItem(NodeIDDropDownList, _nodeId.ToString());
+                        ControlUtils.SelectSingleItem(DdlChannelId, _nodeId.ToString());
                     }
-                    ControlUtils.SelectSingleItem(PageNum, Body.GetQueryString("PageNum"));
-                    ControlUtils.SelectSingleItem(SearchType, Body.GetQueryString("SearchType"));
-                    Keyword.Text = Body.GetQueryString("Keyword");
-                    DateFrom.Text = Body.GetQueryString("DateFrom");
-                    DateTo.Text = Body.GetQueryString("DateTo");
+                    ControlUtils.SelectSingleItem(DdlPageNum, Body.GetQueryString("PageNum"));
+                    ControlUtils.SelectSingleItem(DdlSearchType, Body.GetQueryString("SearchType"));
+                    TbKeyword.Text = Body.GetQueryString("Keyword");
+                    TbDateFrom.Text = Body.GetQueryString("DateFrom");
+                    TbDateTo.Text = Body.GetQueryString("DateTo");
                 }
 
-                spContents.DataBind();
+                SpContents.DataBind();
 			}
 
             if (!HasChannelPermissions(_nodeId, AppManager.Permissions.Channel.ContentDelete))
             {
-                Delete.Visible = false;
-                DeleteAll.Visible = false;
+                BtnDelete.Visible = false;
+                BtnDeleteAll.Visible = false;
             }
             else
             {
-                Delete.Attributes.Add("onclick", PageContentDelete.GetRedirectClickStringForMultiChannels(PublishmentSystemId, true, PageUrl));
-                DeleteAll.Attributes.Add("onclick", PageUtils.GetRedirectStringWithConfirm(PageUtils.AddQueryString(PageUrl, "IsDeleteAll", "True"), "确实要清空回收站吗?"));
+                BtnDelete.Attributes.Add("onclick", PageContentDelete.GetRedirectClickStringForMultiChannels(PublishmentSystemId, true, PageUrl));
+                BtnDeleteAll.Attributes.Add("onclick", PageUtils.GetRedirectStringWithConfirm(PageUtils.AddQueryString(PageUrl, "IsDeleteAll", "True"), "确实要清空回收站吗?"));
             }
-            Restore.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValue(PageUtils.AddQueryString(PageUrl, "IsRestore", "True"), "IDsCollection", "IDsCollection", "请选择需要还原的内容！"));
-            RestoreAll.Attributes.Add("onclick", PageUtils.GetRedirectStringWithConfirm(PageUtils.AddQueryString(PageUrl, "IsRestoreAll", "True"), "确实要还原所有内容吗?"));
+            BtnRestore.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValue(PageUtils.AddQueryString(PageUrl, "IsRestore", "True"), "IDsCollection", "IDsCollection", "请选择需要还原的内容！"));
+            BtnRestoreAll.Attributes.Add("onclick", PageUtils.GetRedirectStringWithConfirm(PageUtils.AddQueryString(PageUrl, "IsRestoreAll", "True"), "确实要还原所有内容吗?"));
 		}
 
-        private readonly Hashtable _nodeNameNavigations = new Hashtable();
-        void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
+
+            var ltlItemTitle = (Literal)e.Item.FindControl("ltlItemTitle");
+            var ltlChannel = (Literal)e.Item.FindControl("ltlChannel");
+            var ltlDeleteDate = (Literal)e.Item.FindControl("ltlDeleteDate");
+            var ltlItemEditUrl = (Literal)e.Item.FindControl("ltlItemEditUrl");
+            var ltlSelect = (Literal)e.Item.FindControl("ltlSelect");
+
+            var contentInfo = new BackgroundContentInfo(e.Item.DataItem);
+            contentInfo.NodeId = -contentInfo.NodeId;
+
+            ltlItemTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, PageUrl);
+            string nodeNameNavigation;
+            if (!_nodeNameNavigations.ContainsKey(contentInfo.NodeId))
             {
-                var ltlItemTitle = (Literal)e.Item.FindControl("ltlItemTitle");
-                var ltlChannel = (Literal)e.Item.FindControl("ltlChannel");
-                var ltlDeleteDate = (Literal)e.Item.FindControl("ltlDeleteDate");
-                var ltlItemEditUrl = (Literal)e.Item.FindControl("ltlItemEditUrl");
-                var ltlSelect = (Literal)e.Item.FindControl("ltlSelect");
-
-                var contentInfo = new BackgroundContentInfo(e.Item.DataItem);
-                contentInfo.NodeId = -contentInfo.NodeId;
-
-                ltlItemTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, PageUrl);
-                string nodeNameNavigation;
-                if (!_nodeNameNavigations.ContainsKey(contentInfo.NodeId))
-                {
-                    nodeNameNavigation = NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId);
-                    _nodeNameNavigations.Add(contentInfo.NodeId, nodeNameNavigation);
-                }
-                else
-                {
-                    nodeNameNavigation = _nodeNameNavigations[contentInfo.NodeId] as string;
-                }
-                ltlChannel.Text = nodeNameNavigation;
-                ltlDeleteDate.Text = DateUtils.GetDateAndTimeString(contentInfo.LastEditDate);
-                ltlItemEditUrl.Text = GetEditUrl(contentInfo);
-
-                ltlSelect.Text =
-                    $@"<input type=""checkbox"" name=""IDsCollection"" value=""{contentInfo.NodeId}_{contentInfo.Id}"" />";
+                nodeNameNavigation = NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId);
+                _nodeNameNavigations.Add(contentInfo.NodeId, nodeNameNavigation);
             }
-        }
+            else
+            {
+                nodeNameNavigation = _nodeNameNavigations[contentInfo.NodeId] as string;
+            }
+            ltlChannel.Text = nodeNameNavigation;
+            ltlDeleteDate.Text = DateUtils.GetDateAndTimeString(contentInfo.LastEditDate);
 
-        private string GetEditUrl(BackgroundContentInfo contentInfo)
-        {
-            var url = string.Empty;
             if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdminName == contentInfo.AddUserName)
             {
                 var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, contentInfo.NodeId);
-                url =
+                ltlItemEditUrl.Text =
                     $"<a href=\"{WebUtils.GetContentAddEditUrl(PublishmentSystemId, nodeInfo, contentInfo.Id, PageUrl)}\">修改</a>";
             }
-            return url;
+
+            ltlSelect.Text =
+                $@"<input type=""checkbox"" name=""IDsCollection"" value=""{contentInfo.NodeId}_{contentInfo.Id}"" />";
         }
 
 		public void AddContent_OnClick(object sender, EventArgs e)
@@ -226,12 +205,12 @@ namespace SiteServer.BackgroundPages.Cms
                     _pageUrl = PageUtils.GetCmsUrl(nameof(PageContentTrash), new NameValueCollection
                     {
                         {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                        {"NodeID", NodeIDDropDownList.SelectedValue},
-                        {"PageNum", PageNum.SelectedValue},
-                        {"SearchType", SearchType.SelectedValue},
-                        {"Keyword", Keyword.Text},
-                        {"DateFrom", DateFrom.Text},
-                        {"DateTo", DateTo.Text}
+                        {"NodeID", DdlChannelId.SelectedValue},
+                        {"PageNum", DdlPageNum.SelectedValue},
+                        {"SearchType", DdlSearchType.SelectedValue},
+                        {"Keyword", TbKeyword.Text},
+                        {"DateFrom", TbDateFrom.Text},
+                        {"DateTo", TbDateTo.Text}
                     });
                 }
                 return _pageUrl;

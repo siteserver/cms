@@ -32,23 +32,16 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            try
+            ConfigManager.SystemConfigInfo.IsTimeThreshold = TranslateUtils.ToBool(RblIsTimeThreshold.SelectedValue);
+            if (ConfigManager.SystemConfigInfo.IsTimeThreshold)
             {
-                ConfigManager.SystemConfigInfo.IsTimeThreshold = TranslateUtils.ToBool(RblIsTimeThreshold.SelectedValue);
-                if (ConfigManager.SystemConfigInfo.IsTimeThreshold)
-                {
-                    ConfigManager.SystemConfigInfo.TimeThreshold = TranslateUtils.ToInt(TbTime.Text);
-                }
-
-                BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
-
-                Body.AddAdminLog("设置日志阈值参数");
-                SuccessMessage("日志阈值参数设置成功");
+                ConfigManager.SystemConfigInfo.TimeThreshold = TranslateUtils.ToInt(TbTime.Text);
             }
-            catch (Exception ex)
-            {
-                FailMessage(ex, ex.Message);
-            }
+
+            BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
+
+            Body.AddAdminLog("设置日志阈值参数");
+            SuccessMessage("日志设置成功");
         }
     }
 }

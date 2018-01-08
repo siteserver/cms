@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
@@ -78,59 +77,44 @@ namespace BaiRong.Core.Provider
 			return creatorUserName;
 		}
 
-        public string[] GetAllRoles()
+        public List<string> GetAllRoles()
         {
-            var tmpUserNames = string.Empty;
+            var list = new List<string>();
             const string sqlSelect = "SELECT RoleName FROM bairong_Roles ORDER BY RoleName";
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
-                    tmpUserNames += GetString(rdr, 0) + ",";
+                    list.Add(GetString(rdr, 0));
                 }
                 rdr.Close();
             }
 
-            if (tmpUserNames.Length > 0)
-            {
-                tmpUserNames = tmpUserNames.Substring(0, tmpUserNames.Length - 1);
-                return tmpUserNames.Split(',');
-            }
-
-            return new string[0];
+            return list;
         }
 
-		public ArrayList GetRoleNameArrayListByCreatorUserName(string creatorUserName)
+		public List<string> GetAllRolesByCreatorUserName(string creatorUserName)
 		{
-			var arraylist = new ArrayList();
+			var list = new List<string>();
 
-			if (!string.IsNullOrEmpty(creatorUserName))
-			{
-                var sqlString = "SELECT RoleName FROM bairong_Roles WHERE CreatorUserName = @CreatorUserName";
-                var parms = new IDataParameter[]
-			    {
-				    GetParameter(ParmCreatorUsername, DataType.VarChar, 255, creatorUserName)
-			    };
+		    if (string.IsNullOrEmpty(creatorUserName)) return list;
 
-                using (var rdr = ExecuteReader(sqlString, parms)) 
-				{
-					while (rdr.Read()) 
-					{
-                        arraylist.Add(GetString(rdr, 0));
-					}
-					rdr.Close();
-				}
-			}
-			return arraylist;
-		}
+		    const string sqlString = "SELECT RoleName FROM bairong_Roles WHERE CreatorUserName = @CreatorUserName";
+		    var parms = new IDataParameter[]
+		    {
+		        GetParameter(ParmCreatorUsername, DataType.VarChar, 255, creatorUserName)
+		    };
 
-		public string[] GetAllRolesByCreatorUserName(string creatorUserName)
-		{
-			var roleNameArrayList = GetRoleNameArrayListByCreatorUserName(creatorUserName);
-			var roleArray = new string[roleNameArrayList.Count];
-			roleNameArrayList.CopyTo(roleArray);
-			return roleArray;
+		    using (var rdr = ExecuteReader(sqlString, parms)) 
+		    {
+		        while (rdr.Read()) 
+		        {
+		            list.Add(GetString(rdr, 0));
+		        }
+		        rdr.Close();
+		    }
+		    return list;
 		}
 
         public void InsertRole(string roleName, string creatorUserName, string description)

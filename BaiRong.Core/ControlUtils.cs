@@ -188,6 +188,22 @@ namespace BaiRong.Core
             return arraylist;
         }
 
+        public static List<string> GetSelectedListControlValueStringList(ListControl listControl)
+        {
+            var list = new List<string>();
+            if (listControl != null)
+            {
+                foreach (ListItem item in listControl.Items)
+                {
+                    if (item.Selected)
+                    {
+                        list.Add(item.Value);
+                    }
+                }
+            }
+            return list;
+        }
+
         public static List<int> GetSelectedListControlValueIntList(ListControl listControl)
         {
             var list = new List<int>();
@@ -204,7 +220,7 @@ namespace BaiRong.Core
             return list;
         }
 
-		public static string[] GetListControlValues(ListControl listControl)
+        public static string[] GetListControlValues(ListControl listControl)
 		{
 			var arraylist = new ArrayList();
 			if (listControl != null)

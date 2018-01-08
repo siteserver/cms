@@ -13,11 +13,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
 
-            if (!IsPostBack)
-            {
-                CreateManager.CreateAll(PublishmentSystemId);
-                PageCreateStatus.Redirect(PublishmentSystemId);
-            }
+            if (IsPostBack) return;
+
+            CreateManager.CreateAll(PublishmentSystemId);
+            PageCreateStatus.Redirect(PublishmentSystemId);
         }
     }
 }

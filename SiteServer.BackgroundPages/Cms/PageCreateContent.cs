@@ -11,9 +11,9 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class PageCreateContent : BasePageCms
     {
-        public ListBox NodeIDList;
-        public DropDownList ChooseScope;
-        public Button DeleteAllContentButton;
+        public ListBox LbNodeIdList;
+        public DropDownList DdlScope;
+        public Button BtnDeleteAll;
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -26,29 +26,29 @@ namespace SiteServer.BackgroundPages.Cms
             VerifySitePermissions(AppManager.Permissions.WebSite.Create);
 
             var listitem = new ListItem("所有选中的栏目", "All");
-            ChooseScope.Items.Add(listitem);
+            DdlScope.Items.Add(listitem);
             listitem = new ListItem("一个月内更新的内容", "Month");
-            ChooseScope.Items.Add(listitem);
+            DdlScope.Items.Add(listitem);
             listitem = new ListItem("一天内更新的内容", "Day");
-            ChooseScope.Items.Add(listitem);
+            DdlScope.Items.Add(listitem);
             listitem = new ListItem("2小时内更新的内容", "2Hour");
-            ChooseScope.Items.Add(listitem);
+            DdlScope.Items.Add(listitem);
 
-            NodeManager.AddListItems(NodeIDList.Items, PublishmentSystemInfo, false, true, Body.AdminName);
-            DeleteAllContentButton.Attributes.Add("onclick", "return confirm(\"此操作将删除所有已生成的内容页面，确定吗？\");");
+            NodeManager.AddListItems(LbNodeIdList.Items, PublishmentSystemInfo, false, true, Body.AdminName);
+            BtnDeleteAll.Attributes.Add("onclick", "return confirm(\"此操作将删除所有已生成的内容页面，确定吗？\");");
         }
 
 
-        public void CreateContentButton_OnClick(object sender, EventArgs e)
+        public void Create_OnClick(object sender, EventArgs e)
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
             var nodeIdList = new List<int>();
-            var selectedNodeIdArrayList = ControlUtils.GetSelectedListControlValueArrayList(NodeIDList);
+            var selectedNodeIdArrayList = ControlUtils.GetSelectedListControlValueArrayList(LbNodeIdList);
 
             var tableName = PublishmentSystemInfo.AuxiliaryTableForContent;
 
-            if (ChooseScope.SelectedValue == "Month")
+            if (DdlScope.SelectedValue == "Month")
             {
                 var lastEditList = BaiRongDataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 720);
                 foreach (var nodeId in lastEditList)
@@ -59,7 +59,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
             }
-            else if (ChooseScope.SelectedValue == "Day")
+            else if (DdlScope.SelectedValue == "Day")
             {
                 var lastEditList = BaiRongDataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 24);
                 foreach (var nodeId in lastEditList)
@@ -70,7 +70,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
             }
-            else if (ChooseScope.SelectedValue == "2Hour")
+            else if (DdlScope.SelectedValue == "2Hour")
             {
                 var lastEditList = BaiRongDataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 2);
                 foreach (var nodeId in lastEditList)
@@ -101,13 +101,12 @@ namespace SiteServer.BackgroundPages.Cms
             PageCreateStatus.Redirect(PublishmentSystemId);
         }
 
-        public void DeleteAllContentButton_OnClick(object sender, EventArgs e)
+        public void BtnDeleteAll_OnClick(object sender, EventArgs e)
         {
-            if (Page.IsPostBack && Page.IsValid)
-            {
-                var url = PageProgressBar.GetDeleteAllPageUrl(PublishmentSystemId, ETemplateType.ContentTemplate);
-                PageUtils.RedirectToLoadingPage(url);
-            }
+            if (!Page.IsPostBack || !Page.IsValid) return;
+
+            var url = PageProgressBar.GetDeleteAllPageUrl(PublishmentSystemId, ETemplateType.ContentTemplate);
+            PageUtils.RedirectToLoadingPage(url);
         }
     }
 }

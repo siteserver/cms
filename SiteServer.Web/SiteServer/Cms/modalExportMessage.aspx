@@ -12,16 +12,10 @@
       <form runat="server">
         <ctrl:alerts runat="server" />
 
-        <div class="form-horizontal">
+        <hr />
 
-          <hr />
-
-          <div class="form-group m-b-0">
-            <div class="col-xs-11 text-right">
-              <button type="button" class="btn btn-default" onclick="window.parent.layer.closeAll()">关 闭</button>
-            </div>
-            <div class="col-xs-1"></div>
-          </div>
+        <div class="text-right mr-1">
+          <button type="button" class="btn btn-default" onclick="window.parent.layer.closeAll()">关 闭</button>
         </div>
 
       </form>

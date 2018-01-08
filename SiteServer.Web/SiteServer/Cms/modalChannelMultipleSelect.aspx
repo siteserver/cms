@@ -12,28 +12,29 @@
       <form runat="server">
         <ctrl:alerts runat="server" />
 
-        <div class="form-horizontal">
-
-          <asp:PlaceHolder id="PhPublishmentSystemId" runat="server">
-            <div class="form-group">
-              <label class="col-xs-2 control-label text-right m-t-5">选择站点</label>
-              <div class="col-xs-6">
-                <asp:DropDownList class="form-control" ID="DdlPublishmentSystemId" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DdlPublishmentSystemId_OnSelectedIndexChanged">
-                </asp:DropDownList>
-              </div>
-              <div class="col-xs-4"></div>
+        <asp:PlaceHolder id="PhPublishmentSystemId" runat="server">
+          <div class="form-group form-row">
+            <label class="col-2 col-form-label text-right m-t-5">选择站点</label>
+            <div class="col-6">
+              <asp:DropDownList class="form-control" ID="DdlPublishmentSystemId" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DdlPublishmentSystemId_OnSelectedIndexChanged">
+              </asp:DropDownList>
             </div>
-          </asp:PlaceHolder>
+            <div class="col-4"></div>
+          </div>
+        </asp:PlaceHolder>
 
-          <table class="table table-hover m-5">
-            <tr class="info thead">
-              <td>
+        <table class="table tablesaw table-hover m-0">
+          <thead>
+            <tr class="thead">
+              <th>
                 点击栏目名称进行选择
-              </td>
+              </th>
             </tr>
+          </thead>
+          <tbody>
             <tr treeItemLevel="0">
               <td>
-                <img align="absmiddle" src="../assets/icons/tree/minus.gif" />
+                <img align="absmiddle" src="../assets/icons/tree/empty.gif" />
                 <img align="absmiddle" border="0" src="../assets/icons/tree/folder.gif" />
                 <asp:Literal ID="LtlChannelName" runat="server"></asp:Literal>
               </td>
@@ -43,9 +44,8 @@
                 <asp:Literal id="ltlHtml" runat="server" />
               </itemtemplate>
             </asp:Repeater>
-          </table>
-
-        </div>
+          </tbody>
+        </table>
 
       </form>
     </body>

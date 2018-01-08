@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
@@ -8,18 +9,35 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageTemplateIncludeAdd : BasePageCms
     {
-        public Literal ltlPageTitle;
+        public Literal LtlPageTitle;
+        public TextBox TbRelatedFileName;
+        public Literal LtlCreatedFileExtName;
+        public DropDownList DdlCharset;
+        public TextBox TbContent;
+        public PlaceHolder PhCodeMirror;
+        public Button BtnEditorType;
 
-        public Literal ltlCreatedFileExtName;
+        private string _fileName;
+        private string _directoryPath;
 
-        public TextBox RelatedFileName;
-		public DropDownList Charset;
-		public TextBox Content;
+        public static string GetRedirectUrl(int publishmentSystemId)
+        {
+            return PageUtils.GetCmsUrl(nameof(PageTemplateIncludeAdd), new NameValueCollection
+            {
+                {"PublishmentSystemID", publishmentSystemId.ToString()}
+            });
+        }
 
-        private string fileName;
-        private string directoryPath;
+        public static string GetRedirectUrl(int publishmentSystemId, string fileName)
+        {
+            return PageUtils.GetCmsUrl(nameof(PageTemplateIncludeAdd), new NameValueCollection
+            {
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"FileName", fileName}
+            });
+        }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -27,122 +45,128 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (Body.IsQueryExists("FileName"))
             {
-                fileName = Body.GetQueryString("FileName");
-                fileName = PathUtils.RemoveParentPath(fileName);
+                _fileName = Body.GetQueryString("FileName");
+                _fileName = PathUtils.RemoveParentPath(_fileName);
             }
-            directoryPath = PathUtility.MapPath(PublishmentSystemInfo, "@/include");
+            _directoryPath = PathUtility.MapPath(PublishmentSystemInfo, "@/include");
 
             if (IsPostBack) return;
 
             VerifySitePermissions(AppManager.Permissions.WebSite.Template);
 
-            var pageTitle = string.IsNullOrEmpty(fileName) ? "添加包含文件" : "编辑包含文件";
-            ltlPageTitle.Text = pageTitle;
+            LtlPageTitle.Text = string.IsNullOrEmpty(_fileName) ? "添加包含文件" : "编辑包含文件";
 
-            ECharsetUtils.AddListItems(Charset);
+            var isCodeMirror = PublishmentSystemInfo.Additional.ConfigTemplateIsCodeMirror;
+            BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
+            PhCodeMirror.Visible = isCodeMirror;
 
-            if (fileName != null)
+            ECharsetUtils.AddListItems(DdlCharset);
+
+            if (_fileName != null)
             {
-                if (!EFileSystemTypeUtils.IsHtml(PathUtils.GetExtension(fileName)))
+                if (!EFileSystemTypeUtils.IsHtml(PathUtils.GetExtension(_fileName)))
                 {
                     PageUtils.RedirectToErrorPage("对不起，此文件无法编辑！");
                 }
                 else
                 {
-                    RelatedFileName.Text = PathUtils.RemoveExtension(fileName);
-                    ltlCreatedFileExtName.Text = PathUtils.GetExtension(fileName);
-                    var fileCharset = FileUtils.GetFileCharset(PathUtils.Combine(directoryPath, fileName));
-                    ControlUtils.SelectSingleItemIgnoreCase(Charset, ECharsetUtils.GetValue(fileCharset));
-                    Content.Text = FileUtils.ReadText(PathUtils.Combine(directoryPath, fileName), fileCharset);
+                    TbRelatedFileName.Text = PathUtils.RemoveExtension(_fileName);
+                    LtlCreatedFileExtName.Text = PathUtils.GetExtension(_fileName);
+                    var fileCharset = FileUtils.GetFileCharset(PathUtils.Combine(_directoryPath, _fileName));
+                    ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, ECharsetUtils.GetValue(fileCharset));
+                    TbContent.Text = FileUtils.ReadText(PathUtils.Combine(_directoryPath, _fileName), fileCharset);
                 }
             }
             else
             {
-                ltlCreatedFileExtName.Text = ".html";
-                ControlUtils.SelectSingleItemIgnoreCase(Charset, PublishmentSystemInfo.Additional.Charset);
+                LtlCreatedFileExtName.Text = ".html";
+                ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, PublishmentSystemInfo.Additional.Charset);
             }
         }
 
+        public void EditorType_OnClick(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack || !Page.IsValid) return;
+
+            var isCodeMirror = PublishmentSystemInfo.Additional.ConfigTemplateIsCodeMirror;
+            isCodeMirror = !isCodeMirror;
+            PublishmentSystemInfo.Additional.ConfigTemplateIsCodeMirror = isCodeMirror;
+            DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
+
+            BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
+            PhCodeMirror.Visible = isCodeMirror;
+        }
+
         public override void Submit_OnClick(object sender, EventArgs e)
-		{
-			if (Page.IsPostBack && Page.IsValid)
-			{
-				if (fileName != null)
-				{
-                    var isChanged = false;
-                    if (PathUtils.RemoveExtension(fileName) != PathUtils.RemoveExtension(RelatedFileName.Text))//文件名改变
-                    {
-                        var fileNames = DirectoryUtils.GetFileNames(directoryPath);
-                        foreach (var theFileName in fileNames)
-                        {
-                            var fileNameWithoutExtension = PathUtils.RemoveExtension(theFileName);
-                            if (fileNameWithoutExtension == RelatedFileName.Text.ToLower())
-                            {
-                                FailMessage("包含文件修改失败，包含文件已存在！");
-                                return;
-                            }
-                        }
+        {
+            if (!Page.IsPostBack || !Page.IsValid) return;
 
-                        isChanged = true;
-                    }
-
-                    if (PathUtils.GetExtension(fileName) != ltlCreatedFileExtName.Text)//文件后缀改变
-                    {
-                        isChanged = true;
-                    }
-
-                    var previousFileName = string.Empty;
-                    if (isChanged)
-                    {
-                        previousFileName = fileName;
-                    }
-
-                    var currentFileName = RelatedFileName.Text + ltlCreatedFileExtName.Text;
-                    var charset = ECharsetUtils.GetEnumType(Charset.SelectedValue);
-					try
-					{
-                        FileUtils.WriteText(PathUtils.Combine(directoryPath, currentFileName), charset, Content.Text);
-                        if (!string.IsNullOrEmpty(previousFileName))
-                        {
-                            FileUtils.DeleteFileIfExists(PathUtils.Combine(directoryPath, previousFileName));
-                        }
-                        Body.AddSiteLog(PublishmentSystemId, "修改包含文件", $"包含文件:{currentFileName}");
-						SuccessMessage("包含文件修改成功！");
-                        AddWaitAndRedirectScript(PageTemplateInclude.GetRedirectUrl(PublishmentSystemId));
-					}
-					catch(Exception ex)
-					{
-						FailMessage(ex, "包含文件修改失败," + ex.Message);
-					}
-				}
-				else
-				{
-                    var currentFileName = RelatedFileName.Text + ltlCreatedFileExtName.Text;
-
-                    var fileNames = DirectoryUtils.GetFileNames(directoryPath);
+            if (_fileName != null)
+            {
+                var isChanged = false;
+                if (PathUtils.RemoveExtension(_fileName) != PathUtils.RemoveExtension(TbRelatedFileName.Text))//文件名改变
+                {
+                    var fileNames = DirectoryUtils.GetFileNames(_directoryPath);
                     foreach (var theFileName in fileNames)
                     {
-                        if (StringUtils.EqualsIgnoreCase(theFileName, currentFileName))
+                        var fileNameWithoutExtension = PathUtils.RemoveExtension(theFileName);
+                        if (fileNameWithoutExtension == TbRelatedFileName.Text.ToLower())
                         {
-                            FailMessage("包含文件添加失败，包含文件文件已存在！");
+                            FailMessage("包含文件修改失败，包含文件已存在！");
                             return;
                         }
                     }
 
-                    var charset = ECharsetUtils.GetEnumType(Charset.SelectedValue);
-					try
-					{
-                        FileUtils.WriteText(PathUtils.Combine(directoryPath, currentFileName), charset, Content.Text);
-                        Body.AddSiteLog(PublishmentSystemId, "添加包含文件", $"包含文件:{currentFileName}");
-						SuccessMessage("包含文件添加成功！");
-                        AddWaitAndRedirectScript(PageTemplateInclude.GetRedirectUrl(PublishmentSystemId));
-					}
-					catch(Exception ex)
-					{
-                        FailMessage(ex, "包含文件添加失败," + ex.Message);
-					}
-				}
-			}
-		}
-	}
+                    isChanged = true;
+                }
+
+                if (PathUtils.GetExtension(_fileName) != LtlCreatedFileExtName.Text)//文件后缀改变
+                {
+                    isChanged = true;
+                }
+
+                var previousFileName = string.Empty;
+                if (isChanged)
+                {
+                    previousFileName = _fileName;
+                }
+
+                var currentFileName = TbRelatedFileName.Text + LtlCreatedFileExtName.Text;
+                var charset = ECharsetUtils.GetEnumType(DdlCharset.SelectedValue);
+                FileUtils.WriteText(PathUtils.Combine(_directoryPath, currentFileName), charset, TbContent.Text);
+                if (!string.IsNullOrEmpty(previousFileName))
+                {
+                    FileUtils.DeleteFileIfExists(PathUtils.Combine(_directoryPath, previousFileName));
+                }
+                Body.AddSiteLog(PublishmentSystemId, "修改包含文件", $"包含文件:{currentFileName}");
+                SuccessMessage("包含文件修改成功！");
+                AddWaitAndRedirectScript(PageTemplateInclude.GetRedirectUrl(PublishmentSystemId));
+            }
+            else
+            {
+                var currentFileName = TbRelatedFileName.Text + LtlCreatedFileExtName.Text;
+
+                var fileNames = DirectoryUtils.GetFileNames(_directoryPath);
+                foreach (var theFileName in fileNames)
+                {
+                    if (StringUtils.EqualsIgnoreCase(theFileName, currentFileName))
+                    {
+                        FailMessage("包含文件添加失败，包含文件文件已存在！");
+                        return;
+                    }
+                }
+
+                var charset = ECharsetUtils.GetEnumType(DdlCharset.SelectedValue);
+                FileUtils.WriteText(PathUtils.Combine(_directoryPath, currentFileName), charset, TbContent.Text);
+                Body.AddSiteLog(PublishmentSystemId, "添加包含文件", $"包含文件:{currentFileName}");
+                SuccessMessage("包含文件添加成功！");
+                AddWaitAndRedirectScript(PageTemplateInclude.GetRedirectUrl(PublishmentSystemId));
+            }
+        }
+
+        public void Return_OnClick(object sender, EventArgs e)
+        {
+            PageUtils.Redirect(PageTemplateInclude.GetRedirectUrl(PublishmentSystemId));
+        }
+    }
 }

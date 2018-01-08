@@ -152,7 +152,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (isSuccess)
             {
-                LayerUtils.CloseAndRedirect(Page, PageTemplateFilePathRule.GetRedirectUrl(PublishmentSystemId, _nodeId));
+                LayerUtils.CloseAndRedirect(Page, PageConfigurationCreateRule.GetRedirectUrl(PublishmentSystemId, _nodeId));
             }
         }
 	}

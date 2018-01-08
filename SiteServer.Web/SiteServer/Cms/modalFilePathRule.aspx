@@ -94,38 +94,37 @@
 			<form runat="server">
 				<ctrl:alerts runat="server" />
 
-				<table class="table table-bordered table-hover">
-					<tr class="info">
-						<td>规则</td>
-						<td>含义</td>
-						<td>规则</td>
-						<td>含义</td>
-						<td>规则</td>
-						<td>含义</td>
-					</tr>
-					<asp:Literal ID="LtlRules" runat="server"></asp:Literal>
+				<table class="table tablesaw table-bordered table-hover m-0">
+					<thead>
+						<tr>
+							<th>规则</th>
+							<th>含义</th>
+							<th>规则</th>
+							<th>含义</th>
+							<th>规则</th>
+							<th>含义</th>
+						</tr>
+					</thead>
+					<tbody>
+						<asp:Literal ID="LtlRules" runat="server"></asp:Literal>
+					</tbody>
 				</table>
 
-				<div class="form-horizontal">
+				<hr />
 
-					<div class="form-group">
-						<label class="col-xs-3 control-label text-right">页面命名规则</label>
-						<div class="col-xs-8">
-							<asp:TextBox class="form-control" id="TbRule" runat="server" />
-						</div>
-						<div class="col-xs-1"></div>
+				<div class="form-group form-row">
+					<label class="col-1 col-form-label text-right">页面命名规则</label>
+					<div class="col-10">
+						<asp:TextBox class="form-control" id="TbRule" runat="server" />
 					</div>
+					<div class="col-1"></div>
+				</div>
 
-					<hr />
+				<hr />
 
-					<div class="form-group m-b-0">
-						<div class="col-xs-11 text-right">
-							<asp:Button class="btn btn-primary m-l-10" ID="BtnCheck" Text="确 定" OnClick="Submit_OnClick" runat="server" />
-							<button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
-						</div>
-						<div class="col-xs-1"></div>
-					</div>
-
+				<div class="text-right mr-1">
+					<asp:Button class="btn btn-primary m-l-5" ID="BtnCheck" Text="确 定" OnClick="Submit_OnClick" runat="server" />
+					<button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
 				</div>
 
 			</form>

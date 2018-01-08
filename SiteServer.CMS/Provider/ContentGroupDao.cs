@@ -142,14 +142,6 @@ namespace SiteServer.CMS.Provider
             return exists;
         }
 
-        public IEnumerable GetDataSource(int publishmentSystemId)
-        {
-            string sqlString =
-                $"SELECT ContentGroupName, PublishmentSystemID, Taxis, Description FROM siteserver_ContentGroup WHERE PublishmentSystemID = {publishmentSystemId} ORDER BY Taxis DESC, ContentGroupName";
-            var enumerable = (IEnumerable)ExecuteReader(sqlString);
-            return enumerable;
-        }
-
         public List<ContentGroupInfo> GetContentGroupInfoList(int publishmentSystemId)
         {
             var list = new List<ContentGroupInfo>();

@@ -58,50 +58,43 @@
           </ul>
         </div>
 
-        <div class="form-horizontal">
-
-          <div class="form-group" id="column1">
-            <label class="col-xs-3 text-right control-label">请选择音频文件</label>
-            <div class="col-xs-8">
-              <div id="fileSelect">
-                <a id="upload_file" href="javascript:;" class="btn btn-success">上 传</a>
-                <span id="img_upload_txt" style="clear:both; font-size:12px; color:#FF3737;"></span>
-              </div>
-            </div>
-            <div class="col-xs-1"></div>
-          </div>
-
-          <div class="form-group" id="column2" style="display: none">
-            <label class="col-xs-3 text-right control-label">请输入音频地址</label>
-            <div class="col-xs-8">
-              <asp:TextBox ID="TbPlayUrl" class="form-control" runat="server"></asp:TextBox>
-            </div>
-            <div class="col-xs-1">
-              <asp:RequiredFieldValidator ControlToValidate="TbPlayUrl" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
-              />
+        <div class="form-group form-row" id="column1">
+          <label class="col-3 text-right col-form-label">请选择音频文件</label>
+          <div class="col-8">
+            <div id="fileSelect">
+              <a id="upload_file" href="javascript:;" class="btn btn-success">上 传</a>
+              <span id="img_upload_txt" style="clear:both; font-size:12px; color:#FF3737;"></span>
             </div>
           </div>
+          <div class="col-1"></div>
+        </div>
 
-          <div class="form-group">
-            <label class="col-xs-3 text-right control-label"></label>
-            <div class="col-xs-8">
-              <div class="checkbox checkbox-primary">
-                <asp:CheckBox id="CbIsAutoPlay" Checked="true" runat="server" Text="自动播放" />
-              </div>
-            </div>
-            <div class="col-xs-1"></div>
+        <div class="form-group form-row" id="column2" style="display: none">
+          <label class="col-3 text-right col-form-label">请输入音频地址</label>
+          <div class="col-8">
+            <asp:TextBox ID="TbPlayUrl" class="form-control" runat="server"></asp:TextBox>
           </div>
-
-          <hr />
-
-          <div class="form-group m-b-0">
-            <div class="col-xs-11 text-right">
-              <asp:Button class="btn btn-primary m-l-10" text="确 定" runat="server" onClick="Submit_OnClick" />
-              <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
-            </div>
-            <div class="col-xs-1"></div>
+          <div class="col-1">
+            <asp:RequiredFieldValidator ControlToValidate="TbPlayUrl" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
+            />
           </div>
+        </div>
 
+        <div class="form-group form-row">
+          <label class="col-3 text-right col-form-label"></label>
+          <div class="col-8">
+            <div class="checkbox checkbox-primary">
+              <asp:CheckBox id="CbIsAutoPlay" Checked="true" runat="server" Text="自动播放" />
+            </div>
+          </div>
+          <div class="col-1"></div>
+        </div>
+
+        <hr />
+
+        <div class="text-right mr-1">
+          <asp:Button class="btn btn-primary m-l-5" text="确 定" runat="server" onClick="Submit_OnClick" />
+          <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
         </div>
 
       </form>

@@ -163,15 +163,15 @@ namespace SiteServer.BackgroundPages.Cms
             LtlLastAccessTime.Text = fileInfo.LastAccessTime.ToString("yyyy-MM-dd hh:mm:ss");
 
             LtlOpen.Text =
-                $@"<a class=""btn btn-default m-l-10"" href=""{PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, _filePath, true)}"" target=""_blank"">浏 览</a>";
+                $@"<a class=""btn btn-default m-l-5"" href=""{PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, _filePath, true)}"" target=""_blank"">浏 览</a>";
             if (EFileSystemTypeUtils.IsTextEditable(fileType))
             {
-                LtlEdit.Text = $@"<a class=""btn btn-default m-l-10"" href=""{ModalFileEdit.GetRedirectUrl(PublishmentSystemId, _relatedPath, _fileName, false)}"">修 改</a>";
+                LtlEdit.Text = $@"<a class=""btn btn-default m-l-5"" href=""{ModalFileEdit.GetRedirectUrl(PublishmentSystemId, _relatedPath, _fileName, false)}"">修 改</a>";
             }
             if (!string.IsNullOrEmpty(_hiddenClientId))
             {
                 LtlChangeName.Text =
-                    $@"<a class=""btn btn-default m-l-10"" href=""javascript:;"" onclick=""{ModalFileChangeName.GetOpenWindowString(
+                    $@"<a class=""btn btn-default m-l-5"" href=""javascript:;"" onclick=""{ModalFileChangeName.GetOpenWindowString(
                         PublishmentSystemId, _relatedPath, fileInfo.Name, _hiddenClientId)}"">改 名</a>";
             }
         }

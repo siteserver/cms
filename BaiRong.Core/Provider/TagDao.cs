@@ -125,6 +125,18 @@ namespace BaiRong.Core.Provider
             return list;
         }
 
+        public string GetSqlString(int publishmentSystemId, int contentId, bool isOrderByCount, int totalNum)
+        {
+            var whereString = GetWhereString(null, publishmentSystemId, contentId);
+            var orderString = string.Empty;
+            if (isOrderByCount)
+            {
+                orderString = "ORDER BY UseNum DESC";
+            }
+
+            return SqlUtils.GetTopSqlString("bairong_Tags", "TagID, PublishmentSystemID, ContentIDCollection, Tag, UseNum", whereString, orderString, totalNum);
+        }
+
         public List<TagInfo> GetTagInfoList(int publishmentSystemId, int contentId, bool isOrderByCount, int totalNum)
         {
             var list = new List<TagInfo>();

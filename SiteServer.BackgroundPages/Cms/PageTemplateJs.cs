@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
@@ -10,11 +10,10 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageTemplateJs : BasePageCms
     {
-		public DataGrid dgContents;
+        public Repeater RptContents;
+        public Button BtnAdd;
 
-        public string PublishmentSystemUrl => PublishmentSystemInfo.Additional.WebUrl;
-
-	    private string _directoryPath;
+        private string _directoryPath;
 
         public static string GetRedirectUrl(int publishmentSystemId)
         {
@@ -32,53 +31,69 @@ namespace SiteServer.BackgroundPages.Cms
 
             _directoryPath = PathUtility.MapPath(PublishmentSystemInfo, "@/js");
 
-			if (!IsPostBack)
+            if (Body.IsQueryExists("Delete"))
             {
-                VerifySitePermissions(AppManager.Permissions.WebSite.Template);
+                var fileName = Body.GetQueryString("FileName");
 
-				if (Body.IsQueryExists("Delete"))
-				{
-                    var fileName = Body.GetQueryString("FileName");
+                try
+                {
+                    FileUtils.DeleteFileIfExists(PathUtils.Combine(_directoryPath, fileName));
+                    Body.AddSiteLog(PublishmentSystemId, "删除脚本文件", $"脚本文件:{fileName}");
+                    SuccessDeleteMessage();
+                }
+                catch (Exception ex)
+                {
+                    FailDeleteMessage(ex);
+                }
+            }
 
-					try
-					{
-                        FileUtils.DeleteFileIfExists(PathUtils.Combine(_directoryPath, fileName));
-                        Body.AddSiteLog(PublishmentSystemId, "删除脚本文件", $"脚本文件:{fileName}");
-						SuccessDeleteMessage();
-					}
-					catch(Exception ex)
-					{
-                        FailDeleteMessage(ex);
-					}
-				}
-			}
-			BindGrid();
-		}
+            if (IsPostBack) return;
 
-		public void BindGrid()
-		{
+            VerifySitePermissions(AppManager.Permissions.WebSite.Template);
+
             DirectoryUtils.CreateDirectoryIfNotExists(_directoryPath);
             var fileNames = DirectoryUtils.GetFileNames(_directoryPath);
-            var fileNameArrayList = new ArrayList();
+            var fileNameList = new List<string>();
             foreach (var fileName in fileNames)
             {
                 if (EFileSystemTypeUtils.IsTextEditable(EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(fileName))))
                 {
                     if (!fileName.Contains("_parsed"))
                     {
-                        fileNameArrayList.Add(fileName);
+                        fileNameList.Add(fileName);
                     }
                 }
             }
-            dgContents.DataSource = fileNameArrayList;
-            dgContents.DataBind();
+
+            RptContents.DataSource = fileNameList;
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
+            RptContents.DataBind();
+
+            BtnAdd.Attributes.Add("onclick", $"location.href='{PageTemplateJsAdd.GetRedirectUrl(PublishmentSystemId)}';return false");
         }
 
-        public string GetCharset(string fileName)
+        private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            var charset = FileUtils.GetFileCharset(PathUtils.Combine(_directoryPath, fileName));
-            return ECharsetUtils.GetText(charset);
-        }
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
+            var fileName = (string)e.Item.DataItem;
+
+            var ltlFileName = (Literal)e.Item.FindControl("ltlFileName");
+            var ltlCharset = (Literal)e.Item.FindControl("ltlCharset");
+            var ltlView = (Literal)e.Item.FindControl("ltlView");
+            var ltlEdit = (Literal)e.Item.FindControl("ltlEdit");
+            var ltlDelete = (Literal)e.Item.FindControl("ltlDelete");
+
+            ltlFileName.Text = fileName;
+
+            var charset = FileUtils.GetFileCharset(PathUtils.Combine(_directoryPath, fileName));
+            ltlCharset.Text = ECharsetUtils.GetText(charset);
+
+            ltlView.Text = $@"<a href=""{PublishmentSystemInfo.Additional.WebUrl}/js/{fileName}"" target=""_blank"">查看</a>";
+            ltlEdit.Text =
+                $@"<a href=""{PageTemplateJsAdd.GetRedirectUrl(PublishmentSystemId, fileName)}"">编辑</a>";
+            ltlDelete.Text =
+                $@"<a href=""javascript:;"" onclick=""{AlertUtils.ConfirmDelete("删除文件", "此操作将删除脚本文件，确认吗", $"{GetRedirectUrl(PublishmentSystemId)}&Delete={true}&FileName={fileName}")}"">删除</a>";
+        }
 	}
 }

@@ -19,8 +19,8 @@ namespace SiteServer.BackgroundPages
     public class PageMain : BasePageCms
     {
         public Literal LtlTopMenus;
-        public Literal LtlExtras;
-        public Literal LtlUserName;
+        public PlaceHolder PhPublishmentSystem;
+        public Literal LtlCreateStatus;
         public NavigationTree NtLeftManagement;
         public NavigationTree NtLeftFunctions;
 
@@ -47,8 +47,6 @@ namespace SiteServer.BackgroundPages
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
-
-            LtlUserName.Text = AdminManager.GetDisplayName(Body.AdminName, true);
 
             _permissions = PermissionsManager.GetPermissions(Body.AdminName);
 
@@ -131,20 +129,13 @@ namespace SiteServer.BackgroundPages
                     LtlTopMenus.Text += GetTopMenusHtml();
                 }
 
-                LtlExtras.Text = $@"
-<li>
-    <form id=""search"" role=""search"" class=""navbar-left app-search pull-left hidden-xs"" action=""{PageContentSearch.GetRedirectUrl(_publishmentSystemInfo.PublishmentSystemId)}"" target=""right"" method=""get"">
-        <input name=""publishmentSystemId"" type=""hidden"" value=""{_publishmentSystemInfo.PublishmentSystemId}"">
-        <input name=""keyword"" type=""text"" placeholder=""内容搜索..."" class=""form-control"">
-        <a href=""javascript:;"" onclick=""$('#search').submit();""><i class=""ion-search""></i></a>
-    </form>
-</li>
-<li class=""dropdown hidden-xs"">
-    <a href=""javascript:;"" onclick=""{PageCreateStatus.GetOpenLayerString(_publishmentSystemInfo.PublishmentSystemId)}"">
-        <i class=""ion-wand""></i>
-        <span id=""progress"" class=""badge badge-xs badge-pink"">0</span>
-    </a>
-</li>
+                PhPublishmentSystem.Visible = true;
+
+                LtlCreateStatus.Text = $@"
+<a href=""javascript:;"" onclick=""{PageCreateStatus.GetOpenLayerString(_publishmentSystemInfo.PublishmentSystemId)}"">
+    <i class=""ion-wand""></i>
+    <span id=""progress"" class=""badge badge-xs badge-pink"">0</span>
+</a>
 ";
 
                 NtLeftManagement.TopId = AppManager.IdSite;
@@ -161,7 +152,7 @@ namespace SiteServer.BackgroundPages
             {
                 if (_permissions.IsSystemAdministrator)
                 {
-                    PageUtils.Redirect(PagePublishmentSystemAdd.GetRedirectUrl());
+                    PageUtils.Redirect(PageSiteAdd.GetRedirectUrl());
                     return;
                 }
             }

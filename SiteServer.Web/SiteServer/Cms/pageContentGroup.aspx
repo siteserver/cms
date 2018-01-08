@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.PageContentGroup" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
 
@@ -9,85 +9,82 @@
     </head>
 
     <body>
-      <form class="container" runat="server">
-        <bairong:alerts runat="server" />
+      <form class="m-l-15 m-r-15" runat="server">
+        <ctrl:alerts runat="server" />
 
-        <div class="raw">
-          <div class="card-box">
-            <h4 class="m-t-0 header-title">
-              <b>内容组管理</b>
-            </h4>
-            <p class="text-muted font-13 m-b-25">
-              在此管理内容组
-            </p>
+        <div class="card-box">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link" href="pageNodeGroup.aspx?publishmentSystemId=<%=PublishmentSystemId%>">栏目组管理</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="javascript:;">内容组管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageContentTags.aspx?publishmentSystemId=<%=PublishmentSystemId%>">内容标签管理</a>
+            </li>
+          </ul>
+        </div>
 
-            <ul class="nav nav-pills m-b-30">
-              <li class="">
-                <a href="pageNodeGroup.aspx?publishmentSystemId=<%=PublishmentSystemId%>">栏目组管理</a>
-              </li>
-              <li class="active">
-                <a href="javascript:;">内容组管理</a>
-              </li>
-              <li class="">
-                <a href="pageContentTags.aspx?publishmentSystemId=<%=PublishmentSystemId%>">内容标签管理</a>
-              </li>
-            </ul>
+        <div class="card-box">
 
-            <div class="form-horizontal">
-
-              <asp:dataGrid id="DgContents" showHeader="true" AutoGenerateColumns="false" DataKeyField="ContentGroupName" HeaderStyle-CssClass="info thead text-center"
-                CssClass="table table table-hover m-0" gridlines="none" runat="server">
-                <Columns>
-                  <asp:BoundColumn HeaderText="内容组名称" DataField="ContentGroupName">
-                    <ItemStyle Width="130" cssClass="center" />
-                  </asp:BoundColumn>
-                  <asp:BoundColumn HeaderText="内容组简介" DataField="Description"> </asp:BoundColumn>
-                  <asp:TemplateColumn>
-                    <ItemTemplate>
-                      <asp:HyperLink ID="UpLinkButton" runat="server">
-                        <img src="../Pic/icon/up.gif" border="0" alt="上升" />
-                      </asp:HyperLink>
-                    </ItemTemplate>
-                    <ItemStyle Width="50" cssClass="center" />
-                  </asp:TemplateColumn>
-                  <asp:TemplateColumn>
-                    <ItemTemplate>
-                      <asp:HyperLink ID="DownLinkButton" runat="server">
-                        <img src="../Pic/icon/down.gif" border="0" alt="下降" />
-                      </asp:HyperLink>
-                    </ItemTemplate>
-                    <ItemStyle Width="50" cssClass="center" />
-                  </asp:TemplateColumn>
-                  <asp:TemplateColumn>
-                    <ItemTemplate>
-                      <%# GetContentsHtml((string)DataBinder.Eval(Container.DataItem,"ContentGroupName"))%>
-                    </ItemTemplate>
-                    <ItemStyle Width="80" cssClass="center" />
-                  </asp:TemplateColumn>
-                  <asp:TemplateColumn>
-                    <ItemTemplate>
-                      <%# GetEditHtml((string)DataBinder.Eval(Container.DataItem,"ContentGroupName"))%>
-                    </ItemTemplate>
-                    <ItemStyle Width="80" cssClass="center" />
-                  </asp:TemplateColumn>
-                  <asp:TemplateColumn>
-                    <ItemTemplate>
-                      <%# GetDeleteHtml((string)DataBinder.Eval(Container.DataItem,"ContentGroupName"))%>
-                    </ItemTemplate>
-                    <ItemStyle Width="80" cssClass="center" />
-                  </asp:TemplateColumn>
-                </Columns>
-              </asp:dataGrid>
-
-              <hr />
-
-              <div class="form-group m-b-0">
-                <asp:Button id="BtnAddGroup" class="btn btn-primary m-l-15" text="添加内容组" runat="server" />
+          <div class="panel panel-default m-t-10">
+            <div class="panel-body p-0">
+              <div class="table-responsive">
+                <table id="contents" class="table tablesaw table-hover m-0">
+                  <thead>
+                    <tr>
+                      <th>内容组名称 </th>
+                      <th>内容组简介 </th>
+                      <th width="50"></th>
+                      <th width="50"></th>
+                      <th width="120"></th>
+                      <th width="60"></th>
+                      <th width="60"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <asp:Repeater ID="RptContents" runat="server">
+                      <itemtemplate>
+                        <tr>
+                          <td>
+                            <asp:Literal ID="ltlContentGroupName" runat="server"></asp:Literal>
+                          </td>
+                          <td>
+                            <asp:Literal ID="ltlDescription" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <asp:HyperLink ID="hlUp" runat="server">
+                              <i class="ion-arrow-up-a" style="font-size: 18px"></i>
+                            </asp:HyperLink>
+                          </td>
+                          <td class="text-center">
+                            <asp:HyperLink ID="hlDown" runat="server">
+                              <i class="ion-arrow-down-a" style="font-size: 18px"></i>
+                            </asp:HyperLink>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlContents" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlEdit" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlDelete" runat="server"></asp:Literal>
+                          </td>
+                        </tr>
+                      </itemtemplate>
+                    </asp:Repeater>
+                  </tbody>
+                </table>
               </div>
-
             </div>
-
           </div>
+
+          <hr />
+
+          <asp:Button id="BtnAddGroup" class="btn btn-primary" text="添加内容组" runat="server" />
+
         </div>
 
       </form>

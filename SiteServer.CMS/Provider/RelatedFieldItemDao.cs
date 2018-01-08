@@ -103,12 +103,25 @@ namespace SiteServer.CMS.Provider
             //RelatedFieldManager.ClearCache();
         }
 
-        public IEnumerable GetDataSource(int relatedFieldId, int parentId)
+        public List<RelatedFieldItemInfo> GetRelatedFieldItemInfoList(int relatedFieldId, int parentId)
         {
+            var list = new List<RelatedFieldItemInfo>();
+
             string sqlString =
                 $"SELECT ID, RelatedFieldID, ItemName, ItemValue, ParentID, Taxis FROM siteserver_RelatedFieldItem WHERE RelatedFieldID = {relatedFieldId} AND ParentID = {parentId} ORDER BY Taxis";
-            var enumerable = (IEnumerable)ExecuteReader(sqlString);
-            return enumerable;
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                while (rdr.Read())
+                {
+                    var i = 0;
+                    var info = new RelatedFieldItemInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i));
+                    list.Add(info);
+                }
+                rdr.Close();
+            }
+
+            return list;
         }
 
         public void UpdateTaxisToUp(int id, int parentId)
@@ -255,25 +268,6 @@ namespace SiteServer.CMS.Provider
             return info;
         }
 
-        public List<RelatedFieldItemInfo> GetRelatedFieldItemInfoList(int relatedFieldId, int parentId)
-        {
-            var list = new List<RelatedFieldItemInfo>();
-
-            string sqlString =
-                $"SELECT ID, RelatedFieldID, ItemName, ItemValue, ParentID, Taxis FROM siteserver_RelatedFieldItem WHERE RelatedFieldID = {relatedFieldId} AND ParentID = {parentId} ORDER BY Taxis";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var i = 0;
-                    var info = new RelatedFieldItemInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i));
-                    list.Add(info);
-                }
-                rdr.Close();
-            }
-
-            return list;
-        }
+        
     }
 }

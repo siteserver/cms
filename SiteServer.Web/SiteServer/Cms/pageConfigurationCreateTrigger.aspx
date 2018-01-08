@@ -1,59 +1,59 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.PageConfigurationCreateTrigger" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-  <!DOCTYPE html>
-  <html>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html>
 
-  <head>
-    <meta charset="utf-8">
-    <!--#include file="../inc/head.html"-->
-  </head>
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-  <body>
-    <form class="container" runat="server">
-      <bairong:alerts runat="server" />
+    <body>
+      <form class="m-l-15 m-r-15" runat="server">
+        <ctrl:alerts runat="server" />
 
-      <div class="raw">
         <div class="card-box">
-          <h4 class="m-t-0 header-title">
-            <b>页面生成触发器</b>
-          </h4>
-          <p class="text-muted font-13 m-b-25">
-              在此设置各栏目生成页面的规则，同时可以设置当栏目下内容改变后需要的生成栏目
-          </p>
-
-          <ul class="nav nav-pills m-b-30">
-            <li class="">
-              <a href="pageTemplateFilePathRule.aspx?publishmentSystemId=<%=PublishmentSystemId%>">页面命名规则</a>
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link" href="pageConfigurationCreateRule.aspx?publishmentSystemId=<%=PublishmentSystemId%>">页面命名规则</a>
             </li>
-            <li class="">
-              <a href="pageConfigurationCreate.aspx?publishmentSystemId=<%=PublishmentSystemId%>">页面生成设置</a>
+            <li class="nav-item">
+              <a class="nav-link" href="pageConfigurationCreate.aspx?publishmentSystemId=<%=PublishmentSystemId%>">页面生成设置</a>
             </li>
-            <li class="active">
-              <a href="javascript:;">页面生成触发器</a>
+            <li class="nav-item active">
+              <a class="nav-link" href="javascript:;">页面生成触发器</a>
             </li>
           </ul>
+        </div>
 
-          <div class="form-horizontal">
+        <div class="card-box">
 
-            <table class="table table-hover m-0">
-              <tr class="info thead">
-                <td>栏目名</td>
-                <td>内容变动时需要生成的栏目</td>
-                <td class="center" style="width:80px;">&nbsp;</td>
-              </tr>
-              <asp:Repeater ID="RptContents" runat="server">
-                <itemtemplate>
-                  <asp:Literal id="ltlHtml" runat="server" />
-                </itemtemplate>
-              </asp:Repeater>
-            </table>
-
+          <div class="panel panel-default">
+            <div class="panel-body p-0">
+              <div class="table-responsive">
+                <table class="tablesaw table table-hover m-b-0">
+                  <thead>
+                    <tr>
+                      <th>栏目名</th>
+                      <th>内容变动时需要生成的栏目</th>
+                      <th class="center" style="width:120px;">&nbsp;</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <asp:Repeater ID="RptContents" runat="server">
+                      <itemtemplate>
+                        <asp:Literal id="ltlHtml" runat="server" />
+                      </itemtemplate>
+                    </asp:Repeater>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
 
         </div>
-      </div>
 
-    </form>
-  </body>
+      </form>
+    </body>
 
-  </html>
+    </html>

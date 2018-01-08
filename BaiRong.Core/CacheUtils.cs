@@ -152,7 +152,5 @@ namespace BaiRong.Core
         }
 
         public static int Count => Cache.Count;
-
-        public static long EffectivePercentagePhysicalMemoryLimit => Cache.EffectivePercentagePhysicalMemoryLimit;
     }
 }

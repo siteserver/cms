@@ -2999,8 +2999,7 @@
     <Compile Include="Provider\TagDao.cs" />
     <Compile Include="Provider\UserDao.cs" />
     <Compile Include="Provider\UserLogDao.cs" />
-    <Compile Include="Cryptography\DESEncryptor.cs" />
-    <Compile Include="Cryptography\EncryptUtils.cs" />
+    <Compile Include="Auth\DesEncryptor.cs" />
     <Compile Include="Data\DbHelper.cs" />
     <Compile Include="BaiRongDataProvider.cs" />
     <Compile Include="Data\DataProviderBase.cs" />
@@ -4991,6 +4990,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Cryptography\" />
     <Folder Include="IO\Serialization\" />
     <Folder Include="ThirdParty\Alipay\openapi\Properties\" />
   </ItemGroup>

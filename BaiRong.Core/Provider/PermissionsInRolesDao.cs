@@ -94,7 +94,7 @@ namespace BaiRong.Core.Provider
             ExecuteNonQuery(SqlDelete, parms);
         }
 
-        public void UpdateRoleAndGeneralPermissions(string roleName, string description, ArrayList generalPermissionArrayList)
+        public void UpdateRoleAndGeneralPermissions(string roleName, string description, List<string> generalPermissionList)
         {
             using (var conn = GetConnection())
             {
@@ -104,9 +104,9 @@ namespace BaiRong.Core.Provider
                     try
                     {
                         BaiRongDataProvider.PermissionsInRolesDao.DeleteWithTrans(roleName, trans);
-                        if (generalPermissionArrayList != null && generalPermissionArrayList.Count > 0)
+                        if (generalPermissionList != null && generalPermissionList.Count > 0)
                         {
-                            var permissionsInRolesInfo = new PermissionsInRolesInfo(roleName, TranslateUtils.ObjectCollectionToString(generalPermissionArrayList));
+                            var permissionsInRolesInfo = new PermissionsInRolesInfo(roleName, TranslateUtils.ObjectCollectionToString(generalPermissionList));
                             BaiRongDataProvider.PermissionsInRolesDao.InsertWithTrans(permissionsInRolesInfo, trans);
                         }
 

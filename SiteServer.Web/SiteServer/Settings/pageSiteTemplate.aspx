@@ -1,87 +1,140 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.PageSiteTemplate" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html>
 
-<body>
-<form class="form-inline" runat="server">
-  <asp:Literal id="LtlBreadCrumb" runat="server" />
-  <bairong:alerts runat="server" />
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-  <asp:dataGrid id="DgDirectories" showHeader="true" AutoGenerateColumns="false" DataKeyField="Name" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">
-    <Columns>
-      <asp:TemplateColumn HeaderText="站点模板名称">
-        <ItemTemplate><asp:Literal ID="ltlTemplateName" runat="server"></asp:Literal></ItemTemplate>
-        <ItemStyle HorizontalAlign="left"/>
-      </asp:TemplateColumn>
-      <asp:TemplateColumn HeaderText="站点模板文件夹">
-        <ItemTemplate><asp:Literal ID="ltlDirectoryName" runat="server"></asp:Literal></ItemTemplate>
-        <ItemStyle HorizontalAlign="left"/>
-      </asp:TemplateColumn>
-      <asp:TemplateColumn HeaderText="站点模板介绍">
-        <ItemTemplate><asp:Literal ID="ltlDescription" runat="server"></asp:Literal></ItemTemplate>
-        <ItemStyle HorizontalAlign="left" />
-      </asp:TemplateColumn>
-      <asp:TemplateColumn HeaderText="创建日期">
-        <ItemTemplate><asp:Literal ID="ltlCreationDate" runat="server"></asp:Literal></ItemTemplate>
-        <ItemStyle Width="70" cssClass="center" />
-      </asp:TemplateColumn>
-      <asp:TemplateColumn>
-        <ItemTemplate>
-          <asp:Literal ID="ltlDownloadUrl" runat="server"></asp:Literal>
-        </ItemTemplate>
-        <ItemStyle Width="180" cssClass="center"/>
-      </asp:TemplateColumn>
-      <asp:TemplateColumn>
-        <ItemTemplate>
-          <asp:Literal ID="ltlCreateUrl" runat="server"></asp:Literal>
-        </ItemTemplate>
-        <ItemStyle Width="50" cssClass="center"/>
-      </asp:TemplateColumn>
-      <asp:TemplateColumn>
-        <ItemTemplate>
-          <asp:Literal ID="ltlDeleteUrl" runat="server"></asp:Literal>
-        </ItemTemplate>
-        <ItemStyle Width="50" cssClass="center"/>
-      </asp:TemplateColumn>
-    </Columns>
-  </asp:dataGrid>
+    <body>
+      <form class="m-l-15 m-r-15" runat="server">
+        <ctrl:alerts runat="server" />
 
-  <hr />
+        <div class="card-box">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link" href="pageSite.aspx">系统站点管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteUrlWeb.aspx">Web访问地址</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteUrlAssets.aspx">资源文件访问地址</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteUrlApi.aspx">API访问地址</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">辅助表管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteKeyword.aspx">敏感词管理</a>
+            </li>
+          </ul>
+        </div>
 
-  <asp:dataGrid id="DgZipFiles" showHeader="true" AutoGenerateColumns="false" DataKeyField="Name" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">
-    <Columns>
-      <asp:TemplateColumn HeaderText="未解压站点模板">
-        <ItemTemplate><asp:Literal ID="ltlFileName" runat="server"></asp:Literal></ItemTemplate>
-        <ItemStyle HorizontalAlign="left"/>
-      </asp:TemplateColumn>
-      <asp:TemplateColumn HeaderText="创建日期">
-        <ItemTemplate><asp:Literal ID="ltlCreationDate" runat="server"></asp:Literal></ItemTemplate>
-        <ItemStyle Width="70" cssClass="center" />
-      </asp:TemplateColumn>
-      <asp:TemplateColumn>
-        <ItemTemplate>
-          <asp:Literal ID="ltlDownloadUrl" runat="server"></asp:Literal>
-        </ItemTemplate>
-        <ItemStyle Width="180" cssClass="center"/>
-      </asp:TemplateColumn>
-      <asp:TemplateColumn>
-        <ItemTemplate>
-          <asp:Literal ID="ltlDeleteUrl" runat="server"></asp:Literal>
-        </ItemTemplate>
-        <ItemStyle Width="50" cssClass="center"/>
-      </asp:TemplateColumn>
-    </Columns>
-  </asp:dataGrid>
+        <div class="card-box">
 
-  <ul class="breadcrumb breadcrumb-button">
-    <asp:Button class="btn btn-success" id="BtnImport" Text="导入站点模板" runat="server" />
-  </ul>
+          <div class="panel panel-default">
+            <div class="panel-body p-0">
+              <div class="table-responsive">
+                <table id="contents" class="table tablesaw table-hover m-0">
+                  <thead>
+                    <tr class="thead">
+                      <th>站点模板名称</th>
+                      <th>站点模板文件夹</th>
+                      <th>站点模板介绍</th>
+                      <th class="text-center">创建日期</th>
+                      <th class="text-center"></th>
+                      <th class="text-center"></th>
+                      <th class="text-center"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <asp:Repeater ID="RptDirectories" runat="server">
+                      <ItemTemplate>
+                        <tr>
+                          <td>
+                            <asp:Literal ID="ltlTemplateName" runat="server"></asp:Literal>
+                          </td>
+                          <td>
+                            <asp:Literal ID="ltlDirectoryName" runat="server"></asp:Literal>
+                          </td>
+                          <td>
+                            <asp:Literal ID="ltlDescription" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlCreationDate" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlDownloadUrl" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlCreateUrl" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlDeleteUrl" runat="server"></asp:Literal>
+                          </td>
+                        </tr>
+                      </ItemTemplate>
+                    </asp:Repeater>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
 
-</form>
-</body>
-</html>
+          <hr />
+
+          <div class="panel panel-default">
+            <div class="panel-body p-0">
+              <div class="table-responsive">
+                <table id="contents" class="table tablesaw table-hover m-0">
+                  <thead>
+                    <tr class="thead">
+                      <th>未解压站点模板</th>
+                      <th class="text-center">创建日期</th>
+                      <th class="text-center"></th>
+                      <th class="text-center"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <asp:Repeater ID="RptZipFiles" runat="server">
+                      <ItemTemplate>
+                        <tr>
+                          <td>
+                            <asp:Literal ID="ltlFileName" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlCreationDate" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlDownloadUrl" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlDeleteUrl" runat="server"></asp:Literal>
+                          </td>
+                        </tr>
+                      </ItemTemplate>
+                    </asp:Repeater>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <hr />
+
+          <asp:Button class="btn btn-primary" id="BtnImport" Text="导入站点模板" runat="server" />
+
+        </div>
+
+      </form>
+    </body>
+
+    </html>

@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Cms
             return LayerUtils.GetOpenScript("添加标签", PageUtils.GetCmsUrl(nameof(ModalContentTagAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()}
-            }), 600, 300);
+            }), 600, 360);
         }
 
         public static string GetOpenWindowStringToEdit(int publishmentSystemId, string tagName)
@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"TagName", tagName}
-            }), 600, 300);
+            }), 600, 360);
         }
 
 		public void Page_Load(object sender, EventArgs e)

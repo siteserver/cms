@@ -12,83 +12,75 @@
 			<form class="m-l-15 m-r-15" runat="server">
 				<ctrl:alerts runat="server" />
 
-				<div class="raw">
-					<div class="card-box">
-						<h4 class="m-t-0 header-title">
-							<b>联动字段设置</b>
-						</h4>
-						<p class="text-muted font-13 m-b-25">
-							在此设置联动字段
-						</p>
+				<div class="card-box">
+					<ul class="nav nav-pills">
+						<li class="nav-item">
+							<a class="nav-link" href="pageTableStyleContent.aspx?publishmentSystemId=<%=PublishmentSystemId%>">内容字段管理</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="pageTableStyleChannel.aspx?publishmentSystemId=<%=PublishmentSystemId%>">栏目字段管理</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="pageTableStyleSite.aspx?publishmentSystemId=<%=PublishmentSystemId%>">站点字段管理</a>
+						</li>
+						<li class="nav-item active">
+							<a class="nav-link" href="javascript:;">联动字段设置</a>
+						</li>
+					</ul>
+				</div>
 
-						<ul class="nav nav-pills m-b-30">
-							<li class="">
-								<a href="pageTableStyleContent.aspx?publishmentSystemId=<%=PublishmentSystemId%>">内容字段管理</a>
-							</li>
-							<li class="">
-								<a href="pageTableStyleChannel.aspx?publishmentSystemId=<%=PublishmentSystemId%>">栏目字段管理</a>
-							</li>
-							<li class="active">
-								<a href="javascript:;">联动字段设置</a>
-							</li>
-						</ul>
+				<div class="card-box">
 
-						<div class="form-horizontal">
-
-							<asp:dataGrid id="DgContents" showHeader="true" AutoGenerateColumns="false" DataKeyField="RelatedFieldID" HeaderStyle-CssClass="info thead text-center"
-							  CssClass="table table-hover m-0" gridlines="none" runat="server">
-								<Columns>
-									<asp:TemplateColumn HeaderText="联动字段名称">
-										<ItemTemplate>
-											&nbsp;
-											<asp:Literal ID="ltlRelatedFieldName" runat="server"></asp:Literal>
-										</ItemTemplate>
-										<ItemStyle HorizontalAlign="left" />
-									</asp:TemplateColumn>
-									<asp:TemplateColumn HeaderText="级数">
-										<ItemTemplate>
-											&nbsp;
-											<asp:Literal ID="ltlTotalLevel" runat="server"></asp:Literal>
-										</ItemTemplate>
-										<ItemStyle Width="100" cssClass="center" />
-									</asp:TemplateColumn>
-									<asp:TemplateColumn>
-										<ItemTemplate>
-											<asp:Literal ID="ltlItemsUrl" runat="server"></asp:Literal>
-										</ItemTemplate>
-										<ItemStyle Width="100" cssClass="center" />
-									</asp:TemplateColumn>
-									<asp:TemplateColumn>
-										<ItemTemplate>
-											<asp:Literal ID="ltlEditUrl" runat="server"></asp:Literal>
-										</ItemTemplate>
-										<ItemStyle Width="50" cssClass="center" />
-									</asp:TemplateColumn>
-									<asp:TemplateColumn>
-										<ItemTemplate>
-											<asp:Literal ID="ltlExportUrl" runat="server"></asp:Literal>
-										</ItemTemplate>
-										<ItemStyle Width="50" cssClass="center" />
-									</asp:TemplateColumn>
-									<asp:TemplateColumn>
-										<ItemTemplate>
-											<asp:Literal ID="ltlDeleteUrl" runat="server"></asp:Literal>
-										</ItemTemplate>
-										<ItemStyle Width="50" cssClass="center" />
-									</asp:TemplateColumn>
-								</Columns>
-							</asp:dataGrid>
-
+					<div class="panel panel-default m-t-10">
+						<div class="panel-body p-0">
+							<div class="table-responsive">
+								<table class="table tablesaw table-hover m-0">
+									<thead>
+										<tr>
+											<th>联动字段名称 </th>
+											<th class="text-center" width="100">级数 </th>
+											<th width="100"></th>
+											<th width="60"></th>
+											<th width="60"></th>
+											<th width="60"></th>
+										</tr>
+									</thead>
+									<tbody>
+										<asp:Repeater ID="RptContents" runat="server">
+											<itemtemplate>
+												<tr>
+													<td>
+														<asp:Literal ID="ltlRelatedFieldName" runat="server"></asp:Literal>
+													</td>
+													<td class="text-center">
+														<asp:Literal ID="ltlTotalLevel" runat="server"></asp:Literal>
+													</td>
+													<td class="text-center">
+														<asp:Literal ID="ltlItemsUrl" runat="server"></asp:Literal>
+													</td>
+													<td class="text-center">
+														<asp:Literal ID="ltlEditUrl" runat="server"></asp:Literal>
+													</td>
+													<td class="text-center">
+														<asp:Literal ID="ltlExportUrl" runat="server"></asp:Literal>
+													</td>
+													<td class="text-center">
+														<asp:Literal ID="ltlDeleteUrl" runat="server"></asp:Literal>
+													</td>
+												</tr>
+											</itemtemplate>
+										</asp:Repeater>
+									</tbody>
+								</table>
+							</div>
 						</div>
-
-						<hr />
-
-						<div class="form-group m-b-0">
-							<asp:Button ID="AddButton" Text="添加联动字段" Cssclass="btn m-r-5" runat="server"></asp:Button>
-							<asp:Button ID="ImportButton" Text="导 入" Cssclass="btn m-r-5" runat="server"></asp:Button>
-						</div>
-
 					</div>
+
+					<hr />
+
+					<asp:Button ID="BtnAdd" Text="添加联动字段" Cssclass="btn btn-primary m-r-5" runat="server"></asp:Button>
+					<asp:Button ID="BtnImport" Text="导 入" Cssclass="btn m-r-5" runat="server"></asp:Button>
+
 				</div>
 
 			</form>

@@ -659,7 +659,7 @@ $('#{ContentAttribute.Title}_colorContainer').hide();
 ");
 
             builder.Append($@"
-<div class=""btn-group"" style=""float:left;"">
+<div class=""btn-group btn-group-sm"" style=""float:left;"">
     <button class=""btn{(formatStrong ? @" btn-success" : string.Empty)}"" style=""font-weight:bold"" onclick=""{ContentAttribute.Title}_strong(this);return false;"">粗体</button>
     <button class=""btn{(formatEm ? " btn-success" : string.Empty)}"" style=""font-style:italic"" onclick=""{ContentAttribute.Title}_em(this);return false;"">斜体</button>
     <button class=""btn{(formatU ? " btn-success" : string.Empty)}"" style=""text-decoration:underline"" onclick=""{ContentAttribute.Title}_u(this);return false;"">下划线</button>

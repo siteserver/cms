@@ -28,53 +28,46 @@
 
         <asp:PlaceHolder id="PhContent" runat="server">
 
-          <div class="form-horizontal">
-
-            <div class="form-group">
-              <label class="col-xs-1 text-right control-label">历史版本</label>
-              <div class="col-xs-10">
-                <asp:DropDownList id="DdlLogId" cssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="DdlLogId_SelectedIndexChanged"
-                  runat="server"></asp:DropDownList>
-              </div>
-              <div class="col-xs-1"></div>
+          <div class="form-group form-row">
+            <label class="col-1 text-right col-form-label">历史版本</label>
+            <div class="col-10">
+              <asp:DropDownList id="DdlLogId" cssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="DdlLogId_SelectedIndexChanged"
+                runat="server"></asp:DropDownList>
             </div>
+            <div class="col-1"></div>
+          </div>
 
-            <div class="form-group">
-              <div class="col-xs-12">
+          <div class="form-group form-row">
+            <div class="col-12">
 
-                <div style="border: 1px solid #CCC; width:100%">
-                  <asp:TextBox width="100%" TextMode="MultiLine" id="TbContent" runat="server" Wrap="false" />
-                </div>
-                <script type="text/javascript">
-                  $(document).ready(function () {
-                    var isTextArea = false;
-                    var editor = CodeMirror.fromTextArea('TbContent', {
-                      height: "400px",
-                      parserfile: ["parsexml.js"],
-                      stylesheet: ["../assets/codeMirror/css/xmlcolors.css"],
-                      path: "../assets/codeMirror/js/",
-                      continuousScanning: 500,
-                      lineNumbers: true
-                    });
-                    $('#reindent').show().click(function () {
-                      if (!isTextArea) editor.reindent();
-                    });
+              <div style="border: 1px solid #CCC; width:100%">
+                <asp:TextBox width="100%" TextMode="MultiLine" id="TbContent" runat="server" Wrap="false" />
+              </div>
+              <script type="text/javascript">
+                $(document).ready(function () {
+                  var isTextArea = false;
+                  var editor = CodeMirror.fromTextArea('TbContent', {
+                    height: "400px",
+                    parserfile: ["parsexml.js"],
+                    stylesheet: ["../assets/codeMirror/css/xmlcolors.css"],
+                    path: "../assets/codeMirror/js/",
+                    continuousScanning: 500,
+                    lineNumbers: true
                   });
-                </script>
+                  $('#reindent').show().click(function () {
+                    if (!isTextArea) editor.reindent();
+                  });
+                });
+              </script>
 
-              </div>
             </div>
+          </div>
 
-            <hr />
+          <hr />
 
-            <div class="form-group m-b-0">
-              <div class="col-xs-11 text-right">
-                <asp:Button class="btn btn-primary m-l-10" text="确 定" runat="server" onClick="Submit_OnClick" />
-                <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
-              </div>
-              <div class="col-xs-1"></div>
-            </div>
-
+          <div class="text-right mr-1">
+            <asp:Button class="btn btn-primary m-l-5" text="确 定" runat="server" onClick="Submit_OnClick" />
+            <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
           </div>
 
         </asp:PlaceHolder>

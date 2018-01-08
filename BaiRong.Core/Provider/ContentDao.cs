@@ -863,7 +863,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         }
 
-        public string GetSelectCommendByHitsAnalysis(string tableName, int publishmentSystemId)
+        public string GetSelectCommandByHitsAnalysis(string tableName, int publishmentSystemId)
         {
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
 
@@ -872,6 +872,11 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             whereString.Append(orderByString);
 
             return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
+        }
+
+        public int GetTotalHits(string tableName, int publishmentSystemId)
+        {
+            return BaiRongDataProvider.DatabaseDao.GetIntResult($"SELECT SUM(Hits) FROM {tableName} WHERE IsChecked='{true}' AND PublishmentSystemId = {publishmentSystemId} AND Hits > 0");
         }
 
         public string GetValue(string tableName, int contentId, string name)

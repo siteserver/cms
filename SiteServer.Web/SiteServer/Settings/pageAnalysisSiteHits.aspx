@@ -1,146 +1,143 @@
-﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.PageAnalysisSiteHits" EnableViewState="false" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.PageAnalysisSiteHits" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
 
     <head>
       <meta charset="utf-8">
-      <!--#include file="../inc/header.aspx"-->
+      <!--#include file="../inc/head.html"-->
+      <script src="../assets/echarts/echarts.js"></script>
     </head>
 
     <body>
-      <form class="form-inline" runat="server">
-        <asp:Literal ID="LtlBreadCrumb" runat="server" />
-        <bairong:Alerts runat="server" />
+      <form class="m-l-15 m-r-15" runat="server">
+        <ctrl:alerts runat="server" />
 
-        <div class="well well-small">
-          <table class="table table-noborder">
-            <tr>
-              <td>开始时间：
-                <bairong:DateTimeTextBox ID="StartDate" class="input-small" runat="server" /> 结束时间：
-                <bairong:DateTimeTextBox ID="EndDate" class="input-small" runat="server" />
-                <asp:Button class="btn" ID="Analysis" OnClick="Analysis_OnClick" Text="分 析" runat="server" />
-              </td>
-            </tr>
-          </table>
+        <div class="card-box">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link" href="pageAnalysisSite.aspx">站点数据统计</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="pageAnalysisSiteHits.aspx">内容点击统计</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageAnalysisSiteDownloads.aspx">文件下载统计</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageAnalysisAdminLogin.aspx">管理员登录统计</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageAnalysisAdminWork.aspx">管理员工作统计</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageAnalysisUser.aspx">会员数据统计</a>
+            </li>
+          </ul>
         </div>
 
-        <div class="popover popover-static">
-          <h3 class="popover-title">站点访问统计</h3>
-          <div class="popover-content">
+        <div class="card-box">
 
-            <div style="width: 100%">
-              <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-              <div id="hits" style="height: 400px; width: 90%; display: inline-block"></div>
-              <!-- ECharts单文件引入 -->
-              <script src="../assets/echarts/echarts.js"></script>
-              <script type="text/javascript">
-                // 路径配置
-                require.config({
-                  paths: {
-                    echarts: '../assets/echarts'
-                  }
-                });
-                // 新增信息数目
-                require(
-                  [
-                    'echarts',
-                    'echarts/chart/bar' // 使用柱状图就加载bar模块，按需加载
-                  ],
-                  function (ec) {
-                    // 基于准备好的dom，初始化echarts图表
-                    var newChart = ec.init(document.getElementById('hits'));
-                    //x array
-                    var xArrayHits = [];
-
-                    //y array
-                    var yArrayHits = [];
-
-                    //title
-                    var newTitle = "访问量";
-
-                    <
-                    asp: Literal id = "LtlArray"
-                    runat = "server" > < /asp:Literal>
-
-                    if (xArrayHits.length == 0) {
-                      xArrayHits = ["暂无数据"];
-                      yArrayHits = [0];
-                    }
-
-                    var option = {
-                      tooltip: {
-                        show: true
-                      },
-                      legend: {
-                        data: []
-                      },
-                      xAxis: [{
-                        type: 'category',
-                        data: []
-                      }],
-                      yAxis: [{
-                        type: 'value'
-                      }],
-                      series: [{
-                        "name": "值",
-                        "type": "bar",
-                        "data": []
-                      }]
-                    };
-                    // 访问量
-                    option.xAxis[0].data = xArrayHits;
-                    option.series[0].data = yArrayHits;
-                    option.series[0].name = "访问量";
-                    option.legend.data = [newTitle];
-                    newChart.setOption(option);
-                  }
-                );
-              </script>
+          <div class="form-inline">
+            <div class="form-group">
+              <label class="col-form-label m-r-10">站点</label>
+              <asp:DropDownList ID="DdlPublishmentSystemId" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="Analysis_OnClick"
+                runat="server" />
             </div>
-
-
-            <table class="table table-bordered table-hover">
-              <tr class="info thead">
-                <td>站点名称</td>
-                <td>访问量</td>
-              </tr>
-
-              <asp:Repeater runat="server" ID="RpContents">
-                <ItemTemplate>
-                  <tr>
-                    <td style="text-align: left">
-                      <asp:Literal ID="ltlPublishmentSystemName" runat="server"></asp:Literal>
-                    </td>
-                    <td style="text-align: center">
-                      <asp:Literal ID="ltlHitsNum" runat="server"></asp:Literal>
-                    </td>
-                  </tr>
-                </ItemTemplate>
-              </asp:Repeater>
-            </table>
-
           </div>
-        </div>
 
-        <div class="popover popover-static">
-          <h3 class="popover-title">总计</h3>
-          <div class="popover-content">
+          <hr />
 
-            <table class="table table-bordered table-hover">
-              <tr class="info thead">
-                <td>所有站点</td>
-                <td>访问量</td>
-              </tr>
-              <tr>
-                <td class="center" style="width: 250px;">总计 </td>
-                <td class="center" style="width: 100px;">
-                  <asp:Literal id="LtlVertical" runat="server"></asp:Literal>
-                </td>
-              </tr>
-            </table>
+          <div style="width: 100%">
+            <div id="hits" style="height: 400px; width: 90%; display: inline-block"></div>
+            <script type="text/javascript">
+              require.config({
+                paths: {
+                  echarts: '../assets/echarts'
+                }
+              });
+              require(
+                [
+                  'echarts',
+                  'echarts/chart/bar'
+                ],
+                function (ec) {
+                  var newChart = ec.init(document.getElementById('hits'));
+                  var xArrayHits = [];
+                  var yArrayHits = [];
+                  var newTitle = "点击量";
 
+                  <%=StrArray%>
+
+                  if (xArrayHits.length == 0) {
+                    xArrayHits = ["暂无数据"];
+                    yArrayHits = [0];
+                  }
+
+                  var option = {
+                    tooltip: {
+                      show: true
+                    },
+                    legend: {
+                      data: []
+                    },
+                    xAxis: [{
+                      type: 'category',
+                      data: []
+                    }],
+                    yAxis: [{
+                      type: 'value'
+                    }],
+                    series: [{
+                      "name": "值",
+                      "type": "bar",
+                      "data": []
+                    }]
+                  };
+
+                  option.xAxis[0].data = xArrayHits;
+                  option.series[0].data = yArrayHits;
+                  option.series[0].name = "点击量";
+                  option.legend.data = [newTitle];
+                  newChart.setOption(option);
+                }
+              );
+            </script>
           </div>
+
+          <div class="panel panel-default">
+            <div class="panel-body p-0">
+              <div class="table-responsive">
+                <table class="table tablesaw table-hover m-0">
+                  <thead>
+                    <th>站点名称</th>
+                    <th class="text-center">点击量</th>
+                  </thead>
+                  <tbody>
+                    <asp:Repeater runat="server" ID="RptContents">
+                      <ItemTemplate>
+                        <tr>
+                          <td>
+                            <asp:Literal ID="ltlPublishmentSystemName" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlHitsNum" runat="server"></asp:Literal>
+                          </td>
+                        </tr>
+                      </ItemTemplate>
+                    </asp:Repeater>
+                    <tr>
+                      <td>总计 </td>
+                      <td class="text-center">
+                        <asp:Literal id="LtlVertical" runat="server"></asp:Literal>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
         </div>
 
       </form>

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
-using BaiRong.Core.Cryptography;
+using BaiRong.Core.Auth;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
@@ -448,7 +448,7 @@ namespace BaiRong.Core.Provider
             }
             else if (passwordFormat == EPasswordFormat.Encrypted)
             {
-                var encryptor = new DESEncryptor
+                var encryptor = new DesEncryptor
                 {
                     InputString = password,
                     EncryptKey = passwordSalt
@@ -473,7 +473,7 @@ namespace BaiRong.Core.Provider
             }
             else if (passwordFormat == EPasswordFormat.Encrypted)
             {
-                var encryptor = new DESEncryptor
+                var encryptor = new DesEncryptor
                 {
                     InputString = password,
                     DecryptKey = passwordSalt

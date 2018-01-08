@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Settings
         public DropDownList DdlLastActivityDate;
 
         public Repeater RptContents;
-        public SqlCountPager SpContents;
+        public SqlPager SpContents;
 
         public Button BtnAdd;
         public Button BtnLock;
@@ -122,7 +122,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.UserManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.User);
 
             //添加隐藏属性
             DdlSearchType.Items.Add(new ListItem("用户ID", "userID"));

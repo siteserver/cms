@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Settings
             return LayerUtils.GetOpenScript("重设密码", PageUtils.GetSettingsUrl(nameof(ModalAdminPassword), new NameValueCollection
             {
                 {"userName", userName}
-            }), 480, 300);
+            }), 520, 300);
         }
         
 		public void Page_Load(object sender, EventArgs e)

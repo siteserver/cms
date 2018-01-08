@@ -29,83 +29,76 @@
       <form enctype="multipart/form-data" method="post" runat="server">
         <ctrl:alerts text="请选择Access文件，系统将导入Access文件对应的字段数据" runat="server" />
 
-        <div class="form-horizontal">
-
-          <div class="form-group">
-            <label class="col-xs-3 text-right control-label">导入类型</label>
-            <div id="import" class="col-xs-5">
-              <asp:DropDownList class="form-control" ID="DdlImportType" runat="server">
-                <asp:ListItem Text="导入压缩包" Value="ContentZip"></asp:ListItem>
-                <asp:ListItem Text="导入Access" Value="ContentAccess" Selected="true"></asp:ListItem>
-                <asp:ListItem Text="导入Excel" Value="ContentExcel"></asp:ListItem>
-                <asp:ListItem Text="导入TXT压缩包" Value="ContentTxtZip"></asp:ListItem>
-              </asp:DropDownList>
-            </div>
-            <div class="col-xs-4"></div>
+        <div class="form-group form-row">
+          <label class="col-3 text-right col-form-label">导入类型</label>
+          <div id="import" class="col-5">
+            <asp:DropDownList class="form-control" ID="DdlImportType" runat="server">
+              <asp:ListItem Text="导入压缩包" Value="ContentZip"></asp:ListItem>
+              <asp:ListItem Text="导入Access" Value="ContentAccess" Selected="true"></asp:ListItem>
+              <asp:ListItem Text="导入Excel" Value="ContentExcel"></asp:ListItem>
+              <asp:ListItem Text="导入TXT压缩包" Value="ContentTxtZip"></asp:ListItem>
+            </asp:DropDownList>
           </div>
+          <div class="col-4"></div>
+        </div>
 
-          <div class="form-group">
-            <label class="col-xs-3 text-right control-label">导入文件</label>
-            <div class="col-xs-5">
-              <input type=file id="HifFile" class="form-control" runat="server" />
-            </div>
-            <div class="col-xs-4">
-              <asp:RequiredFieldValidator ControlToValidate="HifFile" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
-              />
-            </div>
+        <div class="form-group form-row">
+          <label class="col-3 text-right col-form-label">导入文件</label>
+          <div class="col-5">
+            <input type=file id="HifFile" class="form-control" runat="server" />
           </div>
-
-          <div class="form-group">
-            <label class="col-xs-3 text-right control-label">是否覆盖同名标题</label>
-            <div class="col-xs-5">
-              <asp:DropDownList ID="DdlIsOverride" runat="server" class="form-control">
-                <asp:ListItem Text="覆盖" Value="True" Selected="true"></asp:ListItem>
-                <asp:ListItem Text="不覆盖" Value="False"></asp:ListItem>
-              </asp:DropDownList>
-            </div>
-            <div class="col-xs-4"></div>
+          <div class="col-4">
+            <asp:RequiredFieldValidator ControlToValidate="HifFile" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+            />
           </div>
+        </div>
 
-          <div class="form-group">
-            <label class="col-xs-3 text-right control-label">从第几条开始导入</label>
-            <div class="col-xs-5">
-              <asp:TextBox class="form-control" id="TbImportStart" runat="server" />
-            </div>
-            <div class="col-xs-4">
-              <span class="help-block">默认为第一条</span>
-            </div>
+        <div class="form-group form-row">
+          <label class="col-3 text-right col-form-label">是否覆盖同名标题</label>
+          <div class="col-5">
+            <asp:DropDownList ID="DdlIsOverride" runat="server" class="form-control">
+              <asp:ListItem Text="覆盖" Value="True" Selected="true"></asp:ListItem>
+              <asp:ListItem Text="不覆盖" Value="False"></asp:ListItem>
+            </asp:DropDownList>
           </div>
+          <div class="col-4"></div>
+        </div>
 
-          <div class="form-group">
-            <label class="col-xs-3 text-right control-label">共导入几条</label>
-            <div class="col-xs-5">
-              <asp:TextBox class="form-control" id="TbImportCount" runat="server" />
-            </div>
-            <div class="col-xs-4">
-              <span class="help-block">默认为全部导入</span>
-            </div>
+        <div class="form-group form-row">
+          <label class="col-3 text-right col-form-label">从第几条开始导入</label>
+          <div class="col-5">
+            <asp:TextBox class="form-control" id="TbImportStart" runat="server" />
           </div>
-
-          <div class="form-group">
-            <label class="col-xs-3 text-right control-label">内容的状态</label>
-            <div class="col-xs-5">
-              <asp:DropDownList ID="DdlContentLevel" class="form-control" runat="server" />
-            </div>
-            <div class="col-xs-4">
-              <span class="help-block">设置导入后内容的状态</span>
-            </div>
+          <div class="col-4">
+            <small class="form-text text-muted">默认为第一条</small>
           </div>
+        </div>
 
-          <hr />
-
-          <div class="form-group m-b-0">
-            <div class="col-xs-11 text-right">
-              <asp:Button class="btn btn-primary m-l-10" text="确 定" runat="server" onClick="Submit_OnClick" />
-              <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
-            </div>
-            <div class="col-xs-1"></div>
+        <div class="form-group form-row">
+          <label class="col-3 text-right col-form-label">共导入几条</label>
+          <div class="col-5">
+            <asp:TextBox class="form-control" id="TbImportCount" runat="server" />
           </div>
+          <div class="col-4">
+            <small class="form-text text-muted">默认为全部导入</small>
+          </div>
+        </div>
 
+        <div class="form-group form-row">
+          <label class="col-3 text-right col-form-label">内容的状态</label>
+          <div class="col-5">
+            <asp:DropDownList ID="DdlContentLevel" class="form-control" runat="server" />
+          </div>
+          <div class="col-4">
+            <small class="form-text text-muted">设置导入后内容的状态</small>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="text-right mr-1">
+          <asp:Button class="btn btn-primary m-l-5" text="确 定" runat="server" onClick="Submit_OnClick" />
+          <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
         </div>
 
       </form>

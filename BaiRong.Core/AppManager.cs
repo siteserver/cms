@@ -48,10 +48,10 @@ namespace BaiRong.Core
 
             public class Settings
             {
-                public const string SiteAdd = "settings_site_add";
-                public const string SiteManagement = "settings_site_management";
-                public const string AdminManagement = "settings_admin_management";
-                public const string UserManagement = "settings_user_management";
+                public const string SiteAdd = "settings_siteAdd";
+                public const string Site = "settings_site";
+                public const string Admin = "settings_admin";
+                public const string User = "settings_user";
                 public const string Integration = "settings_integration";
                 public const string Service = "settings_service";
                 public const string Chart = "settings_chart";

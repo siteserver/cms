@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
@@ -12,6 +13,14 @@ namespace SiteServer.BackgroundPages.Cms
         public PlaceHolder PhComments;
         public DropDownList DdlIsCheckComments;
         public DropDownList DdlIsAnonymousComments;
+
+        public static string GetRedirectUrl(int publishmentSystemId)
+        {
+            return PageUtils.GetCmsUrl(nameof(PageConfigurationComment), new NameValueCollection
+            {
+                {"PublishmentSystemID", publishmentSystemId.ToString()}
+            });
+        }
 
         public void Page_Load(object sender, EventArgs e)
         {

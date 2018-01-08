@@ -13,8 +13,9 @@ namespace SiteServer.BackgroundPages.Settings
         public Literal LtlPageTitle;
         public DateTimeTextBox TbDateFrom;
         public DateTimeTextBox TbDateTo;
-        public Literal LtlArray;
         public DropDownList DdlXType;
+
+        public string StrArray { get; set; }
 
         //用户数量
         private readonly Hashtable _userNumHashtable = new Hashtable();
@@ -159,7 +160,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             for (var i = 1; i <= _count; i++)
             {
-                LtlArray.Text += $@"
+                StrArray += $@"
 xArray.push('{GetGraphicX(i)}');
 yArray.push('{GetGraphicY(i)}');
 ";

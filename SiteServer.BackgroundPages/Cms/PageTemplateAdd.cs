@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Specialized;
-using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
@@ -15,28 +13,21 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageTemplateAdd : BasePageCms
     {
-        public Literal ltlPageTitle;
-
-		public TextBox TemplateName;
-
-        public DropDownList CreatedFileExtNameDropDownList;
-
-        public TextBox RelatedFileName;
-        public TextBox CreatedFileFullName;
-        public Control CreatedFileFullNameRow;
-		public Help CreatedFileFullNameHelp;
-		public NoTagText CreatedFileFullNameText;
-
-		public DropDownList Charset;
-		public string TemplateTypeString;
-		public HtmlInputHidden TemplateType;
-		public TextBox Content;
-
+        public Literal LtlPageTitle;
+        public Literal LtlTemplateType;
+        public HtmlInputHidden HihTemplateType;
+        public TextBox TbTemplateName;
+        public DropDownList DdlCreatedFileExtName;
+        public TextBox TbRelatedFileName;
+        public PlaceHolder PhCreatedFileFullName;
+        public TextBox TbCreatedFileFullName;
+		public DropDownList DdlCharset;
         public Literal LtlCommands;
-        public PlaceHolder phCodeMirror;
-        public Button btnEditorType;
+        public TextBox TbContent;
+        public PlaceHolder PhCodeMirror;
+        public Button BtnEditorType;
 
-		private ETemplateType _theTemplateType = ETemplateType.IndexPageTemplate;
+		private ETemplateType _templateType = ETemplateType.IndexPageTemplate;
         private bool _isCopy;
 
         public static string GetRedirectUrl(int publishmentSystemId, int templateId, ETemplateType templateType)
@@ -83,233 +74,218 @@ namespace SiteServer.BackgroundPages.Cms
                 templateInfo = TemplateManager.GetTemplateInfo(PublishmentSystemId, templateId);
                 if (templateInfo != null)
                 {
-                    _theTemplateType = templateInfo.TemplateType;
+                    _templateType = templateInfo.TemplateType;
                 }
             }
             else
             {
-                _theTemplateType = ETemplateTypeUtils.GetEnumType(Request.QueryString["TemplateType"]);
+                _templateType = ETemplateTypeUtils.GetEnumType(Request.QueryString["TemplateType"]);
             }
-            TemplateTypeString = ETemplateTypeUtils.GetText(_theTemplateType);
 
-            if (_theTemplateType == ETemplateType.IndexPageTemplate || _theTemplateType == ETemplateType.FileTemplate)
+            if (_templateType == ETemplateType.IndexPageTemplate || _templateType == ETemplateType.FileTemplate)
             {
-                CreatedFileFullNameRow.Visible = true;
+                PhCreatedFileFullName.Visible = true;
             }
             else
             {
-                CreatedFileFullNameRow.Visible = false;
+                PhCreatedFileFullName.Visible = false;
             }
 
             if (IsPostBack) return;
 
             VerifySitePermissions(AppManager.Permissions.WebSite.Template);
 
-            var pageTitle = Body.GetQueryInt("TemplateID") > 0 ? "编辑模板" : "添加模板";
-            ltlPageTitle.Text = pageTitle;
+            LtlTemplateType.Text = ETemplateTypeUtils.GetText(_templateType);
+
+            LtlPageTitle.Text = Body.GetQueryInt("TemplateID") > 0 ? "编辑模板" : "添加模板";
 
             var isCodeMirror = PublishmentSystemInfo.Additional.ConfigTemplateIsCodeMirror;
-            btnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
-            phCodeMirror.Visible = isCodeMirror;
+            BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
+            PhCodeMirror.Visible = isCodeMirror;
 
-            EFileSystemTypeUtils.AddWebPageListItems(CreatedFileExtNameDropDownList);
+            EFileSystemTypeUtils.AddWebPageListItems(DdlCreatedFileExtName);
 
-            ECharsetUtils.AddListItems(Charset);
+            ECharsetUtils.AddListItems(DdlCharset);
 
             if (Body.GetQueryInt("TemplateID") > 0)
             {
-                if (templateInfo != null)
+                if (templateInfo == null) return;
+
+                TbContent.Text = TemplateManager.GetTemplateContent(PublishmentSystemInfo, templateInfo);
+
+                if (_isCopy)
                 {
-                    Content.Text = TemplateManager.GetTemplateContent(PublishmentSystemInfo, templateInfo);
-
-                    if (_isCopy)
-                    {
-                        TemplateName.Text = templateInfo.TemplateName + "_复件";
-                        RelatedFileName.Text = PathUtils.RemoveExtension(templateInfo.RelatedFileName) + "_复件";
-                        CreatedFileFullName.Text = PathUtils.RemoveExtension(templateInfo.CreatedFileFullName) + "_复件";
-                    }
-                    else
-                    {
-                        TemplateName.Text = templateInfo.TemplateName;
-                        RelatedFileName.Text = PathUtils.RemoveExtension(templateInfo.RelatedFileName);
-                        CreatedFileFullName.Text = PathUtils.RemoveExtension(templateInfo.CreatedFileFullName);
-
-                        LtlCommands.Text +=
-                            $@"<a href=""javascript:;"" class=""btn btn-info"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateByTemplate(PublishmentSystemId, templateInfo.TemplateId)}"">生成页面</a><a href=""javascript:;"" class=""btn btn-info"" onclick=""{ModalTemplateRestore.GetOpenWindowString(PublishmentSystemId, templateInfo.TemplateId, string.Empty)}"">还原历史版本</a>";
-
-                        if (Body.GetQueryInt("TemplateLogID") > 0)
-                        {
-                            var templateLogId = Body.GetQueryInt("TemplateLogID");
-                            if (templateLogId > 0)
-                            {
-                                Content.Text = DataProvider.TemplateLogDao.GetTemplateContent(templateLogId);
-                                SuccessMessage("已导入历史版本的模板内容，点击确定保存模板");
-                            }
-                        }
-                    }
-
-                    ControlUtils.SelectSingleItemIgnoreCase(Charset, ECharsetUtils.GetValue(templateInfo.Charset));
-
-                    ControlUtils.SelectSingleItem(CreatedFileExtNameDropDownList, GetTemplateFileExtension(templateInfo));
-                    TemplateType.Value = ETemplateTypeUtils.GetValue(templateInfo.TemplateType);
-                }
-            }
-            else
-            {
-                RelatedFileName.Text = "T_";
-                if (_theTemplateType == ETemplateType.ChannelTemplate)
-                {
-                    CreatedFileFullName.Text = "index";
+                    TbTemplateName.Text = templateInfo.TemplateName + "_复件";
+                    TbRelatedFileName.Text = PathUtils.RemoveExtension(templateInfo.RelatedFileName) + "_复件";
+                    TbCreatedFileFullName.Text = PathUtils.RemoveExtension(templateInfo.CreatedFileFullName) + "_复件";
                 }
                 else
                 {
-                    CreatedFileFullName.Text = "@/";
+                    TbTemplateName.Text = templateInfo.TemplateName;
+                    TbRelatedFileName.Text = PathUtils.RemoveExtension(templateInfo.RelatedFileName);
+                    TbCreatedFileFullName.Text = PathUtils.RemoveExtension(templateInfo.CreatedFileFullName);
+
+                    LtlCommands.Text += $@"
+<button class=""btn"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateByTemplate(PublishmentSystemId, templateInfo.TemplateId)}"">生成页面</button>
+<button class=""btn"" onclick=""{ModalTemplateRestore.GetOpenWindowString(PublishmentSystemId, templateInfo.TemplateId, string.Empty)}"">还原历史版本</button>";
+
+                    if (Body.GetQueryInt("TemplateLogID") > 0)
+                    {
+                        var templateLogId = Body.GetQueryInt("TemplateLogID");
+                        if (templateLogId > 0)
+                        {
+                            TbContent.Text = DataProvider.TemplateLogDao.GetTemplateContent(templateLogId);
+                            SuccessMessage("已导入历史版本的模板内容，点击确定保存模板");
+                        }
+                    }
                 }
-                ControlUtils.SelectSingleItemIgnoreCase(Charset, PublishmentSystemInfo.Additional.Charset);
-                ControlUtils.SelectSingleItem(CreatedFileExtNameDropDownList, EFileSystemTypeUtils.GetValue(EFileSystemType.Html));
-                TemplateType.Value = Body.GetQueryString("TemplateType");
+
+                ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, ECharsetUtils.GetValue(templateInfo.Charset));
+
+                ControlUtils.SelectSingleItem(DdlCreatedFileExtName, GetTemplateFileExtension(templateInfo));
+                HihTemplateType.Value = ETemplateTypeUtils.GetValue(templateInfo.TemplateType);
+            }
+            else
+            {
+                TbRelatedFileName.Text = "T_";
+                TbCreatedFileFullName.Text = _templateType == ETemplateType.ChannelTemplate ? "index" : "@/";
+                ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, PublishmentSystemInfo.Additional.Charset);
+                ControlUtils.SelectSingleItem(DdlCreatedFileExtName, EFileSystemTypeUtils.GetValue(EFileSystemType.Html));
+                HihTemplateType.Value = Body.GetQueryString("TemplateType");
             }
         }
 
         public void EditorType_OnClick(object sender, EventArgs e)
         {
-            if (Page.IsPostBack && Page.IsValid)
-            {
-                var isCodeMirror = PublishmentSystemInfo.Additional.ConfigTemplateIsCodeMirror;
-                isCodeMirror = !isCodeMirror;
-                PublishmentSystemInfo.Additional.ConfigTemplateIsCodeMirror = isCodeMirror;
-                DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
+            if (!Page.IsPostBack || !Page.IsValid) return;
 
-                btnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
-                phCodeMirror.Visible = isCodeMirror;
-            }
+            var isCodeMirror = PublishmentSystemInfo.Additional.ConfigTemplateIsCodeMirror;
+            isCodeMirror = !isCodeMirror;
+            PublishmentSystemInfo.Additional.ConfigTemplateIsCodeMirror = isCodeMirror;
+            DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
+
+            BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
+            PhCodeMirror.Visible = isCodeMirror;
         }
 
 		public override void Submit_OnClick(object sender, EventArgs e)
 		{
-			if (Page.IsPostBack && Page.IsValid)
-			{
-                if (_theTemplateType != ETemplateType.ChannelTemplate)
-				{
-					if (!CreatedFileFullName.Text.StartsWith("~") && !CreatedFileFullName.Text.StartsWith("@"))
-					{
-						CreatedFileFullName.Text = PageUtils.Combine("@", CreatedFileFullName.Text);
-					}
-				}
-				else
-				{
-					CreatedFileFullName.Text = CreatedFileFullName.Text.TrimStart('~', '@');
-					CreatedFileFullName.Text = CreatedFileFullName.Text.Replace("/", string.Empty);
-				}
+		    if (!Page.IsPostBack || !Page.IsValid) return;
 
-				if (Body.GetQueryInt("TemplateID") > 0 && _isCopy == false)
-				{
-                    var templateId = Body.GetQueryInt("TemplateID");
-                    var templateInfo = TemplateManager.GetTemplateInfo(PublishmentSystemId, templateId);
-					if (templateInfo.TemplateName != TemplateName.Text)
-					{
-                        var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(PublishmentSystemId, templateInfo.TemplateType);
-						if (templateNameList.IndexOf(TemplateName.Text) != -1)
-						{
-                            FailMessage("模板修改失败，模板名称已存在！");
-							return;
-						}
-					}
-                    TemplateInfo previousTemplateInfo = null;
-                    var isChanged = false;
-                    if (PathUtils.RemoveExtension(templateInfo.RelatedFileName) != PathUtils.RemoveExtension(RelatedFileName.Text))//文件名改变
-                    {
-                        var fileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(PublishmentSystemId, templateInfo.TemplateType);
-                        foreach (var fileName in fileNameList)
-                        {
-                            var fileNameWithoutExtension = PathUtils.RemoveExtension(fileName);
-                            if (fileNameWithoutExtension == RelatedFileName.Text.ToLower())
-                            {
-                                FailMessage("模板修改失败，模板文件已存在！");
-                                return;
-                            }
-                        }
+		    if (_templateType != ETemplateType.ChannelTemplate)
+		    {
+		        if (!TbCreatedFileFullName.Text.StartsWith("~") && !TbCreatedFileFullName.Text.StartsWith("@"))
+		        {
+                    TbCreatedFileFullName.Text = PageUtils.Combine("@", TbCreatedFileFullName.Text);
+		        }
+		    }
+		    else
+		    {
+                TbCreatedFileFullName.Text = TbCreatedFileFullName.Text.TrimStart('~', '@');
+                TbCreatedFileFullName.Text = TbCreatedFileFullName.Text.Replace("/", string.Empty);
+		    }
 
-                        isChanged = true;
-                    }
+		    if (Body.GetQueryInt("TemplateID") > 0 && _isCopy == false)
+		    {
+		        var templateId = Body.GetQueryInt("TemplateID");
+		        var templateInfo = TemplateManager.GetTemplateInfo(PublishmentSystemId, templateId);
+		        if (templateInfo.TemplateName != TbTemplateName.Text)
+		        {
+		            var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(PublishmentSystemId, templateInfo.TemplateType);
+		            if (templateNameList.IndexOf(TbTemplateName.Text) != -1)
+		            {
+		                FailMessage("模板修改失败，模板名称已存在！");
+		                return;
+		            }
+		        }
+		        TemplateInfo previousTemplateInfo = null;
+		        var isChanged = false;
+		        if (PathUtils.RemoveExtension(templateInfo.RelatedFileName) != PathUtils.RemoveExtension(TbRelatedFileName.Text))//文件名改变
+		        {
+		            var fileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(PublishmentSystemId, templateInfo.TemplateType);
+		            foreach (var fileName in fileNameList)
+		            {
+		                var fileNameWithoutExtension = PathUtils.RemoveExtension(fileName);
+		                if (fileNameWithoutExtension == TbRelatedFileName.Text.ToLower())
+		                {
+		                    FailMessage("模板修改失败，模板文件已存在！");
+		                    return;
+		                }
+		            }
 
-                    if (GetTemplateFileExtension(templateInfo) != CreatedFileExtNameDropDownList.SelectedValue)//文件后缀改变
-                    {
-                        isChanged = true;
-                    }
+		            isChanged = true;
+		        }
 
-                    if (isChanged)
-                    {
-                        previousTemplateInfo = new TemplateInfo(templateInfo.TemplateId, templateInfo.PublishmentSystemId, templateInfo.TemplateName, templateInfo.TemplateType, templateInfo.RelatedFileName, templateInfo.CreatedFileFullName, templateInfo.CreatedFileExtName, templateInfo.Charset, templateInfo.IsDefault);
-                    }
+		        if (GetTemplateFileExtension(templateInfo) != DdlCreatedFileExtName.SelectedValue)//文件后缀改变
+		        {
+		            isChanged = true;
+		        }
+
+		        if (isChanged)
+		        {
+		            previousTemplateInfo = new TemplateInfo(templateInfo.TemplateId, templateInfo.PublishmentSystemId, templateInfo.TemplateName, templateInfo.TemplateType, templateInfo.RelatedFileName, templateInfo.CreatedFileFullName, templateInfo.CreatedFileExtName, templateInfo.Charset, templateInfo.IsDefault);
+		        }
                     
-					templateInfo.TemplateName = TemplateName.Text;
-                    templateInfo.RelatedFileName = RelatedFileName.Text + CreatedFileExtNameDropDownList.SelectedValue;
-                    templateInfo.CreatedFileExtName = CreatedFileExtNameDropDownList.SelectedValue;
-                    templateInfo.CreatedFileFullName = CreatedFileFullName.Text + CreatedFileExtNameDropDownList.SelectedValue;
-					templateInfo.Charset = ECharsetUtils.GetEnumType(Charset.SelectedValue);
-					try
-					{
-						DataProvider.TemplateDao.Update(PublishmentSystemInfo, templateInfo, Content.Text, Body.AdminName);
-                        if (previousTemplateInfo != null)
-                        {
-                            FileUtils.DeleteFileIfExists(TemplateManager.GetTemplateFilePath(PublishmentSystemInfo, previousTemplateInfo));
-                        }
-                        CreatePages(templateInfo);
+		        templateInfo.TemplateName = TbTemplateName.Text;
+		        templateInfo.RelatedFileName = TbRelatedFileName.Text + DdlCreatedFileExtName.SelectedValue;
+		        templateInfo.CreatedFileExtName = DdlCreatedFileExtName.SelectedValue;
+		        templateInfo.CreatedFileFullName = TbCreatedFileFullName.Text + DdlCreatedFileExtName.SelectedValue;
+		        templateInfo.Charset = ECharsetUtils.GetEnumType(DdlCharset.SelectedValue);
 
-                        Body.AddSiteLog(PublishmentSystemId,
-                            $"修改{ETemplateTypeUtils.GetText(templateInfo.TemplateType)}",
-                            $"模板名称:{templateInfo.TemplateName}");
+		        DataProvider.TemplateDao.Update(PublishmentSystemInfo, templateInfo, TbContent.Text, Body.AdminName);
+		        if (previousTemplateInfo != null)
+		        {
+		            FileUtils.DeleteFileIfExists(TemplateManager.GetTemplateFilePath(PublishmentSystemInfo, previousTemplateInfo));
+		        }
+		        CreatePages(templateInfo);
 
-						SuccessMessage("模板修改成功！");
-					}
-					catch(Exception ex)
-					{
-                        FailMessage(ex, "模板修改失败," + ex.Message);
-					}
-				}
-				else
-				{
-                    var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(PublishmentSystemId, ETemplateTypeUtils.GetEnumType(TemplateType.Value));
-					if (templateNameList.IndexOf(TemplateName.Text) != -1)
-					{
-                        FailMessage("模板添加失败，模板名称已存在！");
-						return;
-					}
-                    var fileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(PublishmentSystemId, ETemplateTypeUtils.GetEnumType(TemplateType.Value));
-					if (fileNameList.IndexOf(RelatedFileName.Text.ToLower()) != -1)
-					{
-                        FailMessage("模板添加失败，模板文件已存在！");
-						return;
-					}
+		        Body.AddSiteLog(PublishmentSystemId,
+		            $"修改{ETemplateTypeUtils.GetText(templateInfo.TemplateType)}",
+		            $"模板名称:{templateInfo.TemplateName}");
 
-					var templateInfo = new TemplateInfo();
-                    templateInfo.PublishmentSystemId = PublishmentSystemId;
-					templateInfo.TemplateName = TemplateName.Text;
-					templateInfo.TemplateType = ETemplateTypeUtils.GetEnumType(TemplateType.Value);
+		        SuccessMessage("模板修改成功！");
+		    }
+		    else
+		    {
+		        var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(PublishmentSystemId, ETemplateTypeUtils.GetEnumType(HihTemplateType.Value));
+		        if (templateNameList.IndexOf(TbTemplateName.Text) != -1)
+		        {
+		            FailMessage("模板添加失败，模板名称已存在！");
+		            return;
+		        }
+		        var fileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(PublishmentSystemId, ETemplateTypeUtils.GetEnumType(HihTemplateType.Value));
+		        if (fileNameList.IndexOf(TbRelatedFileName.Text.ToLower()) != -1)
+		        {
+		            FailMessage("模板添加失败，模板文件已存在！");
+		            return;
+		        }
 
-                    templateInfo.RelatedFileName = RelatedFileName.Text + CreatedFileExtNameDropDownList.SelectedValue;
-                    templateInfo.CreatedFileExtName = CreatedFileExtNameDropDownList.SelectedValue;
-                    templateInfo.CreatedFileFullName = CreatedFileFullName.Text + CreatedFileExtNameDropDownList.SelectedValue;
-					templateInfo.Charset = ECharsetUtils.GetEnumType(Charset.SelectedValue);
-					templateInfo.IsDefault = false;
-					try
-					{
-                        templateInfo.TemplateId = DataProvider.TemplateDao.Insert(templateInfo, Content.Text, Body.AdminName);
-                        CreatePages(templateInfo);
-                        Body.AddSiteLog(PublishmentSystemId,
-                            $"添加{ETemplateTypeUtils.GetText(templateInfo.TemplateType)}",
-                            $"模板名称:{templateInfo.TemplateName}");
-						SuccessMessage("模板添加成功！");
-                        AddWaitAndRedirectScript(PageTemplate.GetRedirectUrl(PublishmentSystemId));
-					}
-					catch(Exception ex)
-					{
-						FailMessage(ex, "模板添加失败," + ex.Message);
-					}
-				}
-			}
+		        var templateInfo = new TemplateInfo
+		        {
+		            PublishmentSystemId = PublishmentSystemId,
+		            TemplateName = TbTemplateName.Text,
+		            TemplateType = ETemplateTypeUtils.GetEnumType(HihTemplateType.Value),
+		            RelatedFileName = TbRelatedFileName.Text + DdlCreatedFileExtName.SelectedValue,
+		            CreatedFileExtName = DdlCreatedFileExtName.SelectedValue,
+		            CreatedFileFullName = TbCreatedFileFullName.Text + DdlCreatedFileExtName.SelectedValue,
+		            Charset = ECharsetUtils.GetEnumType(DdlCharset.SelectedValue),
+		            IsDefault = false
+		        };
+
+		        templateInfo.TemplateId = DataProvider.TemplateDao.Insert(templateInfo, TbContent.Text, Body.AdminName);
+		        CreatePages(templateInfo);
+		        Body.AddSiteLog(PublishmentSystemId,
+		            $"添加{ETemplateTypeUtils.GetText(templateInfo.TemplateType)}",
+		            $"模板名称:{templateInfo.TemplateName}");
+		        SuccessMessage("模板添加成功！");
+		        AddWaitAndRedirectScript(PageTemplate.GetRedirectUrl(PublishmentSystemId));
+		    }
 		}
+
+        public void Return_OnClick(object sender, EventArgs e)
+        {
+            PageUtils.Redirect(PageTemplate.GetRedirectUrl(PublishmentSystemId, _templateType));
+        }
 
         private void CreatePages(TemplateInfo templateInfo)
         {

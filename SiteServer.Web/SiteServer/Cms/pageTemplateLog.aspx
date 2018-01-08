@@ -1,54 +1,79 @@
 <%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.PageTemplateLog" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html>
 
-<body>
-<form class="form-inline" runat="server">
-  <asp:Literal id="LtlBreadCrumb" runat="server" />
-  <bairong:alerts runat="server" />
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-  <table class="table table-bordered table-hover">
-    <tr class="info thead">
-      <td width="30">序号</td>
-      <td>修订人</td>
-      <td>修订时间</td>
-      <td>字符数</td>
-      <td width="60"></td>
-      <td width="20">
-        <input onclick="_checkFormAll(this.checked)" type="checkbox" />
-      </td>
-    </tr>
-    <asp:Repeater ID="rptContents" runat="server">
-      <itemtemplate>
-          <tr>
-            <td class="center"><asp:Literal ID="ltlIndex" runat="server"></asp:Literal></td>
-            <td><asp:Literal ID="ltlAddUserName" runat="server"></asp:Literal></td>
-            <td><asp:Literal ID="ltlAddDate" runat="server"></asp:Literal></td>
-            <td>
-              <asp:Literal ID="ltlContentLength" runat="server"></asp:Literal>
-            </td>
-            <td class="center">
-              <asp:Literal ID="ltlView" runat="server"></asp:Literal></td>
-            <td class="center">
-              <input type="checkbox" name="IDCollection" value='<%#DataBinder.Eval(Container.DataItem, "ID")%>' />
-            </td>
-          </tr>
-      </itemtemplate>
-    </asp:Repeater>
-  </table>
+    <body>
+      <form class="m-l-15 m-r-15" runat="server">
+        <ctrl:alerts runat="server" />
 
-  <bairong:sqlPager id="spContents" runat="server" class="table table-pager" />
+        <div class="card-box">
+          <div class="m-t-0 header-title">
+            修订历史
+          </div>
+          <p class="text-muted font-13 m-b-25"></p>
 
-  <ul class="breadcrumb breadcrumb-button">
-    <asp:Button class="btn btn-success hide" id="btnCompare" Text="修订版本对比" runat="server" />
-    <asp:Button class="btn" id="btnDelete" Text="删 除" runat="server" />
-  </ul>
+          <div class="panel panel-default m-t-10">
+            <div class="panel-body p-0">
+              <div class="table-responsive">
+                <table class="table tablesaw table-hover m-0">
+                  <thead>
+                    <tr class="thead">
+                      <th class="text-center" width="60">序号</th>
+                      <th>修订人</th>
+                      <th>修订时间</th>
+                      <th>字符数</th>
+                      <th class="text-center" width="80"></th>
+                      <th class="text-center" width="30">
+                        <input onclick="_checkFormAll(this.checked)" type="checkbox" />
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <asp:Repeater ID="RptContents" runat="server">
+                      <itemtemplate>
+                        <tr>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlIndex" runat="server"></asp:Literal>
+                          </td>
+                          <td>
+                            <asp:Literal ID="ltlAddUserName" runat="server"></asp:Literal>
+                          </td>
+                          <td>
+                            <asp:Literal ID="ltlAddDate" runat="server"></asp:Literal>
+                          </td>
+                          <td>
+                            <asp:Literal ID="ltlContentLength" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlView" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <input type="checkbox" name="IDCollection" value='<%#DataBinder.Eval(Container.DataItem, "ID")%>' />
+                          </td>
+                        </tr>
+                      </itemtemplate>
+                    </asp:Repeater>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
 
-</form>
-</body>
-</html>
+          <ctrl:sqlPager id="SpContents" runat="server" class="table table-pager" />
+
+          <hr />
+
+          <asp:Button class="btn" id="BtnDelete" Text="删 除" runat="server" />
+
+        </div>
+
+      </form>
+    </body>
+
+    </html>

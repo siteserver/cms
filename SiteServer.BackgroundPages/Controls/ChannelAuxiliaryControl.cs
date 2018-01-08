@@ -42,9 +42,9 @@ namespace SiteServer.BackgroundPages.Controls
                 if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
                 {
                     builder.Append($@"
-<div class=""form-group"">
-    <label class=""col-sm-1 control-label"">{styleInfo.DisplayName}</label>
-    <div class=""col-sm-10"">
+<div class=""form-group form-row"">
+    <label class=""col-sm-2 col-form-label text-right"">{styleInfo.DisplayName}</label>
+    <div class=""col-sm-9"">
         {value}
     </div>
     <div class=""col-sm-1"">
@@ -55,8 +55,8 @@ namespace SiteServer.BackgroundPages.Controls
                 else
                 {
                     builder.Append($@"
-<div class=""form-group"">
-    <label class=""col-sm-2 control-label"">{styleInfo.DisplayName}</label>
+<div class=""form-group form-row"">
+    <label class=""col-sm-2 col-form-label text-right"">{styleInfo.DisplayName}</label>
     <div class=""col-sm-4"">
         {value}
     </div>

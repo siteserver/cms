@@ -11,8 +11,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class PageConfigurationCrossSiteTrans : BasePageCms
     {
-        public Repeater rptContents;
-        public RadioButtonList IsCrossSiteTransChecked;
+        public RadioButtonList RblIsCrossSiteTransChecked;
 
         private int _currentNodeId;
 
@@ -47,51 +46,28 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            BindGrid();
-
-            EBooleanUtils.AddListItems(IsCrossSiteTransChecked, "无需审核", "需要审核");
-            ControlUtils.SelectSingleItem(IsCrossSiteTransChecked, PublishmentSystemInfo.Additional.IsCrossSiteTransChecked.ToString());
-        }
-
-        public void BindGrid()
-        {
-            rptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
-            rptContents.ItemDataBound += rptContents_ItemDataBound;
-            rptContents.DataBind();
-        }
-
-        void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
-        {
-            var nodeID = (int)e.Item.DataItem;
-            var enabled = (IsOwningNodeId(nodeID)) ? true : false;
-            if (!enabled)
-            {
-                if (!IsHasChildOwningNodeId(nodeID)) e.Item.Visible = false;
-            }
-            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
-            var ltlHtml = e.Item.FindControl("ltlHtml") as Literal;
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.ConfigurationCrossSiteTrans, null, Body.AdminName);
+            EBooleanUtils.AddListItems(RblIsCrossSiteTransChecked, "无需审核", "需要审核");
+            ControlUtils.SelectSingleItem(RblIsCrossSiteTransChecked, PublishmentSystemInfo.Additional.IsCrossSiteTransChecked.ToString());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
 		{
-			if (Page.IsPostBack && Page.IsValid)
-			{
-                PublishmentSystemInfo.Additional.IsCrossSiteTransChecked = TranslateUtils.ToBool(IsCrossSiteTransChecked.SelectedValue);
+		    if (!Page.IsPostBack || !Page.IsValid) return;
+
+		    PublishmentSystemInfo.Additional.IsCrossSiteTransChecked = TranslateUtils.ToBool(RblIsCrossSiteTransChecked.SelectedValue);
 				
-				try
-				{
-                    DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
+		    try
+		    {
+		        DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
 
-                    Body.AddSiteLog(PublishmentSystemId, "修改默认跨站转发设置");
+		        Body.AddSiteLog(PublishmentSystemId, "修改默认跨站转发设置");
 
-                    SuccessMessage("默认跨站转发设置修改成功！");
-				}
-				catch(Exception ex)
-				{
-                    FailMessage(ex, "默认跨站转发设置修改失败！");
-				}
-			}
+		        SuccessMessage("默认跨站转发设置修改成功！");
+		    }
+		    catch(Exception ex)
+		    {
+		        FailMessage(ex, "默认跨站转发设置修改失败！");
+		    }
 		}
 	}
 }

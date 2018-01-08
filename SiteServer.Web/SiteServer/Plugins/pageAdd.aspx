@@ -3,12 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-  <link href="../assets/css/core.css" rel="stylesheet" type="text/css">
-  <link href="../assets/css/ionicons.min.css" rel="stylesheet" type="text/css" />
-  <link href="../assets/css/components.css" rel="stylesheet" type="text/css" />
-  <link href="../assets/css/pages.css" rel="stylesheet" type="text/css" />
-  <link href="../assets/css/menu.css" rel="stylesheet" type="text/css" />
+  <!--#include file="../inc/head.html"-->
 </head>
 
 <body class="fixed-left">
@@ -35,7 +30,9 @@
         <div class="container">
           <form role="search" class="navbar-left app-search pull-left" style="width: 40%">
             <input v-model="word" type="text" placeholder="搜索插件..." class="form-control app-search-input" style="width: 100%">
-            <a href="javascript:;" v-on:click="search"><i class="ion-search"></i></a>
+            <a href="javascript:;" v-on:click="search">
+              <i class="ion-search"></i>
+            </a>
           </form>
         </div>
       </div>
@@ -60,27 +57,28 @@
           <div class="col-sm-6 col-lg-4" v-for="plugin in searchPlugins">
             <div class="card-box widget-user">
               <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name + '&version=' + plugin.version">
-                  <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
-                  <div class="wid-u-info">
-                    <h4 class="m-t-0 m-b-5">
-                      {{ plugin.displayName }}
-                      <code>{{ plugin.publisher + '-' + plugin.name }}</code>
-                    </h4>
-                    <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
-                    <span title="插件安装量">
-                      <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i> 
-                      <small style="font-size: 14px;">33K </small>
-                    </span>
-                    <span style="margin: 0 5px"></span>
-                    <span title="插件综合评分">
-                      <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                      <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                      <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                      <i class="ion-ios-star-half" style="color: #ffb900;font-size: 18px"></i>
-                      <i class="ion-ios-star-outline" style="color: #ffb900;font-size: 18px"></i>
-                    </span>
-                  </div>
-                </a>
+                <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive"
+                  alt="user">
+                <div class="wid-u-info">
+                  <h4 class="m-t-0 m-b-5">
+                    {{ plugin.displayName }}
+                    <code>{{ plugin.publisher + '-' + plugin.name }}</code>
+                  </h4>
+                  <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
+                  <span title="插件安装量">
+                    <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i>
+                    <small style="font-size: 14px;">33K </small>
+                  </span>
+                  <span style="margin: 0 5px"></span>
+                  <span title="插件综合评分">
+                    <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
+                    <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
+                    <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
+                    <i class="ion-ios-star-half" style="color: #ffb900;font-size: 18px"></i>
+                    <i class="ion-ios-star-outline" style="color: #ffb900;font-size: 18px"></i>
+                  </span>
+                </div>
+              </a>
             </div>
           </div>
         </div>
@@ -100,27 +98,28 @@
           <div class="col-sm-6 col-lg-4" v-for="plugin in featuredPlugins">
             <div class="card-box widget-user">
               <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name + '&version=' + plugin.version">
-                  <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
-                  <div class="wid-u-info">
-                    <h4 class="m-t-0 m-b-5">
-                      {{ plugin.displayName }}
-                      <code>{{ plugin.publisher + '-' + plugin.name }}</code>
-                    </h4>
-                    <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
-                    <span title="插件安装量">
-                      <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i> 
-                      <small style="font-size: 14px;">33K </small>
-                    </span>
-                    <span style="margin: 0 5px"></span>
-                    <span title="插件综合评分">
-                      <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                      <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                      <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                      <i class="ion-ios-star-half" style="color: #ffb900;font-size: 18px"></i>
-                      <i class="ion-ios-star-outline" style="color: #ffb900;font-size: 18px"></i>
-                    </span>
-                  </div>
-                </a>
+                <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive"
+                  alt="user">
+                <div class="wid-u-info">
+                  <h4 class="m-t-0 m-b-5">
+                    {{ plugin.displayName }}
+                    <code>{{ plugin.publisher + '-' + plugin.name }}</code>
+                  </h4>
+                  <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
+                  <span title="插件安装量">
+                    <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i>
+                    <small style="font-size: 14px;">33K </small>
+                  </span>
+                  <span style="margin: 0 5px"></span>
+                  <span title="插件综合评分">
+                    <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
+                    <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
+                    <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
+                    <i class="ion-ios-star-half" style="color: #ffb900;font-size: 18px"></i>
+                    <i class="ion-ios-star-outline" style="color: #ffb900;font-size: 18px"></i>
+                  </span>
+                </div>
+              </a>
             </div>
           </div>
         </div>
@@ -140,27 +139,28 @@
           <div class="col-sm-6 col-lg-4" v-for="plugin in popularPlugins">
             <div class="card-box widget-user">
               <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name + '&version=' + plugin.version">
-                  <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
-                  <div class="wid-u-info">
-                    <h4 class="m-t-0 m-b-5">
-                      {{ plugin.displayName }}
-                      <code>{{ plugin.publisher + '-' + plugin.name }}</code>
-                    </h4>
-                    <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
-                    <span title="插件安装量">
-                      <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i> 
-                      <small style="font-size: 14px;">33K </small>
-                    </span>
-                    <span style="margin: 0 5px"></span>
-                    <span title="插件综合评分">
-                      <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                      <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                      <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                      <i class="ion-ios-star-half" style="color: #ffb900;font-size: 18px"></i>
-                      <i class="ion-ios-star-outline" style="color: #ffb900;font-size: 18px"></i>
-                    </span>
-                  </div>
-                </a>
+                <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive"
+                  alt="user">
+                <div class="wid-u-info">
+                  <h4 class="m-t-0 m-b-5">
+                    {{ plugin.displayName }}
+                    <code>{{ plugin.publisher + '-' + plugin.name }}</code>
+                  </h4>
+                  <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
+                  <span title="插件安装量">
+                    <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i>
+                    <small style="font-size: 14px;">33K </small>
+                  </span>
+                  <span style="margin: 0 5px"></span>
+                  <span title="插件综合评分">
+                    <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
+                    <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
+                    <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
+                    <i class="ion-ios-star-half" style="color: #ffb900;font-size: 18px"></i>
+                    <i class="ion-ios-star-outline" style="color: #ffb900;font-size: 18px"></i>
+                  </span>
+                </div>
+              </a>
             </div>
           </div>
         </div>
@@ -181,27 +181,28 @@
           <div class="col-sm-6 col-lg-4" v-for="plugin in recentlyPlugins">
             <div class="card-box widget-user">
               <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name + '&version=' + plugin.version">
-                  <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
-                  <div class="wid-u-info">
-                    <h4 class="m-t-0 m-b-5">
-                      {{ plugin.displayName }}
-                      <code>{{ plugin.publisher + '-' + plugin.name }}</code>
-                    </h4>
-                    <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
-                    <span title="插件安装量">
-                      <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i> 
-                      <small style="font-size: 14px;">33K </small>
-                    </span>
-                    <span style="margin: 0 5px"></span>
-                    <span title="插件综合评分">
-                      <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                      <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                      <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                      <i class="ion-ios-star-half" style="color: #ffb900;font-size: 18px"></i>
-                      <i class="ion-ios-star-outline" style="color: #ffb900;font-size: 18px"></i>
-                    </span>
-                  </div>
-                </a>
+                <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive"
+                  alt="user">
+                <div class="wid-u-info">
+                  <h4 class="m-t-0 m-b-5">
+                    {{ plugin.displayName }}
+                    <code>{{ plugin.publisher + '-' + plugin.name }}</code>
+                  </h4>
+                  <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
+                  <span title="插件安装量">
+                    <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i>
+                    <small style="font-size: 14px;">33K </small>
+                  </span>
+                  <span style="margin: 0 5px"></span>
+                  <span title="插件综合评分">
+                    <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
+                    <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
+                    <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
+                    <i class="ion-ios-star-half" style="color: #ffb900;font-size: 18px"></i>
+                    <i class="ion-ios-star-outline" style="color: #ffb900;font-size: 18px"></i>
+                  </span>
+                </div>
+              </a>
             </div>
           </div>
         </div>

@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
 
             if (!string.IsNullOrEmpty(_tableName))
             {

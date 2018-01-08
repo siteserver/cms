@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
@@ -12,25 +13,32 @@ namespace SiteServer.BackgroundPages.Cms
         public TextBox TbPageSize;
         public DropDownList DdlIsCreateDoubleClick;
 
-		public void Page_Load(object sender, EventArgs e)
+        public static string GetRedirectUrl(int publishmentSystemId)
+        {
+            return PageUtils.GetCmsUrl(nameof(PageConfigurationSite), new NameValueCollection
+            {
+                {"PublishmentSystemID", publishmentSystemId.ToString()}
+            });
+        }
+
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
 
-			if (!IsPostBack)
-			{
-                VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+            if (IsPostBack) return;
 
-                ECharsetUtils.AddListItems(DdlCharset);
-                ControlUtils.SelectSingleItem(DdlCharset, PublishmentSystemInfo.Additional.Charset);
+            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
 
-                TbPageSize.Text = PublishmentSystemInfo.Additional.PageSize.ToString();
+            ECharsetUtils.AddListItems(DdlCharset);
+            ControlUtils.SelectSingleItem(DdlCharset, PublishmentSystemInfo.Additional.Charset);
 
-                EBooleanUtils.AddListItems(DdlIsCreateDoubleClick, "启用双击生成", "不启用");
-                ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateDoubleClick, PublishmentSystemInfo.Additional.IsCreateDoubleClick.ToString());
-            }
-		}
+            TbPageSize.Text = PublishmentSystemInfo.Additional.PageSize.ToString();
+
+            EBooleanUtils.AddListItems(DdlIsCreateDoubleClick, "启用双击生成", "不启用");
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateDoubleClick, PublishmentSystemInfo.Additional.IsCreateDoubleClick.ToString());
+        }
 
         public override void Submit_OnClick(object sender, EventArgs e)
 		{

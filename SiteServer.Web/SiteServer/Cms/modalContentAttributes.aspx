@@ -76,25 +76,25 @@
           </ul>
         </div>
 
-        <div class="form-horizontal">
+        <div class="p-1">
 
-          <div class="form-group" id="column1">
-            <label class="col-xs-3 control-label text-right">属性</label>
-            <div class="col-xs-8">
-              <asp:CheckBox class="checkbox checkbox-primary" ID="CbIsRecommend" runat="server" Text="推荐"></asp:CheckBox>
-              <asp:CheckBox class="checkbox checkbox-primary" ID="CbIsHot" runat="server" Text="热点"></asp:CheckBox>
-              <asp:CheckBox class="checkbox checkbox-primary" ID="CbIsColor" runat="server" Text="醒目"></asp:CheckBox>
-              <asp:CheckBox class="checkbox checkbox-primary" ID="CbIsTop" runat="server" Text="置顶"></asp:CheckBox>
+          <div class="form-group form-row mt-1" id="column1">
+            <label class="col-1 col-form-label text-right"></label>
+            <div class="col-9 checkbox checkbox-primary text-center">
+              <asp:CheckBox ID="CbIsRecommend" runat="server" Text="推荐"></asp:CheckBox>
+              <asp:CheckBox ID="CbIsHot" runat="server" Text="热点"></asp:CheckBox>
+              <asp:CheckBox ID="CbIsColor" runat="server" Text="醒目"></asp:CheckBox>
+              <asp:CheckBox ID="CbIsTop" runat="server" Text="置顶"></asp:CheckBox>
             </div>
-            <div class="col-xs-1"></div>
+            <div class="col-1"></div>
           </div>
 
-          <div class="form-group" id="column3" style="display: none">
-            <label class="col-xs-3 control-label text-right">点击量</label>
-            <div class="col-xs-8">
+          <div class="form-group form-row" id="column3" style="display: none">
+            <label class="col-3 col-form-label text-right">点击量</label>
+            <div class="col-8">
               <asp:TextBox class="form-control" MaxLength="50" id="TbHits" Text="0" runat="server" />
             </div>
-            <div class="col-xs-1">
+            <div class="col-1">
               <asp:RegularExpressionValidator ControlToValidate="TbHits" ValidationExpression="\d+" Display="Dynamic" ErrorMessage="点击量必须为整数"
                 foreColor="red" runat="server" />
             </div>
@@ -102,13 +102,11 @@
 
           <hr />
 
-          <div class="form-group m-b-0">
-            <div class="col-xs-11 text-right">
-              <asp:Button class="btn btn-primary m-l-10" text="确 定" runat="server" onClick="Submit_OnClick" />
-              <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
-            </div>
-            <div class="col-xs-1"></div>
+          <div class="text-right mr-1">
+            <asp:Button class="btn btn-primary m-l-5" text="确 定" runat="server" onClick="Submit_OnClick" />
+            <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
           </div>
+
         </div>
 
       </form>

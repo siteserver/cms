@@ -133,9 +133,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ajax\AjaxSystemService.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Cms\PageConfigurationCrossSiteTransChannels.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Cms\PageTemplatePreview.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Core\AreaTreeItem.cs" />
+    <Compile Include="Core\DepartmentTreeItem.cs" />
     <Compile Include="Plugins\PageConfig.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -175,16 +183,16 @@
     <Compile Include="Settings\PageAdministratorAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageArea.cs">
+    <Compile Include="Settings\PageAnalysisSiteChannels.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageConfigurationAdministrator.cs">
+    <Compile Include="Settings\PageAdminArea.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageDepartment.cs">
+    <Compile Include="Settings\PageAdminConfiguration.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageDepartmentTree.cs">
+    <Compile Include="Settings\PageAdminDepartment.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageIntegrationPayAlipayMobi.cs">
@@ -202,28 +210,28 @@
     <Compile Include="Settings\PageIntegrationPay.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PagePermissionAdd.cs">
+    <Compile Include="Settings\PageAdminPermissionAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PagePublishmentSystemUrlApi.cs">
+    <Compile Include="Settings\PageSiteUrlApi.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PagePublishmentSystemUrlWeb.cs">
+    <Compile Include="Settings\PageSiteUrlWeb.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PagePublishmentSystemUrlAssetsConfig.cs">
+    <Compile Include="Settings\PageSiteUrlAssetsConfig.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PagePublishmentSystemUrlWebConfig.cs">
+    <Compile Include="Settings\PageSiteUrlWebConfig.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageRecord.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageRole.cs">
+    <Compile Include="Settings\PageAdminRole.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageRoleAdd.cs">
+    <Compile Include="Settings\PageAdminRoleAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageUser.cs">
@@ -257,13 +265,11 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controls\UEditor.cs" />
-    <Compile Include="Core\AreaTreeItem.cs" />
     <Compile Include="Core\ChannelLoading.cs" />
     <Compile Include="Controls\AuxiliaryControl.cs" />
     <Compile Include="Controls\ChannelAuxiliaryControl.cs" />
     <Compile Include="Controls\NodeTree.cs" />
     <Compile Include="Controls\TextEditorControl.cs" />
-    <Compile Include="Core\DepartmentTreeItem.cs" />
     <Compile Include="Core\AjaxManager.cs" />
     <Compile Include="Controls\NavigationTree.cs" />
     <Compile Include="Core\NavigationTreeItem.cs" />
@@ -299,7 +305,7 @@
     <Compile Include="Plugins\PageManagement.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageTableStyle.cs">
+    <Compile Include="Settings\PageSiteTableStyle.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Ajax\AjaxGatherService.cs">
@@ -605,9 +611,6 @@
     <Compile Include="Cms\PageContentView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageFileManagement.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Plugins\PageGatherDatabaseRule.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -656,7 +659,7 @@
     <Compile Include="Plugins\PageSeoMetaMatch.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTableStyle.cs">
+    <Compile Include="Cms\PageTableStyleSite.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageTableStyleChannel.cs">
@@ -773,19 +776,13 @@
     <Compile Include="Cms\PageProgressBar.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageServiceSTL.cs">
+    <Compile Include="Cms\PageServiceStl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageStlCreate.cs">
+    <Compile Include="Plugins\PageTagStyleMenu.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTagStyleMailSMS.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageTagStyleMenu.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageTagStyleMenuAdd.cs">
+    <Compile Include="Plugins\PageTagStyleMenuAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageTemplate.cs">
@@ -800,7 +797,7 @@
     <Compile Include="Cms\PageTemplateCssAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTemplateFilePathRule.cs">
+    <Compile Include="Cms\PageConfigurationCreateRule.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageTemplateInclude.cs">
@@ -830,16 +827,13 @@
     <Compile Include="PageTest.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Ajax\AjaxSystemService.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\PageAnalysisAdminWork.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageAnalysisContentHits.cs">
+    <Compile Include="Settings\PageAnalysisSiteHitsChannels.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageAnalysisContentDownloads.cs">
+    <Compile Include="Settings\PageAnalysisSiteDownloadsChannels.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageAnalysisAdminLogin.cs">
@@ -887,10 +881,10 @@
     <Compile Include="PageUpgrade.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="PageUserPassword.cs">
+    <Compile Include="Account\PagePassword.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="PageUserProfile.cs">
+    <Compile Include="Account\PageProfile.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageValidateCode.cs">
@@ -899,34 +893,34 @@
     <Compile Include="Settings\PageCreateStatus.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageCreateTaskLog.cs">
+    <Compile Include="Settings\PageLogServiceCreateTask.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageStatus.cs">
+    <Compile Include="Settings\PageServiceStatus.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageTask.cs">
+    <Compile Include="Settings\PageServiceTask.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageTaskLog.cs">
+    <Compile Include="Settings\PageLogServiceTask.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageIntegrationSms.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageCache.cs">
+    <Compile Include="Settings\PageUtilityCache.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageDbLogDelete.cs">
+    <Compile Include="Settings\PageUtilityDbLogDelete.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageEncrypt.cs">
+    <Compile Include="Settings\PageUtilityEncrypt.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageJsMin.cs">
+    <Compile Include="Settings\PageUtilityJsMin.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageParameter.cs">
+    <Compile Include="Settings\PageUtilityParameter.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\ModalKeywordAdd.cs">
@@ -938,43 +932,43 @@
     <Compile Include="Settings\ModalChangePublishmentSystemType.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageAuxiliaryTable.cs">
+    <Compile Include="Settings\PageSiteAuxiliaryTable.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\ModalAuxiliaryTableAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageTableMetadata.cs">
+    <Compile Include="Settings\PageSiteTableMetadata.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageKeyword.cs">
+    <Compile Include="Settings\PageSiteKeyword.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageAnalysisSite.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageAnalysisSiteDownload.cs">
+    <Compile Include="Settings\PageAnalysisSiteDownloads.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageAnalysisSiteHits.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PagePublishmentSystem.cs">
+    <Compile Include="Settings\PageSite.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PagePublishmentSystemAdd.cs">
+    <Compile Include="Settings\PageSiteAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PagePublishmentSystemDelete.cs">
+    <Compile Include="Settings\PageSiteDelete.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PagePublishmentSystemEdit.cs">
+    <Compile Include="Settings\PageSiteEdit.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PagePublishmentSystemReplace.cs">
+    <Compile Include="Settings\PageSiteReplace.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PagePublishmentSystemUrlAssets.cs">
+    <Compile Include="Settings\PageSiteUrlAssets.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageSiteTemplate.cs">

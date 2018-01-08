@@ -1,56 +1,81 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.PageTemplateReference" enableviewstate="false"%>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html>
 
-<body>
-<form class="form-inline" runat="server">
-  <asp:Literal id="LtlBreadCrumb" runat="server" />
-  <bairong:alerts runat="server" />
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-  <div class="well well-small">
-    <table class="table table-noborder">
-      <tr>
-        <td>
-          <blockquote style="margin-left:15px;margin-top:10px;">
-            <p>STL语言为SiteServer模板语言(SiteServer Template Language)的缩写，是一种和HTML语言类似的服务器端语言。</p>
-          </blockquote>
-        </td>
-      </tr>
-    </table>
-  </div>
+    <body>
+      <form class="m-l-15 m-r-15" runat="server">
+        <ctrl:alerts runat="server" />
 
-  <table cellspacing="2" cellpadding="2" class="table table-bordered table-striped" class="center" border="0">
-    <tr class="info">
-      <td colspan="4">STL 元素</td>
-    </tr>
-    <tr class="center">
-      <td width="130">元素</td>
-      <td width="100">用途</td>
-      <td>简介</td>
-      <td>属性</td>
-    </tr>
-    <asp:Literal ID="LtlTemplateElements" runat="server"></asp:Literal>
-  </table>
-  <br>
-  <table cellspacing="2" cellpadding="2" class="table table-bordered table-striped" class="center" border="0">
-    <tr class="info">
-      <td colspan="4">STL 实体</td>
-    </tr>
-    <tr class="center" style="height:25px;">
-      <td width="130">实体</td>
-      <td width="100">用途</td>
-      <td>简介</td>
-      <td>属性</td>
-    </tr>
-    <asp:Literal ID="LtlTemplateEntities" runat="server"></asp:Literal>
-  </table>
-  <br>
+        <div class="card-box">
+          <div class="m-t-0 header-title">
+            STL语言参考
+          </div>
+          <p class="text-muted font-13 m-b-25">
+            STL语言为SiteServer模板语言(SiteServer Template Language)的缩写，是一种和HTML语言类似的服务器端语言。
+          </p>
 
-</form>
-</body>
-</html>
+          <ul class="nav nav-pills m-b-20">
+            <li class="nav-item active">
+              <a class="nav-link" href="javascript:;" onclick="$('#containerElements').show();$('#containerEntities').hide();$('.nav-item').removeClass('active');$(this).parent().addClass('active');">STL 元素</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:;" onclick="$('#containerElements').hide();$('#containerEntities').show();$('.nav-item').removeClass('active');$(this).parent().addClass('active');">STL 实体</a>
+            </li>
+          </ul>
+
+          <div id="containerElements">
+            <div class="panel panel-default m-t-10">
+              <div class="panel-body p-0">
+                <div class="table-responsive">
+                  <table class="table tablesaw table-hover m-0">
+                    <thead>
+                      <tr>
+                        <th width="130">元素</th>
+                        <th width="100">用途</th>
+                        <th>简介</th>
+                        <th>属性</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <asp:Literal ID="LtlTemplateElements" runat="server"></asp:Literal>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="containerEntities" style="display: none">
+            <div class="panel panel-default m-t-10">
+              <div class="panel-body p-0">
+                <div class="table-responsive">
+                  <table class="table tablesaw table-hover m-0">
+                    <thead>
+                      <tr>
+                        <th width="130">实体</th>
+                        <th width="100">用途</th>
+                        <th>简介</th>
+                        <th>属性</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <asp:Literal ID="LtlTemplateEntities" runat="server"></asp:Literal>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </form>
+    </body>
+
+    </html>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
@@ -51,6 +52,14 @@ namespace SiteServer.BackgroundPages.Settings
 
         private ExportObject _exportObject;
 
+        public static string GetRedirectUrl(int publishmentSystemId)
+        {
+            return PageUtils.GetSettingsUrl(nameof(PageSiteTemplateSave), new NameValueCollection
+            {
+                {"publishmentSystemId", publishmentSystemId.ToString()}
+            });
+        }
+
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
@@ -61,7 +70,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
 
             if (PublishmentSystemInfo.IsHeadquarters)
             {

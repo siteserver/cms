@@ -3,19 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Data;
-using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
     public class PageAnalysisSiteHits : BasePageCms
     {
-        public DateTimeTextBox StartDate;
-        public DateTimeTextBox EndDate;
-        public Repeater RpContents;
-        public Literal LtlArray;
+        public DropDownList DdlPublishmentSystemId;
+        public Repeater RptContents;
         public Literal LtlVertical;
+
+        public string StrArray { get; set; }
 
         private readonly Hashtable _horizentalHashtable = new Hashtable();
         private readonly Hashtable _verticalHashtable = new Hashtable();
@@ -24,6 +22,11 @@ namespace SiteServer.BackgroundPages.Settings
         private readonly Hashtable _yHashtableHits = new Hashtable();
         private const string YTypeHits = "YType_Hits";
 
+        public static string GetRedirectUrl()
+        {
+            return PageUtils.GetSettingsUrl(nameof(PageAnalysisSiteHits), null);
+        }
+
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
@@ -31,17 +34,30 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifyAdministratorPermissions(AppManager.Permissions.Settings.Chart);
 
-            StartDate.Text = DateUtils.GetDateAndTimeString(DateTime.Now.AddMonths(-1));
-            EndDate.Now = true;
+            DdlPublishmentSystemId.Items.Add(new ListItem("<<全部站点>>", "0"));
+            var publishmentSystemIdList = PublishmentSystemManager.GetPublishmentSystemIdListOrderByLevel();
+            foreach (var publishmentSystemId in publishmentSystemIdList)
+            {
+                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+                DdlPublishmentSystemId.Items.Add(new ListItem(publishmentSystemInfo.PublishmentSystemName, publishmentSystemId.ToString()));
 
-            BindGrid();
+                var key = publishmentSystemInfo.PublishmentSystemId;
+                //x轴信息
+                SetXHashtable(key, publishmentSystemInfo.PublishmentSystemName);
+                //y轴信息
+                SetYHashtable(key, BaiRongDataProvider.ContentDao.GetTotalHits(publishmentSystemInfo.AuxiliaryTableForContent, publishmentSystemId));
+            }
+
+            RptContents.DataSource = publishmentSystemIdList;
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
+            RptContents.DataBind();
 
             foreach (var key in _publishmentSystemIdList)
             {
                 var yValueHits = GetYHashtable(key);
                 if (yValueHits != "0")
                 {
-                    LtlArray.Text += $@"
+                    StrArray += $@"
 xArrayHits.push('{GetXHashtable(key)}');
 yArrayHits.push('{yValueHits}');";
                 }
@@ -49,42 +65,27 @@ yArrayHits.push('{yValueHits}');";
             LtlVertical.Text = GetVerticalTotalNum();
         }
 
-        public void BindGrid()
-        {
-            var ie = DataProvider.PublishmentSystemDao.GetDataSource().GetEnumerator();
-            while (ie.MoveNext())
-            {
-                var publishmentSystemId = SqlUtils.EvalInt(ie.Current, "PublishmentSystemID");
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-
-                var key = publishmentSystemInfo.PublishmentSystemId;
-                //x轴信息
-                SetXHashtable(key, publishmentSystemInfo.PublishmentSystemName);
-                //y轴信息
-                SetYHashtable(key, DataProvider.TrackingDao.GetHitsCountOfPublishmentSystem(publishmentSystemInfo.PublishmentSystemId, TranslateUtils.ToDateTime(StartDate.Text), TranslateUtils.ToDateTime(EndDate.Text)));
-            }
-
-            RpContents.DataSource = DataProvider.PublishmentSystemDao.GetDataSource();
-            RpContents.ItemDataBound += rpContents_ItemDataBound;
-            RpContents.DataBind();
-        }
-
-        private void rpContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
-            var publishmentSystemId = SqlUtils.EvalInt(e.Item.DataItem, "PublishmentSystemID");
+
+            var publishmentSystemId = (int) e.Item.DataItem;
+
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
 
             var ltlPublishmentSystemName = (Literal)e.Item.FindControl("ltlPublishmentSystemName");
             var ltlHitsNum = (Literal)e.Item.FindControl("ltlHitsNum");
 
-            ltlPublishmentSystemName.Text = publishmentSystemInfo.PublishmentSystemName;
+            ltlPublishmentSystemName.Text = $@"<a href=""{PageAnalysisSiteHitsChannels.GetRedirectUrl(publishmentSystemId)}"">{publishmentSystemInfo.PublishmentSystemName}</a>";
             ltlHitsNum.Text = GetYHashtable(publishmentSystemId);
         }
 
         public void Analysis_OnClick(object sender, EventArgs e)
         {
-            BindGrid();
+            var publishmentSystemId = TranslateUtils.ToInt(DdlPublishmentSystemId.SelectedValue);
+            PageUtils.Redirect(publishmentSystemId > 0
+                ? PageAnalysisSiteHitsChannels.GetRedirectUrl(publishmentSystemId)
+                : GetRedirectUrl());
         }
 
         private void SetXHashtable(int publishmentSystemId, string publishmentSystemName)
@@ -146,13 +147,13 @@ yArrayHits.push('{yValueHits}');";
             }
         }
 
-        private string GetHorizental(int publishmentSystemId)
-        {
-            if (_horizentalHashtable[publishmentSystemId] == null) return "0";
+        //private string GetHorizental(int publishmentSystemId)
+        //{
+        //    if (_horizentalHashtable[publishmentSystemId] == null) return "0";
 
-            var num = TranslateUtils.ToInt(_horizentalHashtable[publishmentSystemId].ToString());
-            return (num == 0) ? "0" : $"<strong>{num}</strong>";
-        }
+        //    var num = TranslateUtils.ToInt(_horizentalHashtable[publishmentSystemId].ToString());
+        //    return (num == 0) ? "0" : $"<strong>{num}</strong>";
+        //}
 
         private void SetVertical(string type, int num)
         {
@@ -167,13 +168,13 @@ yArrayHits.push('{yValueHits}');";
             }
         }
 
-        private string GetVertical(string type)
-        {
-            if (_verticalHashtable[type] == null) return "0";
+        //private string GetVertical(string type)
+        //{
+        //    if (_verticalHashtable[type] == null) return "0";
 
-            var num = TranslateUtils.ToInt(_verticalHashtable[type].ToString());
-            return (num == 0) ? "0" : $"<strong>{num}</strong>";
-        }
+        //    var num = TranslateUtils.ToInt(_verticalHashtable[type].ToString());
+        //    return (num == 0) ? "0" : $"<strong>{num}</strong>";
+        //}
 
         private string GetVerticalTotalNum()
         {

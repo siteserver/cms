@@ -1,56 +1,67 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.PageLogConfiguration" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
 
     <head>
       <meta charset="utf-8">
-      <!--#include file="../inc/header.aspx"-->
+      <!--#include file="../inc/head.html"-->
     </head>
 
     <body>
-      <form class="form-inline" runat="server">
-        <asp:Literal ID="LtlBreadCrumb" runat="server" />
-        <bairong:Alerts Text="在此设置日志自动删除阈值" runat="server"></bairong:Alerts>
+      <form class="m-l-15 m-r-15" runat="server">
+        <ctrl:alerts runat="server" />
 
-        <div class="popover popover-static">
-          <h3 class="popover-title">日志管理设置</h3>
-          <div class="popover-content">
+        <div class="card-box">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogSite.aspx">站点日志</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogAdmin.aspx">管理员日志</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogUser.aspx">用户日志</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogServiceTask.aspx">服务组件任务日志</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogServiceCreateTask.aspx">服务组件生成日志</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogError.aspx">系统错误日志</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="pageLogConfiguration.aspx">日志设置</a>
+            </li>
+          </ul>
+        </div>
 
-            <table class="table noborder table-hover">
-              <tr>
-                <td width="180">是否启用记录时间阈值：</td>
-                <td>
-                  <asp:RadioButtonList ID="RblIsTimeThreshold" AutoPostBack="true" OnSelectedIndexChanged="RblIsTimeThreshold_SelectedIndexChanged"
-                    RepeatDirection="Horizontal" runat="server"></asp:RadioButtonList>
-                </td>
-              </tr>
-              <asp:PlaceHolder ID="PhTimeThreshold" runat="server">
-                <tr>
-                  <td>时间：</td>
-                  <td>
-                    <asp:TextBox ID="TbTime" Columns="40" MaxLength="200" Style="ime-mode: disabled;" runat="server" />
-                    <asp:RegularExpressionValidator runat="server" ControlToValidate="TbTime" ValidationExpression="[^']+" ErrorMessage=" *"
-                      ForeColor="red" Display="Dynamic" />
-                    <span class="gray">单位（天）
-                                    <br />
-                                    设置为60天，则默认只保留60天的日志
-                                </span>
-                  </td>
-                </tr>
-              </asp:PlaceHolder>
-            </table>
+        <div class="card-box">
 
-            <hr />
-            <table class="table noborder">
-              <tr>
-                <td class="center">
-                  <asp:Button class="btn btn-primary" ID="Submit" Text="确 定" OnClick="Submit_OnClick" runat="server" />
-                </td>
-              </tr>
-            </table>
-
+          <div class="form-group">
+            <label class="col-form-label">是否启用定时删除日志功能</label>
+            <asp:RadioButtonList ID="RblIsTimeThreshold" class="radio radio-primary" AutoPostBack="true" OnSelectedIndexChanged="RblIsTimeThreshold_SelectedIndexChanged"
+              RepeatDirection="Horizontal" runat="server"></asp:RadioButtonList>
+            <small class="form-text text-muted">启用后系统将定时自动删除日志，以节省数据库存储空间</small>
           </div>
+
+          <asp:PlaceHolder ID="PhTimeThreshold" runat="server">
+            <div class="form-group">
+              <label class="col-form-label">日志保留天数
+                <asp:RegularExpressionValidator runat="server" ControlToValidate="TbTime" ValidationExpression="[^']+" ErrorMessage=" *"
+                  ForeColor="red" Display="Dynamic" />
+              </label>
+              <asp:TextBox ID="TbTime" class="form-control" runat="server" />
+              <small class="form-text text-muted">设置为60天，则默认只保留60天的日志，60天之前的日志将被系统自动删除</small>
+            </div>
+          </asp:PlaceHolder>
+
+          <hr />
+
+          <asp:Button class="btn btn-primary" text="确 定" onclick="Submit_OnClick" runat="server" />
+
         </div>
 
       </form>

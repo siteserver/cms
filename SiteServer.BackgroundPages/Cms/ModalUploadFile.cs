@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"uploadType", EUploadTypeUtils.GetValue(uploadType)},
                 {"TextBoxClientID", textBoxClientId}
-            }), 480, 250);
+            }), 550, 250);
         }
 
         public static string GetOpenWindowStringToList(int publishmentSystemId, EUploadType uploadType, string realtedPath)
@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"uploadType", EUploadTypeUtils.GetValue(uploadType)},
                 {"realtedPath", realtedPath}
-            }), 480, 250);
+            }), 550, 250);
         }
 
 		public void Page_Load(object sender, EventArgs e)

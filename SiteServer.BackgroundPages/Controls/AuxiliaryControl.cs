@@ -90,8 +90,8 @@ namespace SiteServer.BackgroundPages.Controls
                 {
                     var commands = WebUtils.GetTextEditorCommands(PublishmentSystemInfo, styleInfo.AttributeName);
                     builder.Append($@"
-<div class=""form-group"">
-    <label class=""col-sm-1 control-label"">{styleInfo.DisplayName}</label>
+<div class=""form-group form-row"">
+    <label class=""col-sm-1 col-form-label text-right"">{styleInfo.DisplayName}</label>
     <div class=""col-sm-10"">
         {commands}
         <div class=""m-t-10"">
@@ -106,8 +106,8 @@ namespace SiteServer.BackgroundPages.Controls
                 else
                 {
                     builder.Append($@"
-<div class=""form-group"">
-    <label class=""col-sm-1 control-label"">{styleInfo.DisplayName}</label>
+<div class=""form-group form-row"">
+    <label class=""col-sm-1 col-form-label text-right"">{styleInfo.DisplayName}</label>
     <div class=""col-sm-6"">
         {value}
     </div>

@@ -1,56 +1,73 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.PageCreateFile" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html>
 
-<body>
-<form class="form-inline" runat="server">
-  <asp:Literal id="LtlBreadCrumb" runat="server" />
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+      <script type="text/javascript" language="javascript">
+        function selectAll(isChecked) {
+          for (var i = 0; i < document.getElementById('<%=LbTemplateIdList.ClientID%>').options.length; i++) {
+            document.getElementById('<%=LbTemplateIdList.ClientID%>').options[i].selected = isChecked;
+          }
+        }
+      </script>
+    </head>
 
-  <bairong:alerts text="选择需要生成的文件页后点击“生成选定文件”即可生成对应的文件页面。" runat="server" />
+    <body>
+      <form class="m-l-15 m-r-15" runat="server">
+        <ctrl:alerts runat="server" />
 
-  <script type="text/javascript" language="javascript">
-  function selectAllFile(isChecked)
-  {
-    for(var i=0; i<document.getElementById('<%=FileCollectionToCreate.ClientID%>').options.length; i++)
-    {
-      document.getElementById('<%=FileCollectionToCreate.ClientID%>').options[i].selected = isChecked;
-    }
-  }
-  </script>
+        <div class="card-box">
+          <div class="m-t-0 header-title">
+            生成文件页
+          </div>
+          <p class="text-muted font-13 m-b-25">
+            选择需要生成的文件页后点击“生成选定文件”即可生成对应的文件页面，按住Ctrl可多选
+          </p>
 
-  <div class="popover popover-static">
-    <h3 class="popover-title">生成文件页</h3>
-    <div class="popover-content">
+          <div class="form-group form-row">
+            <label class="col-sm-2 col-form-label">生成文件页</label>
+            <div class="col-sm-4">
+              <asp:ListBox ID="LbTemplateIdList" SelectionMode="Multiple" Rows="19" class="form-control" runat="server"></asp:ListBox>
+            </div>
+            <div class="col-sm-6">
 
-      <table class="table noborder">
-        <tr>
-          <td width="160">生成文件页：<br /><span class="gray">按住Ctrl可多选</span></td>
-          <td>
-            <asp:ListBox ID="FileCollectionToCreate" SelectionMode="Multiple" Rows="19" style="width:auto" runat="server"></asp:ListBox>
-            &nbsp;&nbsp;
-            <label class="checkbox inline" style="vertical-align:bottom">
-              <input type="checkbox" onClick="selectAllFile(this.checked);"> 全选
-            </label>
-          </td>
-        </tr>
-        <tr>
-          <td width="160">生成全部文件页：</td>
-          <td colspan="3"><asp:Button class="btn btn-primary" style="margin-bottom:0px;" id="CreateFileButton" text="生成选定文件" onclick="CreateFileButton_OnClick" runat="server" /></td>
-        </tr>
-        <tr>
-          <td width="160">删除全部文件页：</td>
-          <td colspan="3"><asp:Button class="btn" id="DeleteAllFileButton" text="删 除" onclick="DeleteAllFileButton_OnClick" runat="server" /></td>
-        </tr>
-      </table>
+            </div>
+          </div>
+          <div class="form-group form-row">
+            <label class="col-sm-2 col-form-label">生成范围</label>
+            <div class="col-sm-4">
+              <div class="checkbox checkbox-primary float-left">
+                <input id="checkbox" type="checkbox" onClick="selectAll(this.checked);">
+                <label for="checkbox">
+                  全选
+                </label>
+              </div>
+              <asp:Button class="btn btn-primary float-left" style="margin-bottom:0px;" text="生成选定文件页" onclick="Create_OnClick" runat="server"
+              />
+            </div>
+            <div class="col-sm-6">
 
-    </div>
-  </div>
+            </div>
+          </div>
 
-</form>
-</body>
-</html>
+          <hr />
+
+          <div class="form-group form-row">
+            <label class="col-sm-2 col-form-label">删除全部文件页</label>
+            <div class="col-sm-4">
+              <asp:Button class="btn" id="BtnDeleteAll" text="删 除" onclick="BtnDeleteAll_OnClick" runat="server" />
+            </div>
+            <div class="col-sm-6">
+
+            </div>
+          </div>
+
+        </div>
+
+      </form>
+    </body>
+
+    </html>

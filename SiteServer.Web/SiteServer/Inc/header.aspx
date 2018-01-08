@@ -1,11 +1,13 @@
-﻿<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<bairong:Code type="jQuery" runat="server" />
-<bairong:Code type="calendar" runat="server" />
-<bairong:Code type="bootstrap" runat="server" />
-<bairong:Code type="toastr" runat="server" />
-<bairong:Code type="layer" runat="server" />
-<bairong:Script src="inc/script.js" runat="server" />
-<bairong:Style href="inc/style.css" runat="server" />
-<bairong:Style href="assets/font-awesome/css/font-awesome.css" runat="server" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="../assets/css/core.css" rel="stylesheet" type="text/css" />
+<link href="../assets/css/components.css" rel="stylesheet" type="text/css" />
+<link href="../assets/css/pages.css" rel="stylesheet" type="text/css" />
+<link href="../assets/css/menu.css" rel="stylesheet" type="text/css" />
+<link href="../assets/css/responsive.css" rel="stylesheet" type="text/css" />
+<link href="../assets/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+<script src="../assets/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="../assets/sweetalert/sweetalert.min.js" type="text/javascript"></script>
+<script src="../assets/layer/layer.min.js" type="text/javascript"></script>
+<script src="../inc/script.js" type="text/javascript"></script>
+<style>body{ padding: 20px 0; }</style>

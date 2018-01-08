@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.PageConfigurationSite" %>
-	<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+	<%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
 		<!DOCTYPE html>
 		<html>
 
@@ -9,79 +9,52 @@
 		</head>
 
 		<body>
-			<form class="container" runat="server">
-				<bairong:alerts runat="server" />
+			<form class="m-l-15 m-r-15" runat="server">
+				<ctrl:alerts runat="server" />
 
-				<div class="raw">
-					<div class="card-box">
-						<h4 class="m-t-0 header-title">
-							<b>站点配置</b>
-						</h4>
-						<p class="text-muted font-13 m-b-25">
-							在此修改站点相关设置
-						</p>
+				<div class="card-box">
+					<ul class="nav nav-pills">
+						<li class="nav-item active">
+							<a class="nav-link" href="javascript:;">站点配置</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="pageConfigurationContent.aspx?publishmentSystemId=<%=PublishmentSystemId%>">内容配置</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="pageConfigurationComment.aspx?publishmentSystemId=<%=PublishmentSystemId%>">评论设置</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="pageConfigurationSiteAttributes.aspx?publishmentSystemId=<%=PublishmentSystemId%>">站点属性</a>
+						</li>
+					</ul>
+				</div>
 
-						<ul class="nav nav-pills m-b-30">
-							<li class="active">
-								<a href="javascript:;">站点配置</a>
-							</li>
-							<li class="">
-								<a href="pageConfigurationContent.aspx?publishmentSystemId=<%=PublishmentSystemId%>">内容配置</a>
-							</li>
-							<li class="">
-								<a href="pageConfigurationComment.aspx?publishmentSystemId=<%=PublishmentSystemId%>">评论设置</a>
-							</li>
-							<li class="">
-								<a href="pageConfigurationSiteAttributes.aspx?publishmentSystemId=<%=PublishmentSystemId%>">站点属性</a>
-							</li>
+				<div class="card-box">
 
-						</ul>
-
-						<div class="form-horizontal">
-
-							<div class="form-group">
-								<label class="col-sm-3 control-label">网页编码</label>
-								<div class="col-sm-3">
-									<asp:DropDownList id="DdlCharset" class="form-control" runat="server"></asp:DropDownList>
-								</div>
-								<div class="col-sm-6 help-block">
-									模板编码将同步修改
-								</div>
-							</div>
-
-							<div class="form-group">
-								<label class="col-sm-3 control-label">后台信息每页显示数目</label>
-								<div class="col-sm-3">
-									<asp:TextBox Columns="25" Text="18" MaxLength="50" id="TbPageSize" class="form-control" runat="server" />
-								</div>
-								<div class="col-sm-6 help-block">
-									<asp:RequiredFieldValidator ControlToValidate="TbPageSize" errorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
-									/>
-									<span>条</span>
-								</div>
-							</div>
-
-							<div class="form-group">
-								<label class="col-sm-3 control-label">是否启用双击生成页面</label>
-								<div class="col-sm-3">
-									<asp:DropDownList ID="DdlIsCreateDoubleClick" RepeatDirection="Horizontal" class="form-control" runat="server"></asp:DropDownList>
-								</div>
-								<div class="col-sm-6 help-block">
-									此功能通常用于制作调试期间，网站正式上线后不建议启用
-								</div>
-							</div>
-
-							<hr />
-
-							<div class="form-group m-b-0">
-								<div class="col-sm-offset-3 col-sm-9">
-									<asp:Button class="btn btn-primary" id="Submit" text="确 定" onclick="Submit_OnClick" runat="server" />
-								</div>
-							</div>
-
-						</div>
-
+					<div class="form-group">
+						<label class="col-form-label">网页编码</label>
+						<asp:DropDownList id="DdlCharset" class="form-control" runat="server"></asp:DropDownList>
+						<small class="form-text text-muted">模板编码将同步修改</small>
 					</div>
+
+					<div class="form-group">
+						<label class="col-form-label">后台信息每页显示数目(条)
+							<asp:RequiredFieldValidator ControlToValidate="TbPageSize" errorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+							/>
+						</label>
+						<asp:TextBox Text="18" MaxLength="50" id="TbPageSize" class="form-control" runat="server" />
+					</div>
+
+					<div class="form-group">
+						<label class="col-form-label">是否启用双击生成页面</label>
+						<asp:DropDownList ID="DdlIsCreateDoubleClick" RepeatDirection="Horizontal" class="form-control" runat="server"></asp:DropDownList>
+						<small class="form-text text-muted">此功能通常用于制作调试期间，网站正式上线后不建议启用</small>
+					</div>
+
+					<hr />
+
+					<asp:Button class="btn btn-primary" text="确 定" onclick="Submit_OnClick" runat="server" />
+
 				</div>
 
 			</form>

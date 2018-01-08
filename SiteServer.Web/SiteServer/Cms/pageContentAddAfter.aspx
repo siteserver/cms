@@ -1,65 +1,62 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.PageContentAddAfter" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html>
 
-<body>
-<form class="form-inline" runat="server">
-  <asp:Literal id="LtlBreadCrumb" runat="server" />
-  <bairong:alerts runat="server" />
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-  <div class="popover popover-static">
-    <h3 class="popover-title">后续操作</h3>
-    <div class="popover-content">
-    
-      <table class="table noborder table-hover">
-        <tr>
-          <td width="160">请选择后续操作：</td>
-          <td>
-            <asp:RadioButtonList ID="Operation" runat="server" AutoPostBack="true" cssClass="radiobuttonlist" RepeatDirection="Vertical" OnSelectedIndexChanged="Operation_SelectedIndexChanged"></asp:RadioButtonList>
-          </td>
-        </tr>
-      </table>
+    <body>
+      <form class="m-l-15 m-r-15" runat="server">
+        <ctrl:alerts runat="server" />
 
-      <asp:PlaceHolder id="phPublishmentSystemID" runat="server">
-      <table class="table noborder table-hover">
-        <tr>
-          <td width="160">选择站点：</td>
-          <td><asp:DropDownList ID="PublishmentSystemIDDropDownList" runat="server" AutoPostBack="true" OnSelectedIndexChanged="PublishmentSystemID_SelectedIndexChanged"></asp:DropDownList></td>
-        </tr>
-        <tr>
-          <td>投稿到：</td>
-          <td>
-            <asp:ListBox ID="NodeIDListBox" SelectionMode="Multiple" Height="320" width="400" runat="server"></asp:ListBox>
-            <asp:RequiredFieldValidator
-              ControlToValidate="NodeIDListBox"
-              ErrorMessage=" *" foreColor="red"
-              Display="Dynamic"
-              runat="server"
-              />
-            </td>
-        </tr>
-      </table>
-      </asp:PlaceHolder>
-  
-      <asp:PlaceHolder id="phSubmit" runat="server">
-        <hr />
-        <table class="table noborder">
-          <tr>
-            <td class="center">
-              <asp:Button class="btn btn-primary" id="Submit" text="确 定" onclick="Submit_OnClick" runat="server" />
-            </td>
-          </tr>
-        </table>
-      </asp:PlaceHolder>
+        <div class="card-box">
+          <div class="m-t-0 header-title">
+            后续操作
+          </div>
+          <p class="text-muted font-13 m-b-25"></p>
 
-    </div>
-  </div>
+          <div class="form-group form-row">
+            <label class="col-sm-2 col-form-label">请选择后续操作</label>
+            <div class="col-sm-4">
+              <asp:RadioButtonList ID="RblOperation" runat="server" AutoPostBack="true" cssClass="radio radio-primary table" RepeatDirection="Vertical"
+                OnSelectedIndexChanged="RblOperation_SelectedIndexChanged"></asp:RadioButtonList>
+            </div>
+            <div class="col-sm-6 help-block"></div>
+          </div>
 
-</form>
-</body>
-</html>
+          <asp:PlaceHolder id="PhPublishmentSystemId" runat="server">
+            <div class="form-group form-row">
+              <label class="col-sm-2 col-form-label">选择站点</label>
+              <div class="col-sm-4">
+                <asp:DropDownList ID="DdlPublishmentSystemId" class="form-control" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DdlPublishmentSystemId_SelectedIndexChanged"></asp:DropDownList>
+              </div>
+              <div class="col-sm-6 help-block">
+
+              </div>
+            </div>
+            <div class="form-group form-row">
+              <label class="col-sm-2 col-form-label">投稿到</label>
+              <div class="col-sm-4">
+                <asp:ListBox ID="LbNodeId" SelectionMode="Multiple" Height="320" class="form-control" runat="server"></asp:ListBox>
+              </div>
+              <div class="col-sm-6">
+                <asp:RequiredFieldValidator ControlToValidate="LbNodeId" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+                />
+              </div>
+            </div>
+          </asp:PlaceHolder>
+
+          <asp:PlaceHolder id="PhSubmit" runat="server">
+            <hr />
+            <asp:Button class="btn btn-primary" text="确 定" onclick="Submit_OnClick" runat="server" />
+          </asp:PlaceHolder>
+
+        </div>
+
+      </form>
+    </body>
+
+    </html>

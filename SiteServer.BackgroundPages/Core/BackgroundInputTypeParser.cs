@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Core
             var extraBuilder = new StringBuilder();
             if (!string.IsNullOrEmpty(styleInfo.HelpText))
             {
-                extraBuilder.Append($@"<span class=""help-block"">{styleInfo.HelpText}</span>");
+                extraBuilder.Append($@"<small class=""form-text text-muted"">{styleInfo.HelpText}</small>");
             }
 
             var inputType = InputTypeUtils.GetEnumType(styleInfo.InputType);
@@ -173,7 +173,7 @@ $('#{styleInfo.AttributeName}_colorContainer').hide();
 ");
 
                 extraBuilder.Append($@"
-<div class=""btn-group"" style=""float:left;"">
+<div class=""btn-group btn-group-sm"" style=""float:left;"">
     <button class=""btn{(formatStrong ? @" btn-success" : string.Empty)}"" style=""font-weight:bold;font-size:12px;"" onclick=""{styleInfo
                     .AttributeName}_strong(this);return false;"">粗体</button>
     <button class=""btn{(formatEm ? " btn-success" : string.Empty)}"" style=""font-style:italic;font-size:12px;"" onclick=""{styleInfo
@@ -641,7 +641,7 @@ $(document).ready(function(){{
             }
 
             extraBuilder.Append($@"
-<div class=""btn-group"">
+<div class=""btn-group btn-group-sm"">
     <button class=""btn"" onclick=""{ModalUploadImage.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, styleInfo.AttributeName)}"">
         上传
     </button>
@@ -733,7 +733,7 @@ function add_{attributeName}(val,foucs){{
             }
 
             extraBulder.Append($@"
-<div class=""btn-group"">
+<div class=""btn-group btn-group-sm"">
     <button class=""btn"" onclick=""{ModalUploadVideo.GetOpenWindowStringToTextBox(publishmentSystemInfo.PublishmentSystemId, attributeName)}"">
         上传
     </button>
@@ -826,7 +826,7 @@ function add_{attributeName}(val,foucs){{
             }
 
             extraBuilder.Append($@"
-<div class=""btn-group"">
+<div class=""btn-group btn-group-sm"">
     <button class=""btn"" onclick=""{ModalUploadFile.GetOpenWindowStringToTextBox(publishmentSystemInfo.PublishmentSystemId, EUploadType.File, attributeName)}"">
         上传
     </button>

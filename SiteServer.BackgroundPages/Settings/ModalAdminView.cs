@@ -20,7 +20,7 @@ namespace SiteServer.BackgroundPages.Settings
             return LayerUtils.GetOpenScript("查看管理员资料", PageUtils.GetSettingsUrl(nameof(ModalAdminView), new NameValueCollection
             {
                 {"UserName", userName}
-            }), 400, 450);
+            }), 500, 500);
         }
 	
 		public void Page_Load(object sender, EventArgs e)

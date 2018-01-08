@@ -12,30 +12,23 @@
       <form runat="server">
         <ctrl:alerts text="在此导出用户数据至Excel中" runat="server" />
 
-        <div class="form-horizontal">
-
-          <asp:PlaceHolder ID="PhExport" runat="server">
-            <div class="form-group">
-              <label class="col-xs-3 text-right control-label">用户类型</label>
-              <div class="col-xs-7">
-                <asp:DropDownList ID="DdlCheckedState" runat="server" class="form-control"></asp:DropDownList>
-              </div>
-              <div class="col-xs-2">
-
-              </div>
+        <asp:PlaceHolder ID="PhExport" runat="server">
+          <div class="form-group form-row">
+            <label class="col-3 text-right col-form-label">用户类型</label>
+            <div class="col-7">
+              <asp:DropDownList ID="DdlCheckedState" runat="server" class="form-control"></asp:DropDownList>
             </div>
-          </asp:PlaceHolder>
+            <div class="col-2">
 
-          <hr />
-
-          <div class="form-group m-b-0">
-            <div class="col-xs-11 text-right">
-              <asp:Button id="BtnSubmit" class="btn btn-primary m-l-10" text="确 定" runat="server" onClick="Submit_OnClick" />
-              <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
             </div>
-            <div class="col-xs-1"></div>
           </div>
+        </asp:PlaceHolder>
 
+        <hr />
+
+        <div class="text-right mr-1">
+          <asp:Button id="BtnSubmit" class="btn btn-primary m-l-5" text="确 定" runat="server" onClick="Submit_OnClick" />
+          <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
         </div>
 
       </form>

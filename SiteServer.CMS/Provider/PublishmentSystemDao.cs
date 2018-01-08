@@ -453,6 +453,9 @@ namespace SiteServer.CMS.Provider
 
             SetTaxis(publishmentSystemId, lowerTaxis);
             SetTaxis(lowerId, selectedTaxis);
+
+            PublishmentSystemManager.ClearCache();
+
             return true;
         }
 
@@ -484,6 +487,9 @@ namespace SiteServer.CMS.Provider
 
             SetTaxis(publishmentSystemId, higherTaxis);
             SetTaxis(higherId, selectedTaxis);
+
+            PublishmentSystemManager.ClearCache();
+
             return true;
         }
 

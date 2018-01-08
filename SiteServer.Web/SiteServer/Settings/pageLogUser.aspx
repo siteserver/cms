@@ -1,80 +1,130 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.PageLogUser" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html>
 
-<body>
-<form class="form-inline" runat="server">
-  <asp:Literal id="LtlBreadCrumb" runat="server" />
-  <bairong:alerts runat="server" />
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-  <div class="well well-small">
-    <table class="table table-noborder">
-      <tr>
-        <td>
-          时间：从
-          <bairong:DateTimeTextBox id="DateFrom" class="input-small" runat="server" />
-          &nbsp;到&nbsp;
-          <bairong:DateTimeTextBox id="DateTo" class="input-small" runat="server" />
-          用户：
-          <asp:TextBox ID="UserName" MaxLength="500" size="20" runat="server"/>
-          关键字：
-          <asp:TextBox id="Keyword" MaxLength="500" Size="37" runat="server"/>
-          <asp:Button class="btn" OnClick="Search_OnClick" id="Search" text="搜 索"  runat="server"/>
-        </td>
-      </tr>
-    </table>
-  </div>
+    <body>
+      <form class="m-l-15 m-r-15" runat="server">
+        <ctrl:alerts runat="server" />
 
-  <table class="table table-bordered table-hover">
-    <tr class="info thead">
-      <td width="100">用户</td>
-      <td width="100">IP地址</td>
-      <td width="150">日期</td>
-      <td width="160">动作</td>
-      <td>描述</td>
-      <td width="20">
-        <input onclick="_checkFormAll(this.checked)" type="checkbox" />
-      </td>
-    </tr>
-    <asp:Repeater ID="rptContents" runat="server">
-      <itemtemplate>
-          <tr>
-            <td class="center"><asp:Literal ID="ltlUserName" runat="server"></asp:Literal></td>
-            <td class="center"><asp:Literal ID="ltlIPAddress" runat="server"></asp:Literal></td>
-            <td class="center"><asp:Literal ID="ltlAddDate" runat="server"></asp:Literal></td>
-            <td>
-              <asp:Literal ID="ltlAction" runat="server"></asp:Literal>
-            </td>
-            <td>
-              <asp:Literal ID="ltlSummary" runat="server"></asp:Literal></td>
-            <td class="center">
-              <input type="checkbox" name="IDCollection" value='<%#DataBinder.Eval(Container.DataItem, "ID")%>' />
-            </td>
-          </tr>
-      </itemtemplate>
-    </asp:Repeater>
-  </table>
+        <div class="card-box">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogSite.aspx">站点日志</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogAdmin.aspx">管理员日志</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="pageLogUser.aspx">用户日志</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogServiceTask.aspx">服务组件任务日志</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogServiceCreateTask.aspx">服务组件生成日志</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogError.aspx">系统错误日志</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogConfiguration.aspx">日志设置</a>
+            </li>
+          </ul>
+        </div>
 
-  <bairong:sqlPager id="spContents" runat="server" class="table table-pager" />
+        <div class="card-box">
 
-  <ul class="breadcrumb breadcrumb-button">
-    <table width="100%">
-      <tr>
-        <td>
-          <asp:Button class="btn" id="Delete" Text="删 除" runat="server" />
-          <asp:Button class="btn" id="DeleteAll" Text="删除全部" runat="server" />
-        </td>
-        <td align="right"><asp:Literal ID="ltlState" runat="server"></asp:Literal></td>
-        <td width="180" align="right"><asp:Button class="btn" ID="Setting" runat="server" /></td>
-      </tr>
-    </table>
-  </ul>
+          <div class="form-inline">
+            <div class="form-group">
+              <label class="col-form-label m-r-10">时间：从</label>
+              <ctrl:DateTimeTextBox id="TbDateFrom" class="form-control" runat="server" />
+            </div>
 
-</form>
-</body>
-</html>
+            <div class="form-group m-l-10">
+              <label class="col-form-label m-r-10">到</label>
+              <ctrl:DateTimeTextBox id="TbDateTo" class="form-control" runat="server" />
+            </div>
+
+            <div class="form-group m-l-10">
+              <label class="col-form-label m-r-10">用户</label>
+              <asp:TextBox ID="TbUserName" class="form-control" runat="server" />
+            </div>
+
+            <div class="form-group m-l-10">
+              <label class="col-form-label m-r-10">关键字</label>
+              <asp:TextBox ID="TbKeyword" class="form-control" runat="server" />
+            </div>
+
+            <asp:Button class="btn btn-success m-l-10 btn-md" OnClick="Search_OnClick" ID="Search" Text="搜 索" runat="server" />
+          </div>
+
+          <div class="panel panel-default m-t-20">
+            <div class="panel-body p-0">
+              <div class="table-responsive">
+                <table id="contents" class="table tablesaw table-hover m-0">
+                  <thead>
+                    <tr class="thead">
+                      <th class="text-center text-nowrap">用户</th>
+                      <th class="text-center text-nowrap">IP地址</th>
+                      <th class="text-center text-nowrap">日期</th>
+                      <th class="text-nowrap">动作</th>
+                      <th>描述</th>
+                      <th width="30">
+                        <input onclick="_checkFormAll(this.checked)" type="checkbox" />
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <asp:Repeater ID="RptContents" runat="server">
+                      <itemtemplate>
+                        <tr>
+                          <td class="text-center text-nowrap">
+                            <asp:Literal ID="ltlUserName" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center text-nowrap">
+                            <asp:Literal ID="ltlIpAddress" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center text-nowrap">
+                            <asp:Literal ID="ltlAddDate" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-nowrap">
+                            <asp:Literal ID="ltlAction" runat="server"></asp:Literal>
+                          </td>
+                          <td>
+                            <asp:Literal ID="ltlSummary" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center text-nowrap">
+                            <input type="checkbox" name="IDCollection" value='<%#DataBinder.Eval(Container.DataItem, "ID")%>' />
+                          </td>
+                        </tr>
+                      </itemtemplate>
+                    </asp:Repeater>
+                  </tbody>
+                </table>
+
+              </div>
+            </div>
+          </div>
+
+          <ctrl:sqlPager id="SpContents" runat="server" class="table table-pager" />
+
+          <hr />
+
+          <asp:Literal ID="LtlState" runat="server"></asp:Literal>
+
+          <asp:Button class="btn m-r-5" id="BtnDelete" Text="删 除" runat="server" />
+          <asp:Button class="btn m-r-5" id="BtnDeleteAll" Text="删除全部" runat="server" />
+          <asp:Button class="btn m-r-5" ID="BtnSetting" runat="server" />
+
+        </div>
+
+      </form>
+    </body>
+
+    </html>

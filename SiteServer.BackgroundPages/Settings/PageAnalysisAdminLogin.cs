@@ -16,8 +16,9 @@ namespace SiteServer.BackgroundPages.Settings
         public DateTimeTextBox TbDateFrom;
         public DateTimeTextBox TbDateTo;
         public DropDownList DdlXType;
-        public Literal LtlArray1;
-        public Literal LtlArray2;
+
+        public string StrArray1 { get; set; }
+        public string StrArray2 { get; set; }
 
         //管理员登录（按日期）
         private readonly Dictionary<int, int> _adminNumDictionaryDay = new Dictionary<int, int>();
@@ -178,7 +179,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             for (var i = 1; i <= _count; i++)
             {
-                LtlArray1.Text += $@"
+                StrArray1 += $@"
 xArray.push('{GetGraphicX(i)}');
 yArray.push('{GetGraphicY(i)}');
 ";
@@ -186,7 +187,7 @@ yArray.push('{GetGraphicY(i)}');
 
             foreach (var key in adminNumDictionaryName.Keys)
             {
-                LtlArray2.Text += $@"
+                StrArray2 += $@"
 xArray.push('{key}');
 yArray.push('{GetGraphicYUser(adminNumDictionaryName, key)}');
 ";

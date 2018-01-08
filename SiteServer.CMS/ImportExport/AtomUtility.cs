@@ -4,7 +4,7 @@ using Atom.AdditionalElements;
 using Atom.AdditionalElements.DublinCore;
 using Atom.Core;
 using BaiRong.Core;
-using BaiRong.Core.Cryptography;
+using BaiRong.Core.Auth;
 
 namespace SiteServer.CMS.ImportExport
 {
@@ -78,7 +78,7 @@ namespace SiteServer.CMS.ImportExport
         {
             if (string.IsNullOrEmpty(inputString)) return string.Empty;
 
-            var encryptor = new DESEncryptor
+            var encryptor = new DesEncryptor
             {
                 InputString = inputString,
                 EncryptKey = "TgQQk42O"
@@ -92,7 +92,7 @@ namespace SiteServer.CMS.ImportExport
         {
             if (string.IsNullOrEmpty(inputString)) return string.Empty;
 
-            var encryptor = new DESEncryptor
+            var encryptor = new DesEncryptor
             {
                 InputString = inputString,
                 DecryptKey = "TgQQk42O"

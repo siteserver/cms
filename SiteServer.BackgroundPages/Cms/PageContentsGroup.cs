@@ -3,7 +3,6 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
@@ -13,103 +12,100 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class PageContentsGroup : BasePageCms
     {
-        public Literal ltlContentGroupName;
+        public Literal LtlContentGroupName;
 
-        public Repeater rptContents;
-        public SqlPager spContents;
+        public Repeater RptContents;
+        public SqlPager SpContents;
 
-        private string tableName;
-        private NodeInfo nodeInfo;
-        private string contentGroupName;
+        private string _tableName;
+        private NodeInfo _nodeInfo;
+        private string _contentGroupName;
+
+        public static string GetRedirectUrl(int publishmentSystemId, string contentGroupName)
+        {
+            return PageUtils.GetCmsUrl(nameof(PageContentsGroup), new NameValueCollection
+            {
+                {"publishmentSystemId", publishmentSystemId.ToString()},
+                {"contentGroupName", contentGroupName}
+            });
+        }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            var publishmentSystemId = Body.GetQueryInt("publishmentSystemID");
-            contentGroupName = Body.GetQueryString("contentGroupName");
-            nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, publishmentSystemId);
-            tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
+            var publishmentSystemId = Body.GetQueryInt("publishmentSystemId");
+            _contentGroupName = Body.GetQueryString("contentGroupName");
+            _nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, publishmentSystemId);
+            _tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeInfo);
 
-            if (Body.IsQueryExists("Remove"))
+            if (Body.IsQueryExists("remove"))
             {
-                var groupName = Body.GetQueryString("ContentGroupName");
-                var contentId = Body.GetQueryInt("ContentID");
-                try
-                {
-                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
-                    var groupList = TranslateUtils.StringCollectionToStringList(contentInfo.ContentGroupNameCollection);
-                    if (groupList.Contains(groupName))
-                        groupList.Remove(groupName);
+                var contentId = Body.GetQueryInt("contentId");
 
-                    contentInfo.ContentGroupNameCollection = TranslateUtils.ObjectCollectionToString(groupList);
-                    DataProvider.ContentDao.Update(tableName, PublishmentSystemInfo, contentInfo);
-                    Body.AddSiteLog(PublishmentSystemId, "移除内容", $"内容:{contentInfo.Title}");
-                    SuccessMessage("移除成功");
-                    AddWaitAndRedirectScript(PageUrl);
-                }
-                catch (Exception ex)
+                var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, contentId);
+                var groupList = TranslateUtils.StringCollectionToStringList(contentInfo.ContentGroupNameCollection);
+                if (groupList.Contains(_contentGroupName))
                 {
-                    FailMessage(ex, "移除失败");
+                    groupList.Remove(_contentGroupName);
                 }
+
+                contentInfo.ContentGroupNameCollection = TranslateUtils.ObjectCollectionToString(groupList);
+                DataProvider.ContentDao.Update(_tableName, PublishmentSystemInfo, contentInfo);
+                Body.AddSiteLog(PublishmentSystemId, "移除内容", $"内容:{contentInfo.Title}");
+                SuccessMessage("移除成功");
+                AddWaitAndRedirectScript(PageUrl);
             }
 
-            spContents.ControlToPaginate = rptContents;
-            rptContents.ItemDataBound += rptContents_ItemDataBound;
-            spContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
-            spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommendByContentGroup(tableName, contentGroupName, publishmentSystemId);
-            spContents.SortField = "AddDate";
-            spContents.SortMode = SortMode.DESC;
+            SpContents.ControlToPaginate = RptContents;
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
+            SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
+            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommendByContentGroup(_tableName, _contentGroupName, publishmentSystemId);
+            SpContents.SortField = "AddDate";
+            SpContents.SortMode = SortMode.DESC;
 
             if (IsPostBack) return;
 
             VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
-            ltlContentGroupName.Text = "内容组：" + Body.GetQueryString("ContentGroupName");
-            spContents.DataBind();
+            LtlContentGroupName.Text = "内容组：" + _contentGroupName;
+            SpContents.DataBind();
         }
 
-        void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
+
+            var ltlItemTitle = (Literal) e.Item.FindControl("ltlItemTitle");
+            var ltlItemChannel = (Literal) e.Item.FindControl("ltlItemChannel");
+            var ltlItemAddDate = (Literal) e.Item.FindControl("ltlItemAddDate");
+            var ltlItemStatus = (Literal) e.Item.FindControl("ltlItemStatus");
+            var ltlItemEditUrl = (Literal) e.Item.FindControl("ltlItemEditUrl");
+            var ltlItemDeleteUrl = (Literal) e.Item.FindControl("ltlItemDeleteUrl");
+
+            var contentInfo = new ContentInfo(e.Item.DataItem);
+
+            ltlItemTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, PageUrl);
+            ltlItemChannel.Text = NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId);
+            ltlItemAddDate.Text = DateUtils.GetDateAndTimeString(contentInfo.AddDate);
+            ltlItemStatus.Text = CheckManager.GetCheckState(PublishmentSystemInfo, contentInfo.IsChecked,
+                contentInfo.CheckedLevel);
+
+            if (!HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) &&
+                Body.AdminName != contentInfo.AddUserName) return;
+
+            ltlItemEditUrl.Text =
+                $@"<a href=""{WebUtils.GetContentAddEditUrl(PublishmentSystemId, _nodeInfo, contentInfo.Id, PageUrl)}"">编辑</a>";
+
+            var removeUrl = PageUtils.GetCmsUrl(nameof(PageContentsGroup), new NameValueCollection
             {
-                var ltlItemTitle = e.Item.FindControl("ltlItemTitle") as Literal;
-                var ltlItemChannel = e.Item.FindControl("ltlItemChannel") as Literal;
-                var ltlItemAuthor = e.Item.FindControl("ltlItemAuthor") as Literal;
-                var ltlItemAddDate = e.Item.FindControl("ltlItemAddDate") as Literal;
-                var ltlItemStatus = e.Item.FindControl("ltlItemStatus") as Literal;
-                var ltlItemEditUrl = e.Item.FindControl("ltlItemEditUrl") as Literal;
-                var ltlItemDeleteUrl = e.Item.FindControl("ltlItemDeleteUrl") as Literal;
-
-                var contentInfo = new ContentInfo(e.Item.DataItem);
-
-                ltlItemTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, PageUrl);
-                ltlItemChannel.Text = NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId);
-                ltlItemAuthor.Text = AdminManager.GetDisplayName(contentInfo.AddUserName, true);
-                ltlItemAddDate.Text = DateUtils.GetDateAndTimeString(contentInfo.AddDate);
-                ltlItemStatus.Text = CheckManager.GetCheckState(PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);
-
-                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdminName == contentInfo.AddUserName)
-                {
-                    //编辑
-                    ltlItemEditUrl.Text =
-                        $"<a href=\"{WebUtils.GetContentAddEditUrl(PublishmentSystemId, nodeInfo, contentInfo.Id, PageUrl)}\">编辑</a>";
-
-                    //移除
-                    ltlItemDeleteUrl.Text = GetRemoveHtml(contentGroupName, contentInfo.Id);
-                }
-            }
-        }
-
-        public string GetRemoveHtml(string groupName, int contentId)
-        {
-            var urlGroup = PageUtils.GetCmsUrl(nameof(PageContentsGroup), new NameValueCollection
-            {
-                {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                {"contentGroupName", groupName},
-                {"Remove", true.ToString()}
+                {"publishmentSystemId", PublishmentSystemId.ToString()},
+                {"contentGroupName", _contentGroupName},
+                {"contentId", contentInfo.Id.ToString()},
+                {"remove", true.ToString()}
             });
-            return
-                $"<a href=\"{urlGroup}\" onClick=\"javascript:return confirm('此操作将从内容组“{groupName}”移除该内容，确认吗？');\">移除</a>";
+
+            ltlItemDeleteUrl.Text =
+                $@"<a href=""javascript:;"" onClick=""{AlertUtils.Warning("从此内容组移除", $"此操作将从内容组“{_contentGroupName}”移除该内容，确认吗？", "取 消", "移 除", $"location.href = '{removeUrl}';return false;")}"">从此内容组移除</a>";
         }
 
         private string _pageUrl;
@@ -121,8 +117,8 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     _pageUrl = PageUtils.GetCmsUrl(nameof(PageContentsGroup), new NameValueCollection
                     {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                        {"contentGroupName", Body.GetQueryString("contentGroupName")}
+                        {"publishmentSystemId", PublishmentSystemId.ToString()},
+                        {"contentGroupName", _contentGroupName}
                     });
                 }
                 return _pageUrl;

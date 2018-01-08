@@ -16,7 +16,6 @@ namespace SiteServer.BackgroundPages.Cms
     {
 		public TextBox TbPublishmentSystemName;
         public Literal LtlAttributes;
-        public Literal LtlSettings;
         public Button BtnSubmit;
 
         private List<TableStyleInfo> _styleInfoList;
@@ -43,9 +42,6 @@ namespace SiteServer.BackgroundPages.Cms
                 VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
 
                 TbPublishmentSystemName.Text = PublishmentSystemInfo.PublishmentSystemName;
-
-                LtlSettings.Text =
-                    $@"<a class=""btn btn-success"" href=""{PageTableStyle.GetRedirectUrl(PublishmentSystemId, DataProvider.PublishmentSystemDao.TableName, PublishmentSystemId, GetRedirectUrl(PublishmentSystemId))}"">设置站点属性</a>";
 
                 LtlAttributes.Text = GetAttributesHtml(PublishmentSystemInfo.Additional.ToNameValueCollection());
 
@@ -82,28 +78,20 @@ namespace SiteServer.BackgroundPages.Cms
                     var commands = WebUtils.GetTextEditorCommands(PublishmentSystemInfo, styleInfo.AttributeName);
                     builder.Append($@"
 <div class=""form-group"">
-    <label class=""col-sm-3 control-label"">{styleInfo.DisplayName}</label>
-    <div class=""col-sm-8"">
-        {commands}
-        <hr />
-        {value}
-    </div>
-    <div class=""col-sm-1"">
-        {extra}
-    </div>
+    <label class=""control-label"">{styleInfo.DisplayName}</label>
+    {commands}
+    <hr />
+    {value}
+    {extra}
 </div>");
                 }
                 else
                 {
                     builder.Append($@"
 <div class=""form-group"">
-    <label class=""col-sm-3 control-label"">{styleInfo.DisplayName}</label>
-    <div class=""col-sm-3"">
-        {value}
-    </div>
-    <div class=""col-sm-6"">
-        {extra}
-    </div>
+    <label class=""control-label"">{styleInfo.DisplayName}</label>
+    {value}
+    {extra}
 </div>");
                 }
             }

@@ -161,7 +161,7 @@ namespace SiteServer.BackgroundPages.Core
 
             if (loadingType == EDepartmentLoadingType.AdministratorTree)
             {
-                var linkUrl = PageAdministrator.GetRedirectUrl(_departmentInfo.DepartmentId);
+                var linkUrl = PageAdministrator.GetRedirectUrl();
 
                 htmlBuilder.Append(
                     $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='department'>{_departmentInfo.DepartmentName}</a>");

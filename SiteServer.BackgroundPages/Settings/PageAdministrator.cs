@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Data;
@@ -13,47 +12,29 @@ namespace SiteServer.BackgroundPages.Settings
 {
     public class PageAdministrator : BasePage
     {
-        public DropDownList RoleName;
-        public DropDownList PageNum;
-        public DropDownList Order;
-        public TextBox Keyword;
-        public DropDownList ddlAreaID;
-        public DropDownList LastActivityDate;
+        public DropDownList DdlRoleName;
+        public DropDownList DdlPageNum;
+        public DropDownList DdlOrder;
+        public DropDownList DdlLastActivityDate;
+        public DropDownList DdlDepartmentId;
+        public DropDownList DdlAreaId;
+        public TextBox TbKeyword;
 
-        public Repeater rptContents;
-        public SqlPager spContents;
+        public Repeater RptContents;
+        public SqlPager SpContents;
 
-        public Button AddButton;
-        public Button Lock;
-        public Button UnLock;
-        public Button Delete;
+        public Button BtnAdd;
+        public Button BtnLock;
+        public Button BtnUnLock;
+        public Button BtnDelete;
 
-        private int _departmentId;
-        private DepartmentInfo _departmentInfo;
+        private bool[] _isLastNodeArrayOfDepartment;
         private bool[] _isLastNodeArrayOfArea;
         private EUserLockType _lockType = EUserLockType.Forever;
 
-        public static string GetRedirectUrl(int departmentId)
+        public static string GetRedirectUrl()
         {
-            return PageUtils.GetSettingsUrl(nameof(PageAdministrator), new NameValueCollection
-            {
-                {"departmentID", departmentId.ToString()}
-            });
-        }
-
-        public string GetRolesHtml(string userName)
-        {
-            return AdminManager.GetRolesHtml(userName);
-        }
-
-        public string GetDateTime(DateTime datetime)
-        {
-            var retval = string.Empty;
-            if (datetime > DateUtils.SqlMinValue)
-            {
-                retval = DateUtils.GetDateString(datetime);
-            }
-            return retval;
+            return PageUtils.GetSettingsUrl(nameof(PageAdministrator), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -62,12 +43,8 @@ namespace SiteServer.BackgroundPages.Settings
 
             var permissioins = PermissionsManager.GetPermissions(Body.AdminName);
 
-            _departmentId = Body.GetQueryInt("departmentID");
-            var areaId = Body.GetQueryInt("areaID");
-            if (_departmentId > 0)
-            {
-                _departmentInfo = DepartmentManager.GetDepartmentInfo(_departmentId);
-            }
+            var departmentId = Body.GetQueryInt("departmentId");
+            var areaId = Body.GetQueryInt("areaId");
 
             if (Body.IsQueryExists("Delete"))
             {
@@ -124,38 +101,38 @@ namespace SiteServer.BackgroundPages.Settings
                 }
             }
 
-            spContents.ControlToPaginate = rptContents;
-            spContents.ItemsPerPage = StringUtils.Constants.PageSize;
+            SpContents.ControlToPaginate = RptContents;
+            SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
-            if (string.IsNullOrEmpty(Body.GetQueryString("PageNum")))
+            if (string.IsNullOrEmpty(Body.GetQueryString("pageNum")))
             {
-                spContents.ItemsPerPage = TranslateUtils.ToInt(PageNum.SelectedValue) == 0 ? StringUtils.Constants.PageSize : TranslateUtils.ToInt(PageNum.SelectedValue);
+                SpContents.ItemsPerPage = TranslateUtils.ToInt(DdlPageNum.SelectedValue) == 0 ? StringUtils.Constants.PageSize : TranslateUtils.ToInt(DdlPageNum.SelectedValue);
 
-                spContents.SelectCommand = BaiRongDataProvider.AdministratorDao.GetSelectCommand(permissioins.IsConsoleAdministrator, Body.AdminName, _departmentId);
-                spContents.SortField = BaiRongDataProvider.AdministratorDao.GetSortFieldName();
-                spContents.SortMode = SortMode.ASC;
+                SpContents.SelectCommand = BaiRongDataProvider.AdministratorDao.GetSelectCommand(permissioins.IsConsoleAdministrator, Body.AdminName);
+                SpContents.SortField = BaiRongDataProvider.AdministratorDao.GetSortFieldName();
+                SpContents.SortMode = SortMode.ASC;
             }
             else
             {
-                spContents.ItemsPerPage = Body.GetQueryInt("PageNum") == 0 ? StringUtils.Constants.PageSize : Body.GetQueryInt("PageNum");
-                spContents.SelectCommand = BaiRongDataProvider.AdministratorDao.GetSelectCommand(Body.GetQueryString("Keyword"), Body.GetQueryString("RoleName"), Body.GetQueryInt("LastActivityDate"), permissioins.IsConsoleAdministrator, Body.AdminName, _departmentId, Body.GetQueryInt("AreaID"));
-                spContents.SortField = Body.GetQueryString("Order");
-                spContents.SortMode = StringUtils.EqualsIgnoreCase(spContents.SortField, "UserName") ? SortMode.ASC : SortMode.DESC;
+                SpContents.ItemsPerPage = Body.GetQueryInt("pageNum") == 0 ? StringUtils.Constants.PageSize : Body.GetQueryInt("pageNum");
+                SpContents.SelectCommand = BaiRongDataProvider.AdministratorDao.GetSelectCommand(Body.GetQueryString("keyword"), Body.GetQueryString("roleName"), Body.GetQueryInt("lastActivityDate"), permissioins.IsConsoleAdministrator, Body.AdminName, Body.GetQueryInt("departmentId"), Body.GetQueryInt("areaId"));
+                SpContents.SortField = Body.GetQueryString("order");
+                SpContents.SortMode = StringUtils.EqualsIgnoreCase(SpContents.SortField, nameof(AdministratorInfo.UserName)) ? SortMode.ASC : SortMode.DESC;
             }
 
-            rptContents.ItemDataBound += rptContents_ItemDataBound;
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
 
             _lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.SystemConfigInfo.AdminLockLoginType);
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.AdminManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Admin);
 
             var theListItem = new ListItem("全部", string.Empty)
             {
                 Selected = true
             };
-            RoleName.Items.Add(theListItem);
+            DdlRoleName.Items.Add(theListItem);
 
             var allRoles = permissioins.IsConsoleAdministrator ? BaiRongDataProvider.RoleDao.GetAllRoles() : BaiRongDataProvider.RoleDao.GetAllRolesByCreatorUserName(Body.AdminName);
 
@@ -165,7 +142,7 @@ namespace SiteServer.BackgroundPages.Settings
                 if (allPredefinedRoles.Contains(roleName))
                 {
                     var listitem = new ListItem(EPredefinedRoleUtils.GetText(EPredefinedRoleUtils.GetEnumType(roleName)), roleName);
-                    RoleName.Items.Add(listitem);
+                    DdlRoleName.Items.Add(listitem);
                 }
             }
             foreach (var roleName in allRoles)
@@ -173,122 +150,137 @@ namespace SiteServer.BackgroundPages.Settings
                 if (!allPredefinedRoles.Contains(roleName))
                 {
                     var listitem = new ListItem(roleName, roleName);
-                    RoleName.Items.Add(listitem);
+                    DdlRoleName.Items.Add(listitem);
                 }
             }
 
-            ddlAreaID.Items.Add(new ListItem("<全部区域>", "0"));
+            DdlDepartmentId.Items.Add(new ListItem("<所有部门>", "0"));
+            var departmentIdList = DepartmentManager.GetDepartmentIdList();
+            var count = departmentIdList.Count;
+            _isLastNodeArrayOfDepartment = new bool[count];
+            foreach (var theDepartmentId in departmentIdList)
+            {
+                var departmentInfo = DepartmentManager.GetDepartmentInfo(theDepartmentId);
+                DdlDepartmentId.Items.Add(new ListItem(GetTreeItem(departmentInfo.DepartmentId, departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode, _isLastNodeArrayOfDepartment), theDepartmentId.ToString()));
+            }
+            ControlUtils.SelectSingleItem(DdlDepartmentId, departmentId.ToString());
+
+            DdlAreaId.Items.Add(new ListItem("<全部区域>", "0"));
             var areaIdList = AreaManager.GetAreaIdList();
-            var count = areaIdList.Count;
+            count = areaIdList.Count;
             _isLastNodeArrayOfArea = new bool[count];
             foreach (var theAreaId in areaIdList)
             {
                 var areaInfo = AreaManager.GetAreaInfo(theAreaId);
-                var listitem = new ListItem(GetArea(areaInfo.AreaId, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode), theAreaId.ToString());
-                if (areaId == theAreaId)
-                {
-                    listitem.Selected = true;
-                }
-                ddlAreaID.Items.Add(listitem);
+                DdlAreaId.Items.Add(new ListItem(GetTreeItem(areaInfo.AreaId, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode, _isLastNodeArrayOfArea), theAreaId.ToString()));
             }
+            ControlUtils.SelectSingleItem(DdlAreaId, areaId.ToString());
 
-            if (Body.IsQueryExists("PageNum"))
+            if (Body.IsQueryExists("pageNum"))
             {
-                ControlUtils.SelectSingleItem(RoleName, Body.GetQueryString("RoleName"));
-                ControlUtils.SelectSingleItem(PageNum, Body.GetQueryString("PageNum"));
-                Keyword.Text = Body.GetQueryString("Keyword");
-                ControlUtils.SelectSingleItem(ddlAreaID, Body.GetQueryString("AreaID"));
-                ControlUtils.SelectSingleItem(LastActivityDate, Body.GetQueryString("LastActivityDate"));
-                ControlUtils.SelectSingleItem(Order, Body.GetQueryString("Order"));
+                ControlUtils.SelectSingleItem(DdlRoleName, Body.GetQueryString("roleName"));
+                ControlUtils.SelectSingleItem(DdlPageNum, Body.GetQueryString("pageNum"));
+                TbKeyword.Text = Body.GetQueryString("keyword");
+                ControlUtils.SelectSingleItem(DdlDepartmentId, Body.GetQueryString("departmentId"));
+                ControlUtils.SelectSingleItem(DdlAreaId, Body.GetQueryString("areaId"));
+                ControlUtils.SelectSingleItem(DdlLastActivityDate, Body.GetQueryString("lastActivityDate"));
+                ControlUtils.SelectSingleItem(DdlOrder, Body.GetQueryString("order"));
             }
 
-            var urlAdd = PageAdministratorAdd.GetRedirectUrlToAdd(_departmentId);
-            AddButton.Attributes.Add("onclick", $@"location.href='{urlAdd}';return false;");
+            BtnAdd.Attributes.Add("onclick", $@"location.href='{PageAdministratorAdd.GetRedirectUrlToAdd(departmentId)}';return false;");
 
-            var urlAdministrator = GetRedirectUrl(_departmentId);
+            var urlAdministrator = GetRedirectUrl();
 
-            Lock.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(urlAdministrator + "&Lock=True", "UserNameCollection", "UserNameCollection", "请选择需要锁定的管理员！", "此操作将锁定所选管理员，确认吗？"));
+            BtnLock.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(urlAdministrator + "&Lock=True", "UserNameCollection", "UserNameCollection", "请选择需要锁定的管理员！", "此操作将锁定所选管理员，确认吗？"));
 
-            UnLock.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(urlAdministrator + "&UnLock=True", "UserNameCollection", "UserNameCollection", "请选择需要解除锁定的管理员！", "此操作将解除锁定所选管理员，确认吗？"));
+            BtnUnLock.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(urlAdministrator + "&UnLock=True", "UserNameCollection", "UserNameCollection", "请选择需要解除锁定的管理员！", "此操作将解除锁定所选管理员，确认吗？"));
 
-            Delete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(urlAdministrator + "&Delete=True", "UserNameCollection", "UserNameCollection", "请选择需要删除的管理员！", "此操作将删除所选管理员，确认吗？"));
+            BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(urlAdministrator + "&Delete=True", "UserNameCollection", "UserNameCollection", "请选择需要删除的管理员！", "此操作将删除所选管理员，确认吗？"));
 
-            spContents.DataBind();
+            SpContents.DataBind();
         }
 
-        public string GetArea(int areaId, string areaName, int parentsCount, bool isLastNode)
+        public string GetTreeItem(int areaId, string areaName, int parentsCount, bool isLastNode, bool[] array)
         {
             var str = "";
             if (isLastNode == false)
             {
-                _isLastNodeArrayOfArea[parentsCount] = false;
+                array[parentsCount] = false;
             }
             else
             {
-                _isLastNodeArrayOfArea[parentsCount] = true;
+                array[parentsCount] = true;
             }
             for (var i = 0; i < parentsCount; i++)
             {
-                str = string.Concat(str, _isLastNodeArrayOfArea[i] ? "　" : "│");
+                str = string.Concat(str, array[i] ? "　" : "│");
             }
             str = string.Concat(str, isLastNode ? "└" : "├");
             str = string.Concat(str, areaName);
             return str;
         }
 
-        void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
+
+            var userName = SqlUtils.EvalString(e.Item.DataItem, "UserName");
+            var displayName = SqlUtils.EvalString(e.Item.DataItem, "DisplayName");
+            var mobile = SqlUtils.EvalString(e.Item.DataItem, "Mobile");
+            var departmentId = SqlUtils.EvalInt(e.Item.DataItem, "DepartmentID");
+            var areaId = SqlUtils.EvalInt(e.Item.DataItem, "AreaID");
+            if (string.IsNullOrEmpty(displayName))
             {
-                var userName = SqlUtils.EvalString(e.Item.DataItem, "UserName");
-                var displayName = SqlUtils.EvalString(e.Item.DataItem, "DisplayName");
-                var mobile = SqlUtils.EvalString(e.Item.DataItem, "Mobile");
-                var departmentId = SqlUtils.EvalInt(e.Item.DataItem, "DepartmentID");
-                var areaId = SqlUtils.EvalInt(e.Item.DataItem, "AreaID");
-                if (string.IsNullOrEmpty(displayName))
-                {
-                    displayName = userName;
-                }
-                var departmentName = string.Empty;
-                if (_departmentInfo != null)
-                {
-                    departmentName = _departmentInfo.DepartmentName;
-                }
-                else if (departmentId > 0)
-                {
-                    departmentName = DepartmentManager.GetDepartmentName(departmentId);
-                }
-                var countOfFailedLogin = SqlUtils.EvalInt(e.Item.DataItem, "CountOfFailedLogin");
-                var isLockedOut = SqlUtils.EvalBool(e.Item.DataItem, "IsLockedOut");
-                var lastActivityDate = SqlUtils.EvalDateTime(e.Item.DataItem, "LastActivityDate");
-
-                var ltlUserName = (Literal)e.Item.FindControl("ltlUserName");
-                var ltlDisplayName = (Literal)e.Item.FindControl("ltlDisplayName");
-                var ltlMobile = (Literal)e.Item.FindControl("ltlMobile");
-                var ltlDepartment = (Literal)e.Item.FindControl("ltlDepartment");
-                var ltlArea = (Literal)e.Item.FindControl("ltlArea");
-                var ltlEdit = (Literal)e.Item.FindControl("ltlEdit");
-                var hlChangePassword = (HyperLink)e.Item.FindControl("hlChangePassword");
-                var ltlRole = (Literal)e.Item.FindControl("ltlRole");
-                var ltlSelect = (Literal)e.Item.FindControl("ltlSelect");
-
-                ltlUserName.Text = GetUserNameHtml(userName, countOfFailedLogin, isLockedOut, lastActivityDate);
-                ltlDisplayName.Text = displayName;
-                ltlMobile.Text = mobile;
-                ltlDepartment.Text = departmentName;
-                ltlArea.Text = AreaManager.GetAreaName(areaId);
-
-                var urlEdit = PageAdministratorAdd.GetRedirectUrlToEdit(departmentId, userName);
-                ltlEdit.Text = $@"<a href=""{urlEdit}"">修改属性</a>";
-                hlChangePassword.Attributes.Add("onclick", ModalAdminPassword.GetOpenWindowString(userName));
-
-                if (Body.AdminName != userName)
-                {
-                    var openWindowString = ModalPermissionsSet.GetOpenWindowString(userName);
-                    ltlRole.Text = $@"<a href=""javascript:;"" onclick=""{openWindowString}"">权限设置</a>";
-                    ltlSelect.Text = $@"<input type=""checkbox"" name=""UserNameCollection"" value=""{userName}"" />";
-                }
+                displayName = userName;
             }
+            var countOfFailedLogin = SqlUtils.EvalInt(e.Item.DataItem, "CountOfFailedLogin");
+            var countOfLogin = SqlUtils.EvalInt(e.Item.DataItem, "CountOfLogin");
+            var isLockedOut = SqlUtils.EvalBool(e.Item.DataItem, "IsLockedOut");
+            var lastActivityDate = SqlUtils.EvalDateTime(e.Item.DataItem, "LastActivityDate");
+
+            var ltlUserName = (Literal)e.Item.FindControl("ltlUserName");
+            var ltlDisplayName = (Literal)e.Item.FindControl("ltlDisplayName");
+            var ltlMobile = (Literal)e.Item.FindControl("ltlMobile");
+            var ltlDepartment = (Literal)e.Item.FindControl("ltlDepartment");
+            var ltlArea = (Literal)e.Item.FindControl("ltlArea");
+            var ltlLastActivityDate = (Literal)e.Item.FindControl("ltlLastActivityDate");
+            var ltlCountOfLogin = (Literal)e.Item.FindControl("ltlCountOfLogin");
+            var ltlRoles = (Literal)e.Item.FindControl("ltlRoles");
+            var ltlEdit = (Literal)e.Item.FindControl("ltlEdit");
+            var hlChangePassword = (HyperLink)e.Item.FindControl("hlChangePassword");
+            var ltlRole = (Literal)e.Item.FindControl("ltlRole");
+            var ltlSelect = (Literal)e.Item.FindControl("ltlSelect");
+
+            ltlUserName.Text = GetUserNameHtml(userName, countOfFailedLogin, isLockedOut, lastActivityDate);
+            ltlDisplayName.Text = displayName;
+            ltlMobile.Text = mobile;
+            ltlDepartment.Text = DepartmentManager.GetDepartmentName(departmentId);
+            ltlArea.Text = AreaManager.GetAreaName(areaId);
+
+            ltlLastActivityDate.Text = GetDateTime(lastActivityDate);
+            ltlCountOfLogin.Text = countOfLogin.ToString();
+            ltlRoles.Text = AdminManager.GetRolesHtml(userName);
+
+            var urlEdit = PageAdministratorAdd.GetRedirectUrlToEdit(departmentId, userName);
+            ltlEdit.Text = $@"<a href=""{urlEdit}"">修改属性</a>";
+            hlChangePassword.Attributes.Add("onclick", ModalAdminPassword.GetOpenWindowString(userName));
+
+            if (Body.AdminName != userName)
+            {
+                var openWindowString = ModalPermissionsSet.GetOpenWindowString(userName);
+                ltlRole.Text = $@"<a href=""javascript:;"" onclick=""{openWindowString}"">权限设置</a>";
+                ltlSelect.Text = $@"<input type=""checkbox"" name=""UserNameCollection"" value=""{userName}"" />";
+            }
+        }
+
+        private static string GetDateTime(DateTime datetime)
+        {
+            var retval = string.Empty;
+            if (datetime > DateUtils.SqlMinValue)
+            {
+                retval = DateUtils.GetDateString(datetime);
+            }
+            return retval;
         }
 
         private string GetUserNameHtml(string userName, int countOfFailedLogin, bool isLockedOut, DateTime lastActivityDate)
@@ -331,9 +323,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 if (string.IsNullOrEmpty(_pageUrl))
                 {
-                    var url = GetRedirectUrl(_departmentId);
-                    _pageUrl = url +
-                                    $"&RoleName={RoleName.SelectedValue}&PageNum={PageNum.SelectedValue}&Keyword={Keyword.Text}&AreaID={ddlAreaID.SelectedValue}&LastActivityDate={LastActivityDate.SelectedValue}&Order={Order.SelectedValue}";
+                    _pageUrl = $"{GetRedirectUrl()}?roleName={DdlRoleName.SelectedValue}&pageNum={DdlPageNum.SelectedValue}&keyword={TbKeyword.Text}&departmentId={DdlDepartmentId.SelectedValue}&areaId={DdlAreaId.SelectedValue}&lastActivityDate={DdlLastActivityDate.SelectedValue}&order={DdlOrder.SelectedValue}";
                 }
                 return _pageUrl;
             }

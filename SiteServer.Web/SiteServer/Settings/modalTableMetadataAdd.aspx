@@ -12,39 +12,37 @@
       <form runat="server">
         <ctrl:alerts runat="server" />
 
-        <div class="form-horizontal">
-
-          <div class="form-group">
-            <label class="col-xs-2 text-right control-label">字段名</label>
-            <div class="col-xs-5">
+        <div class="form-group form-row">
+            <label class="col-2 text-right col-form-label">字段名</label>
+            <div class="col-5">
               <asp:TextBox id="TbAttributeName" class="form-control" runat="server" />
             </div>
-            <div class="col-xs-5">
+            <div class="col-5">
               <asp:RequiredFieldValidator id="RequiredFieldValidator" ControlToValidate="TbAttributeName" errorMessage=" *" foreColor="red"
                 display="Dynamic" runat="server" />
               <asp:RegularExpressionValidator runat="server" ControlToValidate="TbAttributeName" ValidationExpression="[a-zA-Z0-9_]+" ErrorMessage=" *"
                 foreColor="red" Display="Dynamic" />
-              <span class="help-block">只允许包含字母、数字以及下划线</span>
+              <small class="form-text text-muted">只允许包含字母、数字以及下划线</small>
             </div>
           </div>
-          <div class="form-group">
-            <label class="col-xs-2 text-right control-label">数据类型</label>
-            <div class="col-xs-5">
+          <div class="form-group form-row">
+            <label class="col-2 text-right col-form-label">数据类型</label>
+            <div class="col-5">
               <asp:DropDownList ID="DdlDataType" class="form-control" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DdlDataType_SelectedIndexChanged"
               />
             </div>
-            <div class="col-xs-5">
+            <div class="col-5">
 
             </div>
           </div>
 
           <asp:PlaceHolder id="PhDataLength" runat="server">
-            <div class="form-group">
-              <label class="col-xs-2 text-right control-label">数据长度</label>
-              <div class="col-xs-5">
+            <div class="form-group form-row">
+              <label class="col-2 text-right col-form-label">数据长度</label>
+              <div class="col-5">
                 <asp:TextBox id="TbDataLength" class="form-control" runat="server" />
               </div>
-              <div class="col-xs-5">
+              <div class="col-5">
                 <asp:RequiredFieldValidator ControlToValidate="TbDataLength" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
                 />
                 <asp:RegularExpressionValidator ControlToValidate="TbDataLength" ValidationExpression="\d+" Display="Dynamic" ErrorMessage="数据长度必须为数字"
@@ -55,15 +53,10 @@
 
           <hr />
 
-          <div class="form-group m-b-0">
-            <div class="col-xs-11 text-right">
-              <asp:Button class="btn btn-primary m-l-10" text="确 定" runat="server" onClick="Submit_OnClick" />
-              <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
-            </div>
-            <div class="col-xs-1"></div>
+          <div class="text-right mr-1">
+            <asp:Button class="btn btn-primary m-l-5" text="确 定" runat="server" onClick="Submit_OnClick" />
+            <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
           </div>
-
-        </div>
 
       </form>
     </body>

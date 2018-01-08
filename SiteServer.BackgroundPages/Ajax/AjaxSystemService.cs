@@ -89,7 +89,7 @@ namespace SiteServer.BackgroundPages.Ajax
                     var departmentInfo = DepartmentManager.GetDepartmentInfo(departmentId);
                     if (departmentInfo.ParentId != 0 || allDepartmentIdArrayList.Contains(departmentId))
                     {
-                        arraylist.Add(PageDepartment.GetDepartmentRowHtml(departmentInfo, eLoadingType, nameValueCollection));
+                        arraylist.Add(PageAdminDepartment.GetDepartmentRowHtml(departmentInfo, eLoadingType, nameValueCollection));
                     }
                 }
             }
@@ -98,7 +98,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 foreach (var departmentId in departmentIdList)
                 {
                     var departmentInfo = DepartmentManager.GetDepartmentInfo(departmentId);
-                    arraylist.Add(PageDepartment.GetDepartmentRowHtml(departmentInfo, eLoadingType, nameValueCollection));
+                    arraylist.Add(PageAdminDepartment.GetDepartmentRowHtml(departmentInfo, eLoadingType, nameValueCollection));
                 }
             }
 
@@ -127,7 +127,7 @@ namespace SiteServer.BackgroundPages.Ajax
                     var areaInfo = AreaManager.GetAreaInfo(areaId);
                     if (areaInfo.ParentId != 0 || allAreaIdArrayList.Contains(areaId))
                     {
-                        arraylist.Add(PageArea.GetAreaRowHtml(areaInfo, eLoadingType, nameValueCollection));
+                        arraylist.Add(PageAdminArea.GetAreaRowHtml(areaInfo, eLoadingType, nameValueCollection));
                     }
                 }
             }
@@ -136,7 +136,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 foreach (var areaId in areaIdList)
                 {
                     var areaInfo = AreaManager.GetAreaInfo(areaId);
-                    arraylist.Add(PageArea.GetAreaRowHtml(areaInfo, eLoadingType, nameValueCollection));
+                    arraylist.Add(PageAdminArea.GetAreaRowHtml(areaInfo, eLoadingType, nameValueCollection));
                 }
             }
 

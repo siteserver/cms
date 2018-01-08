@@ -1,47 +1,72 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.PageTemplateJs" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html>
 
-<body>
-<form class="form-inline" runat="server">
-  <asp:Literal id="LtlBreadCrumb" runat="server" />
-  <bairong:alerts text="脚本文件在站点目录 js 中，模板中使用 &amp;lt;script type=&quot;text/javascript&quot; src=&quot;{stl.siteurl}/js/脚本文件.js&quot;&gt;&amp;lt;/script&gt; 引用。" runat="server" />
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-  <asp:dataGrid id="dgContents" showHeader="true" AutoGenerateColumns="false" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">
-    <Columns>
-      <asp:TemplateColumn
-      HeaderText="文件名称">
-        <ItemTemplate> <%# Container.DataItem %> </ItemTemplate>
-        <ItemStyle HorizontalAlign="left" />
-      </asp:TemplateColumn>
-      <asp:TemplateColumn HeaderText="文件编码">
-        <ItemTemplate> <%# GetCharset((string)Container.DataItem) %> </ItemTemplate>
-        <ItemStyle Width="160" CssClass="center" />
-      </asp:TemplateColumn>
-      <asp:TemplateColumn>
-        <ItemTemplate> <a href="<%=PublishmentSystemUrl%>/js/<%# Container.DataItem %>" target="_blank">查看</a> </ItemTemplate>
-        <ItemStyle Width="70" CssClass="center" />
-      </asp:TemplateColumn>
-      <asp:TemplateColumn>
-        <ItemTemplate> <a href="pageTemplateJsAdd.aspx?PublishmentSystemID=<%=PublishmentSystemId%>&FileName=<%# Container.DataItem %>">编辑</a> </ItemTemplate>
-        <ItemStyle Width="70" CssClass="center" />
-      </asp:TemplateColumn>
-      <asp:TemplateColumn>
-        <ItemTemplate> <a href="pageTemplateJs.aspx?PublishmentSystemID=<%=PublishmentSystemId%>&Delete=True&FileName=<%# Container.DataItem %>" onClick="javascript:return confirm('此操作将删除脚本文件“<%# Container.DataItem %>”，确认吗？');">删除</a> </ItemTemplate>
-        <ItemStyle Width="70" CssClass="center" />
-      </asp:TemplateColumn>
-    </Columns>
-  </asp:dataGrid>
+    <body>
+      <form class="m-l-15 m-r-15" runat="server">
+        <ctrl:alerts text="脚本文件在站点目录 js 中，模板中使用 &amp;lt;script type=&quot;text/javascript&quot; src=&quot;{stl.siteurl}/js/脚本文件.js&quot;&gt;&amp;lt;/script&gt; 引用。"
+          runat="server" />
 
-  <ul class="breadcrumb breadcrumb-button">
-    <input type=button class="btn btn-success" onClick="location.href='pageTemplateJsAdd.aspx?PublishmentSystemID=<%=PublishmentSystemId%>';" value="添 加" />
-  </ul>
+        <div class="card-box">
+          <div class="m-t-0 header-title">
+            脚本文件管理
+          </div>
+          <p class="text-muted font-13 m-b-25"></p>
 
-</form>
-</body>
-</html>
+          <div class="panel panel-default m-t-10">
+            <div class="panel-body p-0">
+              <div class="table-responsive">
+                <table class="table tablesaw table-hover m-0">
+                  <thead>
+                    <tr>
+                      <th>文件名称 </th>
+                      <th>文件编码 </th>
+                      <th width="80" class="text-center"></th>
+                      <th width="80" class="text-center"></th>
+                      <th width="80" class="text-center"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <asp:Repeater ID="RptContents" runat="server">
+                      <itemtemplate>
+                        <tr>
+                          <td>
+                            <asp:Literal ID="ltlFileName" runat="server"></asp:Literal>
+                          </td>
+                          <td>
+                            <asp:Literal ID="ltlCharset" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlView" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlEdit" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlDelete" runat="server"></asp:Literal>
+                          </td>
+                        </tr>
+                      </itemtemplate>
+                    </asp:Repeater>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <hr />
+
+          <asp:Button class="btn btn-primary" id="BtnAdd" Text="新增文件" runat="server" />
+
+        </div>
+
+      </form>
+    </body>
+
+    </html>

@@ -48,10 +48,10 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            var pageTitle = _userId == 0 ? "添加用户" : "编辑用户";
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.UserManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.User);
 
-            LtlPageTitle.Text = pageTitle;
+            LtlPageTitle.Text = _userId == 0 ? "添加用户" : "编辑用户";
+
             if (_userId > 0)
             {
                 var userInfo = BaiRongDataProvider.UserDao.GetUserInfo(_userId);
@@ -68,8 +68,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!EUserPasswordRestrictionUtils.Equals(ConfigManager.SystemConfigInfo.UserPasswordRestriction, EUserPasswordRestriction.None))
             {
-                LtlPasswordTips.Text =
-                    $"（请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserPasswordRestriction))}）";
+                LtlPasswordTips.Text = $"请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserPasswordRestriction))}";
             }
 
             if (!string.IsNullOrEmpty(_returnUrl))
@@ -84,62 +83,54 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            if (Page.IsPostBack && Page.IsValid)
+            if (!Page.IsPostBack || !Page.IsValid) return;
+
+            if (_userId == 0)
             {
-                if (_userId == 0)
+                var userInfo = new UserInfo
                 {
-                    var userInfo = new UserInfo
-                    {
-                        UserName = TbUserName.Text,
-                        Password = TbPassword.Text,
-                        CreateDate = DateTime.Now,
-                        LastActivityDate = DateUtils.SqlMinValue,
-                        IsChecked = true,
-                        IsLockedOut = false,
-                        DisplayName = TbDisplayName.Text,
-                        Email = TbEmail.Text,
-                        Mobile = TbMobile.Text
-                    };
+                    UserName = TbUserName.Text,
+                    Password = TbPassword.Text,
+                    CreateDate = DateTime.Now,
+                    LastActivityDate = DateUtils.SqlMinValue,
+                    IsChecked = true,
+                    IsLockedOut = false,
+                    DisplayName = TbDisplayName.Text,
+                    Email = TbEmail.Text,
+                    Mobile = TbMobile.Text
+                };
 
-                    string errorMessage;
-                    var isCreated = BaiRongDataProvider.UserDao.Insert(userInfo, userInfo.Password, string.Empty, out errorMessage);
+                string errorMessage;
+                var isCreated = BaiRongDataProvider.UserDao.Insert(userInfo, userInfo.Password, string.Empty, out errorMessage);
 
-                    if (isCreated)
-                    {
-                        Body.AddAdminLog("添加用户",
-                            $"用户:{TbUserName.Text}");
+                if (isCreated)
+                {
+                    Body.AddAdminLog("添加用户",
+                        $"用户:{TbUserName.Text}");
 
-                        SuccessMessage("用户添加成功，可以继续添加！");
-                        AddWaitAndRedirectScript(GetRedirectUrlToAdd(_returnUrl));
-                    }
-                    else
-                    {
-                        FailMessage($"用户添加失败：<br>{errorMessage}");
-                    }
+                    SuccessMessage("用户添加成功，可以继续添加！");
+                    AddWaitAndRedirectScript(GetRedirectUrlToAdd(_returnUrl));
                 }
                 else
                 {
-                    var userInfo = BaiRongDataProvider.UserDao.GetUserInfo(_userId);
-
-                    userInfo.DisplayName = TbDisplayName.Text;
-                    userInfo.Email = TbEmail.Text;
-                    userInfo.Mobile = TbMobile.Text;
-
-                    try
-                    {
-                        BaiRongDataProvider.UserDao.Update(userInfo);
-
-                        Body.AddAdminLog("修改用户",
-                            $"用户:{TbUserName.Text}");
-
-                        SuccessMessage("用户修改成功！");
-                        AddWaitAndRedirectScript(_returnUrl);
-                    }
-                    catch (Exception ex)
-                    {
-                        FailMessage(ex, $"用户修改失败：{ex.Message}");
-                    }
+                    FailMessage($"用户添加失败：<br>{errorMessage}");
                 }
+            }
+            else
+            {
+                var userInfo = BaiRongDataProvider.UserDao.GetUserInfo(_userId);
+
+                userInfo.DisplayName = TbDisplayName.Text;
+                userInfo.Email = TbEmail.Text;
+                userInfo.Mobile = TbMobile.Text;
+
+                BaiRongDataProvider.UserDao.Update(userInfo);
+
+                Body.AddAdminLog("修改用户",
+                    $"用户:{TbUserName.Text}");
+
+                SuccessMessage("用户修改成功！");
+                AddWaitAndRedirectScript(_returnUrl);
             }
         }
     }

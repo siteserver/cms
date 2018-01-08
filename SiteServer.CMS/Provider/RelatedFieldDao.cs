@@ -168,14 +168,6 @@ namespace SiteServer.CMS.Provider
             return relatedFieldName;
         }
 
-		public IEnumerable GetDataSource(int publishmentSystemId)
-		{
-            string sqlString =
-                $"SELECT RelatedFieldID, RelatedFieldName, PublishmentSystemID, TotalLevel, Prefixes, Suffixes FROM siteserver_RelatedField WHERE PublishmentSystemID = {publishmentSystemId} ORDER BY RelatedFieldID";
-			var enumerable = (IEnumerable)ExecuteReader(sqlString);
-			return enumerable;
-		}
-
 		public List<RelatedFieldInfo> GetRelatedFieldInfoList(int publishmentSystemId)
 		{
 			var list = new List<RelatedFieldInfo>();

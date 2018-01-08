@@ -139,7 +139,6 @@ namespace SiteServer.BackgroundPages.Core
 
                 if (_nodeInfo.ContentNum < 0) return htmlBuilder.ToString();
 
-                htmlBuilder.Append("&nbsp;");
                 htmlBuilder.Append(
                     $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({_nodeInfo.ContentNum})</span>");
             }

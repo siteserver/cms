@@ -23,7 +23,7 @@ SiteServer CMS 是.NET平台CMS系统的创始者，能够以最低的成本、�
 
 ## 2018产品开发路线图
 
-2018年，SiteServer CMS 产品将在每个月底发布新的稳定版本，我们将在每次迭代中对核心功能、文档支持、功能插件以及网站模板四个方面持续改进，详情请参考 [路线图](https://github.com/siteserver/cms/wiki/%E8%B7%AF%E7%BA%BF%E5%9B%BE)。
+2018年，SiteServer CMS 产品将在每个月底发布新的稳定版本，我们将在每次迭代中对核心功能、文档支持、功能插件以及网站模板四个方面进行持续改进，详情请参考 [路线图](https://github.com/siteserver/cms/wiki/%E8%B7%AF%E7%BA%BF%E5%9B%BE)。
 
 ## Feedback
 

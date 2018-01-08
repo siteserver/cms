@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages
             {
                 if (permissions.IsSystemAdministrator)  // 如果目前还没有创建站点并且当前登录管理员是系统管理员
                 {
-                    redirectUrl = PagePublishmentSystemAdd.GetRedirectUrl(); // 则直接跳到站点创建页面
+                    redirectUrl = PageSiteAdd.GetRedirectUrl(); // 则直接跳到站点创建页面
                 }
             }
 

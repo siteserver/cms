@@ -26,44 +26,36 @@
       <form runat="server">
         <ctrl:alerts runat="server" />
 
-        <div class="form-horizontal">
+        <div class="form-group form-row">
+          <div class="col-12">
 
-
-          <div class="form-group">
-            <div class="col-xs-12">
-
-              <div style="border: 1px solid #CCC; width:100%">
-                <asp:TextBox width="100%" TextMode="MultiLine" id="TbContent" runat="server" Wrap="false" />
-              </div>
-              <script type="text/javascript">
-                $(document).ready(function () {
-                  var isTextArea = false;
-                  var editor = CodeMirror.fromTextArea('TbContent', {
-                    height: "400px",
-                    parserfile: ["parsexml.js"],
-                    stylesheet: ["../assets/codeMirror/css/xmlcolors.css"],
-                    path: "../assets/codeMirror/js/",
-                    continuousScanning: 500,
-                    lineNumbers: true
-                  });
-                  $('#reindent').show().click(function () {
-                    if (!isTextArea) editor.reindent();
-                  });
+            <div style="border: 1px solid #CCC; width:100%">
+              <asp:TextBox width="100%" TextMode="MultiLine" id="TbContent" runat="server" Wrap="false" />
+            </div>
+            <script type="text/javascript">
+              $(document).ready(function () {
+                var isTextArea = false;
+                var editor = CodeMirror.fromTextArea('TbContent', {
+                  height: "400px",
+                  parserfile: ["parsexml.js"],
+                  stylesheet: ["../assets/codeMirror/css/xmlcolors.css"],
+                  path: "../assets/codeMirror/js/",
+                  continuousScanning: 500,
+                  lineNumbers: true
                 });
-              </script>
+                $('#reindent').show().click(function () {
+                  if (!isTextArea) editor.reindent();
+                });
+              });
+            </script>
 
-            </div>
           </div>
+        </div>
 
-          <hr />
+        <hr />
 
-          <div class="form-group m-b-0">
-            <div class="col-xs-11 text-right">
-              <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">关 闭</button>
-            </div>
-            <div class="col-xs-1"></div>
-          </div>
-
+        <div class="text-right mr-1">
+          <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">关 闭</button>
         </div>
 
       </form>

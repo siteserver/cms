@@ -12,29 +12,22 @@
 			<form runat="server">
 				<ctrl:alerts text="每一行为一个选项，如果显示项与值不同可以用“|”隔开，左边为显示项，右边为值" runat="server" />
 
-				<div class="form-horizontal">
-
-					<div class="form-group">
-						<label class="col-xs-1 text-right control-label"></label>
-						<div class="col-xs-10">
-							<asp:TextBox class="form-control" Rows="8" TextMode="MultiLine" id="TbItemNames" runat="server" />
-						</div>
-						<div class="col-xs-1">
-							<asp:RequiredFieldValidator ControlToValidate="TbItemNames" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
-							/>
-						</div>
+				<div class="form-group form-row">
+					<label class="col-1 text-right col-form-label"></label>
+					<div class="col-10">
+						<asp:TextBox class="form-control" Rows="8" TextMode="MultiLine" id="TbItemNames" runat="server" />
 					</div>
-
-					<hr />
-
-					<div class="form-group m-b-0">
-						<div class="col-xs-11 text-right">
-							<asp:Button class="btn btn-primary m-l-10" text="确 定" runat="server" onClick="Submit_OnClick" />
-							<button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
-						</div>
-						<div class="col-xs-1"></div>
+					<div class="col-1">
+						<asp:RequiredFieldValidator ControlToValidate="TbItemNames" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+						/>
 					</div>
+				</div>
 
+				<hr />
+
+				<div class="text-right mr-1">
+					<asp:Button class="btn btn-primary m-l-5" text="确 定" runat="server" onClick="Submit_OnClick" />
+					<button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
 				</div>
 
 			</form>

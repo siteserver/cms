@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.BackgroundPages.Core;
@@ -13,9 +12,9 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageContentTranslate : BasePageCms
     {
-        public Literal ltlContents;
-        public HtmlControl divTranslateAdd;
-        public RadioButtonList ddlTranslateType;
+        public Literal LtlContents;
+        public Button BtnTranslateAdd;
+        public RadioButtonList RblTranslateType;
 
         private Dictionary<int, List<int>> _idsDictionary = new Dictionary<int, List<int>>();
         private string _returnUrl;
@@ -87,12 +86,12 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
             }
-            ltlContents.Text = builder.ToString();
+            LtlContents.Text = builder.ToString();
 
-            divTranslateAdd.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(PublishmentSystemId, true));
+            BtnTranslateAdd.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(PublishmentSystemId, true));
 
-            ETranslateContentTypeUtils.AddListItems(ddlTranslateType, isCut);
-            ControlUtils.SelectSingleItem(ddlTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
+            ETranslateContentTypeUtils.AddListItems(RblTranslateType, isCut);
+            ControlUtils.SelectSingleItem(RblTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -103,7 +102,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 try
                 {
-                    var translateType = ETranslateContentTypeUtils.GetEnumType(ddlTranslateType.SelectedValue);
+                    var translateType = ETranslateContentTypeUtils.GetEnumType(RblTranslateType.SelectedValue);
 
                     foreach (var nodeId in _idsDictionary.Keys)
                     {

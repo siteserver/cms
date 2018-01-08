@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
@@ -14,10 +13,9 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class PageContentDelete : BasePageCms
     {
-        public Literal ltlContents;
-        public Control RetainRow;
-        public RadioButtonList RetainFiles;
-        public Button Submit;
+        public Literal LtlContents;
+        public PlaceHolder PhRetain;
+        public RadioButtonList RblRetainFiles;
 
         private Dictionary<int, List<int>> _idsDictionary = new Dictionary<int, List<int>>();
         private bool _isDeleteFromTrash;
@@ -110,89 +108,88 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
             }
-            ltlContents.Text = builder.ToString();
+            LtlContents.Text = builder.ToString();
 
             if (!_isDeleteFromTrash)
             {
-                RetainRow.Visible = true;
+                PhRetain.Visible = true;
                 InfoMessage("此操作将把所选内容放入回收站，确定吗？");
             }
             else
             {
-                RetainRow.Visible = false;
+                PhRetain.Visible = false;
                 InfoMessage("此操作将从回收站中彻底删除所选内容，确定吗？");
             }
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            if (Page.IsPostBack && Page.IsValid)
+            if (!Page.IsPostBack || !Page.IsValid) return;
+
+            try
             {
-                try
+                foreach (var nodeId in _idsDictionary.Keys)
                 {
-                    foreach (var nodeId in _idsDictionary.Keys)
+                    var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
+                    var contentIdList = _idsDictionary[nodeId];
+
+                    if (!_isDeleteFromTrash)
                     {
-                        var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
-                        var contentIdList = _idsDictionary[nodeId];
-
-                        if (!_isDeleteFromTrash)
+                        if (bool.Parse(RblRetainFiles.SelectedValue) == false)
                         {
-                            if (bool.Parse(RetainFiles.SelectedValue) == false)
-                            {
-                                DirectoryUtility.DeleteContents(PublishmentSystemInfo, nodeId, contentIdList);
-                                SuccessMessage("成功删除内容以及生成页面！");
-                            }
-                            else
-                            {
-                                SuccessMessage("成功删除内容，生成页面未被删除！");
-                            }
-
-                            if (contentIdList.Count == 1)
-                            {
-                                var contentId = contentIdList[0];
-                                var contentTitle = BaiRongDataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
-                                Body.AddSiteLog(PublishmentSystemId, nodeId, contentId, "删除内容",
-                                    $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId)},内容标题:{contentTitle}");
-                            }
-                            else
-                            {
-                                Body.AddSiteLog(PublishmentSystemId, "批量删除内容",
-                                    $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId)},内容条数:{contentIdList.Count}");
-                            }
-
-                            DataProvider.ContentDao.TrashContents(PublishmentSystemId, tableName, contentIdList);
-
-                            //引用内容，需要删除
-                            var tableList = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfoListCreatedInDb();
-                            foreach (var table in tableList)
-                            {
-                                var targetContentIdList = BaiRongDataProvider.ContentDao.GetReferenceIdList(table.TableEnName, contentIdList);
-                                if (targetContentIdList.Count > 0)
-                                {
-                                    var targetContentInfo = DataProvider.ContentDao.GetContentInfo(table.TableEnName, TranslateUtils.ToInt(targetContentIdList[0].ToString()));
-                                    DataProvider.ContentDao.DeleteContents(targetContentInfo.PublishmentSystemId, table.TableEnName, targetContentIdList, targetContentInfo.NodeId);
-                                }
-                            }
-
-                            CreateManager.CreateContentTrigger(PublishmentSystemId, nodeId);
+                            DirectoryUtility.DeleteContents(PublishmentSystemInfo, nodeId, contentIdList);
+                            SuccessMessage("成功删除内容以及生成页面！");
                         }
                         else
                         {
-                            SuccessMessage("成功从回收站清空内容！");
-                            DataProvider.ContentDao.DeleteContents(PublishmentSystemId, tableName, contentIdList, nodeId);
-
-                            Body.AddSiteLog(PublishmentSystemId, "从回收站清空内容", $"内容条数:{contentIdList.Count}");
+                            SuccessMessage("成功删除内容，生成页面未被删除！");
                         }
+
+                        if (contentIdList.Count == 1)
+                        {
+                            var contentId = contentIdList[0];
+                            var contentTitle = BaiRongDataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
+                            Body.AddSiteLog(PublishmentSystemId, nodeId, contentId, "删除内容",
+                                $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId)},内容标题:{contentTitle}");
+                        }
+                        else
+                        {
+                            Body.AddSiteLog(PublishmentSystemId, "批量删除内容",
+                                $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId)},内容条数:{contentIdList.Count}");
+                        }
+
+                        DataProvider.ContentDao.TrashContents(PublishmentSystemId, tableName, contentIdList);
+
+                        //引用内容，需要删除
+                        var tableList = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfoListCreatedInDb();
+                        foreach (var table in tableList)
+                        {
+                            var targetContentIdList = BaiRongDataProvider.ContentDao.GetReferenceIdList(table.TableEnName, contentIdList);
+                            if (targetContentIdList.Count > 0)
+                            {
+                                var targetContentInfo = DataProvider.ContentDao.GetContentInfo(table.TableEnName, TranslateUtils.ToInt(targetContentIdList[0].ToString()));
+                                DataProvider.ContentDao.DeleteContents(targetContentInfo.PublishmentSystemId, table.TableEnName, targetContentIdList, targetContentInfo.NodeId);
+                            }
+                        }
+
+                        CreateManager.CreateContentTrigger(PublishmentSystemId, nodeId);
                     }
+                    else
+                    {
+                        SuccessMessage("成功从回收站清空内容！");
+                        DataProvider.ContentDao.DeleteContents(PublishmentSystemId, tableName, contentIdList, nodeId);
+
+                        Body.AddSiteLog(PublishmentSystemId, "从回收站清空内容", $"内容条数:{contentIdList.Count}");
+                    }
+                }
 
 
-                    AddWaitAndRedirectScript(_returnUrl);
-                }
-                catch (Exception ex)
-                {
-                    LogUtils.AddSystemErrorLog(ex);
-                    FailMessage(ex, "删除内容失败！");
-                }
+                AddWaitAndRedirectScript(_returnUrl);
+            }
+            catch (Exception ex)
+            {
+                LogUtils.AddSystemErrorLog(ex);
+                FailMessage(ex, "删除内容失败！");
             }
         }
 

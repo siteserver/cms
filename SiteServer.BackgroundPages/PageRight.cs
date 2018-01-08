@@ -7,7 +7,6 @@ namespace SiteServer.BackgroundPages
 {
     public class PageRight : BasePage
     {
-        public Literal LtlWelcome;
         public Literal LtlVersionInfo;
         public Literal LtlUpdateDate;
         public Literal LtlLastLoginDate;
@@ -17,8 +16,6 @@ namespace SiteServer.BackgroundPages
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
-
-            LtlWelcome.Text = "欢迎使用 SiteServer 管理后台";
 
             LtlVersionInfo.Text = AppManager.GetFullVersion();
 

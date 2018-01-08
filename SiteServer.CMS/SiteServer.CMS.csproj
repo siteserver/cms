@@ -289,7 +289,6 @@
     <Compile Include="Model\TaskLogInfo.cs" />
     <Compile Include="Model\TemplateLogInfo.cs" />
     <Compile Include="Model\KeywordInfo.cs" />
-    <Compile Include="Model\ITagStyleMailSMSBaseInfo.cs" />
     <Compile Include="StlControls\CommentInput.cs" />
     <Compile Include="StlParser\Model\ListInfo.cs" />
     <Compile Include="StlParser\Model\ContextInfo.cs" />
@@ -468,7 +467,6 @@
     <Compile Include="Model\NodeInfoExtend.cs" />
     <Compile Include="Model\PublishmentSystemInfo.cs" />
     <Compile Include="Model\PublishmentSystemInfoExtend.cs" />
-    <Compile Include="Core\MessageManager.cs" />
     <Compile Include="Model\SitePageInfo.cs" />
     <Compile Include="Provider\AdvertisementDao.cs" />
     <Compile Include="Provider\BackgroundContentDao.cs" />

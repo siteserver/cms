@@ -11,44 +11,43 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class PageCreateChannel : BasePageCms
     {
-        public ListBox NodeIDCollectionToCreate;
-        public DropDownList ChooseScope;
-        public Button DeleteAllNodeButton;
+        public ListBox LbNodeIdList;
+        public DropDownList DdlScope;
+        public Button BtnDeleteAll;
+
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
 
-            if (!IsPostBack)
-            {
-                VerifySitePermissions(AppManager.Permissions.WebSite.Create);
+            if (IsPostBack) return;
 
-                var listitem = new ListItem("所有选中的栏目", "All");
-                ChooseScope.Items.Add(listitem);
-                listitem = new ListItem("一个月内更新的栏目", "Month");
-                ChooseScope.Items.Add(listitem);
-                listitem = new ListItem("一天内更新的栏目", "Day");
-                ChooseScope.Items.Add(listitem);
-                listitem = new ListItem("2小时内更新的栏目", "2Hour");
-                ChooseScope.Items.Add(listitem);
+            VerifySitePermissions(AppManager.Permissions.WebSite.Create);
 
-                NodeManager.AddListItems(NodeIDCollectionToCreate.Items, PublishmentSystemInfo, false, true, Body.AdminName);
-                DeleteAllNodeButton.Attributes.Add("onclick", "return confirm(\"此操作将删除所有已生成的栏目页面，确定吗？\");");
-            }
+            var listitem = new ListItem("所有选中的栏目", "All");
+            DdlScope.Items.Add(listitem);
+            listitem = new ListItem("一个月内更新的栏目", "Month");
+            DdlScope.Items.Add(listitem);
+            listitem = new ListItem("一天内更新的栏目", "Day");
+            DdlScope.Items.Add(listitem);
+            listitem = new ListItem("2小时内更新的栏目", "2Hour");
+            DdlScope.Items.Add(listitem);
+
+            NodeManager.AddListItems(LbNodeIdList.Items, PublishmentSystemInfo, false, true, Body.AdminName);
+            BtnDeleteAll.Attributes.Add("onclick", "return confirm(\"此操作将删除所有已生成的栏目页面，确定吗？\");");
         }
 
-
-        public void CreateNodeButton_OnClick(object sender, EventArgs e)
+        public void Create_OnClick(object sender, EventArgs e)
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
             var nodeIdList = new List<int>();
-            var selectedNodeIdArrayList = ControlUtils.GetSelectedListControlValueArrayList(NodeIDCollectionToCreate);
+            var selectedNodeIdArrayList = ControlUtils.GetSelectedListControlValueArrayList(LbNodeIdList);
 
             var tableName = PublishmentSystemInfo.AuxiliaryTableForContent;
 
-            if (ChooseScope.SelectedValue == "Month")
+            if (DdlScope.SelectedValue == "Month")
             {
                 var lastEditList = BaiRongDataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 720);
                 foreach (var nodeId in lastEditList)
@@ -59,7 +58,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
             }
-            else if (ChooseScope.SelectedValue == "Day")
+            else if (DdlScope.SelectedValue == "Day")
             {
                 var lastEditList = BaiRongDataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 24);
                 foreach (var nodeId in lastEditList)
@@ -70,7 +69,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
             }
-            else if (ChooseScope.SelectedValue == "2Hour")
+            else if (DdlScope.SelectedValue == "2Hour")
             {
                 var lastEditList = BaiRongDataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 2);
                 foreach (var nodeId in lastEditList)
@@ -100,7 +99,7 @@ namespace SiteServer.BackgroundPages.Cms
             PageCreateStatus.Redirect(PublishmentSystemId);
         }
 
-        public void DeleteAllNodeButton_OnClick(object sender, EventArgs e)
+        public void BtnDeleteAll_OnClick(object sender, EventArgs e)
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 

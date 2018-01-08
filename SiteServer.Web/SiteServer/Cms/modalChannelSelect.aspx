@@ -12,14 +12,15 @@
       <form runat="server">
         <ctrl:alerts runat="server" />
 
-        <div class="form-horizontal">
-
-          <table class="table table-hover">
-            <tr class="info thead">
-              <td>
+        <table class="table tablesaw table-hover m-0">
+          <thead>
+            <tr class="thead">
+              <th>
                 点击栏目名称进行选择
-              </td>
+              </th>
             </tr>
+          </thead>
+          <tbody>
             <tr treeItemLevel="2">
               <td>
                 <img align="absmiddle" style="cursor:pointer" onClick="displayChildren(this);" isAjax="false" isOpen="true" src="../assets/icons/tree/minus.gif"
@@ -33,9 +34,8 @@
                 <asp:Literal id="ltlHtml" runat="server" />
               </itemtemplate>
             </asp:Repeater>
-          </table>
-
-        </div>
+          </tbody>
+        </table>
 
       </form>
     </body>

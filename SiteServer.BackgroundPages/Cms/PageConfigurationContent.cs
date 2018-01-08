@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
@@ -17,6 +18,14 @@ namespace SiteServer.BackgroundPages.Cms
         public PlaceHolder PhCheckContentLevel; 
         public DropDownList DdlCheckContentLevel;
         public DropDownList DdlIsAutoCheckKeywords;
+
+        public static string GetRedirectUrl(int publishmentSystemId)
+        {
+            return PageUtils.GetCmsUrl(nameof(PageConfigurationContent), new NameValueCollection
+            {
+                {"PublishmentSystemID", publishmentSystemId.ToString()}
+            });
+        }
 
         public void Page_Load(object sender, EventArgs e)
         {

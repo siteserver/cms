@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {"publishmentSystemID", publishmentSystemId.ToString()},
                     {"nodeID", nodeId.ToString()},
                     {"returnUrl", returnUrl}
-                }), 550, 400);
+                }), 600, 400);
         }
 
         public string GetUploadWordMultipleUrl()

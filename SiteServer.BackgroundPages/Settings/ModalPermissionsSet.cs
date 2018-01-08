@@ -208,7 +208,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (isChanged)
             {
-                var redirectUrl = PageAdministrator.GetRedirectUrl(0);
+                var redirectUrl = PageAdministrator.GetRedirectUrl();
                 LayerUtils.CloseAndRedirect(Page, redirectUrl);
             }
         }
