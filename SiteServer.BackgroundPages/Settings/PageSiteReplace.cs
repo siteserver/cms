@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
-using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
@@ -86,7 +85,7 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlDescription = (Literal)e.Item.FindControl("ltlDescription");
             var ltlSamplePic = (Literal)e.Item.FindControl("ltlSamplePic");
 
-            ltlChoose.Text = $@"<input type=""radio"" name=""choose"" id=""choose"" onClick=""document.getElementById('HihSiteTemplateDir').value=this.value;"" value=""{directoryInfo.Name}"" />";
+            ltlChoose.Text = $@"<input type=""radio"" name=""choose"" id=""choose_{directoryInfo.Name}"" onClick=""document.getElementById('{HihSiteTemplateDir.ClientID}').value=this.value;"" value=""{directoryInfo.Name}"" /><label for=""choose_{directoryInfo.Name}"">选中</label>";
             
             if (!string.IsNullOrEmpty(siteTemplateInfo.SiteTemplateName))
             {
@@ -104,8 +103,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 var siteTemplateUrl = PageUtils.GetSiteTemplatesUrl(directoryInfo.Name);
                 var picFileName = PageUtils.GetSiteTemplateMetadataUrl(siteTemplateUrl, siteTemplateInfo.PicFileName);
-                ltlSamplePic.Text =
-                    $"<a href=\"{picFileName}\" target=_blank><img height=120 width=100 border=0 src=\"{picFileName}\" /></a>";
+                ltlSamplePic.Text = $@"<a href=""{picFileName}"" target=""_blank"">样图</a>";
             }
         }
 
@@ -122,8 +120,8 @@ namespace SiteServer.BackgroundPages.Settings
 
             LtlSiteTemplateName.Text = !string.IsNullOrEmpty(siteTemplateInfo.WebSiteUrl) ? $"<a href=\"{PageUtils.ParseConfigRootUrl(siteTemplateInfo.WebSiteUrl)}\" target=_blank>{siteTemplateInfo.SiteTemplateName}</a>" : siteTemplateInfo.SiteTemplateName;
 
-            PhChooseSiteTemplate.Visible = true;
-            PhCreateSiteParameters.Visible = false;
+            PhChooseSiteTemplate.Visible = false;
+            PhCreateSiteParameters.Visible = true;
             BtnNext.Visible = false;
             BtnSubmit.Visible = true;
         }

@@ -1,5 +1,5 @@
 <%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.PageIntegrationPayJdpay" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
 
@@ -12,11 +12,24 @@
       <form class="m-l-15 m-r-15" runat="server">
 
         <div class="card-box">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link" href="pageIntegrationSms.aspx">短信集成</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="pageIntegrationPay.aspx">支付集成</a>
+            </li>
+          </ul>
+        </div>
+
+        <ctrl:alerts runat="server" />
+
+        <div class="card-box">
           <div class="m-t-0 header-title">
-            京东支付设置
+            京东支付集成
           </div>
           <p class="text-muted font-13 m-b-25">
-            在此设置京东支付配置
+            在此设置京东支付
           </p>
 
           <div class="form-group">
@@ -29,8 +42,8 @@
 
             <div class="form-group">
               <label class="col-form-label">商户号
-                <asp:RequiredFieldValidator ControlToValidate="TbMerchant" ErrorMessage=" *" ForeColor="red" Display="Dynamic"
-                  runat="server" />
+                <asp:RequiredFieldValidator ControlToValidate="TbMerchant" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
+                />
                 <asp:RegularExpressionValidator runat="server" ControlToValidate="TbMerchant" ValidationExpression="[^']+" ErrorMessage=" *"
                   ForeColor="red" Display="Dynamic" />
               </label>
@@ -41,8 +54,8 @@
 
             <div class="form-group">
               <label class="col-form-label">用户名
-                <asp:RequiredFieldValidator ControlToValidate="TbUserId" ErrorMessage=" *" ForeColor="red" Display="Dynamic"
-                  runat="server" />
+                <asp:RequiredFieldValidator ControlToValidate="TbUserId" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
+                />
                 <asp:RegularExpressionValidator runat="server" ControlToValidate="TbUserId" ValidationExpression="[^']+" ErrorMessage=" *"
                   ForeColor="red" Display="Dynamic" />
               </label>
@@ -53,8 +66,8 @@
 
             <div class="form-group">
               <label class="col-form-label">MD5 密钥
-                <asp:RequiredFieldValidator ControlToValidate="TbMd5Key" ErrorMessage=" *" ForeColor="red" Display="Dynamic"
-                  runat="server" />
+                <asp:RequiredFieldValidator ControlToValidate="TbMd5Key" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
+                />
                 <asp:RegularExpressionValidator runat="server" ControlToValidate="TbMd5Key" ValidationExpression="[^']+" ErrorMessage=" *"
                   ForeColor="red" Display="Dynamic" />
               </label>
@@ -65,8 +78,8 @@
 
             <div class="form-group">
               <label class="col-form-label">DES密钥
-                <asp:RequiredFieldValidator ControlToValidate="TbDesKey" ErrorMessage=" *" ForeColor="red" Display="Dynamic"
-                  runat="server" />
+                <asp:RequiredFieldValidator ControlToValidate="TbDesKey" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
+                />
                 <asp:RegularExpressionValidator runat="server" ControlToValidate="TbDesKey" ValidationExpression="[^']+" ErrorMessage=" *"
                   ForeColor="red" Display="Dynamic" />
               </label>
@@ -77,8 +90,8 @@
 
             <div class="form-group">
               <label class="col-form-label">商户RSA公钥
-                <asp:RequiredFieldValidator ControlToValidate="TbPublicKey" ErrorMessage=" *" ForeColor="red" Display="Dynamic"
-                  runat="server" />
+                <asp:RequiredFieldValidator ControlToValidate="TbPublicKey" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
+                />
                 <asp:RegularExpressionValidator runat="server" ControlToValidate="TbPublicKey" ValidationExpression="[^']+" ErrorMessage=" *"
                   ForeColor="red" Display="Dynamic" />
               </label>
@@ -90,8 +103,8 @@
 
             <div class="form-group">
               <label class="col-form-label">商户RSA私钥
-                <asp:RequiredFieldValidator ControlToValidate="TbPrivateKey" ErrorMessage=" *" ForeColor="red" Display="Dynamic"
-                  runat="server" />
+                <asp:RequiredFieldValidator ControlToValidate="TbPrivateKey" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
+                />
                 <asp:RegularExpressionValidator runat="server" ControlToValidate="TbPrivateKey" ValidationExpression="[^']+" ErrorMessage=" *"
                   ForeColor="red" Display="Dynamic" />
               </label>

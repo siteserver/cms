@@ -1,5 +1,5 @@
 <%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.PageIntegrationSms" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
 
@@ -12,11 +12,19 @@
       <form class="m-l-15 m-r-15" runat="server">
 
         <div class="card-box">
-          <div class="m-t-0 header-title">
-            短信设置
-          </div>
-          <p class="text-muted font-13 m-b-25"></p>
+          <ul class="nav nav-pills">
+            <li class="nav-item active">
+              <a class="nav-link" href="pageIntegrationSms.aspx">短信集成</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageIntegrationPay.aspx">支付集成</a>
+            </li>
+          </ul>
+        </div>
 
+        <ctrl:alerts runat="server" />
+
+        <div class="card-box">
           <div class="form-group">
             <label class="col-form-label">短信服务商</label>
             <asp:DropDownList ID="DdlProviderType" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="DdlProviderType_SelectedIndexChanged"

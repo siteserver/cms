@@ -10,7 +10,6 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
-        <ctrl:alerts text="启用定时任务需要在服务器中安装SiteServer Service服务组件" runat="server" />
 
         <div class="card-box">
           <ul class="nav nav-pills">
@@ -18,8 +17,9 @@
           </ul>
         </div>
 
-        <div class="card-box">
+        <ctrl:alerts text="启用定时任务需要在服务器中安装SiteServer Service服务组件" runat="server" />
 
+        <div class="card-box">
           <div class="panel panel-default m-t-10">
             <div class="panel-body p-0">
               <div class="table-responsive">

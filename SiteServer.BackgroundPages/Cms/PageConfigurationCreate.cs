@@ -82,42 +82,34 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
 		{
-			if (Page.IsPostBack && Page.IsValid)
-			{
-                PublishmentSystemInfo.Additional.IsCreateContentIfContentChanged = TranslateUtils.ToBool(DdlIsCreateContentIfContentChanged.SelectedValue);
-                PublishmentSystemInfo.Additional.IsCreateChannelIfChannelChanged = TranslateUtils.ToBool(DdlIsCreateChannelIfChannelChanged.SelectedValue);
+		    if (!Page.IsPostBack || !Page.IsValid) return;
 
-                PublishmentSystemInfo.Additional.IsCreateShowPageInfo = TranslateUtils.ToBool(DdlIsCreateShowPageInfo.SelectedValue);
-                PublishmentSystemInfo.Additional.IsCreateIe8Compatible = TranslateUtils.ToBool(DdlIsCreateIe8Compatible.SelectedValue);
-                PublishmentSystemInfo.Additional.IsCreateBrowserNoCache = TranslateUtils.ToBool(DdlIsCreateBrowserNoCache.SelectedValue);
-                PublishmentSystemInfo.Additional.IsCreateJsIgnoreError = TranslateUtils.ToBool(DdlIsCreateJsIgnoreError.SelectedValue);
-                PublishmentSystemInfo.Additional.IsCreateSearchDuplicate = TranslateUtils.ToBool(DdlIsCreateSearchDuplicate.SelectedValue);
-                PublishmentSystemInfo.Additional.IsCreateWithJQuery = TranslateUtils.ToBool(DdlIsCreateWithJQuery.SelectedValue);
+		    PublishmentSystemInfo.Additional.IsCreateContentIfContentChanged = TranslateUtils.ToBool(DdlIsCreateContentIfContentChanged.SelectedValue);
+		    PublishmentSystemInfo.Additional.IsCreateChannelIfChannelChanged = TranslateUtils.ToBool(DdlIsCreateChannelIfChannelChanged.SelectedValue);
 
-                PublishmentSystemInfo.Additional.IsCreateDoubleClick = TranslateUtils.ToBool(DdlIsCreateDoubleClick.SelectedValue);
-                PublishmentSystemInfo.Additional.CreateStaticMaxPage = TranslateUtils.ToInt(TbCreateStaticMaxPage.Text);
+		    PublishmentSystemInfo.Additional.IsCreateShowPageInfo = TranslateUtils.ToBool(DdlIsCreateShowPageInfo.SelectedValue);
+		    PublishmentSystemInfo.Additional.IsCreateIe8Compatible = TranslateUtils.ToBool(DdlIsCreateIe8Compatible.SelectedValue);
+		    PublishmentSystemInfo.Additional.IsCreateBrowserNoCache = TranslateUtils.ToBool(DdlIsCreateBrowserNoCache.SelectedValue);
+		    PublishmentSystemInfo.Additional.IsCreateJsIgnoreError = TranslateUtils.ToBool(DdlIsCreateJsIgnoreError.SelectedValue);
+		    PublishmentSystemInfo.Additional.IsCreateSearchDuplicate = TranslateUtils.ToBool(DdlIsCreateSearchDuplicate.SelectedValue);
+		    PublishmentSystemInfo.Additional.IsCreateWithJQuery = TranslateUtils.ToBool(DdlIsCreateWithJQuery.SelectedValue);
 
-                PublishmentSystemInfo.Additional.IsCreateStaticContentByAddDate = TranslateUtils.ToBool(DdlIsCreateStaticContentByAddDate.SelectedValue);
-                if (PublishmentSystemInfo.Additional.IsCreateStaticContentByAddDate)
-                {
-                    PublishmentSystemInfo.Additional.CreateStaticContentAddDate = TbCreateStaticContentAddDate.DateTime;
-                } 
+		    PublishmentSystemInfo.Additional.IsCreateDoubleClick = TranslateUtils.ToBool(DdlIsCreateDoubleClick.SelectedValue);
+		    PublishmentSystemInfo.Additional.CreateStaticMaxPage = TranslateUtils.ToInt(TbCreateStaticMaxPage.Text);
 
-                PublishmentSystemInfo.Additional.IsCreateMultiThread = TranslateUtils.ToBool(DdlIsCreateMultiThread.SelectedValue);
+		    PublishmentSystemInfo.Additional.IsCreateStaticContentByAddDate = TranslateUtils.ToBool(DdlIsCreateStaticContentByAddDate.SelectedValue);
+		    if (PublishmentSystemInfo.Additional.IsCreateStaticContentByAddDate)
+		    {
+		        PublishmentSystemInfo.Additional.CreateStaticContentAddDate = TbCreateStaticContentAddDate.DateTime;
+		    } 
 
-                try
-				{
-                    DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
+		    PublishmentSystemInfo.Additional.IsCreateMultiThread = TranslateUtils.ToBool(DdlIsCreateMultiThread.SelectedValue);
 
-                    Body.AddSiteLog(PublishmentSystemId, "修改页面生成设置");
+            DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
 
-                    SuccessMessage("页面生成设置修改成功！");
-				}
-				catch(Exception ex)
-				{
-                    FailMessage(ex, "页面生成设置修改失败！");
-				}
-			}
-		}
+            Body.AddSiteLog(PublishmentSystemId, "修改页面生成设置");
+
+            SuccessMessage("页面生成设置修改成功！");
+        }
 	}
 }

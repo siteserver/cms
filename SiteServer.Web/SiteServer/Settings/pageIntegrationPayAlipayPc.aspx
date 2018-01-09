@@ -1,5 +1,5 @@
 <%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.PageIntegrationPayAlipayPc" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
 
@@ -12,11 +12,24 @@
       <form class="m-l-15 m-r-15" runat="server">
 
         <div class="card-box">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link" href="pageIntegrationSms.aspx">短信集成</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="pageIntegrationPay.aspx">支付集成</a>
+            </li>
+          </ul>
+        </div>
+
+        <ctrl:alerts runat="server" />
+
+        <div class="card-box">
           <div class="m-t-0 header-title">
-            支付宝电脑网站支付设置
+            支付宝电脑网站支付集成
           </div>
           <p class="text-muted font-13 m-b-25">
-            在此设置支付宝电脑网站支付配置
+            在此设置支付宝电脑网站支付
           </p>
 
           <div class="form-group">

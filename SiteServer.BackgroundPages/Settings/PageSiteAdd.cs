@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
-using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
@@ -21,38 +20,36 @@ namespace SiteServer.BackgroundPages.Settings
     {
         protected override bool IsSinglePage => true;
 
-        public PlaceHolder ChooseSiteTemplate;
-        public CheckBox UseSiteTemplate;
-        public DataList dlContents;
-        public HtmlInputHidden SiteTemplateDir;
+        public PlaceHolder PhSiteTemplate;
+        public HtmlInputHidden HihSiteTemplateDir;
+        public CheckBox CbIsSiteTemplate;
+        public PlaceHolder PhIsSiteTemplate;
+        public Repeater RptSiteTemplates;
 
-        public PlaceHolder CreateSiteParameters;
-        public Control RowSiteTemplateName;
-        public Label SiteTemplateName;
-        public TextBox PublishmentSystemName;
-        public RadioButtonList IsHeadquarters;
-        public PlaceHolder phNotIsHeadquarters;
-        public DropDownList ParentPublishmentSystemID;
-        public TextBox PublishmentSystemDir;
+        public PlaceHolder PhParameters;
+        public PlaceHolder PhSiteTemplateName;
+        public Literal LtlSiteTemplateName;
+        public TextBox TbPublishmentSystemName;
+        public RadioButtonList RblIsHeadquarters;
+        public PlaceHolder PhIsNotHeadquarters;
+        public DropDownList DdlParentPublishmentSystemId;
+        public TextBox TbPublishmentSystemDir;
+        public DropDownList DdlCharset;
+        public PlaceHolder PhIsImportContents;
+        public CheckBox CbIsImportContents;
+        public PlaceHolder PhIsImportTableStyles;
+        public CheckBox CbIsImportTableStyles;
+        public PlaceHolder PhIsUserSiteTemplateAuxiliaryTables;
+        public RadioButtonList RblIsUserSiteTemplateAuxiliaryTables;
+        public PlaceHolder PhAuxiliaryTable;
+        public DropDownList DdlAuxiliaryTableForContent;
+        public RadioButtonList RblIsCheckContentUseLevel;
+        public PlaceHolder PhCheckContentLevel;
+        public DropDownList DdlCheckContentLevel;
 
-        public DropDownList Charset;
-        public Control RowIsImportContents;
-        public CheckBox IsImportContents;
-        public Control RowIsImportTableStyles;
-        public CheckBox IsImportTableStyles;
-        public Control RowIsUserSiteTemplateAuxiliaryTables;
-        public RadioButtonList IsUserSiteTemplateAuxiliaryTables;
-        public PlaceHolder phAuxiliaryTable;
-        public DropDownList AuxiliaryTableForContent;
-        public RadioButtonList IsCheckContentUseLevel;
-        public Control CheckContentLevelRow;
-        public DropDownList CheckContentLevel;
-
-        public PlaceHolder OperatingError;
-        public Literal ltlErrorMessage;
-
-        public Button Previous;
-        public Button Next;
+        public Button BtnPrevious;
+        public Button BtnSiteTemplateNext;
+        public Button BtnParameters;
 
         private SortedList _sortedlist = new SortedList();
         private AdministratorWithPermissions _permissions;
@@ -77,90 +74,295 @@ namespace SiteServer.BackgroundPages.Settings
             _sortedlist = SiteTemplateManager.Instance.GetSiteTemplateSortedList();
             _permissions = PermissionsManager.GetPermissions(Body.AdminName);
 
-            if (!IsPostBack)
+            if (IsPostBack) return;
+
+            BaiRongDataProvider.TableCollectionDao.CreateAllTableCollectionInfoIfNotExists();
+
+            HihSiteTemplateDir.Value = Body.GetQueryString("siteTemplate");
+
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteAdd);
+
+            var hqSiteId = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
+            if (hqSiteId == 0)
             {
-                BaiRongDataProvider.TableCollectionDao.CreateAllTableCollectionInfoIfNotExists();
+                ControlUtils.SelectSingleItem(RblIsHeadquarters, true.ToString());
+                PhIsNotHeadquarters.Visible = false;
+            }
+            else
+            {
+                RblIsHeadquarters.Enabled = false;
+            }
 
-                SiteTemplateDir.Value = Body.GetQueryString("siteTemplate");
-
-                VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteAdd);
-
-                var hqSiteId = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
-                if (hqSiteId == 0)
+            DdlParentPublishmentSystemId.Items.Add(new ListItem("<无上级站点>", "0"));
+            var publishmentSystemIdArrayList = PublishmentSystemManager.GetPublishmentSystemIdList();
+            var mySystemInfoArrayList = new ArrayList();
+            var parentWithChildren = new Hashtable();
+            foreach (var publishmentSystemId in publishmentSystemIdArrayList)
+            {
+                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+                if (publishmentSystemInfo.IsHeadquarters == false)
                 {
-                    IsHeadquarters.SelectedValue = "True";
-                    phNotIsHeadquarters.Visible = false;
-                }
-                else
-                {
-                    IsHeadquarters.Enabled = false;
-                }
-
-                ParentPublishmentSystemID.Items.Add(new ListItem("<无上级站点>", "0"));
-                var publishmentSystemIdArrayList = PublishmentSystemManager.GetPublishmentSystemIdList();
-                var mySystemInfoArrayList = new ArrayList();
-                var parentWithChildren = new Hashtable();
-                foreach (var publishmentSystemId in publishmentSystemIdArrayList)
-                {
-                    var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                    if (publishmentSystemInfo.IsHeadquarters == false)
+                    if (publishmentSystemInfo.ParentPublishmentSystemId == 0)
                     {
-                        if (publishmentSystemInfo.ParentPublishmentSystemId == 0)
+                        mySystemInfoArrayList.Add(publishmentSystemInfo);
+                    }
+                    else
+                    {
+                        var children = new ArrayList();
+                        if (parentWithChildren.Contains(publishmentSystemInfo.ParentPublishmentSystemId))
                         {
-                            mySystemInfoArrayList.Add(publishmentSystemInfo);
+                            children = (ArrayList)parentWithChildren[publishmentSystemInfo.ParentPublishmentSystemId];
                         }
-                        else
-                        {
-                            var children = new ArrayList();
-                            if (parentWithChildren.Contains(publishmentSystemInfo.ParentPublishmentSystemId))
-                            {
-                                children = (ArrayList)parentWithChildren[publishmentSystemInfo.ParentPublishmentSystemId];
-                            }
-                            children.Add(publishmentSystemInfo);
-                            parentWithChildren[publishmentSystemInfo.ParentPublishmentSystemId] = children;
-                        }
+                        children.Add(publishmentSystemInfo);
+                        parentWithChildren[publishmentSystemInfo.ParentPublishmentSystemId] = children;
                     }
                 }
-                foreach (PublishmentSystemInfo publishmentSystemInfo in mySystemInfoArrayList)
-                {
-                    AddSite(ParentPublishmentSystemID, publishmentSystemInfo, parentWithChildren, 0);
-                }
-                ControlUtils.SelectSingleItem(ParentPublishmentSystemID, "0");
+            }
+            foreach (PublishmentSystemInfo publishmentSystemInfo in mySystemInfoArrayList)
+            {
+                AddSite(DdlParentPublishmentSystemId, publishmentSystemInfo, parentWithChildren, 0);
+            }
+            ControlUtils.SelectSingleItem(DdlParentPublishmentSystemId, "0");
 
-                ECharsetUtils.AddListItems(Charset);
-                ControlUtils.SelectSingleItem(Charset, ECharsetUtils.GetValue(ECharset.utf_8));
+            ECharsetUtils.AddListItems(DdlCharset);
+            ControlUtils.SelectSingleItem(DdlCharset, ECharsetUtils.GetValue(ECharset.utf_8));
 
-                var tableList = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfoListCreatedInDb();
-                foreach (var tableInfo in tableList)
-                {
-                    var li = new ListItem($"{tableInfo.TableCnName}({tableInfo.TableEnName})", tableInfo.TableEnName);
-                    AuxiliaryTableForContent.Items.Add(li);
-                }
+            var tableList = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfoListCreatedInDb();
+            foreach (var tableInfo in tableList)
+            {
+                var li = new ListItem($"{tableInfo.TableCnName}({tableInfo.TableEnName})", tableInfo.TableEnName);
+                DdlAuxiliaryTableForContent.Items.Add(li);
+            }
 
-                IsCheckContentUseLevel.Items.Add(new ListItem("默认审核机制", false.ToString()));
-                IsCheckContentUseLevel.Items.Add(new ListItem("多级审核机制", true.ToString()));
-                ControlUtils.SelectSingleItem(IsCheckContentUseLevel, false.ToString());
+            RblIsCheckContentUseLevel.Items.Add(new ListItem("默认审核机制", false.ToString()));
+            RblIsCheckContentUseLevel.Items.Add(new ListItem("多级审核机制", true.ToString()));
+            ControlUtils.SelectSingleItem(RblIsCheckContentUseLevel, false.ToString());
 
-                UseSiteTemplate.Attributes.Add("onclick", "displaySiteTemplateDiv(this)");
+            var directoryList = new List<DirectoryInfo>();
+            foreach (string directoryName in _sortedlist.Keys)
+            {
+                var directoryPath = PathUtility.GetSiteTemplatesPath(directoryName);
+                var dirInfo = new DirectoryInfo(directoryPath);
+                directoryList.Add(dirInfo);
+            }
 
-                BindGrid();
+            RptSiteTemplates.DataSource = directoryList;
+            RptSiteTemplates.ItemDataBound += RptSiteTemplates_ItemDataBound;
+            RptSiteTemplates.DataBind();
 
-                if (_sortedlist.Count > 0)
-                {
-                    SetActivePlaceHolder(WizardPlaceHolder.ChooseSiteTemplate, ChooseSiteTemplate);
-                }
-                else
-                {
-                    ChooseSiteTemplate.Visible = false;
-                    UseSiteTemplate.Checked = false;
-                    SetActivePlaceHolder(WizardPlaceHolder.CreateSiteParameters, CreateSiteParameters);
-                    RowSiteTemplateName.Visible = RowIsImportContents.Visible = RowIsImportTableStyles.Visible = RowIsUserSiteTemplateAuxiliaryTables.Visible = false;
-                    phAuxiliaryTable.Visible = true;
-                }
+            PhSiteTemplate.Visible = PhParameters.Visible = BtnSiteTemplateNext.Visible = BtnParameters.Visible = false;
+
+            if (_sortedlist.Count > 0)
+            {
+                PhSiteTemplate.Visible = BtnSiteTemplateNext.Visible = true;
+            }
+            else
+            {
+                PhParameters.Visible = BtnParameters.Visible = true;
+                CbIsSiteTemplate.Checked = false;
+                PhSiteTemplateName.Visible = PhIsImportContents.Visible = PhIsImportTableStyles.Visible = PhIsUserSiteTemplateAuxiliaryTables.Visible = false;
+                PhAuxiliaryTable.Visible = true;
             }
         }
 
-        public string GetSiteTemplateName(string siteTemplateDir)
+        public void CbIsSiteTemplate_CheckedChanged(object sender, EventArgs e)
+        {
+            PhIsSiteTemplate.Visible = CbIsSiteTemplate.Checked;
+        }
+
+        public void RblIsHeadquarters_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PhIsNotHeadquarters.Visible = !TranslateUtils.ToBool(RblIsHeadquarters.SelectedValue);
+        }
+
+        public void RblIsUserSiteTemplateAuxiliaryTables_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PhAuxiliaryTable.Visible = !TranslateUtils.ToBool(RblIsUserSiteTemplateAuxiliaryTables.SelectedValue);
+        }
+
+        public void RblIsCheckContentUseLevel_OnSelectedIndexChanged(object sender, EventArgs e)
+        {
+            PhCheckContentLevel.Visible = EBooleanUtils.Equals(RblIsCheckContentUseLevel.SelectedValue, EBoolean.True);
+        }
+
+        public void BtnPrevious_Click(object sender, EventArgs e)
+        {
+            PhSiteTemplate.Visible = BtnSiteTemplateNext.Visible = true;
+            PhParameters.Visible = BtnParameters.Visible = BtnPrevious.Enabled = false;
+        }
+
+        public void BtnSiteTemplateNext_Click(object sender, EventArgs e)
+        {
+            PhSiteTemplate.Visible = PhParameters.Visible = BtnSiteTemplateNext.Visible = BtnParameters.Visible = false;
+
+            if (CbIsSiteTemplate.Checked)
+            {
+                var siteTemplateDir = HihSiteTemplateDir.Value;
+
+                if (string.IsNullOrEmpty(siteTemplateDir))
+                {
+                    FailMessage("请选择需要使用的站点模板");
+                    PhSiteTemplate.Visible = BtnSiteTemplateNext.Visible = true;
+                    BtnPrevious.Enabled = false;
+                    return;
+                }
+
+                PhSiteTemplateName.Visible = PhIsImportContents.Visible = PhIsImportTableStyles.Visible = PhIsUserSiteTemplateAuxiliaryTables.Visible = true;
+                PhAuxiliaryTable.Visible = true;
+
+                
+                LtlSiteTemplateName.Text = $"{GetSiteTemplateName(siteTemplateDir)}（{siteTemplateDir}）";
+
+                var siteTemplatePath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
+                var filePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
+                var publishmentSystemInfo = ConfigurationIe.GetPublishmentSytemInfo(filePath);
+
+                TbPublishmentSystemName.Text = publishmentSystemInfo.PublishmentSystemName;
+                TbPublishmentSystemDir.Text = publishmentSystemInfo.PublishmentSystemDir;
+                var extend = new PublishmentSystemInfoExtend(publishmentSystemInfo.PublishmentSystemDir, publishmentSystemInfo.SettingsXml);
+                if (!string.IsNullOrEmpty(extend.Charset))
+                {
+                    DdlCharset.SelectedValue = extend.Charset;
+                }
+            }
+            else
+            {
+                PhSiteTemplateName.Visible = PhIsImportContents.Visible = PhIsImportTableStyles.Visible = PhIsUserSiteTemplateAuxiliaryTables.Visible = false;
+                PhAuxiliaryTable.Visible = true;
+            }
+
+            PhParameters.Visible = BtnParameters.Visible = BtnPrevious.Enabled = true;
+        }
+
+        public void BtnParameters_Click(object sender, EventArgs e)
+        {
+            string errorMessage;
+            var thePublishmentSystemId = Validate_PublishmentSystemInfo(out errorMessage);
+            if (thePublishmentSystemId > 0)
+            {
+                var url = PageProgressBar.GetCreatePublishmentSystemUrl(thePublishmentSystemId, CbIsSiteTemplate.Checked, CbIsImportContents.Checked, CbIsImportTableStyles.Checked, HihSiteTemplateDir.Value, TranslateUtils.ToBool(RblIsUserSiteTemplateAuxiliaryTables.SelectedValue), StringUtils.Guid(), string.Empty);
+                PageUtils.Redirect(url);
+            }
+            else
+            {
+                FailMessage(errorMessage);
+            }
+        }
+
+        private void RptSiteTemplates_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            if (e.Item.ItemType != ListItemType.AlternatingItem && e.Item.ItemType != ListItemType.Item) return;
+
+            var directoryInfo = (DirectoryInfo)e.Item.DataItem;
+            var siteTemplateInfo = _sortedlist[directoryInfo.Name] as SiteTemplateInfo;
+
+            if (siteTemplateInfo == null) return;
+
+            var ltlChoose = (Literal)e.Item.FindControl("ltlChoose");
+            var ltlTemplateName = (Literal)e.Item.FindControl("ltlTemplateName");
+            var ltlName = (Literal)e.Item.FindControl("ltlName");
+            var ltlDescription = (Literal)e.Item.FindControl("ltlDescription");
+            var ltlSamplePic = (Literal)e.Item.FindControl("ltlSamplePic");
+
+            ltlChoose.Text = $@"<input type=""radio"" name=""choose"" id=""choose_{directoryInfo.Name}"" onClick=""document.getElementById('{HihSiteTemplateDir.ClientID}').value=this.value;"" value=""{directoryInfo.Name}"" /><label for=""choose_{directoryInfo.Name}"">选中</label>";
+
+            if (!string.IsNullOrEmpty(siteTemplateInfo.SiteTemplateName))
+            {
+                ltlTemplateName.Text = !string.IsNullOrEmpty(siteTemplateInfo.WebSiteUrl) ? $"<a href=\"{PageUtils.ParseConfigRootUrl(siteTemplateInfo.WebSiteUrl)}\" target=_blank>{siteTemplateInfo.SiteTemplateName}</a>" : siteTemplateInfo.SiteTemplateName;
+            }
+
+            ltlName.Text = directoryInfo.Name;
+
+            if (!string.IsNullOrEmpty(siteTemplateInfo.Description))
+            {
+                ltlDescription.Text = siteTemplateInfo.Description;
+            }
+
+            if (!string.IsNullOrEmpty(siteTemplateInfo.PicFileName))
+            {
+                var siteTemplateUrl = PageUtils.GetSiteTemplatesUrl(directoryInfo.Name);
+                var picFileName = PageUtils.GetSiteTemplateMetadataUrl(siteTemplateUrl, siteTemplateInfo.PicFileName);
+                ltlSamplePic.Text = $@"<a href=""{picFileName}"" target=""_blank"">样图</a>";
+            }
+        }
+
+        private int Validate_PublishmentSystemInfo(out string errorMessage)
+        {
+            try
+            {
+                var isHq = TranslateUtils.ToBool(RblIsHeadquarters.SelectedValue); // 是否主站
+                var parentPublishmentSystemId = 0;
+                var publishmentSystemDir = string.Empty;
+
+                if (isHq == false)
+                {
+                    if (DirectoryUtils.IsSystemDirectory(TbPublishmentSystemDir.Text))
+                    {
+                        errorMessage = "文件夹名称不能为系统文件夹名称！";
+                        return 0;
+                    }
+
+                    parentPublishmentSystemId = TranslateUtils.ToInt(DdlParentPublishmentSystemId.SelectedValue);
+                    publishmentSystemDir = TbPublishmentSystemDir.Text;
+
+                    var list = DataProvider.NodeDao.GetLowerSystemDirList(parentPublishmentSystemId);
+                    if (list.IndexOf(publishmentSystemDir.ToLower()) != -1)
+                    {
+                        errorMessage = "已存在相同的发布路径！";
+                        return 0;
+                    }
+
+                    if (!DirectoryUtils.IsDirectoryNameCompliant(publishmentSystemDir))
+                    {
+                        errorMessage = "文件夹名称不符合系统要求！";
+                        return 0;
+                    }
+                }
+
+                var nodeInfo = new NodeInfo();
+
+                nodeInfo.NodeName = nodeInfo.NodeIndexName = "首页";
+                nodeInfo.ParentId = 0;
+                nodeInfo.ContentModelPluginId = string.Empty;
+
+                var psInfo = new PublishmentSystemInfo
+                {
+                    PublishmentSystemName = PageUtils.FilterXss(TbPublishmentSystemName.Text),
+                    AuxiliaryTableForContent = DdlAuxiliaryTableForContent.SelectedValue,
+                    PublishmentSystemDir = publishmentSystemDir,
+                    ParentPublishmentSystemId = parentPublishmentSystemId,
+                    IsHeadquarters = isHq,
+                    IsCheckContentUseLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue)
+                };
+
+                if (psInfo.IsCheckContentUseLevel)
+                {
+                    psInfo.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
+                }
+                psInfo.Additional.Charset = DdlCharset.SelectedValue;
+
+                var thePublishmentSystemId = DataProvider.NodeDao.InsertPublishmentSystemInfo(nodeInfo, psInfo, Body.AdminName);
+
+                if (_permissions.IsSystemAdministrator && !_permissions.IsConsoleAdministrator)
+                {
+                    var publishmentSystemIdList = ProductPermissionsManager.Current.PublishmentSystemIdList ?? new List<int>();
+                    publishmentSystemIdList.Add(thePublishmentSystemId);
+                    BaiRongDataProvider.AdministratorDao.UpdatePublishmentSystemIdCollection(Body.AdminName, TranslateUtils.ObjectCollectionToString(publishmentSystemIdList));
+                }
+
+                Body.AddAdminLog("新建站点", $"站点名称:{PageUtils.FilterXss(TbPublishmentSystemName.Text)}");
+
+                errorMessage = string.Empty;
+                return thePublishmentSystemId;
+            }
+            catch (Exception e)
+            {
+                errorMessage = e.Message;
+                return 0;
+            }
+        }
+
+        private string GetSiteTemplateName(string siteTemplateDir)
         {
             var siteTemplateInfo = _sortedlist[siteTemplateDir] as SiteTemplateInfo;
             if (string.IsNullOrEmpty(siteTemplateInfo?.SiteTemplateName)) return string.Empty;
@@ -196,310 +398,5 @@ namespace SiteServer.BackgroundPages.Settings
                 listControl.Items.Add(new ListItem(padding + publishmentSystemInfo.PublishmentSystemName, publishmentSystemInfo.PublishmentSystemId.ToString()));
             }
         }
-
-        public void IsHeadquarters_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            phNotIsHeadquarters.Visible = !TranslateUtils.ToBool(IsHeadquarters.SelectedValue);
-        }
-
-        public void IsUserSiteTemplateAuxiliaryTables_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            phAuxiliaryTable.Visible = !TranslateUtils.ToBool(IsUserSiteTemplateAuxiliaryTables.SelectedValue);
-        }
-
-        public void IsCheckContentUseLevel_OnSelectedIndexChanged(object sender, EventArgs e)
-        {
-            CheckContentLevelRow.Visible = EBooleanUtils.Equals(IsCheckContentUseLevel.SelectedValue, EBoolean.True);
-        }
-
-        public void BindGrid()
-        {
-            var directoryArrayList = new ArrayList();
-            foreach (string directoryName in _sortedlist.Keys)
-            {
-                var directoryPath = PathUtility.GetSiteTemplatesPath(directoryName);
-                var dirInfo = new DirectoryInfo(directoryPath);
-                directoryArrayList.Add(dirInfo);
-            }
-
-            dlContents.DataSource = directoryArrayList;
-            dlContents.ItemDataBound += dlContents_ItemDataBound;
-            dlContents.DataBind();
-        }
-
-        void dlContents_ItemDataBound(object sender, DataListItemEventArgs e)
-        {
-            if (e.Item.ItemType == ListItemType.AlternatingItem || e.Item.ItemType == ListItemType.Item)
-            {
-                var dirInfo = (DirectoryInfo)e.Item.DataItem;
-
-                var ltlImageUrl = (Literal) e.Item.FindControl("ltlImageUrl");
-                var ltlDescription = (Literal) e.Item.FindControl("ltlDescription");
-                var ltlRadio = (Literal) e.Item.FindControl("ltlRadio");
-
-                var siteTemplateInfo = _sortedlist[dirInfo.Name] as SiteTemplateInfo;
-                if (!string.IsNullOrEmpty(siteTemplateInfo?.SiteTemplateName))
-                {
-                    var checkedStr = string.Empty;
-                    if (StringUtils.EqualsIgnoreCase(Body.GetQueryString("siteTemplate"), dirInfo.Name))
-                    {
-                        checkedStr = "checked";
-                    }
-
-                    var templateSn = dirInfo.Name.ToUpper().Substring(2);
-                    if (!string.IsNullOrEmpty(siteTemplateInfo.WebSiteUrl))
-                    {
-                        templateSn =
-                            $@"<a href=""{PageUtils.ParseConfigRootUrl(siteTemplateInfo.WebSiteUrl)}"" target=""_blank"">{templateSn}</a>";
-                    }
-
-                    if (e.Item.ItemIndex == 0)
-                    {
-                        ltlRadio.Text = $@"
-<label class=""radio lead"" onClick=""$('#SiteTemplateDir').val($(this).find('input').val());"">
-  <input type=""radio"" name=""choose"" id=""choose{e.Item.ItemIndex + 1}"" value=""{dirInfo.Name}"" {checkedStr} checked=""checked"">
-  {templateSn}
-</label>";
-                        if (string.IsNullOrEmpty(SiteTemplateDir.Value))
-                        {
-                            SiteTemplateDir.Value = dirInfo.Name;
-                        }
-                    }
-                    else
-                    {
-                        ltlRadio.Text = $@"
-<label class=""radio lead"" onClick=""$('#SiteTemplateDir').val($(this).find('input').val());"">
-  <input type=""radio"" name=""choose"" id=""choose{e.Item.ItemIndex + 1}"" value=""{dirInfo.Name}"" {checkedStr}>
-  {templateSn}
-</label>";
-                    }
-
-                    if (!string.IsNullOrEmpty(siteTemplateInfo.PicFileName))
-                    {
-                        var siteTemplateUrl = PageUtils.GetSiteTemplatesUrl(dirInfo.Name);
-                        ltlImageUrl.Text =
-                            $@"<img class=""cover"" src=""{PageUtils.GetSiteTemplateMetadataUrl(siteTemplateUrl,
-                                siteTemplateInfo.PicFileName)}"" width=""180""><p></p>";
-                    }
-
-                    if (!string.IsNullOrEmpty(siteTemplateInfo.Description))
-                    {
-                        ltlDescription.Text = siteTemplateInfo.Description + "<p></p>";
-                    }
-                }
-            }
-        }
-
-        public WizardPlaceHolder CurrentWizardPlaceHolder
-        {
-            get
-            {
-                if (ViewState["WizardPlaceHolder"] != null)
-                    return (WizardPlaceHolder)ViewState["WizardPlaceHolder"];
-
-                return _sortedlist.Count > 0 ? WizardPlaceHolder.ChooseSiteTemplate : WizardPlaceHolder.CreateSiteParameters;
-            }
-            set
-            {
-                ViewState["WizardPlaceHolder"] = value;
-            }
-        }
-
-        public enum WizardPlaceHolder
-        {
-            ChooseSiteTemplate,
-            CreateSiteParameters,
-            OperatingError,
-        }
-
-        void SetActivePlaceHolder(WizardPlaceHolder panel, Control controlToShow)
-        {
-            var currentPlaceHolder = FindControl(CurrentWizardPlaceHolder.ToString()) as PlaceHolder;
-            if (currentPlaceHolder != null)
-                currentPlaceHolder.Visible = false;
-
-            switch (panel)
-            {
-                case WizardPlaceHolder.ChooseSiteTemplate:
-                    Previous.CssClass = "btn disabled";
-                    Previous.Enabled = false;
-                    Next.CssClass = "btn btn-primary";
-                    Next.Enabled = true;
-                    break;
-                case WizardPlaceHolder.CreateSiteParameters:
-                    Previous.CssClass = "btn";
-                    Previous.Enabled = true;
-                    Next.CssClass = "btn btn-primary";
-                    Next.Enabled = true;
-                    break;
-                case WizardPlaceHolder.OperatingError:
-                    Previous.CssClass = "btn disabled";
-                    Previous.Enabled = false;
-                    Next.CssClass = "btn btn-primary disabled";
-                    Next.Enabled = false;
-                    break;
-                default:
-                    Previous.CssClass = "btn";
-                    Previous.Enabled = true;
-                    Next.CssClass = "btn btn-primary";
-                    Next.Enabled = true;
-                    break;
-            }
-
-            controlToShow.Visible = true;
-            CurrentWizardPlaceHolder = panel;
-        }
-
-        private int Validate_PublishmentSystemInfo(out string errorMessage)
-        {
-            try
-            {
-                var isHq = TranslateUtils.ToBool(IsHeadquarters.SelectedValue); // 是否主站
-                var parentPublishmentSystemId = 0;
-                var publishmentSystemDir = string.Empty;
-
-                if (isHq == false)
-                {
-                    if (DirectoryUtils.IsSystemDirectory(PublishmentSystemDir.Text))
-                    {
-                        errorMessage = "文件夹名称不能为系统文件夹名称！";
-                        return 0;
-                    }
-
-                    parentPublishmentSystemId = TranslateUtils.ToInt(ParentPublishmentSystemID.SelectedValue);
-                    publishmentSystemDir = PublishmentSystemDir.Text;
-
-                    var list = DataProvider.NodeDao.GetLowerSystemDirList(parentPublishmentSystemId);
-                    if (list.IndexOf(publishmentSystemDir.ToLower()) != -1)
-                    {
-                        errorMessage = "已存在相同的发布路径！";
-                        return 0;
-                    }
-
-                    if (!DirectoryUtils.IsDirectoryNameCompliant(publishmentSystemDir))
-                    {
-                        errorMessage = "文件夹名称不符合系统要求！";
-                        return 0;
-                    }
-                }
-
-                var nodeInfo = new NodeInfo();
-
-                nodeInfo.NodeName = nodeInfo.NodeIndexName = "首页";
-                nodeInfo.ParentId = 0;
-                nodeInfo.ContentModelPluginId = string.Empty;
-
-                var psInfo = new PublishmentSystemInfo
-                {
-                    PublishmentSystemName = PageUtils.FilterXss(PublishmentSystemName.Text),
-                    AuxiliaryTableForContent = AuxiliaryTableForContent.SelectedValue,
-                    PublishmentSystemDir = publishmentSystemDir,
-                    ParentPublishmentSystemId = parentPublishmentSystemId,
-                    IsHeadquarters = isHq,
-                    IsCheckContentUseLevel = TranslateUtils.ToBool(IsCheckContentUseLevel.SelectedValue)
-                };
-
-                if (psInfo.IsCheckContentUseLevel)
-                {
-                    psInfo.CheckContentLevel = TranslateUtils.ToInt(CheckContentLevel.SelectedValue);
-                }
-                psInfo.Additional.Charset = Charset.SelectedValue;
-
-                var thePublishmentSystemId = DataProvider.NodeDao.InsertPublishmentSystemInfo(nodeInfo, psInfo, Body.AdminName);
-
-                if (_permissions.IsSystemAdministrator && !_permissions.IsConsoleAdministrator)
-                {
-                    var publishmentSystemIdList = ProductPermissionsManager.Current.PublishmentSystemIdList ?? new List<int>();
-                    publishmentSystemIdList.Add(thePublishmentSystemId);
-                    BaiRongDataProvider.AdministratorDao.UpdatePublishmentSystemIdCollection(Body.AdminName, TranslateUtils.ObjectCollectionToString(publishmentSystemIdList));
-                }
-
-                Body.AddAdminLog("新建站点", $"站点名称:{PageUtils.FilterXss(PublishmentSystemName.Text)}");
-
-                //if (isHQ == EBoolean.False)
-                //{
-                //    string configFilePath = PathUtility.MapPath(psInfo, "@/web.config");
-                //    if (FileUtils.IsFileExists(configFilePath))
-                //    {
-                //        FileUtility.UpdateWebConfig(configFilePath, psInfo.Additional.Charset);
-                //    }
-                //    else
-                //    {
-                //        FileUtility.CreateWebConfig(configFilePath, psInfo.Additional.Charset);
-                //    }
-                //}
-                errorMessage = string.Empty;
-                return thePublishmentSystemId;
-            }
-            catch (Exception e)
-            {
-                errorMessage = e.Message;
-                return 0;
-            }
-        }
-
-        public void NextPlaceHolder(object sender, EventArgs e)
-        {
-            switch (CurrentWizardPlaceHolder)
-            {
-                case WizardPlaceHolder.ChooseSiteTemplate:
-                    if (UseSiteTemplate.Checked)
-                    {
-                        RowSiteTemplateName.Visible = RowIsImportContents.Visible = RowIsImportTableStyles.Visible = RowIsUserSiteTemplateAuxiliaryTables.Visible = true;
-                        phAuxiliaryTable.Visible = true;
-                        SiteTemplateName.Text =
-                            $"{GetSiteTemplateName(SiteTemplateDir.Value)}（{SiteTemplateDir.Value}）";
-
-                        var siteTemplatePath = PathUtility.GetSiteTemplatesPath(SiteTemplateDir.Value);
-                        var filePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
-                        var publishmentSystemInfo = ConfigurationIe.GetPublishmentSytemInfo(filePath);
-
-                        PublishmentSystemName.Text = publishmentSystemInfo.PublishmentSystemName;
-                        PublishmentSystemDir.Text = publishmentSystemInfo.PublishmentSystemDir;
-                        var extend = new PublishmentSystemInfoExtend(publishmentSystemInfo.PublishmentSystemDir, publishmentSystemInfo.SettingsXml);
-                        if (!string.IsNullOrEmpty(extend.Charset))
-                        {
-                            Charset.SelectedValue = extend.Charset;
-                        }
-                    }
-                    else
-                    {
-                        RowSiteTemplateName.Visible = RowIsImportContents.Visible = RowIsImportTableStyles.Visible = RowIsUserSiteTemplateAuxiliaryTables.Visible = false;
-                        phAuxiliaryTable.Visible = true;
-                    }
-                    SetActivePlaceHolder(WizardPlaceHolder.CreateSiteParameters, CreateSiteParameters);
-                    break;
-
-                case WizardPlaceHolder.CreateSiteParameters:
-                    string errorMessage;
-                    var thePublishmentSystemId = Validate_PublishmentSystemInfo(out errorMessage);
-                    if (thePublishmentSystemId > 0)
-                    {
-                        var url = PageProgressBar.GetCreatePublishmentSystemUrl(thePublishmentSystemId, UseSiteTemplate.Checked, IsImportContents.Checked, IsImportTableStyles.Checked, SiteTemplateDir.Value, bool.Parse(IsUserSiteTemplateAuxiliaryTables.SelectedValue), StringUtils.Guid(), string.Empty);
-                        PageUtils.Redirect(url);
-                    }
-                    else
-                    {
-                        ltlErrorMessage.Text = errorMessage;
-                        SetActivePlaceHolder(WizardPlaceHolder.OperatingError, OperatingError);
-                    }
-                    break;
-            }
-        }
-
-        public void PreviousPlaceHolder(object sender, EventArgs e)
-        {
-            switch (CurrentWizardPlaceHolder)
-            {
-                case WizardPlaceHolder.ChooseSiteTemplate:
-                    break;
-
-                case WizardPlaceHolder.CreateSiteParameters:
-                    AddScript("displaySiteTemplateDiv(document.all.UseSiteTemplate);");
-                    SetActivePlaceHolder(WizardPlaceHolder.ChooseSiteTemplate, ChooseSiteTemplate);
-                    break;
-            }
-        }
-
     }
 }

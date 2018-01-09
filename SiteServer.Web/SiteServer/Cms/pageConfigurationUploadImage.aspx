@@ -10,7 +10,6 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
-        <ctrl:alerts runat="server" />
 
         <div class="card-box">
           <ul class="nav nav-pills">
@@ -29,12 +28,13 @@
           </ul>
         </div>
 
-        <div class="card-box">
+        <ctrl:alerts runat="server" />
 
+        <div class="card-box">
           <div class="form-group">
             <label class="col-form-label">图片上传文件夹
-              <asp:RequiredFieldValidator ControlToValidate="TbImageUploadDirectoryName" errorMessage=" *" foreColor="red"
-                display="Dynamic" runat="server" />
+              <asp:RequiredFieldValidator ControlToValidate="TbImageUploadDirectoryName" errorMessage=" *" foreColor="red" display="Dynamic"
+                runat="server" />
               <asp:RegularExpressionValidator runat="server" ControlToValidate="TbImageUploadDirectoryName" ValidationExpression="[^']+"
                 errorMessage=" *" foreColor="red" display="Dynamic" />
             </label>
@@ -70,8 +70,8 @@
 
           <div class="form-group">
             <label class="col-form-label">上传图片最大大小
-              <asp:RequiredFieldValidator ControlToValidate="TbImageUploadTypeMaxSize" errorMessage=" *" foreColor="red"
-                display="Dynamic" runat="server" />
+              <asp:RequiredFieldValidator ControlToValidate="TbImageUploadTypeMaxSize" errorMessage=" *" foreColor="red" display="Dynamic"
+                runat="server" />
               <asp:RegularExpressionValidator ControlToValidate="TbImageUploadTypeMaxSize" ValidationExpression="\d+" Display="Dynamic"
                 ErrorMessage="上传图片最大大小必须为整数" foreColor="red" runat="server" />
             </label>
@@ -90,8 +90,8 @@
 
           <div class="form-group">
             <label class="col-form-label">缩略图（小）最大宽度
-              <asp:RequiredFieldValidator ControlToValidate="TbPhotoSmallWidth" errorMessage=" *" foreColor="red"
-                display="Dynamic" runat="server" />
+              <asp:RequiredFieldValidator ControlToValidate="TbPhotoSmallWidth" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+              />
               <asp:RegularExpressionValidator ControlToValidate="TbPhotoSmallWidth" ValidationExpression="\d+" Display="Dynamic" ErrorMessage="缩略图（小）最大宽度必须为整数"
                 foreColor="red" runat="server" />
             </label>
@@ -101,8 +101,8 @@
 
           <div class="form-group">
             <label class="col-form-label">缩略图（中）最大宽度
-              <asp:RequiredFieldValidator ControlToValidate="TbPhotoMiddleWidth" errorMessage=" *" foreColor="red"
-                display="Dynamic" runat="server" />
+              <asp:RequiredFieldValidator ControlToValidate="TbPhotoMiddleWidth" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+              />
               <asp:RegularExpressionValidator ControlToValidate="TbPhotoMiddleWidth" ValidationExpression="\d+" Display="Dynamic" ErrorMessage="缩略图（中）最大宽度必须为整数"
                 foreColor="red" runat="server" />
             </label>

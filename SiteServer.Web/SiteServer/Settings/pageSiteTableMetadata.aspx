@@ -1,108 +1,138 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.PageSiteTableMetadata" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
 
     <head>
       <meta charset="utf-8">
-      <!--#include file="../inc/header.aspx"-->
+      <!--#include file="../inc/head.html"-->
     </head>
 
     <body>
-      <form class="form-inline" runat="server">
-        <asp:Literal ID="LtlBreadCrumb" runat="server" />
-        <bairong:Alerts runat="server" />
+      <form class="m-l-15 m-r-15" runat="server">
 
-        <asp:DataGrid ID="DgContents" ShowHeader="true" AutoGenerateColumns="false" DataKeyField="TableMetadataID" HeaderStyle-CssClass="info thead"
-          CssClass="table table-bordered table-hover" GridLines="none" runat="server">
-          <Columns>
-            <asp:TemplateColumn HeaderText="字段名">
-              <ItemTemplate>
-                <asp:Literal ID="ltlAttributeName" runat="server"></asp:Literal>
-              </ItemTemplate>
-              <ItemStyle Width="140" CssClass="center" />
-            </asp:TemplateColumn>
-            <asp:TemplateColumn HeaderText="数据类型">
-              <ItemTemplate>
-                <asp:Literal ID="ltlDataType" runat="server"></asp:Literal>
-              </ItemTemplate>
-              <ItemStyle Width="100" CssClass="center" />
-            </asp:TemplateColumn>
-            <asp:TemplateColumn HeaderText="上升">
-              <ItemTemplate>
-                <asp:HyperLink ID="UpLinkButton" CommandName="UP" runat="server">
-                  <img src="../Pic/icon/up.gif" border="0" alt="上升" />
-                </asp:HyperLink>
-              </ItemTemplate>
-              <ItemStyle Width="40" CssClass="center" />
-            </asp:TemplateColumn>
-            <asp:TemplateColumn HeaderText="下降">
-              <ItemTemplate>
-                <asp:HyperLink ID="DownLinkButton" CommandName="DOWN" runat="server">
-                  <img src="../Pic/icon/down.gif" border="0" alt="下降" />
-                </asp:HyperLink>
-              </ItemTemplate>
-              <ItemStyle Width="40" CssClass="center" />
-            </asp:TemplateColumn>
-            <asp:TemplateColumn>
-              <ItemTemplate>
-                <asp:Literal ID="ltlEditUrl" runat="server"></asp:Literal>
-              </ItemTemplate>
-              <ItemStyle Width="50" CssClass="center" />
-            </asp:TemplateColumn>
-            <asp:TemplateColumn>
-              <ItemTemplate>
-                <asp:Literal ID="ltlDeleteUrl" runat="server"></asp:Literal>
-              </ItemTemplate>
-              <ItemStyle Width="60" CssClass="center" />
-            </asp:TemplateColumn>
-          </Columns>
-        </asp:DataGrid>
+        <div class="card-box">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link" href="pageSite.aspx">系统站点管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteUrlWeb.aspx">Web访问地址</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteUrlAssets.aspx">资源文件访问地址</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteUrlApi.aspx">API访问地址</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">辅助表管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteKeyword.aspx">敏感词管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteTemplateOnline.aspx">在线站点模板</a>
+            </li>
+          </ul>
+        </div>
 
-        <br>
+        <ctrl:alerts runat="server" />
 
-        <div id="DivSyncTable" runat="server" class="popover popover-static">
-          <h3 class="popover-title">同步辅助表</h3>
-          <div class="popover-content">
+        <div class="card-box">
+          <div class="m-t-0 header-title">
+            真实字段管理
+          </div>
 
-            <table class="table noborder">
-              <tr>
-                <td>此辅助表在创建后被修改，与数据库中的实际表结构有差别，请同步辅助表。
-                </td>
-              </tr>
-            </table>
+          <div class="panel panel-default m-t-20">
+            <div class="panel-body p-0">
+              <div class="table-responsive">
+                <table class="table tablesaw table-hover m-0">
+                  <thead>
+                    <tr class="thead">
+                      <th>字段名</th>
+                      <th>数据类型</th>
+                      <th class="text-center">上升</th>
+                      <th class="text-center">下降</th>
+                      <th></th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <asp:Repeater ID="RptContents" runat="server">
+                      <itemtemplate>
+                        <tr>
+                          <td>
+                            <asp:Literal id="ltlAttributeName" runat="server" />
+                          </td>
+                          <td>
+                            <asp:Literal id="ltlDataType" runat="server" />
+                          </td>
+                          <td class="text-center">
+                            <asp:HyperLink ID="hlUp" runat="server">
+                              <img src="../Pic/icon/up.gif" />
+                            </asp:HyperLink>
+                          </td>
+                          <td class="text-center">
+                            <asp:HyperLink ID="hlDown" runat="server">
+                              <img src="../Pic/icon/down.gif" />
+                            </asp:HyperLink>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal id="ltlEditUrl" runat="server" />
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal id="ltlDeleteUrl" runat="server" />
+                          </td>
+                        </tr>
+                      </itemtemplate>
+                    </asp:Repeater>
+                  </tbody>
+                </table>
+
+              </div>
+            </div>
+          </div>
+
+          <hr />
+
+          <asp:Button class="btn btn-primary" ID="BtnAdd" Text="添加字段" runat="server"></asp:Button>
+          <asp:Button class="btn" ID="BtnCreateDb" Text="创建辅助表" runat="server"></asp:Button>
+          <asp:Button class="btn" ID="BtnDelete" Text="删除辅助表" runat="server"></asp:Button>
+          <asp:Button class="btn" ID="BtnReCreateDb" Text="创建辅助表" runat="server"></asp:Button>
+          <asp:Button class="btn" ID="BtnSqlString" Text="显示创建表SQL命令" runat="server"></asp:Button>
+          <asp:Button class="btn m-r-5" text="返 回" onclick="Return_OnClick" runat="server" />
+
+        </div>
+
+        <asp:PlaceHolder id="PhSyncTable" runat="server">
+          <div class="card-box">
+            <div class="m-t-0 header-title">
+              同步辅助表
+            </div>
+            <p class="text-muted font-13 m-b-25">
+              此辅助表在创建后被修改，与数据库中的实际表结构有差别，请同步辅助表。
+            </p>
 
             <hr />
-            <table class="table noborder">
-              <tr>
-                <td class="center">
-                  <asp:Button class="btn btn-primary" ID="SyncTableButton" Text="同步辅助表" OnClick="SyncTableButton_OnClick" runat="server"></asp:Button>
-                </td>
-              </tr>
-            </table>
 
+            <asp:Button class="btn btn-primary" Text="同步辅助表" OnClick="SyncTableButton_OnClick" runat="server"></asp:Button>
           </div>
-        </div>
+        </asp:PlaceHolder>
 
-        <div class="popover popover-static" style="<%=GetSqlTableStyle()%>">
-          <h3 class="popover-title">创建辅助表SQL命令</h3>
-          <div class="popover-content">
-
-            <table class="table noborder">
-              <tr>
-                <td>
-                  <asp:Literal ID="LtlSqlString" runat="server" />
-                </td>
-              </tr>
-            </table>
-
+        <asp:PlaceHolder id="PhSqlString" runat="server">
+          <div class="card-box">
+            <div class="m-t-0 header-title">
+              创建辅助表SQL命令
+            </div>
+            <p class="text-muted font-13 m-b-25">
+              <asp:Literal ID="LtlSqlString" runat="server" />
+            </p>
           </div>
-        </div>
-
-        <ul class="breadcrumb breadcrumb-button">
-          <asp:Button class="btn btn-success" ID="BtnAddColumn" Text="添加字段" runat="server"></asp:Button>
-          <asp:Literal id="LtlCommands" runat="server" />
-        </ul>
+        </asp:PlaceHolder>
 
       </form>
     </body>

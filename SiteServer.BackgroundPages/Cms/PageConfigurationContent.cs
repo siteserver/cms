@@ -110,23 +110,16 @@ namespace SiteServer.BackgroundPages.Cms
 		    {
 		        PublishmentSystemInfo.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
 		    }
-				
-		    try
-		    {
-		        DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
-		        if (isReCaculate)
-		        {
-		            DataProvider.ContentDao.UpdateAutoPageContent(PublishmentSystemInfo.AuxiliaryTableForContent, PublishmentSystemInfo);
-		        }
 
-		        Body.AddSiteLog(PublishmentSystemId, "修改内容管理设置");
+            DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
+            if (isReCaculate)
+            {
+                DataProvider.ContentDao.UpdateAutoPageContent(PublishmentSystemInfo.AuxiliaryTableForContent, PublishmentSystemInfo);
+            }
 
-		        SuccessMessage("内容管理设置修改成功！");
-		    }
-		    catch (Exception ex)
-		    {
-		        FailMessage(ex, "内容管理设置修改失败！");
-		    }
-		}
+            Body.AddSiteLog(PublishmentSystemId, "修改内容设置");
+
+            SuccessMessage("内容设置修改成功！");
+        }
 	}
 }

@@ -26,13 +26,16 @@
               <a class="nav-link" href="pageSiteUrlApi.aspx">API访问地址</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
-            </li>
-            <li class="nav-item">
               <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">辅助表管理</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="pageSiteKeyword.aspx">敏感词管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteTemplateOnline.aspx">在线站点模板</a>
             </li>
           </ul>
         </div>
@@ -59,7 +62,7 @@
                   <table class="table tablesaw table-hover m-0">
                     <thead>
                       <tr class="thead">
-                        <th>选择</th>
+                        <th class="text-center"></th>
                         <th>站点模板名称</th>
                         <th>站点模板文件夹</th>
                         <th>站点模板介绍</th>
@@ -70,7 +73,7 @@
                       <asp:Repeater ID="RptContents" runat="server">
                         <itemtemplate>
                           <tr>
-                            <td>
+                            <td class="text-center radio radio-primary">
                               <asp:Literal id="ltlChoose" runat="server" />
                             </td>
                             <td>
@@ -141,8 +144,8 @@
           <hr />
 
           <div class="text-center">
-            <asp:Button class="btn btn-primary m-r-5" id="BtnNext" onclick="BtnNext_Click" runat="server" text="下一步 >"></asp:button>
-            <asp:Button class="btn btn-danger m-r-5" id="BtnSubmit" onclick="BtnSubmit_Click" visible="false" runat="server" text="整站替换 >"></asp:button>
+            <asp:Button class="btn btn-primary m-r-5" id="BtnNext" onclick="BtnNext_Click" runat="server" text="下一步"></asp:button>
+            <asp:Button class="btn btn-danger m-r-5" id="BtnSubmit" onclick="BtnSubmit_Click" visible="false" runat="server" text="整站替换"></asp:button>
             <asp:Button class="btn m-r-5" text="返 回" onclick="Return_OnClick" runat="server" />
           </div>
 

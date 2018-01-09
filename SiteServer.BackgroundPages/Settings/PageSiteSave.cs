@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
@@ -14,47 +14,44 @@ using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-    public class PageSiteTemplateSave : BasePageCms
+    public class PageSiteSave : BasePageCms
     {
-        public enum WizardPanel
-        {
-            Welcome,
-            SaveFiles,
-            SaveSiteContents,
-            SaveSiteStyles,
-            UploadImageFile,
-            Done,
-            OperatingError,
-        }
-
         public PlaceHolder PhWelcome;
         public TextBox TbSiteTemplateName;
         public TextBox TbSiteTemplateDir;
         public TextBox TbWebSiteUrl;
         public TextBox TbDescription;
+
         public PlaceHolder PhSaveFiles;
         public RadioButtonList RblIsSaveAllFiles;
         public PlaceHolder PhDirectoriesAndFiles;
         public CheckBoxList CblDirectoriesAndFiles;
+
         public PlaceHolder PhSaveSiteContents;
         public RadioButtonList RblIsSaveContents;
         public RadioButtonList RblIsSaveAllChannels;
+
         public PlaceHolder PhChannels;
         public Literal LtlChannelTree;
+
         public PlaceHolder PhSaveSiteStyles;
+
         public PlaceHolder PhUploadImageFile;
         public HtmlInputFile HifSamplePicFile;
+
         public PlaceHolder PhDone;
-        public PlaceHolder PhOperatingError;
-        public Literal LtlErrorMessage;
-        public Button BtnPrevious;
-        public Button BtnNext;
+
+        public Button BtnWelcomeNext;
+        public Button BtnSaveFilesNext;
+        public Button BtnSaveSiteContentsNext;
+        public Button BtnSaveSiteStylesNext;
+        public Button BtnUploadImageFileNext;
 
         private ExportObject _exportObject;
 
         public static string GetRedirectUrl(int publishmentSystemId)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageSiteTemplateSave), new NameValueCollection
+            return PageUtils.GetSettingsUrl(nameof(PageSiteSave), new NameValueCollection
             {
                 {"publishmentSystemId", publishmentSystemId.ToString()}
             });
@@ -123,8 +120,6 @@ namespace SiteServer.BackgroundPages.Settings
             ControlUtils.SelectSingleItemIgnoreCase(RblIsSaveAllChannels, true.ToString());
 
             LtlChannelTree.Text = GetChannelTreeHtml();
-
-            SetActivePlaceHolder(WizardPanel.Welcome, PhWelcome);
         }
 
         private string GetChannelTreeHtml()
@@ -139,14 +134,14 @@ namespace SiteServer.BackgroundPages.Settings
             foreach (var nodeId in nodeIdList)
             {
                 var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
-                htmlBuilder.Append(GetChannelTreeTitle(nodeInfo, treeDirectoryUrl, isLastNodeArray));
+                htmlBuilder.Append(GetTitle(nodeInfo, treeDirectoryUrl, isLastNodeArray));
                 htmlBuilder.Append("<br/>");
             }
             htmlBuilder.Append("</span>");
             return htmlBuilder.ToString();
         }
 
-        private string GetChannelTreeTitle(NodeInfo nodeInfo, string treeDirectoryUrl, bool[] isLastNodeArray)
+        private string GetTitle(NodeInfo nodeInfo, string treeDirectoryUrl, IList<bool> isLastNodeArray)
         {
             var itemBuilder = new StringBuilder();
             if (nodeInfo.NodeId == PublishmentSystemId)
@@ -163,26 +158,27 @@ namespace SiteServer.BackgroundPages.Settings
             }
             for (var i = 0; i < nodeInfo.ParentsCount; i++)
             {
-                itemBuilder.Append(isLastNodeArray[i]
-                    ? $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_empty.gif\"/>"
-                    : $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_line.gif\"/>");
+                itemBuilder.Append($"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_empty.gif\"/>");
             }
             if (nodeInfo.IsLastNode)
             {
                 itemBuilder.Append(nodeInfo.ChildrenCount > 0
-                    ? $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_plusbottom.gif\"/>"
-                    : $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_minusbottom.gif\"/>");
+                    ? $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/minus.png\"/>"
+                    : $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_empty.gif\"/>");
             }
             else
             {
                 itemBuilder.Append(nodeInfo.ChildrenCount > 0
-                    ? $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_plusmiddle.gif\"/>"
-                    : $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_minusmiddle.gif\"/>");
+                    ? $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/minus.png\"/>"
+                    : $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_empty.gif\"/>");
             }
 
-            itemBuilder.Append(
-                $@"<label class=""checkbox inline""><input type=""checkbox"" name=""NodeIDCollection"" value=""{nodeInfo
-                    .NodeId}""/> {nodeInfo.NodeName} {$"&nbsp;<span style=\"font-size:8pt;font-family:arial\" class=\"gray\">({nodeInfo.ContentNum})</span>"}</label>");
+            itemBuilder.Append($@"
+<span class=""checkbox checkbox-primary"" style=""padding-left: 0px;"">
+    <input type=""checkbox"" id=""NodeIDCollection_{nodeInfo.NodeId}"" name=""NodeIDCollection"" value=""{nodeInfo.NodeId}""/>
+    <label for=""NodeIDCollection_{nodeInfo.NodeId}""> {nodeInfo.NodeName} &nbsp;<span style=""font-size:8pt;font-family:arial"" class=""gray"">({nodeInfo.ContentNum})</span></label>
+</span>
+");
 
             return itemBuilder.ToString();
         }
@@ -195,60 +191,6 @@ namespace SiteServer.BackgroundPages.Settings
         public void RblIsSaveAllChannels_SelectedIndexChanged(object sender, EventArgs e)
         {
             PhChannels.Visible = !TranslateUtils.ToBool(RblIsSaveAllChannels.SelectedValue);
-        }
-
-        private WizardPanel CurrentWizardPanel
-        {
-            get
-            {
-                if (ViewState["WizardPanel"] != null)
-                    return (WizardPanel)ViewState["WizardPanel"];
-
-                return WizardPanel.Welcome;
-            }
-            set
-            {
-                ViewState["WizardPanel"] = value;
-            }
-        }
-
-        private void SetActivePlaceHolder(WizardPanel panel, Control controlToShow)
-        {
-            var currentPanel = FindControl("ph" + CurrentWizardPanel);
-            if (currentPanel != null)
-                currentPanel.Visible = false;
-
-            if (panel == WizardPanel.Welcome)
-            {
-                BtnPrevious.CssClass = "btn disabled";
-                BtnPrevious.Enabled = false;
-                BtnNext.CssClass = "btn btn-primary";
-                BtnNext.Enabled = true;
-            }
-            else if (panel == WizardPanel.Done)
-            {
-                BtnPrevious.CssClass = "btn disabled";
-                BtnPrevious.Enabled = false;
-                BtnNext.CssClass = "btn btn-primary disabled";
-                BtnNext.Enabled = false;
-            }
-            else if (panel == WizardPanel.OperatingError)
-            {
-                BtnPrevious.CssClass = "btn disabled";
-                BtnPrevious.Enabled = false;
-                BtnNext.CssClass = "btn btn-primary disabled";
-                BtnNext.Enabled = false;
-            }
-            else
-            {
-                BtnPrevious.CssClass = "btn";
-                BtnPrevious.Enabled = true;
-                BtnNext.CssClass = "btn btn-primary";
-                BtnNext.Enabled = true;
-            }
-
-            controlToShow.Visible = true;
-            CurrentWizardPanel = panel;
         }
 
         private bool UploadImageFile(out string errorMessage, out string samplePicPath)
@@ -342,117 +284,103 @@ namespace SiteServer.BackgroundPages.Settings
             }
         }
 
-        public void BtnNext_Click(object sender, EventArgs e)
+        public void BtnWelcomeNext_Click(object sender, EventArgs e)
         {
+            BtnWelcomeNext.Visible = BtnSaveFilesNext.Visible = BtnSaveSiteContentsNext.Visible = BtnSaveSiteStylesNext.Visible = BtnUploadImageFileNext.Visible = PhWelcome.Visible = PhSaveFiles.Visible = PhSaveSiteContents.Visible = PhSaveSiteStyles.Visible = PhUploadImageFile.Visible = PhDone.Visible = false;
+
+            if (SiteTemplateManager.Instance.IsSiteTemplateDirectoryExists(TbSiteTemplateDir.Text))
+            {
+                BtnWelcomeNext.Visible = PhWelcome.Visible = true;
+                FailMessage("站点模板文件夹已存在，请更换站点模板文件夹！");
+            }
+            else
+            {
+                BtnSaveFilesNext.Visible = PhSaveFiles.Visible = true;
+            }
+        }
+
+        public void BtnSaveFilesNext_Click(object sender, EventArgs e)
+        {
+            BtnWelcomeNext.Visible = BtnSaveFilesNext.Visible = BtnSaveSiteContentsNext.Visible = BtnSaveSiteStylesNext.Visible = BtnUploadImageFileNext.Visible = PhWelcome.Visible = PhSaveFiles.Visible = PhSaveSiteContents.Visible = PhSaveSiteStyles.Visible = PhUploadImageFile.Visible = PhDone.Visible = false;
+
             string errorMessage;
-            if (CurrentWizardPanel == WizardPanel.Welcome)
+            if (SaveFiles(out errorMessage))
             {
-                if (SiteTemplateManager.Instance.IsSiteTemplateDirectoryExists(TbSiteTemplateDir.Text))
-                {
-                    LtlErrorMessage.Text = "站点模板保存失败，站点模板已存在！";
-                    SetActivePlaceHolder(WizardPanel.OperatingError, PhOperatingError);
-                }
-                else
-                {
-                    SetActivePlaceHolder(WizardPanel.SaveFiles, PhSaveFiles);
-                }
+                BtnSaveSiteContentsNext.Visible = PhSaveSiteContents.Visible = true;
+                Body.AddAdminLog("保存站点模板", $"站点:{PublishmentSystemInfo.PublishmentSystemName}");
             }
-            else if (CurrentWizardPanel == WizardPanel.SaveFiles)
+            else
             {
-                if (SaveFiles(out errorMessage))
-                {
-                    Body.AddAdminLog("保存站点模板", $"站点:{PublishmentSystemInfo.PublishmentSystemName}");
-
-                    SetActivePlaceHolder(WizardPanel.SaveSiteContents, PhSaveSiteContents);
-                }
-                else
-                {
-                    LtlErrorMessage.Text = errorMessage;
-                    SetActivePlaceHolder(WizardPanel.OperatingError, PhOperatingError);
-                }
-            }
-            else if (CurrentWizardPanel == WizardPanel.SaveSiteContents)
-            {
-                if (SaveSiteContents(out errorMessage))
-                {
-                    SetActivePlaceHolder(WizardPanel.SaveSiteStyles, PhSaveSiteStyles);
-                }
-                else
-                {
-                    LtlErrorMessage.Text = errorMessage;
-                    SetActivePlaceHolder(WizardPanel.OperatingError, PhOperatingError);
-                }
-            }
-            else if (CurrentWizardPanel == WizardPanel.SaveSiteStyles)
-            {
-                if (SaveSiteStyles(out errorMessage))
-                {
-                    SetActivePlaceHolder(WizardPanel.UploadImageFile, PhUploadImageFile);
-                }
-                else
-                {
-                    LtlErrorMessage.Text = errorMessage;
-                    SetActivePlaceHolder(WizardPanel.OperatingError, PhOperatingError);
-                }
-            }
-            else if (CurrentWizardPanel == WizardPanel.UploadImageFile)
-            {
-                string samplePicPath;
-                if (UploadImageFile(out errorMessage, out samplePicPath))
-                {
-                    try
-                    {
-                        var siteTemplateInfo = new SiteTemplateInfo
-                        {
-                            SiteTemplateName = TbSiteTemplateName.Text,
-                            PicFileName = samplePicPath,
-                            WebSiteUrl = TbWebSiteUrl.Text,
-                            Description = TbDescription.Text
-                        };
-
-                        var siteTemplatePath = PathUtility.GetSiteTemplatesPath(TbSiteTemplateDir.Text);
-                        var xmlPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath,
-                            DirectoryUtils.SiteTemplates.FileMetadata);
-                        Serializer.SaveAsXML(siteTemplateInfo, xmlPath);
-
-                        SetActivePlaceHolder(WizardPanel.Done, PhDone);
-                    }
-                    catch (Exception ex)
-                    {
-                        LtlErrorMessage.Text = ex.Message;
-                        SetActivePlaceHolder(WizardPanel.OperatingError, PhOperatingError);
-                    }
-                }
-                else
-                {
-                    LtlErrorMessage.Text = errorMessage;
-                    SetActivePlaceHolder(WizardPanel.OperatingError, PhOperatingError);
-                }
+                BtnSaveFilesNext.Visible = PhSaveFiles.Visible = true;
+                FailMessage(errorMessage);
             }
         }
 
-        public void BtnPrevious_Click(object sender, EventArgs e)
+        public void BtnSaveSiteContentsNext_Click(object sender, EventArgs e)
         {
-            if (CurrentWizardPanel == WizardPanel.Welcome)
+            BtnWelcomeNext.Visible = BtnSaveFilesNext.Visible = BtnSaveSiteContentsNext.Visible = BtnSaveSiteStylesNext.Visible = BtnUploadImageFileNext.Visible = PhWelcome.Visible = PhSaveFiles.Visible = PhSaveSiteContents.Visible = PhSaveSiteStyles.Visible = PhUploadImageFile.Visible = PhDone.Visible = false;
+
+            string errorMessage;
+            if (SaveSiteContents(out errorMessage))
             {
+                BtnSaveSiteStylesNext.Visible = PhSaveSiteStyles.Visible = true;
             }
-            else if (CurrentWizardPanel == WizardPanel.SaveFiles)
+            else
             {
-                SetActivePlaceHolder(WizardPanel.Welcome, PhWelcome);
-            }
-            else if (CurrentWizardPanel == WizardPanel.SaveSiteContents)
-            {
-                SetActivePlaceHolder(WizardPanel.SaveFiles, PhSaveFiles);
-            }
-            else if (CurrentWizardPanel == WizardPanel.SaveSiteStyles)
-            {
-                SetActivePlaceHolder(WizardPanel.SaveSiteContents, PhSaveSiteContents);
-            }
-            else if (CurrentWizardPanel == WizardPanel.UploadImageFile)
-            {
-                SetActivePlaceHolder(WizardPanel.SaveSiteStyles, PhSaveSiteStyles);
+                BtnSaveSiteContentsNext.Visible = PhSaveSiteContents.Visible = true;
+                FailMessage(errorMessage);
             }
         }
 
+        public void BtnSaveSiteStylesNext_Click(object sender, EventArgs e)
+        {
+            BtnWelcomeNext.Visible = BtnSaveFilesNext.Visible = BtnSaveSiteContentsNext.Visible = BtnSaveSiteStylesNext.Visible = BtnUploadImageFileNext.Visible = PhWelcome.Visible = PhSaveFiles.Visible = PhSaveSiteContents.Visible = PhSaveSiteStyles.Visible = PhUploadImageFile.Visible = PhDone.Visible = false;
+
+            string errorMessage;
+            if (SaveSiteStyles(out errorMessage))
+            {
+                BtnUploadImageFileNext.Visible = PhUploadImageFile.Visible = true;
+            }
+            else
+            {
+                BtnSaveSiteStylesNext.Visible = PhSaveSiteStyles.Visible = true;
+                FailMessage(errorMessage);
+            }
+        }
+
+        public void BtnUploadImageFileNext_Click(object sender, EventArgs e)
+        {
+            BtnWelcomeNext.Visible = BtnSaveFilesNext.Visible = BtnSaveSiteContentsNext.Visible = BtnSaveSiteStylesNext.Visible = BtnUploadImageFileNext.Visible = PhWelcome.Visible = PhSaveFiles.Visible = PhSaveSiteContents.Visible = PhSaveSiteStyles.Visible = PhUploadImageFile.Visible = PhDone.Visible = false;
+
+            string errorMessage;
+            string samplePicPath;
+            if (UploadImageFile(out errorMessage, out samplePicPath))
+            {
+                var siteTemplateInfo = new SiteTemplateInfo
+                {
+                    SiteTemplateName = TbSiteTemplateName.Text,
+                    PicFileName = samplePicPath,
+                    WebSiteUrl = TbWebSiteUrl.Text,
+                    Description = TbDescription.Text
+                };
+
+                var siteTemplatePath = PathUtility.GetSiteTemplatesPath(TbSiteTemplateDir.Text);
+                var xmlPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath,
+                    DirectoryUtils.SiteTemplates.FileMetadata);
+                Serializer.SaveAsXML(siteTemplateInfo, xmlPath);
+
+                PhDone.Visible = true;
+            }
+            else
+            {
+                BtnUploadImageFileNext.Visible = PhUploadImageFile.Visible = true;
+                FailMessage(errorMessage);
+            }
+        }
+
+        public void Return_OnClick(object sender, EventArgs e)
+        {
+            PageUtils.Redirect(PageSite.GetRedirectUrl());
+        }
     }
 }

@@ -10,7 +10,6 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
-        <ctrl:alerts runat="server" />
 
         <div class="card-box">
           <ul class="nav nav-pills">
@@ -37,6 +36,8 @@
             </li>
           </ul>
         </div>
+
+        <ctrl:alerts runat="server" />
 
         <div class="card-box">
           <div class="form-inline">
@@ -66,13 +67,13 @@
           <div class="panel panel-default m-t-20">
             <div class="panel-body p-0">
               <div class="table-responsive">
-                <table id="contents" class="table tablesaw table-hover m-0">
+                <table class="table tablesaw table-hover m-0">
                   <thead>
                     <tr class="thead">
+                      <th width="30" class="text-center text-nowrap">Id</th>
                       <th width="150" class="text-center text-nowrap">日期</th>
                       <th>错误消息</th>
                       <th>错误堆栈</th>
-                      <th>描述</th>
                       <th width="30">
                         <input onclick="_checkFormAll(this.checked)" type="checkbox" />
                       </th>
@@ -83,16 +84,17 @@
                       <itemtemplate>
                         <tr>
                           <td class="text-center text-nowrap">
+                            <asp:Literal ID="ltlId" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center text-nowrap">
                             <asp:Literal ID="ltlAddDate" runat="server"></asp:Literal>
                           </td>
                           <td>
+                            <asp:Literal ID="ltlSummary" runat="server"></asp:Literal>
                             <asp:Literal ID="ltlMessage" runat="server"></asp:Literal>
                           </td>
                           <td>
                             <asp:Literal ID="ltlStacktrace" runat="server"></asp:Literal>
-                          </td>
-                          <td>
-                            <asp:Literal ID="ltlSummary" runat="server"></asp:Literal>
                           </td>
                           <td class="text-center text-nowrap">
                             <input type="checkbox" name="IDCollection" value='<%#DataBinder.Eval(Container.DataItem, "ID")%>' />

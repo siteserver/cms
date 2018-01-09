@@ -43,11 +43,6 @@ File: Topbar,Left-sidebar,Right-sidebar
 .nav > li > a i {
   font-size: 20px;
 }
-.nav > li > a .badge {
-  position: absolute;
-  right: 10px;
-  top: 18px;
-}
 .profile img {
   border: 2px solid #edf0f0;
   height: 36px;

@@ -6,10 +6,9 @@ namespace SiteServer.BackgroundPages.Account
 {
     public class PagePassword : BasePage
     {
-        public Literal UserName;
-        public TextBox CurrentPassword;
-        public TextBox NewPassword;
-        public TextBox ConfirmNewPassword;
+        public Literal LtlUserName;
+        public TextBox TbCurrentPassword;
+        public TextBox TbNewPassword;
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -17,30 +16,29 @@ namespace SiteServer.BackgroundPages.Account
 
             if (!Page.IsPostBack)
             {
-                UserName.Text = Body.AdminName;
+                LtlUserName.Text = Body.AdminName;
             }
         }
 
         public void Submit_Click(object sender, EventArgs e)
         {
-            if (Page.IsPostBack && Page.IsValid)
+            if (!Page.IsPostBack || !Page.IsValid) return;
+
+            if (BaiRongDataProvider.AdministratorDao.CheckPassword(TbCurrentPassword.Text, Body.AdministratorInfo.Password, Body.AdministratorInfo.PasswordFormat, Body.AdministratorInfo.PasswordSalt))
             {
-                if (BaiRongDataProvider.AdministratorDao.CheckPassword(CurrentPassword.Text, Body.AdministratorInfo.Password, Body.AdministratorInfo.PasswordFormat, Body.AdministratorInfo.PasswordSalt))
+                string errorMessage;
+                if (BaiRongDataProvider.AdministratorDao.ChangePassword(Body.AdministratorInfo.UserName, TbNewPassword.Text, out errorMessage))
                 {
-                    string errorMessage;
-                    if (BaiRongDataProvider.AdministratorDao.ChangePassword(Body.AdministratorInfo.UserName, NewPassword.Text, out errorMessage))
-                    {
-                        SuccessMessage("密码更改成功");
-                    }
-                    else
-                    {
-                        FailMessage(errorMessage);
-                    }
+                    SuccessMessage("密码更改成功");
                 }
                 else
                 {
-                    FailMessage("当前帐号密码错误");
+                    FailMessage(errorMessage);
                 }
+            }
+            else
+            {
+                FailMessage("当前帐号密码错误");
             }
         }
     }

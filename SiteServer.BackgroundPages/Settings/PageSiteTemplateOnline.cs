@@ -13,7 +13,9 @@ namespace SiteServer.BackgroundPages.Settings
     {
         protected override bool IsSinglePage => true;
 
-	    public DataGrid dgContents;
+        public const string UrlTemplates = "http://templates.siteserver.cn/templates.xml";
+
+        public Repeater RptContents;
         private List<string> _directoryNameLowerList;
 
 		public void Page_Load(object sender, EventArgs e)
@@ -39,137 +41,123 @@ namespace SiteServer.BackgroundPages.Settings
 			}
 
             _directoryNameLowerList = SiteTemplateManager.Instance.GetDirectoryNameLowerList();
-			
-			if (!Page.IsPostBack)
+
+            if (Page.IsPostBack) return;
+
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
+
+            InfoMessage(@"本页面只显示部分免费模板，更多站点模板请访问官网：<a href=""http://templates.siteserver.cn"" target=""_blank"">http://templates.siteserver.cn</a>");
+
+            try
             {
-                VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
+                var list = new List<Dictionary<string, string>>();
 
-                try
+                var content = WebClientUtils.GetRemoteFileSource(UrlTemplates, ECharset.utf_8);
+
+                var document = XmlUtils.GetXmlDocument(content);
+                var rootNode = XmlUtils.GetXmlNode(document, "//siteTemplates");
+                if (rootNode.ChildNodes.Count > 0)
                 {
-                    var list = new List<Dictionary<string, string>> ();
-
-                    var content = WebClientUtils.GetRemoteFileSource(StringUtils.Constants.UrlMoban, ECharset.utf_8);
-
-                    var document = XmlUtils.GetXmlDocument(content);
-                    var rootNode = XmlUtils.GetXmlNode(document, "//siteTemplates");
-                    if (rootNode.ChildNodes.Count > 0)
+                    foreach (XmlNode node in rootNode.ChildNodes)
                     {
-                        foreach (XmlNode node in rootNode.ChildNodes)
+                        var ie = node.ChildNodes.GetEnumerator();
+                        var title = string.Empty;
+                        var description = string.Empty;
+                        var author = string.Empty;
+                        var source = string.Empty;
+                        var lastEditDate = string.Empty;
+
+                        while (ie.MoveNext())
                         {
-                            var ie = node.ChildNodes.GetEnumerator();
-                            var templateName = string.Empty;
-                            var templateType = string.Empty;
-                            var size = string.Empty;
-                            var author = string.Empty;
-                            var uploadDate = string.Empty;
-                            var pageUrl = string.Empty;
-                            var demoUrl = string.Empty;
-                            var downloadUrl = string.Empty;
+                            var childNode = (XmlNode)ie.Current;
+                            if (childNode == null) continue;
 
-                            while (ie.MoveNext())
+                            var nodeName = childNode.Name;
+                            if (StringUtils.EqualsIgnoreCase(nodeName, "title"))
                             {
-                                var childNode = (XmlNode)ie.Current;
-                                var nodeName = childNode.Name;
-                                if (StringUtils.EqualsIgnoreCase(nodeName, "templateName"))
-                                {
-                                    templateName = childNode.InnerText;
-                                }
-                                else if (StringUtils.EqualsIgnoreCase(nodeName, "templateType"))
-                                {
-                                    templateType = childNode.InnerText;
-                                }
-                                else if (StringUtils.EqualsIgnoreCase(nodeName, "size"))
-                                {
-                                    size = childNode.InnerText;
-                                }
-                                else if (StringUtils.EqualsIgnoreCase(nodeName, "author"))
-                                {
-                                    author = childNode.InnerText;
-                                }
-                                else if (StringUtils.EqualsIgnoreCase(nodeName, "uploadDate"))
-                                {
-                                    uploadDate = childNode.InnerText;
-                                }
-                                else if (StringUtils.EqualsIgnoreCase(nodeName, "pageUrl"))
-                                {
-                                    pageUrl = childNode.InnerText;
-                                }
-                                else if (StringUtils.EqualsIgnoreCase(nodeName, "demoUrl"))
-                                {
-                                    demoUrl = childNode.InnerText;
-                                }
-                                else if (StringUtils.EqualsIgnoreCase(nodeName, "downloadUrl"))
-                                {
-                                    downloadUrl = childNode.InnerText;
-                                }
+                                title = childNode.InnerText;
                             }
+                            else if (StringUtils.EqualsIgnoreCase(nodeName, "description"))
+                            {
+                                description = childNode.InnerText;
+                            }
+                            else if (StringUtils.EqualsIgnoreCase(nodeName, "author"))
+                            {
+                                author = childNode.InnerText;
+                            }
+                            else if (StringUtils.EqualsIgnoreCase(nodeName, "source"))
+                            {
+                                source = childNode.InnerText;
+                            }
+                            else if (StringUtils.EqualsIgnoreCase(nodeName, "lastEditDate"))
+                            {
+                                lastEditDate = childNode.InnerText;
+                            }
+                        }
 
-                            var directorName = PageUtils.GetFileNameFromUrl(downloadUrl);
-                            directorName = directorName.Replace(".zip", string.Empty);
-
+                        if (!string.IsNullOrEmpty(title))
+                        {
                             list.Add(new Dictionary<string, string>
                             {
-                                ["templateName"] = templateName,
-                                ["templateType"] = templateType,
-                                ["size"] = size,
+                                ["title"] = title,
+                                ["description"] = description,
                                 ["author"] = author,
-                                ["uploadDate"] = uploadDate,
-                                ["pageUrl"] = pageUrl,
-                                ["demoUrl"] = demoUrl,
-                                ["downloadUrl"] = downloadUrl,
-                                ["directoryName"] = directorName
+                                ["source"] = source,
+                                ["lastEditDate"] = lastEditDate
                             });
                         }
                     }
-
-                    dgContents.DataSource = list;
-                    dgContents.ItemDataBound += dgContents_ItemDataBound;
-                    dgContents.DataBind();
                 }
-                catch(Exception ex)
-                {
-                    FailMessage(ex, "在线模板获取失败：页面地址无法访问！");
-                }
-			}
-		}
 
-        void dgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
-        {
-            if (e.Item.ItemType == ListItemType.AlternatingItem || e.Item.ItemType == ListItemType.Item)
+                RptContents.DataSource = list;
+                RptContents.ItemDataBound += RptContents_ItemDataBound;
+                RptContents.DataBind();
+            }
+            catch (Exception ex)
             {
-                var dict = (Dictionary<string, string>)e.Item.DataItem;
+                FailMessage(ex, "在线模板获取失败：页面地址无法访问！");
+            }
+        }
 
-                var ltlTemplateName = (Literal)e.Item.FindControl("ltlTemplateName");
-                var ltlDirectoryName = (Literal)e.Item.FindControl("ltlDirectoryName"); 
-                var ltlSize = (Literal)e.Item.FindControl("ltlSize");
-                var ltlAuthor = (Literal)e.Item.FindControl("ltlAuthor");
-                var ltlUploadDate = (Literal)e.Item.FindControl("ltlUploadDate");
-                var ltlPageUrl = (Literal)e.Item.FindControl("ltlPageUrl");
-                var ltlDemoUrl = (Literal)e.Item.FindControl("ltlDemoUrl");
-                var ltlDownloadUrl = (Literal)e.Item.FindControl("ltlDownloadUrl");
+        private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            if (e.Item.ItemType != ListItemType.AlternatingItem && e.Item.ItemType != ListItemType.Item) return;
 
-                ltlTemplateName.Text = dict["templateName"];
-                var directoryName = dict["directoryName"];
-                ltlDirectoryName.Text = directoryName;
-                ltlSize.Text = dict["size"];
-                ltlAuthor.Text = dict["author"];
-                ltlUploadDate.Text = dict["uploadDate"];
-                var pageUrl = dict["pageUrl"];
-                ltlPageUrl.Text = $@"<a href=""{PageUtils.AddProtocolToUrl(pageUrl)}"" target=""_blank"">简介</a>";
-                var demoUrl = dict["demoUrl"];
-                ltlDemoUrl.Text = $@"<a href=""{PageUtils.AddProtocolToUrl(demoUrl)}"" target=""_blank"">演示</a>";
-                if (_directoryNameLowerList.Contains(directoryName.ToLower().Trim()))
-                {
-                    ltlDownloadUrl.Text = "已下载";
-                }
-                else
-                {
-                    var downloadUrl = dict["downloadUrl"];
-                    downloadUrl = TranslateUtils.EncryptStringBySecretKey(downloadUrl);
-                    ltlDownloadUrl.Text =
-                        $@"<a href=""javascript:;"" onclick=""{Cms.ModalProgressBar.GetOpenWindowStringWithSiteTemplateDownload(
-                            downloadUrl, directoryName)}"">下载并导入</a>";
-                }
+            var dict = (Dictionary<string, string>)e.Item.DataItem;
+            var title = dict["title"];
+            var description = dict["description"];
+            var author = dict["author"];
+            var source = dict["source"];
+            var lastEditDate = dict["lastEditDate"];
+
+            var ltlTitle = (Literal)e.Item.FindControl("ltlTitle");
+            var ltlDescription = (Literal)e.Item.FindControl("ltlDescription"); 
+            var ltlAuthor = (Literal)e.Item.FindControl("ltlAuthor");
+            var ltlLastEditDate = (Literal)e.Item.FindControl("ltlLastEditDate");
+            var ltlPreviewUrl = (Literal)e.Item.FindControl("ltlPreviewUrl");
+            var ltlDownloadUrl = (Literal)e.Item.FindControl("ltlDownloadUrl");
+
+            ltlTitle.Text = $@"<a href=""http://templates.siteserver.cn/t-{title.ToLower()}/index.html"" target=""_blank"">{title}</a>";
+            
+            ltlDescription.Text = description;
+            ltlAuthor.Text = author;
+            if (!string.IsNullOrEmpty(source) && PageUtils.IsProtocolUrl(source))
+            {
+                ltlAuthor.Text = $@"<a href=""{source}"" target=""_blank"">{ltlAuthor.Text}</a>";
+            }
+            ltlLastEditDate.Text = lastEditDate;
+
+            ltlPreviewUrl.Text = $@"<a href=""http://templates.siteserver.cn/t-{title.ToLower()}/index.html"" target=""_blank"">预览</a>";
+            if (_directoryNameLowerList.Contains($"T_{title}".ToLower().Trim()))
+            {
+                ltlDownloadUrl.Text = "已下载";
+            }
+            else
+            {
+                ltlDownloadUrl.Text =
+                    $@"<a href=""javascript:;"" onclick=""{Cms.ModalProgressBar
+                        .GetOpenWindowStringWithSiteTemplateDownload(
+                            $"http://download.siteserver.cn/templates/T_{title}.zip")}"">下载并导入</a>";
             }
         }
 	}

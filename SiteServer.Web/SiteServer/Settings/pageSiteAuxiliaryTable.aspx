@@ -10,7 +10,6 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
-        <ctrl:alerts runat="server" />
 
         <div class="card-box">
           <ul class="nav nav-pills">
@@ -26,20 +25,24 @@
             <li class="nav-item">
               <a class="nav-link" href="pageSiteUrlApi.aspx">API访问地址</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
-            </li>
             <li class="nav-item active">
               <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">辅助表管理</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="pageSiteKeyword.aspx">敏感词管理</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteTemplateOnline.aspx">在线站点模板</a>
+            </li>
           </ul>
         </div>
 
-        <div class="card-box">
+        <ctrl:alerts runat="server" />
 
+        <div class="card-box">
           <div class="panel panel-default">
             <div class="panel-body p-0">
               <div class="table-responsive">

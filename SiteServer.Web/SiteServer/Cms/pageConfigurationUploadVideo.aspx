@@ -10,7 +10,6 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
-        <ctrl:alerts runat="server" />
 
         <div class="card-box">
           <ul class="nav nav-pills">
@@ -29,8 +28,9 @@
           </ul>
         </div>
 
-        <div class="card-box">
+        <ctrl:alerts runat="server" />
 
+        <div class="card-box">
           <div class="form-group">
             <label class="col-form-label">视频上传文件夹
               <asp:RequiredFieldValidator ControlToValidate="TbVideoUploadDirectoryName" errorMessage=" *" foreColor="red" display="Dynamic"

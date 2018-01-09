@@ -63,13 +63,13 @@ namespace SiteServer.BackgroundPages.Cms
 
             LtlNavItems.Text = $@"
 <li class=""nav-item {(_serviceType == EServiceType.Create ? "active": string.Empty)}"">
-    <a class=""nav-link"" href=""{GetRedirectUrl(PublishmentSystemId, EServiceType.Create)}"">定时生成</a>
+    <a class=""nav-link"" href=""{GetRedirectUrl(PublishmentSystemId, EServiceType.Create)}"">定时生成设置</a>
 </li>
 <li class=""nav-item {(_serviceType == EServiceType.Gather ? "active" : string.Empty)}"">
-    <a class=""nav-link"" href=""{GetRedirectUrl(PublishmentSystemId, EServiceType.Gather)}"">定时采集</a>
+    <a class=""nav-link"" href=""{GetRedirectUrl(PublishmentSystemId, EServiceType.Gather)}"">定时采集设置</a>
 </li>
 <li class=""nav-item {(_serviceType == EServiceType.Backup ? "active" : string.Empty)}"">
-    <a class=""nav-link"" href=""{GetRedirectUrl(PublishmentSystemId, EServiceType.Backup)}"">定时备份</a>
+    <a class=""nav-link"" href=""{GetRedirectUrl(PublishmentSystemId, EServiceType.Backup)}"">定时备份设置</a>
 </li>";
 
             RptContents.DataSource = DataProvider.TaskDao.GetTaskInfoList(_serviceType, PublishmentSystemId);

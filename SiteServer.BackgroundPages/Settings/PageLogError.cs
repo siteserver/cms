@@ -97,15 +97,21 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
+            var ltlId = (Literal)e.Item.FindControl("ltlId");
             var ltlAddDate = (Literal)e.Item.FindControl("ltlAddDate");
             var ltlMessage = (Literal)e.Item.FindControl("ltlMessage");
             var ltlStacktrace = (Literal)e.Item.FindControl("ltlStacktrace");
             var ltlSummary = (Literal)e.Item.FindControl("ltlSummary");
 
+            ltlId.Text = SqlUtils.EvalInt(e.Item.DataItem, "Id").ToString();
             ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, "AddDate"));
             ltlMessage.Text = SqlUtils.EvalString(e.Item.DataItem, "Message");
             ltlStacktrace.Text = SqlUtils.EvalString(e.Item.DataItem, "Stacktrace");
             ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, "Summary");
+            if (!string.IsNullOrEmpty(ltlSummary.Text))
+            {
+                ltlSummary.Text += "<br />";
+            }
         }
 
 	    public void Search_OnClick(object sender, EventArgs e)

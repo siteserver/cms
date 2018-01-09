@@ -10,7 +10,6 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
-        <ctrl:alerts runat="server" />
 
         <div class="card-box">
           <ul class="nav nav-pills">
@@ -29,8 +28,9 @@
           </ul>
         </div>
 
-        <div class="card-box">
+        <ctrl:alerts runat="server" />
 
+        <div class="card-box">
           <div class="form-group">
             <label class="col-form-label">是否启用水印功能</label>
             <asp:DropDownList ID="DdlIsWaterMark" runat="server" RepeatDirection="Horizontal" class="form-control" AutoPostBack="true"

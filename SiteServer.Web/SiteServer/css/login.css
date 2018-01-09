@@ -44,7 +44,8 @@ a, area {blr:expression(this.onFocus=this.blur())}
 .yunItmName img { margin: 13px 13px 0px 0px; float: left; }
 .yunItmS { font: 18px/58px "微软雅黑"; float: left; height: 58px; }
 .yunBox { margin: 0px auto; height: 400px; width: 870px; }
-.yun_u1 ul li { line-height: 34px; height: 34px; margin-bottom: 25px; }
+.yun_u1 {margin-top: 30px;}
+.yun_u1 ul li { line-height: 34px; height: 34px; margin-bottom: 25px; clear: both; }
 .yun_s1 { font: 14px/34px "微软雅黑"; text-align: right; float: left; width: 196px; padding-right: 14px; }
 .yun_int1 { line-height: 32px; padding: 0px 5px; height: 32px; width: 274px; border: 1px solid #BCBCBC; float: left; margin-right: 8px; }
 .yun_int2 { width: 87px; margin-right: 12px; float: left; }
@@ -93,3 +94,4 @@ a, area {blr:expression(this.onFocus=this.blur())}
 .yunFotDl .yun_lastDl { border-right-width: 0px; border-right-style: none; }
 .yunFotCenter { text-align: center; padding: 20px 0px 25px; }
 .yunFtinfo { color: #9c9c9c; line-height: 24px; text-align: center; padding-bottom: 15px; }
+.checkbox label { margin-left: 5px; }

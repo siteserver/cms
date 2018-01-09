@@ -11,7 +11,6 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
-        <ctrl:alerts runat="server" />
 
         <div class="card-box">
           <ul class="nav nav-pills">
@@ -36,8 +35,9 @@
           </ul>
         </div>
 
-        <div class="card-box">
+        <ctrl:alerts runat="server" />
 
+        <div class="card-box">
           <div class="form-inline">
             <div class="form-group">
               <label class="col-form-label m-r-10">时间从</label>

@@ -20,19 +20,21 @@
   <body>
     <form class="container m-t-20" runat="server">
 
-      <div class="panel panel-border panel-danger">
-        <div class="panel-heading">
-          <h3 class="panel-title">错误信息</h3>
+      <div class="card">
+        <div class="card-header" style="border-top: 3px solid #ef5350 !important;border-radius: 3px;">
+          <strong>错误信息</strong>
         </div>
-        <div class="panel-body">
-          <p style="word-wrap: break-word;">
-            <asp:Literal id="LtlMessage" runat="server" />
-          </p>
-          <p>
-            <asp:Literal id="LtlStackTrace" runat="server" />
-          </p>
+        <div class="card-body">
+          <blockquote class="blockquote mb-0">
+            <p style="word-wrap: break-word;">
+              <asp:Literal id="LtlMessage" runat="server" />
+            </p>
+            <p>
+              <asp:Literal id="LtlStackTrace" runat="server" />
+            </p>
+          </blockquote>
         </div>
-        <div class="panel-footer">
+        <div class="card-footer text-muted">
           <span class="m-r-5">如果错误信息为列名无效，可以尝试升级系统，以确保数据库字段一致性</span>
           <a href="upgrade/default.aspx" target="_top" class="btn btn-primary">立即升级</a>
         </div>

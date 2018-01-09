@@ -11,9 +11,17 @@ namespace SiteServer.BackgroundPages.Plugins
     public class PageManagement : BasePage
     {
         public Literal LtlNav;
-        public DataGrid DgPlugins;
+        public Repeater RptContents;
 
         private int _type;
+
+        public static string GetRedirectUrl()
+        {
+            return PageUtils.GetPluginsUrl(nameof(PageManagement), new NameValueCollection
+            {
+                {"type", "0"}
+            });
+        }
 
         public static string GetRedirectUrl(int type)
         {
@@ -113,23 +121,26 @@ namespace SiteServer.BackgroundPages.Plugins
                 }
             }
 
-            const string activeStyle = @"style=""color: #333;font-weight: bold;""";
-
             LtlNav.Text = $@"
-<a href=""{GetRedirectUrl(0)}"" {(_type == 0 ? activeStyle : string.Empty)}> 所有插件 </a> <span class=""gray"">({arr[0]})</span>
-<span class=""gray"">&nbsp;|&nbsp;</span>
-<a href=""{GetRedirectUrl(1)}"" {(_type == 1 ? activeStyle : string.Empty)}> 已启用 </a> <span class=""gray"">({arr[1]})</span>
-<span class=""gray"">&nbsp;|&nbsp;</span>
-<a href=""{GetRedirectUrl(2)}"" {(_type == 2 ? activeStyle : string.Empty)}> 已禁用 </a> <span class=""gray"">({arr[2]})</span>";
+<li class=""nav-item {(_type == 0 ? "active" : string.Empty)}"">
+    <a class=""nav-link"" href=""{GetRedirectUrl(0)}"">所有插件 <span class=""badge {(_type == 0 ? "badge-light" : "badge-secondary")}"">{arr[0]}</span></a>
+</li>
+<li class=""nav-item {(_type == 1 ? "active" : string.Empty)}"">
+    <a class=""nav-link"" href=""{GetRedirectUrl(1)}"">已启用 <span class=""badge {(_type == 1 ? "badge-light" : "badge-secondary")}"">{arr[1]}</span></a>
+</li>
+<li class=""nav-item {(_type == 2 ? "active" : string.Empty)}"">
+    <a class=""nav-link"" href=""{GetRedirectUrl(2)}"">已禁用 <span class=""badge {(_type == 2 ? "badge-light" : "badge-secondary")}"">{arr[2]}</span></a>
+</li>";
 
-            DgPlugins.DataSource = list;
-            DgPlugins.ItemDataBound += DgPlugins_ItemDataBound;
-            DgPlugins.DataBind();
+            RptContents.DataSource = list;
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
+            RptContents.DataBind();
         }
 
-        private void DgPlugins_ItemDataBound(object sender, DataGridItemEventArgs e)
+        private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
             if (e.Item.ItemType != ListItemType.AlternatingItem && e.Item.ItemType != ListItemType.Item) return;
+
             var pluginPair = (PluginPair)e.Item.DataItem;
 
             var ltlPluginId = (Literal)e.Item.FindControl("ltlPluginId");
@@ -155,22 +166,27 @@ Version： {pluginPair.Metadata.Version}
                 ltlInitTime.Text = pluginPair.Metadata.InitTime + "毫秒";
             }
 
+            var ableUrl = PageUtils.GetPluginsUrl(nameof(PageManagement), new NameValueCollection
+            {
+                {pluginPair.Metadata.Disabled ? "enable" : "disable", true.ToString()},
+                {"pluginId", pluginPair.Metadata.Id}
+            });
+
+            var deleteUrl = PageUtils.GetPluginsUrl(nameof(PageManagement), new NameValueCollection
+            {
+                {"delete", true.ToString()},
+                {"pluginId", pluginPair.Metadata.Id}
+            });
+
             var ableText = pluginPair.Metadata.Disabled ? "启用" : "禁用";
-            ltlCmd.Text =
-                $@"
-<a href=""{PageConfig.GetRedirectUrl(pluginPair.Metadata.Id)}"">配置</a>
+            ltlCmd.Text = $@"
+<a href=""{PageConfig.GetRedirectUrl(pluginPair.Metadata.Id)}"">设置</a>
 &nbsp;&nbsp;
-<a href=""{PageUtils.GetPluginsUrl(nameof(PageManagement), new NameValueCollection
-                {
-                    {pluginPair.Metadata.Disabled ? "enable" : "disable", true.ToString()},
-                    {"pluginId", pluginPair.Metadata.Id}
-                })}"" onClick=""javascript:return confirm('此操作将会{ableText}“{pluginPair.Metadata.Name}”插件，确认吗？');"">{ableText}</a>
+<a href=""javascript:;"" onClick=""{AlertUtils.ConfirmRedirect($"{ableText}插件", $"此操作将会{ableText}“{pluginPair.Metadata.Id}”插件，确认吗？", ableText, ableUrl)}"">
+{ableText}
+</a>
 &nbsp;&nbsp;
-<a href=""{PageUtils.GetPluginsUrl(nameof(PageManagement), new NameValueCollection
-                {
-                    {"delete", true.ToString()},
-                    {"pluginId", pluginPair.Metadata.Id}
-                })}"" onClick=""javascript:return confirm('此操作将会删除“{pluginPair.Metadata.Name}”插件，确认吗？');"">删除</a>";
+<a href=""javascript:;"" onClick=""{AlertUtils.ConfirmDelete("删除插件", $"此操作将会删除“{pluginPair.Metadata.Id}”插件，确认吗？", deleteUrl)}"">删除</a>";
         }
     }
 }

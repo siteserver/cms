@@ -10,36 +10,36 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
+
+        <div class="card-box">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogSite.aspx">站点日志</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogAdmin.aspx">管理员日志</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogUser.aspx">用户日志</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="pageLogServiceTask.aspx">服务组件任务日志</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogServiceCreateTask.aspx">服务组件生成日志</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogError.aspx">系统错误日志</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageLogConfiguration.aspx">日志设置</a>
+            </li>
+          </ul>
+        </div>
+
         <ctrl:alerts runat="server" />
 
         <div class="card-box">
-            <ul class="nav nav-pills">
-              <li class="nav-item">
-                <a class="nav-link" href="pageLogSite.aspx">站点日志</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="pageLogAdmin.aspx">管理员日志</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="pageLogUser.aspx">用户日志</a>
-              </li>
-              <li class="nav-item active">
-                <a class="nav-link" href="pageLogServiceTask.aspx">服务组件任务日志</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="pageLogServiceCreateTask.aspx">服务组件生成日志</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="pageLogError.aspx">系统错误日志</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="pageLogConfiguration.aspx">日志设置</a>
-              </li>
-            </ul>
-          </div>
-
-        <div class="card-box">
-
           <div class="m-t-10">
             <div class="form-inline">
               <div class="form-group">

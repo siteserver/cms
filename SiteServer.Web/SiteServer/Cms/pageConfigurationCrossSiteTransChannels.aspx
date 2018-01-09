@@ -10,7 +10,6 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
-        <ctrl:alerts text="在此设置各栏目中内容向其他站点跨站转发的选项，如果不指定跨站转发类型将使用站点的默认跨站转发设置" runat="server" />
 
         <div class="card-box">
           <ul class="nav nav-pills">
@@ -23,8 +22,9 @@
           </ul>
         </div>
 
-        <div class="card-box">
+        <ctrl:alerts text="在此设置各栏目中内容向其他站点跨站转发的选项，如果不指定跨站转发类型将使用站点的默认跨站转发设置" runat="server" />
 
+        <div class="card-box">
           <table class="tablesaw m-t-20 table table-hover m-b-0 tablesaw-stack">
             <thead>
               <tr>

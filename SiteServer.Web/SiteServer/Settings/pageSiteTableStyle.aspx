@@ -1,98 +1,121 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.PageSiteTableStyle" %>
-<%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-  <!DOCTYPE html>
-  <html>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html>
 
-  <head>
-    <meta charset="utf-8">
-    <!--#include file="../inc/head.html"-->
-  </head>
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-  <body>
-    <form class="m-l-15 m-r-15" runat="server">
-      <ctrl:alerts runat="server" />
+    <body>
+      <form class="m-l-15 m-r-15" runat="server">
 
-      <div class="raw">
         <div class="card-box">
-          <h4 class="m-t-0 header-title">
-            <b>虚拟字段管理</b>
-          </h4>
-          <p class="text-muted font-13 m-b-25">
-            在此管理辅助表虚拟字段
-          </p>
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link" href="pageSite.aspx">系统站点管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteUrlWeb.aspx">Web访问地址</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteUrlAssets.aspx">资源文件访问地址</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteUrlApi.aspx">API访问地址</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">辅助表管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteKeyword.aspx">敏感词管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteTemplateOnline.aspx">在线站点模板</a>
+            </li>
+          </ul>
+        </div>
 
-          <div class="form-horizontal">
+        <ctrl:alerts runat="server" />
 
-            <asp:dataGrid id="DgContents" showHeader="true" AutoGenerateColumns="false" HeaderStyle-CssClass="info thead text-center"
-              CssClass="table table-hover m-0" gridlines="none" runat="server">
-              <Columns>
-                <asp:TemplateColumn HeaderText="字段名">
-                  <ItemTemplate>
-                    <asp:Literal ID="ltlAttributeName" runat="server"></asp:Literal>
-                  </ItemTemplate>
-                  <ItemStyle Width="140" cssClass="text-center" />
-                </asp:TemplateColumn>
-                <asp:TemplateColumn HeaderText="显示名称">
-                  <ItemTemplate>
-                    <asp:Literal ID="ltlDisplayName" runat="server"></asp:Literal>
-                  </ItemTemplate>
-                  <ItemStyle Width="140" cssClass="text-center" />
-                </asp:TemplateColumn>
-                <asp:TemplateColumn HeaderText="表单提交类型">
-                  <ItemTemplate>
-                    <asp:Literal ID="ltlInputType" runat="server"></asp:Literal>
-                  </ItemTemplate>
-                  <ItemStyle Width="120" cssClass="text-center" />
-                </asp:TemplateColumn>
-                <asp:TemplateColumn HeaderText="字段类型">
-                  <ItemTemplate>
-                    <asp:Literal ID="ltlFieldType" runat="server"></asp:Literal>
-                  </ItemTemplate>
-                  <ItemStyle Width="120" cssClass="text-center" />
-                </asp:TemplateColumn>
-                <asp:TemplateColumn HeaderText="验证规则">
-                  <ItemTemplate>
-                    <asp:Literal ID="ltlValidate" runat="server"></asp:Literal>
-                  </ItemTemplate>
-                  <ItemStyle Width="100" cssClass="text-center" />
-                </asp:TemplateColumn>
-                <asp:TemplateColumn HeaderText="排序">
-                  <ItemTemplate>
-                    <asp:Literal ID="ltlTaxis" runat="server"></asp:Literal>
-                  </ItemTemplate>
-                  <ItemStyle Width="80" cssClass="text-center" />
-                </asp:TemplateColumn>
-                <asp:TemplateColumn HeaderText="显示样式">
-                  <ItemTemplate>
-                    <asp:Literal ID="ltlEditStyle" runat="server"></asp:Literal>
-                  </ItemTemplate>
-                  <ItemStyle Width="120" cssClass="text-center" />
-                </asp:TemplateColumn>
-                <asp:TemplateColumn HeaderText="表单验证">
-                  <ItemTemplate>
-                    <asp:Literal ID="ltlEditValidate" runat="server"></asp:Literal>
-                  </ItemTemplate>
-                  <ItemStyle Width="80" cssClass="text-center" />
-                </asp:TemplateColumn>
-              </Columns>
-            </asp:dataGrid>
+        <div class="card-box">
+          <div class="m-t-0 header-title">
+            虚拟字段管理
+          </div>
 
+          <div class="panel panel-default m-t-20">
+            <div class="panel-body p-0">
+              <div class="table-responsive">
+                <table class="table tablesaw table-hover m-0">
+                  <thead>
+                    <tr class="thead">
+                      <th>字段名</th>
+                      <th>显示名称</th>
+                      <th class="text-center">表单提交类型</th>
+                      <th class="text-center">字段类型</th>
+                      <th class="text-center">验证规则</th>
+                      <th class="text-center">排序</th>
+                      <th class="text-center">显示样式</th>
+                      <th class="text-center">表单验证</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <asp:Repeater ID="RptContents" runat="server">
+                      <itemtemplate>
+                        <tr>
+                          <td>
+                            <asp:Literal ID="ltlAttributeName" runat="server"></asp:Literal>
+                          </td>
+                          <td>
+                            <asp:Literal ID="ltlDisplayName" runat="server"></asp:Literal>
+
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlInputType" runat="server"></asp:Literal>
+
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlFieldType" runat="server"></asp:Literal>
+
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlValidate" runat="server"></asp:Literal>
+
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlTaxis" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlEditStyle" runat="server"></asp:Literal>
+                          </td>
+                          <td class="text-center">
+                            <asp:Literal ID="ltlEditValidate" runat="server"></asp:Literal>
+                          </td>
+                        </tr>
+                      </itemtemplate>
+                    </asp:Repeater>
+                  </tbody>
+                </table>
+
+              </div>
+            </div>
           </div>
 
           <hr />
 
-          <div class="form-group m-b-0">
-            <asp:Button class="btn m-r-5" id="BtnAddStyle" Text="新增虚拟字段" runat="server" />
-            <asp:Button class="btn m-r-5" id="BtnAddStyles" Text="批量新增虚拟字段" runat="server" />
-            <asp:Button class="btn m-r-5" id="BtnImport" Text="导 入" runat="server" />
-            <asp:Button class="btn m-r-5" id="BtnExport" Text="导 出" runat="server" />
-            <input type="button" class="btn" onclick="location.href='<%=GetReturnUrl() %>    ';" value="返 回" />
-          </div>
+          <asp:Button class="btn btn-primary m-r-5" id="BtnAddStyle" Text="新增虚拟字段" runat="server" />
+          <asp:Button class="btn m-r-5" id="BtnAddStyles" Text="批量新增虚拟字段" runat="server" />
+          <asp:Button class="btn m-r-5" id="BtnImport" Text="导 入" runat="server" />
+          <asp:Button class="btn m-r-5" id="BtnExport" Text="导 出" runat="server" />
+          <asp:Button class="btn m-r-5" text="返 回" onclick="Return_OnClick" runat="server" />
 
         </div>
-      </div>
 
-    </form>
-  </body>
+      </form>
+    </body>
 
-  </html>
+    </html>

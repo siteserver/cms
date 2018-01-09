@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.PageServiceStatus" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
 
     <html>
@@ -14,6 +14,7 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
+        
         <div class="card-box">
           <ul class="nav nav-pills">
             <li class="nav-item active">
@@ -24,6 +25,8 @@
             </li>
           </ul>
         </div>
+
+        <ctrl:alerts runat="server" />
 
         <asp:PlaceHolder id="PhOffline" runat="server">
           <div class="alert alert-danger">

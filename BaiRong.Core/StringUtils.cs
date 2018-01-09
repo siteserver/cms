@@ -36,8 +36,6 @@ namespace BaiRong.Core
             public const string ProductName = "SITESERVER";
             public const string ProductUrl = "http://www.siteserver.cn";
 
-            public const string UrlMoban = "http://moban.siteserver.cn/templates.xml";
-
             public static string GetStlUrl(bool isEntity, string label)
             {
                 return isEntity ? $"http://stl.siteserver.cn/e-{label}/index.html" : $"http://stl.siteserver.cn/{label.Substring("stl:".Length)}/index.html";

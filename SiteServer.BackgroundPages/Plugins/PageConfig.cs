@@ -11,8 +11,7 @@ namespace SiteServer.BackgroundPages.Plugins
 {
     public class PageConfig : BasePage
     {
-        private string _pluginId;
-
+        public Literal LtlPlugin;
         public DropDownList DdlIsDefault;
         public PlaceHolder PhCustom;
         public DropDownList DdlSqlDatabaseType;
@@ -26,6 +25,8 @@ namespace SiteServer.BackgroundPages.Plugins
         public Button BtnConnect;
         public PlaceHolder PhSql2;
         public DropDownList DdlSqlDatabaseName;
+
+        private string _pluginId;
 
         public static string GetRedirectUrl(string pluginId)
         {
@@ -48,6 +49,8 @@ namespace SiteServer.BackgroundPages.Plugins
             var metadata = PluginManager.GetMetadata(_pluginId);
             var isDefault = string.IsNullOrEmpty(metadata.DatabaseType) &&
                             string.IsNullOrEmpty(metadata.ConnectionString);
+
+            LtlPlugin.Text = $"{metadata.DisplayName}（{metadata.Id}）";
 
             EBooleanUtils.AddListItems(DdlIsDefault, "默认数据库连接", "自定义数据库连接");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsDefault, isDefault.ToString());
@@ -175,7 +178,7 @@ namespace SiteServer.BackgroundPages.Plugins
             return connectionString;
         }
 
-        protected void Submit_Click(object sender, EventArgs e)
+        public void Submit_Click(object sender, EventArgs e)
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
@@ -196,8 +199,13 @@ namespace SiteServer.BackgroundPages.Plugins
 
             var metadata = PluginManager.UpdateDatabase(_pluginId, databaseType, connectionString);
 
-            Body.AddAdminLog("配置插件数据库连接", $"插件:{metadata.DisplayName}");
-            SuccessMessage("插件配置成功");
+            Body.AddAdminLog("设置插件数据库连接", $"插件:{metadata.DisplayName}");
+            SuccessMessage("插件设置成功");
+        }
+
+        public void Return_OnClick(object sender, EventArgs e)
+        {
+            PageUtils.Redirect(PageManagement.GetRedirectUrl());
         }
     }
 }

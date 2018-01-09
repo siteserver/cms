@@ -10,6 +10,21 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
+
+        <div class="card-box">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link" href="pageNodeGroup.aspx?publishmentSystemId=<%=PublishmentSystemId%>">栏目组管理</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="pageContentGroup.aspx?publishmentSystemId=<%=PublishmentSystemId%>">内容组管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageContentTags.aspx?publishmentSystemId=<%=PublishmentSystemId%>">内容标签管理</a>
+            </li>
+          </ul>
+        </div>
+
         <ctrl:alerts runat="server" />
 
         <div class="card-box">

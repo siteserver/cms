@@ -11,7 +11,7 @@ namespace SiteServer.BackgroundPages.Settings
 {
     public class PageSiteTableStyle : BasePage
     {
-        public DataGrid DgContents;
+        public Repeater RptContents;
 
         public Button BtnAddStyle;
         public Button BtnAddStyles;
@@ -45,30 +45,22 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
 
-            //删除样式
             if (Body.IsQueryExists("DeleteStyle"))
             {
                 var attributeName = Body.GetQueryString("AttributeName");
                 if (TableStyleManager.IsExists(0, _tableName, attributeName))
                 {
-                    try
-                    {
-                        TableStyleManager.Delete(0, _tableName, attributeName);
-                        Body.AddAdminLog("删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
-                        SuccessDeleteMessage();
-                    }
-                    catch (Exception ex)
-                    {
-                        FailDeleteMessage(ex);
-                    }
+                    TableStyleManager.Delete(0, _tableName, attributeName);
+                    Body.AddAdminLog("删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
+                    SuccessDeleteMessage();
                 }
             }
 
             var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, new List<int> {0});
 
-            DgContents.DataSource = styleInfoList;
-            DgContents.ItemDataBound += DgContents_ItemDataBound;
-            DgContents.DataBind();
+            RptContents.DataSource = styleInfoList;
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
+            RptContents.DataBind();
 
             BtnAddStyle.Attributes.Add("onclick", ModalTableStyleAdd.GetOpenWindowString(0, 0, new List<int> { 0 }, _tableName, string.Empty, _redirectUrl));
             BtnAddStyles.Attributes.Add("onclick",
@@ -82,7 +74,7 @@ namespace SiteServer.BackgroundPages.Settings
             PageUtils.Redirect(GetRedirectUrl(_tableName));
         }
 
-        private void DgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
+        private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
@@ -116,14 +108,18 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (styleInfo.TableStyleId == 0) return;
 
-            var urlStyle = PageUtils.GetSettingsUrl(nameof(PageSiteTableStyle), new NameValueCollection
-            {
-                {"tableName", _tableName},
-                {"DeleteStyle", true.ToString()},
-                {"AttributeName", styleInfo.AttributeName}
-            });
             ltlEditStyle.Text +=
-                $@"&nbsp;&nbsp;<a href=""{urlStyle}"" onClick=""javascript:return confirm('此操作将删除对应显示样式，确认吗？');"">删除</a>";
+                $@"&nbsp;&nbsp;<a href=""{PageUtils.GetSettingsUrl(nameof(PageSiteTableStyle), new NameValueCollection
+                {
+                    {"tableName", _tableName},
+                    {"DeleteStyle", true.ToString()},
+                    {"AttributeName", styleInfo.AttributeName}
+                })}"" onClick=""javascript:return confirm('此操作将删除对应显示样式，确认吗？');"">删除</a>";
+        }
+
+        public void Return_OnClick(object sender, EventArgs e)
+        {
+            PageUtils.Redirect(PageSiteAuxiliaryTable.GetRedirectUrl());
         }
     }
 }

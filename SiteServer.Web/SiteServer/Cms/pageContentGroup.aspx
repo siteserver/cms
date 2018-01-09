@@ -10,7 +10,6 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
-        <ctrl:alerts runat="server" />
 
         <div class="card-box">
           <ul class="nav nav-pills">
@@ -18,7 +17,7 @@
               <a class="nav-link" href="pageNodeGroup.aspx?publishmentSystemId=<%=PublishmentSystemId%>">栏目组管理</a>
             </li>
             <li class="nav-item active">
-              <a class="nav-link" href="javascript:;">内容组管理</a>
+              <a class="nav-link" href="pageContentGroup.aspx?publishmentSystemId=<%=PublishmentSystemId%>">内容组管理</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="pageContentTags.aspx?publishmentSystemId=<%=PublishmentSystemId%>">内容标签管理</a>
@@ -26,9 +25,10 @@
           </ul>
         </div>
 
-        <div class="card-box">
+        <ctrl:alerts runat="server" />
 
-          <div class="panel panel-default m-t-10">
+        <div class="card-box">
+          <div class="panel panel-default">
             <div class="panel-body p-0">
               <div class="table-responsive">
                 <table id="contents" class="table tablesaw table-hover m-0">

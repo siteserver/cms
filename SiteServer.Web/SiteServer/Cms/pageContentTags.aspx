@@ -35,7 +35,6 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
-        <ctrl:alerts runat="server" />
 
         <div class="card-box">
           <ul class="nav nav-pills">
@@ -51,9 +50,10 @@
           </ul>
         </div>
 
-        <div class="card-box">
+        <ctrl:alerts runat="server" />
 
-          <div class="panel panel-default m-t-10">
+        <div class="card-box">
+          <div class="panel panel-default">
             <div class="panel-body p-0">
               <div class="table-responsive">
                 <table id="contents" class="table tablesaw table-hover m-0">

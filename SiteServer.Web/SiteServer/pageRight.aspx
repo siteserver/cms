@@ -100,7 +100,8 @@
         var html = '';
         var totalCount = 0;
         for (i = 0; i < list.length; i++) {
-          html += '<tr><td><a href="' + list[i].url + '">' + list[i].siteName + ' 有 <span style="color:#f00">' + list[i].count + '</span> 篇</a></td></tr>';
+          html += '<tr><td><a href="' + list[i].url + '">' + list[i].siteName + ' 有 <span style="color:#f00">' + list[i]
+            .count + '</span> 篇</a></td></tr>';
           totalCount += list[i].count;
         }
         $('#checkTotalCount').text(totalCount);

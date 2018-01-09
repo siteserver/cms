@@ -51,31 +51,24 @@ namespace SiteServer.BackgroundPages.Cms
 
 		    PublishmentSystemInfo.Additional.PageSize = TranslateUtils.ToInt(TbPageSize.Text, PublishmentSystemInfo.Additional.PageSize);
 		    PublishmentSystemInfo.Additional.IsCreateDoubleClick = TranslateUtils.ToBool(DdlIsCreateDoubleClick.SelectedValue);
-                
-		    try
-		    {
-		        //修改所有模板编码
-		        var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListByPublishmentSystemId(PublishmentSystemId);
-		        var charset = ECharsetUtils.GetEnumType(PublishmentSystemInfo.Additional.Charset);
-		        foreach (var templateInfo in templateInfoList)
-		        {
-		            if (templateInfo.Charset == charset) continue;
 
-		            var templateContent = TemplateManager.GetTemplateContent(PublishmentSystemInfo, templateInfo);
-		            templateInfo.Charset = charset;
-		            DataProvider.TemplateDao.Update(PublishmentSystemInfo, templateInfo, templateContent, Body.AdminName);
-		        }
+            //修改所有模板编码
+            var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListByPublishmentSystemId(PublishmentSystemId);
+            var charset = ECharsetUtils.GetEnumType(PublishmentSystemInfo.Additional.Charset);
+            foreach (var templateInfo in templateInfoList)
+            {
+                if (templateInfo.Charset == charset) continue;
 
-		        DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
+                var templateContent = TemplateManager.GetTemplateContent(PublishmentSystemInfo, templateInfo);
+                templateInfo.Charset = charset;
+                DataProvider.TemplateDao.Update(PublishmentSystemInfo, templateInfo, templateContent, Body.AdminName);
+            }
 
-		        Body.AddSiteLog(PublishmentSystemId, "修改站点配置管理");
+            DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
 
-		        SuccessMessage("站点配置管理修改成功！");
-		    }
-		    catch(Exception ex)
-		    {
-		        FailMessage(ex, "站点配置管理修改失败！");
-		    }
-		}
+            Body.AddSiteLog(PublishmentSystemId, "修改站点设置");
+
+            SuccessMessage("站点设置修改成功！");
+        }
 	}
 }

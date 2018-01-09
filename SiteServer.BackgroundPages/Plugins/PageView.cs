@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
             if (Page.IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Plugins.Management);
+            VerifyAdministratorPermissions(AppManager.Permissions.Plugins.Add, AppManager.Permissions.Plugins.Management);
 
             if (PluginManager.IsExists(_pluginId))
             {
@@ -56,6 +56,11 @@ namespace SiteServer.BackgroundPages.Plugins
                 PhFailure.Visible = true;
                 LtlErrorMessage.Text = errorMessage;
             }
+        }
+
+        public void Return_Click(object sender, EventArgs e)
+        {
+            PageUtils.Redirect(PageAdd.GetRedirectUrl());
         }
     }
 }

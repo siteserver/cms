@@ -26,13 +26,16 @@
               <a class="nav-link" href="pageSiteUrlApi.aspx">API访问地址</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
-            </li>
-            <li class="nav-item">
               <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">辅助表管理</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="pageSiteKeyword.aspx">敏感词管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageSiteTemplateOnline.aspx">在线站点模板</a>
             </li>
           </ul>
         </div>

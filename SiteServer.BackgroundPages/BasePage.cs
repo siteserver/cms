@@ -168,9 +168,9 @@ $('.operation-area').hide();
             return ControlUtils.FindControlBySelfAndChildren(controlId, this);
         }
 
-        public void VerifyAdministratorPermissions(string permission)
+        public void VerifyAdministratorPermissions(params string[] permissionArray)
         {
-            PermissionsManager.VerifyAdministratorPermissions(Body.AdminName, permission);
+            PermissionsManager.VerifyAdministratorPermissions(Body.AdminName, permissionArray);
         }
 
         public virtual void Submit_OnClick(object sender, EventArgs e)

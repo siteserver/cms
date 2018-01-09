@@ -10,7 +10,6 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
-        <ctrl:alerts runat="server" />
 
         <div class="card-box">
           <ul class="nav nav-pills">
@@ -38,8 +37,9 @@
           </ul>
         </div>
 
-        <div class="card-box">
+        <ctrl:alerts runat="server" />
 
+        <div class="card-box">
           <div class="form-group">
             <label class="col-form-label">是否启用定时删除日志功能</label>
             <asp:RadioButtonList ID="RblIsTimeThreshold" class="radio radio-primary" AutoPostBack="true" OnSelectedIndexChanged="RblIsTimeThreshold_SelectedIndexChanged"

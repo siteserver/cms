@@ -10,15 +10,14 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
-        <ctrl:alerts runat="server" />
 
         <div class="card-box">
           <ul class="nav nav-pills">
             <li class="nav-item">
-              <a class="nav-link" href="pageConfigurationSite.aspx?publishmentSystemId=<%=PublishmentSystemId%>">站点配置</a>
+              <a class="nav-link" href="pageConfigurationSite.aspx?publishmentSystemId=<%=PublishmentSystemId%>">站点设置</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageConfigurationContent.aspx?publishmentSystemId=<%=PublishmentSystemId%>">内容配置</a>
+              <a class="nav-link" href="pageConfigurationContent.aspx?publishmentSystemId=<%=PublishmentSystemId%>">内容设置</a>
             </li>
             <li class="nav-item active">
               <a class="nav-link" href="javascript:;">评论设置</a>
@@ -29,8 +28,9 @@
           </ul>
         </div>
 
-        <div class="card-box">
+        <ctrl:alerts runat="server" />
 
+        <div class="card-box">
           <div class="form-group">
             <label class="col-form-label">是否启用评论功能</label>
             <asp:DropDownList ID="DdlIsCommentable" RepeatDirection="Horizontal" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="DdlIsCommentable_OnSelectedIndexChanged"

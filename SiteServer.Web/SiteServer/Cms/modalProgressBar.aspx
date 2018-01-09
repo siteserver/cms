@@ -55,13 +55,13 @@
           </div>
         </div>
         <div id="progressError" style="position:relative; margin: 2em; display:none;">
-          <p style=" padding-left: 25px; padding-bottom: 5px; color:red; text-align: left; vertical-align: middle; background:url(Pic/icon/error.jpg) no-repeat left top;">
+          <p style=" padding-left: 25px; padding-bottom: 5px; color:red; text-align: left; vertical-align: middle; background:url(../Pic/icon/error.jpg) no-repeat left top;">
             执行出错，错误信息为：
             <span id="progressErrorText"></span>
           </p>
         </div>
         <div id="progressWarning" style="position:relative; margin: 2em;">
-          <p style=" padding-left: 25px; padding-bottom: 5px; text-align: left; vertical-align: middle; background:url(Pic/icon/warn.jpg) no-repeat left top;">
+          <p style=" padding-left: 25px; padding-bottom: 5px; text-align: left; vertical-align: middle; background:url(../Pic/icon/warn.jpg) no-repeat left top;">
             进度：
             <span id="progressWarningText">任务初始化...</span>
           </p>

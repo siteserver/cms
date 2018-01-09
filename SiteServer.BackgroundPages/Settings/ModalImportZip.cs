@@ -111,9 +111,8 @@ namespace SiteServer.BackgroundPages.Settings
 	                FailMessage("站点模板压缩包为zip格式，请输入有效文件地址");
 	                return;
 	            }
-	            var directoryName = PathUtils.GetFileNameWithoutExtension(TbDownloadUrl.Text);
-	            PageUtils.Redirect(ModalProgressBar.GetRedirectUrlStringWithSiteTemplateDownload(TbDownloadUrl.Text,
-	                directoryName));
+	            
+	            PageUtils.Redirect(ModalProgressBar.GetRedirectUrlStringWithSiteTemplateDownload(TbDownloadUrl.Text));
 	        }
 	    }
     }

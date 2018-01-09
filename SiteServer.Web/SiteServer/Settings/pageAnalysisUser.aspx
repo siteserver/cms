@@ -11,7 +11,6 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
-        <ctrl:alerts runat="server" />
 
         <div class="card-box">
           <ul class="nav nav-pills">
@@ -35,6 +34,8 @@
             </li>
           </ul>
         </div>
+
+        <ctrl:alerts runat="server" />
 
         <div class="card-box">
           <div class="form-inline">

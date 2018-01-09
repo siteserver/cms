@@ -51,7 +51,6 @@
         <ctrl:alerts text="本页面设置对应站点的具体权限，确认后需在在角色编辑页面再次点击确认才能最终保存" runat="server" />
 
         <div class="card-box">
-
           <asp:PlaceHolder ID="PhWebsitePermissions" runat="server">
             <div class="form-group">
               <label class="col-form-label">

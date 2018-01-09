@@ -1,66 +1,71 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Account.PageProfile" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html>
 
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="./inc/header.aspx"-->
-</head>
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-<body>
-<form class="form-inline" runat="server">
-  <asp:Literal id="LtlBreadCrumb" runat="server" />
-  <bairong:alerts runat="server" />
+    <body>
+      <form class="m-l-15 m-r-15" runat="server">
 
-  <ul class="nav nav-pills">
-    <li class="active"><a href="pageUserProfile.aspx">修改资料</a></li>
-    <li><a href="pageUserPassword.aspx">更改密码</a></li>
-  </ul>
+        <div class="card-box">
+          <ul class="nav nav-pills">
+            <li class="nav-item active">
+              <a class="nav-link" href="pageProfile.aspx">修改资料</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pagePassword.aspx">更改密码</a>
+            </li>
+          </ul>
+        </div>
 
-  <div class="popover popover-static">
-  <h3 class="popover-title">修改资料</h3>
-  <div class="popover-content">
+        <ctrl:alerts runat="server" />
 
-    <table class="table noborder table-hover">
-      <tr>
-        <td width="120">账号：</td>
-        <td><asp:Literal ID="UserName" runat="server"></asp:Literal></td>
-      </tr>
-      <tr>
-        <td>姓名：</td>
-        <td><asp:TextBox ID="DisplayName" runat="server" Width="180px"></asp:TextBox>
-          <asp:RequiredFieldValidator runat="server" ControlToValidate="DisplayName"
-            ErrorMessage="姓名为必填项。" foreColor="red" ToolTip="姓名为必填项。"  Display="Dynamic"></asp:RequiredFieldValidator></td>
-      </tr>
-      <tr>
-        <td>电子邮件：</td>
-        <td><asp:TextBox ID="Email" runat="server" Width="180px"></asp:TextBox>
-          <asp:RegularExpressionValidator ControlToValidate="Email"
-            ValidationExpression="(\w[0-9a-zA-Z_-]*@(\w[0-9a-zA-Z-]*\.)+\w{2,})"
-            ErrorMessage="邮件格式不正确。" foreColor="red" Display="Dynamic" runat="server"/></td>
-      </tr>
-      <tr>
-        <td>手机号码：</td>
-        <td>
-          <asp:TextBox ID="Mobile" runat="server" Width="180px"></asp:TextBox>
-          <asp:RegularExpressionValidator ControlToValidate="Mobile" ValidationExpression="^0?\d{11}$" ErrorMessage="手机号码格式不正确" foreColor="red" Display="Dynamic" runat="server" />
-        </td>
-      </tr>
-    </table>
+        <div class="card-box">
+          <div class="form-group">
+            <label class="col-form-label">账号</label>
+            <div class="form-control-plaintext">
+              <asp:Literal ID="LtlUserName" runat="server"></asp:Literal>
+            </div>
+          </div>
 
-    <hr />
-    <table class="table noborder">
-      <tr>
-        <td class="center">
-          <asp:Button class="btn btn-primary" OnClick="Submit_Click" runat="server" Text="修 改"  />
-        </td>
-      </tr>
-    </table>
+          <div class="form-group">
+            <label class="col-form-label">
+              姓名
+              <asp:RequiredFieldValidator runat="server" ControlToValidate="TbDisplayName" ErrorMessage="姓名为必填项" foreColor="red" ToolTip="姓名为必填项"
+                Display="Dynamic"></asp:RequiredFieldValidator>
+            </label>
+            <asp:TextBox ID="TbDisplayName" class="form-control" runat="server"></asp:TextBox>
+          </div>
 
-    </div>
-  </div>
+          <div class="form-group">
+            <label class="col-form-label">
+              电子邮件
+              <asp:RegularExpressionValidator ControlToValidate="TbEmail" ValidationExpression="(\w[0-9a-zA-Z_-]*@(\w[0-9a-zA-Z-]*\.)+\w{2,})"
+                ErrorMessage="邮件格式不正确" foreColor="red" Display="Dynamic" runat="server" />
+            </label>
+            <asp:TextBox ID="TbEmail" class="form-control" runat="server"></asp:TextBox>
+          </div>
 
-</form>
-</body>
-</html>
+          <div class="form-group">
+            <label class="col-form-label">
+              手机号码
+              <asp:RegularExpressionValidator ControlToValidate="TbMobile" ValidationExpression="^0?\d{11}$" ErrorMessage="手机号码格式不正确" foreColor="red"
+                Display="Dynamic" runat="server" />
+            </label>
+            <asp:TextBox ID="TbMobile" class="form-control" runat="server"></asp:TextBox>
+          </div>
+
+          <hr />
+
+          <asp:Button class="btn btn-primary" text="确 定" onclick="Submit_OnClick" runat="server" />
+
+        </div>
+
+      </form>
+    </body>
+
+    </html>

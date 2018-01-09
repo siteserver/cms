@@ -10,7 +10,6 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
-        <ctrl:alerts runat="server" />
 
         <div class="card-box">
           <ul class="nav nav-pills">
@@ -32,10 +31,13 @@
           </ul>
         </div>
 
+        <ctrl:alerts runat="server" />
+
         <div class="card-box">
           <p class="text-muted font-13 m-b-25">
             当前缓存：
             <asp:Literal id="LtlCount" runat="server" /> 个
+            <asp:Button class="btn btn-success m-l-5" id="Submit" Text="清除缓存" OnClick="Submit_OnClick" runat="server" />
           </p>
 
           <div class="panel panel-default">
@@ -73,10 +75,6 @@
           </div>
 
           <ctrl:sqlPager id="SpContents" runat="server" class="table table-pager" />
-
-          <hr />
-
-          <asp:Button class="btn btn-primary" id="Submit" Text="清除缓存" OnClick="Submit_OnClick" runat="server" />
 
         </div>
 

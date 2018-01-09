@@ -88,7 +88,7 @@ namespace SiteServer.BackgroundPages.Cms
                 PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
-                    {"Gather", "True"}
+                    {"Gather", true.ToString()}
                 }), "GatherRuleNameCollection", "请选择需要开始采集的采集规则名称!", 660, 360);
         }
 
@@ -109,7 +109,7 @@ namespace SiteServer.BackgroundPages.Cms
                 PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
-                    {"GatherDatabase", "True"}
+                    {"GatherDatabase", true.ToString()}
                 }), "GatherRuleNameCollection", "请选择需要开始采集的采集规则名称!", 660, 360);
         }
 
@@ -129,28 +129,26 @@ namespace SiteServer.BackgroundPages.Cms
                 PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
-                    {"GatherFile", "True"}
+                    {"GatherFile", true.ToString()}
                 }), "GatherRuleNameCollection", "请选择需要开始采集的采集规则名称!", 660, 360);
         }
 
-        public static string GetOpenWindowStringWithSiteTemplateDownload(string downloadUrl, string directoryName)
+        public static string GetOpenWindowStringWithSiteTemplateDownload(string downloadUrl)
         {
             return LayerUtils.GetOpenScript("下载在线模板",
                 PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
                 {
-                    {"SiteTemplateDownload", "True"},
-                    {"DownloadUrl", downloadUrl},
-                    {"DirectoryName", directoryName}
+                    {"SiteTemplateDownload", true.ToString()},
+                    {"DownloadUrl", TranslateUtils.EncryptStringBySecretKey(downloadUrl)}
                 }), 460, 360);
         }
 
-        public static string GetRedirectUrlStringWithSiteTemplateDownload(string downloadUrl, string directoryName)
+        public static string GetRedirectUrlStringWithSiteTemplateDownload(string downloadUrl)
         {
             return PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
             {
                 {"SiteTemplateDownload", true.ToString()},
-                {"DownloadUrl", downloadUrl},
-                {"DirectoryName", directoryName}
+                {"DownloadUrl", TranslateUtils.EncryptStringBySecretKey(downloadUrl)}
             });
         }
 
@@ -159,7 +157,7 @@ namespace SiteServer.BackgroundPages.Cms
             return LayerUtils.GetOpenScript("站点模板压缩",
                 PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
                 {
-                    {"SiteTemplateZip", "True"},
+                    {"SiteTemplateZip", true.ToString()},
                     {"DirectoryName", directoryName}
                 }), 460, 360);
         }
@@ -169,7 +167,7 @@ namespace SiteServer.BackgroundPages.Cms
             return LayerUtils.GetOpenScript("站点模板解压",
                 PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
                 {
-                    {"SiteTemplateUnZip", "True"},
+                    {"SiteTemplateUnZip", true.ToString()},
                     {"FileName", fileName}
                 }), 460, 360);
         }
@@ -257,8 +255,10 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var userKeyPrefix = StringUtils.Guid();
 
-                var parameters = AjaxOtherService.GetSiteTemplateDownloadParameters(Body.GetQueryString("DownloadUrl"),
-                    Body.GetQueryString("DirectoryName"), userKeyPrefix);
+                var downloadUrl = TranslateUtils.DecryptStringBySecretKey(Body.GetQueryString("DownloadUrl"));
+                var directoryName = PathUtils.GetFileNameWithoutExtension(downloadUrl);
+
+                var parameters = AjaxOtherService.GetSiteTemplateDownloadParameters(downloadUrl, directoryName, userKeyPrefix);
                 LtlScripts.Text =
                     AjaxManager.RegisterProgressTaskScript(AjaxOtherService.GetSiteTemplateDownloadUrl(), parameters, userKeyPrefix, AjaxOtherService.GetCountArrayUrl());
             }

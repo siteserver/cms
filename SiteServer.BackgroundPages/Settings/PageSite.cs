@@ -71,7 +71,7 @@ namespace SiteServer.BackgroundPages.Settings
             ltlPublishmentSystemDir.Text = publishmentSystemInfo.PublishmentSystemDir;
             ltlAddDate.Text = DateUtils.GetDateString(NodeManager.GetAddDate(publishmentSystemId, publishmentSystemId));
 
-            ltlSave.Text = $@"<a href=""{PageSiteTemplateSave.GetRedirectUrl(publishmentSystemId)}"">保存</a>";
+            ltlSave.Text = $@"<a href=""{PageSiteSave.GetRedirectUrl(publishmentSystemId)}"">保存</a>";
 
             ltlEdit.Text = $@"<a href=""{PageSiteEdit.GetRedirectUrl(publishmentSystemId)}"">修改</a>";
 

@@ -10,7 +10,6 @@
 
     <body>
       <form class="m-l-15 m-r-15" runat="server">
-        <ctrl:alerts runat="server" />
 
         <div class="card-box">
           <ul class="nav nav-pills">
@@ -21,16 +20,14 @@
               <a class="nav-link" href="pageUserCheck.aspx">审核新用户</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageUserConfigRegister.aspx">用户注册设置</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="pageUserConfigLogin.aspx">用户登录设置</a>
+              <a class="nav-link" href="pageUserConfiguration.aspx">用户设置</a>
             </li>
           </ul>
         </div>
 
-        <div class="card-box">
+        <ctrl:alerts runat="server" />
 
+        <div class="card-box">
           <div class="m-t-10">
             <div class="form-inline">
               <div class="form-group">
