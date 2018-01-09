@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using CommandLine;
+using CommandLine; 
 
 namespace siteserver
 {
@@ -11,7 +11,7 @@ namespace siteserver
 
     internal class RunSubOptions
     {
-        // Remainder omitted
+        // Remainder omitted 
     }
 
     internal class TestSubOptions
