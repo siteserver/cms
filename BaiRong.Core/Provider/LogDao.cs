@@ -172,7 +172,7 @@ namespace BaiRong.Core.Provider
         public DateTime GetLastRemoveLogDate(string userName)
         {
             var retval = DateTime.MinValue;
-            var sqlString = SqlUtils.GetTopSqlString("bairong_Log", "AddDate", "WHERE Action = '清空数据库日志'", "ORDER BY ID DESC", 1);
+            var sqlString = SqlUtils.ToTopSqlString("bairong_Log", "AddDate", "WHERE Action = '清空数据库日志'", "ORDER BY ID DESC", 1);
 
             var parms = new IDataParameter[]
 			{

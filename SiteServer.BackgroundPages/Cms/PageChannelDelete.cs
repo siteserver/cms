@@ -116,7 +116,7 @@ namespace SiteServer.BackgroundPages.Cms
                     foreach (var nodeId in nodeIdArrayList)
                     {
                         var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
-                        var contentIdList = BaiRongDataProvider.ContentDao.GetContentIdList(tableName, nodeId);
+                        var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, nodeId);
                         DirectoryUtility.DeleteContents(PublishmentSystemInfo, nodeId, contentIdList);
                         DataProvider.ContentDao.TrashContents(PublishmentSystemId, tableName, contentIdList);
                     }

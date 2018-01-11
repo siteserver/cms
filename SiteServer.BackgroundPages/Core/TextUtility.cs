@@ -198,7 +198,7 @@ namespace SiteServer.BackgroundPages.Core
                 if (attributesOfDisplay.Contains(styleInfo.AttributeName))
                 {
                     builder.Append(
-                        $@"<th style=""width: {GetColumnWidth(styleInfo.AttributeName)}px"">{styleInfo.DisplayName}</th>");
+                        $@"<th class=""text-nowrap"" style=""width: {GetColumnWidth(styleInfo.AttributeName)}px"">{styleInfo.DisplayName}</th>");
                 }
             }
 
@@ -225,7 +225,7 @@ namespace SiteServer.BackgroundPages.Core
                 }
             }
 
-            return $@"<th style=""width: {commandCount * 80}px"" class=""text-center"">操作</th>";
+            return $@"<th style=""width: {commandCount * 80}px"" class=""text-center text-nowrap"">操作</th>";
         }
 
         public static string GetColumnsHtml(Dictionary<string, string> nameValueCacheDict, PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo, StringCollection attributesOfDisplay, List<TableStyleInfo> displayStyleInfoList)

@@ -461,7 +461,6 @@
     <Compile Include="Model\TemplateInfo.cs" />
     <Compile Include="Model\TemplateMatchInfo.cs" />
     <Compile Include="Model\SystemPermissionsInfo.cs" />
-    <Compile Include="Model\BackgroundContentInfo.cs" />
     <Compile Include="Model\Enumerations\ECrossSiteTransType.cs" />
     <Compile Include="Model\NodeInfo.cs" />
     <Compile Include="Model\NodeInfoExtend.cs" />
@@ -469,7 +468,6 @@
     <Compile Include="Model\PublishmentSystemInfoExtend.cs" />
     <Compile Include="Model\SitePageInfo.cs" />
     <Compile Include="Provider\AdvertisementDao.cs" />
-    <Compile Include="Provider\BackgroundContentDao.cs" />
     <Compile Include="Provider\ContentDao.cs">
       <SubType>Code</SubType>
     </Compile>

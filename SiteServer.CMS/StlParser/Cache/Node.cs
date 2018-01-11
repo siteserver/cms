@@ -11,6 +11,11 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         private static readonly object LockObject = new object();
 
+        public static void ClearCache()
+        {
+            StlCacheUtils.ClearCache(nameof(Node));
+        }
+
         public static int GetPublishmentSystemId(int nodeId)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Node), nameof(GetPublishmentSystemId),

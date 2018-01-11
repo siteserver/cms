@@ -249,7 +249,7 @@ namespace BaiRong.Core.Provider
             if (string.IsNullOrEmpty(userName)) return;
 
             var sqlString =
-                $"UPDATE bairong_Administrator SET LastActivityDate = @LastActivityDate, {SqlUtils.GetAddOne("CountOfFailedLogin")} WHERE UserName = @UserName";
+                $"UPDATE bairong_Administrator SET LastActivityDate = @LastActivityDate, {SqlUtils.ToPlusSqlString("CountOfFailedLogin", 1)} WHERE UserName = @UserName";
 
             IDataParameter[] updateParms =
             {
@@ -267,7 +267,7 @@ namespace BaiRong.Core.Provider
             if (string.IsNullOrEmpty(userName)) return;
 
             var sqlString =
-                $"UPDATE bairong_Administrator SET LastActivityDate = @LastActivityDate, {SqlUtils.GetAddOne("CountOfLogin")}, CountOfFailedLogin = 0 WHERE UserName = @UserName";
+                $"UPDATE bairong_Administrator SET LastActivityDate = @LastActivityDate, {SqlUtils.ToPlusSqlString("CountOfLogin", 1)}, CountOfFailedLogin = 0 WHERE UserName = @UserName";
 
             IDataParameter[] updateParms =
             {

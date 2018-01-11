@@ -143,14 +143,14 @@ namespace BaiRong.Core.Provider
 			};
 
             string sqlString =
-                $"UPDATE bairong_Department SET {SqlUtils.GetAddOne("Taxis")} WHERE (Taxis >= {departmentInfo.Taxis})";
+                $"UPDATE bairong_Department SET {SqlUtils.ToPlusSqlString("Taxis", 1)} WHERE (Taxis >= {departmentInfo.Taxis})";
             ExecuteNonQuery(trans, sqlString);
 
             departmentInfo.DepartmentId = ExecuteNonQueryAndReturnId(TableName, nameof(DepartmentInfo.DepartmentId), trans, sqlInsert, insertParms);
 
             if (!string.IsNullOrEmpty(departmentInfo.ParentsPath))
             {
-                sqlString = $"UPDATE bairong_Department SET {SqlUtils.GetAddOne("ChildrenCount")} WHERE DepartmentID IN ({PageUtils.FilterSql(departmentInfo.ParentsPath)})";
+                sqlString = $"UPDATE bairong_Department SET {SqlUtils.ToPlusSqlString("ChildrenCount", 1)} WHERE DepartmentID IN ({PageUtils.FilterSql(departmentInfo.ParentsPath)})";
 
                 ExecuteNonQuery(trans, sqlString);
             }
@@ -163,7 +163,7 @@ namespace BaiRong.Core.Provider
             //    $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN (SELECT TOP 1 DepartmentID FROM bairong_Department WHERE ParentID = {departmentInfo.ParentId} ORDER BY Taxis DESC))";
 
             sqlString =
-                $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN ({SqlUtils.GetInTopSqlString("bairong_Department", "DepartmentID", $"WHERE ParentID = {departmentInfo.ParentId}", "ORDER BY Taxis DESC", 1)}))";
+                $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN ({SqlUtils.ToInTopSqlString("bairong_Department", "DepartmentID", $"WHERE ParentID = {departmentInfo.ParentId}", "ORDER BY Taxis DESC", 1)}))";
 
             ExecuteNonQuery(trans, sqlString);
 
@@ -194,7 +194,7 @@ namespace BaiRong.Core.Provider
             //WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis < @Taxis)
             //ORDER BY Taxis DESC";
 
-            var sqlString = SqlUtils.GetTopSqlString("bairong_Department", "DepartmentID, ChildrenCount, ParentsPath",
+            var sqlString = SqlUtils.ToTopSqlString("bairong_Department", "DepartmentID, ChildrenCount, ParentsPath",
                 "WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis < @Taxis)",
                 "ORDER BY Taxis DESC", 1);
 
@@ -243,7 +243,7 @@ namespace BaiRong.Core.Provider
             //WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis > @Taxis)
             //ORDER BY Taxis";
 
-            var sqlString = SqlUtils.GetTopSqlString("bairong_Department", "DepartmentID, ChildrenCount, ParentsPath",
+            var sqlString = SqlUtils.ToTopSqlString("bairong_Department", "DepartmentID, ChildrenCount, ParentsPath",
                 "WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis > @Taxis)",
                 "ORDER BY Taxis", 1);
 
@@ -319,7 +319,7 @@ namespace BaiRong.Core.Provider
                 //    $"UPDATE bairong_Department SET IsLastNode = '{true.ToString()}' WHERE (DepartmentID IN (SELECT TOP 1 DepartmentID FROM bairong_Department WHERE ParentID = {parentId} ORDER BY Taxis DESC))";
 
                 sqlString =
-                    $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN ({SqlUtils.GetInTopSqlString("bairong_Department", "DepartmentID", $"WHERE ParentID = {parentId}", "ORDER BY Taxis DESC", 1)}))";
+                    $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN ({SqlUtils.ToInTopSqlString("bairong_Department", "DepartmentID", $"WHERE ParentID = {parentId}", "ORDER BY Taxis DESC", 1)}))";
 
                 ExecuteNonQuery(sqlString);
             }

@@ -6,7 +6,6 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -64,7 +63,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in _idArrayList)
                         {
-                            var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, contentId) as BackgroundContentInfo;
+                            var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, contentId);
                             if (contentInfo != null)
                             {
                                 if (CbIsRecommend.Checked)
@@ -98,7 +97,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in _idArrayList)
                         {
-                            var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, contentId) as BackgroundContentInfo;
+                            var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, contentId);
                             if (contentInfo != null)
                             {
                                 if (CbIsRecommend.Checked)
@@ -132,7 +131,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var contentId in _idArrayList)
                     {
-                        BaiRongDataProvider.ContentDao.SetValue(_tableName, contentId, ContentAttribute.Hits, hits.ToString());
+                        DataProvider.ContentDao.SetValue(_tableName, contentId, ContentAttribute.Hits, hits.ToString());
                     }
 
                     Body.AddSiteLog(PublishmentSystemId, "设置内容点击量");

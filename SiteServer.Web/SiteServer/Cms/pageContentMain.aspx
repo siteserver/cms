@@ -17,3 +17,4 @@
   </noframes>
 
   </html>
+  <!--#include file="../inc/foot.html"-->

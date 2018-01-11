@@ -66,19 +66,19 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var contentId in _contentIdList)
             {
-                var isTop = TranslateUtils.ToBool(BaiRongDataProvider.ContentDao.GetValue(_tableName, contentId, ContentAttribute.IsTop));
+                var isTop = TranslateUtils.ToBool(DataProvider.ContentDao.GetValue(_tableName, contentId, ContentAttribute.IsTop));
                 for (var i = 1; i <= taxisNum; i++)
                 {
                     if (isUp)
                     {
-                        if (BaiRongDataProvider.ContentDao.UpdateTaxisToUp(_tableName, _nodeId, contentId, isTop) == false)
+                        if (DataProvider.ContentDao.UpdateTaxisToUp(_tableName, _nodeId, contentId, isTop) == false)
                         {
                             break;
                         }
                     }
                     else
                     {
-                        if (BaiRongDataProvider.ContentDao.UpdateTaxisToDown(_tableName, _nodeId, contentId, isTop) == false)
+                        if (DataProvider.ContentDao.UpdateTaxisToDown(_tableName, _nodeId, contentId, isTop) == false)
                         {
                             break;
                         }

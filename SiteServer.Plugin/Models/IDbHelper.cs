@@ -738,11 +738,7 @@ namespace SiteServer.Plugin.Models
 
         #endregion Parameter Discovery Functions
 
-        #region Utility Functions
-
-        string GetTopSqlString(string tableName, string columns, string whereString, string orderString, int topN);
-
-        string GetTopSqlString(string sqlString, string orderString, int topN);
+        #region Get Value From Reader
 
         string GetString(IDataReader rdr, int i);
 
@@ -753,6 +749,24 @@ namespace SiteServer.Plugin.Models
         decimal GetDecimal(IDataReader rdr, int i);
 
         DateTime GetDateTime(IDataReader rdr, int i);
+
+        #endregion
+
+        #region Utility Functions
+
+        string ToTopSqlString(string connectionString, string tableName, string columns, string whereString, string orderString, int startIndex, int count);
+
+        string ToTopSqlString(string tableName, string columns, string whereString, string orderString, int count);
+
+        string ToPlusSqlString(string fieldName, int plusNum);
+
+        string ToMinusSqlString(string fieldName, int minusNum);
+
+        string ToNowSqlString();
+
+        string ToDateSqlString(DateTime date);
+
+        string ToDateTimeSqlString(DateTime dateTime);
 
         #endregion Utility Functions
     }

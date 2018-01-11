@@ -67,57 +67,54 @@ namespace SiteServer.CMS.Core
 
             try
             {
-                if (contentInfo is BackgroundContentInfo)
+                var fileUrls = new List<string>
                 {
-                    var fileUrls = new List<string>();
-                    contentInfo = (BackgroundContentInfo)contentInfo;
+                    contentInfo.GetString(BackgroundContentAttribute.ImageUrl),
+                    contentInfo.GetString(BackgroundContentAttribute.VideoUrl),
+                    contentInfo.GetString(BackgroundContentAttribute.FileUrl)
+                };
 
-                    fileUrls.Add(contentInfo.GetString(BackgroundContentAttribute.ImageUrl));
-                    fileUrls.Add(contentInfo.GetString(BackgroundContentAttribute.VideoUrl));
-                    fileUrls.Add(contentInfo.GetString(BackgroundContentAttribute.FileUrl));
+                foreach (var url in TranslateUtils.StringCollectionToStringList(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl))))
+                {
+                    if (!fileUrls.Contains(url))
+                    {
+                        fileUrls.Add(url);
+                    }
+                }
+                foreach (var url in TranslateUtils.StringCollectionToStringList(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.VideoUrl))))
+                {
+                    if (!fileUrls.Contains(url))
+                    {
+                        fileUrls.Add(url);
+                    }
+                }
+                foreach (var url in TranslateUtils.StringCollectionToStringList(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl))))
+                {
+                    if (!fileUrls.Contains(url))
+                    {
+                        fileUrls.Add(url);
+                    }
+                }
+                foreach (var url in RegexUtils.GetOriginalImageSrcs(contentInfo.GetString(BackgroundContentAttribute.Content)))
+                {
+                    if (!fileUrls.Contains(url))
+                    {
+                        fileUrls.Add(url);
+                    }
+                }
+                foreach (var url in RegexUtils.GetOriginalLinkHrefs(contentInfo.GetString(BackgroundContentAttribute.Content)))
+                {
+                    if (!fileUrls.Contains(url) && PageUtils.IsVirtualUrl(url))
+                    {
+                        fileUrls.Add(url);
+                    }
+                }
 
-                    foreach (var url in TranslateUtils.StringCollectionToStringList(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl))))
+                foreach (var fileUrl in fileUrls)
+                {
+                    if (!string.IsNullOrEmpty(fileUrl) && PageUtility.IsVirtualUrl(fileUrl))
                     {
-                        if (!fileUrls.Contains(url))
-                        {
-                            fileUrls.Add(url);
-                        }
-                    }
-                    foreach (var url in TranslateUtils.StringCollectionToStringList(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.VideoUrl))))
-                    {
-                        if (!fileUrls.Contains(url))
-                        {
-                            fileUrls.Add(url);
-                        }
-                    }
-                    foreach (var url in TranslateUtils.StringCollectionToStringList(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl))))
-                    {
-                        if (!fileUrls.Contains(url))
-                        {
-                            fileUrls.Add(url);
-                        }
-                    }
-                    foreach (var url in RegexUtils.GetOriginalImageSrcs(contentInfo.GetString(BackgroundContentAttribute.Content)))
-                    {
-                        if (!fileUrls.Contains(url))
-                        {
-                            fileUrls.Add(url);
-                        }
-                    }
-                    foreach (var url in RegexUtils.GetOriginalLinkHrefs(contentInfo.GetString(BackgroundContentAttribute.Content)))
-                    {
-                        if (!fileUrls.Contains(url) && PageUtils.IsVirtualUrl(url))
-                        {
-                            fileUrls.Add(url);
-                        }
-                    }
-
-                    foreach (var fileUrl in fileUrls)
-                    {
-                        if (!string.IsNullOrEmpty(fileUrl) && PageUtility.IsVirtualUrl(fileUrl))
-                        {
-                            MoveFile(sourcePublishmentSystemInfo, destPublishmentSystemInfo, fileUrl);
-                        }
+                        MoveFile(sourcePublishmentSystemInfo, destPublishmentSystemInfo, fileUrl);
                     }
                 }
             }

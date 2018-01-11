@@ -143,7 +143,7 @@ namespace SiteServer.CMS.Provider
 
             if (publishmentSystemId > 0)
             {
-                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTaskLog", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate", "WHERE PublishmentSystemId = @PublishmentSystemId", string.Empty, totalNum);
+                var sqlString = SqlUtils.ToTopSqlString("siteserver_CreateTaskLog", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate", "WHERE PublishmentSystemId = @PublishmentSystemId", string.Empty, totalNum);
 
                 var parms = new IDataParameter[]
                 {
@@ -163,7 +163,7 @@ namespace SiteServer.CMS.Provider
             }
             else
             {
-                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTaskLog", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate", string.Empty, string.Empty, totalNum);
+                var sqlString = SqlUtils.ToTopSqlString("siteserver_CreateTaskLog", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate", string.Empty, string.Empty, totalNum);
 
                 using (var rdr = ExecuteReader(sqlString))
                 {

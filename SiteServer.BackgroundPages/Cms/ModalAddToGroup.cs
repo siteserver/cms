@@ -120,7 +120,7 @@ namespace SiteServer.BackgroundPages.Cms
                         {
                             foreach (var contentId in contentIdArrayList)
                             {
-                                BaiRongDataProvider.ContentDao.AddContentGroupList(tableName, contentId, groupNameList);
+                                DataProvider.ContentDao.AddContentGroupList(tableName, contentId, groupNameList);
                             }
                         }
                     }

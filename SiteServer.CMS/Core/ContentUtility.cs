@@ -155,30 +155,34 @@ namespace SiteServer.CMS.Core
             return formattedTitle;
         }
 
-        public static void PutImagePaths(PublishmentSystemInfo publishmentSystemInfo, BackgroundContentInfo contentInfo, NameValueCollection collection)
+        public static void PutImagePaths(PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo, NameValueCollection collection)
         {
-            if (contentInfo != null)
-            {
-                if (!string.IsNullOrEmpty(contentInfo.ImageUrl) && PageUtility.IsVirtualUrl(contentInfo.ImageUrl))
-                {
-                    collection[contentInfo.ImageUrl] = PathUtility.MapPath(publishmentSystemInfo, contentInfo.ImageUrl);
-                }
-                if (!string.IsNullOrEmpty(contentInfo.VideoUrl) && PageUtility.IsVirtualUrl(contentInfo.VideoUrl))
-                {
-                    collection[contentInfo.VideoUrl] = PathUtility.MapPath(publishmentSystemInfo, contentInfo.VideoUrl);
-                }
-                if (!string.IsNullOrEmpty(contentInfo.FileUrl) && PageUtility.IsVirtualUrl(contentInfo.FileUrl))
-                {
-                    collection[contentInfo.FileUrl] = PathUtility.MapPath(publishmentSystemInfo, contentInfo.FileUrl);
-                }
+            if (contentInfo == null) return;
 
-                var srcArrayList = RegexUtils.GetOriginalImageSrcs(contentInfo.Content);
-                foreach (string src in srcArrayList)
+            var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
+            var videoUrl = contentInfo.GetString(BackgroundContentAttribute.VideoUrl);
+            var fileUrl = contentInfo.GetString(BackgroundContentAttribute.FileUrl);
+            var content = contentInfo.GetString(BackgroundContentAttribute.Content);
+
+            if (!string.IsNullOrEmpty(imageUrl) && PageUtility.IsVirtualUrl(imageUrl))
+            {
+                collection[imageUrl] = PathUtility.MapPath(publishmentSystemInfo, imageUrl);
+            }
+            if (!string.IsNullOrEmpty(videoUrl) && PageUtility.IsVirtualUrl(videoUrl))
+            {
+                collection[videoUrl] = PathUtility.MapPath(publishmentSystemInfo, videoUrl);
+            }
+            if (!string.IsNullOrEmpty(fileUrl) && PageUtility.IsVirtualUrl(fileUrl))
+            {
+                collection[fileUrl] = PathUtility.MapPath(publishmentSystemInfo, fileUrl);
+            }
+
+            var srcList = RegexUtils.GetOriginalImageSrcs(content);
+            foreach (var src in srcList)
+            {
+                if (PageUtility.IsVirtualUrl(src))
                 {
-                    if (PageUtility.IsVirtualUrl(src))
-                    {
-                        collection[src] = PathUtility.MapPath(publishmentSystemInfo, src);
-                    }
+                    collection[src] = PathUtility.MapPath(publishmentSystemInfo, src);
                 }
             }
         }
@@ -229,7 +233,7 @@ namespace SiteServer.CMS.Core
         public static int GetRealContentId(string tableName, int contentId)
         {
             string linkUrl;
-            var referenceId = BaiRongDataProvider.ContentDao.GetReferenceId(tableName, contentId, out linkUrl);
+            var referenceId = DataProvider.ContentDao.GetReferenceId(tableName, contentId, out linkUrl);
             return referenceId > 0 ? referenceId : contentId;
         }
 

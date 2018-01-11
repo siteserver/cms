@@ -127,7 +127,10 @@ namespace SiteServer.CMS.StlParser
                 : TemplateManager.GetChannelTemplateInfo(publishmentSystemId, nodeId);
             var filePath = PathUtility.GetChannelPageFilePath(publishmentSystemInfo, nodeId, 0);
             var pageInfo = new PageInfo(nodeId, 0, publishmentSystemInfo, templateInfo);
-            var contextInfo = new ContextInfo(pageInfo);
+            var contextInfo = new ContextInfo(pageInfo)
+            {
+                ContextType = EContextType.Channel
+            };
             var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(publishmentSystemInfo, templateInfo));
 
             var stlLabelList = StlParserUtility.GetStlLabelList(contentBuilder.ToString());
@@ -310,6 +313,7 @@ namespace SiteServer.CMS.StlParser
             var pageInfo = new PageInfo(nodeId, contentId, publishmentSystemInfo, templateInfo);
             var contextInfo = new ContextInfo(pageInfo)
             {
+                ContextType = EContextType.Content,
                 ContentInfo = contentInfo
             };
             var filePath = PathUtility.GetContentPageFilePath(publishmentSystemInfo, pageInfo.PageNodeId, contentInfo, 0);

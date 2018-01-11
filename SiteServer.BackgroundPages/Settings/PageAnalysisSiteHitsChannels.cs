@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.Settings
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
 
-            SpContents.SelectCommand = BaiRongDataProvider.ContentDao.GetSelectCommandByHitsAnalysis(PublishmentSystemInfo.AuxiliaryTableForContent, PublishmentSystemId);
+            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommandByHitsAnalysis(PublishmentSystemInfo.AuxiliaryTableForContent, PublishmentSystemId);
 
             SpContents.SortField = ContentAttribute.Hits;
             SpContents.SortMode = SortMode.DESC;

@@ -202,7 +202,7 @@ namespace SiteServer.BackgroundPages.Cms
                 if (nodeInfo.ContentModelPluginId != DdlContentModelPluginId.SelectedValue)
                 {
                     nodeInfo.ContentModelPluginId = DdlContentModelPluginId.SelectedValue;
-                    nodeInfo.ContentNum = BaiRongDataProvider.ContentDao.GetCount(NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo.ContentModelPluginId), nodeInfo.NodeId);
+                    nodeInfo.ContentNum = DataProvider.ContentDao.GetCount(NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo.ContentModelPluginId), nodeInfo.NodeId);
                 }
 
                 nodeInfo.ContentRelatedPluginIds = ControlUtils.GetSelectedListControlValueCollection(CblContentRelatedPluginIds);

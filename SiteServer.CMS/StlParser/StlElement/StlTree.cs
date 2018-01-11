@@ -138,16 +138,16 @@ namespace SiteServer.CMS.StlParser.StlElement
             //var theNodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(channel.NodeId, channel.ChildrenCount, EScopeType.All, groupChannel, groupChannelNot);
             var theNodeIdList = Node.GetNodeIdListByScopeType(channel.NodeId, channel.ChildrenCount, EScopeType.All, groupChannel, groupChannelNot);
             var isLastNodeArray = new bool[theNodeIdList.Count];
-            var nodeIdArrayList = new List<int>();
+            var nodeIdList = new List<int>();
 
             var currentNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, pageInfo.PageNodeId);
             if (currentNodeInfo != null)
             {
-                nodeIdArrayList = TranslateUtils.StringCollectionToIntList(currentNodeInfo.ParentsPath);
-                nodeIdArrayList.Add(currentNodeInfo.NodeId);
+                nodeIdList = TranslateUtils.StringCollectionToIntList(currentNodeInfo.ParentsPath);
+                nodeIdList.Add(currentNodeInfo.NodeId);
             }
 
-            foreach (int theNodeId in theNodeIdList)
+            foreach (var theNodeId in theNodeIdList)
             {
                 var theNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, theNodeId);
                 var nodeInfo = new NodeInfo(theNodeInfo);
@@ -155,19 +155,18 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     nodeInfo.NodeName = title;
                 }
-                var isDisplay = nodeIdArrayList.Contains(theNodeId);
+                var isDisplay = nodeIdList.Contains(theNodeId);
                 if (!isDisplay)
                 {
-
-                    isDisplay = (nodeInfo.ParentId == channelId || nodeIdArrayList.Contains(nodeInfo.ParentId));
+                    isDisplay = nodeInfo.ParentId == channelId || nodeIdList.Contains(nodeInfo.ParentId);
                 }
 
-                var selected = (theNodeId == channelId);
-                if (!selected && nodeIdArrayList.Contains(nodeInfo.NodeId))
+                var selected = theNodeId == channelId;
+                if (!selected && nodeIdList.Contains(nodeInfo.NodeId))
                 {
                     selected = true;
                 }
-                var hasChildren = (nodeInfo.ChildrenCount != 0);
+                var hasChildren = nodeInfo.ChildrenCount != 0;
 
                 var linkUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, theNodeInfo, pageInfo.IsLocal);
                 var level = theNodeInfo.ParentsCount - channel.ParentsCount;

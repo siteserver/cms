@@ -103,7 +103,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                SpContents.SelectCommand = BaiRongDataProvider.ContentDao.GetSelectCommend(_tableName, nodeId, ETriState.All, administratorName);
+                SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(_tableName, nodeId, ETriState.All, administratorName);
             }
 
             //spContents.SortField = BaiRongDataProvider.ContentDao.GetSortFieldName();

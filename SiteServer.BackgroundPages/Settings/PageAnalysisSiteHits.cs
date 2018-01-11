@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Settings
                 //x轴信息
                 SetXHashtable(key, publishmentSystemInfo.PublishmentSystemName);
                 //y轴信息
-                SetYHashtable(key, BaiRongDataProvider.ContentDao.GetTotalHits(publishmentSystemInfo.AuxiliaryTableForContent, publishmentSystemId));
+                SetYHashtable(key, DataProvider.ContentDao.GetTotalHits(publishmentSystemInfo.AuxiliaryTableForContent, publishmentSystemId));
             }
 
             RptContents.DataSource = publishmentSystemIdList;

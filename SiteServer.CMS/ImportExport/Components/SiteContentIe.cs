@@ -219,7 +219,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     if (isTop)
                     {
                         topTaxis = taxis - 1;
-                        taxis = BaiRongDataProvider.ContentDao.GetMaxTaxis(tableName, nodeInfo.NodeId, true) + 1;
+                        taxis = DataProvider.ContentDao.GetMaxTaxis(tableName, nodeInfo.NodeId, true) + 1;
                     }
                     var tags = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Tags));
 
@@ -419,7 +419,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             if (contentIdList == null || contentIdList.Count == 0)
             {
-                contentIdList = BaiRongDataProvider.ContentDao.GetContentIdList(tableName, nodeId, isPeriods, dateFrom, dateTo, checkedState);
+                contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, nodeId, isPeriods, dateFrom, dateTo, checkedState);
             }
             if (contentIdList.Count == 0) return false;
 
@@ -430,7 +430,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
                 try
                 {
-                    ContentUtility.PutImagePaths(publishmentSystemInfo, contentInfo as BackgroundContentInfo, collection);
+                    ContentUtility.PutImagePaths(publishmentSystemInfo, contentInfo, collection);
                 }
                 catch
                 {

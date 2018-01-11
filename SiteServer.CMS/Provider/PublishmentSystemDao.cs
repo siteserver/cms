@@ -433,7 +433,7 @@ namespace SiteServer.CMS.Provider
             //sbSql.AppendFormat(" WHERE Taxis > (SELECT Taxis FROM siteserver_PublishmentSystem WHERE PublishmentSystemID = {0}) ", publishmentSystemId);
             //sbSql.AppendFormat(" ORDER BY Taxis ");
 
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_PublishmentSystem", "PublishmentSystemID, Taxis", $"WHERE Taxis > (SELECT Taxis FROM siteserver_PublishmentSystem WHERE PublishmentSystemID = {publishmentSystemId})", "ORDER BY Taxis", 1);
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_PublishmentSystem", "PublishmentSystemID, Taxis", $"WHERE Taxis > (SELECT Taxis FROM siteserver_PublishmentSystem WHERE PublishmentSystemID = {publishmentSystemId})", "ORDER BY Taxis", 1);
 
             var lowerId = 0;
             var lowerTaxis = 0;
@@ -467,7 +467,7 @@ namespace SiteServer.CMS.Provider
             //sbSql.AppendFormat(" WHERE Taxis < (SELECT Taxis FROM siteserver_PublishmentSystem WHERE PublishmentSystemID = {0}) ", publishmentSystemId);
             //sbSql.AppendFormat(" ORDER BY Taxis DESC");
 
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_PublishmentSystem", "PublishmentSystemID, Taxis", $"WHERE Taxis < (SELECT Taxis FROM siteserver_PublishmentSystem WHERE PublishmentSystemID = {publishmentSystemId})", "ORDER BY Taxis DESC", 1);
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_PublishmentSystem", "PublishmentSystemID, Taxis", $"WHERE Taxis < (SELECT Taxis FROM siteserver_PublishmentSystem WHERE PublishmentSystemID = {publishmentSystemId})", "ORDER BY Taxis DESC", 1);
 
             var higherId = 0;
             var higherTaxis = 0;

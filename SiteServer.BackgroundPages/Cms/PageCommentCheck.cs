@@ -127,7 +127,7 @@ namespace SiteServer.BackgroundPages.Cms
                         commentInfo.ContentId);
                     var tableName = NodeManager.GetTableName(PublishmentSystemInfo,
                         NodeManager.GetNodeInfo(PublishmentSystemId, PublishmentSystemId));
-                    var linkText = BaiRongDataProvider.ContentDao.GetValue(tableName, commentInfo.ContentId,
+                    var linkText = DataProvider.ContentDao.GetValue(tableName, commentInfo.ContentId,
                         ContentAttribute.Title);
                     ContentTitles[commentInfo.ContentId] =
                         ltlContent.Text = $@"<a href=""{linkUrl}"" target=""_blank"">{linkText}</a>";

@@ -225,7 +225,7 @@ namespace SiteServer.CMS.Provider
             //Get Higher Taxis and ID
             //string sqlString =
             //    $"SELECT TOP 1 ContentGroupName, Taxis FROM siteserver_ContentGroup WHERE (Taxis > (SELECT Taxis FROM siteserver_ContentGroup WHERE ContentGroupName = @ContentGroupName AND PublishmentSystemID = {publishmentSystemId}) AND PublishmentSystemID = {publishmentSystemId}) ORDER BY Taxis";
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_ContentGroup", "ContentGroupName, Taxis",
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_ContentGroup", "ContentGroupName, Taxis",
                 $"WHERE (Taxis > (SELECT Taxis FROM siteserver_ContentGroup WHERE ContentGroupName = @ContentGroupName AND PublishmentSystemID = {publishmentSystemId}) AND PublishmentSystemID = {publishmentSystemId})",
                 "ORDER BY Taxis", 1);
 
@@ -265,7 +265,7 @@ namespace SiteServer.CMS.Provider
             //Get Lower Taxis and ID
             //string sqlString =
             //    $"SELECT TOP 1 ContentGroupName, Taxis FROM siteserver_ContentGroup WHERE (Taxis < (SELECT Taxis FROM siteserver_ContentGroup WHERE ContentGroupName = @ContentGroupName AND PublishmentSystemID = {publishmentSystemId}) AND PublishmentSystemID = {publishmentSystemId}) ORDER BY Taxis DESC";
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_ContentGroup", "ContentGroupName, Taxis",
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_ContentGroup", "ContentGroupName, Taxis",
                 $"WHERE (Taxis < (SELECT Taxis FROM siteserver_ContentGroup WHERE ContentGroupName = @ContentGroupName AND PublishmentSystemID = {publishmentSystemId}) AND PublishmentSystemID = {publishmentSystemId})",
                 "ORDER BY Taxis DESC", 1);
 

@@ -6,6 +6,7 @@ using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -31,10 +32,10 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var contentTags = BaiRongDataProvider.ContentDao.GetValue(PublishmentSystemInfo.AuxiliaryTableForContent, contentId, ContentAttribute.Tags);
+                            var contentTags = DataProvider.ContentDao.GetValue(PublishmentSystemInfo.AuxiliaryTableForContent, contentId, ContentAttribute.Tags);
                             var contentTagArrayList = TranslateUtils.StringCollectionToStringList(contentTags);
                             contentTagArrayList.Remove(tagName);
-                            BaiRongDataProvider.ContentDao.SetValue(PublishmentSystemInfo.AuxiliaryTableForContent, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagArrayList));
+                            DataProvider.ContentDao.SetValue(PublishmentSystemInfo.AuxiliaryTableForContent, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagArrayList));
                         }
                     }
                     BaiRongDataProvider.TagDao.DeleteTag(tagName, PublishmentSystemId);

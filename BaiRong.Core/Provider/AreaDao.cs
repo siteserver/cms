@@ -115,14 +115,14 @@ namespace BaiRong.Core.Provider
 				GetParameter(ParmCountOfAdmin, DataType.Integer, areaInfo.CountOfAdmin)
 			};
 
-            string sqlString = $"UPDATE bairong_Area SET {SqlUtils.GetAddOne("Taxis")} WHERE (Taxis >= {areaInfo.Taxis})";
+            string sqlString = $"UPDATE bairong_Area SET {SqlUtils.ToPlusSqlString("Taxis", 1)} WHERE (Taxis >= {areaInfo.Taxis})";
             ExecuteNonQuery(trans, sqlString);
 
             areaInfo.AreaId = ExecuteNonQueryAndReturnId(TableName, nameof(AreaInfo.AreaId), trans, sqlInsert, insertParms);
 
             if (!string.IsNullOrEmpty(areaInfo.ParentsPath) && areaInfo.ParentsPath != "0")
             {
-                sqlString = $"UPDATE bairong_Area SET {SqlUtils.GetAddOne("ChildrenCount")} WHERE AreaID IN ({PageUtils.FilterSql(areaInfo.ParentsPath)})";
+                sqlString = $"UPDATE bairong_Area SET {SqlUtils.ToPlusSqlString("ChildrenCount", 1)} WHERE AreaID IN ({PageUtils.FilterSql(areaInfo.ParentsPath)})";
 
                 ExecuteNonQuery(trans, sqlString);
             }
@@ -134,7 +134,7 @@ namespace BaiRong.Core.Provider
             //sqlString =
             //    $"UPDATE bairong_Area SET IsLastNode = 'True' WHERE (AreaID IN (SELECT TOP 1 AreaID FROM bairong_Area WHERE ParentID = {areaInfo.ParentId} ORDER BY Taxis DESC))";            
             sqlString =
-                $"UPDATE bairong_Area SET IsLastNode = '{true}' WHERE AreaID IN ({SqlUtils.GetInTopSqlString(TableName, "AreaID", $"WHERE ParentID = {areaInfo.ParentId}", "ORDER BY Taxis DESC", 1)})";
+                $"UPDATE bairong_Area SET IsLastNode = '{true}' WHERE AreaID IN ({SqlUtils.ToInTopSqlString(TableName, "AreaID", $"WHERE ParentID = {areaInfo.ParentId}", "ORDER BY Taxis DESC", 1)})";
 
             ExecuteNonQuery(trans, sqlString);
 
@@ -164,7 +164,7 @@ namespace BaiRong.Core.Provider
             //FROM bairong_Area
             //WHERE (ParentID = @ParentID) AND (AreaID <> @AreaID) AND (Taxis < @Taxis)
             //ORDER BY Taxis DESC";
-            var sqlString = SqlUtils.GetTopSqlString(TableName, "AreaID, ChildrenCount, ParentsPath",
+            var sqlString = SqlUtils.ToTopSqlString(TableName, "AreaID, ChildrenCount, ParentsPath",
                 "WHERE (ParentID = @ParentID) AND (AreaID <> @AreaID) AND (Taxis < @Taxis)", "ORDER BY Taxis DESC", 1);
 
             IDataParameter[] parms = {
@@ -210,7 +210,7 @@ namespace BaiRong.Core.Provider
             //FROM bairong_Area
             //WHERE (ParentID = @ParentID) AND (AreaID <> @AreaID) AND (Taxis > @Taxis)
             //ORDER BY Taxis";
-            var sqlString = SqlUtils.GetTopSqlString(TableName, "AreaID, ChildrenCount, ParentsPath",
+            var sqlString = SqlUtils.ToTopSqlString(TableName, "AreaID, ChildrenCount, ParentsPath",
                 "WHERE (ParentID = @ParentID) AND (AreaID <> @AreaID) AND (Taxis > @Taxis)", "ORDER BY Taxis", 1);
 
             IDataParameter[] parms = {
@@ -282,7 +282,7 @@ namespace BaiRong.Core.Provider
                 //sqlString =
                 //    $"UPDATE bairong_Area SET IsLastNode = '{true}' WHERE (AreaID IN (SELECT TOP 1 AreaID FROM bairong_Area WHERE ParentID = {parentId} ORDER BY Taxis DESC))";
                 sqlString =
-                    $"UPDATE bairong_Area SET IsLastNode = '{true}' WHERE AreaID IN ({SqlUtils.GetInTopSqlString(TableName, "AreaID", $"WHERE ParentID = {parentId}", "ORDER BY Taxis DESC", 1)})";
+                    $"UPDATE bairong_Area SET IsLastNode = '{true}' WHERE AreaID IN ({SqlUtils.ToInTopSqlString(TableName, "AreaID", $"WHERE ParentID = {parentId}", "ORDER BY Taxis DESC", 1)})";
 
                 ExecuteNonQuery(sqlString);
             }

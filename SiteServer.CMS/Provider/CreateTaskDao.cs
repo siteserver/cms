@@ -146,7 +146,7 @@ namespace SiteServer.CMS.Provider
             {
                 //string sqlString =
                 //    $"SELECT TOP {totalNum} Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId FROM siteserver_CreateTask WHERE PublishmentSystemId = @PublishmentSystemId ORDER BY Id DESC";
-                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask",
+                var sqlString = SqlUtils.ToTopSqlString("siteserver_CreateTask",
                     "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId",
                     "WHERE PublishmentSystemId = @PublishmentSystemId", "ORDER BY Id DESC", totalNum);
 
@@ -181,7 +181,7 @@ namespace SiteServer.CMS.Provider
             {
                 //string sqlString =
                 //    $"SELECT TOP {totalNum} Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId FROM siteserver_CreateTask ORDER BY Id DESC";
-                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId", string.Empty, "ORDER BY Id DESC", totalNum);
+                var sqlString = SqlUtils.ToTopSqlString("siteserver_CreateTask", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId", string.Empty, "ORDER BY Id DESC", totalNum);
 
                 using (var rdr = ExecuteReader(sqlString))
                 {
@@ -214,7 +214,7 @@ namespace SiteServer.CMS.Provider
             CreateTaskInfo info = null;
 
             //var sqlString = "SELECT TOP 1 Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId FROM siteserver_CreateTask ORDER BY Id";
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId", string.Empty, "ORDER BY Id", 1);
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_CreateTask", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId", string.Empty, "ORDER BY Id", 1);
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -248,7 +248,7 @@ namespace SiteServer.CMS.Provider
         {
             var list = new List<CreateTaskInfo>();
 
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId", string.Empty, "ORDER BY Id", topNum);
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_CreateTask", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId", string.Empty, "ORDER BY Id", topNum);
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -277,7 +277,7 @@ namespace SiteServer.CMS.Provider
         {
             var retval = false;
 
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "Id", string.Empty, "ORDER BY Id", 1);
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_CreateTask", "Id", string.Empty, "ORDER BY Id", 1);
 
             using (var rdr = ExecuteReader(sqlString))
             {

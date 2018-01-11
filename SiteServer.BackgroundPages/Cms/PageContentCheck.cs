@@ -134,7 +134,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            SpContents.SelectCommand = BaiRongDataProvider.ContentDao.GetSelectedCommendByCheck(tableName, PublishmentSystemId, list, checkLevelList);
+            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectedCommendByCheck(tableName, PublishmentSystemId, list, checkLevelList);
 
             SpContents.SortField = ContentAttribute.LastEditDate;
             SpContents.SortMode = SortMode.DESC;

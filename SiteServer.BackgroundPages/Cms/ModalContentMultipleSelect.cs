@@ -160,7 +160,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var contentId = TranslateUtils.ToInt(pair.Split('_')[1]);
 
                     var tableName = NodeManager.GetTableName(PublishmentSystemInfo, channelId);
-                    var title = BaiRongDataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
+                    var title = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
                     builder.Append($@"parent.{_jsMethod}('{title}', '{pair}');");
                 }
                 LayerUtils.CloseWithoutRefresh(Page, builder.ToString());

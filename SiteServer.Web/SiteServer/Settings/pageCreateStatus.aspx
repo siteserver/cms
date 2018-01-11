@@ -146,3 +146,4 @@
         </div>
       </form>
     </body>
+    <!--#include file="../inc/foot.html"-->

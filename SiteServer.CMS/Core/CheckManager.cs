@@ -1156,7 +1156,7 @@ namespace SiteServer.CMS.Core
         private static List<KeyValuePair<int, int>> GetUserCountListUnChecked(string administratorName, string tableName)
         {
             var permissions = PermissionsManager.GetPermissions(administratorName);
-            return DataProvider.BackgroundContentDao.GetCountArrayListUnChecked(permissions.IsSystemAdministrator, administratorName, ProductPermissionsManager.Current.PublishmentSystemIdList, ProductPermissionsManager.Current.OwningNodeIdList, tableName);
+            return DataProvider.ContentDao.GetCountListUnChecked(permissions.IsSystemAdministrator, administratorName, ProductPermissionsManager.Current.PublishmentSystemIdList, ProductPermissionsManager.Current.OwningNodeIdList, tableName);
         }
 	}
 }

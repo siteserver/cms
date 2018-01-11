@@ -2436,14 +2436,40 @@ namespace BaiRong.Core.Data
 
         #region Utility Functions
 
-        public string GetTopSqlString(string tableName, string columns, string whereString, string orderString, int topN)
+        public string ToTopSqlString(string connectionString, string tableName, string columns, string whereString, string orderString, int startIndex, int count)
         {
-            return SqlUtils.GetTopSqlString(tableName, columns, whereString, orderString, topN);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(connectionString, tableName, startIndex + 1, count,
+                columns, whereString, orderString);
         }
 
-        public string GetTopSqlString(string sqlString, string orderString, int topN)
+        public string ToTopSqlString(string tableName, string columns, string whereString, string orderString, int count)
         {
-            return SqlUtils.GetTopSqlString(sqlString, orderString, topN);
+            return SqlUtils.ToTopSqlString(tableName, columns, whereString, orderString, count);
+        }
+
+        public string ToPlusSqlString(string fieldName, int plusNum)
+        {
+            return SqlUtils.ToPlusSqlString(fieldName, plusNum);
+        }
+
+        public string ToMinusSqlString(string fieldName, int minusNum)
+        {
+            return SqlUtils.ToMinusSqlString(fieldName, minusNum);
+        }
+
+        public string ToNowSqlString()
+        {
+            return SqlUtils.GetComparableNow();
+        }
+
+        public string ToDateSqlString(DateTime date)
+        {
+            return SqlUtils.GetComparableDate(date);
+        }
+
+        public string ToDateTimeSqlString(DateTime dateTime)
+        {
+            return SqlUtils.GetComparableDate(dateTime);
         }
 
         #endregion Utility Functions

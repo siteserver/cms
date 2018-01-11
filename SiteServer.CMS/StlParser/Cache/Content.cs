@@ -98,7 +98,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<string>(cacheKey);
                 if (retval == null)
                 {
-                    retval = BaiRongDataProvider.ContentDao.GetValue(tableName, contentId, type);
+                    retval = DataProvider.ContentDao.GetValue(tableName, contentId, type);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }                
             }
@@ -118,7 +118,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetIntCache(cacheKey);
                 if (retval == -1)
                 {
-                    retval = BaiRongDataProvider.ContentDao.GetSequence(tableName, nodeId, contentId);
+                    retval = DataProvider.ContentDao.GetSequence(tableName, nodeId, contentId);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -138,7 +138,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetIntCache(cacheKey);
                 if (retval == -1)
                 {
-                    retval = DataProvider.BackgroundContentDao.GetCountCheckedImage(publishmentSystemId, nodeId);
+                    retval = DataProvider.ContentDao.GetCountCheckedImage(publishmentSystemId, nodeId);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -181,7 +181,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetDateTimeCache(cacheKey);
                 if (retval == DateTime.MinValue)
                 {
-                    retval = BaiRongDataProvider.ContentDao.GetAddDate(tableName, contentId);
+                    retval = DataProvider.ContentDao.GetAddDate(tableName, contentId);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -201,7 +201,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetDateTimeCache(cacheKey);
                 if (retval == DateTime.MinValue)
                 {
-                    retval = BaiRongDataProvider.ContentDao.GetLastEditDate(tableName, contentId);
+                    retval = DataProvider.ContentDao.GetLastEditDate(tableName, contentId);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -221,7 +221,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetIntCache(cacheKey);
                 if (retval == -1)
                 {
-                    retval = BaiRongDataProvider.ContentDao.GetContentId(tableName, nodeId, taxis, isNextContent);
+                    retval = DataProvider.ContentDao.GetContentId(tableName, nodeId, taxis, isNextContent);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -241,7 +241,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetIntCache(cacheKey);
                 if (retval == -1)
                 {
-                    retval = BaiRongDataProvider.ContentDao.GetContentId(tableName, nodeId, orderByString);
+                    retval = DataProvider.ContentDao.GetContentId(tableName, nodeId, orderByString);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -261,7 +261,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetIntCache(cacheKey);
                 if (retval == -1)
                 {
-                    retval = BaiRongDataProvider.ContentDao.GetNodeId(tableName, contentId);
+                    retval = DataProvider.ContentDao.GetNodeId(tableName, contentId);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -286,7 +286,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<string>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.BackgroundContentDao.GetStlWhereString(publishmentSystemId, tableName, group,
+                    retval = DataProvider.ContentDao.GetStlWhereString(publishmentSystemId, tableName, group,
                     groupNot,
                     tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop,
                     isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where,
@@ -311,7 +311,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<string>(cacheKey);
                 if (retval == null)
                 {
-                    retval = BaiRongDataProvider.ContentDao.GetStlWhereString(publishmentSystemId, group, groupNot, tags,
+                    retval = DataProvider.ContentDao.GetStlWhereString(publishmentSystemId, group, groupNot, tags,
                     isTopExists, isTop, where);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
@@ -359,7 +359,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<string>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.BackgroundContentDao.GetStlWhereStringBySearch(tableName, group, groupNot, tags,
+                    retval = DataProvider.ContentDao.GetStlWhereStringBySearch(tableName, group, groupNot, tags,
                     isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop,
                     isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
                     StlCacheUtils.SetCache(cacheKey, retval);

@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Text;
 using Atom.Core;
 using BaiRong.Core;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.ImportExport.Components;
@@ -338,7 +339,7 @@ namespace SiteServer.CMS.ImportExport
 
             var tableName = NodeManager.GetTableName(_publishmentSystemInfo, nodeInfo);
 
-            var taxis = BaiRongDataProvider.ContentDao.GetMaxTaxis(tableName, nodeInfo.NodeId, false);
+            var taxis = DataProvider.ContentDao.GetMaxTaxis(tableName, nodeInfo.NodeId, false);
 
             ImportContents(nodeInfo, siteContentDirectoryPath, isOverride, taxis, importStart, importCount, isChecked, checkedLevel);
 
@@ -348,11 +349,11 @@ namespace SiteServer.CMS.ImportExport
         public void ImportContentsByAccessFile(int nodeId, string excelFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
             var nodeInfo = NodeManager.GetNodeInfo(_publishmentSystemInfo.PublishmentSystemId, nodeId);
-            var contentInfoArrayList = AccessObject.GetContentsByAccessFile(excelFilePath, _publishmentSystemInfo, nodeInfo);
+            var contentInfoList = AccessObject.GetContentsByAccessFile(excelFilePath, _publishmentSystemInfo, nodeInfo);
 
             if (importStart > 1 || importCount > 0)
             {
-                var theArrayList = new ArrayList();
+                var theList = new List<ContentInfo>();
 
                 if (importStart == 0)
                 {
@@ -360,32 +361,32 @@ namespace SiteServer.CMS.ImportExport
                 }
                 if (importCount == 0)
                 {
-                    importCount = contentInfoArrayList.Count;
+                    importCount = contentInfoList.Count;
                 }
 
-                var firstIndex = contentInfoArrayList.Count - importStart - importCount + 1;
+                var firstIndex = contentInfoList.Count - importStart - importCount + 1;
                 if (firstIndex <= 0)
                 {
                     firstIndex = 0;
                 }
 
                 var addCount = 0;
-                for (var i = 0; i < contentInfoArrayList.Count; i++)
+                for (var i = 0; i < contentInfoList.Count; i++)
                 {
                     if (addCount >= importCount) break;
                     if (i >= firstIndex)
                     {
-                        theArrayList.Add(contentInfoArrayList[i]);
+                        theList.Add(contentInfoList[i]);
                         addCount++;
                     }
                 }
 
-                contentInfoArrayList = theArrayList;
+                contentInfoList = theList;
             }
 
             var tableName = NodeManager.GetTableName(_publishmentSystemInfo, nodeInfo);
 
-            foreach (BackgroundContentInfo contentInfo in contentInfoArrayList)
+            foreach (var contentInfo in contentInfoList)
             {
                 contentInfo.IsChecked = isChecked;
                 contentInfo.CheckedLevel = checkedLevel;
@@ -422,7 +423,7 @@ namespace SiteServer.CMS.ImportExport
 
             if (importStart > 1 || importCount > 0)
             {
-                var theList = new List<BackgroundContentInfo>();
+                var theList = new List<ContentInfo>();
 
                 if (importStart == 0)
                 {
@@ -493,11 +494,11 @@ namespace SiteServer.CMS.ImportExport
 
             var nodeInfo = NodeManager.GetNodeInfo(_publishmentSystemInfo.PublishmentSystemId, nodeId);
 
-            var contentInfoArrayList = TxtObject.GetContentsByTxtFile(directoryPath, _publishmentSystemInfo, nodeInfo);
+            var contentInfoList = TxtObject.GetContentListByTxtFile(directoryPath, _publishmentSystemInfo, nodeInfo);
 
             if (importStart > 1 || importCount > 0)
             {
-                var theArrayList = new ArrayList();
+                var theList = new List<ContentInfo>();
 
                 if (importStart == 0)
                 {
@@ -505,32 +506,32 @@ namespace SiteServer.CMS.ImportExport
                 }
                 if (importCount == 0)
                 {
-                    importCount = contentInfoArrayList.Count;
+                    importCount = contentInfoList.Count;
                 }
 
-                var firstIndex = contentInfoArrayList.Count - importStart - importCount + 1;
+                var firstIndex = contentInfoList.Count - importStart - importCount + 1;
                 if (firstIndex <= 0)
                 {
                     firstIndex = 0;
                 }
 
                 var addCount = 0;
-                for (var i = 0; i < contentInfoArrayList.Count; i++)
+                for (var i = 0; i < contentInfoList.Count; i++)
                 {
                     if (addCount >= importCount) break;
                     if (i >= firstIndex)
                     {
-                        theArrayList.Add(contentInfoArrayList[i]);
+                        theList.Add(contentInfoList[i]);
                         addCount++;
                     }
                 }
 
-                contentInfoArrayList = theArrayList;
+                contentInfoList = theList;
             }
 
             var tableName = NodeManager.GetTableName(_publishmentSystemInfo, nodeInfo);
 
-            foreach (BackgroundContentInfo contentInfo in contentInfoArrayList)
+            foreach (var contentInfo in contentInfoList)
             {
                 contentInfo.IsChecked = isChecked;
                 contentInfo.CheckedLevel = checkedLevel;

@@ -76,11 +76,11 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteAdd);
+
             BaiRongDataProvider.TableCollectionDao.CreateAllTableCollectionInfoIfNotExists();
 
             HihSiteTemplateDir.Value = Body.GetQueryString("siteTemplate");
-
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteAdd);
 
             var hqSiteId = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
             if (hqSiteId == 0)
@@ -264,7 +264,7 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlDescription = (Literal)e.Item.FindControl("ltlDescription");
             var ltlSamplePic = (Literal)e.Item.FindControl("ltlSamplePic");
 
-            ltlChoose.Text = $@"<input type=""radio"" name=""choose"" id=""choose_{directoryInfo.Name}"" onClick=""document.getElementById('{HihSiteTemplateDir.ClientID}').value=this.value;"" value=""{directoryInfo.Name}"" /><label for=""choose_{directoryInfo.Name}"">选中</label>";
+            ltlChoose.Text = $@"<input type=""radio"" name=""choose"" id=""choose_{directoryInfo.Name}"" onClick=""document.getElementById('{HihSiteTemplateDir.ClientID}').value=this.value;"" {(HihSiteTemplateDir.Value == directoryInfo.Name ? "checked" : string.Empty)} value=""{directoryInfo.Name}"" /><label for=""choose_{directoryInfo.Name}"">选中</label>";
 
             if (!string.IsNullOrEmpty(siteTemplateInfo.SiteTemplateName))
             {

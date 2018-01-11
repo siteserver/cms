@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -78,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                                 TagUtils.AddTags(tagCollection, PublishmentSystemId, contentId);
 
-                                var contentTags = BaiRongDataProvider.ContentDao.GetValue(PublishmentSystemInfo.AuxiliaryTableForContent, contentId, ContentAttribute.Tags);
+                                var contentTags = DataProvider.ContentDao.GetValue(PublishmentSystemInfo.AuxiliaryTableForContent, contentId, ContentAttribute.Tags);
                                 var contentTagArrayList = TranslateUtils.StringCollectionToStringList(contentTags);
                                 contentTagArrayList.Remove(_tagName);
                                 foreach (var theTag in tagCollection)
@@ -88,7 +89,7 @@ namespace SiteServer.BackgroundPages.Cms
                                         contentTagArrayList.Add(theTag);
                                     }
                                 }
-                                BaiRongDataProvider.ContentDao.SetValue(PublishmentSystemInfo.AuxiliaryTableForContent, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagArrayList));
+                                DataProvider.ContentDao.SetValue(PublishmentSystemInfo.AuxiliaryTableForContent, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagArrayList));
                             }
                         }
                         else

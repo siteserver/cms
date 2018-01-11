@@ -134,7 +134,7 @@ namespace BaiRong.Core.Provider
                 orderString = "ORDER BY UseNum DESC";
             }
 
-            return SqlUtils.GetTopSqlString("bairong_Tags", "TagID, PublishmentSystemID, ContentIDCollection, Tag, UseNum", whereString, orderString, totalNum);
+            return SqlUtils.ToTopSqlString("bairong_Tags", "TagID, PublishmentSystemID, ContentIDCollection, Tag, UseNum", whereString, orderString, totalNum);
         }
 
         public List<TagInfo> GetTagInfoList(int publishmentSystemId, int contentId, bool isOrderByCount, int totalNum)
@@ -148,7 +148,7 @@ namespace BaiRong.Core.Provider
                 orderString = "ORDER BY UseNum DESC";
             }
 
-            var sqlString = SqlUtils.GetTopSqlString("bairong_Tags", "TagID, PublishmentSystemID, ContentIDCollection, Tag, UseNum", whereString, orderString, totalNum);
+            var sqlString = SqlUtils.ToTopSqlString("bairong_Tags", "TagID, PublishmentSystemID, ContentIDCollection, Tag, UseNum", whereString, orderString, totalNum);
 
             using (var rdr = ExecuteReader(sqlString))
             {

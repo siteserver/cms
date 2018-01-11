@@ -20,9 +20,6 @@ namespace SiteServer.CMS.Core
         private static AdvertisementDao _advertisementDao;
         public static AdvertisementDao AdvertisementDao => _advertisementDao ?? (_advertisementDao = new AdvertisementDao());
 
-        private static BackgroundContentDao _backgroundContentDao;
-        public static BackgroundContentDao BackgroundContentDao => _backgroundContentDao ?? (_backgroundContentDao = new BackgroundContentDao());
-
         private static CommentDao _commentDao;
         public static CommentDao CommentDao => _commentDao ?? (_commentDao = new CommentDao());
 
@@ -122,7 +119,6 @@ namespace SiteServer.CMS.Core
             AdMaterialDao,
             AdvDao,
             AdvertisementDao,
-            BackgroundContentDao,
             CommentDao,
             ContentDao,
             ContentGroupDao,

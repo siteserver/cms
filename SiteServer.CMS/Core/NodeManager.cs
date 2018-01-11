@@ -7,6 +7,7 @@ using BaiRong.Core.IO;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.Plugin.Features;
 
 namespace SiteServer.CMS.Core
@@ -78,6 +79,7 @@ namespace SiteServer.CMS.Core
         public static void RemoveCache(int publishmentSystemId)
         {
             NodeManagerCache.Remove(publishmentSystemId);
+            Node.ClearCache();
         }
 
         public static NodeInfo GetNodeInfo(int publishmentSystemId, int nodeId)

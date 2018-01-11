@@ -110,7 +110,6 @@
       });
 
       $(document).ready(function () {
-
         $('#frmMain').height($(window).height() - 62);
         $('#frmMain').width($(window).width() - 200);
 
@@ -148,4 +147,10 @@
           wheelStep: 5
         });
       });
+
+      window.onresize = function (event) {
+        $('#frmMain').height($(window).height() - 62);
+        $('#frmMain').width($(window).width() - 200);
+      };
     </script>
+    <!--#include file="inc/foot.html"-->

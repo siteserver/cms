@@ -2,9 +2,9 @@
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -287,7 +287,7 @@ selObj.selectedIndex=0;
                 {
                     foreach (var dataItem in dataSource.Tables[0].Rows)
                     {
-                        var contentInfo = new BackgroundContentInfo(dataItem);
+                        var contentInfo = new ContentInfo(dataItem);
                         if (contentInfo != null)
                         {
                             var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);

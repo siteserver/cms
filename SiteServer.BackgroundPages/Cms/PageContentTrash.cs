@@ -74,7 +74,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (Body.IsQueryExists("IsDeleteAll"))
                 {
-                    BaiRongDataProvider.ContentDao.DeleteContentsByTrash(PublishmentSystemId, tableName);
+                    DataProvider.ContentDao.DeleteContentsByTrash(PublishmentSystemId, tableName);
                     Body.AddSiteLog(PublishmentSystemId, "清空回收站");
                     SuccessMessage("成功清空回收站!");
                     AddWaitAndRedirectScript(PageUrl);
@@ -156,7 +156,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlItemEditUrl = (Literal)e.Item.FindControl("ltlItemEditUrl");
             var ltlSelect = (Literal)e.Item.FindControl("ltlSelect");
 
-            var contentInfo = new BackgroundContentInfo(e.Item.DataItem);
+            var contentInfo = new ContentInfo(e.Item.DataItem);
             contentInfo.NodeId = -contentInfo.NodeId;
 
             ltlItemTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, PageUrl);

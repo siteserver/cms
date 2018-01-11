@@ -2982,7 +2982,6 @@
     <Compile Include="Provider\AreaDao.cs" />
     <Compile Include="Provider\ConfigDao.cs" />
     <Compile Include="Provider\ContentCheckDao.cs" />
-    <Compile Include="Provider\ContentDao.cs" />
     <Compile Include="Provider\CountDao.cs" />
     <Compile Include="Provider\DatabaseDao.cs" />
     <Compile Include="Provider\DbCacheDao.cs" />

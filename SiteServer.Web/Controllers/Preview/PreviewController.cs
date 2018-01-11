@@ -115,16 +115,20 @@ namespace SiteServer.API.Controllers.Preview
             if (publishmentSystemInfo == null) return null;
 
             TemplateInfo templateInfo = null;
+            EContextType contextType = EContextType.Undefined;;
             switch (visualInfo.TemplateType)
             {
                 case ETemplateType.IndexPageTemplate:
                     templateInfo = TemplateManager.GetIndexPageTemplateInfo(visualInfo.PublishmentSystemId);
+                    contextType = EContextType.Channel;
                     break;
                 case ETemplateType.ChannelTemplate:
                     templateInfo = TemplateManager.GetChannelTemplateInfo(visualInfo.PublishmentSystemId, visualInfo.ChannelId);
+                    contextType = EContextType.Channel;
                     break;
                 case ETemplateType.ContentTemplate:
                     templateInfo = TemplateManager.GetContentTemplateInfo(visualInfo.PublishmentSystemId, visualInfo.ChannelId);
+                    contextType = EContextType.Content;
                     break;
                 case ETemplateType.FileTemplate:
                     templateInfo = TemplateManager.GetFileTemplateInfo(visualInfo.PublishmentSystemId, visualInfo.FileTemplateId);
@@ -135,7 +139,10 @@ namespace SiteServer.API.Controllers.Preview
             {
                 IsLocal = true
             };
-            var contextInfo = new ContextInfo(pageInfo);
+            var contextInfo = new ContextInfo(pageInfo)
+            {
+                ContextType = contextType
+            };
 
             var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(publishmentSystemInfo, templateInfo));
             //需要完善，考虑单页模板、内容正文、翻页及外部链接

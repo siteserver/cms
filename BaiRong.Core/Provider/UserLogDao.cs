@@ -191,7 +191,7 @@ namespace BaiRong.Core.Provider
         {
             var retval = DateTime.MinValue;
             //const string sqlString = "SELECT TOP 1 AddDate FROM bairong_UserLog WHERE UserName = @UserName ORDER BY ID DESC";
-            var sqlString = SqlUtils.GetTopSqlString("bairong_UserLog", "AddDate", "WHERE UserName = @UserName",
+            var sqlString = SqlUtils.ToTopSqlString("bairong_UserLog", "AddDate", "WHERE UserName = @UserName",
                 "ORDER BY ID DESC", 1);
 
             var parms = new IDataParameter[]
@@ -214,7 +214,7 @@ namespace BaiRong.Core.Provider
         {
             var retval = DateTime.MinValue;
             //const string sqlString = "SELECT TOP 1 AddDate FROM bairong_UserLog WHERE UserName = @UserName AND Action = '清空数据库日志' ORDER BY ID DESC";
-            var sqlString = SqlUtils.GetTopSqlString("bairong_UserLog", "AddDate",
+            var sqlString = SqlUtils.ToTopSqlString("bairong_UserLog", "AddDate",
                 "WHERE UserName = @UserName AND Action = '清空数据库日志'", "ORDER BY ID DESC", 1);
 
             var parms = new IDataParameter[]

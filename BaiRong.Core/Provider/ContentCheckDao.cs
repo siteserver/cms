@@ -152,7 +152,7 @@ namespace BaiRong.Core.Provider
             ContentCheckInfo checkInfo = null;
 
             //var sqlString = "SELECT TOP 1 CheckID, TableName, PublishmentSystemID, NodeID, ContentID, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons FROM bairong_ContentCheck WHERE TableName = @TableName AND ContentID = @ContentID ORDER BY CheckID DESC";
-            var sqlString = SqlUtils.GetTopSqlString(TableName, "CheckID, TableName, PublishmentSystemID, NodeID, ContentID, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons", "WHERE TableName = @TableName AND ContentID = @ContentID", "ORDER BY CheckID DESC", 1);
+            var sqlString = SqlUtils.ToTopSqlString(TableName, "CheckID, TableName, PublishmentSystemID, NodeID, ContentID, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons", "WHERE TableName = @TableName AND ContentID = @ContentID", "ORDER BY CheckID DESC", 1);
 
             var parms = new IDataParameter[]
 			{

@@ -1333,7 +1333,7 @@ and au.constraint_type = 'P' and cu.table_name = '{tableName.ToUpper()}'";
                 whereString = joinString + " " + whereString;
             }
 
-            return SqlUtils.GetTopSqlString(tableName, columns, whereString, orderByString, totalNum);
+            return SqlUtils.ToTopSqlString(tableName, columns, whereString, orderByString, totalNum);
         }
 
         public string GetSelectSqlString(string tableName, int startNum, int totalNum, string columns, string whereString, string orderByString)
@@ -1354,19 +1354,19 @@ and au.constraint_type = 'P' and cu.table_name = '{tableName.ToUpper()}'";
             }
 
             string countSqlString = $"SELECT Count(*) FROM {tableName} {whereString}";
-            var count = BaiRongDataProvider.DatabaseDao.GetIntResult(connectionString, countSqlString);
+            var allCount = BaiRongDataProvider.DatabaseDao.GetIntResult(connectionString, countSqlString);
             if (totalNum == 0)
             {
-                totalNum = count;
+                totalNum = allCount;
             }
 
-            if (startNum > count) return string.Empty;
+            if (startNum > allCount) return string.Empty;
 
             var topNum = startNum + totalNum - 1;
 
-            if (count < topNum)
+            if (allCount < topNum)
             {
-                totalNum = count - startNum + 1;
+                totalNum = allCount - startNum + 1;
                 if (totalNum < 1)
                 {
                     return GetSelectSqlString(connectionString, tableName, totalNum, columns, whereString, orderByString);
@@ -1431,7 +1431,7 @@ SELECT {columns} FROM (
             string sqlString;
             if (totalNum > 0)
             {
-                sqlString = SqlUtils.GetTopSqlString(queryString, orderByString, totalNum);
+                sqlString = SqlUtils.ToTopSqlString(queryString, orderByString, totalNum);
 
                 //sqlString = WebConfigUtils.DatabaseType == EDatabaseType.MySql ? $"SELECT * FROM ({queryString}) AS tmp {orderByString} LIMIT {totalNum}" : $"SELECT TOP {totalNum} * FROM ({queryString}) tmp {orderByString}";
             }

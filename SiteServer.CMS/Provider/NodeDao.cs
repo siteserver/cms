@@ -301,14 +301,14 @@ namespace SiteServer.CMS.Provider
             if (nodeInfo.PublishmentSystemId != 0)
             {
                 string sqlString =
-                    $"UPDATE siteserver_Node SET {SqlUtils.GetAddOne("Taxis")} WHERE (Taxis >= {nodeInfo.Taxis}) AND (PublishmentSystemID = {nodeInfo.PublishmentSystemId})";
+                    $"UPDATE siteserver_Node SET {SqlUtils.ToPlusSqlString("Taxis")} WHERE (Taxis >= {nodeInfo.Taxis}) AND (PublishmentSystemID = {nodeInfo.PublishmentSystemId})";
                 ExecuteNonQuery(trans, sqlString);
             }
             nodeInfo.NodeId = ExecuteNonQueryAndReturnId(TableName, nameof(NodeInfo.NodeId), trans, sqlInsertNode, insertParms);
 
             if (!string.IsNullOrEmpty(nodeInfo.ParentsPath))
             {
-                var sqlString = $"UPDATE siteserver_Node SET {SqlUtils.GetAddOne("ChildrenCount")} WHERE NodeID IN ({nodeInfo.ParentsPath})";
+                var sqlString = $"UPDATE siteserver_Node SET {SqlUtils.ToPlusSqlString("ChildrenCount")} WHERE NodeID IN ({nodeInfo.ParentsPath})";
 
                 ExecuteNonQuery(trans, sqlString);
             }
@@ -326,7 +326,7 @@ namespace SiteServer.CMS.Provider
             //sqlUpdateIsLastNode =
             //    $"UPDATE siteserver_Node SET IsLastNode = '{true}' WHERE (NodeID IN (SELECT TOP 1 NodeID FROM siteserver_Node WHERE ParentID = {nodeInfo.ParentId} ORDER BY Taxis DESC))";
             sqlUpdateIsLastNode =
-                $"UPDATE siteserver_Node SET IsLastNode = '{true}' WHERE (NodeID IN ({SqlUtils.GetInTopSqlString(TableName, "NodeID", $"WHERE ParentID = {nodeInfo.ParentId}", "ORDER BY Taxis DESC", 1)}))";
+                $"UPDATE siteserver_Node SET IsLastNode = '{true}' WHERE (NodeID IN ({SqlUtils.ToInTopSqlString(TableName, "NodeID", $"WHERE ParentID = {nodeInfo.ParentId}", "ORDER BY Taxis DESC", 1)}))";
 
 
             ExecuteNonQuery(trans, sqlUpdateIsLastNode);
@@ -426,7 +426,7 @@ namespace SiteServer.CMS.Provider
             //FROM siteserver_Node
             //WHERE (ParentID = @ParentID) AND (NodeID <> @NodeID) AND (Taxis < @Taxis) AND (PublishmentSystemID = @PublishmentSystemID)
             //ORDER BY Taxis DESC";
-            var sqlString = SqlUtils.GetTopSqlString(TableName, "NodeID, ChildrenCount, ParentsPath", "WHERE (ParentID = @ParentID) AND (NodeID <> @NodeID) AND (Taxis < @Taxis) AND (PublishmentSystemID = @PublishmentSystemID)", "ORDER BY Taxis DESC", 1);
+            var sqlString = SqlUtils.ToTopSqlString(TableName, "NodeID, ChildrenCount, ParentsPath", "WHERE (ParentID = @ParentID) AND (NodeID <> @NodeID) AND (Taxis < @Taxis) AND (PublishmentSystemID = @PublishmentSystemID)", "ORDER BY Taxis DESC", 1);
 
             var parms = new IDataParameter[]
             {
@@ -475,7 +475,7 @@ namespace SiteServer.CMS.Provider
             //const string sqlString = @"SELECT TOP 1 NodeID, ChildrenCount, ParentsPath
             //FROM siteserver_Node
             //WHERE (ParentID = @ParentID) AND (NodeID <> @NodeID) AND (Taxis > @Taxis) AND (PublishmentSystemID = @PublishmentSystemID) ORDER BY Taxis";
-            var sqlString = SqlUtils.GetTopSqlString(TableName, "NodeID, ChildrenCount, ParentsPath", "WHERE (ParentID = @ParentID) AND (NodeID <> @NodeID) AND (Taxis > @Taxis) AND (PublishmentSystemID = @PublishmentSystemID)", "ORDER BY Taxis", 1);
+            var sqlString = SqlUtils.ToTopSqlString(TableName, "NodeID, ChildrenCount, ParentsPath", "WHERE (ParentID = @ParentID) AND (NodeID <> @NodeID) AND (Taxis > @Taxis) AND (PublishmentSystemID = @PublishmentSystemID)", "ORDER BY Taxis", 1);
 
             var parms = new IDataParameter[]
             {
@@ -513,7 +513,7 @@ namespace SiteServer.CMS.Provider
         private void SetTaxisAdd(int nodeId, string parentsPath, int addNum)
         {
             string sqlString =
-                $"UPDATE siteserver_Node SET {SqlUtils.GetAddNum("Taxis", addNum)} WHERE NodeID = {nodeId} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%'";
+                $"UPDATE siteserver_Node SET {SqlUtils.ToPlusSqlString("Taxis", addNum)} WHERE NodeID = {nodeId} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%'";
 
             ExecuteNonQuery(sqlString);
         }
@@ -521,7 +521,7 @@ namespace SiteServer.CMS.Provider
         private void SetTaxisSubtract(int nodeId, string parentsPath, int subtractNum)
         {
             string sqlString =
-                $"UPDATE siteserver_Node SET {SqlUtils.GetMinusNum("Taxis", subtractNum)} WHERE  NodeID = {nodeId} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%'";
+                $"UPDATE siteserver_Node SET {SqlUtils.ToMinusSqlString("Taxis", subtractNum)} WHERE  NodeID = {nodeId} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%'";
 
             ExecuteNonQuery(sqlString);
         }
@@ -544,7 +544,7 @@ namespace SiteServer.CMS.Provider
             //sqlString =
             //    $"UPDATE siteserver_Node SET IsLastNode = '{true}' WHERE (NodeID IN (SELECT TOP 1 NodeID FROM siteserver_Node WHERE ParentID = {parentId} ORDER BY Taxis DESC))";
             sqlString =
-                $"UPDATE siteserver_Node SET IsLastNode = '{true}' WHERE (NodeID IN ({SqlUtils.GetInTopSqlString(TableName, "NodeID", $"WHERE ParentID = {parentId}", "ORDER BY Taxis DESC", 1)}))";
+                $"UPDATE siteserver_Node SET IsLastNode = '{true}' WHERE (NodeID IN ({SqlUtils.ToInTopSqlString(TableName, "NodeID", $"WHERE ParentID = {parentId}", "ORDER BY Taxis DESC", 1)}))";
 
             ExecuteNonQuery(sqlString);
         }
@@ -1134,9 +1134,9 @@ ORDER BY Taxis";
 
             //var sqlString = isNextChannel ? $"SELECT TOP 1 NodeID FROM siteserver_Node WHERE (ParentID = {parentId} AND Taxis > {taxis}) ORDER BY Taxis" : $"SELECT TOP 1 NodeID FROM siteserver_Node WHERE (ParentID = {parentId} AND Taxis < {taxis}) ORDER BY Taxis DESC";
             var sqlString = isNextChannel
-                ? SqlUtils.GetTopSqlString(TableName, "NodeID",
+                ? SqlUtils.ToTopSqlString(TableName, "NodeID",
                     $"WHERE (ParentID = {parentId} AND Taxis > {taxis})", "ORDER BY Taxis", 1)
-                : SqlUtils.GetTopSqlString(TableName, "NodeID",
+                : SqlUtils.ToTopSqlString(TableName, "NodeID",
                     $"WHERE (ParentID = {parentId} AND Taxis < {taxis})", "ORDER BY Taxis DESC", 1);
 
             using (var rdr = ExecuteReader(sqlString))
@@ -1503,7 +1503,7 @@ ORDER BY Taxis";
 //FROM siteserver_Node 
 //WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) {whereString}) {orderByString}
 //";
-                sqlString = SqlUtils.GetTopSqlString(TableName, "NodeID",
+                sqlString = SqlUtils.ToTopSqlString(TableName, "NodeID",
                     $"WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) {whereString})",
                     orderByString,
                     totalNum);
@@ -1942,7 +1942,7 @@ ORDER BY Taxis";
                 //FROM siteserver_Node 
                 //WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) {whereString}) {orderByString}
                 //";
-                sqlString = SqlUtils.GetTopSqlString(TableName,
+                sqlString = SqlUtils.ToTopSqlString(TableName,
                     "NodeID, NodeName, PublishmentSystemID, ContentModelPluginId, ContentRelatedPluginIds, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, NodeIndexName, NodeGroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateID, ContentTemplateID, Keywords, Description, ExtendValues",
                     $"WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) {whereString})",
                     orderByString,

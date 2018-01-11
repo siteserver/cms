@@ -88,7 +88,7 @@ namespace SiteServer.BackgroundPages.Settings
                 return;
             }
 
-            var ds = BaiRongDataProvider.ContentDao.GetDataSetOfAdminExcludeRecycle(PublishmentSystemInfo.AuxiliaryTableForContent, PublishmentSystemId, _begin, _end);
+            var ds = DataProvider.ContentDao.GetDataSetOfAdminExcludeRecycle(PublishmentSystemInfo.AuxiliaryTableForContent, PublishmentSystemId, _begin, _end);
             if (ds == null || ds.Tables.Count <= 0) return;
 
             var dt = ds.Tables[0];
@@ -117,7 +117,7 @@ yArrayUpdate.push('{yValueUpdate}');";
             SpContents.SortField = "UserName";
             SpContents.SortMode = SortMode.DESC;
 
-            SpContents.SelectCommand = BaiRongDataProvider.ContentDao.GetSelectCommendOfAdminExcludeRecycle(PublishmentSystemInfo.AuxiliaryTableForContent, PublishmentSystemId, _begin, _end);
+            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommendOfAdminExcludeRecycle(PublishmentSystemInfo.AuxiliaryTableForContent, PublishmentSystemId, _begin, _end);
 
             SpContents.DataBind();
         }

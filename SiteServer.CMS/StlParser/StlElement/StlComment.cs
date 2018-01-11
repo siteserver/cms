@@ -144,10 +144,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, leftText, rightText, formatString, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, type);
+            return ParseImpl(contextInfo, leftText, rightText, formatString, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, type);
 		}
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string leftText, string rightText, string formatString, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string type)
+        private static string ParseImpl(ContextInfo contextInfo, string leftText, string rightText, string formatString, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string type)
         {
             var parsedContent = string.Empty;
 
@@ -177,14 +177,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             else if (StringUtils.EqualsIgnoreCase(type, TypeGoodCount))
             {
                 // 实体标签的话只返回数值
-                if (contextInfo.IsCurlyBrace)
-                {
-                    parsedContent = goodCount.ToString();
-                }
-                else
-                {
-                    parsedContent = $"<span id='commentsDigg_{commentId}_{true}'>{goodCount}</span>";
-                }
+                parsedContent = contextInfo.IsCurlyBrace ? goodCount.ToString() : $"<span id='commentsDigg_{commentId}_{true}'>{goodCount}</span>";
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeContent))
             {

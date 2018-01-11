@@ -21,9 +21,6 @@ namespace BaiRong.Core
         private static ContentCheckDao _contentCheckDao;
         public static ContentCheckDao ContentCheckDao => _contentCheckDao ?? (_contentCheckDao = new ContentCheckDao());
 
-        private static ContentDao _contentDao;
-        public static ContentDao ContentDao => _contentDao ?? (_contentDao = new ContentDao());
-
         private static CountDao _countDao;
         internal static CountDao CountDao => _countDao ?? (_countDao = new CountDao());
 
@@ -85,7 +82,6 @@ namespace BaiRong.Core
             AreaDao,
             ConfigDao,
             ContentCheckDao,
-            ContentDao,
             CountDao,
             DatabaseDao,
             DbCacheDao,

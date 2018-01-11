@@ -17,7 +17,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
             {
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
-                BaiRongDataProvider.ContentDao.AddHits(tableName, publishmentSystemInfo.Additional.IsCountHits, publishmentSystemInfo.Additional.IsCountHitsByDay, contentId);
+                DataProvider.ContentDao.AddHits(tableName, publishmentSystemInfo.Additional.IsCountHits, publishmentSystemInfo.Additional.IsCountHitsByDay, contentId);
             }
             catch
             {

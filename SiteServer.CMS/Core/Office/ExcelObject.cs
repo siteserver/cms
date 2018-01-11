@@ -102,7 +102,7 @@ namespace SiteServer.CMS.Core.Office
 
             if (contentIdList == null || contentIdList.Count == 0)
             {
-                contentIdList = BaiRongDataProvider.ContentDao.GetContentIdList(tableName, nodeInfo.NodeId, isPeriods,
+                contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, nodeInfo.NodeId, isPeriods,
                     startDate, endDate, checkedState);
             }
 
@@ -401,7 +401,7 @@ namespace SiteServer.CMS.Core.Office
             if (contentId != 0)
             {
                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
-                target = BaiRongDataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
+                target = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
                 upChannel = NodeManager.GetNodeName(publishmentSystemInfo.PublishmentSystemId, nodeId);
                 if (nodeId != publishmentSystemInfo.PublishmentSystemId)
                 {
@@ -444,7 +444,7 @@ namespace SiteServer.CMS.Core.Office
                     if (trackingInfo.PageContentId != 0)
                     {
                         var tableName = NodeManager.GetTableName(publishmentSystemInfo, trackingInfo.PageNodeId);
-                        target = BaiRongDataProvider.ContentDao.GetValue(tableName, trackingInfo.PageContentId,
+                        target = DataProvider.ContentDao.GetValue(tableName, trackingInfo.PageContentId,
                             ContentAttribute.Title);
                         upChannel = NodeManager.GetNodeName(publishmentSystemInfo.PublishmentSystemId,
                             trackingInfo.PageNodeId);
@@ -535,10 +535,10 @@ namespace SiteServer.CMS.Core.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static List<BackgroundContentInfo> GetContentsByCsvFile(string filePath, PublishmentSystemInfo publishmentSystemInfo,
+        public static List<ContentInfo> GetContentsByCsvFile(string filePath, PublishmentSystemInfo publishmentSystemInfo,
             NodeInfo nodeInfo)
         {
-            var contentInfoList = new List<BackgroundContentInfo>();
+            var contentInfoList = new List<ContentInfo>();
 
             List<string> head;
             List<List<string>> rows;
@@ -571,7 +571,7 @@ namespace SiteServer.CMS.Core.Office
 
             foreach (var row in rows)
             {
-                var contentInfo = new BackgroundContentInfo();
+                var contentInfo = new ContentInfo();
                 if (row.Count != attributeNames.Count) continue;
 
                 for (var i = 0; i < attributeNames.Count; i++)

@@ -158,7 +158,7 @@ namespace SiteServer.CMS.Plugin.Apis
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
 
-            return BaiRongDataProvider.ContentDao.GetValue(tableName, contentId, attributeName);
+            return DataProvider.ContentDao.GetValue(tableName, contentId, attributeName);
         }
 
         public IContentInfo NewInstance()
@@ -214,7 +214,7 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
-            return BaiRongDataProvider.ContentDao.GetContentIdListCheckedByNodeId(tableName, publishmentSystemId, channelId);
+            return DataProvider.ContentDao.GetContentIdListCheckedByNodeId(tableName, publishmentSystemId, channelId);
         }
     }
 }

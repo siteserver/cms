@@ -32,7 +32,7 @@ namespace SiteServer.CMS.Core.Create
             else if (createType == ECreateType.Content)
             {
                 name =
-                    BaiRongDataProvider.ContentDao.GetValue(
+                    DataProvider.ContentDao.GetValue(
                         NodeManager.GetTableName(
                             PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId), channelId),
                         contentId, ContentAttribute.Title);

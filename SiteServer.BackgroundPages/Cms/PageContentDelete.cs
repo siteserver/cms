@@ -148,7 +148,7 @@ namespace SiteServer.BackgroundPages.Cms
                         if (contentIdList.Count == 1)
                         {
                             var contentId = contentIdList[0];
-                            var contentTitle = BaiRongDataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
+                            var contentTitle = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
                             Body.AddSiteLog(PublishmentSystemId, nodeId, contentId, "删除内容",
                                 $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId)},内容标题:{contentTitle}");
                         }
@@ -164,7 +164,7 @@ namespace SiteServer.BackgroundPages.Cms
                         var tableList = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfoListCreatedInDb();
                         foreach (var table in tableList)
                         {
-                            var targetContentIdList = BaiRongDataProvider.ContentDao.GetReferenceIdList(table.TableEnName, contentIdList);
+                            var targetContentIdList = DataProvider.ContentDao.GetReferenceIdList(table.TableEnName, contentIdList);
                             if (targetContentIdList.Count > 0)
                             {
                                 var targetContentInfo = DataProvider.ContentDao.GetContentInfo(table.TableEnName, TranslateUtils.ToInt(targetContentIdList[0].ToString()));

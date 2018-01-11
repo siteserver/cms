@@ -50,7 +50,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (DdlScope.SelectedValue == "Month")
             {
-                var lastEditList = BaiRongDataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 720);
+                var lastEditList = DataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 720);
                 foreach (var nodeId in lastEditList)
                 {
                     if (selectedNodeIdArrayList.Contains(nodeId.ToString()))
@@ -61,7 +61,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else if (DdlScope.SelectedValue == "Day")
             {
-                var lastEditList = BaiRongDataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 24);
+                var lastEditList = DataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 24);
                 foreach (var nodeId in lastEditList)
                 {
                     if (selectedNodeIdArrayList.Contains(nodeId.ToString()))
@@ -72,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else if (DdlScope.SelectedValue == "2Hour")
             {
-                var lastEditList = BaiRongDataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 2);
+                var lastEditList = DataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 2);
                 foreach (var nodeId in lastEditList)
                 {
                     if (selectedNodeIdArrayList.Contains(nodeId.ToString()))

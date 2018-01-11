@@ -79,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var contentIdList = _idsDictionary[nodeId];
                     foreach (var contentId in contentIdList)
                     {
-                        var title = BaiRongDataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
+                        var title = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
                         titles.Append(title + "<br />");
                     }
                 }
@@ -173,7 +173,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
                         var contentIdList = idsDictionaryToCheck[nodeId];
-                        BaiRongDataProvider.ContentDao.UpdateIsChecked(tableName, PublishmentSystemId, nodeId, contentIdList, translateNodeId, true, Body.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
+                        DataProvider.ContentDao.UpdateIsChecked(tableName, PublishmentSystemId, nodeId, contentIdList, translateNodeId, true, Body.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
 
                         DataProvider.NodeDao.UpdateContentNum(PublishmentSystemInfo, nodeId, true);
                     }

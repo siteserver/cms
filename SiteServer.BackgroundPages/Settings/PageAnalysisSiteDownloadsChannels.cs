@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Model;
+using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Provider;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -46,9 +48,9 @@ namespace SiteServer.BackgroundPages.Settings
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
 
-            SpContents.SelectCommand = DataProvider.BackgroundContentDao.GetSelectCommendByDownloads(PublishmentSystemInfo.AuxiliaryTableForContent, PublishmentSystemId);
+            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommendByDownloads(PublishmentSystemInfo.AuxiliaryTableForContent, PublishmentSystemId);
 
-            SpContents.SortField = BaiRongDataProvider.ContentDao.GetSortFieldName();
+            SpContents.SortField = ContentDao.SortFieldName;
             SpContents.SortMode = SortMode.DESC;
 
             if (IsPostBack) return;
@@ -94,7 +96,7 @@ xArrayDownload.push('{xValue}');
             var ltlChannel = (Literal)e.Item.FindControl("ltlChannel");
             var ltlFileUrl = (Literal)e.Item.FindControl("ltlFileUrl");
 
-            var contentInfo = new BackgroundContentInfo(e.Item.DataItem);
+            var contentInfo = new ContentInfo(e.Item.DataItem);
 
             ltlItemTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, PageUrl);
 
@@ -110,9 +112,12 @@ xArrayDownload.push('{xValue}');
             }
             ltlChannel.Text = nodeNameNavigation;
 
-            ltlFileUrl.Text =
-                $@"<a href=""{PageUtility.ParseNavigationUrl(PublishmentSystemInfo, contentInfo.FileUrl, true)}"" target=""_blank"">{contentInfo
-                    .FileUrl}</a>";
+            var fileUrl = contentInfo.GetString(BackgroundContentAttribute.FileUrl);
+            if (!string.IsNullOrEmpty(fileUrl))
+            {
+                ltlFileUrl.Text =
+                $@"<a href=""{PageUtility.ParseNavigationUrl(PublishmentSystemInfo, fileUrl, true)}"" target=""_blank"">{fileUrl}</a>";
+            }
 
             //x轴信息
             SetXHashtable(contentInfo.Id, contentInfo.Title);

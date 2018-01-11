@@ -73,7 +73,7 @@ namespace BaiRong.Core.Provider
 
         public void AddCountNum(string relatedTableName, string relatedIdentity, ECountType countType)
         {
-            var sqlString = $"UPDATE bairong_Count SET {SqlUtils.GetAddOne("CountNum")} WHERE RelatedTableName = @RelatedTableName AND RelatedIdentity = @RelatedIdentity AND CountType = @CountType";
+            var sqlString = $"UPDATE bairong_Count SET {SqlUtils.ToPlusSqlString("CountNum", 1)} WHERE RelatedTableName = @RelatedTableName AND RelatedIdentity = @RelatedIdentity AND CountType = @CountType";
 
             var insertParms = new IDataParameter[]
 			{

@@ -72,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
                     if (nodeInfo.ContentNum > 0)
                     {
                         var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
-                        contentId = BaiRongDataProvider.ContentDao.GetFirstContentId(tableName, channelId);
+                        contentId = DataProvider.ContentDao.GetFirstContentId(tableName, channelId);
                     }
 
                     if (contentId == 0)

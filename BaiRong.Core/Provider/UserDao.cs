@@ -1254,7 +1254,7 @@ namespace BaiRong.Core.Provider
         {
             if (!string.IsNullOrEmpty(userName))
             {
-                var sqlString = $"UPDATE bairong_Users SET LastActivityDate = @LastActivityDate, {SqlUtils.GetAddOne("CountOfFailedLogin")} WHERE UserName = @UserName";
+                var sqlString = $"UPDATE bairong_Users SET LastActivityDate = @LastActivityDate, {SqlUtils.ToPlusSqlString("CountOfFailedLogin", 1)} WHERE UserName = @UserName";
 
                 IDataParameter[] updateParms = {
                     GetParameter(ParmLastActivityDate, DataType.DateTime, DateTime.Now),
@@ -1269,7 +1269,7 @@ namespace BaiRong.Core.Provider
         {
             if (!string.IsNullOrEmpty(userName))
             {
-                var sqlString = $"UPDATE bairong_Users SET LastActivityDate = @LastActivityDate, {SqlUtils.GetAddOne("CountOfLogin")}, CountOfFailedLogin = 0 WHERE UserName = @UserName";
+                var sqlString = $"UPDATE bairong_Users SET LastActivityDate = @LastActivityDate, {SqlUtils.ToPlusSqlString("CountOfLogin", 1)}, CountOfFailedLogin = 0 WHERE UserName = @UserName";
 
                 IDataParameter[] updateParms = {
                     GetParameter(ParmLastActivityDate, DataType.DateTime, DateTime.Now),

@@ -109,3 +109,4 @@
         $('#checkbox').show();
       }
     </script>
+    <!--#include file="inc/foot.html"-->

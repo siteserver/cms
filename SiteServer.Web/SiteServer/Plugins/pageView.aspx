@@ -111,3 +111,4 @@
       data: data
     });
   </script>
+  <!--#include file="../inc/foot.html"-->

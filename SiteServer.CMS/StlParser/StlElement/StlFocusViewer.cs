@@ -3,6 +3,8 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.HtmlControls;
 using BaiRong.Core;
+using BaiRong.Core.Model;
+using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -264,14 +266,16 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     foreach (var dataItem in dataSource.Tables[0].Rows)
                     {
-                        var contentInfo = new BackgroundContentInfo(dataItem);
-                        if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
+                        var contentInfo = new ContentInfo(dataItem);
+                        var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
+
+                        if (!string.IsNullOrEmpty(imageUrl))
                         {
-                            if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg") || contentInfo.ImageUrl.ToLower().EndsWith(".png") || contentInfo.ImageUrl.ToLower().EndsWith(".pneg"))
+                            if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg") || imageUrl.ToLower().EndsWith(".png") || imageUrl.ToLower().EndsWith(".pneg"))
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, contentInfo.ImageUrl, pageInfo.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, imageUrl, pageInfo.IsLocal)));
                             }
                         }
                     }
@@ -349,14 +353,16 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var dataItem in dataSource.Tables[0].Rows)
                     {
-                        var contentInfo = new BackgroundContentInfo(dataItem);
-                        if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
+                        var contentInfo = new ContentInfo(dataItem);
+                        var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
+
+                        if (!string.IsNullOrEmpty(imageUrl))
                         {
-                            if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg") || contentInfo.ImageUrl.ToLower().EndsWith(".png") || contentInfo.ImageUrl.ToLower().EndsWith(".pneg"))
+                            if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg") || imageUrl.ToLower().EndsWith(".png") || imageUrl.ToLower().EndsWith(".pneg"))
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, contentInfo.ImageUrl, pageInfo.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, imageUrl, pageInfo.IsLocal)));
                             }
                         }
                     }
@@ -408,11 +414,13 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var dataItem in dataSource.Tables[0].Rows)
                     {
-                        var contentInfo = new BackgroundContentInfo(dataItem);
-                        if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
+                        var contentInfo = new ContentInfo(dataItem);
+                        var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
+
+                        if (!string.IsNullOrEmpty(imageUrl))
                         {
                             navigationUrls.Add(PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo, pageInfo.IsLocal));
-                            imageUrls.Add(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, contentInfo.ImageUrl, pageInfo.IsLocal));
+                            imageUrls.Add(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, imageUrl, pageInfo.IsLocal));
                         }
                     }
 
@@ -525,16 +533,18 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var dataItem in dataSource.Tables[0].Rows)
                     {
-                        var contentInfo = new BackgroundContentInfo(dataItem);
-                        if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
+                        var contentInfo = new ContentInfo(dataItem);
+                        var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
+
+                        if (!string.IsNullOrEmpty(imageUrl))
                         {
                             //这里使用png图片不管用
                             //||contentInfo.ImageUrl.ToLower().EndsWith(".png")||contentInfo.ImageUrl.ToLower().EndsWith(".pneg")
-                            if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg"))
+                            if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg"))
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, contentInfo.ImageUrl, pageInfo.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, imageUrl, pageInfo.IsLocal)));
                             }
                         }
                     }

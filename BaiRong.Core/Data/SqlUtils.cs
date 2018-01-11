@@ -362,7 +362,7 @@ namespace BaiRong.Core.Data
             return retval;
         }
 
-        public static string GetTopSqlString(string tableName, string columns, string whereString, string orderString, int topN)
+        public static string ToTopSqlString(string tableName, string columns, string whereString, string orderString, int topN)
         {
             string retval = $"SELECT {columns} FROM {tableName} {whereString} {orderString}";
             if (topN <= 0) return retval;
@@ -389,7 +389,7 @@ namespace BaiRong.Core.Data
             return retval;
         }
 
-        public static string GetTopSqlString(string sqlString, string orderString, int topN)
+        public static string ToTopSqlString(string sqlString, string orderString, int topN)
         {
             string retval = $"SELECT * FROM ({sqlString}) {orderString}";
             if (topN <= 0) return retval;
@@ -505,7 +505,7 @@ SELECT * FROM (
             return retval;
         }
 
-        public static string GetInTopSqlString(string tableName, string columns, string whereString, string orderString, int topN)
+        public static string ToInTopSqlString(string tableName, string columns, string whereString, string orderString, int topN)
         {
             var builder = new StringBuilder();
             if (WebConfigUtils.DatabaseType != EDatabaseType.Oracle)
@@ -516,7 +516,7 @@ SELECT * FROM (
                 }
                 builder.Length = builder.Length - 2;
                 return
-                    $"SELECT {builder} FROM ({GetTopSqlString(tableName, columns, whereString, orderString, topN)}) AS T";
+                    $"SELECT {builder} FROM ({ToTopSqlString(tableName, columns, whereString, orderString, topN)}) AS T";
             }
 
             foreach (var column in TranslateUtils.StringCollectionToStringList(columns))
@@ -525,7 +525,7 @@ SELECT * FROM (
             }
             builder.Length = builder.Length - 2;
             return
-                $"SELECT {builder} FROM ({GetTopSqlString(tableName, columns, whereString, orderString, topN)})";
+                $"SELECT {builder} FROM ({ToTopSqlString(tableName, columns, whereString, orderString, topN)})";
         }
 
         public static string GetColumnSqlString(DataType dataType, string attributeName, int length)
@@ -1527,27 +1527,22 @@ GO");
             return retval;
         }
 
-        public static string GetAddOne(string fieldName)
-        {
-            return GetAddNum(fieldName, 1);
-        }
-
-        public static string GetAddNum(string fieldName, int addNum)
+        public static string ToPlusSqlString(string fieldName, int plusNum = 1)
         {
             string retval;
             switch (WebConfigUtils.DatabaseType)
             {
                 case EDatabaseType.MySql:
-                    retval = $"{fieldName} = IFNULL({fieldName}, 0) + {addNum}";
+                    retval = $"{fieldName} = IFNULL({fieldName}, 0) + {plusNum}";
                     break;
                 case EDatabaseType.SqlServer:
-                    retval = $"{fieldName} = ISNULL({fieldName}, 0) + {addNum}";
+                    retval = $"{fieldName} = ISNULL({fieldName}, 0) + {plusNum}";
                     break;
                 case EDatabaseType.PostgreSql:
-                    retval = $"{fieldName} = COALESCE({fieldName}, 0) + {addNum}";
+                    retval = $"{fieldName} = COALESCE({fieldName}, 0) + {plusNum}";
                     break;
                 case EDatabaseType.Oracle:
-                    retval = $"{fieldName} = COALESCE({fieldName}, 0) + {addNum}";
+                    retval = $"{fieldName} = COALESCE({fieldName}, 0) + {plusNum}";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -1556,7 +1551,7 @@ GO");
             return retval;
         }
 
-        public static string GetMinusNum(string fieldName, int minusNum)
+        public static string ToMinusSqlString(string fieldName, int minusNum = 1)
         {
             string retval;
             switch (WebConfigUtils.DatabaseType)

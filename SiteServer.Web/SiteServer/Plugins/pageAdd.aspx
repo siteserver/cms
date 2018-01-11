@@ -247,3 +247,4 @@
         }
       });
     </script>
+    <!--#include file="../inc/foot.html"-->

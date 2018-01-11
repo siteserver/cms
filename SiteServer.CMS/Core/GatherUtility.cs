@@ -413,7 +413,7 @@ namespace SiteServer.CMS.Core
                 if (!isSameTitleAllowed)
                 {
                     var contentTitles = contentTitleHashtable[channelId] as List<string> ??
-                                        BaiRongDataProvider.ContentDao.GetValueList(tableName, channelId, ContentAttribute.Title);
+                                        DataProvider.ContentDao.GetValueList(tableName, channelId, ContentAttribute.Title);
 
                     if (contentTitles.Contains(title))
                     {
@@ -424,7 +424,7 @@ namespace SiteServer.CMS.Core
                     contentTitleHashtable[channelId] = contentTitles;
                 }
 
-                var contentInfo = new BackgroundContentInfo
+                var contentInfo = new ContentInfo
                 {
                     PublishmentSystemId = publishmentSystemInfo.PublishmentSystemId,
                     NodeId = channelId,
@@ -492,7 +492,7 @@ namespace SiteServer.CMS.Core
                                     try
                                     {
                                         WebClientUtils.SaveRemoteFileToLocal(attachmentUrl, filePath);
-                                        contentInfo.ImageUrl = GetPublishmentSystemVirtualUrlByPhysicalPath(publishmentSystemInfo, filePath);
+                                        contentInfo.Set(BackgroundContentAttribute.ImageUrl, GetPublishmentSystemVirtualUrlByPhysicalPath(publishmentSystemInfo, filePath));
                                     }
                                     catch
                                     {
@@ -513,7 +513,7 @@ namespace SiteServer.CMS.Core
                                     try
                                     {
                                         WebClientUtils.SaveRemoteFileToLocal(attachmentUrl, filePath);
-                                        contentInfo.VideoUrl = GetPublishmentSystemVirtualUrlByPhysicalPath(publishmentSystemInfo, filePath);
+                                        contentInfo.Set(BackgroundContentAttribute.VideoUrl, GetPublishmentSystemVirtualUrlByPhysicalPath(publishmentSystemInfo, filePath));
                                     }
                                     catch
                                     {
@@ -534,7 +534,7 @@ namespace SiteServer.CMS.Core
                                     try
                                     {
                                         WebClientUtils.SaveRemoteFileToLocal(attachmentUrl, filePath);
-                                        contentInfo.FileUrl = GetPublishmentSystemVirtualUrlByPhysicalPath(publishmentSystemInfo, filePath);
+                                        contentInfo.Set(BackgroundContentAttribute.FileUrl, GetPublishmentSystemVirtualUrlByPhysicalPath(publishmentSystemInfo, filePath));
                                     }
                                     catch
                                     {
@@ -583,7 +583,7 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                if (string.IsNullOrEmpty(contentInfo.ImageUrl))
+                if (string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.ImageUrl)))
                 {
                     var firstImageUrl = string.Empty;
                     if (isSaveImage)
@@ -629,11 +629,11 @@ namespace SiteServer.CMS.Core
 
                     if (isSetFirstImageAsImageUrl)
                     {
-                        contentInfo.ImageUrl = firstImageUrl;
+                        contentInfo.Set(BackgroundContentAttribute.ImageUrl, firstImageUrl);
                     }
                 }
                 //contentInfo.Content = StringUtility.TextEditorContentEncode(content, publishmentSystemInfo, false);
-                contentInfo.Content = content;
+                contentInfo.Set(BackgroundContentAttribute.Content, content);
 
                 contentInfo.SourceId = SourceManager.CaiJi;
 
@@ -893,7 +893,7 @@ namespace SiteServer.CMS.Core
 
                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, gatherDatabaseRuleInfo.NodeId);
 
-                var titleList = BaiRongDataProvider.ContentDao.GetValueList(tableName, gatherDatabaseRuleInfo.NodeId, ContentAttribute.Title);
+                var titleList = DataProvider.ContentDao.GetValueList(tableName, gatherDatabaseRuleInfo.NodeId, ContentAttribute.Title);
 
                 using (var rdr = BaiRongDataProvider.DatabaseDao.GetDataReader(gatherDatabaseRuleInfo.ConnectionString, sqlString))
                 {
@@ -903,7 +903,7 @@ namespace SiteServer.CMS.Core
                         {
                             var collection = new NameValueCollection();
                             BaiRongDataProvider.DatabaseDao.ReadResultsToNameValueCollection(rdr, collection);
-                            var contentInfo = Converter.ToBackgroundContentInfo(collection, tableMatchInfo.ColumnsMap);
+                            var contentInfo = Converter.ToContentInfo(collection, tableMatchInfo.ColumnsMap);
                             if (!string.IsNullOrEmpty(contentInfo?.Title) && !titleList.Contains(contentInfo.Title))
                             {
                                 contentInfo.PublishmentSystemId = publishmentSystemId;

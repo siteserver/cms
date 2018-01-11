@@ -69,7 +69,7 @@ namespace SiteServer.BackgroundPages.Cms
                             foreach (var contentId in _contentIdArrayList)
                             {
                                 var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
-                                FileUtility.MoveFileByContentInfo(PublishmentSystemInfo, targetPublishmentSystemInfo, contentInfo as BackgroundContentInfo);
+                                FileUtility.MoveFileByContentInfo(PublishmentSystemInfo, targetPublishmentSystemInfo, contentInfo);
                                 contentInfo.PublishmentSystemId = targetPublishmentSystemId;
                                 contentInfo.SourceId = contentInfo.NodeId;
                                 contentInfo.NodeId = targetNodeId;

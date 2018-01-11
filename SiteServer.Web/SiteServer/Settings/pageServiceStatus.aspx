@@ -175,3 +175,4 @@
         </asp:PlaceHolder>
       </form>
     </body>
+    <!--#include file="../inc/foot.html"-->

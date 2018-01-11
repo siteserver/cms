@@ -89,7 +89,7 @@ namespace BaiRong.Core.Provider
 
         private void Update(int publishmentSystemId, int relatedIdentity, bool isGood)
 		{
-            var sqlString = isGood ? $"UPDATE bairong_Digg SET {SqlUtils.GetAddOne("Good")} WHERE PublishmentSystemID = @PublishmentSystemID AND RelatedIdentity = @RelatedIdentity" : $"UPDATE bairong_Digg SET {SqlUtils.GetAddOne("Bad")} WHERE PublishmentSystemID = @PublishmentSystemID AND RelatedIdentity = @RelatedIdentity";
+            var sqlString = isGood ? $"UPDATE bairong_Digg SET {SqlUtils.ToPlusSqlString("Good", 1)} WHERE PublishmentSystemID = @PublishmentSystemID AND RelatedIdentity = @RelatedIdentity" : $"UPDATE bairong_Digg SET {SqlUtils.ToPlusSqlString("Bad", 1)} WHERE PublishmentSystemID = @PublishmentSystemID AND RelatedIdentity = @RelatedIdentity";
 
             var parms = new IDataParameter[]
 			{

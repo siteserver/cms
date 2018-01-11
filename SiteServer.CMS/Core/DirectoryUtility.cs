@@ -154,7 +154,7 @@ namespace SiteServer.CMS.Core
             foreach (var nodeId in nodeIdList)
             {
                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
-                var contentIdList = BaiRongDataProvider.ContentDao.GetContentIdList(tableName, nodeId);
+                var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, nodeId);
                 if (contentIdList.Count > 0)
                 {
                     foreach (var contentId in contentIdList)
@@ -186,7 +186,7 @@ namespace SiteServer.CMS.Core
                 FileUtils.DeleteFileIfExists(filePath);
 
                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
-                var contentIdList = BaiRongDataProvider.ContentDao.GetContentIdList(tableName, nodeId);
+                var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, nodeId);
                 if (contentIdList.Count > 0)
                 {
                     DeleteContents(publishmentSystemInfo, nodeId, contentIdList);

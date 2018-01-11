@@ -176,12 +176,12 @@ namespace SiteServer.CMS.Provider
             var comments = GetCountChecked(publishmentSystemId, nodeId, contentId);
             
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
-            BaiRongDataProvider.ContentDao.UpdateComments(tableName, contentId, comments);
+            DataProvider.ContentDao.UpdateComments(tableName, contentId, comments);
         }
 
         public void AddGoodCount(int commentId)
         {
-            string sqlString = $"UPDATE siteserver_Comment SET {SqlUtils.GetAddOne("GoodCount")} WHERE ID = {commentId}";
+            string sqlString = $"UPDATE siteserver_Comment SET {SqlUtils.ToPlusSqlString("GoodCount", 1)} WHERE ID = {commentId}";
             ExecuteNonQuery(sqlString);
         }
 
@@ -204,11 +204,11 @@ namespace SiteServer.CMS.Provider
             {
                 //offsetWhereString = $"AND ID NOT IN (SELECT TOP {requestOffset} ID FROM siteserver_Comment WHERE PublishmentSystemID = @PublishmentSystemID AND NodeID = @NodeID AND ContentID = @ContentID AND IsChecked = @IsChecked ORDER BY ID DESC)";
                 offsetWhereString =
-                    $"AND ID NOT IN ({SqlUtils.GetInTopSqlString("siteserver_Comment", "ID", "WHERE PublishmentSystemID = @PublishmentSystemID AND NodeID = @NodeID AND ContentID = @ContentID AND IsChecked = @IsChecked", "ORDER BY ID DESC", requestOffset)})";
+                    $"AND ID NOT IN ({SqlUtils.ToInTopSqlString("siteserver_Comment", "ID", "WHERE PublishmentSystemID = @PublishmentSystemID AND NodeID = @NodeID AND ContentID = @ContentID AND IsChecked = @IsChecked", "ORDER BY ID DESC", requestOffset)})";
             }
             //var sqlString =
             //    $"SELECT TOP {requestCount} ID, PublishmentSystemID, NodeID, ContentID, GoodCount, UserName, IsChecked, AddDate, Content FROM siteserver_Comment WHERE PublishmentSystemID = @PublishmentSystemID AND NodeID = @NodeID AND ContentID = @ContentID AND IsChecked = @IsChecked {offsetWhereString} ORDER BY ID DESC";
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_Comment",
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_Comment",
                 "ID, PublishmentSystemID, NodeID, ContentID, GoodCount, UserName, IsChecked, AddDate, Content",
                 $"WHERE PublishmentSystemID = @PublishmentSystemID AND NodeID = @NodeID AND ContentID = @ContentID AND IsChecked = @IsChecked {offsetWhereString}",
                 "ORDER BY ID DESC", requestCount);

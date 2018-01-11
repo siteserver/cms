@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Collections.Specialized;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using BaiRong.Core.Table;
 
@@ -43,9 +44,9 @@ namespace SiteServer.CMS.Core.Office
             return isExport;
         }
 
-        public static ArrayList GetContentsByAccessFile(string filePath, PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
+        public static List<ContentInfo> GetContentsByAccessFile(string filePath, PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
         {
-            var contentInfoArrayList = new ArrayList();
+            var contentInfoList = new List<ContentInfo>();
 
             var accessDao = new AccessDao(filePath);
             var tableNames = accessDao.GetTableNames();
@@ -84,7 +85,7 @@ namespace SiteServer.CMS.Core.Office
 
                         foreach (DataRow row in oleDt.Rows)
                         {
-                            var contentInfo = new BackgroundContentInfo();
+                            var contentInfo = new ContentInfo();
 
                             for (var i = 0; i < oleDt.Columns.Count; i++)
                             {
@@ -102,14 +103,14 @@ namespace SiteServer.CMS.Core.Office
                                 contentInfo.NodeId = nodeInfo.NodeId;
                                 contentInfo.LastEditDate = DateTime.Now;
 
-                                contentInfoArrayList.Add(contentInfo);
+                                contentInfoList.Add(contentInfo);
                             }
                         }
                     }
                 }
             }
 
-            return contentInfoArrayList;
+            return contentInfoList;
         }
 	}
 }

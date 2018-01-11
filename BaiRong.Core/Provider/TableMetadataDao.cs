@@ -448,7 +448,7 @@ namespace BaiRong.Core.Provider
         {
             //Get Higher Taxis and ClassID
             //var sqlString = "SELECT TOP 1 TableMetadataID, Taxis FROM bairong_TableMetadata WHERE ((Taxis > (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableEnName = @AuxiliaryTableEnName1))) AND AuxiliaryTableEnName=@AuxiliaryTableEnName2) ORDER BY Taxis";
-            var sqlString = SqlUtils.GetTopSqlString("bairong_TableMetadata", "TableMetadataID, Taxis",
+            var sqlString = SqlUtils.ToTopSqlString("bairong_TableMetadata", "TableMetadataID, Taxis",
                 "WHERE ((Taxis > (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableEnName = @AuxiliaryTableEnName1))) AND AuxiliaryTableEnName=@AuxiliaryTableEnName2)",
                 "ORDER BY Taxis",
                 1);
@@ -492,7 +492,7 @@ namespace BaiRong.Core.Provider
         {
             //Get Lower Taxis and ClassID
             //var sqlString = "SELECT TOP 1 TableMetadataID, Taxis FROM bairong_TableMetadata WHERE ((Taxis < (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableEnName = @AuxiliaryTableEnName1))) AND AuxiliaryTableEnName = @AuxiliaryTableEnName2) ORDER BY Taxis DESC";
-            var sqlString = SqlUtils.GetTopSqlString("bairong_TableMetadata", "TableMetadataID, Taxis",
+            var sqlString = SqlUtils.ToTopSqlString("bairong_TableMetadata", "TableMetadataID, Taxis",
                 "WHERE ((Taxis < (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableEnName = @AuxiliaryTableEnName1))) AND AuxiliaryTableEnName = @AuxiliaryTableEnName2)",
                 "ORDER BY Taxis DESC", 1);
 

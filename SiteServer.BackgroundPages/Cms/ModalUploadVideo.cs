@@ -21,7 +21,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"TextBoxClientID", textBoxClientId}
-            }), 480, 220);
+            }), 520, 220);
         }
 
         public static string GetOpenWindowStringToList(int publishmentSystemId, string currentRootPath)
@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"CurrentRootPath", currentRootPath}
-            }), 480, 220);
+            }), 520, 220);
         }
 
         public void Page_Load(object sender, EventArgs e)

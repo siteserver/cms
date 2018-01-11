@@ -169,7 +169,7 @@ namespace SiteServer.CMS.Provider
 
             //string sqlString =
             //    $"SELECT TOP 1 ID, PublishmentSystemID, ContentID, SmallUrl, MiddleUrl, LargeUrl, Taxis, Description FROM siteserver_Photo WHERE PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId} ORDER BY Taxis";
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_Photo", "ID, PublishmentSystemID, ContentID, SmallUrl, MiddleUrl, LargeUrl, Taxis, Description", $"WHERE PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId}", "ORDER BY Taxis", 1);
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_Photo", "ID, PublishmentSystemID, ContentID, SmallUrl, MiddleUrl, LargeUrl, Taxis, Description", $"WHERE PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId}", "ORDER BY Taxis", 1);
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -288,7 +288,7 @@ namespace SiteServer.CMS.Provider
             //Get Higher Taxis and ID
             //string sqlString =
             //    $"SELECT TOP 1 ID, Taxis FROM siteserver_Photo WHERE (Taxis > (SELECT Taxis FROM siteserver_Photo WHERE ID = {id}) AND (PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId})) ORDER BY Taxis";
-            string sqlString = SqlUtils.GetTopSqlString("siteserver_Photo", "ID, Taxis", $"WHERE (Taxis > (SELECT Taxis FROM siteserver_Photo WHERE ID = {id}) AND (PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId}))", "ORDER BY Taxis", 1);
+            string sqlString = SqlUtils.ToTopSqlString("siteserver_Photo", "ID, Taxis", $"WHERE (Taxis > (SELECT Taxis FROM siteserver_Photo WHERE ID = {id}) AND (PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId}))", "ORDER BY Taxis", 1);
 
             var higherId = 0;
             var higherTaxis = 0;
@@ -322,7 +322,7 @@ namespace SiteServer.CMS.Provider
             //Get Lower Taxis and ID
             //string sqlString =
             //    $"SELECT TOP 1 ID, Taxis FROM siteserver_Photo WHERE (Taxis < (SELECT Taxis FROM siteserver_Photo WHERE ID = {id}) AND (PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId})) ORDER BY Taxis DESC";
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_Photo", "ID, Taxis", $"WHERE (Taxis < (SELECT Taxis FROM siteserver_Photo WHERE ID = {id}) AND (PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId}))", "ORDER BY Taxis DESC", 1);
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_Photo", "ID, Taxis", $"WHERE (Taxis < (SELECT Taxis FROM siteserver_Photo WHERE ID = {id}) AND (PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId}))", "ORDER BY Taxis DESC", 1);
 
             var lowerId = 0;
             var lowerTaxis = 0;

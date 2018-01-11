@@ -1,23 +1,17 @@
 using System;
-using System.Collections;
 using System.Collections.Specialized;
-using System.Data;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using SiteServer.CMS.Model;
+using BaiRong.Core.Model;
 
 namespace SiteServer.CMS.Core
 {
 	/// <summary>
 	/// Convert 的摘要说明。
 	/// </summary>
-	public sealed class Converter
+	public static class Converter
 	{
-		private Converter()
-		{
-		}		
-
-		/// <summary>
+	    /// <summary>
 		/// 将以2004-1-20或2005-9-3 12:12:32为格式的字符串转换为日期
 		/// </summary>
 		public static DateTime ToDateTime(string dateTimeString)
@@ -35,7 +29,7 @@ namespace SiteServer.CMS.Core
 			var minute = DateTime.Now.Minute;
 			var second = DateTime.Now.Second;
 
-			if (dateTimeStr.IndexOf(" ") != -1)
+			if (dateTimeStr.IndexOf(" ", StringComparison.Ordinal) != -1)
 			{
 				var dateAndTimeArray = dateTimeStr.Split(' ');
 				if (dateAndTimeArray.Length == 2)
@@ -52,7 +46,10 @@ namespace SiteServer.CMS.Core
 						minute = int.Parse(arrayTime[1]);
 						second = int.Parse(arrayTime[2]);
 					}
-					catch{}
+				    catch
+				    {
+				        // ignored
+				    }
 				}
 			}
 			else
@@ -66,16 +63,16 @@ namespace SiteServer.CMS.Core
 						month = int.Parse(array[1]);
 						day = int.Parse(array[2]);
 					}
-					catch{}
+				    catch
+				    {
+				        // ignored
+				    }
 				}
 			}
 
 			var dateTime = new DateTime(year, month, day, hour, minute, second);
 			return dateTime;
-		}
-
-
-		
+		}	
 
 		public static HorizontalAlign ToHorizontalAlign(string typeStr)
 		{
@@ -102,40 +99,17 @@ namespace SiteServer.CMS.Core
 			return (RepeatLayout)TranslateUtils.ToEnum(typeof(RepeatLayout), typeStr, RepeatLayout.Table);
 		}
 
-
-		/// <summary>
-		/// 处理数据源，转换成IEnumerable，方便进行下一步操作
-		/// </summary>
-		/// <param name="source">数据源，先统一装箱</param>
-		/// <returns>数据源的IEnumerable形式</returns>
-		public static IEnumerable ToIEnumerable(object source)
-		{
-			if(source is IEnumerable)
-				return (IEnumerable)source;
-			else if(source is IList)
-				return (IEnumerable)source;
-			else if(source is DataSet)
-				return ((DataSet)source).Tables[0].DefaultView;
-			else if (source is DataTable)
-				return ((DataTable)source).DefaultView;
-			else
-				return null;
-		}
-
-
-        public static BackgroundContentInfo ToBackgroundContentInfo(NameValueCollection collection, NameValueCollection columnsMap)
+        public static ContentInfo ToContentInfo(NameValueCollection collection, NameValueCollection columnsMap)
         {
-            BackgroundContentInfo contentInfo = null;
-            if (collection != null && columnsMap != null)
+            if (collection == null || columnsMap == null) return null;
+
+            var contentInfo = new ContentInfo();
+            foreach (string attributeName in collection.Keys)
             {
-                contentInfo = new BackgroundContentInfo();
-                foreach (string attributeName in collection.Keys)
+                if (columnsMap[attributeName] != null)
                 {
-                    if (columnsMap[attributeName] != null)
-                    {
-                        var columnsToMatch = columnsMap[attributeName];
-                        contentInfo.Set(columnsToMatch, collection[attributeName]);
-                    }
+                    var columnsToMatch = columnsMap[attributeName];
+                    contentInfo.Set(columnsToMatch, collection[attributeName]);
                 }
             }
             return contentInfo;

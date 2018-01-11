@@ -253,7 +253,7 @@ namespace SiteServer.CMS.Provider
         {
             //Get Higher Taxis and ID
             //var sqlString = "SELECT TOP 1 NodeGroupName, Taxis FROM siteserver_NodeGroup WHERE (Taxis > (SELECT Taxis FROM siteserver_NodeGroup WHERE NodeGroupName = @NodeGroupName AND PublishmentSystemID = @PublishmentSystemID) AND PublishmentSystemID = @PublishmentSystemID) ORDER BY Taxis";
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_NodeGroup", "NodeGroupName, Taxis",
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_NodeGroup", "NodeGroupName, Taxis",
                 "WHERE (Taxis > (SELECT Taxis FROM siteserver_NodeGroup WHERE NodeGroupName = @NodeGroupName AND PublishmentSystemID = @PublishmentSystemID) AND PublishmentSystemID = @PublishmentSystemID)",
                 "ORDER BY Taxis", 1);
 
@@ -294,7 +294,7 @@ namespace SiteServer.CMS.Provider
         {
             //Get Lower Taxis and ID
             //var sqlString = "SELECT TOP 1 NodeGroupName, Taxis FROM siteserver_NodeGroup WHERE (Taxis < (SELECT Taxis FROM siteserver_NodeGroup WHERE NodeGroupName = @NodeGroupName AND PublishmentSystemID = @PublishmentSystemID) AND PublishmentSystemID = @PublishmentSystemID) ORDER BY Taxis DESC";
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_NodeGroup", "NodeGroupName, Taxis",
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_NodeGroup", "NodeGroupName, Taxis",
                 "WHERE (Taxis < (SELECT Taxis FROM siteserver_NodeGroup WHERE NodeGroupName = @NodeGroupName AND PublishmentSystemID = @PublishmentSystemID) AND PublishmentSystemID = @PublishmentSystemID)",
                 "ORDER BY Taxis DESC", 1);
 

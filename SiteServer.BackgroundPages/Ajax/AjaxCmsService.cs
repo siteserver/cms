@@ -153,7 +153,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
-            var titleList = BaiRongDataProvider.ContentDao.GetValueListByStartString(tableName, nodeId, ContentAttribute.Title, title, 10);
+            var titleList = DataProvider.ContentDao.GetValueListByStartString(tableName, nodeId, ContentAttribute.Title, title, 10);
             if (titleList.Count > 0)
             {
                 foreach (var value in titleList)
