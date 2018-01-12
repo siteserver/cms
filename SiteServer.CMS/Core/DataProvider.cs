@@ -53,9 +53,6 @@ namespace SiteServer.CMS.Core
         private static LogDao _logDao;
         public static LogDao LogDao => _logDao ?? (_logDao = new LogDao());
 
-        private static MenuDisplayDao _menuDisplayDao;
-        public static MenuDisplayDao MenuDisplayDao => _menuDisplayDao ?? (_menuDisplayDao = new MenuDisplayDao());
-
         private static NodeDao _nodeDao;
         public static NodeDao NodeDao => _nodeDao ?? (_nodeDao = new NodeDao());
 
@@ -130,7 +127,6 @@ namespace SiteServer.CMS.Core
             InnerLinkDao,
             KeywordDao,
             LogDao,
-            MenuDisplayDao,
             NodeDao,
             NodeGroupDao,
             PhotoDao,

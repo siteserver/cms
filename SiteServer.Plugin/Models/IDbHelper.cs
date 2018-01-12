@@ -750,6 +750,16 @@ namespace SiteServer.Plugin.Models
 
         DateTime GetDateTime(IDataReader rdr, int i);
 
+        string GetString(IDataReader rdr, string name);
+
+        bool GetBoolean(IDataReader rdr, string name);
+
+        int GetInt(IDataReader rdr, string name);
+
+        decimal GetDecimal(IDataReader rdr, string name);
+
+        DateTime GetDateTime(IDataReader rdr, string name);
+
         #endregion
 
         #region Utility Functions

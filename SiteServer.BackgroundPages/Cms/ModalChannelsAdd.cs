@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             DdlContentModelPluginId.Items.Add(new ListItem("<与父栏目相同>", string.Empty));
-            var contentTables = PluginManager.GetEnabledPluginMetadatas<IContentModel>();
+            var contentTables = PluginManager.GetContentModelPlugins();
             foreach (var contentTable in contentTables)
             {
                 DdlContentModelPluginId.Items.Add(new ListItem(contentTable.DisplayName, contentTable.Id));

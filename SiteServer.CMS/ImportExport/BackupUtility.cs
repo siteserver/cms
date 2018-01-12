@@ -56,8 +56,6 @@ namespace SiteServer.CMS.ImportExport
             exportObject.ExportTemplates(templateFilePath);
             var tableDirectoryPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.Table);
             exportObject.ExportTablesAndStyles(tableDirectoryPath);
-            var menuDisplayFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileMenuDisplay);
-            exportObject.ExportMenuDisplay(menuDisplayFilePath);
             var tagStyleFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileTagStyle);
             exportObject.ExportTagStyle(tagStyleFilePath);
             var adFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileAd);
@@ -127,10 +125,6 @@ namespace SiteServer.CMS.ImportExport
             //导入辅助表
             var tableDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.Table);
             importObject.ImportAuxiliaryTables(tableDirectoryPath, isUseTable);
-
-            //导入菜单
-            var menuDisplayFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileMenuDisplay);
-            importObject.ImportMenuDisplay(menuDisplayFilePath, isOverride);
 
             //导入标签样式
             var tagStyleFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileTagStyle);

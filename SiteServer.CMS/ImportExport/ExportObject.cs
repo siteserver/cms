@@ -136,17 +136,6 @@ namespace SiteServer.CMS.ImportExport
             templateIe.ExportTemplates(templateIdList);
         }
 
-
-        /// <summary>
-        /// 导出网站菜单显示方式至指定的文件地址
-        /// </summary>
-        /// <param name="filePath"></param>
-        public void ExportMenuDisplay(string filePath)
-        {
-            var menuDisplayIe = new MenuDisplayIe(_publishmentSystemInfo.PublishmentSystemId, filePath);
-            menuDisplayIe.ExportMenuDisplay();
-        }
-
         public void ExportTagStyle(string filePath)
         {
             var tagStyleIe = new TagStyleIe(_publishmentSystemInfo.PublishmentSystemId, filePath);

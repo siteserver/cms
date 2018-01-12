@@ -90,7 +90,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ControlUtils.SelectSingleItem(DdlParentNodeId, _nodeId.ToString());
 
                 DdlContentModelPluginId.Items.Add(new ListItem("<默认>", string.Empty));
-                var contentTables = PluginManager.GetEnabledPluginMetadatas<IContentModel>();
+                var contentTables = PluginManager.GetContentModelPlugins();
                 foreach (var contentTable in contentTables)
                 {
                     DdlContentModelPluginId.Items.Add(new ListItem(contentTable.DisplayName, contentTable.Id));

@@ -778,7 +778,6 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(updateNodeSqlString);
 
             DataProvider.TemplateDao.CreateDefaultTemplateInfo(nodeInfo.NodeId, administratorName);
-            DataProvider.MenuDisplayDao.CreateDefaultMenuDisplayInfo(nodeInfo.NodeId);
             return nodeInfo.NodeId;
         }
 

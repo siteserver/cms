@@ -55,7 +55,6 @@ namespace BaiRong.Core
             //文件
             public const string FileTemplate = "Template.xml";//序列化模板的文件名
             public const string FileDisplayMode = "DisplayMode.xml";//序列化显示方式的文件名
-            public const string FileMenuDisplay = "MenuDisplay.xml";//序列化菜单显示方式的文件名
             public const string FileTagStyle = "TagStyle.xml";//序列化模板标签样式的文件名
             public const string FileGatherRule = "GatherRule.xml";//序列化采集规则的文件名
             public const string FileAd = "Ad.xml";//序列化固定广告的文件名

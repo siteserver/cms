@@ -1,8 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.Text;
-using System.Web;
-using System.Web.Http;
+﻿using System.Web.Http;
 using BaiRong.Core;
 using SiteServer.CMS.Controllers.Sys.Integration;
 
@@ -16,7 +12,7 @@ namespace SiteServer.API.Controllers.Sys.Integration
         {
             successUrl = TranslateUtils.DecryptStringBySecretKey(successUrl);
           
-            HttpContext.Current.Response.Redirect(successUrl);
+            PageUtils.Redirect(successUrl);
         }
     }
 }

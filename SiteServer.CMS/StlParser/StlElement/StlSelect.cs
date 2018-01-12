@@ -257,7 +257,7 @@ selObj.selectedIndex=0;
 
             if (isChannel)
             {
-                var nodeIdList = StlDataUtility.GetNodeIdList(pageInfo.PublishmentSystemId, channel.NodeId, groupContent, groupContentNot, orderByString, scopeType, groupChannel, groupChannelNot, false, false, totalNum, where);
+                var nodeIdList = StlDataUtility.GetNodeIdList(pageInfo.PublishmentSystemId, channel.NodeId, orderByString, scopeType, groupChannel, groupChannelNot, false, false, totalNum, where);
 
                 if (nodeIdList != null && nodeIdList.Count > 0)
                 {

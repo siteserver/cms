@@ -111,17 +111,6 @@ namespace SiteServer.CMS.ImportExport
             templateIe.ImportTemplates(overwrite, administratorName);
         }
 
-        /// <summary>
-        /// 从指定的地址导入网站菜单显示方式至站点中
-        /// </summary>
-        /// <param name="filePath">指定的导入地址</param>
-        /// <param name="overwrite">是否覆盖原有菜单显示方式</param>
-        public void ImportMenuDisplay(string filePath, bool overwrite)
-        {
-            var menuDisplayIe = new MenuDisplayIe(_publishmentSystemInfo.PublishmentSystemId, filePath);
-            menuDisplayIe.ImportMenuDisplay(overwrite);
-        }
-
         public void ImportTagStyle(string filePath, bool overwrite)
         {
             var tagStyleIe = new TagStyleIe(_publishmentSystemInfo.PublishmentSystemId, filePath);

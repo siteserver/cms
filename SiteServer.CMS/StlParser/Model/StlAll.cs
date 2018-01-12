@@ -135,10 +135,6 @@ namespace SiteServer.CMS.StlParser.Model
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlMarquee), stlAttribute)
                     },
                     {
-                        StlMenu.ElementName, 
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlMenu), stlAttribute)
-                    },
-                    {
                         StlNavigation.ElementName,
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlNavigation), stlAttribute)
                     },
@@ -235,10 +231,6 @@ namespace SiteServer.CMS.StlParser.Model
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlTags), stlAttribute)
                     },
                     {
-                        StlTemplate.ElementName, 
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlTemplate), stlAttribute)
-                    },
-                    {
                         StlTree.ElementName, 
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlTree), stlAttribute)
                     },
@@ -292,7 +284,6 @@ namespace SiteServer.CMS.StlParser.Model
                 {StlLoading.ElementName, StlLoading.AttributeList},
                 {StlLocation.ElementName, StlLocation.AttributeList},
                 {StlMarquee.ElementName, StlMarquee.AttributeList},
-                {StlMenu.ElementName, StlMenu.AttributeList},
                 {StlNavigation.ElementName, StlNavigation.AttributeList},
                 {StlNo.ElementName, StlNo.AttributeList},
                 {StlPageChannels.ElementName, StlPageChannels.AttributeList},
@@ -317,7 +308,6 @@ namespace SiteServer.CMS.StlParser.Model
                 {StlStar.ElementName, StlStar.AttributeList},
                 {StlTabs.ElementName, StlTabs.AttributeList},
                 {StlTags.ElementName, StlTags.AttributeList},
-                {StlTemplate.ElementName, StlTemplate.AttributeList},
                 {StlTree.ElementName, StlTree.AttributeList},
                 {StlValue.ElementName, StlValue.AttributeList},
                 {StlVideo.ElementName, StlVideo.AttributeList},

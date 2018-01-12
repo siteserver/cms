@@ -198,7 +198,6 @@
     <Compile Include="StlParser\Cache\Star.cs" />
     <Compile Include="StlParser\Cache\Database.cs" />
     <Compile Include="StlParser\Cache\Photo.cs" />
-    <Compile Include="StlParser\Cache\MenuDisplay.cs" />
     <Compile Include="StlParser\Cache\Digg.cs" />
     <Compile Include="StlParser\Cache\Comment.cs" />
     <Compile Include="StlParser\Cache\InnerLink.cs" />
@@ -213,7 +212,6 @@
     <Compile Include="StlParser\Model\ContentItemInfo.cs" />
     <Compile Include="StlParser\Model\StlAttribute.cs" />
     <Compile Include="StlParser\Parser.cs" />
-    <Compile Include="StlParser\StlElement\StlTemplate.cs" />
     <Compile Include="StlParser\Cache\StlCacheUtils.cs" />
     <Compile Include="StlParser\Utility\StlInnerUtility.cs" />
     <Compile Include="Core\Advertisement\AdvertisementManager.cs">
@@ -249,7 +247,6 @@
     <Compile Include="ImportExport\Components\TableCollectionIe.cs" />
     <Compile Include="ImportExport\Components\ConfigurationIe.cs" />
     <Compile Include="ImportExport\Components\GatherRuleIe.cs" />
-    <Compile Include="ImportExport\Components\MenuDisplayIe.cs" />
     <Compile Include="ImportExport\Components\PhotoIe.cs" />
     <Compile Include="ImportExport\Components\RelatedFieldIe.cs" />
     <Compile Include="ImportExport\Components\SeoIe.cs" />
@@ -335,7 +332,6 @@
     <Compile Include="StlParser\StlElement\StlInclude.cs" />
     <Compile Include="StlParser\StlElement\StlLocation.cs" />
     <Compile Include="StlParser\StlElement\StlMarquee.cs" />
-    <Compile Include="StlParser\StlElement\StlMenu.cs" />
     <Compile Include="StlParser\StlElement\StlNavigation.cs" />
     <Compile Include="StlParser\StlElement\StlPageChannels.cs" />
     <Compile Include="StlParser\StlElement\StlPageComments.cs" />
@@ -455,7 +451,6 @@
     <Compile Include="Model\Enumerations\ETemplateType.cs" />
     <Compile Include="Model\Enumerations\ETrackerStyle.cs" />
     <Compile Include="Model\Enumerations\ETrackerType.cs" />
-    <Compile Include="Model\MenuDisplayInfo.cs" />
     <Compile Include="Model\SeoMetaInfo.cs" />
     <Compile Include="Model\SiteTemplateInfo.cs" />
     <Compile Include="Model\TemplateInfo.cs" />
@@ -482,7 +477,6 @@
     <Compile Include="Provider\InnerLinkDao.cs" />
     <Compile Include="Provider\KeywordDao.cs" />
     <Compile Include="Provider\LogDao.cs" />
-    <Compile Include="Provider\MenuDisplayDao.cs" />
     <Compile Include="Provider\NodeDao.cs" />
     <Compile Include="Provider\NodeGroupDao.cs" />
     <Compile Include="Provider\PublishmentSystemDao.cs" />

@@ -26,6 +26,8 @@ namespace SiteServer.Plugin.Apis
 
         string GetPublishmentSystemUrl(int publishmentSystemId);
 
+        string GetPublishmentSystemUrl(int publishmentSystemId, string relatedUrl);
+
         string GetPublishmentSystemUrlByFilePath(string filePath);
 
         string GetChannelUrl(int publishmentSystemId, int channelId);

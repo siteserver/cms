@@ -105,7 +105,6 @@ namespace SiteServer.CMS.ImportExport
 
                 var templateFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTemplate);
                 var tableDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Table);
-                var menuDisplayFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileMenuDisplay);
                 var tagStyleFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTagStyle);
                 var adFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileAd);
                 var seoFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileSeo);
@@ -121,8 +120,6 @@ namespace SiteServer.CMS.ImportExport
                 importObject.ImportTemplates(templateFilePath, true, administratorName);
 
                 importObject.ImportAuxiliaryTables(tableDirectoryPath, isUseTables);
-
-                importObject.ImportMenuDisplay(menuDisplayFilePath, true);
 
                 importObject.ImportTagStyle(tagStyleFilePath, true);
 
@@ -166,9 +163,6 @@ namespace SiteServer.CMS.ImportExport
             //导出辅助表及样式
             var tableDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Table);
             exportObject.ExportTablesAndStyles(tableDirectoryPath);
-            //导出下拉菜单
-            var menuDisplayFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileMenuDisplay);
-            exportObject.ExportMenuDisplay(menuDisplayFilePath);
             //导出模板标签样式
             var tagStyleFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTagStyle);
             exportObject.ExportTagStyle(tagStyleFilePath);

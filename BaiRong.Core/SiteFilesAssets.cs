@@ -287,11 +287,6 @@ namespace BaiRong.Core
             public const string Ali = "flashes/focusali.swf";
         }
 
-        public class MmMenu
-        {
-            public const string Js = "scripts/mm_menu.js";
-        }
-
         public class DatePicker
         {
             public const string Js = "scripts/datepicker/wdatepicker.js";

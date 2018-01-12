@@ -92,7 +92,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
                         
                         parameters["__r"] = StringUtils.GetRandomInt(1, 10000).ToString();
 
-                        HttpContext.Current.Response.Redirect(PageUtils.AddQueryString(redirectUrl, parameters), true);
+                        PageUtils.Redirect(PageUtils.AddQueryString(redirectUrl, parameters));
                         return;
                     }
                 }
@@ -100,7 +100,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
             catch
             {
                 var redirectUrl = PageUtility.GetIndexPageUrl(publishmentSystemInfo, false);
-                HttpContext.Current.Response.Redirect(redirectUrl, true);
+                PageUtils.Redirect(redirectUrl);
                 return;
             }
 

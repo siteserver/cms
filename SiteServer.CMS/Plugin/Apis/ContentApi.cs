@@ -44,6 +44,15 @@ namespace SiteServer.CMS.Plugin.Apis
             return DataProvider.ContentDao.GetCount(tableName, channelId, whereString);
         }
 
+        public string GetTableName(int publishmentSystemId, int channelId)
+        {
+            if (publishmentSystemId <= 0 || channelId <= 0) return string.Empty;
+
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
+            return NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+        }
+
         public List<PluginTableColumn> GetTableColumns(int publishmentSystemId, int channelId)
         {
             if (publishmentSystemId <= 0 || channelId <= 0) return null;

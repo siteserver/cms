@@ -531,6 +531,23 @@ namespace SiteServer.CMS.Plugin
         //    return contentModels;
         //}
 
+        public static List<PluginMetadata> GetContentModelPlugins()
+        {
+            var list = new List<PluginMetadata>();
+
+            var pairs = GetEnabledPluginPairs<IContentModel>();
+            foreach (var pluginPair in pairs)
+            {
+                var plugin = (IContentModel) pluginPair.Plugin;
+
+                if (string.IsNullOrEmpty(plugin.ContentTableName) || plugin.ContentTableColumns == null || plugin.ContentTableColumns.Count == 0) continue;
+
+                list.Add(pluginPair.Metadata);
+            }
+
+            return list;
+        }
+
         public static List<PluginMetadata> GetAllContentRelatedPlugins(bool includeContentTable)
         {
             var list = new List<PluginMetadata>();

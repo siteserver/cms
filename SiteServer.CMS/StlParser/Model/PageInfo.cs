@@ -358,7 +358,6 @@ namespace SiteServer.CMS.StlParser.Model
             public const string JsAcAudioJs = "Js_Ac_AudioJs";                    //audio.js
             public const string JsAcVideoJs = "Js_Ac_VideoJs";                    //video.js
 
-            public const string JsAcMenuScripts = "Js_Ac_MenuScripts";            //下拉菜单
             public const string JsAdStlCountHits = "Js_Ad_StlCountHits";          //统计访问量
             public const string JsAdAddTracker = "Js_Ad_AddTracker";              //添加流量统计代码
             public const string JsAeStlZoom = "Js_Ae_StlZoom";                    //文字缩放

@@ -35,9 +35,9 @@
             <tr>
               <td>
                 时间：从
-                <ctrl:DateTimeTextBox id="TbDateFrom" class="input-small" Columns="12" runat="server" /> &nbsp;到&nbsp;
-                <ctrl:DateTimeTextBox id="TbDateTo" class="input-small" Columns="12" runat="server" /> 目标：
-                <asp:DropDownList ID="DdlSearchType" class="input-small" runat="server"> </asp:DropDownList>
+                <ctrl:DateTimeTextBox id="TbDateFrom" class="form-control" Columns="12" runat="server" /> &nbsp;到&nbsp;
+                <ctrl:DateTimeTextBox id="TbDateTo" class="form-control" Columns="12" runat="server" /> 目标：
+                <asp:DropDownList ID="DdlSearchType" class="form-control" runat="server"> </asp:DropDownList>
                 关键字：
                 <asp:TextBox id="TbKeyword" MaxLength="500" Size="37" runat="server" />
                 <asp:Button class="btn" OnClick="Search_OnClick" id="Search" text="搜 索" runat="server" />

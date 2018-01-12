@@ -89,6 +89,12 @@ namespace SiteServer.CMS.Plugin.Apis
             return PageUtility.GetPublishmentSystemUrl(publishmentSystemInfo, false);
         }
 
+        public string GetPublishmentSystemUrl(int publishmentSystemId, string relatedUrl)
+        {
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            return PageUtility.GetPublishmentSystemUrl(publishmentSystemInfo, relatedUrl, false);
+        }
+
         public string GetPublishmentSystemUrlByFilePath(string filePath)
         {
             var publishmentSystemId = PublishmentSystemApi.Instance.GetPublishmentSystemIdByFilePath(filePath);

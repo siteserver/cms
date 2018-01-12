@@ -84,7 +84,6 @@
     <script src="assets/layer/layer.min.js" type="text/javascript"></script>
     <script src="/signalr/hubs" type="text/javascript"></script>
     <script src="inc/script.js" type="text/javascript"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
     <script src="assets/jQuery-slimScroll/jquery.slimscroll.min.js" type="text/javascript"></script>
 
     <script type="text/javascript">

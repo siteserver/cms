@@ -89,9 +89,9 @@ namespace SiteServer.CMS.StlParser.Utility
             return theNodeId;
         }
 
-        public static List<int> GetNodeIdList(int publishmentSystemId, int channelId, string groupContent, string groupContentNot, string orderByString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isImageExists, bool isImage, int totalNum, string where)
+        public static List<int> GetNodeIdList(int publishmentSystemId, int channelId, string orderByString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isImageExists, bool isImage, int totalNum, string where)
         {
-            var whereString = Node.GetWhereString(publishmentSystemId, groupContent, groupContentNot, isImageExists, isImage, where);
+            var whereString = Node.GetWhereString(publishmentSystemId, groupChannel, groupChannelNot, isImageExists, isImage, where);
             var nodeIdList = Node.GetNodeIdListByScopeType(channelId, scopeType, groupChannel, groupChannelNot);
             return Node.GetNodeIdListByTotalNum(nodeIdList, totalNum, orderByString, whereString);
         }

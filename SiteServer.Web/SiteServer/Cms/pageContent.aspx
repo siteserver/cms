@@ -13,8 +13,6 @@
           });
         });
       </script>
-      <script type="text/javascript" src="../assets/bootstrap/js/popper.min.js"></script>
-      <script type="text/javascript" src="../assets/bootstrap/js/bootstrap.min.js"></script>
     </head>
 
     <body>
@@ -28,11 +26,11 @@
             </div>
 
             <div class="btn-group ml-1">
-              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button type="button" class="btn btn-primary dropdown-toggle" onclick="$('#dropdown-more').toggle();return false;">
                 更多
                 <span class="caret"></span>
               </button>
-              <div class="dropdown-menu">
+              <div id="dropdown-more" class="dropdown-menu">
                 <asp:Literal ID="LtlMoreButtons" runat="server"></asp:Literal>
               </div>
             </div>
