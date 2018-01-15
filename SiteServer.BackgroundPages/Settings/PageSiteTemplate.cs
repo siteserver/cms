@@ -7,7 +7,6 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -158,7 +157,7 @@ namespace SiteServer.BackgroundPages.Settings
                         dirInfo.Name)}"">压缩</a>";
             }
 
-            var urlAdd = PageSiteAdd.GetRedirectUrl(dirInfo.Name);
+            var urlAdd = PageSiteAdd.GetRedirectUrl(dirInfo.Name, string.Empty);
             ltlCreateUrl.Text = $@"<a href=""{urlAdd}"">创建站点</a>";
 
             var urlDelete = PageUtils.GetSettingsUrl(nameof(PageSiteTemplate), new NameValueCollection

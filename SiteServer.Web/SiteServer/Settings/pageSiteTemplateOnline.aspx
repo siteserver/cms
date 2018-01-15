@@ -49,36 +49,35 @@
                 <table id="contents" class="table tablesaw table-hover m-0">
                   <thead>
                     <tr class="thead">
-                      <th>站点模板名称</th>
-                      <th>站点模板文件夹</th>
+                      <th class="text-nowrap">名称</th>
                       <th>简介</th>
-                      <th class="text-center">模板作者</th>
-                      <th class="text-center">更新时间</th>
-                      <th></th>
-                      <th></th>
+                      <th class="text-center text-nowrap">模板作者</th>
+                      <th class="text-center text-nowrap">更新时间</th>
+                      <th class="text-center text-nowrap"></th>
+                      <th class="text-center text-nowrap"></th>
                     </tr>
                   </thead>
                   <tbody>
                     <asp:Repeater ID="RptContents" runat="server">
                       <ItemTemplate>
                         <tr>
-                          <td>
+                          <td class="text-nowrap">
                             <asp:Literal ID="ltlTitle" runat="server"></asp:Literal>
                           </td>
                           <td>
                             <asp:Literal ID="ltlDescription" runat="server"></asp:Literal>
                           </td>
-                          <td class="text-center">
+                          <td class="text-center text-nowrap">
                             <asp:Literal ID="ltlAuthor" runat="server"></asp:Literal>
                           </td>
-                          <td class="text-center">
+                          <td class="text-center text-nowrap">
                             <asp:Literal ID="ltlLastEditDate" runat="server"></asp:Literal>
                           </td>
-                          <td class="text-center">
+                          <td class="text-center text-nowrap">
                             <asp:Literal ID="ltlPreviewUrl" runat="server"></asp:Literal>
                           </td>
-                          <td class="text-center">
-                            <asp:Literal ID="ltlDownloadUrl" runat="server"></asp:Literal>
+                          <td class="text-center text-nowrap">
+                            <asp:Literal ID="ltlCreateUrl" runat="server"></asp:Literal>
                           </td>
                         </tr>
                       </ItemTemplate>

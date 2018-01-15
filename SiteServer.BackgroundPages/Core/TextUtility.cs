@@ -183,10 +183,10 @@ namespace SiteServer.BackgroundPages.Core
             return AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Permissions.Channel.ContentEdit);
         }
 
-        public static bool IsComment(PublishmentSystemInfo publishmentSystemInfo, int nodeId, string administratorName)
-        {
-            return publishmentSystemInfo.Additional.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Permissions.Channel.CommentCheck, AppManager.Permissions.Channel.CommentDelete);
-        }
+        //public static bool IsComment(PublishmentSystemInfo publishmentSystemInfo, int nodeId, string administratorName)
+        //{
+        //    return publishmentSystemInfo.Additional.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Permissions.Channel.CommentCheck, AppManager.Permissions.Channel.CommentDelete);
+        //}
 
         public static string GetColumnsHeadHtml(List<TableStyleInfo> tableStyleInfoArrayList, StringCollection attributesOfDisplay, PublishmentSystemInfo publishmentSystemInfo)
         {
@@ -205,14 +205,10 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetCommandsHeadHtml(PublishmentSystemInfo publishmentSystemInfo, Dictionary<string, IContentRelated> pluginChannels, bool isEdit, bool isComment)
+        public static string GetCommandsHeadHtml(PublishmentSystemInfo publishmentSystemInfo, Dictionary<string, IContentRelated> pluginChannels, bool isEdit)
         {
             var commandCount = 0;
             if (isEdit)
-            {
-                commandCount += 1;
-            }
-            if (isComment)
             {
                 commandCount += 1;
             }
@@ -243,7 +239,7 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetCommandsHtml(PublishmentSystemInfo publishmentSystemInfo, Dictionary<string, IContentRelated> pluginChannels, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit, bool isComment)
+        public static string GetCommandsHtml(PublishmentSystemInfo publishmentSystemInfo, Dictionary<string, IContentRelated> pluginChannels, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
         {
             var builder = new StringBuilder();
 
@@ -252,14 +248,14 @@ namespace SiteServer.BackgroundPages.Core
                 builder.Append($@"<a style=""margin:0 5px"" href=""{PageContentAdd.GetRedirectUrlOfEdit(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, pageUrl)}"">编辑</a>");
             }
 
-            if (isComment)
-            {
-                //var urlComment = PageComment.GetRedirectUrl(publishmentSystemInfo.PublishmentSystemID, contentInfo.NodeId, contentInfo.Id, pageUrl);
-                var urlComment = PageComments.GetRedirectUrl(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, pageUrl);
-                builder.Append(
-                    $@"<a style=""margin:0 5px"" href=""{urlComment}"">评论<span style=""color:gray"">({contentInfo
-                        .Comments})</span></a>");
-            }
+            //if (isComment)
+            //{
+            //    //var urlComment = PageComment.GetRedirectUrl(publishmentSystemInfo.PublishmentSystemID, contentInfo.NodeId, contentInfo.Id, pageUrl);
+            //    var urlComment = PageComments.GetRedirectUrl(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, pageUrl);
+            //    builder.Append(
+            //        $@"<a style=""margin:0 5px"" href=""{urlComment}"">评论<span style=""color:gray"">({contentInfo
+            //            .Comments})</span></a>");
+            //}
 
             foreach (var pluginId in pluginChannels.Keys)
             {

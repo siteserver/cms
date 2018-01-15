@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Core;
+using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
 
-namespace SiteServer.CMS.ImportExport
+namespace SiteServer.CMS.Core
 {
     public class SiteTemplateManager
     {
@@ -63,6 +63,27 @@ namespace SiteServer.CMS.ImportExport
             return list;
         }
 
+        public bool IsSiteTemplateExists
+        {
+            get
+            {
+                var directoryPaths = DirectoryUtils.GetDirectoryPaths(_rootPath);
+                foreach (var siteTemplatePath in directoryPaths)
+                {
+                    var metadataXmlFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileMetadata);
+                    if (FileUtils.IsFileExists(metadataXmlFilePath))
+                    {
+                        var siteTemplateInfo = Serializer.ConvertFileToObject(metadataXmlFilePath, typeof(SiteTemplateInfo)) as SiteTemplateInfo;
+                        if (siteTemplateInfo != null)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+        }
+
         public SortedList GetSiteTemplateSortedList()
         {
             var sortedlist = new SortedList();
@@ -76,6 +97,7 @@ namespace SiteServer.CMS.ImportExport
                     if (siteTemplateInfo != null)
                     {
                         var directoryName = PathUtils.GetDirectoryName(siteTemplatePath);
+                        siteTemplateInfo.DirectoryName = directoryName;
                         sortedlist.Add(directoryName, siteTemplateInfo);
                     }
                 }

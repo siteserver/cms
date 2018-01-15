@@ -36,7 +36,6 @@ namespace SiteServer.BackgroundPages.Cms
         private List<TableStyleInfo> _attributesOfDisplayStyleInfoList;
         private Dictionary<string, IContentRelated> _pluginChannels;
         private bool _isEdit;
-        private bool _isComment;
         private readonly Dictionary<string, string> _nameValueCacheDict = new Dictionary<string, string>();
 
         public static string GetRedirectUrl(int publishmentSystemId, int nodeId)
@@ -64,7 +63,6 @@ namespace SiteServer.BackgroundPages.Cms
             _attributesOfDisplayStyleInfoList = ContentUtility.GetColumnTableStyleInfoList(PublishmentSystemInfo, _styleInfoList);
             _pluginChannels = PluginManager.GetContentRelatedFeatures(_nodeInfo);
             _isEdit = TextUtility.IsEdit(PublishmentSystemInfo, nodeId, Body.AdminName);
-            _isComment = TextUtility.IsComment(PublishmentSystemInfo, nodeId, Body.AdminName);
 
             if (_nodeInfo.Additional.IsPreviewContents)
             {
@@ -154,7 +152,7 @@ $(document).ready(function() {
             }
 
             LtlColumnsHead.Text = TextUtility.GetColumnsHeadHtml(_styleInfoList, _attributesOfDisplay, PublishmentSystemInfo);
-            LtlCommandsHead.Text = TextUtility.GetCommandsHeadHtml(PublishmentSystemInfo, _pluginChannels, _isEdit, _isComment);
+            LtlCommandsHead.Text = TextUtility.GetCommandsHeadHtml(PublishmentSystemInfo, _pluginChannels, _isEdit);
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
@@ -176,7 +174,7 @@ $(document).ready(function() {
             ltlStatus.Text =
                 $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{ModalCheckState.GetOpenWindowString(PublishmentSystemId, contentInfo, PageUrl)}"">{CheckManager.GetCheckState(PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
 
-            ltlCommands.Text = TextUtility.GetCommandsHtml(PublishmentSystemInfo, _pluginChannels, contentInfo, PageUrl, Body.AdminName, _isEdit, _isComment);
+            ltlCommands.Text = TextUtility.GetCommandsHtml(PublishmentSystemInfo, _pluginChannels, contentInfo, PageUrl, Body.AdminName, _isEdit);
 
             ltlSelect.Text = $@"<input type=""checkbox"" name=""ContentIDCollection"" value=""{contentInfo.Id}"" />";
         }

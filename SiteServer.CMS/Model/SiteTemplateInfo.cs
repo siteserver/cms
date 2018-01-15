@@ -56,5 +56,7 @@ namespace SiteServer.CMS.Model
 			set { _description = value; }
 		}
 
-	}
+        public string DirectoryName { get; set; }
+
+    }
 }

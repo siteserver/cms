@@ -515,7 +515,7 @@ namespace SiteServer.CMS.Core
 
         public static bool IsWebSiteFile(string fileName)
         {
-            if (StringUtils.EqualsIgnoreCase(fileName, "T_系统首页模板.htm")
+            if (StringUtils.EqualsIgnoreCase(fileName, "T_系统首页模板.html")
                || StringUtils.EqualsIgnoreCase(fileName, "index.html"))
             {
                 return true;

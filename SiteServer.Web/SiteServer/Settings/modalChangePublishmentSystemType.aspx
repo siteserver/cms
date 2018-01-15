@@ -29,7 +29,7 @@
           <div class="form-group form-row">
             <label class="col-3 text-right col-form-label">从系统根目录选择需要转移到子站点的文件夹及文件</label>
             <div class="col-8">
-              <asp:CheckBoxList ID="CblFilesToSite" class="checkbox checkbox-primary" RepeatColumns="2" runat="server"></asp:CheckBoxList>
+              <asp:CheckBoxList ID="CblFilesToSite" class="checkbox checkbox-primary" RepeatColumns="4" runat="server"></asp:CheckBoxList>
             </div>
             <div class="col-1">
 

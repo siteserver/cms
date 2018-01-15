@@ -32,7 +32,7 @@ namespace SiteServer.BackgroundPages.Settings
                     new NameValueCollection
                     {
                         {"PublishmentSystemID", publishmentSystemId.ToString()}
-                    }), 600, 550);
+                    }));
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -50,6 +50,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (_isHeadquarters)
             {
                 InfoMessage($"将站点{PublishmentSystemInfo.PublishmentSystemName}转移到子目录");
+
                 PhChangeToSite.Visible = true;
                 PhChangeToHeadquarters.Visible = false;
                 var fileSystems = FileManager.GetFileSystemInfoExtendCollection(WebConfigUtils.PhysicalApplicationPath, true);
@@ -75,7 +76,6 @@ namespace SiteServer.BackgroundPages.Settings
                     {
                         selectedList.Add(fileSystem.Name);
                     }
-
                 }
 
                 //主站下的单页模板

@@ -255,15 +255,6 @@
     <Compile Include="Settings\PageLogUser.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageComments.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageCommentCheck.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageConfigurationComment.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Controls\UEditor.cs" />
     <Compile Include="Core\ChannelLoading.cs" />
     <Compile Include="Controls\AuxiliaryControl.cs" />

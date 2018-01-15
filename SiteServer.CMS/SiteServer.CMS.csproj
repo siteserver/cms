@@ -172,6 +172,7 @@
     <Compile Include="Core\Security\PermissionConfig.cs" />
     <Compile Include="Core\Security\PermissionConfigManager.cs" />
     <Compile Include="Core\Security\PermissionManager.cs" />
+    <Compile Include="Core\OnlineTemplateManager.cs" />
     <Compile Include="Model\PluginConfigInfo.cs" />
     <Compile Include="Plugin\Apis\AdminApi.cs" />
     <Compile Include="Plugin\Apis\UserApi.cs" />
@@ -254,7 +255,7 @@
     <Compile Include="ImportExport\Components\TableStyleIe.cs" />
     <Compile Include="ImportExport\Components\TagStyleIe.cs" />
     <Compile Include="ImportExport\Components\TemplateIe.cs" />
-    <Compile Include="ImportExport\SiteTemplateManager.cs" />
+    <Compile Include="Core\SiteTemplateManager.cs" />
     <Compile Include="ImportExport\BackupUtility.cs" />
     <Compile Include="StlParser\FileSystemObject.cs" />
     <Compile Include="Model\AdAreaInfo.cs" />

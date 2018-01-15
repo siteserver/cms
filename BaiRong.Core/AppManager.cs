@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
 
 namespace BaiRong.Core
@@ -83,8 +82,6 @@ namespace BaiRong.Core
                 public const string ChannelEdit = "cms_channelEdit";
                 public const string ChannelDelete = "cms_channelDelete";
                 public const string ChannelTranslate = "cms_channelTranslate";
-                public const string CommentCheck = "cms_commentCheck";
-                public const string CommentDelete = "cms_commentDelete";
                 public const string CreatePage = "cms_createPage";
                 public const string ContentCheck = "cms_contentCheck";
                 public const string ContentCheckLevel1 = "cms_contentCheckLevel1";
