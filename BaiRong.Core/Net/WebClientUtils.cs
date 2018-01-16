@@ -9,11 +9,12 @@ namespace BaiRong.Core.Net
 	public class WebClientUtils
 	{
 		// 获取指定网页的HTML代码
-		public static string GetRemoteFileSource(string Url, ECharset charset, string cookieString)
+		public static string GetRemoteFileSource(string url, ECharset charset, string cookieString)
 		{
 			try
 			{
-                var uri = new Uri(PageUtils.AddProtocolToUrl(Url.Trim()));
+			    string retval;
+                var uri = new Uri(PageUtils.AddProtocolToUrl(url.Trim()));
 				var hwReq = (HttpWebRequest)WebRequest.Create(uri);
 				if (!string.IsNullOrEmpty(cookieString))
 				{
@@ -23,13 +24,17 @@ namespace BaiRong.Core.Net
 				hwReq.Method = "Get";
 				//hwReq.ContentType = "text/html";
 				hwReq.KeepAlive = false;
-                
-				var reader = new System.IO.StreamReader(hwRes.GetResponseStream(), ECharsetUtils.GetEncoding(charset));
-				return reader.ReadToEnd();
+
+			    using (var reader = new System.IO.StreamReader(hwRes.GetResponseStream(), ECharsetUtils.GetEncoding(charset)))
+			    {
+                    retval = reader.ReadToEnd();
+                }
+
+			    return retval;
 			}
 			catch
 			{
-				throw new Exception($"页面地址“{Url}”无法访问！");
+				throw new Exception($"页面地址“{url}”无法访问！");
 			}
 		}
 

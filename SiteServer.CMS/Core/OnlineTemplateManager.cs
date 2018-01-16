@@ -90,7 +90,7 @@ namespace SiteServer.CMS.Core
 
         public static string GetDownloadUrl(string name)
         {
-            return $"http://download.siteserver.cn/templates/T_{name}.zip";
+            return $"http://cloud.siteserver.cn/api/downloads/template/{name}";
         }
     }
 }

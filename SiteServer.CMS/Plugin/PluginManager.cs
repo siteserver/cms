@@ -730,11 +730,6 @@ namespace SiteServer.CMS.Plugin
             return actions;
         }
 
-        internal static string GetDownloadUrl(string pluginId, string version)
-        {
-            return $"http://plugins.siteserver.cn/download/{pluginId}.zip?version={version}";
-        }
-
         public static bool Install(string pluginId, string version, out string errorMessage)
         {
             errorMessage = string.Empty;
@@ -753,7 +748,7 @@ namespace SiteServer.CMS.Plugin
                 var zipFilePath = PathUtility.GetTemporaryFilesPath(pluginId + ".zip");
                 FileUtils.DeleteFileIfExists(zipFilePath);
 
-                var downloadUrl = GetDownloadUrl(pluginId, version);
+                var downloadUrl = $"http://download.siteserver.cn/plugins/{pluginId}/{version}/{pluginId}.zip";
                 WebClientUtils.SaveRemoteFileToLocal(downloadUrl, zipFilePath);
                 
                 ZipUtils.UnpackFiles(zipFilePath, directoryPath);

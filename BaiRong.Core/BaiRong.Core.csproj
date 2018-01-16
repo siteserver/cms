@@ -4989,7 +4989,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Cryptography\" />
     <Folder Include="IO\Serialization\" />
     <Folder Include="ThirdParty\Alipay\openapi\Properties\" />
   </ItemGroup>
