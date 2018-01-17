@@ -1,5 +1,5 @@
 <%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.PageMain" Trace="False" EnableViewState="false" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
 
@@ -59,8 +59,8 @@
           <div class="sidebar-inner slimscrollleft">
             <div id="sidebar-menu">
               <ul>
-                <bairong:NavigationTree id="NtLeftManagement" title="站点管理" runat="server" />
-                <bairong:NavigationTree id="NtLeftFunctions" title="站点插件" runat="server" />
+                <ctrl:NavigationTree id="NtLeftManagement" title="站点管理" runat="server" />
+                <ctrl:NavigationTree id="NtLeftFunctions" title="站点插件" runat="server" />
                 <li class="text-muted menu-title"></li>
                 <li class="text-muted menu-title"></li>
                 <li class="text-muted menu-title"></li>
@@ -151,5 +151,41 @@
         $('#frmMain').height($(window).height() - 62);
         $('#frmMain').width($(window).width() - 200);
       };
+
+      ! function () {
+        var analytics = window.analytics = window.analytics || [];
+        if (!analytics.initialize)
+          if (analytics.invoked) window.console && console.error && console.error("Segment snippet included twice.");
+          else {
+            analytics.invoked = !0;
+            analytics.methods = ["trackSubmit", "trackClick", "trackLink", "trackForm", "pageview", "identify", "reset",
+              "group", "track", "ready", "alias", "debug", "page", "once", "off", "on"
+            ];
+            analytics.factory = function (t) {
+              return function () {
+                var e = Array.prototype.slice.call(arguments);
+                e.unshift(t);
+                analytics.push(e);
+                return analytics
+              }
+            };
+            for (var t = 0; t < analytics.methods.length; t++) {
+              var e = analytics.methods[t];
+              analytics[e] = analytics.factory(e)
+            }
+            analytics.load = function (t) {
+              var e = document.createElement("script");
+              e.type = "text/javascript";
+              e.async = !0;
+              e.src = ("https:" === document.location.protocol ? "https://" : "http://") +
+                "cdn.segment.com/analytics.js/v1/" + t + "/analytics.min.js";
+              var n = document.getElementsByTagName("script")[0];
+              n.parentNode.insertBefore(e, n)
+            };
+            analytics.SNIPPET_VERSION = "4.0.0";
+            analytics.load("FJtqVJJwjWQsJxU9f2ovi7VPG5hFDzoj");
+            analytics.page();
+          }
+      }();
     </script>
     <!--#include file="inc/foot.html"-->

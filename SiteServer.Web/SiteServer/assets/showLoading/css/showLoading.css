@@ -1,7 +1,7 @@
 .loading-indicator {
 	height: 80px;
 	width: 80px;
-	background: url( '../images/loading.gif' );
+	background: url( '../../layer/skin/default/xubox_loading0.gif' );
 	background-repeat: no-repeat;
 	background-position: center center;
 }

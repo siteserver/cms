@@ -1,299 +1,612 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.PageInstaller" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-    <!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
-    <html xmlns="http://www.w3.org/1999/xhtml">
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html>
 
     <head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      <meta http-equiv="X-UA-Compatible" content="IE=7" />
-      <title>SiteServer 系列产品安装向导</title>
-      <link href="style/step.css" rel="stylesheet" type="text/css" />
-      <script language="javascript" src="../assets/jquery/jquery-1.9.1.min.js"></script>
-      <script src="js/check_data.js"></script>
+      <meta charset="utf-8">
+      <title>SiteServer CMS 安装向导</title>
+      <!--#include file="../inc/head.html"-->
       <link href="../assets/showLoading/css/showLoading.css" rel="stylesheet" media="screen" />
       <script type="text/javascript" src="../assets/showLoading/js/jquery.showLoading.js"></script>
+      <style>
+        .rank {
+          border: none;
+          background: url(../pic/rank.gif) no-repeat;
+          width: 125px;
+          height: 22px;
+          vertical-align: middle;
+          cursor: default;
+        }
+
+        .r0 {
+          background-position: 0 0;
+        }
+
+        .r1 {
+          background-position: 0 -22px;
+        }
+
+        .r2 {
+          background-position: 0 -44px;
+        }
+
+        .r3 {
+          background-position: 0 -66px;
+        }
+
+        .r4 {
+          background-position: 0 -88px;
+        }
+
+        .r5 {
+          background-position: 0 -110px;
+        }
+
+        .r6 {
+          background-position: 0 -132px;
+        }
+
+        .r7 {
+          background-position: 0 -154px;
+        }
+      </style>
       <script>
-        $(function () {
-          $('.byellow').click(function () {
-            $('#main').showLoading();
-            return true;
-          });
-        });
+        var checkPassword = function () {
+          var strPassword = $('#TbAdminPassword').val();
+
+          var level = "rank r0";
+          level = checkPasswordLevel(strPassword);
+          $('#passwordLevel').removeClass().addClass(level);
+
+          return true;
+        }
+
+        var checkPasswordLevel = function (strPassword) {
+          //check length
+          var result = 0;
+          if (strPassword.length == 0)
+            result += 0;
+          else if (strPassword.length < 8 && strPassword.length > 0)
+            result += 5;
+          else if (strPassword.length > 10)
+            result += 25;
+          else
+            result += 10;
+          //alert("检查长度:"+strPassword.length+"-"+result);
+
+          //check letter
+          var bHave = false;
+          var bAll = false;
+          var capital = strPassword.match(/[A-Z]{1}/); //找大写字母
+          var small = strPassword.match(/[a-z]{1}/); //找小写字母
+          if (capital == null && small == null) {
+            result += 0; //没有字母
+            bHave = false;
+          } else if (capital != null && small != null) {
+            result += 20;
+            bAll = true;
+          } else {
+            result += 10;
+            bAll = true;
+          }
+          //alert("检查字母："+result);
+
+          //检查数字
+          var bDigi = false;
+          var digitalLen = 0;
+          for (var i = 0; i < strPassword.length; i++) {
+
+            if (strPassword.charAt(i) <= '9' && strPassword.charAt(i) >= '0') {
+              bDigi = true;
+              digitalLen += 1;
+              //alert(strPassword[i]);
+            }
+
+          }
+          if (digitalLen == 0) //没有数字
+          {
+            result += 0;
+            bDigi = false;
+          } else if (digitalLen > 2) //2个数字以上
+          {
+            result += 20;
+            bDigi = true;
+          } else {
+            result += 10;
+            bDigi = true;
+          }
+          //alert("数字个数：" + digitalLen);
+          //alert("检查数字："+result);
+
+          //检查非单词字符
+          var bOther = false;
+          var otherLen = 0;
+          for (var i = 0; i < strPassword.length; i++) {
+            if ((strPassword.charAt(i) >= '0' && strPassword.charAt(i) <= '9') ||
+              (strPassword.charAt(i) >= 'A' && strPassword.charAt(i) <= 'Z') ||
+              (strPassword.charAt(i) >= 'a' && strPassword.charAt(i) <= 'z'))
+              continue;
+            otherLen += 1;
+            bOther = true;
+          }
+          if (otherLen == 0) //没有非单词字符
+          {
+            result += 0;
+            bOther = false;
+          } else if (otherLen > 1) //1个以上非单词字符
+          {
+            result += 25;
+            bOther = true;
+          } else {
+            result += 10;
+            bOther = true;
+          }
+          //alert("检查非单词："+result);
+
+          //检查额外奖励
+          if (bAll && bDigi && bOther)
+            result += 5;
+          else if (bHave && bDigi && bOther)
+            result += 3;
+          else if (bHave && bDigi)
+            result += 2;
+          //alert("检查额外奖励："+result);
+
+          var level = "";
+          //根据分数来算密码强度的等级
+          if (result >= 70)
+            level = "rank r7";
+          else if (result >= 60)
+            level = "rank r6";
+          else if (result >= 50)
+            level = "rank r5";
+          else if (result >= 40)
+            level = "rank r4";
+          else if (result >= 30)
+            level = "rank r3";
+          else if (result > 20)
+            level = "rank r2";
+          else if (result > 10)
+            level = "rank r1";
+          else
+            level = "rank r0";
+
+          //		alert("return:"+level);
+          return level.toString();
+        }
       </script>
     </head>
 
     <body>
-      <div class="wrap">
-        <div class="top">
-          <div class="top-logo"> </div>
-          <div class="top-link">
-            <UL>
-              <LI>
-                <A href="http://www.siteserver.cn/" target="_blank">官方网站</A>
-              </LI>
-              <LI>
-                <A href="http://bbs.siteserver.cn/" target="_blank">技术论坛</A>
-              </LI>
-              <LI>
-                <A href="http://cms.siteserver.cn/" target="_blank">系统帮助</A>
-              </LI>
-            </UL>
-          </div>
-          <div class="top-version">
-            <H2>
-              <asp:Literal ID="LtlVersionInfo" runat="server"></asp:Literal>
-              安装向导 </H2>
-          </div>
-        </div>
-        <div id="main">
-          <div class="box">
-            <h2>安装进度</h2>
-            <ul class="list_step">
-              <asp:Literal ID="LtlStepTitle" runat="server"></asp:Literal>
+      <form class="m-l-15 m-r-15" runat="server">
+
+        <div id="main" class="card-box">
+          <h4 class="text-dark  header-title m-t-0">
+            SiteServer CMS
+            <asp:Literal ID="LtlVersionInfo" runat="server"></asp:Literal> 安装向导
+          </h4>
+          <p class="text-muted m-b-25 font-13">
+            欢迎来到SiteServer CMS 安装向导！只要进行以下几步操作，你就可以开始使用强大且可扩展的CMS系统了。
+          </p>
+
+          <ctrl:alerts runat="server" />
+
+          <!-- step 1 place -->
+          <asp:PlaceHolder ID="PhStep1" runat="server">
+
+            <ul class="nav nav-pills nav-fill bg-muted m-b-20">
+              <li class="nav-item active">
+                <a class="nav-link" href="javascript:;">许可协议</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">环境检测</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">数据库设置</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">安装产品</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">安装完成</a>
+              </li>
             </ul>
-          </div>
-          <div class="box noline">
-            <form id="installForm" runat="server">
-              <div class="form_detail">
-                <div class="error">
-                  <asp:Literal ID="LtlErrorMessage" runat="server"></asp:Literal>
-                </div>
-                <asp:PlaceHolder ID="PhStep1" runat="server">
-                  <table cellpadding="0" cellspacing="0" width="660" border="0">
+
+            <div class="form-group">
+              <label class="col-form-label">
+                SiteServer CMS 开源协议
+                <img src="../Pic/Installer/printerIcon.gif">
+                <a href="eula.html" target="new"> 可打印版本</a>
+              </label>
+            </div>
+
+            <iframe style="border-color:#F5F5F5; border-width:1px;" scrolling="yes" src="eula.html" height="320" width="100%"></iframe>
+
+            <hr />
+
+            <div class="text-center">
+              <asp:Checkbox id="ChkIAgree" class="checkbox checkbox-primary" runat="server" Text="我已经阅读并同意此协议" Checked="true" />
+              <asp:Button OnClick="BtnStep1_Click" class="btn btn-primary" Text="下一步" runat="server"></asp:Button>
+            </div>
+
+          </asp:PlaceHolder>
+
+          <!-- step 2 place -->
+          <asp:PlaceHolder ID="PhStep2" runat="server">
+
+            <ul class="nav nav-pills nav-fill bg-muted m-b-20">
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">许可协议</a>
+              </li>
+              <li class="nav-item active">
+                <a class="nav-link" href="javascript:;">环境检测</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">数据库设置</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">安装产品</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">安装完成</a>
+              </li>
+            </ul>
+
+            <div class="form-group">
+              <label class="col-form-label">
+                服务器信息
+              </label>
+              <small class="form-text text-muted">下表显示当前服务器环境</small>
+            </div>
+
+            <div class="panel panel-default">
+              <div class="panel-body p-0">
+                <div class="table-responsive">
+                  <table class="tablesaw table table-hover m-b-0 tablesaw-stack">
+                    <thead>
+                      <tr>
+                        <th>参数</th>
+                        <th>值</th>
+                      </tr>
+                    </thead>
                     <tbody>
                       <tr>
+                        <td>服务器域名</td>
                         <td>
-                          <h3>SiteServer 系列产品许可协议</h3>
+                          <asp:Literal ID="LtlDomain" runat="server"></asp:Literal>
                         </td>
-                        <td nowrap align="right">
-                          <img src="../Pic/Installer/printerIcon.gif">
-                          <a href="eula.html" target="new"> 可打印版本</a>
+                      </tr>
+                      <tr>
+                        <td>SiteServer 版本</td>
+                        <td>
+                          <asp:Literal ID="LtlVersion" runat="server"></asp:Literal>
                         </td>
-                        <tr>
-                          <td colspan="2">&nbsp;</td>
-                        </tr>
-                        <tr>
-                          <td valign="top" class="center" colspan="2">
-                            <iframe style="border-color:#999999; border-width:1px;" scrolling="yes" src="eula.html" height="264" width="660"></iframe>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td colspan="2">&nbsp;</td>
-                        </tr>
-                        <tr>
-                          <td valign="top" align="right" colspan="2">
-                            <span class="im">我已经阅读并同意此协议</span>
-                            <asp:Checkbox id="ChkIAgree" runat="server" Checked="true" /> &nbsp;
-                            <asp:button OnClick="BtnStep1_Click" class="btn byellow" Text="继 续" runat="server"></asp:button>
-                          </td>
-                        </tr>
+                      </tr>
+                      <tr>
+                        <td>.NET版本</td>
+                        <td>
+                          <asp:Literal ID="LtlNetVersion" runat="server"></asp:Literal>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>系统根目录</td>
+                        <td>
+                          <asp:Literal ID="LtlPhysicalApplicationPath" runat="server"></asp:Literal>
+                        </td>
+                      </tr>
                     </tbody>
                   </table>
-                </asp:PlaceHolder>
-                <asp:PlaceHolder ID="PhStep2" runat="server">
-                  <div>
-                    <div class=pr-title>
-                      <h3>服务器信息</h3>
-                    </div>
-                    <table class=twbox border=0 cellSpacing=0 cellPadding=0 align=center>
-                      <tbody>
-                        <tr>
-                          <th align=middle>
-                            <strong>参数</strong>
-                          </th>
-                          <th>
-                            <strong>值</strong>
-                          </th>
-                        </tr>
-                        <tr>
-                          <td>服务器域名</td>
-                          <td>
-                            <asp:Literal ID="LtlDomain" runat="server"></asp:Literal>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>SiteServer 版本</td>
-                          <td>
-                            <asp:Literal ID="LtlVersion" runat="server"></asp:Literal>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>.NET版本</td>
-                          <td>
-                            <asp:Literal ID="LtlNetVersion" runat="server"></asp:Literal>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>系统根目录</td>
-                          <td>
-                            <asp:Literal ID="LtlPhysicalApplicationPath" runat="server"></asp:Literal>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <div class=pr-title>
-                      <h3>目录权限检测</h3>
-                    </div>
-                    <div style="PADDING-BOTTOM: 0px; LINE-HEIGHT: 33px; PADDING-LEFT: 8px; PADDING-RIGHT: 8px; HEIGHT: 23px; COLOR: #666; OVERFLOW: hidden; PADDING-TOP: 2px">系统要求必须满足下列所有的目录权限全部可读写的需求才能使用，如果没有相关权限请添加。 </div>
-                    <table class=twbox border=0 cellSpacing=0 cellPadding=0 width=512 align=center>
-                      <tbody>
-                        <tr>
-                          <th width=300 align=middle>
-                            <strong>目录名</strong>
-                          </th>
-                          <th width=212>
-                            <strong>读写权限</strong>
-                          </th>
-                        </tr>
-                        <tr>
-                          <td>/*</td>
-                          <td>
-                            <asp:Literal ID="LtlRootWrite" runat="server"></asp:Literal>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>/SiteFiles/*</td>
-                          <td>
-                            <asp:Literal ID="LtlSiteFielsWrite" runat="server"></asp:Literal>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-
-                    <p style="text-align:right; padding-right:50px;">
-                      <asp:button OnClick="BtnPrevious_Click" class="btn bnormal" Text="后 退" runat="server"></asp:button>
-                      <asp:button ID="BtnStep2" OnClick="BtnStep2_Click" class="btn byellow" Text="下一步" runat="server"></asp:button>
-
-                    </p>
-                  </div>
-                </asp:PlaceHolder>
-                <asp:PlaceHolder ID="PhStep3" runat="server">
-                  <div class=pr-title>
-                    <h3>选择数据库类型</h3>
-                  </div>
-                  <div style="PADDING-BOTTOM: 10px; LINE-HEIGHT: 33px; PADDING-LEFT: 8px; PADDING-RIGHT: 8px; HEIGHT: 23px; COLOR: #666; OVERFLOW: hidden; PADDING-TOP: 2px">请选择需要安装的数据库类型。 </div>
-                  <p>
-                    <label>数据库类型：</label>
-                    <asp:DropDownList ID="DdlSqlDatabaseType" AutoPostBack="true" OnSelectedIndexChanged="DdlSqlDatabaseType_SelectedIndexChanged"
-                      runat="server"></asp:DropDownList>
-                  </p>
-                  <asp:PlaceHolder ID="PhSql1" runat="server">
-                    <div class=pr-title>
-                      <h3>数据库连接设置</h3>
-                    </div>
-                    <div style="PADDING-BOTTOM: 10px; LINE-HEIGHT: 33px; PADDING-LEFT: 8px; PADDING-RIGHT: 8px; HEIGHT: 23px; COLOR: #666; OVERFLOW: hidden; PADDING-TOP: 2px">在此设置数据库的连接字符串。 </div>
-                    <p>
-                      <label>数据库主机：</label>
-                      <asp:TextBox style="width:285px" class="ipt_tx" ID="TbSqlServer" onblur="checkData(this, 'sqlserver_msg', '数据库主机');" Text=""
-                        runat="server" />
-                      <span id="sqlserver_msg" class="error" style="display:none"></span>
-                      <span class="info">IP地址或者服务器名</span>
-                    </p>
-                    <p>
-                      <label>数据库端口：</label>
-                      <asp:DropDownList ID="DdlIsDefaultPort" AutoPostBack="true" OnSelectedIndexChanged="DdlIsDefaultPort_SelectedIndexChanged"
-                        runat="server"></asp:DropDownList>
-                    </p>
-                    <asp:PlaceHolder id="PhSqlPort" runat="server">
-                      <p>
-                        <label>自定义端口：</label>
-                        <asp:TextBox style="width:285px" class="ipt_tx" id="TbSqlPort" onblur="checkData(this, 'sqlport_msg', '自定义端口');" runat="server"
-                        />
-                        <span id="sqlport_msg" class="error" style="display:none"></span>
-                        <span class="info">连接数据库的端口</span>
-                      </p>
-                    </asp:PlaceHolder>
-                    <p>
-                      <label>数据库用户：</label>
-                      <asp:TextBox style="width:285px" class="ipt_tx" id="TbSqlUserName" onblur="checkData(this, 'sqlusername_msg', '数据库用户');"
-                        runat="server" />
-                      <span id="sqlusername_msg" class="error" style="display:none"></span>
-                      <span class="info">连接数据库的用户名</span>
-                    </p>
-                    <p>
-                      <label>数据库密码：</label>
-                      <asp:TextBox style="width:285px" TextMode="Password" class="ipt_tx" id="TbSqlPassword" onblur="checkData(this, 'sqlpassword_msg', '数据库密码');"
-                        runat="server" />
-                      <input type="hidden" runat="server" id="HihSqlHiddenPassword" />
-                      <span id="sqlpassword_msg" class="error" style="display:none"></span>
-                      <span class="info">连接数据库的密码</span>
-                    </p>
-                    <asp:PlaceHolder id="PhSqlOracleDatabase" visible="false" runat="server">
-                      <p>
-                        <label>数据库名称：</label>
-                        <asp:TextBox style="width:285px" class="ipt_tx" id="TbSqlOracleDatabase" onblur="checkData(this, 'sqloracledatabase_msg', '数据库名称');"
-                          runat="server" />
-                        <span id="sqloracledatabase_msg" class="error" style="display:none"></span>
-                        <span class="info">指定需要安装的Oracle数据库名称</span>
-                      </p>
-                    </asp:PlaceHolder>
-                  </asp:PlaceHolder>
-                  <asp:PlaceHolder ID="PhSql2" runat="server" Visible="false">
-                    <p>
-                      <label>选择数据库：</label>
-                      <asp:DropDownList ID="DdlSqlDatabaseName" runat="server"></asp:DropDownList>
-                      <span class="info">选择安装的数据库</span>
-                    </p>
-                  </asp:PlaceHolder>
-                  <p style="text-align:right; padding-right:50px;">
-                    <asp:button OnClick="BtnPrevious_Click" class="btn bnormal" Text="后 退" runat="server"></asp:button>
-                    <asp:button OnClick="BtnStep3_Click" class="btn byellow" Text="下一步" runat="server"></asp:button>
-                  </p>
-                </asp:PlaceHolder>
-                <asp:PlaceHolder ID="PhStep4" runat="server">
-                  <div class=pr-title>
-                    <h3>管理员初始密码</h3>
-                  </div>
-                  <div style="PADDING-BOTTOM: 10px; LINE-HEIGHT: 33px; PADDING-LEFT: 8px; PADDING-RIGHT: 8px; HEIGHT: 23px; COLOR: #666; OVERFLOW: hidden; PADDING-TOP: 2px">在此设置总管理员的登录用户名与密码。</div>
-                  <p>
-                    <label>管理员用户名：</label>
-                    <asp:TextBox style="width:285px" class="ipt_tx" ID="TbAdminName" onblur="checkAdminName();" runat="server" />
-                    <span id="adminname_msg" class="error" style="display:none"></span>
-                    <span class="info">登录后台使用的用户名</span>
-                  </p>
-                  <p>
-                    <label>管理员密码：</label>
-                    <asp:TextBox style="width:285px" TextMode="Password" class="ipt_tx" id="TbAdminPassword" onblur="checkPassword();" runat="server"
-                    />
-                    <span id="password_msg" class="error" style="display:none"></span>
-                    <span class="rank_info">密码强度：
-                      <input type="text" id="passwordLevel" class="rank r0" disabled="disabled" />
-                    </span>
-                  </p>
-                  <p>
-                    <label>确认密码：</label>
-                    <asp:TextBox style="width:285px" TextMode="Password" class="ipt_tx" id="TbComfirmAdminPassword" onblur="checkConfirmPassword();"
-                      runat="server" />
-                    <span id="confirmPassword_msg" class="error" style="display:none"></span>
-                    <span class="info">6-16个字符，支持大小写字母、数字和符号</span>
-                  </p>
-                  <p>
-                    <label>是否加密连接字符串：</label>
-                    <asp:DropDownList ID="DdlIsProtectData" runat="server"></asp:DropDownList>
-                    <span class="info">设置是否加密Web.Config中的数据库连接字符串</span>
-                  </p>
-                  <p style="text-align:right; padding-right:50px;">
-                    <asp:button OnClick="BtnPrevious_Click" class="btn bnormal" Text="后 退" runat="server"></asp:button>
-                    <asp:button OnClick="BtnStep4_Click" class="btn byellow" Text="下一步" runat="server"></asp:button>
-                  </p>
-                </asp:PlaceHolder>
-                <asp:PlaceHolder ID="PhStep5" runat="server">
-                  <p class="success" style="background-repeat:no-repeat; padding:15px; padding-left:50px;margin-right:100px;"> 恭喜，您已经完成了 SiteServer 系列产品的安装，并已正常运行，
-                    <A href='<%=GetSiteServerUrl()%>'>进入后台</A>。
-                  </p>
-                </asp:PlaceHolder>
+                </div>
               </div>
-            </form>
-          </div>
-        </div>
-      </div>
-      <div id="ft">
-        <p> 北京百容千域软件技术开发有限公司 版权所有
+            </div>
 
-        </p>
-      </div>
-      </div>
+            <div class="form-group">
+              <label class="col-form-label">
+                目录权限检测
+              </label>
+              <small class="form-text text-muted">
+                系统要求必须满足下列所有的目录权限全部可读写的需求才能使用，如果没有相关权限请添加。
+              </small>
+            </div>
+
+            <div class="panel panel-default">
+              <div class="panel-body p-0">
+                <div class="table-responsive">
+                  <table class="tablesaw table table-hover m-b-0 tablesaw-stack">
+                    <thead>
+                      <tr>
+                        <th>目录名</th>
+                        <th>读写权限</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>/*</td>
+                        <td>
+                          <asp:Literal ID="LtlRootWrite" runat="server"></asp:Literal>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>/SiteFiles/*</td>
+                        <td>
+                          <asp:Literal ID="LtlSiteFielsWrite" runat="server"></asp:Literal>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="text-center">
+              <asp:Button OnClick="BtnPrevious_Click" CausesValidation="false" class="btn" Text="上一步" runat="server"></asp:Button>
+              <asp:Button ID="BtnStep2" OnClick="BtnStep2_Click" class="btn btn-primary ml-2" Text="下一步" runat="server"></asp:Button>
+            </div>
+
+          </asp:PlaceHolder>
+
+          <!-- step 3 place -->
+          <asp:PlaceHolder ID="PhStep3" runat="server">
+
+            <ul class="nav nav-pills nav-fill bg-muted m-b-20">
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">许可协议</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">环境检测</a>
+              </li>
+              <li class="nav-item active">
+                <a class="nav-link" href="javascript:;">数据库设置</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">安装产品</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">安装完成</a>
+              </li>
+            </ul>
+
+            <div class="form-group">
+              <label class="col-form-label">
+                数据库类型
+              </label>
+              <asp:DropDownList ID="DdlSqlDatabaseType" cssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="DdlSqlDatabaseType_SelectedIndexChanged"
+                runat="server"></asp:DropDownList>
+              <small class="form-text text-muted">
+                请选择需要安装的数据库类型。
+              </small>
+            </div>
+
+            <asp:PlaceHolder ID="PhSql1" runat="server">
+              <div class="form-group">
+                <label class="col-form-label">
+                  数据库主机
+                  <asp:RequiredFieldValidator ControlToValidate="TbSqlServer" errorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+                  />
+                </label>
+                <asp:TextBox ID="TbSqlServer" class="form-control" runat="server" />
+                <small class="form-text text-muted">
+                  IP地址或者服务器名
+                </small>
+              </div>
+              <div class="form-group">
+                <label class="col-form-label">
+                  数据库端口
+                  <asp:RequiredFieldValidator ControlToValidate="TbSqlServer" errorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+                  />
+                </label>
+                <asp:DropDownList ID="DdlIsDefaultPort" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="DdlIsDefaultPort_SelectedIndexChanged"
+                  runat="server"></asp:DropDownList>
+              </div>
+
+              <asp:PlaceHolder id="PhSqlPort" runat="server">
+                <div class="form-group">
+                  <label class="col-form-label">
+                    自定义端口
+                    <asp:RequiredFieldValidator ControlToValidate="TbSqlPort" errorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+                    />
+                  </label>
+                  <asp:TextBox ID="TbSqlPort" class="form-control" runat="server" />
+                  <small class="form-text text-muted">
+                    连接数据库的端口
+                  </small>
+                </div>
+              </asp:PlaceHolder>
+
+              <div class="form-group">
+                <label class="col-form-label">
+                  数据库用户名
+                  <asp:RequiredFieldValidator ControlToValidate="TbSqlUserName" errorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+                  />
+                </label>
+                <asp:TextBox ID="TbSqlUserName" class="form-control" runat="server" />
+                <small class="form-text text-muted">
+                  连接数据库的用户名
+                </small>
+              </div>
+              <div class="form-group">
+                <label class="col-form-label">
+                  数据库密码
+                  <asp:RequiredFieldValidator ControlToValidate="TbSqlPassword" errorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+                  />
+                  <input type="hidden" runat="server" id="HihSqlHiddenPassword" />
+                </label>
+                <asp:TextBox ID="TbSqlPassword" TextMode="Password" class="form-control" runat="server" />
+                <small class="form-text text-muted">
+                  连接数据库的密码
+                </small>
+              </div>
+
+              <asp:PlaceHolder id="PhSqlOracleDatabase" visible="false" runat="server">
+                <div class="form-group">
+                  <label class="col-form-label">
+                    数据库名称
+                    <asp:RequiredFieldValidator ControlToValidate="TbSqlOracleDatabase" errorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+                    />
+                  </label>
+                  <asp:TextBox ID="TbSqlOracleDatabase" class="form-control" runat="server" />
+                  <small class="form-text text-muted">
+                    指定需要安装的Oracle数据库名称
+                  </small>
+                </div>
+              </asp:PlaceHolder>
+
+            </asp:PlaceHolder>
+
+            <asp:PlaceHolder ID="PhSql2" runat="server" Visible="false">
+
+              <div class="form-group">
+                <label class="col-form-label">
+                  选择数据库
+                </label>
+                <asp:DropDownList ID="DdlSqlDatabaseName" class="form-control" runat="server"></asp:DropDownList>
+                <small class="form-text text-muted">
+                  选择安装的数据库
+                </small>
+              </div>
+
+            </asp:PlaceHolder>
+
+            <hr />
+
+            <div class="text-center">
+              <asp:Button OnClick="BtnPrevious_Click" CausesValidation="false" class="btn" Text="上一步" runat="server"></asp:Button>
+              <asp:Button OnClick="BtnStep3_Click" class="btn btn-primary ml-2" Text="下一步" runat="server"></asp:Button>
+            </div>
+
+          </asp:PlaceHolder>
+
+          <!-- step 4 place -->
+          <asp:PlaceHolder ID="PhStep4" runat="server">
+
+            <ul class="nav nav-pills nav-fill bg-muted m-b-20">
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">许可协议</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">环境检测</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">数据库设置</a>
+              </li>
+              <li class="nav-item active">
+                <a class="nav-link" href="javascript:;">安装产品</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">安装完成</a>
+              </li>
+            </ul>
+
+            <div class="form-group">
+              <label class="col-form-label">
+                总管理员用户名
+                <asp:RequiredFieldValidator ControlToValidate="TbAdminName" errorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+                />
+              </label>
+              <asp:TextBox class="form-control" ID="TbAdminName" runat="server" />
+              <small class="form-text text-muted">
+                在此设置总管理员的登录用户名
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label">
+                总管理员密码
+                <asp:RequiredFieldValidator ControlToValidate="TbAdminPassword" errorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+                />
+              </label>
+              <asp:TextBox id="TbAdminPassword" TextMode="Password" onblur="checkPassword();" class="form-control" runat="server" />
+              <small class="form-text text-muted">
+                密码强度：
+                <input type="text" id="passwordLevel" class="rank r0" disabled="disabled" />
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">
+                确认密码
+                <asp:RequiredFieldValidator ControlToValidate="TbComfirmAdminPassword" errorMessage=" *" foreColor="red" Display="Dynamic"
+                  runat="server" />
+                <asp:CompareValidator runat="server" ControlToCompare="TbAdminPassword" ControlToValidate="TbComfirmAdminPassword" Display="Dynamic"
+                  ForeColor="red" ErrorMessage=" 两次输入的新密码不一致！请再输入一遍您上面填写的新密码。"></asp:CompareValidator>
+              </label>
+              <asp:TextBox id="TbComfirmAdminPassword" TextMode="Password" class="form-control" runat="server" />
+              <small class="form-text text-muted">
+                6-16个字符，支持大小写字母、数字和符号
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">
+                是否加密连接字符串
+              </label>
+              <asp:DropDownList ID="DdlIsProtectData" class="form-control" runat="server"></asp:DropDownList>
+              <small class="form-text text-muted">
+                设置是否加密Web.Config中的数据库连接字符串
+              </small>
+            </div>
+
+            <hr />
+
+            <div class="text-center">
+              <asp:Button OnClick="BtnPrevious_Click" CausesValidation="false" class="btn" Text="上一步" runat="server"></asp:Button>
+              <asp:Button OnClick="BtnStep4_Click" class="btn btn-primary ml-2" Text="下一步" runat="server"></asp:Button>
+            </div>
+
+          </asp:PlaceHolder>
+
+          <!-- step 5 place -->
+          <asp:PlaceHolder ID="PhStep5" runat="server">
+
+            <ul class="nav nav-pills nav-fill bg-muted m-b-20">
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">许可协议</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">环境检测</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">数据库设置</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">安装产品</a>
+              </li>
+              <li class="nav-item active">
+                <a class="nav-link" href="javascript:;">安装完成</a>
+              </li>
+            </ul>
+
+            <div class="alert alert-success" role="alert">
+              <h4 class="alert-heading">安装完成！</h4>
+              <p>
+                恭喜，您已经完成了 SiteServer CMS 的安装，并已正常运行
+                <asp:Literal id="LtlGo" runat="server" />
+              </p>
+              <hr>
+              <p class="mb-0">
+                获取更多使用帮助请访问
+                <a href="http://docs.siteserver.cn" target="_blank">SiteServer CMS 文档中心</a>
+              </p>
+            </div>
+
+          </asp:PlaceHolder>
+
+        </div>
+
+      </form>
     </body>
 
     </html>
     <!--#include file="../inc/foot.html"-->
+    <script>
+      var validate = window.Page_ClientValidate;
+      $(function () {
+        $('.btn-primary').click(function () {
+          if (!validate || validate()) {
+            $('#main').showLoading();
+          }
+          return true;
+        });
+      });
+    </script>
