@@ -20,9 +20,6 @@
 							<a class="nav-link" href="pageConfigurationContent.aspx?publishmentSystemId=<%=PublishmentSystemId%>">内容设置</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="pageConfigurationComment.aspx?publishmentSystemId=<%=PublishmentSystemId%>">评论设置</a>
-						</li>
-						<li class="nav-item">
 							<a class="nav-link" href="pageConfigurationSiteAttributes.aspx?publishmentSystemId=<%=PublishmentSystemId%>">站点属性</a>
 						</li>
 					</ul>

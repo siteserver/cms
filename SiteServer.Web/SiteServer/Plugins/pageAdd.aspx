@@ -16,7 +16,7 @@
           <p class="lead mt-3 text-nowrap">载入中，请稍后...</p>
         </div>
 
-        <div v-bind:style="{ display: recentlyPlugins ? '' : 'none' }">
+        <div v-bind:style="{ display: recentlyPlugins ? '' : 'none' }" style="display: none">
           <div class="card-box">
 
             <div class="form-inline">
@@ -44,13 +44,13 @@
                 <div class="col-6 col-lg-4" v-for="plugin in searchPlugins">
                   <div class="card-box widget-user">
                     <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name + '&version=' + plugin.version">
-                      <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive"
+                      <img v-bind:src="'http://download.siteserver.cn/plugins/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive"
                         alt="user">
                       <div class="wid-u-info">
-                        <h4 class="m-t-0 m-b-5">
+                        <h5 class="m-t-0 m-b-5">
                           {{ plugin.displayName }}
                           <code>{{ plugin.publisher + '-' + plugin.name }}</code>
-                        </h4>
+                        </h5>
                         <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
                         <span title="插件安装量">
                           <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i>
@@ -81,13 +81,13 @@
                 <div class="col-6 col-lg-4" v-for="plugin in featuredPlugins">
                   <div class="card-box widget-user">
                     <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name + '&version=' + plugin.version">
-                      <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive"
+                      <img v-bind:src="'http://download.siteserver.cn/plugins/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive"
                         alt="user">
                       <div class="wid-u-info">
-                        <h4 class="m-t-0 m-b-5">
+                        <h5 class="m-t-0 m-b-5">
                           {{ plugin.displayName }}
                           <code>{{ plugin.publisher + '-' + plugin.name }}</code>
-                        </h4>
+                        </h5>
                         <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
                         <span title="插件安装量">
                           <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i>
@@ -118,13 +118,13 @@
                 <div class="col-6 col-lg-4" v-for="plugin in popularPlugins">
                   <div class="card-box widget-user">
                     <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name + '&version=' + plugin.version">
-                      <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive"
+                      <img v-bind:src="'http://download.siteserver.cn/plugins/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive"
                         alt="user">
                       <div class="wid-u-info">
-                        <h4 class="m-t-0 m-b-5">
+                        <h5 class="m-t-0 m-b-5">
                           {{ plugin.displayName }}
                           <code>{{ plugin.publisher + '-' + plugin.name }}</code>
-                        </h4>
+                        </h5>
                         <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
                         <span title="插件安装量">
                           <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i>
@@ -155,13 +155,13 @@
                 <div class="col-6 col-lg-4" v-for="plugin in recentlyPlugins">
                   <div class="card-box widget-user">
                     <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name + '&version=' + plugin.version">
-                      <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive"
+                      <img v-bind:src="'http://download.siteserver.cn/plugins/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive"
                         alt="user">
                       <div class="wid-u-info">
-                        <h4 class="m-t-0 m-b-5">
+                        <h5 class="m-t-0 m-b-5">
                           {{ plugin.displayName }}
                           <code>{{ plugin.publisher + '-' + plugin.name }}</code>
-                        </h4>
+                        </h5>
                         <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
                         <span title="插件安装量">
                           <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i>

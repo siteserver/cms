@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
@@ -7,24 +6,65 @@ using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages
 {
-    public class PageUpgrade : Page
+    public class PageUpgrade : BasePage
     {
         public Literal LtlVersionInfo;
-        public Literal LtlStepTitle;
-        public Literal LtlErrorMessage;
+
         public PlaceHolder PhStep1;
-        public CheckBox ChkIAgree;
         public PlaceHolder PhStep2;
         public PlaceHolder PhStep3;
+        public PlaceHolder PhStep4;
+        public PlaceHolder PhStep5;
+        public Literal LtlGo;
+
+        protected override bool IsSinglePage => true;
 
         public static string GetRedirectUrl()
         {
             return PageUtils.GetSiteServerUrl("upgrade", null);
         }
 
-        private string GetSetpTitleString(int step)
+        public void Page_Load(object sender, EventArgs e)
         {
-            PhStep1.Visible = PhStep2.Visible = PhStep3.Visible = false;
+            if (IsPostBack) return;
+
+            if (SystemManager.IsNeedInstall())
+            {
+                Page.Response.Write("系统未安装，向导被禁用");
+                Page.Response.End();
+                return;
+            }
+
+            CacheUtils.ClearAll();
+
+            LtlVersionInfo.Text = AppManager.GetFullVersion();
+            LtlGo.Text = $@"<a class=""btn btn-success m-l-5"" href=""{PageUtils.GetAdminDirectoryUrl(string.Empty)}"">进入后台</a>";
+        }
+
+        public void BtnStep1_Click(object sender, EventArgs e)
+        {
+            SetSetp(2);
+        }
+
+        public void BtnStep2_Click(object sender, EventArgs e)
+        {
+            SetSetp(3);
+        }
+
+        public void BtnStep3_Click(object sender, EventArgs e)
+        {
+            SetSetp(4);
+        }
+
+        public void BtnStep4_Click(object sender, EventArgs e)
+        {
+            SystemManager.Upgrade();
+            SetSetp(5);
+        }
+
+        private void SetSetp(int step)
+        {
+            PhStep1.Visible = PhStep2.Visible = PhStep3.Visible = PhStep4.Visible = PhStep5.Visible = false;
             if (step == 1)
             {
                 PhStep1.Visible = true;
@@ -37,96 +77,14 @@ namespace SiteServer.BackgroundPages
             {
                 PhStep3.Visible = true;
             }
-
-            var builder = new StringBuilder();
-
-            for (var i = 1; i <= 3; i++)
+            else if (step == 4)
             {
-                var liClass = string.Empty;
-                if (i == step)
-                {
-                    liClass = @" class=""current""";
-                }
-                string imageUrl = $"../installer/images/step{i}{((i <= step) ? "a" : "b")}.gif";
-                var title = string.Empty;
-                if (i == 1)
-                {
-                    title = "许可协议";
-                }
-                else if (i == 2)
-                {
-                    title = "系统升级";
-                }
-                else if (i == 3)
-                {
-                    title = "升级完成";
-                }
-                builder.Append($@"<li{liClass}><img src=""{imageUrl}"" />{title}</li>");
+                PhStep4.Visible = true;
             }
-
-            return builder.ToString();
-        }
-
-        public void Page_Load(object sender, EventArgs e)
-        {
-            if (TranslateUtils.ToBool(Request.QueryString["done"]))
+            else if (step == 5)
             {
-                LtlStepTitle.Text = GetSetpTitleString(3);
+                PhStep5.Visible = true;
             }
-            else
-            {
-                if (IsNeedUpgrade(Page))
-                {
-                    if (!IsPostBack)
-                    {
-                        LtlVersionInfo.Text = $"SITESERVER {AppManager.GetFullVersion()}";
-                        LtlStepTitle.Text = GetSetpTitleString(1);
-                    }
-                }
-            }
-        }
-
-        public bool IsNeedUpgrade(Page page)
-        {
-            CacheUtils.ClearAll();
-
-            //if (BaiRongDataProvider.ConfigDao.GetDatabaseVersion() == AppManager.Version)
-            //{
-            //    page.Response.Write($"<h2>当前版本为“{AppManager.Version}”,数据库版本与系统版本一致，无需升级</h2>");
-            //    page.Response.End();
-            //    return false;
-            //}
-
-            return true;
-        }
-
-        protected void PhStep1_Click(object sender, EventArgs e)
-        {
-            if (ChkIAgree.Checked)
-            {
-                LtlStepTitle.Text = GetSetpTitleString(2);
-
-                //string errorMessage;
-                //AppManager.Upgrade(AppManager.Version, out errorMessage);
-                //LtlErrorMessage.Text = errorMessage;
-
-                SystemManager.Upgrade();
-                LtlErrorMessage.Text = string.Empty;
-            }
-            else
-            {
-                ShowErrorMessage("您必须同意软件许可协议才能进行升级！");
-            }
-        }
-
-        public string GetSiteServerUrl()
-        {
-            return PageUtils.GetAdminDirectoryUrl(string.Empty);
-        }
-
-        private void ShowErrorMessage(string errorMessage)
-        {
-            LtlErrorMessage.Text = $@"<img src=""../installer/images/check_error.gif"" /> {errorMessage}";
         }
     }
 }

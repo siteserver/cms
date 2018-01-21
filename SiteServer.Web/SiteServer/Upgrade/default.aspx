@@ -1,217 +1,356 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.PageUpgrade" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
 
     <head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      <meta http-equiv="X-UA-Compatible" content="IE=7" />
-      <title>SiteServer 系列产品升级向导</title>
-      <link href="../installer/style/step.css" rel="stylesheet" type="text/css" />
-      <script src="../installer/js/check_data.js"></script>
+      <meta charset="utf-8">
+      <title>SiteServer CMS 升级向导</title>
+      <!--#include file="../inc/head.html"-->
+      <link href="../assets/showLoading/css/showLoading.css" rel="stylesheet" media="screen" />
+      <script type="text/javascript" src="../assets/showLoading/js/jquery.showLoading.js"></script>
     </head>
 
     <body>
-      <div class="wrap">
-        <DIV class="top">
-          <DIV class="top-logo"> </DIV>
-          <DIV class="top-link">
-            <UL>
-              <LI>
-                <A href="http://www.siteserver.cn/" target="_blank">官方网站</A>
-              </LI>
-              <LI>
-                <A href="http://bbs.siteserver.cn/" target="_blank">技术论坛</A>
-              </LI>
-              <LI>
-                <A href="http://cms.siteserver.cn/" target="_blank">系统帮助</A>
-              </LI>
-            </UL>
-          </DIV>
-          <DIV class="top-version">
-            <H2>
-              <asp:Literal ID="LtlVersionInfo" runat="server"></asp:Literal> 升级向导 </H2>
-          </DIV>
-        </DIV>
-        <div id="main">
-          <div class="box">
-            <h2>升级进度</h2>
-            <ul class="list_step">
-              <asp:Literal ID="LtlStepTitle" runat="server"></asp:Literal>
+      <form class="m-l-15 m-r-15" runat="server">
+
+        <div id="main" class="card-box">
+          <h4 class="text-dark  header-title m-t-0">
+            SiteServer CMS
+            <asp:Literal ID="LtlVersionInfo" runat="server"></asp:Literal> 升级向导
+          </h4>
+          <p class="text-muted m-b-25 font-13">
+            欢迎来到SiteServer CMS 升级向导！
+          </p>
+
+          <ctrl:alerts runat="server" />
+
+          <!-- step 1 place -->
+          <asp:PlaceHolder ID="PhStep1" runat="server">
+
+            <ul class="nav nav-pills nav-fill bg-muted m-b-20">
+              <li class="nav-item active">
+                <a class="nav-link" href="javascript:;">升级准备</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">检查更新</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">下载升级包</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">升级系统</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">升级完成</a>
+              </li>
             </ul>
-          </div>
-          <div class="box noline">
-            <form runat="server">
-              <div class="form_detail">
-                <div class="error">
-                  <asp:Literal ID="LtlErrorMessage" runat="server"></asp:Literal>
+
+            <div class="jumbotron">
+              <h4 class="display-5">欢迎来到SiteServer CMS 升级向导！</h4>
+              <p class="lead">
+                升级向导将在线检查并自动下载、安装可用的更新，升级范围包括 SiteServer CMS 产品及已安装的插件。
+              </p>
+              <hr class="my-4">
+              <p>
+                如果已手动下载产品升级包并解压覆盖，请点击
+                <asp:button OnClick="BtnStep4_Click" class="btn btn-primary" Text="直接升级" runat="server"></asp:button>
+              </p>
+            </div>
+
+            <hr />
+
+            <div class="text-center">
+              <asp:button OnClick="BtnStep1_Click" class="btn btn-primary" Text="下一步" runat="server"></asp:button>
+            </div>
+
+          </asp:PlaceHolder>
+
+          <!-- step 2 place -->
+          <asp:PlaceHolder ID="PhStep2" visible="false" runat="server">
+
+            <ul class="nav nav-pills nav-fill bg-muted m-b-20">
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">升级准备</a>
+              </li>
+              <li class="nav-item active">
+                <a class="nav-link" href="javascript:;">检查更新</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">下载升级包</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">升级系统</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">升级完成</a>
+              </li>
+            </ul>
+
+            <div class="panel panel-border panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">产品更新</h3>
+                <p class="panel-sub-title font-13 text-muted">SiteServer CMS 新版本</p>
+              </div>
+              <div class="panel-body">
+
+                <div class="jumbotron text-center">
+                  <img src="../pic/animated_loading.gif" />
+                  <br />
+                  <small class="form-text text-muted">正在检查更新...</small>
                 </div>
-                <asp:PlaceHolder ID="PhStep1" runat="server">
-                  <table cellpadding="0" cellspacing="0" width="660" border="0">
-                    <TBODY>
+
+                <div class="jumbotron">
+                  <h4 class="display-5">当前版本已经是最新版本</h4>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table tablesaw table-hover m-0">
+                    <thead>
+                      <tr class="thead">
+                        <th class="text-center" width="200">选择</th>
+                        <th>版本</th>
+                        <th>更新简介</th>
+                        <th class="text-center">发布日期</th>
+                        <th class="text-center"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       <tr>
+                        <td class="text-center checkbox checkbox-primary text-nowrap">
+                          <input type="checkbox" name="choose" id="choose_" value="" />
+                          <label for="choose_">选中</label>
+                        </td>
                         <td>
-                          <H3 style="position:absolute; margin-top:0px; top: 205px;">SITESERVER
-                            <span style="font-size:6px; position:relative; top:-10px">TM</span> 系列产品许可协议</H3>
+                          当前版本：
+                          <strong>5.1</strong>
+                          <br /> 新版本：
+                          <strong>5.1.1</strong>
                         </td>
-                        <td nowrap align="right">
-                          <img src="../Pic/Installer/printerIcon.gif">
-                          <a href="../installer/eula.html" target="new"> 可打印版本</a>
+                        <td>
+                          快速制作各类表单,如报名表,登记表,邀请表,反馈表,预约表,订单表等。
                         </td>
-                        <tr>
-                          <td colspan="2">&nbsp;</td>
-                        </tr>
-                        <tr>
-                          <td valign="top" class="center" colspan="2">
-                            <iframe style="border-color:#999999; border-width:1px;" scrolling="yes" src="../installer/eula.html"
-                              height="264" width="660"></iframe>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td colspan="2">&nbsp;</td>
-                        </tr>
-                        <tr>
-                          <td valign="top" align="right" colspan="2">
-                            <span class="im">我已经阅读并同意此协议</span>
-                            <asp:Checkbox id="ChkIAgree" runat="server" Checked="true" /> &nbsp;
-                            <asp:button OnClick="PhStep1_Click" class="btn byellow" tabindex="3" Text="开始升级" runat="server"></asp:button>
-                          </td>
-                        </tr>
+                        <td class="text-center">
+                          2018年1月2日
+                        </td>
+                        <td class="text-center">
+                          <a href="/siteserver/plugins/pageconfig.aspx?pluginId=ss-shopping" target="_blank">发行说明</a>
+                        </td>
+                      </tr>
+
                     </tbody>
                   </table>
-                </asp:PlaceHolder>
-                <asp:PlaceHolder ID="PhStep2" runat="server">
-                  <DIV id="Upgrade1">
-                    <DIV class=pr-title>
-                      <H3 style="color:#06F">分析软件信息</H3>
-                      <DIV>&nbsp;
-                        <img src="../assets/icons/waiting.gif" width="220" height="19" align="middle" />
-                      </DIV>
-                    </DIV>
-                    <DIV class=pr-title>
-                      <H3 style="color:#06F">升级系统文件</H3>
-                      <DIV>&nbsp;升级系统文件。 </DIV>
-                    </DIV>
-                    <DIV class=pr-title>
-                      <H3 style="color:#06F">升级平台数据库</H3>
-                      <DIV>&nbsp;升级平台数据库。 </DIV>
-                    </DIV>
-                    <DIV class=pr-title>
-                      <H3 style="color:#06F">升级模块数据库</H3>
-                      <DIV>&nbsp;升级模块数据库。 </DIV>
-                    </DIV>
-                  </DIV>
-                  <DIV id="Upgrade2" style="display:none">
-                    <DIV class=pr-title>
-                      <H3>分析软件信息(已完成)</H3>
-                      <DIV>&nbsp;分析软件完整性</DIV>
-                    </DIV>
-                    <DIV class=pr-title>
-                      <H3 style="color:#06F">升级系统文件</H3>
-                      <img src="../assets/icons/waiting.gif" width="220" height="19" align="middle" />
-                    </DIV>
-                    <DIV class=pr-title>
-                      <H3 style="color:#06F">升级平台数据库</H3>
-                      <DIV>&nbsp;升级平台数据库。 </DIV>
-                    </DIV>
-                    <DIV class=pr-title>
-                      <H3 style="color:#06F">升级模块数据库</H3>
-                      <DIV>&nbsp;升级模块数据库。 </DIV>
-                    </DIV>
-                  </DIV>
-                  <DIV id="Upgrade3" style="display:none">
-                    <DIV class=pr-title>
-                      <H3>分析软件信息(已完成)</H3>
-                      <DIV>&nbsp;分析软件完整性</DIV>
-                    </DIV>
-                    <DIV class=pr-title>
-                      <H3>升级系统文件(已完成)</H3>
-                      <DIV>&nbsp;升级系统文件。 </DIV>
-                    </DIV>
-                    <DIV class=pr-title>
-                      <H3 style="color:#06F">升级平台数据库</H3>
-                      <DIV>&nbsp;
-                        <img src="../assets/icons/waiting.gif" width="220" height="19" align="middle" />
-                      </DIV>
-                    </DIV>
-                    <DIV class=pr-title>
-                      <H3 style="color:#06F">升级模块数据库</H3>
-                      <DIV>&nbsp;升级模块数据库。 </DIV>
-                    </DIV>
-                  </DIV>
-                  <DIV id="Upgrade4" style="display:none">
-                    <DIV class=pr-title>
-                      <H3>分析软件信息(已完成)</H3>
-                      <DIV>&nbsp;分析软件完整性</DIV>
-                    </DIV>
-                    <DIV class=pr-title>
-                      <H3>升级系统文件(已完成)</H3>
-                      <DIV>&nbsp;升级系统文件。 </DIV>
-                    </DIV>
-                    <DIV class=pr-title>
-                      <H3>升级平台数据库(已完成)</H3>
-                      <DIV>&nbsp;升级平台数据库。 </DIV>
-                    </DIV>
-                    <DIV class=pr-title>
-                      <H3 style="color:#06F">升级模块数据库</H3>
-                      <DIV>&nbsp;
-                        <img src="../assets/icons/waiting.gif" width="220" height="19" align="middle" />
-                      </DIV>
-                    </DIV>
-                  </DIV>
-                  <DIV id="Upgrade5" style="display:none">
-                    <DIV class=pr-title>
-                      <H3>分析软件信息(已完成)</H3>
-                      <DIV>&nbsp;分析软件完整性</DIV>
-                    </DIV>
-                    <DIV class=pr-title>
-                      <H3>升级系统文件(已完成)</H3>
-                      <DIV>&nbsp;升级系统文件。 </DIV>
-                    </DIV>
-                    <DIV class=pr-title>
-                      <H3>升级平台数据库(已完成)</H3>
-                      <DIV>&nbsp;升级平台数据库。 </DIV>
-                    </DIV>
-                    <DIV class=pr-title>
-                      <H3>升级模块数据库(已完成)</H3>
-                      <DIV>&nbsp;升级模块数据库。 </DIV>
-                    </DIV>
-                  </DIV>
-                  <script>
-                    var k = 1;
-                    var timeout;
-
-                    function upgrade() {
-                      for (j = 1; j <= 5; j++) {
-                        document.getElementById("Upgrade" + j).style.display = "none";
-                      }
-                      k = k + 1;
-                      document.getElementById("Upgrade" + k).style.display = "";
-                      if (k == 5) {
-                        window.clearInterval(timeout);
-                        location.href = "default.aspx?done=true";
-                      }
-                    }
-                    timeout = window.setInterval("upgrade()", 2000);
-                  </script>
-                </asp:PlaceHolder>
-                <asp:PlaceHolder ID="PhStep3" runat="server">
-                  <p class="success" style="background-repeat:no-repeat; padding:15px; padding-left:50px;margin-right:100px;">
-                    <span style="position:absolute; margin-top:0px;">恭喜，您已经完成了 SITESERVER
-                      <span style="font-size:6px; position:relative; top:-10px">TM</span>&nbsp;&nbsp;系列产品的升级，
-                      <A href='<%=GetSiteServerUrl()%>'>进入后台</A>。</span>
-                  </p>
-                </asp:PlaceHolder>
+                </div>
               </div>
-            </form>
-          </div>
+            </div>
+
+            <div class="panel panel-border panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">插件更新</h3>
+                <p class="panel-sub-title font-13 text-muted">插件新版本</p>
+              </div>
+              <div class="panel-body">
+
+                <div class="jumbotron text-center">
+                  <img src="../pic/animated_loading.gif" />
+                  <br />
+                  <small class="form-text text-muted">正在检查更新...</small>
+                </div>
+
+                <div class="jumbotron text-center">
+                  <h4 class="display-5">无可用插件升级包</h4>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table tablesaw table-hover m-0">
+                    <thead>
+                      <tr class="thead">
+                        <th class="text-center" width="200">选择</th>
+                        <th>插件Id</th>
+                        <th>插件名称</th>
+                        <th>版本</th>
+                        <th>作者</th>
+                        <th>更新简介</th>
+                        <th class="text-center">发布日期</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="text-center checkbox checkbox-primary text-nowrap">
+                          <input type="checkbox" name="choose" id="choose_" value="" />
+                          <label for="choose_">选中</label>
+                        </td>
+                        <td>
+                          ss-shopping
+                        </td>
+                        <td>
+                          <img src="/SiteFiles/Plugins/ss-shopping/logo.svg" width="48" height="48"> 购物
+                        </td>
+                        <td>
+                          当前版本：
+                          <strong>5.1</strong>
+                          <br /> 新版本：
+                          <strong>5.1.1</strong>
+                        </td>
+                        <td>
+                          <a href="/siteserver/plugins/pageconfig.aspx?pluginId=ss-shopping" target="_blank">siteserver</a>
+                        </td>
+                        <td>
+                          快速制作各类表单,如报名表,登记表,邀请表,反馈表,预约表,订单表等。
+                        </td>
+                        <td class="text-center">
+                          2018年1月2日
+                        </td>
+                        <td class="text-center">
+                          <a href="/siteserver/plugins/pageconfig.aspx?pluginId=ss-shopping" target="_blank">发行说明</a>
+                        </td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+
+            <div style="display: ">
+
+              <hr />
+
+              <div class="text-center">
+                <asp:button OnClick="BtnStep2_Click" class="btn btn-primary" Text="下一步" runat="server"></asp:button>
+              </div>
+
+            </div>
+
+          </asp:PlaceHolder>
+
+          <!-- step 3 place -->
+          <asp:PlaceHolder ID="PhStep3" visible="false" runat="server">
+
+            <ul class="nav nav-pills nav-fill bg-muted m-b-20">
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">升级准备</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">检查更新</a>
+              </li>
+              <li class="nav-item active">
+                <a class="nav-link" href="javascript:;">下载升级包</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">升级系统</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">升级完成</a>
+              </li>
+            </ul>
+
+            <div class="jumbotron text-center">
+              <img src="../pic/animated_loading.gif" />
+              <br />
+              <small class="form-text text-muted">正在下载升级包...</small>
+            </div>
+
+            <div class="jumbotron text-center">
+              <h4 class="display-5">升级包已全部下载完成，点击下一步升级系统</h4>
+            </div>
+
+            <hr />
+
+            <div class="text-center">
+              <asp:button OnClick="BtnStep3_Click" class="btn btn-primary" Text="下一步" runat="server"></asp:button>
+            </div>
+
+          </asp:PlaceHolder>
+
+          <!-- step 4 place -->
+          <asp:PlaceHolder ID="PhStep4" visible="false" runat="server">
+
+            <ul class="nav nav-pills nav-fill bg-muted m-b-20">
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">升级准备</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">检查更新</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">下载升级包</a>
+              </li>
+              <li class="nav-item active">
+                <a class="nav-link" href="javascript:;">升级系统</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">升级完成</a>
+              </li>
+            </ul>
+
+            <div class="jumbotron text-center">
+              <img src="../pic/animated_loading.gif" />
+              <br />
+              <small class="form-text text-muted">正在升级系统...</small>
+            </div>
+
+            <hr />
+
+            <div class="text-center">
+              <asp:button OnClick="BtnStep4_Click" class="btn btn-primary" Text="下一步" runat="server"></asp:button>
+            </div>
+
+          </asp:PlaceHolder>
+
+          <!-- step 5 place -->
+          <asp:PlaceHolder ID="PhStep5" visible="false" runat="server">
+
+            <ul class="nav nav-pills nav-fill bg-muted m-b-20">
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">升级准备</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">检查更新</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">下载升级包</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">升级系统</a>
+              </li>
+              <li class="nav-item active">
+                <a class="nav-link" href="javascript:;">升级完成</a>
+              </li>
+            </ul>
+
+            <div class="alert alert-success" role="alert">
+              <h4 class="alert-heading">升级完成！</h4>
+              <p>
+                恭喜，您已经完成了 SiteServer CMS 的升级
+                <asp:Literal id="LtlGo" runat="server" />
+              </p>
+              <hr>
+              <p class="mb-0">
+                获取更多使用帮助请访问
+                <a href="http://docs.siteserver.cn" target="_blank">SiteServer CMS 文档中心</a>
+              </p>
+            </div>
+
+          </asp:PlaceHolder>
+
         </div>
-      </div>
-      <div id="ft">
-        <p> 北京百容千域软件技术开发有限公司 版权所有 </p>
-      </div>
-      </div>
+
+      </form>
     </body>
 
     </html>
     <!--#include file="../inc/foot.html"-->
+    <script>
+      var validate = window.Page_ClientValidate;
+      $(function () {
+        $('.btn-primary').click(function () {
+          if (!validate || validate()) {
+            $('#main').showLoading();
+          }
+          return true;
+        });
+      });
+    </script>

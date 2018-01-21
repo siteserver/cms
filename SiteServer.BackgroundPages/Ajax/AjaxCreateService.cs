@@ -2,10 +2,12 @@
 using System.Collections.Specialized;
 using System.Web.UI;
 using BaiRong.Core;
+using BaiRong.Core.Net;
+using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Ajax
@@ -35,19 +37,17 @@ namespace SiteServer.BackgroundPages.Ajax
             });
         }
 
-        public static string GetCreatePublishmentSystemParameters(int publishmentSystemId, bool isUseSiteTemplate, bool isImportContents, bool isImportTableStyles, string siteTemplateDir, bool isUseTables, string userKeyPrefix, bool isTop, string returnUrl)
+        public static string GetCreatePublishmentSystemParameters(int publishmentSystemId, bool isImportContents, bool isImportTableStyles, string siteTemplateDir, string onlineTemplateName, bool isUseTables, string userKeyPrefix)
         {
             return TranslateUtils.NameValueCollectionToString(new NameValueCollection
             {
-                {"publishmentSystemID", publishmentSystemId.ToString()},
-                {"isUseSiteTemplate", isUseSiteTemplate.ToString()},
+                {"publishmentSystemId", publishmentSystemId.ToString()},
                 {"isImportContents", isImportContents.ToString()},
                 {"isImportTableStyles", isImportTableStyles.ToString()},
                 {"siteTemplateDir", siteTemplateDir},
+                {"onlineTemplateName", onlineTemplateName},
                 {"isUseTables", isUseTables.ToString()},
-                {"userKeyPrefix", userKeyPrefix},
-                {"isTop", isTop.ToString()},
-                {"returnUrl", StringUtils.ValueToUrl(returnUrl)}
+                {"userKeyPrefix", userKeyPrefix}
             });
         }
 
@@ -62,72 +62,29 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 retval = GetCountArray(userKeyPrefix);
             }
-            //else if (type == "GetCountArrayForService")
-            //{
-            //    retval = GetCountArrayForService(userKeyPrefix);
-            //}
-            //    else if (type == "CreateChannels")
-            //    {
-            //        int publishmentSystemID = TranslateUtils.ToInt(base.Request.Form["publishmentSystemID"]);
-            //        retval = CreateChannels(publishmentSystemID, userKeyPrefix);
-            //    }
-            //    else if (type == "CreateChannelsOneByOne")
-            //    {
-            //        int publishmentSystemID = TranslateUtils.ToInt(base.Request.Form["publishmentSystemID"]);
-            //        bool isIncludeChildren = TranslateUtils.ToBool(base.Request.Form["isIncludeChildren"]);
-            //        bool isCreateContents = TranslateUtils.ToBool(base.Request.Form["isCreateContents"]);
-            //        retval = CreateChannelsOneByOne(publishmentSystemID, userKeyPrefix, isIncludeChildren, isCreateContents);
-            //    }
-            //    else if (type == "CreateContents")
-            //    {
-            //        int publishmentSystemID = TranslateUtils.ToInt(base.Request.Form["publishmentSystemID"]);
-            //        retval = CreateContents(publishmentSystemID, userKeyPrefix);
-            //    }
-            //    else if (type == "CreateContentsByService")
-            //    {
-            //        int publishmentSystemID = TranslateUtils.ToInt(base.Request.Form["publishmentSystemID"]);
-            //        int createTaskID = TranslateUtils.ToInt(base.Request.Form["createTaskID"]);
-            //        retval = CreateContentsByService(publishmentSystemID, userKeyPrefix, createTaskID);
-            //    }
-            //    else if (type == "CreateContentsOneByOne")
-            //    {
-            //        int publishmentSystemID = TranslateUtils.ToInt(base.Request.Form["publishmentSystemID"]);
-            //        int nodeID = TranslateUtils.ToInt(base.Request.Form["nodeID"]);
-            //        retval = CreateContentsOneByOne(publishmentSystemID, nodeID, userKeyPrefix);
-            //    }
-            //    else if (type == "CreateByTemplate")
-            //    {
-            //        int publishmentSystemID = TranslateUtils.ToInt(base.Request.Form["publishmentSystemID"]);
-            //        int templateID = TranslateUtils.ToInt(base.Request.Form["templateID"]);
-            //        retval = CreateByTemplate(publishmentSystemID, templateID, userKeyPrefix);
-            //    }
-            //    else if (type == "CreateByIDsCollection")
-            //    {
-            //        int publishmentSystemID = TranslateUtils.ToInt(base.Request.Form["publishmentSystemID"]);
-            //        retval = CreateByIDsCollection(publishmentSystemID, userKeyPrefix);
-            //    }
-            //    else if (type == "CreateFiles")
-            //    {
-            //        int publishmentSystemID = TranslateUtils.ToInt(base.Request.Form["publishmentSystemID"]);
-            //        retval = CreateFiles(publishmentSystemID, userKeyPrefix);
-            //    }
+            
             if (type == TypeCreatePublishmentSystem)
             {
-                var publishmentSystemId = TranslateUtils.ToInt(Request.Form["publishmentSystemID"]);
-                var isUseSiteTemplate = TranslateUtils.ToBool(Request.Form["isUseSiteTemplate"]);
+                var publishmentSystemId = TranslateUtils.ToInt(Request.Form["publishmentSystemId"]);
                 var isImportContents = TranslateUtils.ToBool(Request.Form["isImportContents"]);
                 var isImportTableStyles = TranslateUtils.ToBool(Request.Form["isImportTableStyles"]);
                 var siteTemplateDir = Request.Form["siteTemplateDir"];
+                var onlineTemplateName = Request.Form["onlineTemplateName"];
                 var isUseTables = TranslateUtils.ToBool(Request.Form["isUseTables"]);
-                var returnUrl = Request.Form["returnUrl"];
-                var isTop = TranslateUtils.ToBool(Request.Form["isTop"], false);
-                retval = CreatePublishmentSystem(publishmentSystemId, isUseSiteTemplate, isImportContents, isImportTableStyles, siteTemplateDir, isUseTables, userKeyPrefix, returnUrl, isTop, context.AdminName);
+
+                if (!string.IsNullOrEmpty(siteTemplateDir))
+                {
+                    retval = CreatePublishmentSystemBySiteTemplateDir(publishmentSystemId, isImportContents, isImportTableStyles, siteTemplateDir, isUseTables, userKeyPrefix, context.AdminName);
+                }
+                else if (!string.IsNullOrEmpty(onlineTemplateName))
+                {
+                    retval = CreatePublishmentSystemByOnlineTemplateName(publishmentSystemId, isImportContents, isImportTableStyles, onlineTemplateName, isUseTables, userKeyPrefix, context.AdminName);
+                }
+                else
+                {
+                    retval = CreatePublishmentSystem(publishmentSystemId, userKeyPrefix, context.AdminName);
+                }
             }
-            //    else if (type == "CreateAll")
-            //    {
-            //        int publishmentSystemID = TranslateUtils.ToInt(base.Request.Form["publishmentSystemID"]);
-            //        retval = CreateAll(publishmentSystemID, userKeyPrefix);
-            //    }
 
             var jsonString = TranslateUtils.NameValueCollectionToJsonString(retval);
             Page.Response.Write(jsonString);
@@ -148,67 +105,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
-        #region 创建站点
-
-        public NameValueCollection CreatePublishmentSystem(int publishmentSystemId, bool isUseSiteTemplate, bool isImportContents, bool isImportTableStyles, string siteTemplateDir, bool isUseTables, string userKeyPrefix, string returnUrl, string administratorName)
-        {
-            var cacheTotalCountKey = userKeyPrefix + CacheTotalCount;
-            var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
-            var cacheMessageKey = userKeyPrefix + CacheMessage;
-
-            CacheUtils.Insert(cacheTotalCountKey, "3");//存储需要的页面总数
-            CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
-            CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
-
-            //返回“运行结果”、“错误信息”及“执行JS脚本”的字符串数组
-            NameValueCollection retval;
-
-            try
-            {
-
-                CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
-                CacheUtils.Insert(cacheMessageKey, "正在创建站点...");//存储消息
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-
-
-                CacheUtils.Insert(cacheCurrentCountKey, "2");//存储当前的页面总数
-                CacheUtils.Insert(cacheMessageKey, "正在导入数据...");//存储消息
-                if (isUseSiteTemplate && !string.IsNullOrEmpty(siteTemplateDir))
-                {
-                    SiteTemplateManager.Instance.ImportSiteTemplateToEmptyPublishmentSystem(publishmentSystemId, siteTemplateDir, isUseTables, isImportContents, isImportTableStyles, administratorName);
-                }
-
-                CacheUtils.Insert(cacheCurrentCountKey, "3");//存储当前的页面总数
-                CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
-                if (!string.IsNullOrEmpty(returnUrl))
-                {
-                    returnUrl = PageUtils.AddQueryString(StringUtils.ValueFromUrl(returnUrl), "PublishmentSystemID", publishmentSystemId.ToString());
-                    retval = AjaxManager.GetWaitingTaskNameValueCollection(
-                        $"站点 <strong>{publishmentSystemInfo.PublishmentSystemName}<strong> 创建成功!", string.Empty,
-                        $"location.href='{returnUrl}';");
-                }
-                else
-                {
-                    retval = AjaxManager.GetWaitingTaskNameValueCollection(
-                        $"站点 <strong>{publishmentSystemInfo.PublishmentSystemName}<strong> 创建成功!", string.Empty,
-                        $"top.location.href='{PageInitialization.GetRedirectUrl()}';");
-                }
-            }
-            catch (Exception ex)
-            {
-                retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                LogUtils.AddSystemErrorLog(ex);
-            }
-
-            CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
-            CacheUtils.Remove(cacheCurrentCountKey);//取消存储当前的页面总数
-            CacheUtils.Remove(cacheMessageKey);//取消存储消息
-            CacheUtils.ClearAll();
-
-            return retval;
-        }
-
-        public NameValueCollection CreatePublishmentSystem(int publishmentSystemId, bool isUseSiteTemplate, bool isImportContents, bool isImportTableStyles, string siteTemplateDir, bool isUseTables, string userKeyPrefix, string returnUrl, bool isTop, string administratorName)
+        public NameValueCollection CreatePublishmentSystemBySiteTemplateDir(int publishmentSystemId, bool isImportContents, bool isImportTableStyles, string siteTemplateDir, bool isUseTables, string userKeyPrefix, string administratorName)
         {
             var cacheTotalCountKey = userKeyPrefix + CacheTotalCount;
             var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
@@ -225,36 +122,18 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "正在创建站点...");//存储消息
-
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "2");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "正在导入数据...");//存储消息
-                if (isUseSiteTemplate && !string.IsNullOrEmpty(siteTemplateDir))
-                {
-                    SiteTemplateManager.Instance.ImportSiteTemplateToEmptyPublishmentSystem(publishmentSystemId, siteTemplateDir, isUseTables, isImportContents, isImportTableStyles, administratorName);
-                }
-
+                SiteTemplateManager.Instance.ImportSiteTemplateToEmptyPublishmentSystem(publishmentSystemId, siteTemplateDir, isUseTables, isImportContents, isImportTableStyles, administratorName);
                 CreateManager.CreateAll(publishmentSystemId);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "3");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
-                if (!string.IsNullOrEmpty(returnUrl))
-                {
-                    returnUrl = PageUtils.AddQueryString(StringUtils.ValueFromUrl(returnUrl), "PublishmentSystemID", publishmentSystemId.ToString());
-                    retval = AjaxManager.GetWaitingTaskNameValueCollection(
-                        $"站点 <strong>{publishmentSystemInfo.PublishmentSystemName}<strong> 创建成功!", string.Empty, isTop ?
-                            $"top.location.href='{returnUrl}';"
-                            : $"location.href='{returnUrl}';");
-                }
-                else
-                {
-                    var initUrl = PageInitialization.GetRedirectUrl();
-                    retval = AjaxManager.GetWaitingTaskNameValueCollection(
-                        $"站点 <strong>{publishmentSystemInfo.PublishmentSystemName}<strong> 创建成功!", string.Empty, isTop ?
-                            $"location.href='{initUrl}';"
-                            : $"top.location.href='{initUrl}';");
-                }
+                retval = AjaxManager.GetWaitingTaskNameValueCollection(
+                        $"站点 <strong>{publishmentSystemInfo.PublishmentSystemName}<strong> 创建成功!", string.Empty,
+                        $"top.location.href='{PageInitialization.GetRedirectUrl()}';");
             }
             catch (Exception ex)
             {
@@ -270,6 +149,101 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
-        #endregion
+        public NameValueCollection CreatePublishmentSystemByOnlineTemplateName(int publishmentSystemId, bool isImportContents, bool isImportTableStyles, string onlineTemplateName, bool isUseTables, string userKeyPrefix, string administratorName)
+        {
+            var cacheTotalCountKey = userKeyPrefix + CacheTotalCount;
+            var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
+            var cacheMessageKey = userKeyPrefix + CacheMessage;
+
+            CacheUtils.Insert(cacheTotalCountKey, "4");//存储需要的页面总数
+            CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
+            CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
+
+            //返回“运行结果”、“错误信息”及“执行JS脚本”的字符串数组
+            NameValueCollection retval;
+
+            try
+            {
+                CacheUtils.Insert(cacheCurrentCountKey, "1");
+                CacheUtils.Insert(cacheMessageKey, "开始下载模板压缩包，可能需要几分钟，请耐心等待...");
+
+                var filePath = PathUtility.GetSiteTemplatesPath($"T_{onlineTemplateName}.zip");
+                FileUtils.DeleteFileIfExists(filePath);
+                var downloadUrl = OnlineTemplateManager.GetDownloadUrl(onlineTemplateName);
+                WebClientUtils.SaveRemoteFileToLocal(downloadUrl, filePath);
+
+                CacheUtils.Insert(cacheCurrentCountKey, "2");
+                CacheUtils.Insert(cacheMessageKey, "模板压缩包下载成功，开始解压缩，可能需要几分钟，请耐心等待...");
+
+                var siteTemplateDir = $"T_{onlineTemplateName}";
+                var directoryPath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
+                DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
+                ZipUtils.UnpackFiles(filePath, directoryPath);
+
+                CacheUtils.Insert(cacheCurrentCountKey, "3");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "站点模板下载成功，正在导入数据...");//存储消息
+
+                SiteTemplateManager.Instance.ImportSiteTemplateToEmptyPublishmentSystem(publishmentSystemId, siteTemplateDir, isUseTables, isImportContents, isImportTableStyles, administratorName);
+                CreateManager.CreateAll(publishmentSystemId);
+
+                CacheUtils.Insert(cacheCurrentCountKey, "4");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
+
+                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+                retval = AjaxManager.GetWaitingTaskNameValueCollection($"站点 <strong>{publishmentSystemInfo.PublishmentSystemName}<strong> 创建成功!", string.Empty,
+                        $"top.location.href='{PageInitialization.GetRedirectUrl()}';");
+            }
+            catch (Exception ex)
+            {
+                retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
+                LogUtils.AddSystemErrorLog(ex);
+            }
+
+            CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
+            CacheUtils.Remove(cacheCurrentCountKey);//取消存储当前的页面总数
+            CacheUtils.Remove(cacheMessageKey);//取消存储消息
+            CacheUtils.ClearAll();
+
+            return retval;
+        }
+
+        public NameValueCollection CreatePublishmentSystem(int publishmentSystemId, string userKeyPrefix, string administratorName)
+        {
+            var cacheTotalCountKey = userKeyPrefix + CacheTotalCount;
+            var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
+            var cacheMessageKey = userKeyPrefix + CacheMessage;
+
+            CacheUtils.Insert(cacheTotalCountKey, "2");//存储需要的页面总数
+            CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
+            CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
+
+            //返回“运行结果”、“错误信息”及“执行JS脚本”的字符串数组
+            NameValueCollection retval;
+
+            try
+            {
+                CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "正在创建站点...");//存储消息
+                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+
+                CacheUtils.Insert(cacheCurrentCountKey, "2");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
+                retval = AjaxManager.GetWaitingTaskNameValueCollection(
+                        $"站点 <strong>{publishmentSystemInfo.PublishmentSystemName}<strong> 创建成功!", string.Empty,
+                        $"top.location.href='{PageInitialization.GetRedirectUrl()}';");
+            }
+            catch (Exception ex)
+            {
+                retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
+                LogUtils.AddSystemErrorLog(ex);
+            }
+
+            CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
+            CacheUtils.Remove(cacheCurrentCountKey);//取消存储当前的页面总数
+            CacheUtils.Remove(cacheMessageKey);//取消存储消息
+            CacheUtils.ClearAll();
+
+            return retval;
+        }
     }
 }

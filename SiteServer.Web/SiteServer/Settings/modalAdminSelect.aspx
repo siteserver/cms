@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.ModalAdminSelect" Trace="false"%>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
 
@@ -11,7 +11,7 @@
     <body>
       <form class="form-inline" runat="server">
         <asp:Button id="btnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
-        <bairong:alerts runat="server"></bairong:alerts>
+        <ctrl:alerts runat="server" />
 
         <table class="table">
           <tr>

@@ -10,8 +10,6 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
-using SiteServer.CMS.ImportExport;
-using SiteServer.CMS.ImportExport.Components;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -20,15 +18,19 @@ namespace SiteServer.BackgroundPages.Settings
     {
         protected override bool IsSinglePage => true;
 
-        public PlaceHolder PhSiteTemplate;
+        public PlaceHolder PhSource;
+        public RadioButtonList RblSource;
         public HtmlInputHidden HihSiteTemplateDir;
-        public CheckBox CbIsSiteTemplate;
-        public PlaceHolder PhIsSiteTemplate;
+        public HtmlInputHidden HihOnlineTemplateName;
+
+        public PlaceHolder PhSiteTemplates;
         public Repeater RptSiteTemplates;
 
-        public PlaceHolder PhParameters;
-        public PlaceHolder PhSiteTemplateName;
-        public Literal LtlSiteTemplateName;
+        public PlaceHolder PhOnlineTemplates;
+        public Repeater RptOnlineTemplates;
+
+        public PlaceHolder PhSubmit;
+        public Literal LtlSource;
         public TextBox TbPublishmentSystemName;
         public RadioButtonList RblIsHeadquarters;
         public PlaceHolder PhIsNotHeadquarters;
@@ -48,22 +50,20 @@ namespace SiteServer.BackgroundPages.Settings
         public DropDownList DdlCheckContentLevel;
 
         public Button BtnPrevious;
-        public Button BtnSiteTemplateNext;
-        public Button BtnParameters;
-
-        private SortedList _sortedlist = new SortedList();
-        private AdministratorWithPermissions _permissions;
+        public Button BtnNext;
+        public Button BtnSubmit;
 
         public static string GetRedirectUrl()
         {
             return PageUtils.GetSettingsUrl(nameof(PageSiteAdd), null);
         }
 
-        public static string GetRedirectUrl(string siteTemplate)
+        public static string GetRedirectUrl(string siteTemplateDir, string onlineTemplateName)
         {
             return PageUtils.GetSettingsUrl(nameof(PageSiteAdd), new NameValueCollection
             {
-                {"siteTemplate", siteTemplate}
+                {"siteTemplateDir", siteTemplateDir},
+                {"onlineTemplateName", onlineTemplateName}
             });
         }
 
@@ -71,16 +71,11 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            _sortedlist = SiteTemplateManager.Instance.GetSiteTemplateSortedList();
-            _permissions = PermissionsManager.GetPermissions(Body.AdminName);
-
             if (IsPostBack) return;
 
             VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteAdd);
 
             BaiRongDataProvider.TableCollectionDao.CreateAllTableCollectionInfoIfNotExists();
-
-            HihSiteTemplateDir.Value = Body.GetQueryString("siteTemplate");
 
             var hqSiteId = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
             if (hqSiteId == 0)
@@ -138,37 +133,39 @@ namespace SiteServer.BackgroundPages.Settings
             RblIsCheckContentUseLevel.Items.Add(new ListItem("多级审核机制", true.ToString()));
             ControlUtils.SelectSingleItem(RblIsCheckContentUseLevel, false.ToString());
 
-            var directoryList = new List<DirectoryInfo>();
-            foreach (string directoryName in _sortedlist.Keys)
+            if (SiteTemplateManager.Instance.IsSiteTemplateExists)
             {
-                var directoryPath = PathUtility.GetSiteTemplatesPath(directoryName);
-                var dirInfo = new DirectoryInfo(directoryPath);
-                directoryList.Add(dirInfo);
-            }
-
-            RptSiteTemplates.DataSource = directoryList;
-            RptSiteTemplates.ItemDataBound += RptSiteTemplates_ItemDataBound;
-            RptSiteTemplates.DataBind();
-
-            PhSiteTemplate.Visible = PhParameters.Visible = BtnSiteTemplateNext.Visible = BtnParameters.Visible = false;
-
-            if (_sortedlist.Count > 0)
-            {
-                PhSiteTemplate.Visible = BtnSiteTemplateNext.Visible = true;
+                RblSource.Items.Add(new ListItem("创建空站点（不使用模板）", ETriStateUtils.GetValue(ETriState.True)));
+                RblSource.Items.Add(new ListItem("使用站点模板创建站点", ETriStateUtils.GetValue(ETriState.False)));
+                RblSource.Items.Add(new ListItem("使用在线模板创建站点", ETriStateUtils.GetValue(ETriState.All)));
             }
             else
             {
-                PhParameters.Visible = BtnParameters.Visible = true;
-                CbIsSiteTemplate.Checked = false;
-                PhSiteTemplateName.Visible = PhIsImportContents.Visible = PhIsImportTableStyles.Visible = PhIsUserSiteTemplateAuxiliaryTables.Visible = false;
-                PhAuxiliaryTable.Visible = true;
+                RblSource.Items.Add(new ListItem("创建空站点（不使用模板）", ETriStateUtils.GetValue(ETriState.True)));
+                RblSource.Items.Add(new ListItem("使用站点模板创建站点", ETriStateUtils.GetValue(ETriState.False)));
+            }
+            ControlUtils.SelectSingleItem(RblSource, ETriStateUtils.GetValue(ETriState.True));
+
+            var siteTemplateDir = Body.GetQueryString("siteTemplateDir");
+            var onlineTemplateName = Body.GetQueryString("onlineTemplateName");
+
+            if (!string.IsNullOrEmpty(siteTemplateDir))
+            {
+                HihSiteTemplateDir.Value = siteTemplateDir;
+                ControlUtils.SelectSingleItem(RblSource, ETriStateUtils.GetValue(ETriState.False));
+                BtnNext_Click(null, EventArgs.Empty);
+            }
+            else if (!string.IsNullOrEmpty(onlineTemplateName))
+            {
+                HihOnlineTemplateName.Value = onlineTemplateName;
+                ControlUtils.SelectSingleItem(RblSource, ETriStateUtils.GetValue(ETriState.All));
+                BtnNext_Click(null, EventArgs.Empty);
             }
         }
 
-        public void CbIsSiteTemplate_CheckedChanged(object sender, EventArgs e)
-        {
-            PhIsSiteTemplate.Visible = CbIsSiteTemplate.Checked;
-        }
+        private bool IsSiteTemplate => ETriStateUtils.GetEnumType(RblSource.SelectedValue) == ETriState.False;
+
+        private bool IsOnlineTemplate => ETriStateUtils.GetEnumType(RblSource.SelectedValue) == ETriState.All;
 
         public void RblIsHeadquarters_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -185,67 +182,128 @@ namespace SiteServer.BackgroundPages.Settings
             PhCheckContentLevel.Visible = EBooleanUtils.Equals(RblIsCheckContentUseLevel.SelectedValue, EBoolean.True);
         }
 
-        public void BtnPrevious_Click(object sender, EventArgs e)
+        public void BtnNext_Click(object sender, EventArgs e)
         {
-            PhSiteTemplate.Visible = BtnSiteTemplateNext.Visible = true;
-            PhParameters.Visible = BtnParameters.Visible = BtnPrevious.Enabled = false;
-        }
-
-        public void BtnSiteTemplateNext_Click(object sender, EventArgs e)
-        {
-            PhSiteTemplate.Visible = PhParameters.Visible = BtnSiteTemplateNext.Visible = BtnParameters.Visible = false;
-
-            if (CbIsSiteTemplate.Checked)
+            if (PhSource.Visible)
             {
+                HideAll();
+
+                if (IsSiteTemplate)
+                {
+                    var siteTemplates = SiteTemplateManager.Instance.GetSiteTemplateSortedList();
+
+                    RptSiteTemplates.DataSource = siteTemplates.Values;
+                    RptSiteTemplates.ItemDataBound += RptSiteTemplates_ItemDataBound;
+                    RptSiteTemplates.DataBind();
+
+                    ShowSiteTemplates();
+                }
+                else if (IsOnlineTemplate)
+                {
+                    List<Dictionary<string, string>> list;
+                    if (OnlineTemplateManager.TryGetOnlineTemplates(out list))
+                    {
+                        RptOnlineTemplates.DataSource = list;
+                        RptOnlineTemplates.ItemDataBound += RptOnlineTemplates_ItemDataBound;
+                        RptOnlineTemplates.DataBind();
+
+                        ShowOnlineTemplates();
+                    }
+                    else
+                    {
+                        FailMessage($"在线模板获取失败：页面地址{OnlineTemplateManager.UrlHome}无法访问！");
+
+                        ShowSource();
+                    }
+                }
+                else
+                {
+                    LtlSource.Text = "创建空站点（不使用模板）";
+
+                    ShowSubmit();
+                }
+            }
+            else if (PhSiteTemplates.Visible)
+            {
+                HideAll();
+
                 var siteTemplateDir = HihSiteTemplateDir.Value;
 
                 if (string.IsNullOrEmpty(siteTemplateDir))
                 {
                     FailMessage("请选择需要使用的站点模板");
-                    PhSiteTemplate.Visible = BtnSiteTemplateNext.Visible = true;
-                    BtnPrevious.Enabled = false;
+                    ShowSiteTemplates();
                     return;
                 }
 
-                PhSiteTemplateName.Visible = PhIsImportContents.Visible = PhIsImportTableStyles.Visible = PhIsUserSiteTemplateAuxiliaryTables.Visible = true;
-                PhAuxiliaryTable.Visible = true;
+                LtlSource.Text = $"使用站点模板创建站点（{siteTemplateDir}）";
 
-                
-                LtlSiteTemplateName.Text = $"{GetSiteTemplateName(siteTemplateDir)}（{siteTemplateDir}）";
-
-                var siteTemplatePath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
-                var filePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
-                var publishmentSystemInfo = ConfigurationIe.GetPublishmentSytemInfo(filePath);
-
-                TbPublishmentSystemName.Text = publishmentSystemInfo.PublishmentSystemName;
-                TbPublishmentSystemDir.Text = publishmentSystemInfo.PublishmentSystemDir;
-                var extend = new PublishmentSystemInfoExtend(publishmentSystemInfo.PublishmentSystemDir, publishmentSystemInfo.SettingsXml);
-                if (!string.IsNullOrEmpty(extend.Charset))
-                {
-                    DdlCharset.SelectedValue = extend.Charset;
-                }
+                ShowSubmit();
             }
-            else
+            else if (PhOnlineTemplates.Visible)
             {
-                PhSiteTemplateName.Visible = PhIsImportContents.Visible = PhIsImportTableStyles.Visible = PhIsUserSiteTemplateAuxiliaryTables.Visible = false;
-                PhAuxiliaryTable.Visible = true;
-            }
+                HideAll();
 
-            PhParameters.Visible = BtnParameters.Visible = BtnPrevious.Enabled = true;
+                var onlineTemplateName = HihOnlineTemplateName.Value;
+
+                if (string.IsNullOrEmpty(onlineTemplateName))
+                {
+                    FailMessage("请选择需要使用的在线模板");
+                    ShowOnlineTemplates();
+                    return;
+                }
+
+                LtlSource.Text = $@"使用在线模板创建站点（<a href=""{OnlineTemplateManager.GetTemplateUrl(onlineTemplateName)}"" target=""_blank"">{onlineTemplateName}</a>）";
+
+                ShowSubmit();
+            }
         }
 
-        public void BtnParameters_Click(object sender, EventArgs e)
+        public void BtnSubmit_Click(object sender, EventArgs e)
         {
+            HideAll();
+
             string errorMessage;
             var thePublishmentSystemId = Validate_PublishmentSystemInfo(out errorMessage);
             if (thePublishmentSystemId > 0)
             {
-                var url = PageProgressBar.GetCreatePublishmentSystemUrl(thePublishmentSystemId, CbIsSiteTemplate.Checked, CbIsImportContents.Checked, CbIsImportTableStyles.Checked, HihSiteTemplateDir.Value, TranslateUtils.ToBool(RblIsUserSiteTemplateAuxiliaryTables.SelectedValue), StringUtils.Guid(), string.Empty);
-                PageUtils.Redirect(url);
+                var siteTemplateDir = IsSiteTemplate ? HihSiteTemplateDir.Value : string.Empty;
+                var onlineTemplateName = IsOnlineTemplate ? HihOnlineTemplateName.Value : string.Empty;
+                PageUtils.Redirect(PageProgressBar.GetCreatePublishmentSystemUrl(thePublishmentSystemId,
+                    CbIsImportContents.Checked, CbIsImportTableStyles.Checked, siteTemplateDir, onlineTemplateName,
+                    TranslateUtils.ToBool(RblIsUserSiteTemplateAuxiliaryTables.SelectedValue), StringUtils.Guid()));
             }
             else
             {
                 FailMessage(errorMessage);
+
+                ShowSubmit();
+            }
+        }
+
+        public void BtnPrevious_Click(object sender, EventArgs e)
+        {
+            if (PhSiteTemplates.Visible || PhOnlineTemplates.Visible)
+            {
+                HideAll();
+                ShowSource();
+            }
+            else if (PhSubmit.Visible)
+            {
+                HideAll();
+
+                if (IsSiteTemplate)
+                {
+                    ShowSiteTemplates();
+                }
+                else if (IsOnlineTemplate)
+                {
+                    ShowOnlineTemplates();
+                }
+                else
+                {
+                    ShowSource();
+                }
             }
         }
 
@@ -253,10 +311,11 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (e.Item.ItemType != ListItemType.AlternatingItem && e.Item.ItemType != ListItemType.Item) return;
 
-            var directoryInfo = (DirectoryInfo)e.Item.DataItem;
-            var siteTemplateInfo = _sortedlist[directoryInfo.Name] as SiteTemplateInfo;
+            var templateInfo = (SiteTemplateInfo)e.Item.DataItem;
+            if (templateInfo == null) return;
 
-            if (siteTemplateInfo == null) return;
+            var directoryPath = PathUtility.GetSiteTemplatesPath(templateInfo.DirectoryName);
+            var directoryInfo = new DirectoryInfo(directoryPath);
 
             var ltlChoose = (Literal)e.Item.FindControl("ltlChoose");
             var ltlTemplateName = (Literal)e.Item.FindControl("ltlTemplateName");
@@ -266,24 +325,59 @@ namespace SiteServer.BackgroundPages.Settings
 
             ltlChoose.Text = $@"<input type=""radio"" name=""choose"" id=""choose_{directoryInfo.Name}"" onClick=""document.getElementById('{HihSiteTemplateDir.ClientID}').value=this.value;"" {(HihSiteTemplateDir.Value == directoryInfo.Name ? "checked" : string.Empty)} value=""{directoryInfo.Name}"" /><label for=""choose_{directoryInfo.Name}"">选中</label>";
 
-            if (!string.IsNullOrEmpty(siteTemplateInfo.SiteTemplateName))
+            if (!string.IsNullOrEmpty(templateInfo.SiteTemplateName))
             {
-                ltlTemplateName.Text = !string.IsNullOrEmpty(siteTemplateInfo.WebSiteUrl) ? $"<a href=\"{PageUtils.ParseConfigRootUrl(siteTemplateInfo.WebSiteUrl)}\" target=_blank>{siteTemplateInfo.SiteTemplateName}</a>" : siteTemplateInfo.SiteTemplateName;
+                ltlTemplateName.Text = !string.IsNullOrEmpty(templateInfo.WebSiteUrl) ? $@"<a href=""{PageUtils.ParseConfigRootUrl(templateInfo.WebSiteUrl)}"" target=""_blank"">{templateInfo.SiteTemplateName}</a>" : templateInfo.SiteTemplateName;
             }
 
             ltlName.Text = directoryInfo.Name;
 
-            if (!string.IsNullOrEmpty(siteTemplateInfo.Description))
+            if (!string.IsNullOrEmpty(templateInfo.Description))
             {
-                ltlDescription.Text = siteTemplateInfo.Description;
+                ltlDescription.Text = templateInfo.Description;
             }
 
-            if (!string.IsNullOrEmpty(siteTemplateInfo.PicFileName))
+            if (!string.IsNullOrEmpty(templateInfo.PicFileName))
             {
                 var siteTemplateUrl = PageUtils.GetSiteTemplatesUrl(directoryInfo.Name);
-                var picFileName = PageUtils.GetSiteTemplateMetadataUrl(siteTemplateUrl, siteTemplateInfo.PicFileName);
+                var picFileName = PageUtils.GetSiteTemplateMetadataUrl(siteTemplateUrl, templateInfo.PicFileName);
                 ltlSamplePic.Text = $@"<a href=""{picFileName}"" target=""_blank"">样图</a>";
             }
+        }
+
+        private void RptOnlineTemplates_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            if (e.Item.ItemType != ListItemType.AlternatingItem && e.Item.ItemType != ListItemType.Item) return;
+
+            var dict = (Dictionary<string, string>)e.Item.DataItem;
+            var title = dict["title"];
+            var description = dict["description"];
+            var author = dict["author"];
+            var source = dict["source"];
+            var lastEditDate = dict["lastEditDate"];
+
+            var ltlChoose = (Literal)e.Item.FindControl("ltlChoose");
+            var ltlTitle = (Literal)e.Item.FindControl("ltlTitle");
+            var ltlDescription = (Literal)e.Item.FindControl("ltlDescription");
+            var ltlAuthor = (Literal)e.Item.FindControl("ltlAuthor");
+            var ltlLastEditDate = (Literal)e.Item.FindControl("ltlLastEditDate");
+            var ltlPreviewUrl = (Literal)e.Item.FindControl("ltlPreviewUrl");
+
+            ltlChoose.Text = $@"<input type=""radio"" name=""choose"" id=""choose_{title}"" onClick=""document.getElementById('{HihOnlineTemplateName.ClientID}').value=this.value;"" {(HihOnlineTemplateName.Value == title ? "checked" : string.Empty)} value=""{title}"" /><label for=""choose_{title}"" class=""m-l-10"">选中</label>";
+
+            var templateUrl = OnlineTemplateManager.GetTemplateUrl(title);
+
+            ltlTitle.Text = $@"<a href=""{templateUrl}"" target=""_blank"">{title}</a>";
+
+            ltlDescription.Text = description;
+            ltlAuthor.Text = author;
+            if (!string.IsNullOrEmpty(source) && PageUtils.IsProtocolUrl(source))
+            {
+                ltlAuthor.Text = $@"<a href=""{source}"" target=""_blank"">{ltlAuthor.Text}</a>";
+            }
+            ltlLastEditDate.Text = lastEditDate;
+
+            ltlPreviewUrl.Text = $@"<a href=""{templateUrl}"" target=""_blank"">模板详情</a>";
         }
 
         private int Validate_PublishmentSystemInfo(out string errorMessage)
@@ -343,14 +437,15 @@ namespace SiteServer.BackgroundPages.Settings
 
                 var thePublishmentSystemId = DataProvider.NodeDao.InsertPublishmentSystemInfo(nodeInfo, psInfo, Body.AdminName);
 
-                if (_permissions.IsSystemAdministrator && !_permissions.IsConsoleAdministrator)
+                var permissions = PermissionsManager.GetPermissions(Body.AdminName);
+                if (permissions.IsSystemAdministrator && !permissions.IsConsoleAdministrator)
                 {
                     var publishmentSystemIdList = ProductPermissionsManager.Current.PublishmentSystemIdList ?? new List<int>();
                     publishmentSystemIdList.Add(thePublishmentSystemId);
                     BaiRongDataProvider.AdministratorDao.UpdatePublishmentSystemIdCollection(Body.AdminName, TranslateUtils.ObjectCollectionToString(publishmentSystemIdList));
                 }
 
-                Body.AddAdminLog("新建站点", $"站点名称:{PageUtils.FilterXss(TbPublishmentSystemName.Text)}");
+                Body.AddAdminLog("创建新站点", $"站点名称：{PageUtils.FilterXss(TbPublishmentSystemName.Text)}");
 
                 errorMessage = string.Empty;
                 return thePublishmentSystemId;
@@ -360,14 +455,6 @@ namespace SiteServer.BackgroundPages.Settings
                 errorMessage = e.Message;
                 return 0;
             }
-        }
-
-        private string GetSiteTemplateName(string siteTemplateDir)
-        {
-            var siteTemplateInfo = _sortedlist[siteTemplateDir] as SiteTemplateInfo;
-            if (string.IsNullOrEmpty(siteTemplateInfo?.SiteTemplateName)) return string.Empty;
-
-            return !string.IsNullOrEmpty(siteTemplateInfo.WebSiteUrl) ? $"<a href=\"{PageUtils.ParseNavigationUrl(siteTemplateInfo.WebSiteUrl)}\" target=_blank>{siteTemplateInfo.SiteTemplateName}</a>" : siteTemplateInfo.SiteTemplateName;
         }
 
         private static void AddSite(ListControl listControl, PublishmentSystemInfo publishmentSystemInfo, Hashtable parentWithChildren, int level)
@@ -396,6 +483,57 @@ namespace SiteServer.BackgroundPages.Settings
             else
             {
                 listControl.Items.Add(new ListItem(padding + publishmentSystemInfo.PublishmentSystemName, publishmentSystemInfo.PublishmentSystemId.ToString()));
+            }
+        }
+
+        private void HideAll()
+        {
+            PhSource.Visible =
+                PhSiteTemplates.Visible =
+                    PhOnlineTemplates.Visible =
+                        PhSubmit.Visible = PhIsImportContents.Visible =
+                            PhIsImportTableStyles.Visible =
+                                PhIsUserSiteTemplateAuxiliaryTables.Visible =
+                                    PhAuxiliaryTable.Visible =
+                                        BtnPrevious.Enabled = BtnNext.Visible = BtnSubmit.Visible = false;
+        }
+
+        private void ShowSource()
+        {
+            PhSource.Visible = BtnNext.Visible = true;
+        }
+
+        private void ShowSiteTemplates()
+        {
+            PhSiteTemplates.Visible = BtnPrevious.Enabled = BtnNext.Visible = true;
+        }
+
+        private void ShowOnlineTemplates()
+        {
+            PhOnlineTemplates.Visible = BtnPrevious.Enabled = BtnNext.Visible = true;
+        }
+
+        private void ShowSubmit()
+        {
+            if (IsSiteTemplate)
+            {
+                PhSubmit.Visible =
+                    PhIsImportContents.Visible =
+                        PhIsImportTableStyles.Visible =
+                            PhIsUserSiteTemplateAuxiliaryTables.Visible =
+                                PhAuxiliaryTable.Visible = BtnPrevious.Enabled = BtnSubmit.Visible = true;
+            }
+            else if (IsOnlineTemplate)
+            {
+                PhSubmit.Visible =
+                    PhIsImportContents.Visible =
+                        PhIsImportTableStyles.Visible =
+                            PhIsUserSiteTemplateAuxiliaryTables.Visible =
+                                PhAuxiliaryTable.Visible = BtnPrevious.Enabled = BtnSubmit.Visible = true;
+            }
+            else
+            {
+                PhSubmit.Visible = PhAuxiliaryTable.Visible = BtnPrevious.Enabled = BtnSubmit.Visible = true;
             }
         }
     }
