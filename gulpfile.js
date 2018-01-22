@@ -44,10 +44,10 @@ gulp.task('build', function () {
 });
 
 gulp.task('zip', function () {
-  gulp.src(['./build/**/*', '!./build/安装向导.html']).pipe(zip('siteserver_upgrade.zip')).pipe(gulp.dest('./'));
+  gulp.src(['./build/**/*', '!./build/SiteServer.Update.nuspec']).pipe(zip('siteserver_install.zip')).pipe(gulp.dest('./'));
 });
 
 // 编译 Release
-// rm -rf build siteserver_install.zip siteserver_upgrade.zip
+// rm -rf build siteserver_install.zip
 // gulp build
 // gulp zip
