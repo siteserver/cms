@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Diagnostics;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
+using SiteServer.Utils.Diagnostics;
+using SiteServer.Utils.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {

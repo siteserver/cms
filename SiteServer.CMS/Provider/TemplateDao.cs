@@ -2,14 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -501,7 +501,7 @@ namespace SiteServer.CMS.Provider
                 sqlString = isDefault ? $"SELECT count(*) FROM siteserver_Node WHERE (ContentTemplateID = {templateId} OR ContentTemplateID = 0) AND PublishmentSystemID = {publishmentSystemId}" : $"SELECT count(*) FROM siteserver_Node WHERE ContentTemplateID = {templateId}";
             }
 
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         public List<int> GetNodeIdList(TemplateInfo templateInfo)
@@ -520,7 +520,7 @@ namespace SiteServer.CMS.Provider
 
             if (!string.IsNullOrEmpty(sqlString))
             {
-                list = BaiRongDataProvider.DatabaseDao.GetIntList(sqlString);
+                list = DataProvider.DatabaseDao.GetIntList(sqlString);
             }
 
             return list;

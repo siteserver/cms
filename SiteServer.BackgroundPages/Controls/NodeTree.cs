@@ -1,13 +1,11 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Web.UI;
-using BaiRong.Core;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.BackgroundPages.Controls
 {

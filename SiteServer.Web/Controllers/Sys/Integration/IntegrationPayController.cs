@@ -1,5 +1,5 @@
 ﻿using System.Web.Http;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Integration;
 
 namespace SiteServer.API.Controllers.Sys.Integration

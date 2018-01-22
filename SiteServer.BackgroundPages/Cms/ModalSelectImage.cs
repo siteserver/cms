@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.IO.FileManagement;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.IO.FileManagement;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 

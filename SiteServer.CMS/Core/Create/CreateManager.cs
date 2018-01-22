@@ -1,5 +1,5 @@
-﻿using BaiRong.Core;
-using BaiRong.Core.Model;
+﻿using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 

@@ -1,6 +1,6 @@
-using BaiRong.Core;
+using SiteServer.Utils;
 using System.Collections.Generic;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils.Model.Enumerations;
 
 namespace SiteServer.CMS.Core.Security
 {
@@ -213,7 +213,7 @@ namespace SiteServer.CMS.Core.Security
                     }
                     else if (EPredefinedRoleUtils.IsSystemAdministrator(Roles))
                     {
-                        var thePublishmentSystemIdList = BaiRongDataProvider.AdministratorDao.GetPublishmentSystemIdList(UserName);
+                        var thePublishmentSystemIdList = DataProvider.AdministratorDao.GetPublishmentSystemIdList(UserName);
                         _publishmentSystemIdList = new List<int>();
                         foreach (var publishmentSystemId in PublishmentSystemManager.GetPublishmentSystemIdList())
                         {

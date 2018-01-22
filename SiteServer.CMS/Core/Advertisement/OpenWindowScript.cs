@@ -1,5 +1,5 @@
 using SiteServer.CMS.Model;
-using BaiRong.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core.Advertisement
 {

@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI;
-using BaiRong.Core;
-using BaiRong.Core.Net;
-using SiteServer.BackgroundPages.Cms;
+using SiteServer.Utils;
+using SiteServer.Utils.Net;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.BackgroundPages.Ajax
 {

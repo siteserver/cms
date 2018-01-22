@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -27,8 +28,8 @@ namespace SiteServer.BackgroundPages.Settings
 			
 				try
 				{
-                    BaiRongDataProvider.TableCollectionDao.DeleteCollectionTableInfoAndDbTable(enName);//删除辅助表
-                    BaiRongDataProvider.TableCollectionDao.DeleteCollectionTableInfoAndDbTable(enNameArchive);//删除辅助表归档
+                    DataProvider.TableCollectionDao.DeleteCollectionTableInfoAndDbTable(enName);//删除辅助表
+                    DataProvider.TableCollectionDao.DeleteCollectionTableInfoAndDbTable(enNameArchive);//删除辅助表归档
 
                     Body.AddAdminLog("删除辅助表", $"辅助表:{enName}");
 
@@ -44,7 +45,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
 
-            RptContents.DataSource = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfoList();
+            RptContents.DataSource = DataProvider.TableCollectionDao.GetTableCollectionInfoList();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 

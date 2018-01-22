@@ -1,9 +1,9 @@
 ﻿using System;
-using BaiRong.Core;
+using SiteServer.Utils;
 using Word.Plugin;
 using System.Collections.Specialized;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
+using SiteServer.CMS.Model;
+using SiteServer.Utils.Model;
 
 namespace SiteServer.CMS.Core.Office
 {

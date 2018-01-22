@@ -1,7 +1,6 @@
 using System;
 using System.Xml.Serialization;
-using BaiRong.Core.Model;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Model
 {

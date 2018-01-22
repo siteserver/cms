@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Globalization;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Model.Enumerations;
 
 namespace SiteServer.CMS.Model
 {
@@ -291,12 +291,6 @@ namespace SiteServer.CMS.Model
         {
             get { return GetDateTime("CreateStaticContentAddDate", DateTime.MinValue); }
             set { Set("CreateStaticContentAddDate", DateUtils.GetDateString(value)); }
-        }
-
-        public bool IsCreateMultiThread
-        {
-            get { return GetBool("IsCreateMultiThread"); }
-            set { Set("IsCreateMultiThread", value.ToString()); }
         }
 
         /****************流量统计设置********************/

@@ -1,4 +1,4 @@
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.Core

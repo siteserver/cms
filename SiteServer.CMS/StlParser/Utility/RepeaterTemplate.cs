@@ -1,10 +1,10 @@
 using System;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.StlParser.Utility
 {

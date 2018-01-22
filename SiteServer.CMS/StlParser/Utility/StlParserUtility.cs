@@ -4,11 +4,11 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.ThirdParty.Sgml;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.ThirdParty.Sgml;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.Utility

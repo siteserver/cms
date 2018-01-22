@@ -9,7 +9,7 @@
     </head>
 
     <body>
-      <div id="main" class="m-l-15 m-r-15">
+      <form id="main" class="m-l-15 m-r-15" runat="server">
 
         <div class="text-center" style="margin-top: 100px" v-bind:style="{ display: recentlyPlugins ? 'none' : '' }">
           <img class="mt-3" src="../assets/layer/skin/default/xubox_loading0.gif" />
@@ -19,13 +19,20 @@
         <div v-bind:style="{ display: recentlyPlugins ? '' : 'none' }" style="display: none">
           <div class="card-box">
 
-            <div class="form-inline">
-              <div class="form-group">
-                <label class="col-form-label m-r-10">关键字</label>
-                <input v-model="word" type="text" placeholder="请输入关键字..." class="form-control" style="width: 400px">
-              </div>
+            <div class="row">
+              <div class="col-8">
+                <div class="form-inline">
+                  <div class="form-group">
+                    <label class="col-form-label m-r-10">关键字</label>
+                    <input v-model="word" type="text" placeholder="请输入关键字..." class="form-control" style="width: 400px">
+                  </div>
 
-              <input type="button" value="搜索插件" v-on:click="search" class="btn btn-success m-l-10 btn-md">
+                  <input type="button" value="搜索插件" v-on:click="search" class="btn btn-success m-l-10 btn-md">
+                </div>
+              </div>
+              <div class="col-4">
+                <asp:Button id="BtnUpload" class="btn btn-primary float-right btn-md" Text="手动安装插件" runat="server" />
+              </div>
             </div>
 
           </div>
@@ -184,7 +191,7 @@
           </div>
         </div>
 
-      </div>
+      </form>
     </body>
 
     </html>

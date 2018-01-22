@@ -1,18 +1,18 @@
 ﻿using System;
-using BaiRong.Core;
+using SiteServer.Utils;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 using SiteServer.Plugin.Apis;
-using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
     public class ConfigApi : IConfigApi
     {
-        private readonly PluginMetadata _metadata;
+        private readonly IMetadata _metadata;
 
-        public ConfigApi(PluginMetadata metadata)
+        public ConfigApi(IMetadata metadata)
         {
             _metadata = metadata;
         }

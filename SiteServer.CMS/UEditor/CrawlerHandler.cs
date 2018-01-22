@@ -4,8 +4,8 @@ using System.Linq;
 using System.Net;
 using System.Web;
 
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 

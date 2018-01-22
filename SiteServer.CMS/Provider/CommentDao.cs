@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -181,7 +181,7 @@ namespace SiteServer.CMS.Provider
 
         public void AddGoodCount(int commentId)
         {
-            string sqlString = $"UPDATE siteserver_Comment SET {SqlUtils.ToPlusSqlString("GoodCount", 1)} WHERE ID = {commentId}";
+            string sqlString = $"UPDATE siteserver_Comment SET {SqlUtils.ToPlusSqlString("GoodCount")} WHERE ID = {commentId}";
             ExecuteNonQuery(sqlString);
         }
 
@@ -249,14 +249,14 @@ namespace SiteServer.CMS.Provider
         {
             string sqlString =
                 $"SELECT COUNT(*) FROM siteserver_Comment WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeId} AND ContentID = {contentId} AND IsChecked = '{true}'";
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         public int GetCountChecked(int publishmentSystemId, DateTime begin, DateTime end)
         {
             string sqlString =
                 $"SELECT COUNT(*) FROM siteserver_Comment WHERE PublishmentSystemID = {publishmentSystemId} AND (AddDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end)}) AND IsChecked = '{true}'";
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         public string GetSortFieldName()
@@ -277,7 +277,7 @@ namespace SiteServer.CMS.Provider
             }
             string sqlWhereString =
                 $"WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeId} AND ContentID = {contentId} AND IsChecked = '{true}' {whereString}";
-            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+            return DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
         }
 
         public string GetSelectedCommendByCheck(int publishmentSystemId)
@@ -285,14 +285,14 @@ namespace SiteServer.CMS.Provider
             string whereString =
                         $"WHERE PublishmentSystemID = {publishmentSystemId} AND IsChecked='{false}'";
 
-            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return DataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public int GetTotalCountWithChecked(int publishmentSystemId, int nodeId, int contentId)
         {
             string sqlString =
                 $"SELECT COUNT(*) FROM siteserver_Comment WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeId} AND ContentID = {contentId} AND IsChecked = '{true}'";
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         public List<int> GetContentIdListByCount(int publishmentSystemId)

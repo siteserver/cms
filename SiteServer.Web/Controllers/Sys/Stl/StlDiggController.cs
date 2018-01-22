@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Web;
 using System.Web.Http;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Controllers.Sys.Stl;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.API.Controllers.Sys.Stl
 {
@@ -27,10 +28,10 @@ namespace SiteServer.API.Controllers.Sys.Stl
 
             if (isDigg)
             {
-                BaiRongDataProvider.DiggDao.AddCount(publishmentSystemId, relatedIdentity, isGood);
+                DataProvider.DiggDao.AddCount(publishmentSystemId, relatedIdentity, isGood);
             }
 
-            var counts = BaiRongDataProvider.DiggDao.GetCount(publishmentSystemId, relatedIdentity);
+            var counts = DataProvider.DiggDao.GetCount(publishmentSystemId, relatedIdentity);
             var goodNum = counts[0];
             var badNum = counts[1];
 

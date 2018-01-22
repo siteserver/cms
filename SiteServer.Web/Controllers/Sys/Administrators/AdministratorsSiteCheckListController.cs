@@ -4,6 +4,7 @@ using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Controllers.Sys.Administrators;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.API.Controllers.Sys.Administrators
 {

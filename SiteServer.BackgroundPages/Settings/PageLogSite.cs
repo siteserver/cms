@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
@@ -33,8 +32,8 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
             SpContents.SelectCommand = !Body.IsQueryExists("LogType")
-                ? DataProvider.LogDao.GetSelectCommend()
-                : DataProvider.LogDao.GetSelectCommend(PublishmentSystemId, Body.GetQueryString("LogType"),
+                ? DataProvider.PublishmentSystemLogDao.GetSelectCommend()
+                : DataProvider.PublishmentSystemLogDao.GetSelectCommend(PublishmentSystemId, Body.GetQueryString("LogType"),
                     Body.GetQueryString("UserName"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"),
                     Body.GetQueryString("DateTo"));
 
@@ -47,7 +46,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var arraylist = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("IDCollection"));
                 try
                 {
-                    DataProvider.LogDao.Delete(arraylist);
+                    DataProvider.PublishmentSystemLogDao.Delete(arraylist);
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -59,7 +58,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    DataProvider.LogDao.DeleteAll();
+                    DataProvider.PublishmentSystemLogDao.DeleteAll();
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)

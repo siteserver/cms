@@ -1,5 +1,5 @@
 ﻿using System;
-using BaiRong.Core.Data;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Model
 {

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.IO;
+using SiteServer.Utils;
+using SiteServer.Utils.IO;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
@@ -218,7 +218,7 @@ namespace SiteServer.CMS.Core
                 foreach (var plugin in plugins)
                 {
                     imageHtml +=
-                        $@"<img align=""absmiddle"" title=""插件：{plugin.DisplayName}"" border=""0"" src=""{PageUtils.GetPluginDirectoryUrl(plugin.Id, plugin.Icon)}"" width=""18"" height=""18"" />";
+                        $@"<img align=""absmiddle"" title=""插件：{plugin.Title}"" border=""0"" src=""{PluginManager.GetPluginIconUrl(plugin)}"" width=""18"" height=""18"" />";
                 }
             }
             return imageHtml;

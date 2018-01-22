@@ -1,6 +1,6 @@
 using System.Web;
 
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.Model

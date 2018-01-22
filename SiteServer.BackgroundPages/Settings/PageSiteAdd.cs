@@ -5,8 +5,8 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
@@ -75,7 +75,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteAdd);
 
-            BaiRongDataProvider.TableCollectionDao.CreateAllTableCollectionInfoIfNotExists();
+            DataProvider.TableCollectionDao.CreateAllTableCollectionInfoIfNotExists();
 
             var hqSiteId = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
             if (hqSiteId == 0)
@@ -122,7 +122,7 @@ namespace SiteServer.BackgroundPages.Settings
             ECharsetUtils.AddListItems(DdlCharset);
             ControlUtils.SelectSingleItem(DdlCharset, ECharsetUtils.GetValue(ECharset.utf_8));
 
-            var tableList = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfoListCreatedInDb();
+            var tableList = DataProvider.TableCollectionDao.GetTableCollectionInfoListCreatedInDb();
             foreach (var tableInfo in tableList)
             {
                 var li = new ListItem($"{tableInfo.TableCnName}({tableInfo.TableEnName})", tableInfo.TableEnName);
@@ -442,7 +442,7 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     var publishmentSystemIdList = ProductPermissionsManager.Current.PublishmentSystemIdList ?? new List<int>();
                     publishmentSystemIdList.Add(thePublishmentSystemId);
-                    BaiRongDataProvider.AdministratorDao.UpdatePublishmentSystemIdCollection(Body.AdminName, TranslateUtils.ObjectCollectionToString(publishmentSystemIdList));
+                    DataProvider.AdministratorDao.UpdatePublishmentSystemIdCollection(Body.AdminName, TranslateUtils.ObjectCollectionToString(publishmentSystemIdList));
                 }
 
                 Body.AddAdminLog("创建新站点", $"站点名称：{PageUtils.FilterXss(TbPublishmentSystemName.Text)}");

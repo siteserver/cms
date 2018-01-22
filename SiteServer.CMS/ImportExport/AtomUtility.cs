@@ -3,8 +3,8 @@ using System.Collections.Specialized;
 using Atom.AdditionalElements;
 using Atom.AdditionalElements.DublinCore;
 using Atom.Core;
-using BaiRong.Core;
-using BaiRong.Core.Auth;
+using SiteServer.Utils;
+using SiteServer.Utils.Auth;
 
 namespace SiteServer.CMS.ImportExport
 {

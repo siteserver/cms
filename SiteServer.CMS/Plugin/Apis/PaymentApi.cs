@@ -2,16 +2,18 @@
 using Aop.Api;
 using Aop.Api.Domain;
 using Aop.Api.Request;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.Plugin.Apis;
 using WxPayAPI;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Web;
-using BaiRong.Core.ThirdParty.Jdpay;
+using SiteServer.Utils.ThirdParty.Jdpay;
 using SiteServer.CMS.Controllers.Sys.Integration;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
@@ -19,7 +21,8 @@ namespace SiteServer.CMS.Plugin.Apis
     {
         private PaymentApi() { }
 
-        public static PaymentApi Instance { get; } = new PaymentApi();
+        private static PaymentApi _instance;
+        public static PaymentApi Instance => _instance ?? (_instance = new PaymentApi());
 
         private static IntegrationPayConfig GetConfig()
         {
@@ -44,43 +47,43 @@ namespace SiteServer.CMS.Plugin.Apis
             if (config.AlipayPcIsMApi)
             {
                 // 合作身份者ID，签约账号，以2088开头由16位纯数字组成的字符串，查看地址：https://b.alipay.com/order/pidAndKey.htm
-                BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.partner = config.AlipayPcPid;
+                Utils.ThirdParty.Alipay.MApi.Pc.Config.partner = config.AlipayPcPid;
 
                 // 收款支付宝账号，以2088开头由16位纯数字组成的字符串，一般情况下收款账号就是签约账号
-                BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.seller_id = BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.partner;
+                Utils.ThirdParty.Alipay.MApi.Pc.Config.seller_id = Utils.ThirdParty.Alipay.MApi.Pc.Config.partner;
 
                 // MD5密钥，安全检验码，由数字和字母组成的32位字符串，查看地址：https://b.alipay.com/order/pidAndKey.htm
-                BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.key = config.AlipayPcMd5;
+                Utils.ThirdParty.Alipay.MApi.Pc.Config.key = config.AlipayPcMd5;
 
                 // 服务器异步通知页面路径，需http://格式的完整路径，不能加?id=123这类自定义参数,必须外网可以正常访问
-                BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.notify_url = string.Empty;
+                Utils.ThirdParty.Alipay.MApi.Pc.Config.notify_url = string.Empty;
 
                 // 页面跳转同步通知页面路径，需http://格式的完整路径，不能加?id=123这类自定义参数，必须外网可以正常访问
-                BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.return_url = returnUrl;
+                Utils.ThirdParty.Alipay.MApi.Pc.Config.return_url = returnUrl;
 
                 // 字符编码格式 目前支持 gbk 或 utf-8
-                BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.input_charset = "utf-8";
+                Utils.ThirdParty.Alipay.MApi.Pc.Config.input_charset = "utf-8";
 
                 // 支付类型 ，无需修改
-                BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.payment_type = "1";
+                Utils.ThirdParty.Alipay.MApi.Pc.Config.payment_type = "1";
 
                 // 调用的接口名，无需修改
-                BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.service = "create_direct_pay_by_user";
+                Utils.ThirdParty.Alipay.MApi.Pc.Config.service = "create_direct_pay_by_user";
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////
 
                 //把请求参数打包成数组
                 var sParaTemp = new SortedDictionary<string, string>
                 {
-                    {"service", BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.service},
-                    {"partner", BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.partner},
-                    {"seller_id", BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.seller_id},
-                    {"_input_charset", BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.input_charset.ToLower()},
-                    {"payment_type", BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.payment_type},
-                    {"notify_url", BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.notify_url},
-                    {"return_url", BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.return_url},
-                    {"anti_phishing_key", BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.anti_phishing_key},
-                    {"exter_invoke_ip", BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.exter_invoke_ip},
+                    {"service", Utils.ThirdParty.Alipay.MApi.Pc.Config.service},
+                    {"partner", Utils.ThirdParty.Alipay.MApi.Pc.Config.partner},
+                    {"seller_id", Utils.ThirdParty.Alipay.MApi.Pc.Config.seller_id},
+                    {"_input_charset", Utils.ThirdParty.Alipay.MApi.Pc.Config.input_charset.ToLower()},
+                    {"payment_type", Utils.ThirdParty.Alipay.MApi.Pc.Config.payment_type},
+                    {"notify_url", Utils.ThirdParty.Alipay.MApi.Pc.Config.notify_url},
+                    {"return_url", Utils.ThirdParty.Alipay.MApi.Pc.Config.return_url},
+                    {"anti_phishing_key", Utils.ThirdParty.Alipay.MApi.Pc.Config.anti_phishing_key},
+                    {"exter_invoke_ip", Utils.ThirdParty.Alipay.MApi.Pc.Config.exter_invoke_ip},
                     {"out_trade_no", orderNo},
                     {"subject", productName},
                     {"total_fee", amount.ToString("N2")},
@@ -91,7 +94,7 @@ namespace SiteServer.CMS.Plugin.Apis
                 //如sParaTemp.Add("参数名","参数值");
 
                 //建立请求
-                return BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Submit.BuildRequest(sParaTemp, "get", "确认");
+                return Utils.ThirdParty.Alipay.MApi.Pc.Submit.BuildRequest(sParaTemp, "get", "确认");
             }
 
             var client = new DefaultAopClient("https://openapi.alipay.com/gateway.do", config.AlipayMobiAppId, config.AlipayMobiPrivateKey, "JSON",
@@ -139,30 +142,30 @@ namespace SiteServer.CMS.Plugin.Apis
             if (config.AlipayMobiIsMApi)
             {
                 // 合作身份者ID，签约账号，以2088开头由16位纯数字组成的字符串，查看地址：https://b.alipay.com/order/pidAndKey.htm
-                BaiRong.Core.ThirdParty.Alipay.MApi.Mobi.Config.partner = config.AlipayMobiPid;
+                Utils.ThirdParty.Alipay.MApi.Mobi.Config.partner = config.AlipayMobiPid;
 
                 // 收款支付宝账号，以2088开头由16位纯数字组成的字符串，一般情况下收款账号就是签约账号
-                BaiRong.Core.ThirdParty.Alipay.MApi.Mobi.Config.seller_id = BaiRong.Core.ThirdParty.Alipay.MApi.Mobi.Config.partner;
+                Utils.ThirdParty.Alipay.MApi.Mobi.Config.seller_id = Utils.ThirdParty.Alipay.MApi.Mobi.Config.partner;
 
                 // MD5密钥，安全检验码，由数字和字母组成的32位字符串，查看地址：https://b.alipay.com/order/pidAndKey.htm
-                BaiRong.Core.ThirdParty.Alipay.MApi.Mobi.Config.key = config.AlipayMobiMd5;
+                Utils.ThirdParty.Alipay.MApi.Mobi.Config.key = config.AlipayMobiMd5;
 
                 // 服务器异步通知页面路径，需http://格式的完整路径，不能加?id=123这类自定义参数,必须外网可以正常访问
-                BaiRong.Core.ThirdParty.Alipay.MApi.Mobi.Config.notify_url = string.Empty;
+                Utils.ThirdParty.Alipay.MApi.Mobi.Config.notify_url = string.Empty;
 
                 // 页面跳转同步通知页面路径，需http://格式的完整路径，不能加?id=123这类自定义参数，必须外网可以正常访问
-                BaiRong.Core.ThirdParty.Alipay.MApi.Mobi.Config.return_url = returnUrl;
+                Utils.ThirdParty.Alipay.MApi.Mobi.Config.return_url = returnUrl;
 
                 //把请求参数打包成数组
                 var sParaTemp = new SortedDictionary<string, string>
                 {
-                    {"partner", BaiRong.Core.ThirdParty.Alipay.MApi.Mobi.Config.partner},
-                    {"seller_id", BaiRong.Core.ThirdParty.Alipay.MApi.Mobi.Config.seller_id},
-                    {"_input_charset", BaiRong.Core.ThirdParty.Alipay.MApi.Mobi.Config.input_charset.ToLower()},
-                    {"service", BaiRong.Core.ThirdParty.Alipay.MApi.Mobi.Config.service},
-                    {"payment_type", BaiRong.Core.ThirdParty.Alipay.MApi.Mobi.Config.payment_type},
-                    {"notify_url", BaiRong.Core.ThirdParty.Alipay.MApi.Mobi.Config.notify_url},
-                    {"return_url", BaiRong.Core.ThirdParty.Alipay.MApi.Mobi.Config.return_url},
+                    {"partner", Utils.ThirdParty.Alipay.MApi.Mobi.Config.partner},
+                    {"seller_id", Utils.ThirdParty.Alipay.MApi.Mobi.Config.seller_id},
+                    {"_input_charset", Utils.ThirdParty.Alipay.MApi.Mobi.Config.input_charset.ToLower()},
+                    {"service", Utils.ThirdParty.Alipay.MApi.Mobi.Config.service},
+                    {"payment_type", Utils.ThirdParty.Alipay.MApi.Mobi.Config.payment_type},
+                    {"notify_url", Utils.ThirdParty.Alipay.MApi.Mobi.Config.notify_url},
+                    {"return_url", Utils.ThirdParty.Alipay.MApi.Mobi.Config.return_url},
                     {"out_trade_no", orderNo},
                     {"subject", productName},
                     {"total_fee", amount.ToString("N2")},
@@ -176,7 +179,7 @@ namespace SiteServer.CMS.Plugin.Apis
                 //如sParaTemp.Add("参数名","参数值");
 
                 //建立请求
-                return BaiRong.Core.ThirdParty.Alipay.MApi.Mobi.Submit.BuildRequest(sParaTemp, "get", "确认");
+                return Utils.ThirdParty.Alipay.MApi.Mobi.Submit.BuildRequest(sParaTemp, "get", "确认");
             }
 
             var client = new DefaultAopClient("https://openapi.alipay.com/gateway.do", config.AlipayMobiAppId, config.AlipayMobiPrivateKey, "JSON",
@@ -415,7 +418,7 @@ namespace SiteServer.CMS.Plugin.Apis
             var config = GetConfig();
             if (!config.IsJdpay) return null;
 
-            var callbackUrl = PageUtils.AddProtocolToUrl(Pay.GetUrl(PageUtils.OuterApiUrl, returnUrl));
+            var callbackUrl = PageUtils.AddProtocolToUrl(Pay.GetUrl(PageUtility.OuterApiUrl, returnUrl));
 
             var orderInfoDic = new SortedDictionary<string, string>
             {

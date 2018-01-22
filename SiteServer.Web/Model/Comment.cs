@@ -1,8 +1,8 @@
-﻿using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+﻿using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.API.Model
 {
@@ -18,7 +18,7 @@ namespace SiteServer.API.Model
             Content = commentInfo.Content;
             IsChecked = commentInfo.IsChecked;
             DisplayName = userInfo?.DisplayName;
-            AvatarUrl = PageUtility.GetUserAvatarUrl(PageUtils.OuterApiUrl, userInfo);
+            AvatarUrl = PageUtility.GetUserAvatarUrl(PageUtility.OuterApiUrl, userInfo);
         }
 
         public int Id { get; set; }

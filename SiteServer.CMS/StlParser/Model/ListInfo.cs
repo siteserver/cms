@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Parsers;

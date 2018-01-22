@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using System.Collections.Specialized;
 using SiteServer.BackgroundPages.Ajax;
@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Core
             var contentTable = PluginManager.GetEnabledPluginMetadata<IContentModel>(nodeInfo.ContentModelPluginId);
             if (contentTable != null)
             {
-                _iconFolderUrl = PageUtils.GetPluginDirectoryUrl(contentTable.Id, contentTable.Icon);
+                _iconFolderUrl = PluginManager.GetPluginIconUrl(contentTable);
             }
 
             _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");

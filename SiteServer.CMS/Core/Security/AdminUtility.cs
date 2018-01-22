@@ -1,6 +1,7 @@
-using BaiRong.Core;
+using SiteServer.Utils;
 using System.Collections.Generic;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.CMS.Core.Security
 {

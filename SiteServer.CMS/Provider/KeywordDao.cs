@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Data;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -76,7 +76,7 @@ namespace SiteServer.CMS.Provider
         public int GetCount()
         {
             var sqlString = "SELECT COUNT(*) AS TotalNum FROM siteserver_Keyword";
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         public void Update(KeywordInfo keywordInfo)
@@ -194,7 +194,7 @@ namespace SiteServer.CMS.Provider
             //string sqlString =
             //    $"SELECT Keyword FROM siteserver_Keyword WHERE CHARINDEX(Keyword, '{PageUtils.FilterSql(content)}') > 0";
             var sqlString = $"SELECT Keyword FROM siteserver_Keyword WHERE {SqlUtils.GetInStrReverse(PageUtils.FilterSql(content), nameof(KeywordInfo.Keyword))}";
-            return BaiRongDataProvider.DatabaseDao.GetStringList(sqlString);
+            return DataProvider.DatabaseDao.GetStringList(sqlString);
         }
     }
 }

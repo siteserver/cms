@@ -20,7 +20,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <PublishUrl>http://localhost/BaiRongZhiDao/</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -79,20 +79,66 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.10.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.6.10.5\lib\net452\MySql.Data.dll</HintPath>
+    </Reference>
     <Reference Include="NetDimension.Weibo">
       <HintPath>..\ref\NetDimension.Weibo.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Npgsql, Version=3.2.6.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.3.2.6\lib\net451\Npgsql.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Common, Version=4.5.0.4, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\NuGet.Common.4.5.0\lib\net45\NuGet.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Core, Version=2.14.0.832, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\NuGet.Core.2.14.0\lib\net40-Client\NuGet.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Frameworks, Version=4.5.0.4, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\NuGet.Frameworks.4.5.0\lib\net45\NuGet.Frameworks.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Packaging, Version=4.5.0.4, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\NuGet.Packaging.4.5.0\lib\net45\NuGet.Packaging.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Packaging.Core, Version=4.5.0.4, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\NuGet.Packaging.Core.4.5.0\lib\net45\NuGet.Packaging.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Versioning, Version=4.5.0.4, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\NuGet.Versioning.4.5.0\lib\net45\NuGet.Versioning.dll</HintPath>
+    </Reference>
+    <Reference Include="Oracle.ManagedDataAccess, Version=4.122.1.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
+      <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="QQLoginAouth2">
       <HintPath>..\ref\QQLoginAouth2.dll</HintPath>
     </Reference>
+    <Reference Include="SiteServer.Plugin, Version=1.1.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.1.10\lib\net45\SiteServer.Plugin.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.3.0\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
@@ -165,15 +211,56 @@
     <Compile Include="Controllers\Sys\Stl\Star.cs" />
     <Compile Include="Controllers\Sys\Stl\ActionsDynamic.cs" />
     <Compile Include="Controllers\Sys\Stl\ActionsVote.cs" />
-    <Compile Include="Core\Create\CreateTaskManagerForDb.cs" />
-    <Compile Include="Core\Create\CreateTaskManagerForMomery.cs" />
+    <Compile Include="Core\AdminManager.cs" />
+    <Compile Include="Core\AreaManager.cs" />
+    <Compile Include="Core\CacheDbUtils.cs" />
+    <Compile Include="Core\ConfigManager.cs" />
+    <Compile Include="Core\CountManager.cs" />
+    <Compile Include="Core\Create\CreateTaskManager.cs" />
     <Compile Include="Core\Create\ICreateTaskManager.cs" />
+    <Compile Include="Core\DepartmentManager.cs" />
+    <Compile Include="Core\LogUtils.cs" />
+    <Compile Include="Core\RoleManager.cs" />
     <Compile Include="Core\Security\AdministratorWithPermissions.cs" />
     <Compile Include="Core\Security\PermissionConfig.cs" />
     <Compile Include="Core\Security\PermissionConfigManager.cs" />
     <Compile Include="Core\Security\PermissionManager.cs" />
     <Compile Include="Core\OnlineTemplateManager.cs" />
+    <Compile Include="Core\SmsManager.cs" />
+    <Compile Include="Core\TableColumnManager.cs" />
+    <Compile Include="Core\TableMetadataManager.cs" />
+    <Compile Include="Core\TableStyleManager.cs" />
+    <Compile Include="Core\TagUtils.cs" />
+    <Compile Include="Core\WordSpliter.cs" />
+    <Compile Include="Data\DataProviderBase.cs" />
+    <Compile Include="Data\DbHelper.cs" />
+    <Compile Include="Data\MySql.cs" />
+    <Compile Include="Data\Oracle.cs" />
+    <Compile Include="Data\PostgreSql.cs" />
+    <Compile Include="Data\SqlHelper.cs" />
+    <Compile Include="Data\SqlServer.cs" />
+    <Compile Include="Model\AdministratorInfo.cs" />
+    <Compile Include="Model\AreaInfo.cs" />
+    <Compile Include="Model\BackgroundContentAttribute.cs" />
+    <Compile Include="Model\ConfigInfo.cs" />
+    <Compile Include="Model\ContentAttribute.cs" />
+    <Compile Include="Model\ContentCheckInfo.cs" />
+    <Compile Include="Model\ContentInfo.cs" />
+    <Compile Include="Model\CountInfo.cs" />
+    <Compile Include="Model\DepartmentInfo.cs" />
+    <Compile Include="Model\ErrorLogInfo.cs" />
+    <Compile Include="Model\IntegrationPayConfig.cs" />
+    <Compile Include="Model\LogInfo.cs" />
+    <Compile Include="Model\PermissionsInRolesInfo.cs" />
     <Compile Include="Model\PluginConfigInfo.cs" />
+    <Compile Include="Model\SystemConfigInfo.cs" />
+    <Compile Include="Model\TableCollectionInfo.cs" />
+    <Compile Include="Model\TableColumnInfo.cs" />
+    <Compile Include="Model\TableMatchInfo.cs" />
+    <Compile Include="Model\TableMetadataInfo.cs" />
+    <Compile Include="Model\TagInfo.cs" />
+    <Compile Include="Model\UserInfo.cs" />
+    <Compile Include="Model\UserLogInfo.cs" />
     <Compile Include="Plugin\Apis\AdminApi.cs" />
     <Compile Include="Plugin\Apis\UserApi.cs" />
     <Compile Include="Plugin\Apis\PaymentApi.cs" />
@@ -183,14 +270,45 @@
     <Compile Include="Plugin\Apis\FilesApi.cs" />
     <Compile Include="Plugin\Apis\ContentApi.cs" />
     <Compile Include="Plugin\Apis\ConfigApi.cs" />
-    <Compile Include="Plugin\Apis\DataApi.cs" />
-    <Compile Include="Plugin\PluginTableUtils.cs" />
+    <Compile Include="Plugin\Model\PluginContext.cs" />
+    <Compile Include="Plugin\Model\PluginEnvironment.cs" />
+    <Compile Include="Plugin\Model\PluginMetadata.cs" />
+    <Compile Include="Plugin\Model\PluginInfo.cs" />
+    <Compile Include="Plugin\Model\PluginParseContext.cs" />
+    <Compile Include="Plugin\Model\PluginRenderContext.cs" />
+    <Compile Include="Plugin\Core\NuGetManager.cs" />
+    <Compile Include="Plugin\Core\PackageMetadataStrings.cs" />
+    <Compile Include="Plugin\Core\PluginTableUtils.cs" />
     <Compile Include="Core\TabManager.cs" />
     <Compile Include="Core\ContentUtility.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Plugin\Apis\PublishmentSystemApi.cs" />
+    <Compile Include="Provider\AdministratorDao.cs" />
+    <Compile Include="Provider\AdministratorsInRolesDao.cs" />
+    <Compile Include="Provider\AreaDao.cs" />
+    <Compile Include="Provider\ConfigDao.cs" />
+    <Compile Include="Provider\ContentCheckDao.cs" />
+    <Compile Include="Provider\CountDao.cs" />
+    <Compile Include="Provider\DatabaseDao.cs" />
+    <Compile Include="Provider\DbCacheDao.cs" />
+    <Compile Include="Provider\DepartmentDao.cs" />
+    <Compile Include="Provider\DiggDao.cs" />
+    <Compile Include="Provider\ErrorLogDao.cs" />
+    <Compile Include="Provider\LogDao.cs" />
+    <Compile Include="Provider\PermissionsInRolesDao.cs" />
+    <Compile Include="Provider\PluginDao.cs" />
     <Compile Include="Provider\PluginConfigDao.cs" />
+    <Compile Include="Provider\RecordDao.cs" />
+    <Compile Include="Provider\RoleDao.cs" />
     <Compile Include="Provider\SeoMetasInNodesDao.cs" />
+    <Compile Include="Provider\TableCollectionDao.cs" />
+    <Compile Include="Provider\TableMatchDao.cs" />
+    <Compile Include="Provider\TableMetadataDao.cs" />
+    <Compile Include="Provider\TableStyleDao.cs" />
+    <Compile Include="Provider\TableStyleItemDao.cs" />
+    <Compile Include="Provider\TagDao.cs" />
+    <Compile Include="Provider\UserDao.cs" />
+    <Compile Include="Provider\UserLogDao.cs" />
     <Compile Include="StlParser\Cache\Advertisement.cs" />
     <Compile Include="StlParser\Cache\SeoMeta.cs" />
     <Compile Include="StlParser\Cache\TableStructure.cs" />
@@ -209,6 +327,7 @@
     <Compile Include="StlParser\Cache\Administrator.cs" />
     <Compile Include="StlParser\Cache\Node.cs" />
     <Compile Include="StlParser\Cache\Content.cs" />
+    <Compile Include="StlParser\FileSystemObjectAsync.cs" />
     <Compile Include="StlParser\Model\ChannelItemInfo.cs" />
     <Compile Include="StlParser\Model\ContentItemInfo.cs" />
     <Compile Include="StlParser\Model\StlAttribute.cs" />
@@ -230,16 +349,14 @@
     <Compile Include="Core\Advertisement\ScreenDownScript.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Core\Create\CreateTaskManager.cs" />
     <Compile Include="Core\PageUtility.cs" />
     <Compile Include="Core\Create\CreateManager.cs" />
     <Compile Include="Core\Office\TxtObject.cs" />
-    <Compile Include="Plugin\RequestBody.cs" />
+    <Compile Include="Plugin\Model\RequestBody.cs" />
     <Compile Include="Core\TemplateManager.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Core\UEditorUploader.cs" />
-    <Compile Include="Core\ServiceManager.cs" />
     <Compile Include="Core\CheckManager.cs" />
     <Compile Include="ImportExport\AtomUtility.cs" />
     <Compile Include="ImportExport\ExportObject.cs" />
@@ -283,8 +400,6 @@
     <Compile Include="Model\Enumerations\ESigninPriority.cs" />
     <Compile Include="Model\Enumerations\EStatisticsInputType.cs" />
     <Compile Include="Model\Enumerations\EKeywordGrade.cs" />
-    <Compile Include="Model\TaskInfo.cs" />
-    <Compile Include="Model\TaskLogInfo.cs" />
     <Compile Include="Model\TemplateLogInfo.cs" />
     <Compile Include="Model\KeywordInfo.cs" />
     <Compile Include="StlControls\CommentInput.cs" />
@@ -385,10 +500,6 @@
     <Compile Include="Provider\AdAreaDao.cs" />
     <Compile Include="Provider\AdMaterialDao.cs" />
     <Compile Include="Provider\AdvDao.cs" />
-    <Compile Include="Provider\CreateTaskDao.cs" />
-    <Compile Include="Provider\CreateTaskLogDao.cs" />
-    <Compile Include="Provider\TaskDao.cs" />
-    <Compile Include="Provider\TaskLogDao.cs" />
     <Compile Include="Provider\TemplateLogDao.cs" />
     <Compile Include="Core\ArchiveManager.cs" />
     <Compile Include="Core\Converter.cs" />
@@ -438,12 +549,9 @@
     <Compile Include="Model\GatherRuleInfo.cs" />
     <Compile Include="Model\GatherRuleInfoExtend.cs" />
     <Compile Include="Model\InnerLinkInfo.cs" />
-    <Compile Include="Model\LogInfo.cs" />
+    <Compile Include="Model\PublishmentSystemLogInfo.cs" />
     <Compile Include="Model\NodeGroupInfo.cs" />
     <Compile Include="Model\TagStyleInfo.cs" />
-    <Compile Include="Model\TaskBackupInfo.cs" />
-    <Compile Include="Model\TaskCreateInfo.cs" />
-    <Compile Include="Model\TaskGatherInfo.cs" />
     <Compile Include="Model\TrackingInfo.cs" />
     <Compile Include="Core\NodeManager.cs" />
     <Compile Include="Core\PublishmentSystemManager.cs" />
@@ -477,7 +585,7 @@
     <Compile Include="Provider\GatherRuleDao.cs" />
     <Compile Include="Provider\InnerLinkDao.cs" />
     <Compile Include="Provider\KeywordDao.cs" />
-    <Compile Include="Provider\LogDao.cs" />
+    <Compile Include="Provider\PublishmentSystemLogDao.cs" />
     <Compile Include="Provider\NodeDao.cs" />
     <Compile Include="Provider\NodeGroupDao.cs" />
     <Compile Include="Provider\PublishmentSystemDao.cs" />
@@ -500,18 +608,27 @@
     <Compile Include="UEditor\UploadHandler.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BaiRong.Core\BaiRong.Core.csproj">
+    <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj">
       <Project>{3d8cb06b-1791-4685-ab56-965b9f41666e}</Project>
-      <Name>BaiRong.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SiteServer.Plugin\SiteServer.Plugin.csproj">
-      <Project>{8451ecdd-2ea4-4966-bb0a-7bbc40138e80}</Project>
-      <Name>SiteServer.Plugin</Name>
+      <Name>SiteServer.Utils</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="docs\MySqlCommand.xml" />
+    <Content Include="docs\MySqlCommandBuilder.xml" />
+    <Content Include="docs\MySqlConnection.xml" />
+    <Content Include="docs\MySqlConnectionStringBuilder.xml" />
+    <Content Include="docs\MySqlDataAdapter.xml" />
+    <Content Include="docs\MySqlDataReader.xml" />
+    <Content Include="docs\MySqlException.xml" />
+    <Content Include="docs\MySqlHelper.xml" />
+    <Content Include="docs\MySqlParameter.xml" />
+    <Content Include="docs\MySqlParameterCollection.xml" />
+    <Content Include="docs\MySqlTransaction.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

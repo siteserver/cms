@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
@@ -282,7 +282,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         var link = new HyperLink();
                         var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                        link.NavigateUrl = ActionsDownload.GetUrl(PageUtils.InnerApiUrl, filePath);
+                        link.NavigateUrl = ActionsDownload.GetUrl(PageUtility.InnerApiUrl, filePath);
                         link.Text = "下载";
                         var successMessage = "成功导出文件！&nbsp;&nbsp;" + ControlUtils.GetControlRenderHtml(link);
                         SuccessMessage(successMessage);

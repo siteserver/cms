@@ -3,15 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
+using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -771,7 +771,7 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            BaiRongDataProvider.AdministratorDao.UpdatePublishmentSystemId(administratorName, nodeInfo.NodeId);
+            DataProvider.AdministratorDao.UpdatePublishmentSystemId(administratorName, nodeInfo.NodeId);
 
             string updateNodeSqlString =
                 $"UPDATE siteserver_Node SET PublishmentSystemID = {nodeInfo.NodeId} WHERE NodeID = {nodeInfo.NodeId}";
@@ -1382,7 +1382,7 @@ ORDER BY Taxis";
             string sqlString =
                 $"SELECT COUNT(*) AS TotalNum FROM siteserver_Node WHERE PublishmentSystemID = {publishmentSystemId} AND ParentID = {nodeInfo.ParentId} AND Taxis > (SELECT Taxis FROM siteserver_Node WHERE NodeID = {nodeId})";
 
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString) + 1;
+            return DataProvider.DatabaseDao.GetIntResult(sqlString) + 1;
         }
 
         public int GetNodeIdByNodeIndexName(int publishmentSystemId, string nodeIndexName)
@@ -1864,7 +1864,7 @@ ORDER BY Taxis";
             string sqlWhereString =
                 $"WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) {whereString})";
 
-            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
 
             return (IEnumerable)ExecuteReader(sqlSelect);
         }
@@ -1873,7 +1873,7 @@ ORDER BY Taxis";
         {
             string sqlWhereString = $"WHERE (PublishmentSystemID = {publishmentSystemId} {whereString})";
 
-            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
 
             return ExecuteDataset(sqlSelect);
         }
@@ -1888,7 +1888,7 @@ ORDER BY Taxis";
             string sqlWhereString =
                 $"WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) {whereString})";
 
-            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
 
             return ExecuteDataset(sqlSelect);
         }
@@ -1897,7 +1897,7 @@ ORDER BY Taxis";
         {
             string sqlWhereString = $"WHERE (PublishmentSystemID = {publishmentSystemId} {whereString})";
 
-            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
 
             return ExecuteDataset(sqlSelect);
         }
@@ -2002,7 +2002,7 @@ WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) {where
             string sqlString =
                 $"SELECT SUM(ContentNum) FROM siteserver_Node WHERE (PublishmentSystemID = {publishmentSystemId})";
 
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         public List<string> GetContentModelPluginIdList()

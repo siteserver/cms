@@ -5,7 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Web;
 using System.Web.UI;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages

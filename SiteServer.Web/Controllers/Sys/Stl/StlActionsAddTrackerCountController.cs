@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web;
 using System.Web.Http;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;

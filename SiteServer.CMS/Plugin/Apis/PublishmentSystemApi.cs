@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SiteServer.CMS.Core;
+using SiteServer.Plugin;
 using SiteServer.Plugin.Apis;
-using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
@@ -9,7 +9,8 @@ namespace SiteServer.CMS.Plugin.Apis
     {
         private PublishmentSystemApi() { }
 
-        public static PublishmentSystemApi Instance { get; } = new PublishmentSystemApi();
+        private static PublishmentSystemApi _instance;
+        public static PublishmentSystemApi Instance => _instance ?? (_instance = new PublishmentSystemApi());
 
         public int GetPublishmentSystemIdByFilePath(string path)
         {

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl.Comments;
 using SiteServer.CMS.StlControls;
 using SiteServer.CMS.StlParser.Model;

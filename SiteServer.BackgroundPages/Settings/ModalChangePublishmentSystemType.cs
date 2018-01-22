@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.IO.FileManagement;
+using SiteServer.Utils;
+using SiteServer.Utils.IO.FileManagement;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
 

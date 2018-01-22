@@ -5,8 +5,8 @@ using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin;
 using SiteServer.Plugin.Apis;
-using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
@@ -14,19 +14,20 @@ namespace SiteServer.CMS.Plugin.Apis
     {
         private ParseApi() { }
 
-        public static ParseApi Instance { get; } = new ParseApi();
+        private static ParseApi _instance;
+        public static ParseApi Instance => _instance ?? (_instance = new ParseApi());
 
         public Dictionary<string, string> GetStlElements(string innerXml, List<string> stlElementNames)
         {
             return StlInnerUtility.GetStlElements(innerXml, stlElementNames);
         }
 
-        public string ParseInnerXml(string innerXml, PluginParseContext context)
+        public string ParseInnerXml(string innerXml, IParseContext context)
         {
             return StlParserManager.ParseInnerContent(innerXml, context);
         }
 
-        public string ParseAttributeValue(string attributeValue, PluginParseContext context)
+        public string ParseAttributeValue(string attributeValue, IParseContext context)
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(context.PublishmentSystemId);
             var templateInfo = new TemplateInfo
@@ -49,7 +50,7 @@ namespace SiteServer.CMS.Plugin.Apis
             return StlParserUtility.XmlToHtml(xml);
         }
 
-        public string GetCurrentUrl(PluginParseContext context)
+        public string GetCurrentUrl(IParseContext context)
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(context.PublishmentSystemId);
             return StlUtility.GetStlCurrentUrl(publishmentSystemInfo, context.ChannelId, context.ContentId,

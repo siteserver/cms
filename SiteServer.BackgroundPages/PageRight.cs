@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Administrators;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages
 {
@@ -11,7 +12,7 @@ namespace SiteServer.BackgroundPages
         public Literal LtlUpdateDate;
         public Literal LtlLastLoginDate;
 
-        public string ApiUrl => SiteCheckList.GetUrl(PageUtils.InnerApiUrl, Body.AdminName);
+        public string ApiUrl => SiteCheckList.GetUrl(PageUtility.InnerApiUrl, Body.AdminName);
 
         public void Page_Load(object sender, EventArgs e)
         {

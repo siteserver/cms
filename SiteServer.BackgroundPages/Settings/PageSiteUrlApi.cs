@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -34,7 +35,7 @@ namespace SiteServer.BackgroundPages.Settings
             ConfigManager.SystemConfigInfo.IsSeparatedApi = TranslateUtils.ToBool(RblIsSeparatedApi.SelectedValue);
             ConfigManager.SystemConfigInfo.SeparatedApiUrl = TbSeparatedApiUrl.Text;
 
-            BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
+            DataProvider.ConfigDao.Update(ConfigManager.Instance);
 
             Body.AddAdminLog("修改API访问地址");
             SuccessUpdateMessage();

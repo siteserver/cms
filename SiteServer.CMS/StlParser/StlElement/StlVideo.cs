@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using BaiRong.Core;
-using BaiRong.Core.Model.Attributes;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
@@ -174,13 +174,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (contextInfo.ContentInfo == null)
                         {
-                            //videoUrl = BaiRongDataProvider.ContentDao.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, type);
+                            //videoUrl = DataProvider.ContentDao.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, type);
                             videoUrl = Content.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, type);
                             if (string.IsNullOrEmpty(videoUrl))
                             {
                                 if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.VideoUrl))
                                 {
-                                    //videoUrl = BaiRongDataProvider.ContentDao.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.VideoUrl);
+                                    //videoUrl = DataProvider.ContentDao.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.VideoUrl);
                                     videoUrl = Content.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.VideoUrl);
                                 }
                             }
@@ -188,7 +188,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             {
                                 if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.FileUrl))
                                 {
-                                    //videoUrl = BaiRongDataProvider.ContentDao.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.FileUrl);
+                                    //videoUrl = DataProvider.ContentDao.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.FileUrl);
                                     videoUrl = Content.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.FileUrl);
                                 }
                             }
@@ -217,7 +217,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (contentId != 0)
                 {
-                    //imageUrl = contextInfo.ContentInfo == null ? BaiRongDataProvider.ContentDao.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.ImageUrl) : contextInfo.ContentInfo.GetString(BackgroundContentAttribute.ImageUrl);
+                    //imageUrl = contextInfo.ContentInfo == null ? DataProvider.ContentDao.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.ImageUrl) : contextInfo.ContentInfo.GetString(BackgroundContentAttribute.ImageUrl);
                     imageUrl = contextInfo.ContentInfo == null ? Content.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.ImageUrl) : contextInfo.ContentInfo.GetString(BackgroundContentAttribute.ImageUrl);
                 }
             }

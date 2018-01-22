@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Model;
-using BaiRong.Core.Model;
-using BaiRong.Core.Table;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Table;
 
 namespace SiteServer.CMS.Core
 {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -81,7 +81,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     relatedIdentity = contextInfo.ChannelId;
                 }
 
-                //var counts = BaiRongDataProvider.DiggDao.GetCount(pageInfo.PublishmentSystemId, relatedIdentity);
+                //var counts = DataProvider.DiggDao.GetCount(pageInfo.PublishmentSystemId, relatedIdentity);
                 var counts = Cache.Digg.GetCount(pageInfo.PublishmentSystemId, relatedIdentity);
                 var goodNum = counts[0];
                 var badNum = counts[1];

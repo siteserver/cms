@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.CMS.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 
 namespace SiteServer.CMS.Core
 {

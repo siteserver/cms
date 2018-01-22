@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.Web;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core.Create;

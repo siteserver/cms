@@ -2,6 +2,7 @@
 using System.Web.Http;
 using SiteServer.CMS.Controllers.Sys.Stl.Comments;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.API.Controllers.Sys.Stl.Comments
 {

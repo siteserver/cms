@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -42,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 TbTags.Text = _tagName;
 
-                var count = BaiRongDataProvider.TagDao.GetTagCount(_tagName, PublishmentSystemId);
+                var count = DataProvider.TagDao.GetTagCount(_tagName, PublishmentSystemId);
 
                 InfoMessage($@"标签“<strong>{_tagName}</strong>”被使用 {count} 次，编辑此标签将更新所有使用此标签的内容。");
             }
@@ -59,21 +60,21 @@ namespace SiteServer.BackgroundPages.Cms
                     if (!string.Equals(_tagName, TbTags.Text))
                     {
                         var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
-                        var contentIdList = BaiRongDataProvider.TagDao.GetContentIdListByTag(_tagName, PublishmentSystemId);
+                        var contentIdList = DataProvider.TagDao.GetContentIdListByTag(_tagName, PublishmentSystemId);
                         if (contentIdList.Count > 0)
                         {
                             foreach (int contentId in contentIdList)
                             {
                                 if (!tagCollection.Contains(_tagName))//删除
                                 {
-                                    var tagInfo = BaiRongDataProvider.TagDao.GetTagInfo(PublishmentSystemId, _tagName);
+                                    var tagInfo = DataProvider.TagDao.GetTagInfo(PublishmentSystemId, _tagName);
                                     if (tagInfo != null)
                                     {
                                         var idArrayList = TranslateUtils.StringCollectionToIntList(tagInfo.ContentIdCollection);
                                         idArrayList.Remove(contentId);
                                         tagInfo.ContentIdCollection = TranslateUtils.ObjectCollectionToString(idArrayList);
                                         tagInfo.UseNum = idArrayList.Count;
-                                        BaiRongDataProvider.TagDao.Update(tagInfo);
+                                        DataProvider.TagDao.Update(tagInfo);
                                     }
                                 }
 
@@ -94,7 +95,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                         else
                         {
-                            BaiRongDataProvider.TagDao.DeleteTag(_tagName, PublishmentSystemId);
+                            DataProvider.TagDao.DeleteTag(_tagName, PublishmentSystemId);
                         }
                     }
 

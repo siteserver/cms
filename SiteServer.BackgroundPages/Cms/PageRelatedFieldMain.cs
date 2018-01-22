@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Cms
 {

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Table;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -14,7 +14,7 @@ using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Controllers.Sys.Editors;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Core
                 extraBuilder.Append($@"<small class=""form-text text-muted"">{styleInfo.HelpText}</small>");
             }
 
-            var inputType = InputTypeUtils.GetEnumType(styleInfo.InputType);
+            var inputType = styleInfo.InputType;
 
             if (inputType == InputType.Text)
             {
@@ -276,8 +276,8 @@ $('#Title').keyup(function (e) {
             value = ETextEditorTypeUtils.TranslateToHtml(value);
             value = StringUtils.HtmlEncode(value);
 
-            var controllerUrl = UEditor.GetUrl(PageUtils.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId);
-            var editorUrl = SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "ueditor");
+            var controllerUrl = UEditor.GetUrl(PageUtility.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId);
+            var editorUrl = SiteFilesAssets.GetUrl(PageUtility.OuterApiUrl, "ueditor");
 
             if (pageScripts["uEditor"] == null)
             {
@@ -306,7 +306,7 @@ $(function(){{
             }
 
             var builder = new StringBuilder();
-            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
 
             var selectedValue = attributes.GetString(styleInfo.AttributeName);
 
@@ -339,7 +339,7 @@ $(function(){{
             }
 
             var builder = new StringBuilder();
-            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
 
             var selectedValues = TranslateUtils.StringCollectionToStringList(attributes.GetString(styleInfo.AttributeName));
 
@@ -421,7 +421,7 @@ function getRelatedField_{fieldInfo.RelatedFieldId}(level){{
     var obj = $('#c_' + attributeName + '_' + (level - 1));
     var itemID = $('option:selected', obj).attr('itemID');
     if (itemID){{
-        var url = '{ActionsRelatedField.GetUrl(PageUtils.InnerApiUrl, publishmentSystemInfo.PublishmentSystemId,
+        var url = '{ActionsRelatedField.GetUrl(PageUtility.InnerApiUrl, publishmentSystemInfo.PublishmentSystemId,
                 styleInfo.Additional.RelatedFieldId, 0)}' + itemID;
         var values = '{values}';
         var value = (values) ? values.split(',')[level - 1] : '';
@@ -476,7 +476,7 @@ $(document).ready(function(){{
 
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
 
             var checkBoxList = new CheckBoxList
             {
@@ -524,7 +524,7 @@ $(document).ready(function(){{
 
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
             if (styleItems == null || styleItems.Count == 0)
             {
                 styleItems = new List<TableStyleItemInfo>
@@ -926,7 +926,7 @@ function add_{attributeName}(val,foucs){{
                 //var theValue = GetValueByForm(styleInfo, publishmentSystemInfo, formCollection);
 
                 var theValue = formCollection[styleInfo.AttributeName] ?? string.Empty;
-                var inputType = InputTypeUtils.GetEnumType(styleInfo.InputType);
+                var inputType = styleInfo.InputType;
                 if (inputType == InputType.TextEditor)
                 {
                     theValue = ContentUtility.TextEditorContentEncode(publishmentSystemInfo, theValue);

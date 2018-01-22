@@ -1,8 +1,7 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
-using System.Web;
 using System.Web.UI;
-using BaiRong.Core.Model;
+using SiteServer.Utils.Model;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Model;
 

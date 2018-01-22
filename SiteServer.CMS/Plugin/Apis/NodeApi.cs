@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 using SiteServer.Plugin.Apis;
-using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
@@ -14,7 +14,8 @@ namespace SiteServer.CMS.Plugin.Apis
     {
         private NodeApi() { }
 
-        public static NodeApi Instance { get; } = new NodeApi();
+        private static NodeApi _instance;
+        public static NodeApi Instance => _instance ?? (_instance = new NodeApi());
 
         public INodeInfo GetNodeInfo(int publishmentSystemId, int channelId)
         {

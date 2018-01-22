@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
-using BaiRong.Core;
-using BaiRong.Core.Net;
+using SiteServer.Utils;
+using SiteServer.Utils.Net;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -285,14 +285,14 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheMessageKey, "开始下载插件压缩包，可能需要几分钟，请耐心等待");
 
                 var fileName = PageUtils.GetFileNameFromUrl(downloadUrl);
-                var filePath = PathUtils.GetPluginsPath(fileName);
+                var filePath = PathUtils.GetPluginPath(fileName);
                 FileUtils.DeleteFileIfExists(filePath);
                 WebClientUtils.SaveRemoteFileToLocal(downloadUrl, filePath);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "4");
                 CacheUtils.Insert(cacheMessageKey, "插件压缩包下载成功，开始安装");
 
-                ZipUtils.UnpackFiles(filePath, PathUtils.GetPluginsPath(fileName.Substring(0, fileName.IndexOf(".", StringComparison.Ordinal))));
+                ZipUtils.UnpackFiles(filePath, PathUtils.GetPluginPath(fileName.Substring(0, fileName.IndexOf(".", StringComparison.Ordinal))));
 
                 CacheUtils.Insert(cacheCurrentCountKey, "5");
                 CacheUtils.Insert(cacheMessageKey, string.Empty);

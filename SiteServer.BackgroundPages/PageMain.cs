@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -159,7 +159,7 @@ namespace SiteServer.BackgroundPages
 
             if (_publishmentSystemInfo != null && _publishmentSystemInfo.PublishmentSystemId > 0 && Body.AdministratorInfo.PublishmentSystemId != _publishmentSystemInfo.PublishmentSystemId)
             {
-                BaiRongDataProvider.AdministratorDao.UpdatePublishmentSystemId(Body.AdminName, _publishmentSystemInfo.PublishmentSystemId);
+                DataProvider.AdministratorDao.UpdatePublishmentSystemId(Body.AdminName, _publishmentSystemInfo.PublishmentSystemId);
             }
         }
 
@@ -328,7 +328,7 @@ namespace SiteServer.BackgroundPages
             var builder = new StringBuilder();
             foreach (var tab in topMenuTabs)
             {
-                if (!TabManager.IsValid(tab, _permissions.PermissionList)) continue;
+                if (!TabManager.IsValid(tab, permissionList)) continue;
 
                 var target = string.Empty;
                 if (!string.IsNullOrEmpty(tab.Target))

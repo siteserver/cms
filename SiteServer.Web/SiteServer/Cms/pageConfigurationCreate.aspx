@@ -106,14 +106,6 @@
             </div>
           </asp:PlaceHolder>
 
-          <div class="form-group">
-            <label class="col-form-label">是否启用多线程生成页面</label>
-            <asp:DropDownList ID="DdlIsCreateMultiThread" class="form-control" runat="server"></asp:DropDownList>
-            <small class="form-text text-muted">
-              此功能通常用于CMS服务器配置较高而且现在生成页面时CPU和内存利用率不太高（不超过60%）时建议启用
-            </small>
-          </div>
-
           <hr />
 
           <asp:Button class="btn btn-primary" id="Submit" text="确 定" onclick="Submit_OnClick" runat="server" />

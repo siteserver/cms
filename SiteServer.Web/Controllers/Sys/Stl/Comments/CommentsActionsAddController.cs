@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Web.Http;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.API.Model;
 using SiteServer.CMS.Controllers.Sys.Stl.Comments;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin;
-using SiteServer.Plugin.Models;
+using SiteServer.CMS.Plugin.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.API.Controllers.Sys.Stl.Comments
 {
@@ -38,7 +38,7 @@ namespace SiteServer.API.Controllers.Sys.Stl.Comments
                     DataProvider.CommentDao.GetUserNameAndContent(replyId, out replyUserName, out replyContent);
                     if (!string.IsNullOrEmpty(replyContent))
                     {
-                        var displayName = BaiRongDataProvider.UserDao.GetDisplayName(replyUserName);
+                        var displayName = DataProvider.UserDao.GetDisplayName(replyUserName);
                         if (!string.IsNullOrEmpty(displayName))
                         {
                             displayName = $"@{displayName}：";
@@ -53,14 +53,14 @@ namespace SiteServer.API.Controllers.Sys.Stl.Comments
                 {
                     string userName;
                     string errorMessage;
-                    if (!BaiRongDataProvider.UserDao.Validate(account, password, out userName, out errorMessage))
+                    if (!DataProvider.UserDao.Validate(account, password, out userName, out errorMessage))
                     {
-                        BaiRongDataProvider.UserDao.UpdateLastActivityDateAndCountOfFailedLogin(userName);
+                        DataProvider.UserDao.UpdateLastActivityDateAndCountOfFailedLogin(userName);
                         return BadRequest(errorMessage);
                     }
 
-                    BaiRongDataProvider.UserDao.UpdateLastActivityDateAndCountOfLogin(userName);
-                    userInfo = BaiRongDataProvider.UserDao.GetUserInfoByUserName(userName);
+                    DataProvider.UserDao.UpdateLastActivityDateAndCountOfLogin(userName);
+                    userInfo = DataProvider.UserDao.GetUserInfoByUserName(userName);
 
                     context.UserLogin(userName);
                 }

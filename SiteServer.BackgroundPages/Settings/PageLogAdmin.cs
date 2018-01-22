@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -28,7 +28,7 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
-            SpContents.SelectCommand = !Body.IsQueryExists("Keyword") ? BaiRongDataProvider.LogDao.GetSelectCommend() : BaiRongDataProvider.LogDao.GetSelectCommend(Body.GetQueryString("UserName"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"));
+            SpContents.SelectCommand = !Body.IsQueryExists("Keyword") ? DataProvider.LogDao.GetSelectCommend() : DataProvider.LogDao.GetSelectCommend(Body.GetQueryString("UserName"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"));
 
             SpContents.SortField = "ID";
             SpContents.SortMode = SortMode.DESC;
@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var arraylist = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("IDCollection"));
                 try
                 {
-                    BaiRongDataProvider.LogDao.Delete(arraylist);
+                    DataProvider.LogDao.Delete(arraylist);
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -61,13 +61,13 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else if (Body.IsQueryExists("DeleteAll"))
             {
-                BaiRongDataProvider.LogDao.DeleteAll();
+                DataProvider.LogDao.DeleteAll();
                 SuccessDeleteMessage();
             }
             else if (Body.IsQueryExists("Setting"))
             {
                 ConfigManager.SystemConfigInfo.IsLogAdmin = !ConfigManager.SystemConfigInfo.IsLogAdmin;
-                BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
+                DataProvider.ConfigDao.Update(ConfigManager.Instance);
                 SuccessMessage($"成功{(ConfigManager.SystemConfigInfo.IsLogAdmin ? "启用" : "禁用")}日志记录");
             }
 

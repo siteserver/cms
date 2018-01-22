@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 using SiteServer.Plugin.Features;
-using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Controls
 {

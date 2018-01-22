@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Data;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -374,7 +375,7 @@ namespace SiteServer.CMS.Provider
                         if (generalPermissionList != null && generalPermissionList.Count > 0)
                         {
                             var permissionsInRolesInfo = new PermissionsInRolesInfo(roleName, TranslateUtils.ObjectCollectionToString(generalPermissionList));
-                            BaiRongDataProvider.PermissionsInRolesDao.InsertWithTrans(permissionsInRolesInfo, trans);
+                            DataProvider.PermissionsInRolesDao.InsertWithTrans(permissionsInRolesInfo, trans);
                         }
 
                         foreach (var systemPermissionsInfo in systemPermissionsInfoList)
@@ -392,7 +393,7 @@ namespace SiteServer.CMS.Provider
                     }
                 }
             }
-            BaiRongDataProvider.RoleDao.InsertRole(roleName, creatorUserName, description);
+            DataProvider.RoleDao.InsertRole(roleName, creatorUserName, description);
         }
 
         public void UpdatePublishmentPermissions(string roleName, List<SystemPermissionsInfo> systemPermissionsInfoList)
@@ -433,7 +434,7 @@ namespace SiteServer.CMS.Provider
                     {
                         DeleteWithTrans(roleName, trans);
 
-                        BaiRongDataProvider.PermissionsInRolesDao.DeleteWithTrans(roleName, trans);
+                        DataProvider.PermissionsInRolesDao.DeleteWithTrans(roleName, trans);
 
                         trans.Commit();
                     }
@@ -445,7 +446,7 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            BaiRongDataProvider.RoleDao.DeleteRole(roleName);
+            DataProvider.RoleDao.DeleteRole(roleName);
         }
     }
 }

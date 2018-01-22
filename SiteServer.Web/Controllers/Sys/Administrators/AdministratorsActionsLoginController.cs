@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Web.Http;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Administrators;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.API.Controllers.Sys.Administrators
 {
@@ -24,14 +26,14 @@ namespace SiteServer.API.Controllers.Sys.Administrators
 
                 string userName;
                 string errorMessage;
-                if (!BaiRongDataProvider.AdministratorDao.ValidateAccount(account, password, out userName, out errorMessage))
+                if (!DataProvider.AdministratorDao.ValidateAccount(account, password, out userName, out errorMessage))
                 {
                     LogUtils.AddAdminLog(userName, "后台管理员登录失败");
-                    BaiRongDataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfFailedLogin(userName);
+                    DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfFailedLogin(userName);
                     return Unauthorized();
                 }
 
-                BaiRongDataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLogin(userName);
+                DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLogin(userName);
                 context.AdminLogin(userName);
 
                 return Ok(new

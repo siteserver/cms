@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Text;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Settings;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Core
 {

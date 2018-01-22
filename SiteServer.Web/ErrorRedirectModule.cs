@@ -1,6 +1,7 @@
 using System;
 using System.Web;
-using BaiRong.Core;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.API
 {

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Http;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.API.Model;
 using SiteServer.CMS.Controllers.Sys.Stl.Comments;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.API.Controllers.Sys.Stl.Comments
 {
@@ -38,7 +39,7 @@ namespace SiteServer.API.Controllers.Sys.Stl.Comments
                         .Select(
                             commentInfo =>
                                 new Comment(commentInfo,
-                                    BaiRongDataProvider.UserDao.GetUserInfoByUserName(commentInfo.UserName)))
+                                    DataProvider.UserDao.GetUserInfoByUserName(commentInfo.UserName)))
                         .ToList();
 
                 return Ok(new

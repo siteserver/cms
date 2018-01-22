@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Table;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Table;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 using SiteServer.Plugin.Apis;
-using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
@@ -12,7 +12,8 @@ namespace SiteServer.CMS.Plugin.Apis
     {
         private ContentApi() { }
 
-        public static ContentApi Instance { get; } = new ContentApi();
+        private static ContentApi _instance;
+        public static ContentApi Instance => _instance ?? (_instance = new ContentApi());
 
         public IContentInfo GetContentInfo(int publishmentSystemId, int channelId, int contentId)
         {
@@ -53,7 +54,7 @@ namespace SiteServer.CMS.Plugin.Apis
             return NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
         }
 
-        public List<PluginTableColumn> GetTableColumns(int publishmentSystemId, int channelId)
+        public List<TableColumn> GetTableColumns(int publishmentSystemId, int channelId)
         {
             if (publishmentSystemId <= 0 || channelId <= 0) return null;
 
@@ -63,37 +64,37 @@ namespace SiteServer.CMS.Plugin.Apis
             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemId, channelId);
 
             var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
-            var tableColumnList = new List<PluginTableColumn>
+            var tableColumnList = new List<TableColumn>
             {
-                new PluginTableColumn
+                new TableColumn
                 {
                     AttributeName = ContentAttribute.Title,
-                    DataType = nameof(DataType.VarChar),
+                    DataType = DataType.VarChar,
                     DataLength = 255,
-                    InputStyle = new PluginInputStyle
+                    InputStyle = new InputStyle
                     {
-                        InputType = nameof(InputType.Text),
+                        InputType = InputType.Text,
                         DisplayName = "标题",
                         IsRequired = true,
-                        ValidateType = nameof(ValidateType.None)
+                        ValidateType = ValidateType.None
                     }
                 }
             };
 
             foreach (var styleInfo in tableStyleInfoList)
             {
-                tableColumnList.Add(new PluginTableColumn
+                tableColumnList.Add(new TableColumn
                 {
                     AttributeName = styleInfo.AttributeName,
-                    DataType = nameof(DataType.VarChar),
+                    DataType = DataType.VarChar,
                     DataLength = 50,
-                    InputStyle = new PluginInputStyle
+                    InputStyle = new InputStyle
                     {
                         InputType = styleInfo.InputType,
                         DisplayName = styleInfo.DisplayName,
                         DefaultValue = styleInfo.DefaultValue,
                         IsRequired = styleInfo.Additional.IsRequired,
-                        ValidateType = ValidateTypeUtils.GetValue(styleInfo.Additional.ValidateType),
+                        ValidateType = styleInfo.Additional.ValidateType,
                         MinNum = styleInfo.Additional.MinNum,
                         MaxNum = styleInfo.Additional.MaxNum,
                         RegExp = styleInfo.Additional.RegExp,
@@ -102,57 +103,57 @@ namespace SiteServer.CMS.Plugin.Apis
                 });
             }
 
-            tableColumnList.Add(new PluginTableColumn
+            tableColumnList.Add(new TableColumn
             {
                 AttributeName = ContentAttribute.IsTop,
-                DataType = nameof(DataType.VarChar),
+                DataType = DataType.VarChar,
                 DataLength = 18,
-                InputStyle = new PluginInputStyle
+                InputStyle = new InputStyle
                 {
-                    InputType = nameof(InputType.CheckBox),
-                    DisplayName = "置顶",
+                    InputType = InputType.CheckBox,
+                    DisplayName = "置顶"
                 }
             });
-            tableColumnList.Add(new PluginTableColumn
+            tableColumnList.Add(new TableColumn
             {
                 AttributeName = ContentAttribute.IsRecommend,
-                DataType = nameof(DataType.VarChar),
+                DataType = DataType.VarChar,
                 DataLength = 18,
-                InputStyle = new PluginInputStyle
+                InputStyle = new InputStyle
                 {
-                    InputType = nameof(InputType.CheckBox),
-                    DisplayName = "推荐",
+                    InputType = InputType.CheckBox,
+                    DisplayName = "推荐"
                 }
             });
-            tableColumnList.Add(new PluginTableColumn
+            tableColumnList.Add(new TableColumn
             {
                 AttributeName = ContentAttribute.IsHot,
-                DataType = nameof(DataType.VarChar),
+                DataType = DataType.VarChar,
                 DataLength = 18,
-                InputStyle = new PluginInputStyle
+                InputStyle = new InputStyle
                 {
-                    InputType = nameof(InputType.CheckBox),
+                    InputType = InputType.CheckBox,
                     DisplayName = "热点"
                 }
             });
-            tableColumnList.Add(new PluginTableColumn
+            tableColumnList.Add(new TableColumn
             {
                 AttributeName = ContentAttribute.IsColor,
-                DataType = nameof(DataType.VarChar),
+                DataType = DataType.VarChar,
                 DataLength = 18,
-                InputStyle = new PluginInputStyle
+                InputStyle = new InputStyle
                 {
-                    InputType = nameof(InputType.CheckBox),
+                    InputType = InputType.CheckBox,
                     DisplayName = "醒目"
                 }
             });
-            tableColumnList.Add(new PluginTableColumn
+            tableColumnList.Add(new TableColumn
             {
                 AttributeName = ContentAttribute.AddDate,
-                DataType = nameof(DataType.DateTime),
-                InputStyle = new PluginInputStyle
+                DataType = DataType.DateTime,
+                InputStyle = new InputStyle
                 {
-                    InputType = nameof(InputType.DateTime),
+                    InputType = InputType.DateTime,
                     DisplayName = "添加时间"
                 }
             });

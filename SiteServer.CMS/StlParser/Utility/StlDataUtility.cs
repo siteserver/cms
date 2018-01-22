@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Xml;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
-using BaiRong.Core.Model;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser.Cache;
 
@@ -421,13 +421,13 @@ namespace SiteServer.CMS.StlParser.Utility
         public static IEnumerable GetCommentsDataSource(int publishmentSystemId, int channelId, int contentId, DbItemContainer itemContainer, int startNum, int totalNum, bool isRecommend, string orderByString, string where)
         {
             var sqlString = Comment.GetSelectSqlStringWithChecked(publishmentSystemId, channelId, contentId, startNum, totalNum, isRecommend, where, orderByString);
-            return BaiRongDataProvider.DatabaseDao.GetDataSource(sqlString);
+            return DataProvider.DatabaseDao.GetDataSource(sqlString);
         }
 
         public static DataSet GetPageCommentsDataSet(int publishmentSystemId, int channelId, int contentId, DbItemContainer itemContainer, int startNum, int totalNum, bool isRecommend, string orderByString, string where)
         {
             var sqlString = Comment.GetSelectSqlStringWithChecked(publishmentSystemId, channelId, contentId, startNum, totalNum, isRecommend, where, orderByString);
-            return BaiRongDataProvider.DatabaseDao.GetDataSet(sqlString);
+            return DataProvider.DatabaseDao.GetDataSet(sqlString);
         }
 
         //public static IEnumerable GetInputContentsDataSource(int publishmentSystemId, int inputId, ListInfo listInfo)
@@ -435,7 +435,7 @@ namespace SiteServer.CMS.StlParser.Utility
         //    var isReplyExists = listInfo.Others.Get(StlInputContents.AttributeIsReply) != null;
         //    var isReply = TranslateUtils.ToBool(listInfo.Others.Get(StlInputContents.AttributeIsReply));
         //    var sqlString = InputContent.GetSelectSqlStringWithChecked(publishmentSystemId, inputId, isReplyExists, isReply, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.OrderByString, listInfo.Others);
-        //    return BaiRongDataProvider.DatabaseDao.GetDataSource(sqlString);
+        //    return DataProvider.DatabaseDao.GetDataSource(sqlString);
         //}
 
         //public static DataSet GetPageInputContentsDataSet(int publishmentSystemId, int inputId, ListInfo listInfo)
@@ -443,7 +443,7 @@ namespace SiteServer.CMS.StlParser.Utility
         //    var isReplyExists = listInfo.Others.Get(StlInputContents.AttributeIsReply) != null;
         //    var isReply = TranslateUtils.ToBool(listInfo.Others.Get(StlInputContents.AttributeIsReply));
         //    var sqlString = InputContent.GetSelectSqlStringWithChecked(publishmentSystemId, inputId, isReplyExists, isReply, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.OrderByString, listInfo.Others);
-        //    return BaiRongDataProvider.DatabaseDao.GetDataSet(sqlString);
+        //    return DataProvider.DatabaseDao.GetDataSet(sqlString);
         //}
 
         public static DataSet GetChannelsDataSource(int publishmentSystemId, int channelId, string group, string groupNot, bool isImageExists, bool isImage, int startNum, int totalNum, string orderByString, EScopeType scopeType, bool isTotal, string where)
@@ -494,13 +494,13 @@ namespace SiteServer.CMS.StlParser.Utility
         public static IEnumerable GetSqlContentsDataSource(string connectionString, string queryString, int startNum, int totalNum, string orderByString)
         {
             var sqlString = TableStructure.GetSelectSqlStringByQueryString(connectionString, queryString, startNum, totalNum, orderByString);
-            return BaiRongDataProvider.DatabaseDao.GetDataSource(connectionString, sqlString);
+            return DataProvider.DatabaseDao.GetDataSource(connectionString, sqlString);
         }
 
         public static DataSet GetPageSqlContentsDataSet(string connectionString, string queryString, int startNum, int totalNum, string orderByString)
         {
             var sqlString = TableStructure.GetSelectSqlStringByQueryString(connectionString, queryString, startNum, totalNum, orderByString);
-            return BaiRongDataProvider.DatabaseDao.GetDataSet(connectionString, sqlString);
+            return DataProvider.DatabaseDao.GetDataSet(connectionString, sqlString);
         }
 
         public static IEnumerable GetSitesDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString, string since)

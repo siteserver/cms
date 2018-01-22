@@ -1,5 +1,5 @@
 ﻿using System;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using System.Collections;
 using System.Collections.Generic;

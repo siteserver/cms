@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 
@@ -1143,7 +1143,7 @@ namespace SiteServer.CMS.Core
         {
             var list = new List<KeyValuePair<int, int>>();
 
-            var tableEnNameList = BaiRongDataProvider.TableCollectionDao.GetTableEnNameListCreatedInDb();
+            var tableEnNameList = DataProvider.TableCollectionDao.GetTableEnNameListCreatedInDb();
 
             foreach (var tableEnName in tableEnNameList)
             {

@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -126,7 +125,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlAttributeName.Text = styleInfo.AttributeName;
 
             ltlDisplayName.Text = styleInfo.DisplayName;
-            ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
+            ltlInputType.Text = InputTypeUtils.GetText(styleInfo.InputType);
 
             ltlValidate.Text = ValidateTypeUtils.GetValidateInfo(styleInfo);
 

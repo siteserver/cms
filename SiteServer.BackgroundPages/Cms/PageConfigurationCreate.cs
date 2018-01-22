@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
 
@@ -22,7 +22,6 @@ namespace SiteServer.BackgroundPages.Cms
         public DropDownList DdlIsCreateStaticContentByAddDate;
         public PlaceHolder PhIsCreateStaticContentByAddDate;
         public DateTimeTextBox TbCreateStaticContentAddDate;
-        public DropDownList DdlIsCreateMultiThread; // 是否启用多线程生成页面
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -70,9 +69,6 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 TbCreateStaticContentAddDate.DateTime = PublishmentSystemInfo.Additional.CreateStaticContentAddDate;
             }
-
-            EBooleanUtils.AddListItems(DdlIsCreateMultiThread, "启用", "不启用");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateMultiThread, PublishmentSystemInfo.Additional.IsCreateMultiThread.ToString());
         }
 
         public void DdlIsCreateStaticContentByAddDate_SelectedIndexChanged(object sender, EventArgs e)
@@ -102,8 +98,6 @@ namespace SiteServer.BackgroundPages.Cms
 		    {
 		        PublishmentSystemInfo.Additional.CreateStaticContentAddDate = TbCreateStaticContentAddDate.DateTime;
 		    } 
-
-		    PublishmentSystemInfo.Additional.IsCreateMultiThread = TranslateUtils.ToBool(DdlIsCreateMultiThread.SelectedValue);
 
             DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
 

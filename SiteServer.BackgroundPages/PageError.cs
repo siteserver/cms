@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages
 {
@@ -19,7 +20,7 @@ namespace SiteServer.BackgroundPages
                 var logId = TranslateUtils.ToInt(Request.QueryString["logId"]);
                 if (logId > 0)
                 {
-                    var pair = BaiRongDataProvider.ErrorLogDao.GetMessageAndStacktrace(logId);
+                    var pair = DataProvider.ErrorLogDao.GetMessageAndStacktrace(logId);
                     message = pair.Key;
                     stackTrace = pair.Value;
                 }

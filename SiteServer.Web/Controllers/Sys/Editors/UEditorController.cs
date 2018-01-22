@@ -1,6 +1,6 @@
 ﻿using System.Web;
 using System.Web.Http;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Controllers.Sys.Editors;
 using SiteServer.CMS.UEditor;
 

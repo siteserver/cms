@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Web.UI;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -188,7 +188,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (contextInfo.ContextType == EContextType.Content)
                 {
                     var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
-                    //var groupContents = TranslateUtils.StringCollectionToStringList(BaiRongDataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection));
+                    //var groupContents = TranslateUtils.StringCollectionToStringList(DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection));
                     var groupContents = TranslateUtils.StringCollectionToStringList(Content.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection));
                     isSuccess = TestTypeValues(testOperate, testValue, groupContents);
                 }
@@ -789,7 +789,7 @@ function {functionName}(pageNum)
             if (contextInfo.ContentInfo == null)
             {
                 var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
-                //theValue = BaiRongDataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, testTypeStr);
+                //theValue = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, testTypeStr);
                 theValue = Content.GetValue(tableName, contextInfo.ContentId, testTypeStr);
             }
             else
@@ -809,7 +809,7 @@ function {functionName}(pageNum)
                 if (contextInfo.ContentInfo == null)
                 {
                     var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
-                    //addDate = BaiRongDataProvider.ContentDao.GetAddDate(tableName, contextInfo.ContentId);
+                    //addDate = DataProvider.ContentDao.GetAddDate(tableName, contextInfo.ContentId);
                     addDate = Content.GetAddDate(tableName, contextInfo.ContentId);
                 }
                 else
@@ -867,7 +867,7 @@ function {functionName}(pageNum)
                     if (contextInfo.ContentInfo == null)
                     {
                         var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
-                        //addDate = BaiRongDataProvider.ContentDao.GetAddDate(tableName, contextInfo.ContentId);
+                        //addDate = DataProvider.ContentDao.GetAddDate(tableName, contextInfo.ContentId);
                         addDate = Content.GetAddDate(tableName, contextInfo.ContentId);
                     }
                     else
@@ -894,7 +894,7 @@ function {functionName}(pageNum)
                 if (contextInfo.ContentInfo == null)
                 {
                     var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
-                    //lastEditDate = BaiRongDataProvider.ContentDao.GetLastEditDate(tableName, contextInfo.ContentId);
+                    //lastEditDate = DataProvider.ContentDao.GetLastEditDate(tableName, contextInfo.ContentId);
                     lastEditDate = Content.GetLastEditDate(tableName, contextInfo.ContentId);
                 }
                 else

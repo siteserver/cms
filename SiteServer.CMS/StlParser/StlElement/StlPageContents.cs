@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.WebControls;
 using System.Xml;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Controllers.Sys.Stl;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
@@ -135,7 +137,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var pageCount = 1;
             try
             {
-                //totalNum = BaiRongDataProvider.DatabaseDao.GetPageTotalCount(SqlString);
+                //totalNum = DataProvider.DatabaseDao.GetPageTotalCount(SqlString);
                 totalNum = Database.GetPageTotalCount(SqlString);
                 if (ListInfo.PageNum != 0 && ListInfo.PageNum < totalNum)//需要翻页
                 {
@@ -178,10 +180,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (!string.IsNullOrEmpty(SqlString))
                     {
-                        //var pageSqlString = BaiRongDataProvider.DatabaseDao.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
+                        //var pageSqlString = DataProvider.DatabaseDao.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
                         var pageSqlString = Database.GetStlPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
 
-                        var datasource = BaiRongDataProvider.DatabaseDao.GetDataSource(pageSqlString);
+                        var datasource = DataProvider.DatabaseDao.GetDataSource(pageSqlString);
 
                         if (ListInfo.Layout == ELayout.None)
                         {

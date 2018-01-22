@@ -1,4 +1,5 @@
-using BaiRong.Core;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.StlParser.Cache
 {
@@ -20,7 +21,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<string>(cacheKey);
                 if (retval == null)
                 {
-                    retval = BaiRongDataProvider.DatabaseDao.GetSelectSqlStringByQueryString(connectionString,
+                    retval = DataProvider.DatabaseDao.GetSelectSqlStringByQueryString(connectionString,
                     queryString, startNum, totalNum, orderByString);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }

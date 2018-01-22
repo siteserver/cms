@@ -1,5 +1,6 @@
 ﻿using System;
-using BaiRong.Core;
+using System.Threading.Tasks;
+using SiteServer.Utils;
 using Microsoft.AspNet.SignalR;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -9,12 +10,12 @@ namespace SiteServer.API
 {
     public class CreateHub : Hub
     {
-        public void Execute(int publishmentSystemId)
+        public async Task Execute(int publishmentSystemId)
         {
             var pendingTaskCount = 0;
             try
             {
-                pendingTaskCount = ExecuteTask(publishmentSystemId);
+                pendingTaskCount = await ExecuteTaskAsync(publishmentSystemId);
             }
             catch (Exception ex)
             {
@@ -24,14 +25,8 @@ namespace SiteServer.API
             Clients.Client(Context.ConnectionId).next(pendingTaskCount);
         }
 
-        private static int ExecuteTask(int publishmentSystemId)
+        private static async Task<int> ExecuteTaskAsync(int publishmentSystemId)
         {
-            // 如果服务组件启用了的话，则通过服务组件生成
-            if (ServiceManager.IsServiceOnline)
-            {
-                return 0;
-            }
-
             var instance = CreateTaskManager.Instance;
 
             var pendingTask = instance.GetAndRemoveLastPendingTask(publishmentSystemId);
@@ -40,7 +35,7 @@ namespace SiteServer.API
             try
             {
                 var start = DateTime.Now;
-                FileSystemObject.Execute(pendingTask.PublishmentSystemId, pendingTask.CreateType, pendingTask.ChannelId,
+                await FileSystemObjectAsync.ExecuteAsync(pendingTask.PublishmentSystemId, pendingTask.CreateType, pendingTask.ChannelId,
                     pendingTask.ContentId, pendingTask.TemplateId);
                 var timeSpan = DateUtils.GetRelatedDateTimeString(start);
                 instance.AddSuccessLog(pendingTask, timeSpan);
@@ -57,7 +52,7 @@ namespace SiteServer.API
             return instance.GetPendingTaskCount(publishmentSystemId);
         }
 
-        public void GetTasks(int publishmentSystemId)
+        public async Task GetTasks(int publishmentSystemId)
         {
             try
             {
@@ -66,19 +61,11 @@ namespace SiteServer.API
                     var summary = CreateTaskManager.Instance.GetTaskSummary(publishmentSystemId);
                     Clients.Client(Context.ConnectionId).show(true, summary.Tasks, summary.ChannelsCount, summary.ContentsCount, summary.FilesCount);
 
-                    Execute(publishmentSystemId);
+                    await Execute(publishmentSystemId);
                 }
                 else
                 {
-                    if (ServiceManager.IsServiceOnline)
-                    {
-                        var summary = CreateTaskManager.Instance.GetTaskSummary(publishmentSystemId);
-                        Clients.Client(Context.ConnectionId).show(true, summary.Tasks, summary.ChannelsCount, summary.ContentsCount, summary.FilesCount);
-                    }
-                    else
-                    {
-                        Clients.Client(Context.ConnectionId).show(false, null, 0, 0, 0, 0);
-                    }
+                    Clients.Client(Context.ConnectionId).show(false, null, 0, 0, 0, 0);
                 }
             }
             catch (Exception ex)

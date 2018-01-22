@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -30,7 +32,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var userIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("UserIDCollection"));
                 foreach (var userId in userIdList)
                 {
-                    BaiRongDataProvider.UserDao.Delete(userId);
+                    DataProvider.UserDao.Delete(userId);
                 }
 
                 Body.AddAdminLog("删除用户", string.Empty);
@@ -40,16 +42,16 @@ namespace SiteServer.BackgroundPages.Settings
             else if (Body.IsQueryExists("Check"))
             {
                 var userIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("UserIDCollection"));
-                BaiRongDataProvider.UserDao.Check(userIdList);
+                DataProvider.UserDao.Check(userIdList);
 
                 SuccessCheckMessage();
             }
 
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = 25;
-            SpContents.SelectCommand = BaiRongDataProvider.UserDao.GetSelectCommand(false);
+            SpContents.SelectCommand = DataProvider.UserDao.GetSelectCommand(false);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
-            SpContents.SortField = BaiRongDataProvider.UserDao.GetSortFieldName();
+            SpContents.SortField = DataProvider.UserDao.GetSortFieldName();
             SpContents.SortMode = SortMode.DESC;
 
             if (IsPostBack) return;

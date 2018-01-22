@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Plugin.Core;
 
 namespace SiteServer.BackgroundPages
 {
@@ -8,11 +9,15 @@ namespace SiteServer.BackgroundPages
     {
         public Literal LtlContent;
 
-        public void Page_Load(object sender, EventArgs e)
+        public async void Page_Load(object sender, EventArgs e)
         {
-            LtlContent.Text = string.Empty;
+            LtlContent.Text = NuGetManager.TestGetLastPackage(false);
 
-            //BaiRongDataProvider.DatabaseDao.Test();
+            LtlContent.Text += "<br /><hr /></br />";
+
+            LtlContent.Text += NuGetManager.TestGetReleaseVersionList();
+
+            //DataProvider.DatabaseDao.Test();
         }
     }
 }

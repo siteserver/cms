@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Atom.Core;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Table;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.ImportExport.Components
@@ -71,7 +71,7 @@ namespace SiteServer.CMS.ImportExport.Components
             AtomUtility.AddDcElement(feed.AdditionalElements, "DisplayName", tableStyleInfo.DisplayName);
             AtomUtility.AddDcElement(feed.AdditionalElements, "HelpText", tableStyleInfo.HelpText);
             AtomUtility.AddDcElement(feed.AdditionalElements, "IsVisibleInList", tableStyleInfo.IsVisibleInList.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, "InputType", tableStyleInfo.InputType);
+            AtomUtility.AddDcElement(feed.AdditionalElements, "InputType", tableStyleInfo.InputType.Value);
             AtomUtility.AddDcElement(feed.AdditionalElements, "DefaultValue", tableStyleInfo.DefaultValue);
             AtomUtility.AddDcElement(feed.AdditionalElements, "IsHorizontal", tableStyleInfo.IsHorizontal.ToString());
             //SettingsXML
@@ -114,7 +114,7 @@ namespace SiteServer.CMS.ImportExport.Components
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
                 var feed = ExportTableStyleInfo(tableStyleInfo);
-                var styleItems = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(tableStyleInfo.TableStyleId);
+                var styleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(tableStyleInfo.TableStyleId);
                 if (styleItems != null && styleItems.Count > 0)
                 {
                     foreach (var styleItemInfo in styleItems)
@@ -139,7 +139,7 @@ namespace SiteServer.CMS.ImportExport.Components
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
                 var feed = ExportTableStyleInfo(tableStyleInfo);
-                var styleItems = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(tableStyleInfo.TableStyleId);
+                var styleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(tableStyleInfo.TableStyleId);
                 if (styleItems != null && styleItems.Count > 0)
                 {
                     foreach (var styleItemInfo in styleItems)
@@ -172,7 +172,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 //SettingsXML
                 var extendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, "ExtendValues");
 
-                var styleInfo = new TableStyleInfo(0, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisibleInList, InputTypeUtils.GetValue(inputType), defaultValue, isHorizontal, extendValues);
+                var styleInfo = new TableStyleInfo(0, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisibleInList, inputType, defaultValue, isHorizontal, extendValues);
 
                 var styleItems = new List<TableStyleItemInfo>();
                 foreach (AtomEntry entry in feed.Entries)
@@ -238,7 +238,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                         if (relatedIdentity <= 0 || TableStyleManager.IsExists(relatedIdentity, tableName, attributeName)) continue;
 
-                        var styleInfo = new TableStyleInfo(0, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisibleInList, InputTypeUtils.GetValue(inputType), defaultValue, isHorizontal, extendValues);
+                        var styleInfo = new TableStyleInfo(0, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisibleInList, inputType, defaultValue, isHorizontal, extendValues);
 
                         var styleItems = new List<TableStyleItemInfo>();
                         foreach (AtomEntry entry in feed.Entries)

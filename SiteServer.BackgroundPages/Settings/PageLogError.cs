@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var list = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("IDCollection"));
                 try
                 {
-                    BaiRongDataProvider.ErrorLogDao.Delete(list);
+                    DataProvider.ErrorLogDao.Delete(list);
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -41,7 +41,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    BaiRongDataProvider.ErrorLogDao.DeleteAll();
+                    DataProvider.ErrorLogDao.DeleteAll();
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
-            SpContents.SelectCommand = BaiRongDataProvider.ErrorLogDao.GetSelectCommend(Body.GetQueryString("PluginId"), Body.GetQueryString("Keyword"),
+            SpContents.SelectCommand = DataProvider.ErrorLogDao.GetSelectCommend(Body.GetQueryString("PluginId"), Body.GetQueryString("Keyword"),
                     Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"));
 
             SpContents.SortField = "Id";
@@ -63,9 +63,9 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsPostBack) return;
 
             DdlPluginId.Items.Add(new ListItem("全部错误", string.Empty));
-            foreach (var pair in PluginManager.AllPluginPairs)
+            foreach (var pluginInfo in PluginManager.AllPluginInfoList)
             {
-                DdlPluginId.Items.Add(new ListItem(pair.Metadata.DisplayName, pair.Metadata.Id));
+                DdlPluginId.Items.Add(new ListItem(pluginInfo.Id, pluginInfo.Id));
             }
 
             VerifyAdministratorPermissions(AppManager.Permissions.Settings.Log);

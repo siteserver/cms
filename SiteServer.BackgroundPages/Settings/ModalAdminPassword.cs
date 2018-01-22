@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -28,7 +29,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            if (!string.IsNullOrEmpty(_userName) && BaiRongDataProvider.AdministratorDao.IsAdminNameExists(_userName))
+            if (!string.IsNullOrEmpty(_userName) && DataProvider.AdministratorDao.IsAdminNameExists(_userName))
             {
                 LbUserName.Text = _userName;
             }
@@ -45,7 +46,7 @@ namespace SiteServer.BackgroundPages.Settings
             try
             {
                 string errorMessage;
-                if (!BaiRongDataProvider.AdministratorDao.ChangePassword(_userName, TbPassword.Text, out errorMessage))
+                if (!DataProvider.AdministratorDao.ChangePassword(_userName, TbPassword.Text, out errorMessage))
                 {
                     FailMessage(errorMessage);
                     return;

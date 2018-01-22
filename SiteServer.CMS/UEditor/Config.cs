@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.CMS.UEditor
 {

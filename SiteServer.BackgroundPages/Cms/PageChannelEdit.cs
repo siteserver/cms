@@ -2,10 +2,9 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
@@ -13,7 +12,6 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin.Features;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -92,7 +90,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentTables = PluginManager.GetContentModelPlugins();
                 foreach (var contentTable in contentTables)
                 {
-                    DdlContentModelPluginId.Items.Add(new ListItem(contentTable.DisplayName, contentTable.Id));
+                    DdlContentModelPluginId.Items.Add(new ListItem(contentTable.Title, contentTable.Id));
                 }
                 ControlUtils.SelectSingleItem(DdlContentModelPluginId, nodeInfo.ContentModelPluginId);
 
@@ -103,7 +101,7 @@ namespace SiteServer.BackgroundPages.Cms
                         TranslateUtils.StringCollectionToStringList(nodeInfo.ContentRelatedPluginIds);
                     foreach (var pluginMetadata in plugins)
                     {
-                        CblContentRelatedPluginIds.Items.Add(new ListItem(pluginMetadata.DisplayName, pluginMetadata.Id)
+                        CblContentRelatedPluginIds.Items.Add(new ListItem(pluginMetadata.Title, pluginMetadata.Id)
                         {
                             Selected = relatedPluginIds.Contains(pluginMetadata.Id)
                         });

@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.IO;
+using SiteServer.Utils;
+using SiteServer.Utils.IO;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
@@ -387,7 +387,7 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    var roles = BaiRongDataProvider.AdministratorsInRolesDao.GetRolesForUser(adminUserName);
+                    var roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(adminUserName);
                     var ps = new ProductAdministratorWithPermissions(adminUserName);
                     foreach (var itemForPsid in ps.WebsitePermissionDict.Keys)
                     {

@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -161,7 +162,7 @@ namespace SiteServer.BackgroundPages.Cms
                         DataProvider.ContentDao.TrashContents(PublishmentSystemId, tableName, contentIdList);
 
                         //引用内容，需要删除
-                        var tableList = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfoListCreatedInDb();
+                        var tableList = DataProvider.TableCollectionDao.GetTableCollectionInfoListCreatedInDb();
                         foreach (var table in tableList)
                         {
                             var targetContentIdList = DataProvider.ContentDao.GetReferenceIdList(table.TableEnName, contentIdList);

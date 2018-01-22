@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Table;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -396,10 +396,10 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
                     //{
                     //    contentInfo.Id
                     //};
-                    //var tableList = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfoListCreatedInDb();
+                    //var tableList = DataProvider.TableCollectionDao.GetTableCollectionInfoListCreatedInDb();
                     //foreach (var table in tableList)
                     //{
-                    //    var targetContentIdList = BaiRongDataProvider.ContentDao.GetReferenceIdList(table.TableEnName, sourceContentIdList);
+                    //    var targetContentIdList = DataProvider.ContentDao.GetReferenceIdList(table.TableEnName, sourceContentIdList);
                     //    foreach (var targetContentId in targetContentIdList)
                     //    {
                     //        var targetContentInfo = DataProvider.ContentDao.GetContentInfo(table.TableEnName, targetContentId);
@@ -412,7 +412,7 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
                     //        contentInfo.ReferenceId = targetContentInfo.ReferenceId;
                     //        contentInfo.Taxis = targetContentInfo.Taxis;
                     //        contentInfo.Set(ContentAttribute.TranslateContentType, targetContentInfo.GetString(ContentAttribute.TranslateContentType));
-                    //        BaiRongDataProvider.ContentDao.Update(table.TableEnName, contentInfo);
+                    //        DataProvider.ContentDao.Update(table.TableEnName, contentInfo);
 
                     //        //资源：图片，文件，视频
                     //        var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetContentInfo.PublishmentSystemId);

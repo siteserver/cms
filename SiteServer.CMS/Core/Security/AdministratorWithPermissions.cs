@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
 
 namespace SiteServer.CMS.Core.Security
 {
@@ -57,7 +57,7 @@ namespace SiteServer.CMS.Core.Security
                             }
                             else
                             {
-                                _permissionList = BaiRongDataProvider.PermissionsInRolesDao.GetGeneralPermissionList(Roles);
+                                _permissionList = DataProvider.PermissionsInRolesDao.GetGeneralPermissionList(Roles);
                             }
 
                             CacheUtils.InsertMinutes(_permissionListKey, _permissionList, 30);
@@ -82,7 +82,7 @@ namespace SiteServer.CMS.Core.Security
                         }
                         else
                         {
-                            _roles = BaiRongDataProvider.AdministratorsInRolesDao.GetRolesForUser(UserName);
+                            _roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(UserName);
                             CacheUtils.InsertMinutes(_rolesKey, _roles, 30);
                         }
                     }

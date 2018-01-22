@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Images;
+using SiteServer.Utils;
+using SiteServer.Utils.Images;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms

@@ -3,10 +3,11 @@ using System.Globalization;
 using System.Text;
 using System.Web;
 using System.Web.Http;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.API.Controllers.Sys.Stl
 {
@@ -128,7 +129,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
             }
 
             var clickString = $"stlStarPoint_{updaterId}({currentNum});return false;";
-            var starUrl = SiteFilesAssets.GetUrl(PageUtils.InnerApiUrl, "star");
+            var starUrl = SiteFilesAssets.GetUrl(PageUtility.InnerApiUrl, "star");
 
             return $@"<img id=""stl_star_item_{updaterId}_{currentNum}"" alt=""{currentNum}"" onmouseover=""stlStarDraw({currentNum}, {totalStar}, {updaterId}, '{theme}', '{starUrl}')"" onmouseout=""stlStarInit({totalStar}, {updaterId})"" oriSrc=""{starUrl}/{imageName}"" src=""{starUrl}/{imageName}"" onclick=""{clickString}""/>";
         }

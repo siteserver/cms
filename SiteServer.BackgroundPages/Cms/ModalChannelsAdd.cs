@@ -3,12 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin.Features;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -63,7 +62,7 @@ namespace SiteServer.BackgroundPages.Cms
             var contentTables = PluginManager.GetContentModelPlugins();
             foreach (var contentTable in contentTables)
             {
-                DdlContentModelPluginId.Items.Add(new ListItem(contentTable.DisplayName, contentTable.Id));
+                DdlContentModelPluginId.Items.Add(new ListItem(contentTable.Title, contentTable.Id));
             }
 
             var plugins = PluginManager.GetAllContentRelatedPlugins(false);
@@ -71,7 +70,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 foreach (var pluginMetadata in plugins)
                 {
-                    CblContentRelatedPluginIds.Items.Add(new ListItem(pluginMetadata.DisplayName, pluginMetadata.Id));
+                    CblContentRelatedPluginIds.Items.Add(new ListItem(pluginMetadata.Title, pluginMetadata.Id));
                 }
             }
             else

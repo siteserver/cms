@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
@@ -21,7 +20,6 @@ namespace SiteServer.BackgroundPages.Cms
         public Repeater RptContents;
         public SqlPager SpContents;
         public Literal LtlColumnsHead;
-        public Literal LtlCommandsHead;
         public Literal LtlButtons;
         public Literal LtlMoreButtons;
         public DateTimeTextBox TbDateFrom;
@@ -104,7 +102,7 @@ namespace SiteServer.BackgroundPages.Cms
                 SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(_tableName, nodeId, ETriState.All, administratorName);
             }
 
-            //spContents.SortField = BaiRongDataProvider.ContentDao.GetSortFieldName();
+            //spContents.SortField = DataProvider.ContentDao.GetSortFieldName();
             //spContents.SortMode = SortMode.DESC;
             //spContents.OrderByString = ETaxisTypeUtils.GetOrderByString(tableStyle, ETaxisType.OrderByTaxisDesc);
             SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(_nodeInfo.Additional.DefaultTaxisType));
@@ -152,7 +150,6 @@ $(document).ready(function() {
             }
 
             LtlColumnsHead.Text = TextUtility.GetColumnsHeadHtml(_styleInfoList, _attributesOfDisplay, PublishmentSystemInfo);
-            LtlCommandsHead.Text = TextUtility.GetCommandsHeadHtml(PublishmentSystemInfo, _pluginChannels, _isEdit);
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)

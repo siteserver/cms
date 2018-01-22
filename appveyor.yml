@@ -43,9 +43,9 @@
       name: siteserver_upgrade
 
   deploy:
+    provider: GitHub
     release: siteserver-v$(appveyor_build_version)
     description: 'SiteServer CMS'
-    provider: GitHub
     auth_token:
       secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
     artifact: /.*\.zip/
@@ -89,7 +89,7 @@
     - nuget restore siteserver.sln
 
   after_build:
-    - gulp build
+    - gulp build --build 5.0.{build}-beta
     - gulp zip
 
   artifacts:
@@ -100,14 +100,22 @@
       name: siteserver_upgrade
 
   deploy:
-    release: siteserver-dev-v$(appveyor_build_version)
-    description: 'SiteServer CMS'
-    provider: GitHub
-    auth_token:
-      secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
-    artifact: /.*\.zip/
-    draft: false
-    prerelease: false
-    on:
-      branch: dev
-      appveyor_repo_tag: false
+    - provider: GitHub
+      release: siteserver-dev-v$(appveyor_build_version)
+      description: 'SiteServer CMS'
+      auth_token:
+        secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
+      artifact: /.*\.zip/
+      draft: false
+      prerelease: false
+      on:
+        branch: dev
+        appveyor_repo_tag: false
+
+    - provider: NuGet
+      server: https://www.myget.org/F/siteserver/api/v2/package                 # remove to push to NuGet.org
+      api_key:
+        secure: i9vISdFyCeWbRUQw+jhcF748i4oWdeatGBrx+dJ07SDTpt7Hsk9YCRp/ha3ZXfZF
+      skip_symbols: false
+      symbol_server:           # remove to push symbols to SymbolSource.org
+      artifact: build\SiteServer.Update.nupkg

@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Text;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
+using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Cache;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -64,7 +62,7 @@ namespace SiteServer.CMS.Provider
                 ExecuteNonQuery(sqlString);
 
                 var checkInfo = new ContentCheckInfo(0, tableName, publishmentSystemId, nodeId, contentId, isAdmin, userName, isChecked, checkedLevel, checkDate, reasons);
-                BaiRongDataProvider.ContentCheckDao.Insert(checkInfo);
+                DataProvider.ContentCheckDao.Insert(checkInfo);
             }
 
             Content.ClearCache();
@@ -306,7 +304,7 @@ INSERT INTO {tableName} (
             parameters.AddRange(paras);
 
             //IDataParameter[] parms;
-            //var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(contentInfo.Attributes.GetExtendedAttributes(), tableName, out parms);
+            //var sqlInsert = DataProvider.DatabaseDao.GetInsertSqlString(contentInfo.Attributes.GetExtendedAttributes(), tableName, out parms);
 
             var contentId = ExecuteNonQueryAndReturnId(tableName, nameof(ContentInfo.Id), sqlString, parameters.ToArray());
 
@@ -356,7 +354,7 @@ INSERT INTO {tableName} (
             //if (!string.IsNullOrEmpty(tableName))
             //{
             //    contentInfo.Attributes.BeforeExecuteNonQuery();
-            //    sqlString = BaiRongDataProvider.DatabaseDao.GetUpdateSqlString(contentInfo.Attributes.GetExtendedAttributes(), tableName, out parms);
+            //    sqlString = DataProvider.DatabaseDao.GetUpdateSqlString(contentInfo.Attributes.GetExtendedAttributes(), tableName, out parms);
             //}
 
             var metadataInfoList = TableMetadataManager.GetTableMetadataInfoList(tableName);
@@ -693,7 +691,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
 
                 string sqlString =
                     $"DELETE FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeInfo.NodeId} AND SourceId = {SourceManager.Preview}";
-                BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlString);
+                DataProvider.DatabaseDao.ExecuteSql(sqlString);
             }
         }
 
@@ -719,7 +717,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
                 rdr.Close();
             }
 
-            BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlList);
+            DataProvider.DatabaseDao.ExecuteSql(sqlList);
 
             Content.ClearCache();
         }
@@ -846,7 +844,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
         public string GetValue(string tableName, int contentId, string name)
         {
             string sqlString = $"SELECT {name} FROM {tableName} WHERE (Id = {contentId})";
-            return BaiRongDataProvider.DatabaseDao.GetString(sqlString);
+            return DataProvider.DatabaseDao.GetString(sqlString);
         }
 
         public void AddContentGroupList(string tableName, int contentId, List<string> contentGroupList)
@@ -925,7 +923,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
 
             //whereString.Append(orderByString);
 
-            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString(), orderByString);
+            return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString(), orderByString);
         }
 
         public string GetSelectCommandByHitsAnalysis(string tableName, int publishmentSystemId)
@@ -936,18 +934,18 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             whereString.Append($"AND IsChecked='{true}' AND PublishmentSystemId = {publishmentSystemId} AND Hits > 0");
             whereString.Append(orderByString);
 
-            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
+            return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         }
 
         public int GetTotalHits(string tableName, int publishmentSystemId)
         {
-            return BaiRongDataProvider.DatabaseDao.GetIntResult($"SELECT SUM(Hits) FROM {tableName} WHERE IsChecked='{true}' AND PublishmentSystemId = {publishmentSystemId} AND Hits > 0");
+            return DataProvider.DatabaseDao.GetIntResult($"SELECT SUM(Hits) FROM {tableName} WHERE IsChecked='{true}' AND PublishmentSystemId = {publishmentSystemId} AND Hits > 0");
         }
 
         public int GetFirstContentId(string tableName, int nodeId)
         {
             string sqlString = $"SELECT Id FROM {tableName} WHERE NodeId = {nodeId} ORDER BY Taxis DESC, Id DESC";
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         public List<int> GetContentIdList(string tableName, int nodeId)
@@ -1061,14 +1059,14 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
         public List<string> GetValueList(string tableName, int nodeId, string name)
         {
             string sqlString = $"SELECT {name} FROM {tableName} WHERE NodeId = {nodeId}";
-            return BaiRongDataProvider.DatabaseDao.GetStringList(sqlString);
+            return DataProvider.DatabaseDao.GetStringList(sqlString);
         }
 
         public List<string> GetValueListByStartString(string tableName, int nodeId, string name, string startString, int totalNum)
         {
             var inStr = SqlUtils.GetInStr(name, startString);
             var sqlString = SqlUtils.GetDistinctTopSqlString(tableName, name, $"WHERE NodeId = {nodeId} AND {inStr}", string.Empty, totalNum);
-            return BaiRongDataProvider.DatabaseDao.GetStringList(sqlString);
+            return DataProvider.DatabaseDao.GetStringList(sqlString);
         }
 
         public int GetNodeId(string tableName, int contentId)
@@ -1123,7 +1121,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
         {
             string sqlString = $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (NodeId = {nodeId})";
 
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         public int GetSequence(string tableName, int nodeId, int contentId)
@@ -1131,7 +1129,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             string sqlString =
                 $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE NodeId = {nodeId} AND IsChecked = '{true}' AND Taxis < (SELECT Taxis FROM {tableName} WHERE (Id = {contentId}))";
 
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString) + 1;
+            return DataProvider.DatabaseDao.GetIntResult(sqlString) + 1;
         }
 
         public string GetSelectCommendOfAdminExcludeRecycle(string tableName, int publishmentSystemId, DateTime begin, DateTime end)
@@ -1181,7 +1179,7 @@ group by tmp.userName";
                 ? $"WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) "
                 : $"WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) ";
 
-            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString);
+            return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString);
         }
 
         public string GetStlWhereString(int publishmentSystemId, string group, string groupNot, string tags, bool isTopExists, bool isTop, string where)
@@ -1242,7 +1240,7 @@ group by tmp.userName";
             if (!string.IsNullOrEmpty(tags))
             {
                 var tagCollection = TagUtils.ParseTagsString(tags);
-                var contentIdList = BaiRongDataProvider.TagDao.GetContentIdListByTagCollection(tagCollection, publishmentSystemId);
+                var contentIdList = DataProvider.TagDao.GetContentIdListByTagCollection(tagCollection, publishmentSystemId);
                 if (contentIdList.Count > 0)
                 {
                     var inString = TranslateUtils.ToSqlInStringWithoutQuote(contentIdList);
@@ -1328,7 +1326,7 @@ group by tmp.userName";
             ContentInfo info = null;
 
             string sqlWhere = $"WHERE Id = {contentId}";
-            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
+            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -1375,7 +1373,7 @@ group by tmp.userName";
                     : $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (LastEditDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}) AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')";
             }
 
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
         
         public string GetWhereStringByStlSearch(bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int publishmentSystemId, List<string> excludeAttributes, NameValueCollection form, out bool isDefaultCondition)
@@ -1598,13 +1596,13 @@ group by tmp.userName";
 
             if (isNoDup)
             {
-                var sqlString = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
+                var sqlString = DataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
                 sqlWhereString += $" AND Id IN ({sqlString})";
             }
 
             if (!string.IsNullOrEmpty(tableName))
             {
-                return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, StlColumns, sqlWhereString, orderByString);
+                return DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, StlColumns, sqlWhereString, orderByString);
             }
             return string.Empty;
         }
@@ -1615,13 +1613,13 @@ group by tmp.userName";
                     $"WHERE (NodeId > 0 AND IsChecked = '{true}' {whereString})";
             if (isNoDup)
             {
-                var sqlString = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
+                var sqlString = DataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
                 sqlWhereString += $" AND Id IN ({sqlString})";
             }
 
             if (!string.IsNullOrEmpty(tableName))
             {
-                return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, $"{ContentAttribute.Id}, {ContentAttribute.NodeId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}", sqlWhereString, orderByString);
+                return DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, $"{ContentAttribute.Id}, {ContentAttribute.NodeId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}", sqlWhereString, orderByString);
             }
             return string.Empty;
         }
@@ -1742,7 +1740,7 @@ group by tmp.userName";
 
             string sqlString = $"SELECT COUNT(*) FROM {tableName} {whereString}";
 
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         public List<KeyValuePair<int, int>> GetCountListUnChecked(bool isSystemAdministrator, string administratorName, List<int> publishmentSystemIdList, List<int> owningNodeIdList, string tableName)
@@ -1779,7 +1777,7 @@ group by tmp.userName";
                 var checkLevelList = CheckManager.LevelInt.GetCheckLevelListOfNeedCheck(publishmentSystemInfo, isChecked, checkedLevel);
                 var sqlString = isSystemAdministrator ? $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (PublishmentSystemID = {publishmentSystemId} AND NodeID > 0 AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}))" : $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningNodeIdList)}) AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}))";
 
-                var count = BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+                var count = DataProvider.DatabaseDao.GetIntResult(sqlString);
                 if (count > 0)
                 {
                     list.Add(new KeyValuePair<int, int>(publishmentSystemId, count));
@@ -1794,7 +1792,7 @@ group by tmp.userName";
             string sqlString =
                 $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (NodeID = {nodeId} AND ImageUrl <> '' AND {ContentAttribute.IsChecked} = '{true}')";
 
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         public string GetStlWhereString(int publishmentSystemId, string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, bool isCreateSearchDuplicate)
@@ -1894,7 +1892,7 @@ group by tmp.userName";
             if (!string.IsNullOrEmpty(tags))
             {
                 var tagCollection = TagUtils.ParseTagsString(tags);
-                var contentIdArrayList = BaiRongDataProvider.TagDao.GetContentIdListByTagCollection(tagCollection, publishmentSystemId);
+                var contentIdArrayList = DataProvider.TagDao.GetContentIdListByTagCollection(tagCollection, publishmentSystemId);
                 if (contentIdArrayList.Count > 0)
                 {
                     whereBuilder.Append(
@@ -1909,7 +1907,7 @@ group by tmp.userName";
 
             if (!isCreateSearchDuplicate)
             {
-                var sqlString = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(ID)", whereBuilder + " GROUP BY Title");
+                var sqlString = DataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(ID)", whereBuilder + " GROUP BY Title");
                 whereBuilder.Append($" AND ID IN ({sqlString}) ");
             }
 
@@ -2023,14 +2021,14 @@ group by tmp.userName";
             whereString.Append(
                 $"WHERE (PublishmentSystemID = {publishmentSystemId} AND IsChecked='True' AND FileUrl <> '') ");
 
-            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
+            return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         }
 
         private int GetTaxis(int selectedId, string tableName)
         {
             string sqlString = $"SELECT Taxis FROM {tableName} WHERE (Id = {selectedId})";
 
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         private string GetSelectCommendByCondition(string tableName, int publishmentSystemId, List<int> nodeIdList, string searchType, string keyword, string dateFrom, string dateTo, ETriState checkedState, bool isNoDup, bool isTrashContent)
@@ -2100,7 +2098,7 @@ group by tmp.userName";
 
             if (isNoDup)
             {
-                var sqlString = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", whereString + " GROUP BY Title");
+                var sqlString = DataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", whereString + " GROUP BY Title");
                 whereString.Append($"AND Id IN ({sqlString})");
             }
 
@@ -2115,14 +2113,14 @@ group by tmp.userName";
 
             whereString.Append(" ").Append(orderByString);
 
-            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
+            return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         }
 
         private List<int> GetContentIdListByTrash(int publishmentSystemId, string tableName)
         {
             string sqlString =
                 $"SELECT Id FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId < 0";
-            return BaiRongDataProvider.DatabaseDao.GetIntList(sqlString);
+            return DataProvider.DatabaseDao.GetIntList(sqlString);
         }
 
         private DataSet GetStlDataSourceChecked(string tableName, List<int> nodeIdList, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
@@ -2135,7 +2133,7 @@ group by tmp.userName";
 
             if (isNoDup)
             {
-                var sqlString = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
+                var sqlString = DataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
                 sqlWhereString += $" AND Id IN ({sqlString})";
             }
 
@@ -2266,7 +2264,7 @@ group by tmp.userName";
             DataSet dataset = null;
             if (!string.IsNullOrEmpty(tableName))
             {
-                var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, totalNum, StlColumns, whereString, orderByString);
+                var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, totalNum, StlColumns, whereString, orderByString);
                 dataset = ExecuteDataset(sqlSelect);
             }
             return dataset;
@@ -2277,7 +2275,7 @@ group by tmp.userName";
             DataSet dataset = null;
             if (!string.IsNullOrEmpty(tableName))
             {
-                var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, StlColumns, whereString, orderByString);
+                var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, StlColumns, whereString, orderByString);
                 dataset = ExecuteDataset(sqlSelect);
             }
             return dataset;
@@ -2324,7 +2322,7 @@ group by tmp.userName";
                     : $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AddDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}) AND (AddUserName = '{userName}')";
             }
 
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         private List<int> GetContentIdListChecked(string tableName, int nodeId, int totalNum, string orderByFormatString, string whereString)
@@ -2406,7 +2404,7 @@ group by tmp.userName";
         //        ExecuteNonQuery(sqlString);
 
         //        var checkInfo = new ContentCheckInfo(0, tableName, publishmentSystemId, nodeId, contentId, isAdmin, userName, isChecked, checkedLevel, checkDate, reasons);
-        //        BaiRongDataProvider.ContentCheckDao.Insert(checkInfo);
+        //        DataProvider.ContentCheckDao.Insert(checkInfo);
         //    }
         //}
 
@@ -2470,7 +2468,7 @@ group by tmp.userName";
 
         //    whereString.Append(orderByString);
 
-        //    return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
+        //    return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         //}
 
         //private string GetSelectCommend(string tableName, int nodeId, ETriState checkedState)
@@ -2491,7 +2489,7 @@ group by tmp.userName";
 
         //    //whereString.Append(orderByString);
 
-        //    return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString(), orderByString);
+        //    return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString(), orderByString);
         //}
 
         //private string GetSelectCommend(string tableName, List<int> nodeIdList, ETriState checkedState)
@@ -2515,7 +2513,7 @@ group by tmp.userName";
 
         //    whereString.Append(orderByString);
 
-        //    return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
+        //    return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         //}
 
         //private List<int> GetContentIdListByPublishmentSystemId(string tableName, int publishmentSystemId)
@@ -2576,7 +2574,7 @@ group by tmp.userName";
         //    string sqlString =
         //        $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (NodeId = {nodeId} AND IsChecked = '{true}' {whereString})";
 
-        //    return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+        //    return DataProvider.DatabaseDao.GetIntResult(sqlString);
         //}
 
         //private int GetStlCountChecked(string tableName, List<int> nodeIdList, string whereString)
@@ -2589,7 +2587,7 @@ group by tmp.userName";
 
         //    string sqlString = $"SELECT COUNT(*) FROM {tableName} {sqlWhereString}";
 
-        //    return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+        //    return DataProvider.DatabaseDao.GetIntResult(sqlString);
         //}
 
         //private List<int> GetContentIdListCheck(int publishmentSystemId, int nodeId, string tableName)
@@ -2636,7 +2634,7 @@ group by tmp.userName";
         //        if (!string.IsNullOrEmpty(tableName))
         //        {
         //            string sqlWhere = $"WHERE NodeId > 0 AND Id = {contentId}";
-        //            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
+        //            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
 
         //            using (var rdr = ExecuteReader(sqlSelect))
         //            {
@@ -2760,7 +2758,7 @@ group by tmp.userName";
         //        }
         //    }
 
-        //    return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
+        //    return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         //}
     }
 }

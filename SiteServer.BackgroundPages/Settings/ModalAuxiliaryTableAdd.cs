@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -39,7 +41,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!string.IsNullOrEmpty(_tableName))
             {
-                var info = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfo(_tableName);
+                var info = DataProvider.TableCollectionDao.GetTableCollectionInfo(_tableName);
                 if (info != null)
                 {
                     TbTableEnName.Text = info.TableEnName;
@@ -56,11 +58,11 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!string.IsNullOrEmpty(_tableName))
             {
-                var info = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfo(_tableName);
+                var info = DataProvider.TableCollectionDao.GetTableCollectionInfo(_tableName);
                 info.TableCnName = TbTableCnName.Text;
                 info.Description = TbDescription.Text;
 
-                BaiRongDataProvider.TableCollectionDao.Update(info);
+                DataProvider.TableCollectionDao.Update(info);
 
                 Body.AddAdminLog("修改辅助表", $"辅助表:{_tableName}");
 
@@ -69,12 +71,12 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                var tableEnNameList = BaiRongDataProvider.TableCollectionDao.GetTableEnNameList();
+                var tableEnNameList = DataProvider.TableCollectionDao.GetTableEnNameList();
                 if (tableEnNameList.IndexOf(TbTableEnName.Text) != -1)
                 {
                     FailMessage("辅助表添加失败，辅助表标识已存在！");
                 }
-                else if (BaiRongDataProvider.DatabaseDao.IsTableExists(TbTableEnName.Text))
+                else if (DataProvider.DatabaseDao.IsTableExists(TbTableEnName.Text))
                 {
                     FailMessage("辅助表添加失败，数据库中已存在此表！");
                 }
@@ -87,7 +89,7 @@ namespace SiteServer.BackgroundPages.Settings
                         Description = TbDescription.Text
                     };
 
-                    BaiRongDataProvider.TableCollectionDao.Insert(info, BaiRongDataProvider.TableMetadataDao.GetDefaultTableMetadataInfoList(info.TableEnName));
+                    DataProvider.TableCollectionDao.Insert(info, DataProvider.TableMetadataDao.GetDefaultTableMetadataInfoList(info.TableEnName));
 
                     Body.AddAdminLog("添加辅助表", $"辅助表:{TbTableEnName.Text}");
 

@@ -2,9 +2,10 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -171,7 +172,7 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             var retval = new StringBuilder();
 
-            var tagList = BaiRongDataProvider.TagDao.GetTagListByStartString(publishmentSystemId, tag, 10);
+            var tagList = DataProvider.TagDao.GetTagListByStartString(publishmentSystemId, tag, 10);
             if (tagList.Count > 0)
             {
                 foreach (var value in tagList)

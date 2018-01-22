@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Web.UI;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core.Security;
-using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.BackgroundPages
 {

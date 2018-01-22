@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;

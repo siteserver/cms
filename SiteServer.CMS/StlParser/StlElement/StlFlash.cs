@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using BaiRong.Core;
-using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
@@ -150,7 +150,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var nodeInfo = NodeManager.GetNodeInfo(contextInfo.PublishmentSystemInfo.PublishmentSystemId, contextInfo.ChannelId);
                         var tableName = NodeManager.GetTableName(contextInfo.PublishmentSystemInfo, nodeInfo);
 
-                        //picUrl = BaiRongDataProvider.ContentDao.GetValue(tableName, contentId, type);
+                        //picUrl = DataProvider.ContentDao.GetValue(tableName, contentId, type);
                         picUrl = Content.GetValue(tableName, contentId, type);
                     }
                     else

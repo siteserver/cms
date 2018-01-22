@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using BaiRong.Core.Integration;
+using SiteServer.CMS.Core;
 using SiteServer.Plugin.Apis;
 
 namespace SiteServer.CMS.Plugin.Apis
@@ -8,7 +8,8 @@ namespace SiteServer.CMS.Plugin.Apis
     {
         private SmsApi() { }
 
-        public static SmsApi Instance { get; } = new SmsApi();
+        private static SmsApi _instance;
+        public static SmsApi Instance => _instance ?? (_instance = new SmsApi());
 
         public bool IsReady()
         {

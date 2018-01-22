@@ -1,11 +1,11 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Data;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -189,7 +189,7 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName)			 
 			};
 
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString, selectParms);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString, selectParms);
         }
 
         private void SetTaxis(int publishmentSystemId, string groupName, int taxis)

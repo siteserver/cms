@@ -1,6 +1,5 @@
-using BaiRong.Core.Model;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Model
 {

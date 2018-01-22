@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using BaiRong.Core;
-using BaiRong.Core.IO;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Rss;
+using SiteServer.Utils;
+using SiteServer.Utils.IO;
+using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Rss;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;

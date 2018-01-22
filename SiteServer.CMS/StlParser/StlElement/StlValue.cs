@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using BaiRong.Core;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
+using SiteServer.Utils.Table;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -189,7 +189,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             else
                             {
                                 parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.PublishmentSystemInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerXml, false);
-                                parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                                parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                             }
                         }
                         else

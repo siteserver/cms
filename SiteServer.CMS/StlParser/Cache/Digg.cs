@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using BaiRong.Core;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.StlParser.Cache
 {
@@ -19,7 +20,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<int[]>(cacheKey);
                 if (retval == null)
                 {
-                    retval = BaiRongDataProvider.DiggDao.GetCount(publishmentSystemId, relatedIdentity);
+                    retval = DataProvider.DiggDao.GetCount(publishmentSystemId, relatedIdentity);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -39,7 +40,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<List<int>>(cacheKey);
                 if (retval == null)
                 {
-                    retval = BaiRongDataProvider.DiggDao.GetRelatedIdentityListByTotal(publishmentSystemId);
+                    retval = DataProvider.DiggDao.GetRelatedIdentityListByTotal(publishmentSystemId);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }

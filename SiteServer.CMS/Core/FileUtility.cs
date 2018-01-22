@@ -1,11 +1,10 @@
 using System;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Model;
 using System.Collections.Generic;
-using BaiRong.Core.Images;
-using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils.Images;
+using SiteServer.Utils.Model.Enumerations;
 
 namespace SiteServer.CMS.Core
 {

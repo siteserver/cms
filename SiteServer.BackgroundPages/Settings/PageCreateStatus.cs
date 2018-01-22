@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
-using BaiRong.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {

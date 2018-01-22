@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.BackgroundPages.Cms

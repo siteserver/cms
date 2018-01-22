@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -130,7 +130,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 }
 
                 string resultString =
-                    $"任务完成，备份地址：<br /><strong> {filePath} </strong>&nbsp;<a href='{ActionsDownload.GetUrl(PageUtils.InnerApiUrl, filePath)}'><img src='{SiteServerAssets.GetIconUrl("download.gif")}' />下载</a>。";
+                    $"任务完成，备份地址：<br /><strong> {filePath} </strong>&nbsp;<a href='{ActionsDownload.GetUrl(PageUtility.InnerApiUrl, filePath)}'><img src='{SiteServerAssets.GetIconUrl("download.gif")}' />下载</a>。";
 
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(resultString, string.Empty, string.Empty);
             }

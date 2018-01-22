@@ -4,6 +4,7 @@ var rimraf = require('rimraf');
 var rename = require("gulp-rename");
 var replace = require('gulp-replace');
 var zip = require('gulp-zip');
+var argv = require('yargs').argv;
 
 function min(src, dest) {
   var g = gulp.src(src);
@@ -22,6 +23,11 @@ function min(src, dest) {
 }
 
 gulp.task('build', function () {
+  //nuspec
+  var version = argv.build;
+  console.log(version);
+  gulp.src('./SiteServer.Update.nuspec').pipe(replace('$version$', version)).pipe(gulp.dest('./build/SiteServer.Update.nuspec'));
+
   //bin
   gulp.src(['./SiteServer.Web/bin/*.dll']).pipe(gulp.dest('./build/bin'));
   //SiteFiles
@@ -32,16 +38,12 @@ gulp.task('build', function () {
   min('./SiteServer.Web/SiteServer/**/*', './build/SiteServer');
   //SiteServer.Web/*
   min('./SiteServer.Web/安装向导.html', './build');
-  min('./SiteServer.Web/升级向导.html', './build');
   gulp.src('./SiteServer.Web/Global.asax').pipe(gulp.dest('./build'));
   gulp.src('./SiteServer.Web/robots.txt').pipe(gulp.dest('./build'));
   gulp.src('./SiteServer.Web/Web.Release.config').pipe(rename('Web.config')).pipe(gulp.dest('./build'));
-  //exe
-  gulp.src(['./siteserver/bin/Release/siteserver.exe']).pipe(gulp.dest('./build'));
 });
 
 gulp.task('zip', function () {
-  gulp.src(['./build/**/*', '!./build/升级向导.html']).pipe(zip('siteserver_install.zip')).pipe(gulp.dest('./'));
   gulp.src(['./build/**/*', '!./build/安装向导.html']).pipe(zip('siteserver_upgrade.zip')).pipe(gulp.dest('./'));
 });
 

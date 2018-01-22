@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Table;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
@@ -228,7 +227,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, type, relatedIdentities);
                     parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo.Title, separator, pageInfo.PublishmentSystemInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerXml, false);
-                    parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                    parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
                     if (!isClearTags && !string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString)))
                     {
@@ -623,7 +622,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (!string.IsNullOrEmpty(contentInfo.AddUserName))
                     {
-                        //var displayName = BaiRongDataProvider.AdministratorDao.GetDisplayName(contentInfo.AddUserName);
+                        //var displayName = DataProvider.AdministratorDao.GetDisplayName(contentInfo.AddUserName);
                         var displayName = Administrator.GetDisplayName(contentInfo.AddUserName);
                         parsedContent = string.IsNullOrEmpty(displayName) ? contentInfo.AddUserName : displayName;
                     }
@@ -644,7 +643,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
                             var num = TranslateUtils.ToInt(no);
                             parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo, separator, pageInfo.PublishmentSystemInfo, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerXml, false);
-                            parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                            parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                         else
                         {

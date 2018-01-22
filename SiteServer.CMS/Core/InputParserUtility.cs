@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Web.UI.HtmlControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
@@ -29,7 +28,7 @@ namespace SiteServer.CMS.Core
         {
             var parsedContent = content;
 
-            var inputType = InputTypeUtils.GetEnumType(styleInfo.InputType);
+            var inputType = styleInfo.InputType;
 
             if (inputType == InputType.Date)
             {
@@ -68,7 +67,7 @@ namespace SiteServer.CMS.Core
                 var selectedTexts = new ArrayList();
                 var selectedValues = TranslateUtils.StringCollectionToStringList(content);
                 var styleItems = styleInfo.StyleItems ??
-                                 BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+                                 DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
                 foreach (var itemInfo in styleItems)
                 {
                     if (selectedValues.Contains(itemInfo.ItemValue))
@@ -107,7 +106,7 @@ namespace SiteServer.CMS.Core
             var value = contentInfo.GetString(styleInfo.AttributeName);
             var parsedContent = string.Empty;
 
-            var inputType = InputTypeUtils.GetEnumType(styleInfo.InputType);
+            var inputType = styleInfo.InputType;
 
             if (inputType == InputType.Date)
             {
@@ -138,7 +137,7 @@ namespace SiteServer.CMS.Core
                 var selectedTexts = new ArrayList();
                 var selectedValues = TranslateUtils.StringCollectionToStringList(value);
                 var styleItems = styleInfo.StyleItems ??
-                                 BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+                                 DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
                 foreach (var itemInfo in styleItems)
                 {
                     if (selectedValues.Contains(itemInfo.ItemValue))
@@ -309,7 +308,7 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     retval = $@"
-<embed src=""{SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
+<embed src=""{SiteFilesAssets.GetUrl(PageUtility.OuterApiUrl, SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
                         .ToString().ToLower()}&image={string.Empty}&file={videoUrl}"" width=""{450}"" height=""{350}""/>
 ";
                 }
@@ -324,13 +323,13 @@ namespace SiteServer.CMS.Core
             {
                 if (isStlEntity)
                 {
-                    retval = ActionsDownload.GetUrl(PageUtils.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId, nodeId, contentId, fileUrl);
+                    retval = ActionsDownload.GetUrl(PageUtility.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId, nodeId, contentId, fileUrl);
                 }
                 else
                 {
                     var stlAnchor = new HtmlAnchor();
                     ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                    stlAnchor.HRef = ActionsDownload.GetUrl(PageUtils.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId, nodeId, contentId, fileUrl);
+                    stlAnchor.HRef = ActionsDownload.GetUrl(PageUtility.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId, nodeId, contentId, fileUrl);
                     stlAnchor.InnerHtml = string.IsNullOrEmpty(innerXml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerXml;
 
                     retval = ControlUtils.GetControlRenderHtml(stlAnchor);
@@ -348,13 +347,13 @@ namespace SiteServer.CMS.Core
                 {
                     if (isStlEntity)
                     {
-                        retval = ActionsDownload.GetUrl(PageUtils.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId, fileUrl);
+                        retval = ActionsDownload.GetUrl(PageUtility.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId, fileUrl);
                     }
                     else
                     {
                         var stlAnchor = new HtmlAnchor();
                         ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                        stlAnchor.HRef = ActionsDownload.GetUrl(PageUtils.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId, fileUrl);
+                        stlAnchor.HRef = ActionsDownload.GetUrl(PageUtility.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId, fileUrl);
                         stlAnchor.InnerHtml = string.IsNullOrEmpty(innerXml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerXml;
 
                         retval = ControlUtils.GetControlRenderHtml(stlAnchor);

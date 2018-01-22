@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
+using SiteServer.CMS.Data;
 
 namespace SiteServer.CMS.Provider
 {

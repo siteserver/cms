@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using BaiRong.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core.Security
 {

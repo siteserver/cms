@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -57,7 +58,7 @@ namespace SiteServer.BackgroundPages.Settings
                 ConfigManager.SystemConfigInfo.SmsProviderType =
                     ESmsProviderTypeUtils.GetEnumType(DdlProviderType.SelectedValue);
                 ConfigManager.SystemConfigInfo.SmsAppKey = TbAppKey.Text;
-                BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
+                DataProvider.ConfigDao.Update(ConfigManager.Instance);
 
                 SuccessMessage("短信服务商设置成功！");
             }

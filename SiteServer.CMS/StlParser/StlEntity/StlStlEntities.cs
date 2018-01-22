@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using BaiRong.Core;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
+using SiteServer.Utils.Table;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 

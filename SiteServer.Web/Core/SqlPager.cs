@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Data;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Core
 {
@@ -257,7 +257,7 @@ namespace SiteServer.API.Core
         {
             var sqlString = GetQueryCountCommandText();
 
-            var recCount = BaiRongDataProvider.DatabaseDao.GetIntResult(WebConfigUtils.ConnectionString, sqlString);
+            var recCount = DataProvider.DatabaseDao.GetIntResult(WebConfigUtils.ConnectionString, sqlString);
 
             return recCount;
         }

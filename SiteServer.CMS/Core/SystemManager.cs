@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.CMS.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Model.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
@@ -11,46 +10,42 @@ namespace SiteServer.CMS.Core
     {
         public static void Install(string adminName, string adminPassword)
         {
-            InstallOrUpgrade(adminName, adminPassword);
+            InstallOrUpdate(adminName, adminPassword);
         }
 
-        public static void Upgrade()
+        public static void Update()
         {
-            InstallOrUpgrade(string.Empty, string.Empty);
+            InstallOrUpdate(string.Empty, string.Empty);
         }
 
-        private static void InstallOrUpgrade(string adminName, string adminPassword)
+        private static void InstallOrUpdate(string adminName, string adminPassword)
         {
-            var providers = new List<DataProviderBase>();
-            providers.AddRange(BaiRongDataProvider.AllProviders);
-            providers.AddRange(DataProvider.AllProviders);
-
-            foreach (var provider in providers)
+            foreach (var provider in DataProvider.AllProviders)
             {
                 if (string.IsNullOrEmpty(provider.TableName) || provider.TableColumns == null || provider.TableColumns.Count <= 0) continue;
 
-                if (!BaiRongDataProvider.DatabaseDao.IsTableExists(provider.TableName))
+                if (!DataProvider.DatabaseDao.IsTableExists(provider.TableName))
                 {
-                    BaiRongDataProvider.DatabaseDao.CreateSystemTable(provider.TableName, provider.TableColumns);
+                    DataProvider.DatabaseDao.CreateSystemTable(provider.TableName, provider.TableColumns);
                 }
                 else
                 {
-                    BaiRongDataProvider.DatabaseDao.AlterSystemTable(provider.TableName, provider.TableColumns);
+                    DataProvider.DatabaseDao.AlterSystemTable(provider.TableName, provider.TableColumns);
                 }
             }
 
-            var configInfo = BaiRongDataProvider.ConfigDao.GetConfigInfo();
+            var configInfo = DataProvider.ConfigDao.GetConfigInfo();
             if (configInfo == null)
             {
                 configInfo = new ConfigInfo(true, AppManager.Version, DateTime.Now, string.Empty);
-                BaiRongDataProvider.ConfigDao.Insert(configInfo);
+                DataProvider.ConfigDao.Insert(configInfo);
             }
             else
             {
                 configInfo.DatabaseVersion = AppManager.Version;
                 configInfo.IsInitialized = true;
                 configInfo.UpdateDate = DateTime.Now;
-                BaiRongDataProvider.ConfigDao.Update(configInfo);
+                DataProvider.ConfigDao.Update(configInfo);
             }
 
             if (!string.IsNullOrEmpty(adminName) && !string.IsNullOrEmpty(adminPassword))
@@ -65,23 +60,23 @@ namespace SiteServer.CMS.Core
 
                 string errorMessage;
                 AdminManager.CreateAdministrator(administratorInfo, out errorMessage);
-                BaiRongDataProvider.AdministratorsInRolesDao.AddUserToRole(adminName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
+                DataProvider.AdministratorsInRolesDao.AddUserToRole(adminName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
             }
 
-            BaiRongDataProvider.TableCollectionDao.CreateAllTableCollectionInfoIfNotExists();
+            DataProvider.TableCollectionDao.CreateAllTableCollectionInfoIfNotExists();
         }
 
-        public static bool IsNeedUpgrade()
+        public static bool IsNeedUpdate()
         {
-            return !StringUtils.EqualsIgnoreCase(AppManager.Version, BaiRongDataProvider.ConfigDao.GetDatabaseVersion());
+            return !StringUtils.EqualsIgnoreCase(AppManager.Version, DataProvider.ConfigDao.GetDatabaseVersion());
         }
 
         public static bool IsNeedInstall()
         {
-            var isNeedInstall = !BaiRongDataProvider.ConfigDao.IsInitialized();
+            var isNeedInstall = !DataProvider.ConfigDao.IsInitialized();
             if (isNeedInstall)
             {
-                isNeedInstall = !BaiRongDataProvider.ConfigDao.IsInitialized();
+                isNeedInstall = !DataProvider.ConfigDao.IsInitialized();
             }
             return isNeedInstall;
         }

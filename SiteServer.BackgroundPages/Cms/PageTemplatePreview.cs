@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Utility;

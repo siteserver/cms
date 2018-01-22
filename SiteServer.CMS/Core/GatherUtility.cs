@@ -2,16 +2,15 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
-using BaiRong.Core;
-using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Net;
+using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Net;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
 using System.Collections.Generic;
-using BaiRong.Core.Model;
-using BaiRong.Core.Table;
-using SiteServer.Plugin.Models;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Table;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
@@ -293,15 +292,6 @@ namespace SiteServer.CMS.Core
         {
             try
             {
-                // TODO:采集文件、链接标题为内容标题、链接提示为内容标题
-                //string extension = PathUtils.GetExtension(url);
-                //if (!EFileSystemTypeUtils.IsTextEditable(extension))
-                //{
-                //    if (EFileSystemTypeUtils.IsImageOrFlashOrPlayer(extension))
-                //    {
-
-                //    }
-                //}
                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
                 var contentHtml = WebClientUtils.GetRemoteFileSource(url, charset, cookieString);
                 var title = RegexUtils.GetContent("title", regexTitle, contentHtml);
@@ -851,7 +841,7 @@ namespace SiteServer.CMS.Core
                 var currentCount = 0;
 
                 var gatherDatabaseRuleInfo = DataProvider.GatherDatabaseRuleDao.GetGatherDatabaseRuleInfo(gatherRuleName, publishmentSystemId);
-                var tableMatchInfo = BaiRongDataProvider.TableMatchDao.GetTableMatchInfo(gatherDatabaseRuleInfo.TableMatchId);
+                var tableMatchInfo = DataProvider.TableMatchDao.GetTableMatchInfo(gatherDatabaseRuleInfo.TableMatchId);
 
                 if (!DataProvider.NodeDao.IsExists(gatherDatabaseRuleInfo.NodeId))
                 {
@@ -864,7 +854,7 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    totalCount = BaiRongDataProvider.DatabaseDao.GetIntResult(gatherDatabaseRuleInfo.ConnectionString,
+                    totalCount = DataProvider.DatabaseDao.GetIntResult(gatherDatabaseRuleInfo.ConnectionString,
                         $"SELECT COUNT(*) FROM {gatherDatabaseRuleInfo.RelatedTableName}");
                 }
 
@@ -895,14 +885,14 @@ namespace SiteServer.CMS.Core
 
                 var titleList = DataProvider.ContentDao.GetValueList(tableName, gatherDatabaseRuleInfo.NodeId, ContentAttribute.Title);
 
-                using (var rdr = BaiRongDataProvider.DatabaseDao.GetDataReader(gatherDatabaseRuleInfo.ConnectionString, sqlString))
+                using (var rdr = DataProvider.DatabaseDao.GetDataReader(gatherDatabaseRuleInfo.ConnectionString, sqlString))
                 {
                     while (rdr.Read())
                     {
                         try
                         {
                             var collection = new NameValueCollection();
-                            BaiRongDataProvider.DatabaseDao.ReadResultsToNameValueCollection(rdr, collection);
+                            DataProvider.DatabaseDao.ReadResultsToNameValueCollection(rdr, collection);
                             var contentInfo = Converter.ToContentInfo(collection, tableMatchInfo.ColumnsMap);
                             if (!string.IsNullOrEmpty(contentInfo?.Title) && !titleList.Contains(contentInfo.Title))
                             {

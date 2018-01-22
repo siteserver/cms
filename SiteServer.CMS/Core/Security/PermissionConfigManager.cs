@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Xml;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
 
 namespace SiteServer.CMS.Core.Security

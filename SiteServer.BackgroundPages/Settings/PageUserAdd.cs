@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -54,7 +56,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (_userId > 0)
             {
-                var userInfo = BaiRongDataProvider.UserDao.GetUserInfo(_userId);
+                var userInfo = DataProvider.UserDao.GetUserInfo(_userId);
                 if (userInfo != null)
                 {
                     TbUserName.Text = userInfo.UserName;
@@ -101,7 +103,7 @@ namespace SiteServer.BackgroundPages.Settings
                 };
 
                 string errorMessage;
-                var isCreated = BaiRongDataProvider.UserDao.Insert(userInfo, userInfo.Password, string.Empty, out errorMessage);
+                var isCreated = DataProvider.UserDao.Insert(userInfo, userInfo.Password, string.Empty, out errorMessage);
 
                 if (isCreated)
                 {
@@ -118,13 +120,13 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                var userInfo = BaiRongDataProvider.UserDao.GetUserInfo(_userId);
+                var userInfo = DataProvider.UserDao.GetUserInfo(_userId);
 
                 userInfo.DisplayName = TbDisplayName.Text;
                 userInfo.Email = TbEmail.Text;
                 userInfo.Mobile = TbMobile.Text;
 
-                BaiRongDataProvider.UserDao.Update(userInfo);
+                DataProvider.UserDao.Update(userInfo);
 
                 Body.AddAdminLog("修改用户",
                     $"用户:{TbUserName.Text}");

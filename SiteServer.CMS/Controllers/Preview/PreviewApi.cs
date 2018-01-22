@@ -1,4 +1,5 @@
-﻿using BaiRong.Core;
+﻿using SiteServer.CMS.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Controllers.Preview
 {
@@ -31,7 +32,7 @@ namespace SiteServer.CMS.Controllers.Preview
 
         private static string GetUrl(int publishmentSystemId, int channelId, int contentId, int fileTemplateId)
         {
-            var apiUrl = PageUtils.Combine(PageUtils.InnerApiUrl, Route);
+            var apiUrl = PageUtils.Combine(PageUtility.InnerApiUrl, Route);
             apiUrl = apiUrl.Replace("{publishmentSystemId}", publishmentSystemId.ToString());
             if (channelId > 0)
             {

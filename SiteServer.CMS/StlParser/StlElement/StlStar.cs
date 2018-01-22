@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
@@ -82,7 +82,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
             var contentId = ContentUtility.GetRealContentId(tableName, contextInfo.ContentId);
-            //var channelId = BaiRongDataProvider.ContentDao.GetNodeId(tableName, contextInfo.ContentId);
+            //var channelId = DataProvider.ContentDao.GetNodeId(tableName, contextInfo.ContentId);
             var channelId = Content.GetNodeId(tableName, contextInfo.ContentId);
 
             if (isTextOnly)

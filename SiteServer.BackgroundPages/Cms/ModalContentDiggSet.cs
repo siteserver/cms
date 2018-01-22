@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -32,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                var nums = BaiRongDataProvider.DiggDao.GetCount(PublishmentSystemId, _contentId);
+                var nums = DataProvider.DiggDao.GetCount(PublishmentSystemId, _contentId);
 
                 TbGoodNum.Text = Convert.ToString(nums[0]);
                 TbBadNum.Text = Convert.ToString(nums[1]);
@@ -48,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var goodNum = TranslateUtils.ToInt(TbGoodNum.Text);
                 var badNum = TranslateUtils.ToInt(TbBadNum.Text);
 
-                BaiRongDataProvider.DiggDao.SetCount(PublishmentSystemId, _contentId, goodNum, badNum);
+                DataProvider.DiggDao.SetCount(PublishmentSystemId, _contentId, goodNum, badNum);
                 Body.AddSiteLog(PublishmentSystemId, _channelId, _contentId, "设置内容Digg值", string.Empty);
                 isChanged = true;
             }

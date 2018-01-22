@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Data;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
-using SiteServer.Plugin.Models;
+using SiteServer.CMS.Data;
+using SiteServer.CMS.Model;
+using SiteServer.Utils.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {

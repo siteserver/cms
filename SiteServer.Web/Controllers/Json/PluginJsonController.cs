@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Json;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin.Features;
 
 namespace SiteServer.API.Controllers.Json
@@ -11,7 +14,7 @@ namespace SiteServer.API.Controllers.Json
     public class PluginJsonController : ApiController
     {
         [HttpGet, Route(PluginJsonApi.Route)]
-        public IHttpActionResult Get(string pluginId)
+        public async Task<IHttpActionResult> Get(string pluginId)
         {
             try
             {
@@ -23,7 +26,9 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonGet(context));
+                var results = await Task.Run(() => webApi.JsonGet(context));
+
+                return Ok(results);
             }
             catch (Exception ex)
             {

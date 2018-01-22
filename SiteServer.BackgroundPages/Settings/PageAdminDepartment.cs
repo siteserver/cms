@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -37,7 +38,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var departmentIdArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("DepartmentIDCollection"));
                 foreach (var departmentId in departmentIdArrayList)
                 {
-                    BaiRongDataProvider.DepartmentDao.Delete(departmentId);
+                    DataProvider.DepartmentDao.Delete(departmentId);
                 }
                 SuccessMessage("成功删除所选部门");
             }
@@ -45,7 +46,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 var departmentId = Body.GetQueryInt("DepartmentID");
                 var isSubtract = Body.IsQueryExists("Subtract");
-                BaiRongDataProvider.DepartmentDao.UpdateTaxis(departmentId, isSubtract);
+                DataProvider.DepartmentDao.UpdateTaxis(departmentId, isSubtract);
 
                 PageUtils.Redirect(GetRedirectUrl(departmentId));
                 return;
@@ -74,7 +75,7 @@ namespace SiteServer.BackgroundPages.Settings
                 {"Delete", "True" }
             }), "DepartmentIDCollection", "DepartmentIDCollection", "请选择需要删除的部门！", "此操作将删除对应部门以及所有下级部门，确认删除吗？"));
 
-            RptContents.DataSource = BaiRongDataProvider.DepartmentDao.GetDepartmentIdListByParentId(0);
+            RptContents.DataSource = DataProvider.DepartmentDao.GetDepartmentIdListByParentId(0);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }

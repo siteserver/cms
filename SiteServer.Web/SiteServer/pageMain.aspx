@@ -34,6 +34,32 @@
             <asp:PlaceHolder id="PhPublishmentSystem" runat="server" visible="false">
               <div class="menu-extras">
                 <ul class="nav navbar-nav navbar-right float-right">
+                  <!-- <li class="dropdown hidden-xs">
+                    <a href="javascript:;">
+                      <i class="ion-android-download text-warning"></i>
+                    </a>
+                    <div class="card bg-warning text-dark" style="width: 18rem; z-index: 11; position: absolute;">
+                      <div class="card-body" style="padding-bottom: 0;">
+                        <h5 class="card-title">发现新版本</h5>
+                        <p class="card-text">
+                          当前版本：V5.1<br />
+                          最新版本：V5.2<br />
+                          <hr />
+                          1、加入网络直播
+                          <br />
+                          2、优化CNTV协同
+                          <br />
+                          <br />
+                          <a class="card-link" href="sdfsdf" target="_blank">查看发行说明</a>
+                          <hr />
+                          <div class="text-center">
+                              <a href="#" class="card-link btn btn-primary">立即升级</a>
+                              <a href="#" class="card-link btn btn-secondary">稍后再说</a>
+                            </div>
+                        </p>
+                      </div>
+                    </div>
+                  </li> -->
                   <li class="dropdown hidden-xs">
                     <asp:Literal id="LtlCreateStatus" runat="server" />
                   </li>
@@ -87,6 +113,10 @@
     <script src="assets/jQuery-slimScroll/jquery.slimscroll.min.js" type="text/javascript"></script>
 
     <script type="text/javascript">
+      if (window.top != self) {
+        window.top.location = self.location;
+      }
+
       function redirect(url) {
         $('#right').src = url;
       }

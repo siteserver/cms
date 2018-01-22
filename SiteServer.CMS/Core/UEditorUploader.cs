@@ -3,8 +3,8 @@ using System.Web;
 using System.Collections;
 using System.IO;
 using SiteServer.CMS.Model;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
 
 namespace SiteServer.CMS.Core
 {

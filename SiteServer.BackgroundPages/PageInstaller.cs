@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
-using BaiRong.Core.Data;
 
 namespace SiteServer.BackgroundPages
 {
@@ -52,7 +51,12 @@ namespace SiteServer.BackgroundPages
 
         protected override bool IsSinglePage => true;
 
-	    public void Page_Load(object sender, EventArgs e)
+        public static string GetRedirectUrl()
+        {
+            return PageUtils.GetSiteServerUrl("installer/default.aspx", null);
+        }
+
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsPostBack) return;
 
@@ -181,7 +185,7 @@ Disallow: /SiteFiles/");
                 else
                 {
                     var connectionStringWithoutDatabaseName = GetConnectionString(databaseType == EDatabaseType.Oracle);
-                    isConnectValid = BaiRongDataProvider.DatabaseDao.ConnectToServer(databaseType, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
+                    isConnectValid = DataProvider.DatabaseDao.ConnectToServer(databaseType, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
                 }
                 
                 if (isConnectValid)
@@ -344,7 +348,7 @@ Disallow: /SiteFiles/");
             try
             {
                 //var errorBuilder = new StringBuilder();
-                //BaiRongDataProvider.DatabaseDao.Install(errorBuilder);
+                //DataProvider.DatabaseDao.Install(errorBuilder);
                 SystemManager.Install(TbAdminName.Text, TbAdminPassword.Text);
                 
                 return true;

@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 

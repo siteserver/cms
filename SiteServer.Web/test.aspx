@@ -1,4 +1,4 @@
-<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.PageTest" %>
+<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.PageTest" Async="true" %>
 
 <!DOCTYPE html>
 <html>

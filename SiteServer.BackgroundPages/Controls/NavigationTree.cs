@@ -2,8 +2,8 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
-using BaiRong.Core;
-using BaiRong.Core.Tabs;
+using SiteServer.Utils;
+using SiteServer.Utils.Tabs;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Controls

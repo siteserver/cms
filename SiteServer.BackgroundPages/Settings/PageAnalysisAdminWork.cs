@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
@@ -136,7 +135,7 @@ yArrayUpdate.push('{yValueUpdate}');";
             var ltlContentUpdate = (Literal)e.Item.FindControl("ltlContentUpdate");
 
             ltlUserName.Text = userName;
-            ltlDisplayName.Text = BaiRongDataProvider.AdministratorDao.GetDisplayName(userName);
+            ltlDisplayName.Text = DataProvider.AdministratorDao.GetDisplayName(userName);
 
             ltlContentAdd.Text = addCount == 0 ? "0" : $"<strong>{addCount}</strong>";
             ltlContentUpdate.Text = updateCount == 0 ? "0" : $"<strong>{updateCount}</strong>";

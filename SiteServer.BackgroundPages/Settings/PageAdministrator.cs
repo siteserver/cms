@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -54,7 +55,7 @@ namespace SiteServer.BackgroundPages.Settings
                     var userNameArrayList = TranslateUtils.StringCollectionToStringList(userNameCollection);
                     foreach (var userName in userNameArrayList)
                     {
-                        BaiRongDataProvider.AdministratorDao.Delete(userName);
+                        DataProvider.AdministratorDao.Delete(userName);
                     }
 
                     Body.AddAdminLog("删除管理员", $"管理员:{userNameCollection}");
@@ -72,7 +73,7 @@ namespace SiteServer.BackgroundPages.Settings
                 try
                 {
                     var userNameList = TranslateUtils.StringCollectionToStringList(userNameCollection);
-                    BaiRongDataProvider.AdministratorDao.Lock(userNameList);
+                    DataProvider.AdministratorDao.Lock(userNameList);
 
                     Body.AddAdminLog("锁定管理员", $"管理员:{userNameCollection}");
 
@@ -89,7 +90,7 @@ namespace SiteServer.BackgroundPages.Settings
                 try
                 {
                     var userNameList = TranslateUtils.StringCollectionToStringList(userNameCollection);
-                    BaiRongDataProvider.AdministratorDao.UnLock(userNameList);
+                    DataProvider.AdministratorDao.UnLock(userNameList);
 
                     Body.AddAdminLog("解除锁定管理员", $"管理员:{userNameCollection}");
 
@@ -108,14 +109,14 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 SpContents.ItemsPerPage = TranslateUtils.ToInt(DdlPageNum.SelectedValue) == 0 ? StringUtils.Constants.PageSize : TranslateUtils.ToInt(DdlPageNum.SelectedValue);
 
-                SpContents.SelectCommand = BaiRongDataProvider.AdministratorDao.GetSelectCommand(permissioins.IsConsoleAdministrator, Body.AdminName);
-                SpContents.SortField = BaiRongDataProvider.AdministratorDao.GetSortFieldName();
+                SpContents.SelectCommand = DataProvider.AdministratorDao.GetSelectCommand(permissioins.IsConsoleAdministrator, Body.AdminName);
+                SpContents.SortField = DataProvider.AdministratorDao.GetSortFieldName();
                 SpContents.SortMode = SortMode.ASC;
             }
             else
             {
                 SpContents.ItemsPerPage = Body.GetQueryInt("pageNum") == 0 ? StringUtils.Constants.PageSize : Body.GetQueryInt("pageNum");
-                SpContents.SelectCommand = BaiRongDataProvider.AdministratorDao.GetSelectCommand(Body.GetQueryString("keyword"), Body.GetQueryString("roleName"), Body.GetQueryInt("lastActivityDate"), permissioins.IsConsoleAdministrator, Body.AdminName, Body.GetQueryInt("departmentId"), Body.GetQueryInt("areaId"));
+                SpContents.SelectCommand = DataProvider.AdministratorDao.GetSelectCommand(Body.GetQueryString("keyword"), Body.GetQueryString("roleName"), Body.GetQueryInt("lastActivityDate"), permissioins.IsConsoleAdministrator, Body.AdminName, Body.GetQueryInt("departmentId"), Body.GetQueryInt("areaId"));
                 SpContents.SortField = Body.GetQueryString("order");
                 SpContents.SortMode = StringUtils.EqualsIgnoreCase(SpContents.SortField, nameof(AdministratorInfo.UserName)) ? SortMode.ASC : SortMode.DESC;
             }
@@ -134,7 +135,7 @@ namespace SiteServer.BackgroundPages.Settings
             };
             DdlRoleName.Items.Add(theListItem);
 
-            var allRoles = permissioins.IsConsoleAdministrator ? BaiRongDataProvider.RoleDao.GetAllRoles() : BaiRongDataProvider.RoleDao.GetAllRolesByCreatorUserName(Body.AdminName);
+            var allRoles = permissioins.IsConsoleAdministrator ? DataProvider.RoleDao.GetAllRoles() : DataProvider.RoleDao.GetAllRolesByCreatorUserName(Body.AdminName);
 
             var allPredefinedRoles = EPredefinedRoleUtils.GetAllPredefinedRoleName();
             foreach (var roleName in allRoles)

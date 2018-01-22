@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -52,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
             LtlTitle.Text = contentInfo.Title;
             LtlState.Text = CheckManager.GetCheckState(PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);
 
-            var checkInfoList = BaiRongDataProvider.ContentCheckDao.GetCheckInfoList(_tableName, _contentId);
+            var checkInfoList = DataProvider.ContentCheckDao.GetCheckInfoList(_tableName, _contentId);
             if (checkInfoList.Count > 0)
             {
                 PhCheckReasons.Visible = true;

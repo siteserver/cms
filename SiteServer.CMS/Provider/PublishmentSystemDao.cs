@@ -3,16 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
+using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
+using SiteServer.Plugin;
 using SiteServer.Plugin.Features;
-using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
@@ -135,9 +135,9 @@ namespace SiteServer.CMS.Provider
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             var list = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(publishmentSystemId);
-            BaiRongDataProvider.TableStyleDao.Delete(list, publishmentSystemInfo.AuxiliaryTableForContent);
+            DataProvider.TableStyleDao.Delete(list, publishmentSystemInfo.AuxiliaryTableForContent);
 
-            BaiRongDataProvider.TagDao.DeleteTags(publishmentSystemId);
+            DataProvider.TagDao.DeleteTags(publishmentSystemId);
 
             DataProvider.NodeDao.Delete(publishmentSystemId);
 
@@ -319,7 +319,7 @@ namespace SiteServer.CMS.Provider
             };
 
             const string sqlString = "SELECT COUNT(*) FROM siteserver_PublishmentSystem WHERE AuxiliaryTableForContent = @AuxiliaryTableForContent";
-            var count = BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString, parameters);
+            var count = DataProvider.DatabaseDao.GetIntResult(sqlString, parameters);
 
             if (count > 0) return true;
 
@@ -417,7 +417,7 @@ namespace SiteServer.CMS.Provider
             {
                 orderByString = "ORDER BY IsHeadquarters DESC, ParentPublishmentSystemID, Taxis DESC, PublishmentSystemID";
 
-                var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+                var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
 
                 ie = (IEnumerable)ExecuteReader(sqlSelect);
             }
@@ -522,7 +522,7 @@ namespace SiteServer.CMS.Provider
         private static int GetMaxTaxis()
         {
             const string sqlString = "SELECT MAX(Taxis) FROM siteserver_PublishmentSystem";
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         private void SetTaxisNotZero()

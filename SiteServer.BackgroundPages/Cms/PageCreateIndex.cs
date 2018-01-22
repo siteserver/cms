@@ -1,5 +1,5 @@
 ﻿using System;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core.Create;
 

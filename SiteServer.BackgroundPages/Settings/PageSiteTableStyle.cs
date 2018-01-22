@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Settings
             ltlAttributeName.Text = styleInfo.AttributeName;
 
             ltlDisplayName.Text = styleInfo.DisplayName;
-            ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
+            ltlInputType.Text = InputTypeUtils.GetText(styleInfo.InputType);
             ltlFieldType.Text = TableMetadataManager.IsAttributeNameExists(_tableName, styleInfo.AttributeName) ? $"ÕæÊµ {TableMetadataManager.GetTableMetadataDataType(_tableName, styleInfo.AttributeName)}" : "ÐéÄâ×Ö¶Î";
 
             ltlValidate.Text = ValidateTypeUtils.GetValidateInfo(styleInfo);

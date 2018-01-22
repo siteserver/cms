@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using BaiRong.Core;
-using BaiRong.Core.Data;
+using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -69,7 +68,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, DisplayName))
                 {
-                    //parsedContent = string.IsNullOrEmpty(userName) ? "匿名" : BaiRongDataProvider.UserDao.GetDisplayName(userName);
+                    //parsedContent = string.IsNullOrEmpty(userName) ? "匿名" : DataProvider.UserDao.GetDisplayName(userName);
                     parsedContent = string.IsNullOrEmpty(userName) ? "匿名" : User.GetDisplayName(userName);
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, GoodCount))

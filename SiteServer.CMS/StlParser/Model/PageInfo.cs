@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Cache;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -80,7 +80,7 @@ namespace SiteServer.CMS.StlParser.Model
             PublishmentSystemInfo = publishmentSystemInfo;
             UserInfo = null;
             _uniqueId = 1;
-            ApiUrl = PageUtils.OuterApiUrl;
+            ApiUrl = PageUtility.OuterApiUrl;
 
             ChannelItems = new Stack<ChannelItemInfo>(5);
             ContentItems = new Stack<ContentItemInfo>(5);

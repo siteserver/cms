@@ -2,6 +2,8 @@ bin/
 obj/
 SiteFiles/BackupFiles/
 SiteFiles/Plugins/
+SiteFiles/packages/
+SiteFiles/dev/
 SiteFiles/SiteTemplates/
 SiteFiles/TemporaryFiles/
 SiteFiles/UserFiles/test/

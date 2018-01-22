@@ -1,11 +1,10 @@
-﻿using BaiRong.Core.Model;
+﻿using SiteServer.Utils.Model;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using System.Text;
-using BaiRong.Core;
+using SiteServer.Utils;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using BaiRong.Core.Model.Attributes;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
@@ -17,32 +16,6 @@ namespace SiteServer.BackgroundPages.Core
     {
         private TextUtility()
         {
-        }
-
-        public static int GetColumnWidth(string attributeName)
-        {
-            var width = 80;
-            if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Hits) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.HitsByDay) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.HitsByMonth) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.HitsByWeek))
-            {
-                width = 50;
-            }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.AddUserName) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.LastEditUserName) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.CheckUserName))
-            {
-                width = 60;
-            }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.AddDate) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.LastEditDate))
-            {
-                width = 140;
-            }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.LastHitsDate) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.CheckCheckDate))
-            {
-                width = 140;
-            }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, BackgroundContentAttribute.Digg) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.CheckReasons))
-            {
-                width = 110;
-            }
-            return width;
         }
 
         private static string GetColumnValue(Dictionary<string, string> nameValueCacheDict, PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo, TableStyleInfo styleInfo)
@@ -67,10 +40,7 @@ namespace SiteServer.BackgroundPages.Core
                     var key = ContentAttribute.LastEditUserName + ":" + contentInfo.LastEditUserName;
                     if (!nameValueCacheDict.TryGetValue(key, out value))
                     {
-                        value =
-                            $@"<a rel=""popover"" class=""popover-hover"" data-content=""{AdminManager.GetFullName(
-                                contentInfo.LastEditUserName)}"" data-original-title=""管理员"">{AdminManager.GetDisplayName(
-                                contentInfo.LastEditUserName, false)}</a>";
+                        value = AdminManager.GetDisplayName(contentInfo.LastEditUserName, false);
                         nameValueCacheDict[key] = value;
                     }
                 }
@@ -83,10 +53,7 @@ namespace SiteServer.BackgroundPages.Core
                     var key = ContentAttribute.CheckUserName + ":" + checkUserName;
                     if (!nameValueCacheDict.TryGetValue(key, out value))
                     {
-                        value =
-                            $@"<a rel=""popover"" class=""popover-hover"" data-content=""{AdminManager.GetFullName(
-                                checkUserName)}"" data-original-title=""管理员"">{AdminManager.GetDisplayName(checkUserName,
-                                false)}</a>";
+                        value = AdminManager.GetDisplayName(checkUserName, false);
                         nameValueCacheDict[key] = value;
                     }
                 }
@@ -160,7 +127,7 @@ namespace SiteServer.BackgroundPages.Core
                 else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, BackgroundContentAttribute.Digg))
                 {
                     var showPopWinString = ModalContentDiggSet.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id);
-                    var nums = BaiRongDataProvider.DiggDao.GetCount(publishmentSystemInfo.PublishmentSystemId, contentInfo.Id);
+                    var nums = DataProvider.DiggDao.GetCount(publishmentSystemInfo.PublishmentSystemId, contentInfo.Id);
                     string display = $"赞同：{nums[0]} 不赞同：{nums[1]}";
                     value =
                         $@"<a href=""javascript:;"" onclick=""{showPopWinString}"" title=""点击设置Digg数"">{display}</a>";
@@ -198,30 +165,11 @@ namespace SiteServer.BackgroundPages.Core
                 if (attributesOfDisplay.Contains(styleInfo.AttributeName))
                 {
                     builder.Append(
-                        $@"<th class=""text-nowrap"" style=""width: {GetColumnWidth(styleInfo.AttributeName)}px"">{styleInfo.DisplayName}</th>");
+                        $@"<th class=""text-nowrap"">{styleInfo.DisplayName}</th>");
                 }
             }
 
             return builder.ToString();
-        }
-
-        public static string GetCommandsHeadHtml(PublishmentSystemInfo publishmentSystemInfo, Dictionary<string, IContentRelated> pluginChannels, bool isEdit)
-        {
-            var commandCount = 0;
-            if (isEdit)
-            {
-                commandCount += 1;
-            }
-
-            foreach (var pluginChannel in pluginChannels.Values)
-            {
-                if (pluginChannel?.ContentLinks != null)
-                {
-                    commandCount += pluginChannel.ContentLinks.Count;
-                }
-            }
-
-            return $@"<th style=""width: {commandCount * 80}px"" class=""text-center text-nowrap"">操作</th>";
         }
 
         public static string GetColumnsHtml(Dictionary<string, string> nameValueCacheDict, PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo, StringCollection attributesOfDisplay, List<TableStyleInfo> displayStyleInfoList)
@@ -233,7 +181,7 @@ namespace SiteServer.BackgroundPages.Core
                 if (!attributesOfDisplay.Contains(styleInfo.AttributeName)) continue;
 
                 var value = GetColumnValue(nameValueCacheDict, publishmentSystemInfo, contentInfo, styleInfo);
-                builder.Append($@"<td width=""{GetColumnWidth(styleInfo.AttributeName)}"">{value}</td>");
+                builder.Append($@"<td class=""text-nowrap"">{value}</td>");
             }
 
             return builder.ToString();
@@ -245,7 +193,7 @@ namespace SiteServer.BackgroundPages.Core
 
             if (isEdit || administratorName == contentInfo.AddUserName)
             {
-                builder.Append($@"<a style=""margin:0 5px"" href=""{PageContentAdd.GetRedirectUrlOfEdit(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, pageUrl)}"">编辑</a>");
+                builder.Append($@"<a href=""{PageContentAdd.GetRedirectUrlOfEdit(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, pageUrl)}"">编辑</a>");
             }
 
             //if (isComment)
@@ -264,10 +212,15 @@ namespace SiteServer.BackgroundPages.Core
                 {
                     foreach (var link in pluginChannel.ContentLinks)
                     {
-                        var href = PluginManager.GetMenuContentHref(pluginId, link.Href,
-                            publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, pageUrl);
-                        builder.Append(
-                            $@"<a style=""margin:0 5px"" href=""{href}"" {(string.IsNullOrEmpty(link.Target) ? string.Empty : "target='" + link.Target + "'")}>{link.Text}</a>");
+                        var originalUrl = link.NavigateUrl;
+                        link.NavigateUrl = PluginManager.GetMenuContentHref(pluginId, originalUrl, publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, pageUrl);
+
+                        builder.Append("&nbsp;&nbsp;").Append(ControlUtils.GetControlRenderHtml(link));
+
+                        link.NavigateUrl = originalUrl;
+
+                        //builder.Append(
+                        //    $@"<a style=""margin:0 5px"" href=""{href}"" {(string.IsNullOrEmpty(link.Target) ? string.Empty : "target='" + link.Target + "'")}>{link.Text}</a>");
                     }
                 }
             }

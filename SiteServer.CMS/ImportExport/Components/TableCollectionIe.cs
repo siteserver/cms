@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using Atom.Core;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Table;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
@@ -19,7 +20,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
 		public void ExportAuxiliaryTable(string tableName)
 		{
-            var tableInfo = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfo(tableName);
+            var tableInfo = DataProvider.TableCollectionDao.GetTableCollectionInfo(tableName);
 			if (tableInfo != null)
 			{
                 var metaInfoList = TableMetadataManager.GetTableMetadataInfoList(tableInfo.TableEnName);
@@ -59,7 +60,7 @@ namespace SiteServer.CMS.ImportExport.Components
 			AtomUtility.AddDcElement(entry.AdditionalElements, "TableMetadataID", metaInfo.TableMetadataId.ToString());
 			AtomUtility.AddDcElement(entry.AdditionalElements, "AuxiliaryTableENName", metaInfo.AuxiliaryTableEnName);
 			AtomUtility.AddDcElement(entry.AdditionalElements, "AttributeName", metaInfo.AttributeName);
-			AtomUtility.AddDcElement(entry.AdditionalElements, "DataType", DataTypeUtils.GetValue(metaInfo.DataType));
+			AtomUtility.AddDcElement(entry.AdditionalElements, "DataType", metaInfo.DataType.Value);
 			AtomUtility.AddDcElement(entry.AdditionalElements, "DataLength", metaInfo.DataLength.ToString());
 			AtomUtility.AddDcElement(entry.AdditionalElements, "Taxis", metaInfo.Taxis.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, "IsSystem", metaInfo.IsSystem.ToString());
@@ -100,7 +101,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                 var tableNameToInsert = string.Empty;//需要增加的表名，空代表不需要添加辅助表
 
-                var tableInfo = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfo(tableName);
+                var tableInfo = DataProvider.TableCollectionDao.GetTableCollectionInfo(tableName);
                 if (tableInfo == null)//如果当前系统无此表名
                 {
                     tableNameToInsert = tableName;
@@ -122,7 +123,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                 if (!string.IsNullOrEmpty(tableNameToInsert))//需要添加
                 {
-                    if (!BaiRongDataProvider.DatabaseDao.IsTableExists(tableNameToInsert))
+                    if (!DataProvider.DatabaseDao.IsTableExists(tableNameToInsert))
                     {
                         tableInfo = new TableCollectionInfo
                         {
@@ -154,9 +155,9 @@ namespace SiteServer.CMS.ImportExport.Components
                             metadataInfoList.Add(metaInfo);
                         }
 
-                        BaiRongDataProvider.TableCollectionDao.Insert(tableInfo, metadataInfoList);
+                        DataProvider.TableCollectionDao.Insert(tableInfo, metadataInfoList);
 
-                        BaiRongDataProvider.TableCollectionDao.CreateDbTable(tableNameToInsert);
+                        DataProvider.TableCollectionDao.CreateDbTable(tableNameToInsert);
                     }
                 }
 

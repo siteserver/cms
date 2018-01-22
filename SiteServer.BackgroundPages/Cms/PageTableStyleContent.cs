@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -68,7 +67,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             InfoMessage(
-                $"在此编辑内容模型字段,子栏目默认继承父栏目字段设置; 辅助表:{BaiRongDataProvider.TableCollectionDao.GetTableCnName(_tableName)}({_tableName})");
+                $"在此编辑内容模型字段,子栏目默认继承父栏目字段设置; 辅助表:{DataProvider.TableCollectionDao.GetTableCnName(_tableName)}({_tableName})");
             NodeManager.AddListItems(DdlNodeId.Items, PublishmentSystemInfo, false, true, Body.AdminName);
             ControlUtils.SelectSingleItem(DdlNodeId, nodeId.ToString());
 
@@ -105,7 +104,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlAttributeName.Text = styleInfo.AttributeName;
 
             ltlDisplayName.Text = styleInfo.DisplayName;
-            ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
+            ltlInputType.Text = InputTypeUtils.GetText(styleInfo.InputType);
             ltlFieldType.Text = TableMetadataManager.IsAttributeNameExists(_tableName, styleInfo.AttributeName) ? $"真实 {TableMetadataManager.GetTableMetadataDataType(_tableName, styleInfo.AttributeName)}" : "虚拟字段";
 
             ltlValidate.Text = ValidateTypeUtils.GetValidateInfo(styleInfo);

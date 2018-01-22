@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Preview;
 using SiteServer.CMS.Core;
 

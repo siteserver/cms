@@ -20,7 +20,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <PublishUrl>http://localhost/BaiRongZhiDao/</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -79,6 +79,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SiteServer.Plugin, Version=1.1.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.1.10\lib\net45\SiteServer.Plugin.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
@@ -119,17 +122,13 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BaiRong.Core\BaiRong.Core.csproj">
+    <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj">
       <Project>{3d8cb06b-1791-4685-ab56-965b9f41666e}</Project>
-      <Name>BaiRong.Core</Name>
+      <Name>SiteServer.Utils</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
       <Project>{61a793e1-3e99-4bdc-bc20-7298ca3e0000}</Project>
       <Name>SiteServer.CMS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SiteServer.Plugin\SiteServer.Plugin.csproj">
-      <Project>{8451ecdd-2ea4-4966-bb0a-7bbc40138e80}</Project>
-      <Name>SiteServer.Plugin</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -144,12 +143,16 @@
     </Compile>
     <Compile Include="Core\AreaTreeItem.cs" />
     <Compile Include="Core\DepartmentTreeItem.cs" />
+    <Compile Include="Plugins\ModalTaxis.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Plugins\ModalManualInstall.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Plugins\PageAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Plugins\PageConfig.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="Plugins\PageConfig.cs" />
     <Compile Include="Plugins\PageView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -428,9 +431,6 @@
     <Compile Include="Cms\ModalTableStyleValidateAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalTaskAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\ModalTextEditorImportWord.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -573,9 +573,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageTableStyleContent.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageTask.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Ajax\AjaxBackupService.cs">
@@ -728,7 +725,7 @@
     <Compile Include="PageLogout.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="PageUpgrade.cs">
+    <Compile Include="PageAutoUpdate.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Account\PagePassword.cs">
@@ -741,18 +738,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageCreateStatus.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageLogServiceCreateTask.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageServiceStatus.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageServiceTask.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageLogServiceTask.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageIntegrationSms.cs">
@@ -836,6 +821,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

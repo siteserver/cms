@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Model.Enumerations;
 using Aop.Api.Util;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -94,7 +96,7 @@ namespace SiteServer.BackgroundPages.Settings
             _config.AlipayMobiPrivateKey = TbPrivateKey.Text;
 
             ConfigManager.SystemConfigInfo.IntegrationPayConfigJson = TranslateUtils.JsonSerialize(_config);
-            BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
+            DataProvider.ConfigDao.Update(ConfigManager.Instance);
 
             PageUtils.Redirect(PageIntegrationPay.GetRedirectUrl());
         }

@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Data;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -189,7 +190,7 @@ namespace SiteServer.CMS.Provider
             string sqlString =
                 $"SELECT Count(*) FROM siteserver_Photo WHERE PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId}";
 
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         public string GetSortFieldName()
@@ -209,7 +210,7 @@ namespace SiteServer.CMS.Provider
             var orderByString = "ORDER BY Taxis";
             string whereString = $"WHERE (PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId})";
 
-            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, SqlUtils.Asterisk, whereString, orderByString);
+            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, SqlUtils.Asterisk, whereString, orderByString);
 
             return (IEnumerable)ExecuteReader(sqlSelect);
         }
@@ -257,7 +258,7 @@ namespace SiteServer.CMS.Provider
         {
             string sqlString = $"SELECT Taxis FROM siteserver_Photo WHERE (ID = {id})";
 
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         private void SetTaxis(int id, int taxis)

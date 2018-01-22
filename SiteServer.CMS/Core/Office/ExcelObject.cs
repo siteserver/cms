@@ -1,12 +1,12 @@
 ﻿using System.Collections;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Table;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Table;
 
 namespace SiteServer.CMS.Core.Office
 {
@@ -511,15 +511,15 @@ namespace SiteServer.CMS.Core.Office
             };
             var rows = new List<List<string>>();
 
-            var userIdList = BaiRongDataProvider.UserDao.GetUserIdList(checkedState != ETriState.False);
+            var userIdList = DataProvider.UserDao.GetUserIdList(checkedState != ETriState.False);
             if (checkedState == ETriState.All)
             {
-                userIdList.AddRange(BaiRongDataProvider.UserDao.GetUserIdList(false));
+                userIdList.AddRange(DataProvider.UserDao.GetUserIdList(false));
             }
 
             foreach (var userId in userIdList)
             {
-                var userInfo = BaiRongDataProvider.UserDao.GetUserInfo(userId);
+                var userInfo = DataProvider.UserDao.GetUserInfo(userId);
 
                 rows.Add(new List<string>
                 {

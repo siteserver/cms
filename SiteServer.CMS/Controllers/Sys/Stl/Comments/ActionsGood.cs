@@ -1,4 +1,4 @@
-﻿using BaiRong.Core;
+﻿using SiteServer.Utils;
 
 namespace SiteServer.CMS.Controllers.Sys.Stl.Comments
 {

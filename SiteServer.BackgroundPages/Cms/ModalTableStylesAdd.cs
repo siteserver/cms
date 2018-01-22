@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Table;
-using SiteServer.Plugin.Models;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var styleInfo = TableStyleManager.GetTableStyleInfo(_tableName, string.Empty, _relatedIdentities);
 
-                ControlUtils.SelectSingleItem(DdlInputType, InputTypeUtils.GetValue(InputTypeUtils.GetEnumType(styleInfo.InputType)));
+                ControlUtils.SelectSingleItem(DdlInputType, styleInfo.InputType.Value);
                 TbDefaultValue.Text = styleInfo.DefaultValue;
                 DdlIsHorizontal.SelectedValue = styleInfo.IsHorizontal.ToString();
                 TbColumns.Text = styleInfo.Additional.Columns.ToString();
@@ -178,7 +178,7 @@ namespace SiteServer.BackgroundPages.Cms
                     return false;
                 }
 
-                var styleInfo = new TableStyleInfo(0, relatedIdentity, _tableName, attributeName, 0, displayName, string.Empty, false, InputTypeUtils.GetValue(inputType), TbDefaultValue.Text, TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue), string.Empty);
+                var styleInfo = new TableStyleInfo(0, relatedIdentity, _tableName, attributeName, 0, displayName, string.Empty, false, inputType, TbDefaultValue.Text, TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue), string.Empty);
                 styleInfo.Additional.Columns = TranslateUtils.ToInt(TbColumns.Text);
                 styleInfo.Additional.Height = TranslateUtils.ToInt(TbHeight.Text);
                 styleInfo.Additional.Width = TbWidth.Text;

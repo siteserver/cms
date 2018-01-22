@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Table;
-using SiteServer.Plugin.Models;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -57,7 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
             _redirectUrl = StringUtils.ValueFromUrl(Body.GetQueryString("RedirectUrl"));
 
             _styleInfo = _tableStyleId != 0
-                ? BaiRongDataProvider.TableStyleDao.GetTableStyleInfo(_tableStyleId)
+                ? DataProvider.TableStyleDao.GetTableStyleInfo(_tableStyleId)
                 : TableStyleManager.GetTableStyleInfo(_tableName, _attributeName, _relatedIdentities);
 
             if (IsPostBack) return;
@@ -78,7 +78,7 @@ namespace SiteServer.BackgroundPages.Cms
             TbMaxNum.Text = _styleInfo.Additional.MaxNum.ToString();
 
             ValidateTypeUtils.AddListItems(DdlValidateType);
-            ControlUtils.SelectSingleItem(DdlValidateType, ValidateTypeUtils.GetValue(_styleInfo.Additional.ValidateType));
+            ControlUtils.SelectSingleItem(DdlValidateType, _styleInfo.Additional.ValidateType.Value);
 
             TbRegExp.Text = _styleInfo.Additional.RegExp;
             TbErrorMessage.Text = _styleInfo.Additional.ErrorMessage;

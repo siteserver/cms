@@ -5,9 +5,9 @@ using System.ComponentModel;
 using System.Data;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -757,11 +757,11 @@ namespace SiteServer.BackgroundPages.Controls
 
         private int GetQueryVirtualCount()
         {
-            var recCount = BaiRongDataProvider.DatabaseDao.GetPageTotalCount(SelectCommand);
+            var recCount = DataProvider.DatabaseDao.GetPageTotalCount(SelectCommand);
             //            SqlConnection conn = new SqlConnection(ConnectionString);
             //            SqlCommand cmd = new SqlCommand(cmdText, conn);
-            //IDbConnection conn = SqlUtils.GetIDbConnection(BaiRongDataProvider.ADOType, ConnectionString);
-            //IDbCommand cmd = SqlUtils.GetIDbCommand(BaiRongDataProvider.ADOType);
+            //IDbConnection conn = SqlUtils.GetIDbConnection(DataProvider.ADOType, ConnectionString);
+            //IDbCommand cmd = SqlUtils.GetIDbCommand(DataProvider.ADOType);
             //cmd.Connection = conn;
             //cmd.CommandText = cmdText;
 

@@ -1,23 +1,24 @@
-﻿using BaiRong.Core;
-using SiteServer.CMS.Core;
+﻿using SiteServer.CMS.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core.Security;
+using SiteServer.CMS.Plugin.Model;
+using SiteServer.Plugin;
 using SiteServer.Plugin.Apis;
-using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
     public class AdminApi : IAdminApi
     {
-        private readonly PluginMetadata _metadata;
+        private readonly IMetadata _metadata;
 
-        public AdminApi(PluginMetadata metadata)
+        public AdminApi(IMetadata metadata)
         {
             _metadata = metadata;
         }
 
         public bool IsAdminNameExists(string adminName)
         {
-            return BaiRongDataProvider.AdministratorDao.IsAdminNameExists(adminName);
+            return DataProvider.AdministratorDao.IsAdminNameExists(adminName);
         }
 
         public string AdminName

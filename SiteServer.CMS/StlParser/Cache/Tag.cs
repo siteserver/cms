@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 
 namespace SiteServer.CMS.StlParser.Cache
 {
@@ -22,7 +24,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<List<int>>(cacheKey);
                 if (retval == null)
                 {
-                    retval = BaiRongDataProvider.TagDao.GetContentIdListByTagCollection(tagCollection, publishmentSystemId);
+                    retval = DataProvider.TagDao.GetContentIdListByTagCollection(tagCollection, publishmentSystemId);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -42,7 +44,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<List<TagInfo>>(cacheKey);
                 if (retval == null)
                 {
-                    retval = BaiRongDataProvider.TagDao.GetTagInfoList(publishmentSystemId, contentId, isOrderByCount, totalNum);
+                    retval = DataProvider.TagDao.GetTagInfoList(publishmentSystemId, contentId, isOrderByCount, totalNum);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }

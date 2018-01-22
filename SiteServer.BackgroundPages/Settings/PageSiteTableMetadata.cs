@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -44,7 +42,7 @@ namespace SiteServer.BackgroundPages.Settings
             _tableName = Body.GetQueryString("ENName").Trim();
             _redirectUrl = GetRedirectUrl(_tableName);
 
-            var tableInfo = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfo(_tableName);
+            var tableInfo = DataProvider.TableCollectionDao.GetTableCollectionInfo(_tableName);
 
             if (Body.IsQueryExists("Delete"))
             {
@@ -52,8 +50,8 @@ namespace SiteServer.BackgroundPages.Settings
 
                 try
                 {
-                    var tableMetadataInfo = BaiRongDataProvider.TableMetadataDao.GetTableMetadataInfo(tableMetadataId);
-                    BaiRongDataProvider.TableMetadataDao.Delete(tableMetadataId);
+                    var tableMetadataInfo = DataProvider.TableMetadataDao.GetTableMetadataInfo(tableMetadataId);
+                    DataProvider.TableMetadataDao.Delete(tableMetadataId);
 
                     Body.AddAdminLog("删除辅助表字段", $"辅助表:{_tableName},字段名:{tableMetadataInfo.AttributeName}");
 
@@ -89,7 +87,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    BaiRongDataProvider.TableCollectionDao.CreateDbTable(_tableName);
+                    DataProvider.TableCollectionDao.CreateDbTable(_tableName);
                     tableInfo.IsChangedAfterCreatedInDb = false;
 
                     Body.AddAdminLog("创建辅助表", $"辅助表:{_tableName}");
@@ -100,7 +98,7 @@ namespace SiteServer.BackgroundPages.Settings
                 catch (Exception ex)
                 {
                     FailMessage(ex, "<br>辅助表创建失败，失败原因为：" + ex.Message + "<br>请检查创建表SQL命令");
-                    var sqlString = SqlUtils.GetCreateTableCollectionInfoSqlString(_tableName);
+                    var sqlString = DataProvider.DatabaseDao.GetCreateTableCollectionInfoSqlString(_tableName);
                     LtlSqlString.Text = sqlString.Replace("\r\n", "<br>").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
                     _showSqlTable = true;
                 }
@@ -109,7 +107,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    BaiRongDataProvider.TableCollectionDao.DeleteDbTable(_tableName);
+                    DataProvider.TableCollectionDao.DeleteDbTable(_tableName);
                     tableInfo.IsChangedAfterCreatedInDb = false;
 
                     Body.AddAdminLog("删除辅助表", $"辅助表:{_tableName}");
@@ -127,7 +125,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    BaiRongDataProvider.TableCollectionDao.ReCreateDbTable(_tableName);
+                    DataProvider.TableCollectionDao.ReCreateDbTable(_tableName);
                     DataProvider.NodeDao.UpdateContentNumToZero(_tableName);
                     tableInfo.IsChangedAfterCreatedInDb = false;
 
@@ -140,14 +138,14 @@ namespace SiteServer.BackgroundPages.Settings
                 {
 
                     FailMessage(ex, "<br>辅助表重建失败，失败原因为：" + ex.Message + "<br>请检查创建表SQL命令");
-                    var sqlString = SqlUtils.GetCreateTableCollectionInfoSqlString(_tableName);
+                    var sqlString = DataProvider.DatabaseDao.GetCreateTableCollectionInfoSqlString(_tableName);
                     LtlSqlString.Text = sqlString.Replace("\r\n", "<br>").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
                     _showSqlTable = true;
                 }
             }
             else if (Body.IsQueryExists("ShowCrateDBCommand"))
             {
-                var sqlString = SqlUtils.GetCreateTableCollectionInfoSqlString(_tableName);
+                var sqlString = DataProvider.DatabaseDao.GetCreateTableCollectionInfoSqlString(_tableName);
                 LtlSqlString.Text = sqlString.Replace("\r\n", "<br>").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
             }
             else if (Body.IsQueryExists("SetTaxis"))
@@ -157,16 +155,16 @@ namespace SiteServer.BackgroundPages.Settings
                 switch (direction.ToUpper())
                 {
                     case "UP":
-                        BaiRongDataProvider.TableMetadataDao.TaxisDown(tableMetadataId, _tableName);
+                        DataProvider.TableMetadataDao.TaxisDown(tableMetadataId, _tableName);
                         break;
                     case "DOWN":
-                        BaiRongDataProvider.TableMetadataDao.TaxisUp(tableMetadataId, _tableName);
+                        DataProvider.TableMetadataDao.TaxisUp(tableMetadataId, _tableName);
                         break;
                 }
                 SuccessMessage("排序成功！");
             }
 
-            _tableIsRealCreated = BaiRongDataProvider.DatabaseDao.IsTableExists(_tableName);
+            _tableIsRealCreated = DataProvider.DatabaseDao.IsTableExists(_tableName);
 
             _isTableUsed = DataProvider.PublishmentSystemDao.IsTableUsed(_tableName);
 
@@ -177,7 +175,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
 
-            RptContents.DataSource = BaiRongDataProvider.TableMetadataDao.GetDataSource(_tableName);
+            RptContents.DataSource = DataProvider.TableMetadataDao.GetDataSource(_tableName);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
@@ -248,7 +246,6 @@ namespace SiteServer.BackgroundPages.Settings
             var tableMetadataId = SqlUtils.EvalInt(e.Item.DataItem, "TableMetadataID");
             var attributeName = SqlUtils.EvalString(e.Item.DataItem, "AttributeName");
             var dataType = SqlUtils.EvalString(e.Item.DataItem, "DataType");
-            var dataLength = SqlUtils.EvalInt(e.Item.DataItem, "DataLength");
             var isSystem = SqlUtils.EvalString(e.Item.DataItem, "IsSystem");
 
             var ltlAttributeName = (Literal)e.Item.FindControl("ltlAttributeName");
@@ -260,7 +257,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             ltlAttributeName.Text = attributeName;
 
-            ltlDataType.Text = DataTypeUtils.GetTextByAuxiliaryTable(DataTypeUtils.GetEnumType(dataType), dataLength);
+            ltlDataType.Text = DataTypeUtils.GetText(DataTypeUtils.GetEnumType(dataType));
 
             if (TranslateUtils.ToBool(isSystem))
             {
@@ -303,7 +300,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            BaiRongDataProvider.TableCollectionDao.SyncDbTable(_tableName);
+            DataProvider.TableCollectionDao.SyncDbTable(_tableName);
             PhSyncTable.Visible = false;
             SuccessMessage("同步辅助表成功！");
             PageUtils.Redirect(_redirectUrl);

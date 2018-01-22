@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.Plugin;
 using SiteServer.Plugin.Apis;
-using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
     public class FilesApi : IFilesApi
     {
-        private readonly PluginMetadata _metadata;
+        private readonly IMetadata _metadata;
 
-        public FilesApi(PluginMetadata metadata)
+        public FilesApi(IMetadata metadata)
         {
             _metadata = metadata;
         }
@@ -53,34 +53,34 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string GetPluginPath(string relatedPath)
         {
-            var path = PathUtils.Combine(_metadata.DirectoryPath, relatedPath);
+            var path = PathUtils.Combine(PathUtils.GetPluginPath(_metadata.Id), relatedPath);
             DirectoryUtils.CreateDirectoryIfNotExists(path);
             return path;
         }
 
         public string GetPluginUrl(string relatedUrl = "")
         {
-            return PageUtility.GetSiteFilesUrl(PageUtils.InnerApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
+            return PageUtility.GetSiteFilesUrl(PageUtility.InnerApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
         }
 
         public string GetApiUrl(string relatedUrl = "")
         {
-            return PageUtils.Combine(PageUtils.OuterApiUrl, relatedUrl);
+            return PageUtils.Combine(PageUtility.OuterApiUrl, relatedUrl);
         }
 
         public string GetApiPluginUrl(string relatedUrl = "")
         {
-            return PageUtility.GetSiteFilesUrl(PageUtils.OuterApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
+            return PageUtility.GetSiteFilesUrl(PageUtility.OuterApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
         }
 
         public string GetApiPluginJsonUrl(string name = "", string id = "")
         {
-            return Controllers.Json.PluginJsonApi.GetUrl(PageUtils.OuterApiUrl, _metadata.Id, name, id);
+            return Controllers.Json.PluginJsonApi.GetUrl(PageUtility.OuterApiUrl, _metadata.Id, name, id);
         }
 
         public string GetApiPluginHttpUrl(string name = "", string id = "")
         {
-            return Controllers.Http.PluginHttpApi.GetUrl(PageUtils.OuterApiUrl, _metadata.Id, name, id);
+            return Controllers.Http.PluginHttpApi.GetUrl(PageUtility.OuterApiUrl, _metadata.Id, name, id);
         }
 
         public string GetPublishmentSystemUrl(int publishmentSystemId)

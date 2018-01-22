@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Account
 {
@@ -31,7 +31,7 @@ namespace SiteServer.BackgroundPages.Account
             Body.AdministratorInfo.Email = TbEmail.Text;
             Body.AdministratorInfo.Mobile = TbMobile.Text;
 
-            BaiRongDataProvider.AdministratorDao.Update(Body.AdministratorInfo);
+            DataProvider.AdministratorDao.Update(Body.AdministratorInfo);
 
             SuccessMessage("资料更改成功");
         }

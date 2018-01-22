@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -37,7 +38,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var areaIdArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("AreaIDCollection"));
                 foreach (var areaId in areaIdArrayList)
                 {
-                    BaiRongDataProvider.AreaDao.Delete(areaId);
+                    DataProvider.AreaDao.Delete(areaId);
                 }
                 SuccessMessage("成功删除所选区域");
             }
@@ -45,7 +46,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 var areaId = int.Parse(Body.GetQueryString("AreaID"));
                 var isSubtract = Body.IsQueryExists("Subtract");
-                BaiRongDataProvider.AreaDao.UpdateTaxis(areaId, isSubtract);
+                DataProvider.AreaDao.UpdateTaxis(areaId, isSubtract);
 
                 PageUtils.Redirect(GetRedirectUrl(areaId));
                 return;
@@ -100,7 +101,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void BindGrid()
         {
-            RptContents.DataSource = BaiRongDataProvider.AreaDao.GetAreaIdListByParentId(0);
+            RptContents.DataSource = DataProvider.AreaDao.GetAreaIdListByParentId(0);
             RptContents.ItemDataBound += rptContents_ItemDataBound;
             RptContents.DataBind();
         }

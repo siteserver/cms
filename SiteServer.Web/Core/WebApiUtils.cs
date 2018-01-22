@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Text;
-using BaiRong.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Core
 {

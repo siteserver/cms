@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Text;
-using BaiRong.Core;
+using SiteServer.Utils;
 using System.Collections.Specialized;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;

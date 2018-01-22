@@ -1,12 +1,12 @@
-﻿using BaiRong.Core;
-using BaiRong.Core.Model;
+﻿using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using System;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Controllers.Preview;
 using SiteServer.CMS.StlParser.Cache;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
@@ -15,6 +15,10 @@ namespace SiteServer.CMS.Core
         private PageUtility()
         {
         }
+
+        public const string InnerApiUrl = "/api";
+
+        public static string OuterApiUrl => ConfigManager.SystemConfigInfo.ApiUrl;
 
         public static string GetPublishmentSystemUrl(PublishmentSystemInfo publishmentSystemInfo, bool isLocal)
         {

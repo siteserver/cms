@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-using BaiRong.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.StlParser.Utility
 {

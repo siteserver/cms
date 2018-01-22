@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
@@ -90,7 +90,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 TbRoleName.Text = _theRoleName;
                 TbRoleName.Enabled = false;
-                TbDescription.Text = BaiRongDataProvider.RoleDao.GetRoleDescription(_theRoleName);
+                TbDescription.Text = DataProvider.RoleDao.GetRoleDescription(_theRoleName);
 
                 if (Body.GetQueryString("Return") == null)
                 {
@@ -120,7 +120,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 if (!string.IsNullOrEmpty(_theRoleName))
                 {
-                    var permissionList = BaiRongDataProvider.PermissionsInRolesDao.GetGeneralPermissionList(new[] { _theRoleName });
+                    var permissionList = DataProvider.PermissionsInRolesDao.GetGeneralPermissionList(new[] { _theRoleName });
                     if (permissionList != null && permissionList.Count > 0)
                     {
                         ControlUtils.SelectMultiItems(CblPermissions, permissionList);
@@ -194,7 +194,7 @@ if (ss_role) {
                     var publishmentSystemPermissionsInRolesInfoList = Session[SystemPermissionsInfoListKey] as List<SystemPermissionsInfo>;
 
                     var generalPermissionList = ControlUtils.GetSelectedListControlValueStringList(CblPermissions);
-                    BaiRongDataProvider.PermissionsInRolesDao.UpdateRoleAndGeneralPermissions(_theRoleName, TbDescription.Text, generalPermissionList);
+                    DataProvider.PermissionsInRolesDao.UpdateRoleAndGeneralPermissions(_theRoleName, TbDescription.Text, generalPermissionList);
 
                     DataProvider.SystemPermissionsDao.UpdatePublishmentPermissions(_theRoleName, publishmentSystemPermissionsInRolesInfoList);
 
@@ -211,7 +211,7 @@ if (ss_role) {
             }
             else
             {
-                if (BaiRongDataProvider.RoleDao.IsRoleExists(TbRoleName.Text))
+                if (DataProvider.RoleDao.IsRoleExists(TbRoleName.Text))
                 {
                     FailMessage("角色添加失败，角色标识已存在！");
                 }

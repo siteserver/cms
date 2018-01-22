@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -17,7 +18,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsPostBack) return;
 
             VerifyAdministratorPermissions(AppManager.Permissions.Settings.Utility);
-            var dt = BaiRongDataProvider.LogDao.GetLastRemoveLogDate(Body.AdminName);
+            var dt = DataProvider.LogDao.GetLastRemoveLogDate(Body.AdminName);
             LtlLastExecuteDate.Text = dt == DateTime.MinValue ? "无记录" : DateUtils.GetDateAndTimeString(dt);
         }
 
@@ -25,7 +26,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            BaiRongDataProvider.DatabaseDao.DeleteDbLog();
+            DataProvider.DatabaseDao.DeleteDbLog();
 
             Body.AddAdminLog("清空数据库日志");
 

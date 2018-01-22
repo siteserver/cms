@@ -2,10 +2,10 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.BackgroundPages.Ajax
 {

@@ -1,7 +1,7 @@
 ﻿using SiteServer.CMS.Model;
-using BaiRong.Core;
+using SiteServer.Utils;
 using System.Text;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.CMS.Core.Advertisement

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -55,7 +57,7 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     foreach (var userId in userIdList)
                     {
-                        BaiRongDataProvider.UserDao.Delete(userId);
+                        DataProvider.UserDao.Delete(userId);
                     }
 
                     Body.AddAdminLog("删除用户", string.Empty);
@@ -72,7 +74,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var userIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("UserIDCollection"));
                 try
                 {
-                    BaiRongDataProvider.UserDao.Lock(userIdList);
+                    DataProvider.UserDao.Lock(userIdList);
 
                     Body.AddAdminLog("锁定用户", string.Empty);
 
@@ -88,7 +90,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var userIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("UserIDCollection"));
                 try
                 {
-                    BaiRongDataProvider.UserDao.UnLock(userIdList);
+                    DataProvider.UserDao.UnLock(userIdList);
 
                     Body.AddAdminLog("解除锁定用户", string.Empty);
 
@@ -106,16 +108,16 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 SpContents.ItemsPerPage = TranslateUtils.ToInt(DdlPageNum.SelectedValue) == 0 ? 25 : TranslateUtils.ToInt(DdlPageNum.SelectedValue);
 
-                SpContents.SelectCommand = BaiRongDataProvider.UserDao.GetSelectCommand(true);
+                SpContents.SelectCommand = DataProvider.UserDao.GetSelectCommand(true);
             }
             else
             {
                 SpContents.ItemsPerPage = Body.GetQueryInt("PageNum") == 0 ? StringUtils.Constants.PageSize : Body.GetQueryInt("PageNum");
-                SpContents.SelectCommand = BaiRongDataProvider.UserDao.GetSelectCommand(Body.GetQueryString("Keyword"), Body.GetQueryInt("CreationDate"), Body.GetQueryInt("LastActivityDate"), true, Body.GetQueryInt("LoginCount"), Body.GetQueryString("SearchType"));
+                SpContents.SelectCommand = DataProvider.UserDao.GetSelectCommand(Body.GetQueryString("Keyword"), Body.GetQueryInt("CreationDate"), Body.GetQueryInt("LastActivityDate"), true, Body.GetQueryInt("LoginCount"), Body.GetQueryString("SearchType"));
             }
 
             RptContents.ItemDataBound += rptContents_ItemDataBound;
-            SpContents.SortField = BaiRongDataProvider.UserDao.GetSortFieldName();
+            SpContents.SortField = DataProvider.UserDao.GetSortFieldName();
             SpContents.SortMode = SortMode.DESC;
 
             _lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserLockLoginType);

@@ -2,9 +2,10 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -124,7 +125,7 @@ namespace SiteServer.BackgroundPages.Settings
             DdlXType.SelectedValue = EStatictisXTypeUtils.GetValue(_xType);
 
             //用户添加量统计
-            var trackingDayDict = BaiRongDataProvider.UserDao.GetTrackingDictionary( TranslateUtils.ToDateTime(Body.GetQueryString("DateFrom")), TranslateUtils.ToDateTime(Body.GetQueryString("DateTo"), DateTime.Now), EStatictisXTypeUtils.GetValue(_xType));
+            var trackingDayDict = DataProvider.UserDao.GetTrackingDictionary( TranslateUtils.ToDateTime(Body.GetQueryString("DateFrom")), TranslateUtils.ToDateTime(Body.GetQueryString("DateTo"), DateTime.Now), EStatictisXTypeUtils.GetValue(_xType));
 
             var now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
             for (var i = 0; i < _count; i++)

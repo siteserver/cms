@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Web;
 
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.UEditor

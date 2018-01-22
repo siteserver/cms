@@ -3,7 +3,7 @@ using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.Routing;
-using BaiRong.Core;
+using SiteServer.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -50,7 +50,7 @@ namespace SiteServer.API
             configuration.EnsureInitialized();
 
             WebConfigUtils.Load(HostingEnvironment.ApplicationPhysicalPath);
-            var c = PluginManager.AllPluginPairs;
+            var c = PluginManager.PluginInfoListRunnable;
         }
     }
 }

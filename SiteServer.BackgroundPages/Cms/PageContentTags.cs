@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Model;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -27,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 try
                 {
-                    var contentIdList = BaiRongDataProvider.TagDao.GetContentIdListByTag(tagName, PublishmentSystemId);
+                    var contentIdList = DataProvider.TagDao.GetContentIdListByTag(tagName, PublishmentSystemId);
                     if (contentIdList.Count > 0)
                     {
                         foreach (var contentId in contentIdList)
@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
                             DataProvider.ContentDao.SetValue(PublishmentSystemInfo.AuxiliaryTableForContent, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagArrayList));
                         }
                     }
-                    BaiRongDataProvider.TagDao.DeleteTag(tagName, PublishmentSystemId);
+                    DataProvider.TagDao.DeleteTag(tagName, PublishmentSystemId);
                     Body.AddSiteLog(PublishmentSystemId, "删除内容标签", $"内容标签:{tagName}");
                     SuccessDeleteMessage();
                 }
@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
 
-            SpContents.SelectCommand = BaiRongDataProvider.TagDao.GetSqlString(PublishmentSystemId, 0, true, 0);
+            SpContents.SelectCommand = DataProvider.TagDao.GetSqlString(PublishmentSystemId, 0, true, 0);
             SpContents.SortField = nameof(TagInfo.UseNum);
             SpContents.SortMode = SortMode.DESC;
 

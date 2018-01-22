@@ -36,7 +36,6 @@
         </div>
         <div class="card-footer text-muted">
           <span class="m-r-5">如果错误信息为列名无效，可以尝试升级系统，以确保数据库字段一致性</span>
-          <a href="upgrade/default.aspx" target="_top" class="btn btn-primary">立即升级</a>
         </div>
       </div>
 

@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
+using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
@@ -10,8 +9,7 @@ using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
-using System.Threading.Tasks;
-using BaiRong.Core.Model;
+using SiteServer.Utils.Model;
 
 namespace SiteServer.CMS.StlParser
 {
@@ -62,47 +60,15 @@ namespace SiteServer.CMS.StlParser
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
             var contentIdList = Content.GetContentIdListChecked(tableName, nodeId, orderByString);
 
-            if (publishmentSystemInfo.Additional.IsCreateMultiThread) // 多线程并发生成页面
+            foreach (var contentId in contentIdList)
             {
-                for (var i = 0; i < contentIdList.Count; i = i + 3)
+                try
                 {
-                    var list = new List<int>
-                    {
-                        contentIdList[i]
-                    };
-                    if (i < contentIdList.Count - 1)
-                    {
-                        list.Add(contentIdList[i + 1]);
-                    }
-                    if (i < contentIdList.Count - 2)
-                    {
-                        list.Add(contentIdList[i + 2]);
-                    }
-                    Parallel.ForEach(list, contentId =>
-                    {
-                        try
-                        {
-                            CreateContent(publishmentSystemInfo, tableName, nodeId, contentId);
-                        }
-                        catch (Exception ex)
-                        {
-                            LogUtils.AddSystemErrorLog(ex, "CreateContent");
-                        }
-                    });
+                    CreateContent(publishmentSystemInfo, tableName, nodeId, contentId);
                 }
-            }
-            else  // 单线程生成页面
-            {
-                foreach (var contentId in contentIdList)
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        CreateContent(publishmentSystemInfo, tableName, nodeId, contentId);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogUtils.AddSystemErrorLog(ex, "CreateContent");
-                    }
+                    LogUtils.AddSystemErrorLog(ex, "CreateContent");
                 }
             }
         }

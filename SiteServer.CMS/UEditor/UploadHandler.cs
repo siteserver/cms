@@ -1,10 +1,10 @@
-﻿using BaiRong.Core;
+﻿using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using System;
 using System.IO;
 using System.Linq;
 using System.Web;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils.Model.Enumerations;
 
 namespace SiteServer.CMS.UEditor
 {

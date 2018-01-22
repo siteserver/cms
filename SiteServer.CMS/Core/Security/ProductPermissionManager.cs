@@ -1,4 +1,5 @@
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.CMS.Core.Security
 {

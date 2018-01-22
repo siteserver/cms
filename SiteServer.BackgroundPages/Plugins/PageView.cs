@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Plugins
@@ -46,7 +46,7 @@ namespace SiteServer.BackgroundPages.Plugins
         public void BtnInstall_Click(object sender, EventArgs e)
         {
             string errorMessage;
-            var isSuccess = PluginManager.Install(_pluginId, _version, out errorMessage);
+            var isSuccess = PluginManager.GetAndInstall(_pluginId, _version, out errorMessage);
             if (isSuccess)
             {
                 PhSuccess.Visible = true;
