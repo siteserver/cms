@@ -117,4 +117,5 @@
         secure: i9vISdFyCeWbRUQw+jhcF748i4oWdeatGBrx+dJ07SDTpt7Hsk9YCRp/ha3ZXfZF
       skip_symbols: false
       symbol_server:           # remove to push symbols to SymbolSource.org
-      artifact: /.*\.nupkg/
+      artifacts:
+        - path: '*.nupkg'
