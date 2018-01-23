@@ -29,7 +29,7 @@ function build(v, beta) {
   }
 
   //nuspec
-  gulp.src('./SiteServer.Update.nuspec').pipe(replace('$version$', version)).pipe(gulp.dest('./build/SiteServer.Update.nuspec'));
+  gulp.src('./SiteServer.Update.nuspec').pipe(replace('$version$', version)).pipe(gulp.dest('./build'));
 
   //bin
   gulp.src(['./SiteServer.Web/bin/*.dll']).pipe(gulp.dest('./build/bin'));
