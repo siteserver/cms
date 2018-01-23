@@ -32,7 +32,7 @@
     - nuget restore siteserver.sln
 
   after_build:
-    - gulp release --build=6.0.$(appveyor_build_version)
+    - gulp release
     - gulp zip
 
   artifacts:
@@ -90,7 +90,7 @@
     publish_nuget: true
 
   after_build:
-    - gulp preview --build=6.0.{version}{build}
+    - gulp preview
     - nuget pack build/SiteServer.Update.nuspec
     - gulp zip
 

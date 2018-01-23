@@ -22,8 +22,8 @@ function min(src, dest) {
   }
 }
 
-function build(v, beta) {
-  var version = v;
+function build(beta) {
+  var version = process.env.APPVEYOR_BUILD_VERSION;
   if (beta) {
     version += '-beta';
   }
@@ -50,11 +50,11 @@ function build(v, beta) {
 }
 
 gulp.task('release', function () {
-  build(argv.build, false);
+  build(false);
 });
 
 gulp.task('preview', function () {
-  build(argv.build, true);
+  build(true);
 });
 
 gulp.task('zip', function () {
