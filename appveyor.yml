@@ -61,7 +61,7 @@
     only:
       - dev
 
-  version: 5.0.{build}
+  version: 6.0.{build}
 
   configuration:
     - Release
@@ -93,7 +93,7 @@
     publish_nuget: true
 
   after_build:
-    - gulp build --build 5.0.{build}-beta
+    - gulp build --build 6.0.$(appveyor_build_version)-beta
     - nuget pack build/SiteServer.Update.nuspec
     - gulp zip
 
@@ -103,7 +103,7 @@
 
   deploy:
     - provider: GitHub
-      release: siteserver-dev-v$(appveyor_build_version)
+      release: siteserver-v$(appveyor_build_version)
       description: 'SiteServer CMS'
       auth_token:
         secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
