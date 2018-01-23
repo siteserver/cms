@@ -721,7 +721,7 @@ SELECT * FROM (
                 {
                     if (string.IsNullOrEmpty(tableColumn.ColumnName)) continue;
 
-                    if (tableColumn.IsIdentity || StringUtils.EqualsIgnoreCase(tableColumn.ColumnName, "Id"))
+                    if (tableColumn.IsIdentity)
                     {
                         primaryKeyColumns.Add(tableColumn);
                         sqlBuilder.Append($@"{tableColumn.ColumnName} {SqlUtils.GetAutoIncrementDataType()},").AppendLine();

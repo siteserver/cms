@@ -1,4 +1,5 @@
-﻿using Atom.Core;
+﻿using System.Collections.Generic;
+using Atom.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -35,12 +36,12 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var feed = AtomUtility.GetEmptyFeed();
 
-            AtomUtility.AddDcElement(feed.AdditionalElements, "Id", relatedFieldInfo.Id.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, "Title", relatedFieldInfo.Title);
-            AtomUtility.AddDcElement(feed.AdditionalElements, "SiteId", relatedFieldInfo.SiteId.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, "TotalLevel", relatedFieldInfo.TotalLevel.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, "Prefixes", relatedFieldInfo.Prefixes);
-            AtomUtility.AddDcElement(feed.AdditionalElements, "Suffixes", relatedFieldInfo.Suffixes);
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(RelatedFieldInfo.Id), "RelatedFieldID" }, relatedFieldInfo.Id.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(RelatedFieldInfo.Title), "RelatedFieldName" }, relatedFieldInfo.Title);
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(RelatedFieldInfo.SiteId), "PublishmentSystemID" }, relatedFieldInfo.SiteId.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(RelatedFieldInfo.TotalLevel), relatedFieldInfo.TotalLevel.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(RelatedFieldInfo.Prefixes), relatedFieldInfo.Prefixes);
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(RelatedFieldInfo.Suffixes), relatedFieldInfo.Suffixes);
 
 			return feed;
 		}
@@ -49,12 +50,12 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var entry = AtomUtility.GetEmptyEntry();
 
-            AtomUtility.AddDcElement(entry.AdditionalElements, "ID", relatedFieldItemInfo.Id.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, "RelatedFieldID", relatedFieldItemInfo.RelatedFieldId.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, "ItemName", relatedFieldItemInfo.ItemName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, "ItemValue", relatedFieldItemInfo.ItemValue);
-            AtomUtility.AddDcElement(entry.AdditionalElements, "ParentID", relatedFieldItemInfo.ParentId.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, "Taxis", relatedFieldItemInfo.Taxis.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(RelatedFieldItemInfo.Id), "ID" }, relatedFieldItemInfo.Id.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(RelatedFieldItemInfo.RelatedFieldId), "RelatedFieldID" }, relatedFieldItemInfo.RelatedFieldId.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(RelatedFieldItemInfo.ItemName), relatedFieldItemInfo.ItemName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(RelatedFieldItemInfo.ItemValue), relatedFieldItemInfo.ItemValue);
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(RelatedFieldItemInfo.ParentId), "ParentID" }, relatedFieldItemInfo.ParentId.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(RelatedFieldItemInfo.Taxis), relatedFieldItemInfo.Taxis.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, "Level", level.ToString());
 
             feed.Entries.Add(entry);
@@ -76,14 +77,14 @@ namespace SiteServer.CMS.ImportExport.Components
 			{
                 var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
-                var relatedFieldName = AtomUtility.GetDcElementContent(feed.AdditionalElements, "RelatedFieldName");
-                var totalLevel = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, "TotalLevel"));
-                var prefixes = AtomUtility.GetDcElementContent(feed.AdditionalElements, "Prefixes");
-                var suffixes = AtomUtility.GetDcElementContent(feed.AdditionalElements, "Suffixes");
+                var title = AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string> { nameof(RelatedFieldInfo.Title), "RelatedFieldName" });
+                var totalLevel = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(RelatedFieldInfo.TotalLevel)));
+                var prefixes = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(RelatedFieldInfo.Prefixes));
+                var suffixes = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(RelatedFieldInfo.Suffixes));
 
-                var relatedFieldInfo = new RelatedFieldInfo(0, relatedFieldName, _siteId, totalLevel, prefixes, suffixes);
+                var relatedFieldInfo = new RelatedFieldInfo(0, title, _siteId, totalLevel, prefixes, suffixes);
 
-                var srcRelatedFieldInfo = DataProvider.RelatedFieldDao.GetRelatedFieldInfo(_siteId, relatedFieldName);
+                var srcRelatedFieldInfo = DataProvider.RelatedFieldDao.GetRelatedFieldInfo(_siteId, title);
                 if (srcRelatedFieldInfo != null)
                 {
                     if (overwrite)
@@ -103,8 +104,8 @@ namespace SiteServer.CMS.ImportExport.Components
                 var lastInsertedId = 0;
 				foreach (AtomEntry entry in feed.Entries)
 				{
-                    var itemName = AtomUtility.GetDcElementContent(entry.AdditionalElements, "ItemName");
-                    var itemValue = AtomUtility.GetDcElementContent(entry.AdditionalElements, "ItemValue");
+                    var itemName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(RelatedFieldItemInfo.ItemName));
+                    var itemValue = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(RelatedFieldItemInfo.ItemValue));
                     var level = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "Level"));
                     var parentId = 0;
                     if (level > 1)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
@@ -210,7 +209,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 		        var nodeIdStrArrayList = ControlUtils.GetSelectedListControlValueArrayList(LbNodeIdFrom);
 
-		        var nodeIdArrayList = new ArrayList();//需要转移的栏目ID
+		        var nodeIdList = new List<int>();//需要转移的栏目ID
 		        foreach (string nodeIdStr in nodeIdStrArrayList)
 		        {
 		            var nodeId = int.Parse(nodeIdStr);
@@ -218,7 +217,7 @@ namespace SiteServer.BackgroundPages.Cms
 		            {
 		                if (!ChannelManager.IsAncestorOrSelf(SiteId, nodeId, targetNodeId))
 		                {
-		                    nodeIdArrayList.Add(nodeId);
+                            nodeIdList.Add(nodeId);
 		                }
 		            }
 
@@ -230,24 +229,24 @@ namespace SiteServer.BackgroundPages.Cms
 
 		        if (translateType != ETranslateType.Content)//需要转移栏目
 		        {
-		            var nodeIdArrayListToTranslate = new ArrayList(nodeIdArrayList);
-		            foreach (int nodeId in nodeIdArrayList)
+		            var nodeIdListToTranslate = new List<int>(nodeIdList);
+		            foreach (var nodeId in nodeIdList)
 		            {
 		                var subNodeIdArrayList = DataProvider.ChannelDao.GetIdListForDescendant(nodeId);
 		                if (subNodeIdArrayList != null && subNodeIdArrayList.Count > 0)
 		                {
 		                    foreach (int nodeIdToDelete in subNodeIdArrayList)
 		                    {
-		                        if (nodeIdArrayListToTranslate.Contains(nodeIdToDelete))
+		                        if (nodeIdListToTranslate.Contains(nodeIdToDelete))
 		                        {
-		                            nodeIdArrayListToTranslate.Remove(nodeIdToDelete);
+                                    nodeIdListToTranslate.Remove(nodeIdToDelete);
 		                        }
 		                    }
 		                }
 		            }
 
 		            var nodeInfoList = new List<ChannelInfo>();
-		            foreach (int nodeId in nodeIdArrayListToTranslate)
+		            foreach (int nodeId in nodeIdListToTranslate)
 		            {
 		                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
 		                nodeInfoList.Add(nodeInfo);
@@ -257,11 +256,11 @@ namespace SiteServer.BackgroundPages.Cms
 
 		            if (RblIsDeleteAfterTranslate.Visible && EBooleanUtils.Equals(RblIsDeleteAfterTranslate.SelectedValue, EBoolean.True))
 		            {
-		                foreach (int nodeId in nodeIdArrayListToTranslate)
+		                foreach (int nodeId in nodeIdListToTranslate)
 		                {
 		                    try
 		                    {
-		                        DataProvider.ChannelDao.Delete(nodeId);
+		                        DataProvider.ChannelDao.Delete(SiteId, nodeId);
 		                    }
 		                    catch
 		                    {

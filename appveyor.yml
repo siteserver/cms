@@ -97,8 +97,8 @@
   artifacts:
     - path: siteserver_install.zip
       name: siteserver_install
-      
-    - path: '**\*.nupkg'
+
+    - path: '*.nupkg'
 
   deploy:
     - provider: GitHub

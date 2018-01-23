@@ -47,7 +47,7 @@
         <div class="form-group form-row">
           <label class="col-2 col-form-label text-right">栏目模板</label>
           <div class="col-4">
-            <asp:DropDownList class="form-control" ID="DdlChannelTemplateId" DataTextField="TemplateName" DataValueField="TemplateId"
+            <asp:DropDownList class="form-control" ID="DdlChannelTemplateId" DataTextField="TemplateName" DataValueField="Id"
               runat="server"></asp:DropDownList>
           </div>
           <div class="col-6"></div>
@@ -55,7 +55,7 @@
         <div class="form-group form-row">
           <label class="col-2 col-form-label text-right">内容模板</label>
           <div class="col-4">
-            <asp:DropDownList class="form-control" ID="DdlContentTemplateId" DataTextField="TemplateName" DataValueField="TemplateId"
+            <asp:DropDownList class="form-control" ID="DdlContentTemplateId" DataTextField="TemplateName" DataValueField="Id"
               runat="server"></asp:DropDownList>
           </div>
           <div class="col-6"></div>

@@ -21,7 +21,7 @@
           <div class="form-group form-row">
             <label class="col-sm-2 col-form-label">是否保留文件</label>
             <div class="col-sm-4">
-              <asp:RadioButtonList ID="RetainFiles" runat="server" RepeatDirection="Horizontal" class="radio radio-primary">
+              <asp:RadioButtonList ID="RblRetainFiles" runat="server" RepeatDirection="Horizontal" class="radio radio-primary">
                 <asp:ListItem Text="保留生成的文件" Value="true"></asp:ListItem>
                 <asp:ListItem Text="删除生成的文件" Value="false" Selected="true"></asp:ListItem>
               </asp:RadioButtonList>

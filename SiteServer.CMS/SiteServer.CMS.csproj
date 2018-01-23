@@ -219,6 +219,8 @@
     <Compile Include="Data\PostgreSql.cs" />
     <Compile Include="Data\SqlHelper.cs" />
     <Compile Include="Data\SqlServer.cs" />
+    <Compile Include="ImportExport\Components\ContentGroupIe.cs" />
+    <Compile Include="ImportExport\Components\ChannelGroupIe.cs" />
     <Compile Include="Model\AdministratorInfo.cs" />
     <Compile Include="Model\AreaInfo.cs" />
     <Compile Include="Model\BackgroundContentAttribute.cs" />

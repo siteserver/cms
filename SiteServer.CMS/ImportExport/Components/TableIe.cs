@@ -19,53 +19,37 @@ namespace SiteServer.CMS.ImportExport.Components
 		public void ExportAuxiliaryTable(string tableName)
 		{
             var tableInfo = DataProvider.TableDao.GetTableCollectionInfo(tableName);
-			if (tableInfo != null)
-			{
-                var metaInfoList = TableMetadataManager.GetTableMetadataInfoList(tableInfo.TableName);
-				var filePath = _directoryPath + PathUtils.SeparatorChar + tableInfo.TableName + ".xml";
+		    if (tableInfo == null) return;
 
-				var feed = GetAtomFeed(tableInfo);
+		    var metaInfoList = TableMetadataManager.GetTableMetadataInfoList(tableInfo.TableName);
+		    var filePath = _directoryPath + PathUtils.SeparatorChar + tableInfo.TableName + ".xml";
 
-				foreach (var metaInfo in metaInfoList)
-				{
-					var entry = GetAtomEntry(metaInfo);
-					feed.Entries.Add(entry);
-				}
-				feed.Save(filePath);
-			}
+            var feed = AtomUtility.GetEmptyFeed();
+
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(TableInfo.TableName), "TableENName" }, tableInfo.TableName);
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(TableInfo.DisplayName), "TableCNName" }, tableInfo.DisplayName);
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableInfo.AttributeNum), tableInfo.AttributeNum.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(TableInfo.IsCreatedInDb), "IsCreatedInDB" }, tableInfo.IsCreatedInDb.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(TableInfo.IsChangedAfterCreatedInDb), "IsChangedAfterCreatedInDB" }, tableInfo.IsChangedAfterCreatedInDb.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableInfo.Description), tableInfo.Description);
+            AtomUtility.AddDcElement(feed.AdditionalElements, "SerializedString", TableMetadataManager.GetSerializedString(tableInfo.TableName));   //表唯一序列号
+
+            foreach (var metaInfo in metaInfoList)
+		    {
+                var entry = AtomUtility.GetEmptyEntry();
+
+                AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(TableMetadataInfo.Id), "TableMetadataID" }, metaInfo.Id.ToString());
+                AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(TableMetadataInfo.TableName), "AuxiliaryTableENName" }, metaInfo.TableName);
+                AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TableMetadataInfo.AttributeName), metaInfo.AttributeName);
+                AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TableMetadataInfo.DataType), metaInfo.DataType.Value);
+                AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TableMetadataInfo.DataLength), metaInfo.DataLength.ToString());
+                AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TableMetadataInfo.Taxis), metaInfo.Taxis.ToString());
+                AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TableMetadataInfo.IsSystem), metaInfo.IsSystem.ToString());
+
+                feed.Entries.Add(entry);
+		    }
+		    feed.Save(filePath);
 		}
-
-		private static AtomFeed GetAtomFeed(TableInfo tableInfo)
-		{
-			var feed = AtomUtility.GetEmptyFeed();
-
-			AtomUtility.AddDcElement(feed.AdditionalElements, "TableName", tableInfo.TableName);
-			AtomUtility.AddDcElement(feed.AdditionalElements, "DisplayName", tableInfo.DisplayName);
-			AtomUtility.AddDcElement(feed.AdditionalElements, "AttributeNum", tableInfo.AttributeNum.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, "IsCreatedInDB", tableInfo.IsCreatedInDb.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, "IsChangedAfterCreatedInDB", tableInfo.IsChangedAfterCreatedInDb.ToString());
-			AtomUtility.AddDcElement(feed.AdditionalElements, "Description", tableInfo.Description);
-            //表唯一序列号
-            AtomUtility.AddDcElement(feed.AdditionalElements, "SerializedString", TableMetadataManager.GetSerializedString(tableInfo.TableName));
-
-			return feed;
-		}
-
-		private static AtomEntry GetAtomEntry(TableMetadataInfo metaInfo)
-		{
-			var entry = AtomUtility.GetEmptyEntry();
-
-			AtomUtility.AddDcElement(entry.AdditionalElements, "Id", metaInfo.Id.ToString());
-			AtomUtility.AddDcElement(entry.AdditionalElements, "TableName", metaInfo.TableName);
-			AtomUtility.AddDcElement(entry.AdditionalElements, "AttributeName", metaInfo.AttributeName);
-			AtomUtility.AddDcElement(entry.AdditionalElements, "DataType", metaInfo.DataType.Value);
-			AtomUtility.AddDcElement(entry.AdditionalElements, "DataLength", metaInfo.DataLength.ToString());
-			AtomUtility.AddDcElement(entry.AdditionalElements, "Taxis", metaInfo.Taxis.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, "IsSystem", metaInfo.IsSystem.ToString());
-
-			return entry;
-		}
-
 
         /// <summary>
         /// 将频道模板中的辅助表导入发布系统中，返回修改了的表名对照
@@ -86,7 +70,7 @@ namespace SiteServer.CMS.ImportExport.Components
             {
                 var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
-                var tableName = AtomUtility.GetDcElementContent(feed.AdditionalElements, "TableName");
+                var tableName = AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string> { nameof(TableInfo.TableName), "TableENName" });
 
                 if (!isUserTables)
                 {
@@ -94,7 +78,8 @@ namespace SiteServer.CMS.ImportExport.Components
                     continue;
                 }
 
-                var displayName = AtomUtility.GetDcElementContent(feed.AdditionalElements, "DisplayName");
+                var displayName = AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string> { nameof(TableInfo.DisplayName), "TableCNName" });
+
                 var serializedString = AtomUtility.GetDcElementContent(feed.AdditionalElements, "SerializedString");
 
                 var tableNameToInsert = string.Empty;//需要增加的表名，空代表不需要添加辅助表
@@ -130,7 +115,7 @@ namespace SiteServer.CMS.ImportExport.Components
                             AttributeNum = 0,
                             IsCreatedInDb = false,
                             IsChangedAfterCreatedInDb = false,
-                            Description = AtomUtility.GetDcElementContent(feed.AdditionalElements, "Description")
+                            Description = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableInfo.Description))
                         };
 
                         var metadataInfoList = new List<TableMetadataInfo>();

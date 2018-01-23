@@ -4870,7 +4870,6 @@
     <None Include="ThirdParty\RSS.NET\RssTestAppliction\.cvsignore" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ThirdParty\Atom\mediatypes.txt" />
     <Content Include="docs\MySqlCommand.xml" />
     <Content Include="docs\MySqlCommandBuilder.xml" />
     <Content Include="docs\MySqlConnection.xml" />

@@ -46,17 +46,15 @@ namespace SiteServer.Utils
         {
             public const string DirectoryName = "SiteTemplates";
             //文件夹
-            public const string SiteTemplateMetadata = "SiteTemplateMetadata";//存储频道模板元数据的文件夹名称
-            public const string SiteContent = "SiteContent";//频道内容导入导出临时文件夹名
-            //public const string Input = "Input";//提交表单导入导出临时文件夹名
-            public const string Table = "Table";//辅助表导入导出临时文件夹名
-            public const string RelatedField = "RelatedField";//关联字段导入导出临时文件夹名
+            public const string SiteTemplateMetadata = "SiteTemplateMetadata";      //存储频道模板元数据的文件夹名称
+            public const string SiteContent = "SiteContent";                        //频道内容导入导出临时文件夹名
+            public const string Table = "Table";                                    //辅助表导入导出临时文件夹名
+            public const string RelatedField = "RelatedField";                      //关联字段导入导出临时文件夹名
 
             //文件
-            public const string FileTemplate = "Template.xml";//序列化模板的文件名
-            public const string FileDisplayMode = "DisplayMode.xml";//序列化显示方式的文件名
-            public const string FileMetadata = "Metadata.xml";//频道模板元数据文件
-            public const string FileConfiguration = "Configuration.xml";
+            public const string FileTemplate = "Template.xml";                      //序列化模板的文件名
+            public const string FileMetadata = "Metadata.xml";                      //频道模板元数据文件
+            public const string FileConfiguration = "Configuration.xml";            //站点配置
         }
 
         public static char DirectorySeparatorChar = Path.DirectorySeparatorChar;

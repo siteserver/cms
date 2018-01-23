@@ -24,7 +24,8 @@ namespace SiteServer.CMS.Provider
             {
                 ColumnName = nameof(SiteInfo.Id),
                 DataType = DataType.Integer,
-                IsPrimaryKey = true
+                IsPrimaryKey = true,
+                IsIdentity = false
             },
             new TableColumnInfo
             {
@@ -106,7 +107,7 @@ namespace SiteServer.CMS.Provider
 
             DataProvider.TagDao.DeleteTags(siteId);
 
-            DataProvider.ChannelDao.Delete(siteId);
+            DataProvider.ChannelDao.Delete(siteId, siteId);
 
             UpdateParentIdToZero(siteId);
 
@@ -257,13 +258,6 @@ namespace SiteServer.CMS.Provider
                 rdr.Close();
             }
             return list;
-        }
-
-        public IEnumerable GetDataSource()
-        {
-            var sqlString = $"SELECT p.Id, p.SiteName, p.SiteDir, p.TableName, p.IsRoot, p.ParentId, p.Taxis, n.{nameof(ChannelInfo.ChannelName)} FROM {TableName} p INNER JOIN {DataProvider.ChannelDao.TableName} n ON (p.Id = n.{nameof(ChannelInfo.Id)}) ORDER BY p.IsRoot DESC, p.ParentId, p.Taxis DESC, n.{nameof(ChannelInfo.Id)}";
-
-            return (IEnumerable)ExecuteReader(sqlString);
         }
 
         public int GetSiteCount()

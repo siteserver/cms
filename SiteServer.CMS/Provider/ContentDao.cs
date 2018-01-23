@@ -803,6 +803,25 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             Content.ClearCache();
         }
 
+        public void DeleteContentsByDeletedChannelIdList(IDbTransaction trans, SiteInfo siteInfo, List<int> channelIdList)
+        {
+            foreach (var channelId in channelIdList)
+            {
+                var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+                if (!string.IsNullOrEmpty(tableName))
+                {
+                    ExecuteNonQuery(trans, $"DELETE FROM {tableName} WHERE SiteId = {siteInfo.Id} AND {nameof(ContentInfo.ChannelId)} = {channelId}");
+                }
+            }
+
+            Content.ClearCache();
+        }
+
+        public string GetCountSqlString(string tableName, int channelId)
+        {
+            return $"SELECT COUNT(*) AS ContentNum FROM {tableName} WHERE {ContentAttribute.ChannelId} = {channelId}";
+        }
+
         public void RestoreContentsByTrash(int siteId, string tableName)
         {
             var updateNum = 0;

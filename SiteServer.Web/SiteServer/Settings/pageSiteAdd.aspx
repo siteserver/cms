@@ -158,7 +158,7 @@
               <label class="col-form-label">
                 站点级别
               </label>
-              <asp:RadioButtonList ID="RblIsHeadquarters" cssClass="radio radio-primary" AutoPostBack="true" OnSelectedIndexChanged="RblIsHeadquarters_SelectedIndexChanged"
+              <asp:RadioButtonList ID="RblIsRoot" cssClass="radio radio-primary" AutoPostBack="true" OnSelectedIndexChanged="RblIsRoot_SelectedIndexChanged"
                 RepeatDirection="Horizontal" runat="server">
                 <asp:ListItem Text="主站" Value="True"></asp:ListItem>
                 <asp:ListItem Text="子站" Value="False" Selected="true"></asp:ListItem>

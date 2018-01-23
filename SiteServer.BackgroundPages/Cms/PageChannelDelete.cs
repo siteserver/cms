@@ -138,7 +138,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         var tableName = ChannelManager.GetTableName(SiteInfo, nodeId);
                         DataProvider.ContentDao.TrashContentsByChannelId(SiteId, tableName, nodeId);
-                        DataProvider.ChannelDao.Delete(nodeId);
+                        DataProvider.ChannelDao.Delete(SiteId, nodeId);
                     }
 
                     Body.AddSiteLog(SiteId, "删除栏目", $"栏目:{builder}");

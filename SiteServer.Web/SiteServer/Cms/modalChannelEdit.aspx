@@ -142,7 +142,7 @@
           <div class="form-group form-row">
             <label class="col-2 col-form-label text-right">栏目模版</label>
             <div class="col-4">
-              <asp:DropDownList class="form-control" id="DdlChannelTemplateId" DataTextField="TemplateName" DataValueField="TemplateId"
+              <asp:DropDownList class="form-control" id="DdlChannelTemplateId" DataTextField="TemplateName" DataValueField="Id"
                 runat="server"></asp:DropDownList>
             </div>
             <div class="col-6 help-block"></div>
@@ -153,7 +153,7 @@
           <div class="form-group form-row">
             <label class="col-2 col-form-label text-right">内容模版</label>
             <div class="col-4">
-              <asp:DropDownList class="form-control" id="DdlContentTemplateId" DataTextField="TemplateName" DataValueField="TemplateId"
+              <asp:DropDownList class="form-control" id="DdlContentTemplateId" DataTextField="TemplateName" DataValueField="Id"
                 runat="server"></asp:DropDownList>
             </div>
             <div class="col-6 help-block"></div>
@@ -166,7 +166,7 @@
           <div class="form-group form-row">
             <label class="col-2 col-form-label text-right">栏目组</label>
             <div class="col-10">
-              <asp:CheckBoxList id="CblNodeGroupNameCollection" DataTextField="NodeGroupName" DataValueField="NodeGroupName" RepeatDirection="Horizontal"
+              <asp:CheckBoxList id="CblNodeGroupNameCollection" DataTextField="GroupName" DataValueField="GroupName" RepeatDirection="Horizontal"
                 RepeatLayout="Flow" class="checkbox checkbox-primary" runat="server" />
             </div>
           </div>

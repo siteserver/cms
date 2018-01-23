@@ -18,6 +18,8 @@ namespace SiteServer.BackgroundPages
 
         protected override bool IsSinglePage => true;
 
+        protected override bool IsAccessable => true;
+
         public static string GetRedirectUrl()
         {
             return PageUtils.GetSiteServerUrl(nameof(PageAutoUpdate), null);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Atom.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
@@ -29,16 +30,16 @@ namespace SiteServer.CMS.ImportExport.Components
 
 			var feed = AtomUtility.GetEmptyFeed();
 
-            AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.Id, psInfo.Id.ToString());
-			AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.SiteName, psInfo.SiteName);
-            AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.SiteDir, psInfo.SiteDir);
-            AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.TableName, psInfo.TableName);
-            AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.IsRoot, psInfo.IsRoot.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.ParentId, psInfo.ParentId.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.Id, "PublishmentSystemId" }, psInfo.Id.ToString());
+			AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.SiteName, "PublishmentSystemName" }, psInfo.SiteName);
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.SiteDir, "PublishmentSystemDir" }, psInfo.SiteDir);
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.TableName, "AuxiliaryTableForContent" }, psInfo.TableName);
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.IsRoot, "IsHeadquarters" }, psInfo.IsRoot.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.ParentId, "ParentPublishmentSystemId" }, psInfo.ParentId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.Taxis, psInfo.Taxis.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.SettingsXml, psInfo.Additional.ToString());
 
-			var indexTemplateId = TemplateManager.GetDefaultTemplateId(psInfo.Id, ETemplateType.IndexPageTemplate);
+            var indexTemplateId = TemplateManager.GetDefaultTemplateId(psInfo.Id, ETemplateType.IndexPageTemplate);
 			if (indexTemplateId != 0)
 			{
                 var indexTemplateName = TemplateManager.GetTemplateName(_siteId, indexTemplateId);
@@ -66,13 +67,13 @@ namespace SiteServer.CMS.ImportExport.Components
 				AtomUtility.AddDcElement(feed.AdditionalElements, DefaultFileTemplateName, fileTemplateName);
 			}
 
-			var nodeGroupInfoList = DataProvider.ChannelGroupDao.GetGroupInfoList(psInfo.Id);
-            nodeGroupInfoList.Reverse();
+			var channelGroupInfoList = DataProvider.ChannelGroupDao.GetGroupInfoList(psInfo.Id);
+            channelGroupInfoList.Reverse();
 
-			foreach (var nodeGroupInfo in nodeGroupInfoList)
+			foreach (var channelGroupInfo in channelGroupInfoList)
 			{
-				var entry = ExportNodeGroupInfo(nodeGroupInfo);
-				feed.Entries.Add(entry);
+				var entry = ChannelGroupIe.Export(channelGroupInfo);
+                feed.Entries.Add(entry);
 			}
 
 			var contentGroupInfoList = DataProvider.ContentGroupDao.GetContentGroupInfoList(psInfo.Id);
@@ -80,52 +81,26 @@ namespace SiteServer.CMS.ImportExport.Components
 
 			foreach (var contentGroupInfo in contentGroupInfoList)
 			{
-				var entry = ExportContentGroupInfo(contentGroupInfo);
+				var entry = ContentGroupIe.Export(contentGroupInfo);
 				feed.Entries.Add(entry);
 			}
 
 			feed.Save(_filePath);
 		}
 
-		private static AtomEntry ExportNodeGroupInfo(ChannelGroupInfo nodeGroupInfo)
-		{
-			var entry = AtomUtility.GetEmptyEntry();
-
-			AtomUtility.AddDcElement(entry.AdditionalElements, "IsNodeGroup", true.ToString());
-			AtomUtility.AddDcElement(entry.AdditionalElements, "GroupName", nodeGroupInfo.GroupName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, "Taxis", nodeGroupInfo.Taxis.ToString());
-			AtomUtility.AddDcElement(entry.AdditionalElements, "Description", nodeGroupInfo.Description);
-
-			return entry;
-		}
-
-		private static AtomEntry ExportContentGroupInfo(ContentGroupInfo contentGroupInfo)
-		{
-			var entry = AtomUtility.GetEmptyEntry();
-
-			AtomUtility.AddDcElement(entry.AdditionalElements, "IsContentGroup", true.ToString());
-			AtomUtility.AddDcElement(entry.AdditionalElements, "GroupName", contentGroupInfo.GroupName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, "Taxis", contentGroupInfo.Taxis.ToString());
-			AtomUtility.AddDcElement(entry.AdditionalElements, "Description", contentGroupInfo.Description);
-
-			return entry;
-		}
-
-        public static SiteInfo GetPublishmentSytemInfo(string filePath)
+        public static SiteInfo GetSiteInfo(string filePath)
         {
             var siteInfo = new SiteInfo();
             if (!FileUtils.IsFileExists(filePath)) return siteInfo;
 
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
-            siteInfo.SiteName = AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.SiteName);
-            siteInfo.SiteDir = AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.SiteDir);
+            siteInfo.SiteName = AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string> { SiteAttribute.SiteName, "PublishmentSystemName" });
+            siteInfo.SiteDir = AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string> { SiteAttribute.SiteDir, "PublishmentSystemDir" });
             if (siteInfo.SiteDir != null && siteInfo.SiteDir.IndexOf("\\", StringComparison.Ordinal) != -1)
             {
                 siteInfo.SiteDir = siteInfo.SiteDir.Substring(siteInfo.SiteDir.LastIndexOf("\\", StringComparison.Ordinal) + 1);
             }
-            //siteInfo.IsCheckContentUseLevel = EBooleanUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.IsCheckContentUseLevel));
-            //siteInfo.CheckContentLevel = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.CheckContentLevel));
             siteInfo.SettingsXml = AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.SettingsXml);
             siteInfo.Additional.IsCreateDoubleClick = false;
             return siteInfo;
@@ -139,8 +114,6 @@ namespace SiteServer.CMS.ImportExport.Components
 
 			var siteInfo = SiteManager.GetSiteInfo(_siteId);
 
-            //psInfo.IsCheckContentUseLevel = EBooleanUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.IsCheckContentUseLevel, EBooleanUtils.GetValue(psInfo.IsCheckContentUseLevel)));
-            //psInfo.CheckContentLevel = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.CheckContentLevel, psInfo.CheckContentLevel.ToString()));
             siteInfo.SettingsXml = AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.SettingsXml, siteInfo.SettingsXml);
 
             siteInfo.Additional.IsSeparatedWeb = false;
@@ -190,26 +163,10 @@ namespace SiteServer.CMS.ImportExport.Components
 
 			foreach (AtomEntry entry in feed.Entries)
 			{
-				var isNodeGroup = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, "IsNodeGroup"));
-				var isContentGroup = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, "IsContentGroup"));
-				if (isNodeGroup)
-				{
-					var nodeGroupName = AtomUtility.GetDcElementContent(entry.AdditionalElements, "NodeGroupName");
-				    if (DataProvider.ChannelGroupDao.IsExists(siteInfo.Id, nodeGroupName)) continue;
-
-				    var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "Taxis"));
-				    var description = AtomUtility.GetDcElementContent(entry.AdditionalElements, "Description");
-				    DataProvider.ChannelGroupDao.Insert(new ChannelGroupInfo(nodeGroupName, siteInfo.Id, taxis, description));
-				}
-				else if (isContentGroup)
-				{
-					var contentGroupName = AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentGroupName");
-				    if (DataProvider.ContentGroupDao.IsExists(contentGroupName, siteInfo.Id)) continue;
-
-				    var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "Taxis"));
-				    var description = AtomUtility.GetDcElementContent(entry.AdditionalElements, "Description");
-				    DataProvider.ContentGroupDao.Insert(new ContentGroupInfo(contentGroupName, siteInfo.Id, taxis, description));
-				}
+			    if (!ChannelGroupIe.Import(entry, siteInfo.Id))
+			    {
+                    ContentGroupIe.Import(entry, siteInfo.Id);
+                }
 			}
 		}
 

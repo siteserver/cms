@@ -57,15 +57,15 @@ namespace SiteServer.CMS.ImportExport.Components
 
             var siteInfo = SiteManager.GetSiteInfo(_siteId);
 
-			AtomUtility.AddDcElement(entry.AdditionalElements, "Id", templateInfo.Id.ToString());
-			AtomUtility.AddDcElement(entry.AdditionalElements, "SiteId", templateInfo.SiteId.ToString());
-			AtomUtility.AddDcElement(entry.AdditionalElements, "TemplateName", templateInfo.TemplateName);
-			AtomUtility.AddDcElement(entry.AdditionalElements, "TemplateType", ETemplateTypeUtils.GetValue(templateInfo.TemplateType));
-            AtomUtility.AddDcElement(entry.AdditionalElements, "RelatedFileName", templateInfo.RelatedFileName);
-			AtomUtility.AddDcElement(entry.AdditionalElements, "CreatedFileFullName", templateInfo.CreatedFileFullName);
-			AtomUtility.AddDcElement(entry.AdditionalElements, "CreatedFileExtName", templateInfo.CreatedFileExtName);
-			AtomUtility.AddDcElement(entry.AdditionalElements, "Charset", ECharsetUtils.GetValue(templateInfo.Charset));
-            AtomUtility.AddDcElement(entry.AdditionalElements, "IsDefault", templateInfo.IsDefault.ToString());
+			AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ nameof(TemplateInfo.Id), "TemplateID" }, templateInfo.Id.ToString());
+			AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(TemplateInfo.SiteId), "PublishmentSystemID" }, templateInfo.SiteId.ToString());
+			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.TemplateName), templateInfo.TemplateName);
+			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.TemplateType), ETemplateTypeUtils.GetValue(templateInfo.TemplateType));
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.RelatedFileName), templateInfo.RelatedFileName);
+			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileFullName), templateInfo.CreatedFileFullName);
+			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileExtName), templateInfo.CreatedFileExtName);
+			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.Charset), ECharsetUtils.GetValue(templateInfo.Charset));
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.IsDefault), templateInfo.IsDefault.ToString());
 
             var templateContent = TemplateManager.GetTemplateContent(siteInfo, templateInfo);
 			AtomUtility.AddDcElement(entry.AdditionalElements, "Content", AtomUtility.Encrypt(templateContent));
@@ -81,7 +81,7 @@ namespace SiteServer.CMS.ImportExport.Components
 		    var siteInfo = SiteManager.GetSiteInfo(_siteId);
 			foreach (AtomEntry entry in feed.Entries)
 			{
-				var templateName = AtomUtility.GetDcElementContent(entry.AdditionalElements, "TemplateName");
+				var templateName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.TemplateName));
 			    if (string.IsNullOrEmpty(templateName)) continue;
 
 			    var templateInfo = new TemplateInfo
@@ -89,11 +89,11 @@ namespace SiteServer.CMS.ImportExport.Components
                     SiteId = _siteId,
 			        TemplateName = templateName,
 			        TemplateType =
-			            ETemplateTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(entry.AdditionalElements, "TemplateType")),
-			        RelatedFileName = AtomUtility.GetDcElementContent(entry.AdditionalElements, "RelatedFileName"),
-			        CreatedFileFullName = AtomUtility.GetDcElementContent(entry.AdditionalElements, "CreatedFileFullName"),
-			        CreatedFileExtName = AtomUtility.GetDcElementContent(entry.AdditionalElements, "CreatedFileExtName"),
-			        Charset = ECharsetUtils.GetEnumType(AtomUtility.GetDcElementContent(entry.AdditionalElements, "Charset")),
+			            ETemplateTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.TemplateType))),
+			        RelatedFileName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.RelatedFileName)),
+			        CreatedFileFullName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileFullName)),
+			        CreatedFileExtName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileExtName)),
+			        Charset = ECharsetUtils.GetEnumType(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.Charset))),
 			        IsDefault = false
 			    };
 

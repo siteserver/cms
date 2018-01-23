@@ -65,8 +65,8 @@
                     <tr class="thead">
                       <th>内容标题(点击查看) </th>
                       <asp:Literal id="LtlColumnsHead" runat="server"></asp:Literal>
-                      <th class="text-center text-nowrap">操作</th>
-                      <th class="text-center text-nowrap">状态</th>
+                      <th class="text-center text-nowrap" width="100">操作</th>
+                      <th class="text-center text-nowrap" width="100">状态</th>
                       <th width="20" class="text-center text-nowrap">
                         <input type="checkbox" onClick="selectRows(document.getElementById('contents'), this.checked);">
                       </th>

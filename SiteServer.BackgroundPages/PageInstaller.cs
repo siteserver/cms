@@ -51,12 +51,14 @@ namespace SiteServer.BackgroundPages
 
         protected override bool IsSinglePage => true;
 
-        public static string GetRedirectUrl()
-        {
-            return PageUtils.GetSiteServerUrl("installer/default.aspx", null);
-        }
+	    protected override bool IsAccessable => true;
 
-        public void Page_Load(object sender, EventArgs e)
+	    public static string GetRedirectUrl()
+	    {
+	        return PageUtils.GetSiteServerUrl("installer/default", null);
+	    }
+
+	    public void Page_Load(object sender, EventArgs e)
         {
             if (IsPostBack) return;
 

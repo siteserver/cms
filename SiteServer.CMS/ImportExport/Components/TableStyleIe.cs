@@ -62,19 +62,19 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var feed = AtomUtility.GetEmptyFeed();
 
-            AtomUtility.AddDcElement(feed.AdditionalElements, "Id", tableStyleInfo.Id.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, "RelatedIdentity", tableStyleInfo.RelatedIdentity.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, "TableName", tableStyleInfo.TableName);
-            AtomUtility.AddDcElement(feed.AdditionalElements, "AttributeName", tableStyleInfo.AttributeName);
-            AtomUtility.AddDcElement(feed.AdditionalElements, "Taxis", tableStyleInfo.Taxis.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, "DisplayName", tableStyleInfo.DisplayName);
-            AtomUtility.AddDcElement(feed.AdditionalElements, "HelpText", tableStyleInfo.HelpText);
-            AtomUtility.AddDcElement(feed.AdditionalElements, "IsVisibleInList", tableStyleInfo.IsVisibleInList.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, "InputType", tableStyleInfo.InputType.Value);
-            AtomUtility.AddDcElement(feed.AdditionalElements, "DefaultValue", tableStyleInfo.DefaultValue);
-            AtomUtility.AddDcElement(feed.AdditionalElements, "IsHorizontal", tableStyleInfo.IsHorizontal.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string>{ nameof(TableStyleInfo.Id), "TableStyleID" }, tableStyleInfo.Id.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyleInfo.RelatedIdentity), tableStyleInfo.RelatedIdentity.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyleInfo.TableName), tableStyleInfo.TableName);
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyleInfo.AttributeName), tableStyleInfo.AttributeName);
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyleInfo.Taxis), tableStyleInfo.Taxis.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyleInfo.DisplayName), tableStyleInfo.DisplayName);
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyleInfo.HelpText), tableStyleInfo.HelpText);
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyleInfo.IsVisibleInList), tableStyleInfo.IsVisibleInList.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyleInfo.InputType), tableStyleInfo.InputType.Value);
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyleInfo.DefaultValue), tableStyleInfo.DefaultValue);
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyleInfo.IsHorizontal), tableStyleInfo.IsHorizontal.ToString());
             //SettingsXML
-            AtomUtility.AddDcElement(feed.AdditionalElements, "ExtendValues", tableStyleInfo.ExtendValues);
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyleInfo.ExtendValues), tableStyleInfo.ExtendValues);
 
             //保存此栏目样式在系统中的排序号
             var orderString = string.Empty;
@@ -92,11 +92,11 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var entry = AtomUtility.GetEmptyEntry();
 
-            AtomUtility.AddDcElement(entry.AdditionalElements, "Id", styleItemInfo.Id.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, "TableStyleID", styleItemInfo.TableStyleId.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, "ItemTitle", styleItemInfo.ItemTitle);
-            AtomUtility.AddDcElement(entry.AdditionalElements, "ItemValue", styleItemInfo.ItemValue);
-            AtomUtility.AddDcElement(entry.AdditionalElements, "IsSelected", styleItemInfo.IsSelected.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ nameof(TableStyleItemInfo.Id), "TableStyleItemID" }, styleItemInfo.Id.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(TableStyleItemInfo.TableStyleId), "TableStyleID" }, styleItemInfo.TableStyleId.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TableStyleItemInfo.ItemTitle), styleItemInfo.ItemTitle);
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TableStyleItemInfo.ItemValue), styleItemInfo.ItemValue);
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TableStyleItemInfo.IsSelected), styleItemInfo.IsSelected.ToString());
 
 			return entry;
 		}
@@ -160,25 +160,25 @@ namespace SiteServer.CMS.ImportExport.Components
             {
                 var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
-                var attributeName = AtomUtility.GetDcElementContent(feed.AdditionalElements, "AttributeName");
-                var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, "Taxis"), 0);
-                var displayName = AtomUtility.GetDcElementContent(feed.AdditionalElements, "DisplayName");
-                var helpText = AtomUtility.GetDcElementContent(feed.AdditionalElements, "HelpText");
-                var isVisibleInList = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsVisibleInList"));
-                var inputType = InputTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, "InputType"));
-                var defaultValue = AtomUtility.GetDcElementContent(feed.AdditionalElements, "DefaultValue");
-                var isHorizontal = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsHorizontal"));
+                var attributeName = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.AttributeName));
+                var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.Taxis)), 0);
+                var displayName = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.DisplayName));
+                var helpText = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.HelpText));
+                var isVisibleInList = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.IsVisibleInList)));
+                var inputType = InputTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.InputType)));
+                var defaultValue = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.DefaultValue));
+                var isHorizontal = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.IsHorizontal)));
                 //SettingsXML
-                var extendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, "ExtendValues");
+                var extendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.ExtendValues));
 
                 var styleInfo = new TableStyleInfo(0, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisibleInList, inputType, defaultValue, isHorizontal, extendValues);
 
                 var styleItems = new List<TableStyleItemInfo>();
                 foreach (AtomEntry entry in feed.Entries)
                 {
-                    var itemTitle = AtomUtility.GetDcElementContent(entry.AdditionalElements, "ItemTitle");
-                    var itemValue = AtomUtility.GetDcElementContent(entry.AdditionalElements, "ItemValue");
-                    var isSelected = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, "IsSelected"));
+                    var itemTitle = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TableStyleItemInfo.ItemTitle));
+                    var itemValue = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TableStyleItemInfo.ItemValue));
+                    var isSelected = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TableStyleItemInfo.IsSelected)));
 
                     styleItems.Add(new TableStyleItemInfo(0, 0, itemTitle, itemValue, isSelected));
                 }
@@ -222,14 +222,14 @@ namespace SiteServer.CMS.ImportExport.Components
                     {
                         var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
-                        var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, "Taxis"), 0);
-                        var displayName = AtomUtility.GetDcElementContent(feed.AdditionalElements, "DisplayName");
-                        var helpText = AtomUtility.GetDcElementContent(feed.AdditionalElements, "HelpText");
-                        var isVisibleInList = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsVisibleInList"));
-                        var inputType = InputTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, "InputType"));
-                        var defaultValue = AtomUtility.GetDcElementContent(feed.AdditionalElements, "DefaultValue");
-                        var isHorizontal = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsHorizontal"));
-                        var extendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, "ExtendValues");
+                        var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.Taxis)), 0);
+                        var displayName = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.DisplayName));
+                        var helpText = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.HelpText));
+                        var isVisibleInList = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.IsVisibleInList)));
+                        var inputType = InputTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.InputType)));
+                        var defaultValue = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.DefaultValue));
+                        var isHorizontal = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.IsHorizontal)));
+                        var extendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.ExtendValues));
 
                         var orderString = AtomUtility.GetDcElementContent(feed.AdditionalElements, "OrderString");
 
@@ -242,9 +242,9 @@ namespace SiteServer.CMS.ImportExport.Components
                         var styleItems = new List<TableStyleItemInfo>();
                         foreach (AtomEntry entry in feed.Entries)
                         {
-                            var itemTitle = AtomUtility.GetDcElementContent(entry.AdditionalElements, "ItemTitle");
-                            var itemValue = AtomUtility.GetDcElementContent(entry.AdditionalElements, "ItemValue");
-                            var isSelected = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, "IsSelected"));
+                            var itemTitle = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TableStyleItemInfo.ItemTitle));
+                            var itemValue = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TableStyleItemInfo.ItemValue));
+                            var isSelected = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TableStyleItemInfo.IsSelected)));
 
                             styleItems.Add(new TableStyleItemInfo(0, 0, itemTitle, itemValue, isSelected));
                         }

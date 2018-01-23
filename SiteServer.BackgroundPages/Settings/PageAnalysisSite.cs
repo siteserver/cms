@@ -105,10 +105,10 @@ yArrayUpdate.push('{yValueUpdate}');";
 
         public void BindGrid()
         {
-            var ie = DataProvider.SiteDao.GetDataSource().GetEnumerator();
-            while (ie.MoveNext())
+            var siteIdList = SiteManager.GetSiteIdList();
+            
+            foreach(var siteId in siteIdList)
             {
-                var siteId = SqlUtils.EvalInt(ie.Current, "SiteId");
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
 
                 var key = siteInfo.Id;
@@ -119,7 +119,7 @@ yArrayUpdate.push('{yValueUpdate}');";
                 SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentUpdate(siteInfo.TableName, siteInfo.Id, siteInfo.Id, EScopeType.All, _begin, _end, string.Empty), YTypeUpdate);
             }
 
-            RptContents.DataSource = DataProvider.SiteDao.GetDataSource();
+            RptContents.DataSource = siteIdList;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }
@@ -128,8 +128,9 @@ yArrayUpdate.push('{yValueUpdate}');";
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var siteId = SqlUtils.EvalInt(e.Item.DataItem, "SiteId");
+            var siteId = (int) e.Item.DataItem;
             var siteInfo = SiteManager.GetSiteInfo(siteId);
+
             var ltlSiteName = (Literal)e.Item.FindControl("ltlSiteName");
             var ltlNewContentNum = (Literal)e.Item.FindControl("ltlNewContentNum");
             var ltlUpdateContentNum = (Literal)e.Item.FindControl("ltlUpdateContentNum");

@@ -85,9 +85,9 @@ namespace SiteServer.CMS.ImportExport
             if (isDeleteChannels)
             {
                 var nodeIdList = DataProvider.ChannelDao.GetIdListByParentId(siteId, siteId);
-                foreach (int nodeId in nodeIdList)
+                foreach (var nodeId in nodeIdList)
                 {
-                    DataProvider.ChannelDao.Delete(nodeId);
+                    DataProvider.ChannelDao.Delete(siteId, nodeId);
                 }
             }
             if (isDeleteTemplates)

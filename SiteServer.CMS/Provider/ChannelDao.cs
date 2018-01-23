@@ -882,7 +882,7 @@ namespace SiteServer.CMS.Provider
             if (!string.IsNullOrEmpty(tableName))
             {
                 sqlString =
-                    $"UPDATE siteserver_Channel SET ContentNum = (SELECT COUNT(*) AS ContentNum FROM {tableName} WHERE (Id = {channelId})) WHERE (Id = {channelId})";
+                    $"UPDATE {TableName} SET ContentNum = ({DataProvider.ContentDao.GetCountSqlString(tableName, channelId)}) WHERE Id = {channelId}";
             }
             if (!string.IsNullOrEmpty(sqlString))
             {
@@ -917,7 +917,7 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString);
         }
 
-        public void Delete(int channelId)
+        public void Delete(int siteId, int channelId)
         {
             var channelInfo = GetChannelInfo(channelId);
             if (channelInfo == null) return;
@@ -932,15 +932,9 @@ namespace SiteServer.CMS.Provider
             string deleteCmd =
                 $"DELETE FROM siteserver_Channel WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
 
-            var tableName = ChannelManager.GetTableName(SiteManager.GetSiteInfo(channelInfo.SiteId), channelInfo);
-            var deleteContentCmd = string.Empty;
-            if (!string.IsNullOrEmpty(tableName))
-            {
-                deleteContentCmd =
-                    $"DELETE FROM {tableName} WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
-            }
-
             int deletedNum;
+
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
 
             using (var conn = GetConnection())
             {
@@ -949,10 +943,8 @@ namespace SiteServer.CMS.Provider
                 {
                     try
                     {
-                        if (!string.IsNullOrEmpty(deleteContentCmd))
-                        {
-                            ExecuteNonQuery(trans, deleteContentCmd);
-                        }
+                        DataProvider.ContentDao.DeleteContentsByDeletedChannelIdList(trans, siteInfo, idList);
+
                         deletedNum = ExecuteNonQuery(trans, deleteCmd);
 
                         if (channelInfo.ParentId != 0)

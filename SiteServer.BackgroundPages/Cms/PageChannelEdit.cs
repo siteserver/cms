@@ -183,7 +183,6 @@ namespace SiteServer.BackgroundPages.Cms
             ChannelInfo nodeInfo;
             try
             {
-
                 nodeInfo = ChannelManager.GetChannelInfo(SiteId, _nodeId);
                 if (!nodeInfo.IndexName.Equals(TbNodeIndexName.Text) && TbNodeIndexName.Text.Length != 0)
                 {
