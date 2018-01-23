@@ -22,7 +22,7 @@ namespace SiteServer.CMS.Model
             }
             if (pageInfo.SiteId == 0)
             {
-                pageInfo.SiteId = PathUtility.GetCurrentPublishmentSystemId();
+                pageInfo.SiteId = PathUtility.GetCurrentSiteId();
             }
             if (!string.IsNullOrEmpty(HttpContext.Current.Request.QueryString["ChannelID"]))
             {

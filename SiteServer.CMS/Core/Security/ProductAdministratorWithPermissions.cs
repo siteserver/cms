@@ -1,6 +1,6 @@
 using SiteServer.Utils;
 using System.Collections.Generic;
-using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.Security
 {
@@ -9,23 +9,23 @@ namespace SiteServer.CMS.Core.Security
 		private Dictionary<int, List<string>> _websitePermissionDict;
 		private Dictionary<int, List<string>> _channelPermissionDict;
         private List<string> _channelPermissionListIgnoreNodeId;
-        private List<int> _publishmentSystemIdList;
-        private List<int> _owningNodeIdList;
+        private List<int> _siteIdList;
+        private List<int> _owningChannelIdList;
 
         private readonly string _websitePermissionDictKey;
         private readonly string _channelPermissionDictKey;
-        private readonly string _channelPermissionListIgnoreNodeIdKey;
-        private readonly string _publishmentSystemIdListKey;
-        private readonly string _owningNodeIdListKey;
+        private readonly string _channelPermissionListIgnoreChannelIdKey;
+        private readonly string _siteIdListKey;
+        private readonly string _owningChannelIdListKey;
 
         public ProductAdministratorWithPermissions(string userName)
             : base(userName)
 		{
             _websitePermissionDictKey = PermissionsManager.GetWebsitePermissionDictKey(userName);
             _channelPermissionDictKey = PermissionsManager.GetChannelPermissionDictKey(userName);
-            _channelPermissionListIgnoreNodeIdKey = PermissionsManager.GetChannelPermissionListIgnoreNodeIdKey(userName);
-            _publishmentSystemIdListKey = PermissionsManager.GetPublishmentSystemIdKey(userName);
-            _owningNodeIdListKey = PermissionsManager.GetOwningNodeIdListKey(userName);
+            _channelPermissionListIgnoreChannelIdKey = PermissionsManager.GetChannelPermissionListIgnoreChannelIdKey(userName);
+            _siteIdListKey = PermissionsManager.GetSiteIdKey(userName);
+            _owningChannelIdListKey = PermissionsManager.GetOwningChannelIdListKey(userName);
 		}
 
 		public Dictionary<int, List<string>> WebsitePermissionDict
@@ -51,17 +51,17 @@ namespace SiteServer.CMS.Core.Security
                                 }
 
                                 _websitePermissionDict = new Dictionary<int, List<string>>();
-                                if (PublishmentSystemIdList.Count > 0)
+                                if (SiteIdList.Count > 0)
                                 {
-                                    foreach (var publishmentSystemId in PublishmentSystemIdList)
+                                    foreach (var siteId in SiteIdList)
                                     {
-                                        _websitePermissionDict[publishmentSystemId] = allWebsitePermissionList;
+                                        _websitePermissionDict[siteId] = allWebsitePermissionList;
                                     }
                                 }
                             }
                             else
                             {
-                                _websitePermissionDict = DataProvider.SystemPermissionsDao.GetWebsitePermissionSortedList(Roles);
+                                _websitePermissionDict = DataProvider.SitePermissionsDao.GetWebsitePermissionSortedList(Roles);
                             }
                             CacheUtils.InsertMinutes(_websitePermissionDictKey, _websitePermissionDict, 30);
                         }
@@ -95,17 +95,17 @@ namespace SiteServer.CMS.Core.Security
 
                                 _channelPermissionDict = new Dictionary<int, List<string>>();
 
-                                if (PublishmentSystemIdList.Count > 0)
+                                if (SiteIdList.Count > 0)
                                 {
-                                    foreach (var publishmentSystemId in PublishmentSystemIdList)
+                                    foreach (var siteId in SiteIdList)
                                     {
-                                        _channelPermissionDict[publishmentSystemId] = allChannelPermissionList;
+                                        _channelPermissionDict[siteId] = allChannelPermissionList;
                                     }
                                 }
                             }
                             else
                             {
-                                _channelPermissionDict = DataProvider.SystemPermissionsDao.GetChannelPermissionSortedList(Roles);
+                                _channelPermissionDict = DataProvider.SitePermissionsDao.GetChannelPermissionSortedList(Roles);
                             }
                             CacheUtils.InsertMinutes(_channelPermissionDictKey, _channelPermissionDict, 30);
                         }
@@ -123,9 +123,9 @@ namespace SiteServer.CMS.Core.Security
                 {
                     if (!string.IsNullOrEmpty(UserName) && !string.Equals(UserName, AdminManager.AnonymousUserName))
                     {
-                        if (CacheUtils.Get(_channelPermissionListIgnoreNodeIdKey) != null)
+                        if (CacheUtils.Get(_channelPermissionListIgnoreChannelIdKey) != null)
                         {
-                            _channelPermissionListIgnoreNodeId = CacheUtils.Get(_channelPermissionListIgnoreNodeIdKey) as List<string>;
+                            _channelPermissionListIgnoreNodeId = CacheUtils.Get(_channelPermissionListIgnoreChannelIdKey) as List<string>;
                         }
                         else
                         {
@@ -139,9 +139,9 @@ namespace SiteServer.CMS.Core.Security
                             }
                             else
                             {
-                                _channelPermissionListIgnoreNodeId = DataProvider.SystemPermissionsDao.GetChannelPermissionListIgnoreNodeId(Roles);
+                                _channelPermissionListIgnoreNodeId = DataProvider.SitePermissionsDao.GetChannelPermissionListIgnoreChannelId(Roles);
                             }
-                            CacheUtils.InsertMinutes(_channelPermissionListIgnoreNodeIdKey, _channelPermissionListIgnoreNodeId, 30);
+                            CacheUtils.InsertMinutes(_channelPermissionListIgnoreChannelIdKey, _channelPermissionListIgnoreNodeId, 30);
                         }
                     }
                 }
@@ -195,69 +195,69 @@ namespace SiteServer.CMS.Core.Security
         //    return false;
         //}
 
-        public List<int> PublishmentSystemIdList
+        public List<int> SiteIdList
         {
             get
             {
-                if (_publishmentSystemIdList != null) return _publishmentSystemIdList;
+                if (_siteIdList != null) return _siteIdList;
 
-                if (CacheUtils.Get(_publishmentSystemIdListKey) != null)
+                if (CacheUtils.Get(_siteIdListKey) != null)
                 {
-                    _publishmentSystemIdList = (List<int>)CacheUtils.Get(_publishmentSystemIdListKey);
+                    _siteIdList = (List<int>)CacheUtils.Get(_siteIdListKey);
                 }
                 else
                 {
                     if (EPredefinedRoleUtils.IsConsoleAdministrator(Roles))
                     {
-                        _publishmentSystemIdList = PublishmentSystemManager.GetPublishmentSystemIdList();
+                        _siteIdList = SiteManager.GetSiteIdList();
                     }
                     else if (EPredefinedRoleUtils.IsSystemAdministrator(Roles))
                     {
-                        var thePublishmentSystemIdList = DataProvider.AdministratorDao.GetPublishmentSystemIdList(UserName);
-                        _publishmentSystemIdList = new List<int>();
-                        foreach (var publishmentSystemId in PublishmentSystemManager.GetPublishmentSystemIdList())
+                        var theSiteIdList = DataProvider.AdministratorDao.GetSiteIdList(UserName);
+                        _siteIdList = new List<int>();
+                        foreach (var siteId in SiteManager.GetSiteIdList())
                         {
-                            if (thePublishmentSystemIdList != null && thePublishmentSystemIdList.Contains(publishmentSystemId))
+                            if (theSiteIdList != null && theSiteIdList.Contains(siteId))
                             {
-                                _publishmentSystemIdList.Add(publishmentSystemId);
+                                _siteIdList.Add(siteId);
                             }
                         }
                     }
                     else
                     {
-                        _publishmentSystemIdList = new List<int>();
-                        foreach (var publishmentSystemId in WebsitePermissionDict.Keys)
+                        _siteIdList = new List<int>();
+                        foreach (var siteId in WebsitePermissionDict.Keys)
                         {
-                            _publishmentSystemIdList.Add(publishmentSystemId);
+                            _siteIdList.Add(siteId);
                         }
                     }
 
-                    if (_publishmentSystemIdList == null)
+                    if (_siteIdList == null)
                     {
-                        _publishmentSystemIdList = new List<int>();
+                        _siteIdList = new List<int>();
                     }
 
-                    CacheUtils.InsertMinutes(_publishmentSystemIdListKey, _publishmentSystemIdList, 30);
+                    CacheUtils.InsertMinutes(_siteIdListKey, _siteIdList, 30);
                 }
-                return _publishmentSystemIdList;
+                return _siteIdList;
             }
         }
 
-        public List<int> OwningNodeIdList
+        public List<int> OwningChannelIdList
         {
             get
             {
-                if (_owningNodeIdList == null)
+                if (_owningChannelIdList == null)
                 {
                     if (!string.IsNullOrEmpty(UserName) && !string.Equals(UserName, AdminManager.AnonymousUserName))
                     {
-                        if (CacheUtils.Get(_owningNodeIdListKey) != null)
+                        if (CacheUtils.Get(_owningChannelIdListKey) != null)
                         {
-                            _owningNodeIdList = CacheUtils.Get(_owningNodeIdListKey) as List<int>;
+                            _owningChannelIdList = CacheUtils.Get(_owningChannelIdListKey) as List<int>;
                         }
                         else
                         {
-                            _owningNodeIdList = new List<int>();
+                            _owningChannelIdList = new List<int>();
 
                             var permissions = PermissionsManager.GetPermissions(UserName);
 
@@ -265,16 +265,16 @@ namespace SiteServer.CMS.Core.Security
                             {
                                 foreach (var nodeId in ProductPermissionsManager.Current.ChannelPermissionDict.Keys)
                                 {
-                                    _owningNodeIdList.Add(nodeId);
-                                    _owningNodeIdList.AddRange(DataProvider.NodeDao.GetNodeIdListForDescendant(nodeId));
+                                    _owningChannelIdList.Add(nodeId);
+                                    _owningChannelIdList.AddRange(DataProvider.ChannelDao.GetIdListForDescendant(nodeId));
                                 }
                             }
 
-                            CacheUtils.InsertMinutes(_owningNodeIdListKey, _owningNodeIdList, 30);
+                            CacheUtils.InsertMinutes(_owningChannelIdListKey, _owningChannelIdList, 30);
                         }
                     }
                 }
-                return _owningNodeIdList ?? (_owningNodeIdList = new List<int>());
+                return _owningChannelIdList ?? (_owningChannelIdList = new List<int>());
             }
         }
 
@@ -283,14 +283,14 @@ namespace SiteServer.CMS.Core.Security
             _websitePermissionDict = null;
             _channelPermissionDict = null;
             _channelPermissionListIgnoreNodeId = null;
-            _publishmentSystemIdList = null;
-            _owningNodeIdList = null;
+            _siteIdList = null;
+            _owningChannelIdList = null;
 
             CacheUtils.Remove(_websitePermissionDictKey);
             CacheUtils.Remove(_channelPermissionDictKey);
-            CacheUtils.Remove(_channelPermissionListIgnoreNodeIdKey);
-            CacheUtils.Remove(_publishmentSystemIdListKey);
-            CacheUtils.Remove(_owningNodeIdListKey);
+            CacheUtils.Remove(_channelPermissionListIgnoreChannelIdKey);
+            CacheUtils.Remove(_siteIdListKey);
+            CacheUtils.Remove(_owningChannelIdListKey);
         }
 
         public static ProductAdministratorWithPermissions GetProductAnonymousUserWithPermissions()

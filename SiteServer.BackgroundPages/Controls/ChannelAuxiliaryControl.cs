@@ -13,7 +13,7 @@ namespace SiteServer.BackgroundPages.Controls
 	{
         public IAttributes Attributes { get; set; }
 
-        public PublishmentSystemInfo PublishmentSystemInfo { get; set; }
+        public SiteInfo SiteInfo { get; set; }
 
         public int NodeId { get; set; }
 
@@ -23,8 +23,8 @@ namespace SiteServer.BackgroundPages.Controls
 		{
             if (Attributes == null) return;
 
-            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemInfo.PublishmentSystemId, NodeId);
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.NodeDao.TableName, relatedIdentities);
+            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteInfo.Id, NodeId);
+            var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName, relatedIdentities);
 
 		    if (styleInfoList == null) return;
 
@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Controls
 		    foreach (var styleInfo in styleInfoList)
 		    {
 		        string extra;
-		        var value = BackgroundInputTypeParser.Parse(PublishmentSystemInfo, NodeId, styleInfo, Attributes, pageScripts, out extra);
+		        var value = BackgroundInputTypeParser.Parse(SiteInfo, NodeId, styleInfo, Attributes, pageScripts, out extra);
 
 		        if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 

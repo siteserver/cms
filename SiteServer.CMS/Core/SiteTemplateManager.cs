@@ -1,10 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
@@ -118,40 +117,25 @@ namespace SiteServer.CMS.Core
             return list;
         }
 
-        public void ImportSiteTemplateToEmptyPublishmentSystem(int publishmentSystemId, string siteTemplateDir, bool isUseTables, bool isImportContents, bool isImportTableStyles, string administratorName)
+        public void ImportSiteTemplateToEmptySite(int siteId, string siteTemplateDir, bool isUseTables, bool isImportContents, bool isImportTableStyles, string administratorName)
         {
             var siteTemplatePath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
             if (DirectoryUtils.IsDirectoryExists(siteTemplatePath))
             {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
 
                 var templateFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTemplate);
                 var tableDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Table);
-                var tagStyleFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTagStyle);
-                var adFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileAd);
-                var seoFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileSeo);
-                var gatherRuleFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileGatherRule);
-                //var inputDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Input);
                 var configurationFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
                 var siteContentDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteContent);
 
-                var importObject = new ImportObject(publishmentSystemId);
+                var importObject = new ImportObject(siteId);
 
                 importObject.ImportFiles(siteTemplatePath, true);
 
                 importObject.ImportTemplates(templateFilePath, true, administratorName);
 
                 importObject.ImportAuxiliaryTables(tableDirectoryPath, isUseTables);
-
-                importObject.ImportTagStyle(tagStyleFilePath, true);
-
-                importObject.ImportAd(adFilePath, true);
-
-                importObject.ImportSeo(seoFilePath, true);
-
-                importObject.ImportGatherRule(gatherRuleFilePath, true);
-
-                //importObject.ImportInput(inputDirectoryPath, true);
 
                 importObject.ImportConfiguration(configurationFilePath);
 
@@ -162,7 +146,7 @@ namespace SiteServer.CMS.Core
                     importObject.ImportSiteContent(siteContentDirectoryPath, filePath, isImportContents);
                 }
 
-                DataProvider.NodeDao.UpdateContentNum(publishmentSystemInfo);
+                DataProvider.ChannelDao.UpdateContentNum(siteInfo);
 
                 if (isImportTableStyles)
                 {
@@ -173,9 +157,9 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void ExportPublishmentSystemToSiteTemplate(PublishmentSystemInfo publishmentSystemInfo, string siteTemplateDir)
+        public static void ExportSiteToSiteTemplate(SiteInfo siteInfo, string siteTemplateDir)
         {
-            var exportObject = new ExportObject(publishmentSystemInfo.PublishmentSystemId);
+            var exportObject = new ExportObject(siteInfo.Id);
 
             var siteTemplatePath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
 
@@ -185,24 +169,9 @@ namespace SiteServer.CMS.Core
             //导出辅助表及样式
             var tableDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Table);
             exportObject.ExportTablesAndStyles(tableDirectoryPath);
-            //导出模板标签样式
-            var tagStyleFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTagStyle);
-            exportObject.ExportTagStyle(tagStyleFilePath);
-            //导出广告
-            var adFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileAd);
-            exportObject.ExportAd(adFilePath);
-            //导出采集规则
-            var gatherRuleFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileGatherRule);
-            exportObject.ExportGatherRule(gatherRuleFilePath);
-            //导出提交表单
-            //var inputDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Input);
-            //exportObject.ExportInput(inputDirectoryPath);
             //导出站点属性以及站点属性表单
             var configurationFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
             exportObject.ExportConfiguration(configurationFilePath);
-            //导出SEO
-            var seoFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileSeo);
-            exportObject.ExportSeo(seoFilePath);
             //导出关联字段
             var relatedFieldDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.RelatedField);
             exportObject.ExportRelatedField(relatedFieldDirectoryPath);

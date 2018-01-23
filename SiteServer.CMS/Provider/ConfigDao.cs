@@ -3,14 +3,13 @@ using System.Data;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
     public class ConfigDao : DataProviderBase
 	{
-        public override string TableName => "bairong_Config";
+        public override string TableName => "siteserver_Config";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
@@ -45,15 +44,15 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlInsertConfig = "INSERT INTO bairong_Config (IsInitialized, DatabaseVersion, UpdateDate, SystemConfig) VALUES (@IsInitialized, @DatabaseVersion, @UpdateDate, @SystemConfig)";
+        private const string SqlInsertConfig = "INSERT INTO siteserver_Config (IsInitialized, DatabaseVersion, UpdateDate, SystemConfig) VALUES (@IsInitialized, @DatabaseVersion, @UpdateDate, @SystemConfig)";
 
-        private const string SqlSelectConfig = "SELECT IsInitialized, DatabaseVersion, UpdateDate, SystemConfig FROM bairong_Config";
+        private const string SqlSelectConfig = "SELECT IsInitialized, DatabaseVersion, UpdateDate, SystemConfig FROM siteserver_Config";
 
-        private const string SqlSelectIsInitialized = "SELECT IsInitialized FROM bairong_Config";
+        private const string SqlSelectIsInitialized = "SELECT IsInitialized FROM siteserver_Config";
 
-		private const string SqlSelectDatabaseVersion = "SELECT DatabaseVersion FROM bairong_Config";
+		private const string SqlSelectDatabaseVersion = "SELECT DatabaseVersion FROM siteserver_Config";
 
-        private const string SqlUpdateConfig = "UPDATE bairong_Config SET IsInitialized = @IsInitialized, DatabaseVersion = @DatabaseVersion, UpdateDate = @UpdateDate, SystemConfig = @SystemConfig";
+        private const string SqlUpdateConfig = "UPDATE siteserver_Config SET IsInitialized = @IsInitialized, DatabaseVersion = @DatabaseVersion, UpdateDate = @UpdateDate, SystemConfig = @SystemConfig";
 
 		private const string ParmIsInitialized = "@IsInitialized";
 		private const string ParmDatabaseVersion = "@DatabaseVersion";

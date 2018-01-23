@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
@@ -142,22 +141,22 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            var parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.PublishmentSystemInfo, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, contextInfo.IsCurlyBrace);
+            var parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.SiteInfo, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, contextInfo.IsCurlyBrace);
 
             if (isFilesize)
             {
-                var filePath = PathUtility.MapPath(pageInfo.PublishmentSystemInfo, fileUrl);
+                var filePath = PathUtility.MapPath(pageInfo.SiteInfo, fileUrl);
                 parsedContent += " (" + FileUtils.GetFileSizeByFilePath(filePath) + ")";
             }
             else
             {
                 if (isCount && contextInfo.ContentInfo != null)
                 {
-                    parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.PublishmentSystemInfo, contextInfo.ContentInfo.NodeId, contextInfo.ContentInfo.Id, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, contextInfo.IsCurlyBrace);
+                    parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contextInfo.ContentInfo.ChannelId, contextInfo.ContentInfo.Id, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, contextInfo.IsCurlyBrace);
                 }
                 else
                 {
-                    parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.PublishmentSystemInfo, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, contextInfo.IsCurlyBrace);
+                    parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.SiteInfo, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, contextInfo.IsCurlyBrace);
                 }                
             }
 

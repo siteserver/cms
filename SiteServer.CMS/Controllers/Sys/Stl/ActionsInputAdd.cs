@@ -4,12 +4,12 @@ namespace SiteServer.CMS.Controllers.Sys.Stl
 {
     public class ActionsInputAdd
     {
-        public const string Route = "sys/stl/actions/input_add/{publishmentSystemId}/{inputId}";
+        public const string Route = "sys/stl/actions/input_add/{siteId}/{inputId}";
 
-        public static string GetUrl(string apiUrl, int publishmentSystemId, int inputId)
+        public static string GetUrl(string apiUrl, int siteId, int inputId)
         {
             apiUrl = PageUtils.Combine(apiUrl, Route);
-            apiUrl = apiUrl.Replace("{publishmentSystemId}", publishmentSystemId.ToString());
+            apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             apiUrl = apiUrl.Replace("{inputId}", inputId.ToString());
             return apiUrl;
         }

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Web.UI;
 using SiteServer.Utils;
-using SiteServer.Utils.Model.Enumerations;
-using SiteServer.Utils.Net;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Controls
 {

@@ -4,29 +4,29 @@ namespace SiteServer.CMS.Model
 	{
 	    public RelatedFieldInfo()
 		{
-            RelatedFieldId = 0;
-            RelatedFieldName = string.Empty;
-			PublishmentSystemId = 0;
+            Id = 0;
+            Title = string.Empty;
+			SiteId = 0;
             TotalLevel = 0;
             Prefixes = string.Empty;
             Suffixes = string.Empty;
 		}
 
-        public RelatedFieldInfo(int relatedFieldId, string relatedFieldName, int publishmentSystemId, int totalLevel, string prefixes, string suffixes)
+        public RelatedFieldInfo(int id, string title, int siteId, int totalLevel, string prefixes, string suffixes)
 		{
-            RelatedFieldId = relatedFieldId;
-            RelatedFieldName = relatedFieldName;
-            PublishmentSystemId = publishmentSystemId;
+            Id = id;
+            Title = title;
+            SiteId = siteId;
             TotalLevel = totalLevel;
             Prefixes = prefixes;
             Suffixes = suffixes;
 		}
 
-        public int RelatedFieldId { get; set; }
+        public int Id { get; set; }
 
-	    public string RelatedFieldName { get; set; }
+	    public string Title { get; set; }
 
-	    public int PublishmentSystemId { get; set; }
+	    public int SiteId { get; set; }
 
 	    public int TotalLevel { get; set; }
 

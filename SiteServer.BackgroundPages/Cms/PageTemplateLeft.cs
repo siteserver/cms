@@ -21,11 +21,11 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
-            _dictionary = DataProvider.TemplateDao.GetCountDictionary(PublishmentSystemId);
+            _dictionary = DataProvider.TemplateDao.GetCountDictionary(SiteId);
 
             LtlTotalCount.Text = $"({GetCount(string.Empty)})";
             LtlIndexPageCount.Text = $"({GetCount("IndexPageTemplate")})";
@@ -36,12 +36,12 @@ namespace SiteServer.BackgroundPages.Cms
 
         public string GetServiceUrl()
         {
-            return PageServiceStl.GetRedirectUrl(PageServiceStl.TypeGetLoadingTemplates);
+            return PageServiceStl.GetRedirectUrl(SiteId, PageServiceStl.TypeGetLoadingTemplates);
         }
 
         public string GetServiceParams()
         {
-            return $"publishmentSystemID={PublishmentSystemId}&templateType=";
+            return $"siteID={SiteId}&templateType=";
         }
 
         private int GetCount(string templateType)

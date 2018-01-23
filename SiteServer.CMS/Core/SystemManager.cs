@@ -1,8 +1,7 @@
 ﻿using System;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
@@ -63,7 +62,7 @@ namespace SiteServer.CMS.Core
                 DataProvider.AdministratorsInRolesDao.AddUserToRole(adminName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
             }
 
-            DataProvider.TableCollectionDao.CreateAllTableCollectionInfoIfNotExists();
+            DataProvider.TableDao.CreateAllTableCollectionInfoIfNotExists();
         }
 
         public static bool IsNeedUpdate()

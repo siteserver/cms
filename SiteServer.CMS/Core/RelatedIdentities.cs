@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Table;
 
 namespace SiteServer.CMS.Core
 {
@@ -12,23 +10,23 @@ namespace SiteServer.CMS.Core
 		{
 		}
 
-        public static List<int> GetRelatedIdentities(int publishmentSystemId, int relatedIdentity)
+        public static List<int> GetRelatedIdentities(int siteId, int relatedIdentity)
         {
-            List<int> relatedIdentities = GetChannelRelatedIdentities(publishmentSystemId, relatedIdentity);
+            List<int> relatedIdentities = GetChannelRelatedIdentities(siteId, relatedIdentity);
 
             return relatedIdentities;
         }
 
-        public static List<int> GetChannelRelatedIdentities(int publishmentSystemId, int nodeId)
+        public static List<int> GetChannelRelatedIdentities(int siteId, int nodeId)
         {
             var arraylist = new List<int>();
-            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(siteId, nodeId);
             if (nodeInfo != null)
             {
-                var nodeIdCollection = "0," + nodeInfo.NodeId;
+                var nodeIdCollection = "0," + nodeInfo.Id;
                 if (nodeInfo.ParentsCount > 0)
                 {
-                    nodeIdCollection = "0," + nodeInfo.ParentsPath + "," + nodeInfo.NodeId;
+                    nodeIdCollection = "0," + nodeInfo.ParentsPath + "," + nodeInfo.Id;
                 }
 
                 arraylist = TranslateUtils.StringCollectionToIntList(nodeIdCollection);
@@ -41,11 +39,11 @@ namespace SiteServer.CMS.Core
             return arraylist;
         }
 
-        public static List<TableStyleInfo> GetTableStyleInfoList(PublishmentSystemInfo publishmentSystemInfo, int nodeId)
+        public static List<TableStyleInfo> GetTableStyleInfoList(SiteInfo siteInfo, int nodeId)
         {
-            List<int> relatedIdentities = GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, nodeId);
+            List<int> relatedIdentities = GetChannelRelatedIdentities(siteInfo.Id, nodeId);
 
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
+            var tableName = ChannelManager.GetTableName(siteInfo, nodeId);
 
             return TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
         }

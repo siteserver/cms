@@ -19,19 +19,19 @@ namespace SiteServer.BackgroundPages.Core
         private readonly string _iconMinusUrl;
         private readonly string _iconPlusUrl;
 
-        private readonly PublishmentSystemInfo _publishmentSystemInfo;
-        private readonly NodeInfo _nodeInfo;
+        private readonly SiteInfo _siteInfo;
+        private readonly ChannelInfo _nodeInfo;
         private readonly bool _enabled;
         private readonly string _administratorName;
 
-        public static NodeTreeItem CreateInstance(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, bool enabled, string administratorName)
+        public static NodeTreeItem CreateInstance(SiteInfo siteInfo, ChannelInfo nodeInfo, bool enabled, string administratorName)
         {
-            return new NodeTreeItem(publishmentSystemInfo, nodeInfo, enabled, administratorName);
+            return new NodeTreeItem(siteInfo, nodeInfo, enabled, administratorName);
         }
 
-        private NodeTreeItem(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, bool enabled, string administratorName)
+        private NodeTreeItem(SiteInfo siteInfo, ChannelInfo nodeInfo, bool enabled, string administratorName)
         {
-            _publishmentSystemInfo = publishmentSystemInfo;
+            _siteInfo = siteInfo;
             _nodeInfo = nodeInfo;
             _enabled = enabled;
             _administratorName = administratorName;
@@ -62,11 +62,11 @@ namespace SiteServer.BackgroundPages.Core
             if (_nodeInfo.ChildrenCount > 0)
             {
                 htmlBuilder.Append(
-                    _nodeInfo.PublishmentSystemId == _nodeInfo.NodeId
+                    _nodeInfo.SiteId == _nodeInfo.Id
                         ? $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_nodeInfo
-                            .NodeId}"" src=""{_iconMinusUrl}"" />"
+                            .Id}"" src=""{_iconMinusUrl}"" />"
                         : $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_nodeInfo
-                            .NodeId}"" src=""{_iconPlusUrl}"" />");
+                            .Id}"" src=""{_iconPlusUrl}"" />");
             }
             else
             {
@@ -76,8 +76,8 @@ namespace SiteServer.BackgroundPages.Core
             if (!string.IsNullOrEmpty(_iconFolderUrl))
             {
                 htmlBuilder.Append(
-                    _nodeInfo.NodeId > 0
-                        ? $@"<a href=""{PageRedirect.GetRedirectUrlToChannel(_nodeInfo.PublishmentSystemId, _nodeInfo.NodeId)}"" target=""_blank"" title=""浏览页面""><img align=""absmiddle"" border=""0"" src=""{_iconFolderUrl}"" style=""max-height: 22px; max-width: 22px"" /></a>"
+                    _nodeInfo.Id > 0
+                        ? $@"<a href=""{PageRedirect.GetRedirectUrlToChannel(_nodeInfo.SiteId, _nodeInfo.Id)}"" target=""_blank"" title=""浏览页面""><img align=""absmiddle"" border=""0"" src=""{_iconFolderUrl}"" style=""max-height: 22px; max-width: 22px"" /></a>"
                         : $@"<img align=""absmiddle"" src=""{_iconFolderUrl}"" style=""max-height: 22px; max-width: 22px"" />");
             }
 
@@ -87,19 +87,19 @@ namespace SiteServer.BackgroundPages.Core
             {
                 if (loadingType == ELoadingType.ContentTree)
                 {
-                    var linkUrl = PageContent.GetRedirectUrl(_nodeInfo.PublishmentSystemId, _nodeInfo.NodeId);
+                    var linkUrl = PageContent.GetRedirectUrl(_nodeInfo.SiteId, _nodeInfo.Id);
 
                     htmlBuilder.Append(
-                        $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_nodeInfo.NodeName}</a>");
+                        $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_nodeInfo.ChannelName}</a>");
                 }
                 else if (loadingType == ELoadingType.ChannelSelect)
                 {
-                    var linkUrl = ModalChannelSelect.GetRedirectUrl(_nodeInfo.PublishmentSystemId, _nodeInfo.NodeId);
+                    var linkUrl = ModalChannelSelect.GetRedirectUrl(_nodeInfo.SiteId, _nodeInfo.Id);
                     if (additional != null)
                     {
                         if (!string.IsNullOrEmpty(additional["linkUrl"]))
                         {
-                            linkUrl = additional["linkUrl"] + _nodeInfo.NodeId;
+                            linkUrl = additional["linkUrl"] + _nodeInfo.Id;
                         }
                         else
                         {
@@ -109,33 +109,33 @@ namespace SiteServer.BackgroundPages.Core
                             }
                         }
                     }
-                    htmlBuilder.Append($"<a href='{linkUrl}'>{_nodeInfo.NodeName}</a>");
+                    htmlBuilder.Append($"<a href='{linkUrl}'>{_nodeInfo.ChannelName}</a>");
                 }
                 else
                 {
-                    if (AdminUtility.HasChannelPermissions(_administratorName, _nodeInfo.PublishmentSystemId, _nodeInfo.NodeId, AppManager.Permissions.Channel.ChannelEdit))
+                    if (AdminUtility.HasChannelPermissions(_administratorName, _nodeInfo.SiteId, _nodeInfo.Id, AppManager.Permissions.Channel.ChannelEdit))
                     {
-                        var onClickUrl = ModalChannelEdit.GetOpenWindowString(_nodeInfo.PublishmentSystemId, _nodeInfo.NodeId, returnUrl);
+                        var onClickUrl = ModalChannelEdit.GetOpenWindowString(_nodeInfo.SiteId, _nodeInfo.Id, returnUrl);
                         htmlBuilder.Append(
-                            $@"<a href=""javascript:;;"" onClick=""{onClickUrl}"" title=""快速编辑栏目"">{_nodeInfo.NodeName}</a>");
+                            $@"<a href=""javascript:;;"" onClick=""{onClickUrl}"" title=""快速编辑栏目"">{_nodeInfo.ChannelName}</a>");
 
                     }
                     else
                     {
-                        htmlBuilder.Append($@"<a href=""javascript:;;"">{_nodeInfo.NodeName}</a>");
+                        htmlBuilder.Append($@"<a href=""javascript:;;"">{_nodeInfo.ChannelName}</a>");
                     }
                 }
             }
             else
             {
-                htmlBuilder.Append(_nodeInfo.NodeName);
+                htmlBuilder.Append(_nodeInfo.ChannelName);
             }
 
-            if (_nodeInfo.PublishmentSystemId != 0)
+            if (_nodeInfo.SiteId != 0)
             {
                 htmlBuilder.Append("&nbsp;");
 
-                htmlBuilder.Append(NodeManager.GetNodeTreeLastImageHtml(_publishmentSystemInfo, _nodeInfo));
+                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(_siteInfo, _nodeInfo));
 
                 if (_nodeInfo.ContentNum < 0) return htmlBuilder.ToString();
 
@@ -146,7 +146,7 @@ namespace SiteServer.BackgroundPages.Core
             return htmlBuilder.ToString();
         }
 
-        public static string GetScript(PublishmentSystemInfo publishmentSystemInfo, ELoadingType loadingType, NameValueCollection additional)
+        public static string GetScript(SiteInfo siteInfo, ELoadingType loadingType, NameValueCollection additional)
         {
             var script = @"
 <script language=""JavaScript"">
@@ -269,7 +269,7 @@ function displayChildren(img){
             script += $@"
 function loadingChannels(tr, img, div, nodeID){{
     var url = '{AjaxOtherService.GetGetLoadingChannelsUrl()}';
-    var pars = '{AjaxOtherService.GetGetLoadingChannelsParameters(publishmentSystemInfo.PublishmentSystemId, loadingType, additional)}&parentID=' + nodeID;
+    var pars = '{AjaxOtherService.GetGetLoadingChannelsParameters(siteInfo.Id, loadingType, additional)}&parentID=' + nodeID;
 
     jQuery.post(url, pars, function(data, textStatus)
     {{

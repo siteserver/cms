@@ -10,7 +10,7 @@
     <script src="/signalr/hubs"></script>
     <script language="javascript" src="../inc/script.js"></script>
     <script type="text/javascript">
-      var siteId = <%=PublishmentSystemId%>;
+      var siteId = <%=SiteId%>;
 
       $(function () {
         var create = $.connection.createHub;

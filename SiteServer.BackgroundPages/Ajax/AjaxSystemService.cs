@@ -79,7 +79,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
             var eLoadingType = EDepartmentLoadingTypeUtils.GetEnumType(loadingType);
 
-            var departmentIdList = DataProvider.DepartmentDao.GetDepartmentIdListByParentId(parentId);
+            var departmentIdList = DataProvider.DepartmentDao.GetIdListByParentId(parentId);
             var nameValueCollection = TranslateUtils.ToNameValueCollection(TranslateUtils.DecryptStringBySecretKey(additional));
             if (!string.IsNullOrEmpty(nameValueCollection["DepartmentIDCollection"]))
             {
@@ -117,7 +117,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
             var eLoadingType = EAreaLoadingTypeUtils.GetEnumType(loadingType);
 
-            var areaIdList = DataProvider.AreaDao.GetAreaIdListByParentId(parentId);
+            var areaIdList = DataProvider.AreaDao.GetIdListByParentId(parentId);
             var nameValueCollection = TranslateUtils.ToNameValueCollection(TranslateUtils.DecryptStringBySecretKey(additional));
             if (!string.IsNullOrEmpty(nameValueCollection["AreaIDCollection"]))
             {

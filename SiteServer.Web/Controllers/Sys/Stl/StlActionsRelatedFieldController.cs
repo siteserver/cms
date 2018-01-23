@@ -4,7 +4,6 @@ using System.Web.Http;
 using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.API.Controllers.Sys.Stl
@@ -13,7 +12,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
     public class StlActionsRelatedFieldController : ApiController
     {
         [HttpPost, Route(ActionsRelatedField.Route)]
-        public void Main(int publishmentSystemId)
+        public void Main(int siteId)
         {
             var context = new RequestContext();
 

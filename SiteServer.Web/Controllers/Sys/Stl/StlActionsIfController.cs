@@ -2,7 +2,6 @@
 using System.Web.Http;
 using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
-using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
@@ -19,7 +18,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
             {
                 var context = new RequestContext();
 
-                var publishmentSystemId = context.GetPostInt("publishmentSystemId");
+                var siteId = context.GetPostInt("siteId");
                 var channelId = context.GetPostInt("channelId");
                 var contentId = context.GetPostInt("contentId");
                 var templateId = context.GetPostInt("templateId");
@@ -47,7 +46,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
 
                 return Ok(new
                 {
-                    Html = StlUtility.ParseDynamicContent(publishmentSystemId, channelId, contentId, templateId, false, isSuccess ? successTemplate : failureTemplate, pageUrl, 0, ajaxDivId, null, context.UserInfo)
+                    Html = StlUtility.ParseDynamicContent(siteId, channelId, contentId, templateId, false, isSuccess ? successTemplate : failureTemplate, pageUrl, 0, ajaxDivId, null, context.UserInfo)
                 });
             }
             catch(Exception ex)

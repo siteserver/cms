@@ -218,11 +218,11 @@ namespace SiteServer.CMS.Model.Enumerations
 		    listControl.Items.Add(GetListItem(ELinkType.NoLink, false));
 		}
 
-        public static bool IsCreatable(NodeInfo nodeInfo)
+        public static bool IsCreatable(ChannelInfo channelInfo)
         {
             var isCreatable = false;
 
-            var linkType = GetEnumType(nodeInfo.LinkType);
+            var linkType = GetEnumType(channelInfo.LinkType);
 
             if (linkType == ELinkType.None)
             {
@@ -230,34 +230,34 @@ namespace SiteServer.CMS.Model.Enumerations
             }
             else if (linkType == ELinkType.NoLinkIfContentNotExists)
             {
-                isCreatable = nodeInfo.ContentNum != 0;
+                isCreatable = channelInfo.ContentNum != 0;
             }
             else if (linkType == ELinkType.LinkToOnlyOneContent)
             {
-                isCreatable = nodeInfo.ContentNum != 1;
+                isCreatable = channelInfo.ContentNum != 1;
             }
             else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
             {
-                if (nodeInfo.ContentNum != 0 && nodeInfo.ContentNum != 1)
+                if (channelInfo.ContentNum != 0 && channelInfo.ContentNum != 1)
                 {
                     isCreatable = true;
                 }
             }
             else if (linkType == ELinkType.LinkToFirstContent)
             {
-                isCreatable = nodeInfo.ContentNum < 1;
+                isCreatable = channelInfo.ContentNum < 1;
             }
             else if (linkType == ELinkType.NoLinkIfChannelNotExists)
             {
-                isCreatable = nodeInfo.ChildrenCount != 0;
+                isCreatable = channelInfo.ChildrenCount != 0;
             }
             else if (linkType == ELinkType.LinkToLastAddChannel)
             {
-                isCreatable = nodeInfo.ChildrenCount <= 0;
+                isCreatable = channelInfo.ChildrenCount <= 0;
             }
             else if (linkType == ELinkType.LinkToFirstChannel)
             {
-                isCreatable = nodeInfo.ChildrenCount <= 0;
+                isCreatable = channelInfo.ChildrenCount <= 0;
             }
 
             return isCreatable;

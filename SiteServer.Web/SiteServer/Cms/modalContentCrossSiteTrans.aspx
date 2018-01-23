@@ -15,7 +15,7 @@
         <div class="form-group form-row">
           <label class="col-3 col-form-label text-right">选择站点</label>
           <div class="col-8">
-            <asp:DropDownList ID="DdlPublishmentSystemId" class="form-control" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DdlPublishmentSystemId_SelectedIndexChanged"></asp:DropDownList>
+            <asp:DropDownList ID="DdlSiteId" class="form-control" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DdlSiteId_SelectedIndexChanged"></asp:DropDownList>
           </div>
           <div class="col-1"></div>
         </div>

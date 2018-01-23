@@ -3,9 +3,9 @@ using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.ImportExport;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -20,12 +20,11 @@ namespace SiteServer.BackgroundPages.Cms
 
         private int _nodeId;
 
-        public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
+        public static string GetOpenWindowString(int siteId, int nodeId)
         {
             return LayerUtils.GetOpenScript("导入内容",
-                PageUtils.GetCmsUrl(nameof(ModalContentImport), new NameValueCollection
+                PageUtils.GetCmsUrl(siteId, nameof(ModalContentImport), new NameValueCollection
                 {
-                    {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"NodeID", nodeId.ToString()}
                 }), 0, 520);
         }
@@ -34,12 +33,12 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _nodeId = Body.GetQueryInt("NodeID", PublishmentSystemId);
+            _nodeId = Body.GetQueryInt("NodeID", SiteId);
             if (IsPostBack) return;
 
             int checkedLevel;
-            var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, PublishmentSystemId, out checkedLevel);
-            CheckManager.LoadContentLevelToEdit(DdlContentLevel, PublishmentSystemInfo, _nodeId, null, isChecked, checkedLevel);
+            var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, SiteInfo, SiteId, out checkedLevel);
+            CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, _nodeId, null, isChecked, checkedLevel);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -48,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
 			{
                 var isChecked = false;
                 var checkedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
-                if (checkedLevel >= PublishmentSystemInfo.CheckContentLevel)
+                if (checkedLevel >= SiteInfo.Additional.CheckContentLevel)
                 {
                     isChecked = true;
                 }
@@ -68,8 +67,8 @@ namespace SiteServer.BackgroundPages.Cms
 
                         HifFile.PostedFile.SaveAs(localFilePath);
 
-                        var importObject = new ImportObject(PublishmentSystemId);
-                        var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
+                        var importObject = new ImportObject(SiteId);
+                        var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _nodeId);
                         importObject.ImportContentsByZipFile(nodeInfo, localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), TranslateUtils.ToInt(TbImportStart.Text), TranslateUtils.ToInt(TbImportCount.Text), isChecked, checkedLevel);
                     }
                     else if (StringUtils.EqualsIgnoreCase(DdlImportType.SelectedValue, ModalExportMessage.ExportTypeContentAccess))
@@ -85,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                         HifFile.PostedFile.SaveAs(localFilePath);
 
-                        var importObject = new ImportObject(PublishmentSystemId);
+                        var importObject = new ImportObject(SiteId);
                         importObject.ImportContentsByAccessFile(_nodeId, localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), TranslateUtils.ToInt(TbImportStart.Text), TranslateUtils.ToInt(TbImportCount.Text), isChecked, checkedLevel);
                     }
                     else if (StringUtils.EqualsIgnoreCase(DdlImportType.SelectedValue, ModalExportMessage.ExportTypeContentExcel))
@@ -101,7 +100,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                         HifFile.PostedFile.SaveAs(localFilePath);
 
-                        var importObject = new ImportObject(PublishmentSystemId);
+                        var importObject = new ImportObject(SiteId);
                         importObject.ImportContentsByCsvFile(_nodeId, localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), TranslateUtils.ToInt(TbImportStart.Text), TranslateUtils.ToInt(TbImportCount.Text), isChecked, checkedLevel);
                     }
                     else if (StringUtils.EqualsIgnoreCase(DdlImportType.SelectedValue, ModalExportMessage.ExportTypeContentTxtZip))
@@ -117,11 +116,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                         HifFile.PostedFile.SaveAs(localFilePath);
 
-                        var importObject = new ImportObject(PublishmentSystemId);
+                        var importObject = new ImportObject(SiteId);
                         importObject.ImportContentsByTxtZipFile(_nodeId, localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), TranslateUtils.ToInt(TbImportStart.Text), TranslateUtils.ToInt(TbImportCount.Text), isChecked, checkedLevel);
                     }
 
-                    Body.AddSiteLog(PublishmentSystemId, _nodeId, 0, "导入内容", string.Empty);
+                    Body.AddSiteLog(SiteId, _nodeId, 0, "导入内容", string.Empty);
 
                     LayerUtils.Close(Page);
 				}

@@ -3,7 +3,6 @@ using System.Web.Http;
 using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
@@ -20,8 +19,8 @@ namespace SiteServer.API.Controllers.Sys.Stl
             {
                 var context = new RequestContext();
 
-                var publishmentSystemId = context.GetPostInt("publishmentSystemId");
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+                var siteId = context.GetPostInt("siteId");
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
                 var pageNodeId = context.GetPostInt("pageNodeId");
                 var templateId = context.GetPostInt("templateId");
                 var totalNum = context.GetPostInt("totalNum");
@@ -29,9 +28,9 @@ namespace SiteServer.API.Controllers.Sys.Stl
                 var currentPageIndex = context.GetPostInt("currentPageIndex");
                 var stlPageContentsElement = TranslateUtils.DecryptStringBySecretKey(context.GetPostString("stlPageContentsElement"));
 
-                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, pageNodeId);
-                var templateInfo = TemplateManager.GetTemplateInfo(publishmentSystemId, templateId);
-                var pageInfo = new PageInfo(nodeInfo.NodeId, 0, publishmentSystemInfo, templateInfo)
+                var nodeInfo = ChannelManager.GetChannelInfo(siteId, pageNodeId);
+                var templateInfo = TemplateManager.GetTemplateInfo(siteId, templateId);
+                var pageInfo = new PageInfo(nodeInfo.Id, 0, siteInfo, templateInfo)
                 {
                     UserInfo = context.UserInfo
                 };

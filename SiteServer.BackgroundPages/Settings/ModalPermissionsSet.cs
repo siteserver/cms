@@ -3,17 +3,17 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
     public class ModalPermissionsSet : BasePageCms
     {
         public DropDownList DdlPredefinedRole;
-        public PlaceHolder PhPublishmentSystemId;
-        public CheckBoxList CblPublishmentSystemId;
+        public PlaceHolder PhSiteId;
+        public CheckBoxList CblSiteId;
         public PlaceHolder PhRoles;
         public ListBox LbAvailableRoles;
         public ListBox LbAssignedRoles;
@@ -50,8 +50,8 @@ namespace SiteServer.BackgroundPages.Settings
             var type = EPredefinedRoleUtils.GetEnumTypeByRoles(roles);
             ControlUtils.SelectSingleItem(DdlPredefinedRole, EPredefinedRoleUtils.GetValue(type));
 
-            PublishmentSystemManager.AddListItems(CblPublishmentSystemId);
-            ControlUtils.SelectMultiItems(CblPublishmentSystemId, DataProvider.AdministratorDao.GetPublishmentSystemIdList(_userName));
+            SiteManager.AddListItems(CblSiteId);
+            ControlUtils.SelectMultiItems(CblSiteId, DataProvider.AdministratorDao.GetSiteIdList(_userName));
 
             ListBoxDataBind();
 
@@ -62,17 +62,17 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (EPredefinedRoleUtils.Equals(EPredefinedRole.ConsoleAdministrator, DdlPredefinedRole.SelectedValue))
             {
-                PhRoles.Visible = PhPublishmentSystemId.Visible = false;
+                PhRoles.Visible = PhSiteId.Visible = false;
             }
             else if (EPredefinedRoleUtils.Equals(EPredefinedRole.SystemAdministrator, DdlPredefinedRole.SelectedValue))
             {
                 PhRoles.Visible = false;
-                PhPublishmentSystemId.Visible = true;
+                PhSiteId.Visible = true;
             }
             else
             {
                 PhRoles.Visible = true;
-                PhPublishmentSystemId.Visible = false;
+                PhSiteId.Visible = false;
             }
         }
 
@@ -191,9 +191,9 @@ namespace SiteServer.BackgroundPages.Settings
                 }
                 DataProvider.AdministratorsInRolesDao.AddUserToRole(_userName, DdlPredefinedRole.SelectedValue);
 
-                DataProvider.AdministratorDao.UpdatePublishmentSystemIdCollection(_userName,
+                DataProvider.AdministratorDao.UpdateSiteIdCollection(_userName,
                     EPredefinedRoleUtils.Equals(EPredefinedRole.SystemAdministrator, DdlPredefinedRole.SelectedValue)
-                        ? ControlUtils.SelectedItemsValueToStringCollection(CblPublishmentSystemId.Items)
+                        ? ControlUtils.SelectedItemsValueToStringCollection(CblSiteId.Items)
                         : string.Empty);
 
                 Body.AddAdminLog("设置管理员权限", $"管理员:{_userName}");

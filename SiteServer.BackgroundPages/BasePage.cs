@@ -214,15 +214,15 @@ $('.operation-area').hide();
             return ClientScript.IsStartupScriptRegistered(key);
         }
 
-        public static string GetShowImageScript(string imageClientId, string publishmentSystemUrl)
+        public static string GetShowImageScript(string imageClientId, string siteUrl)
         {
-            return GetShowImageScript("this", imageClientId, publishmentSystemUrl);
+            return GetShowImageScript("this", imageClientId, siteUrl);
         }
 
-        public static string GetShowImageScript(string objString, string imageClientId, string publishmentSystemUrl)
+        public static string GetShowImageScript(string objString, string imageClientId, string siteUrl)
         {
             return
-                $"showImage({objString}, '{imageClientId}', '{PageUtils.ApplicationPath}', '{publishmentSystemUrl}')";
+                $"showImage({objString}, '{imageClientId}', '{PageUtils.ApplicationPath}', '{siteUrl}')";
         }
 
         public string SwalError(string title, string message)

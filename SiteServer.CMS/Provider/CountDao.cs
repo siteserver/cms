@@ -2,22 +2,21 @@
 using System.Data;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.Plugin;
 using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Provider
 {
     public class CountDao : DataProviderBase
     {
-        public override string TableName => "bairong_Count";
+        public override string TableName => "siteserver_Count";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
             new TableColumnInfo
             {
-                ColumnName = nameof(CountInfo.CountId),
+                ColumnName = nameof(CountInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
@@ -47,11 +46,11 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlSelectCountNum = "SELECT CountNum FROM bairong_Count WHERE RelatedTableName = @RelatedTableName AND RelatedIdentity = @RelatedIdentity AND CountType = @CountType";
+        private const string SqlSelectCountNum = "SELECT CountNum FROM siteserver_Count WHERE RelatedTableName = @RelatedTableName AND RelatedIdentity = @RelatedIdentity AND CountType = @CountType";
 
-        private const string SqlDeleteByRelatedTableName = "DELETE FROM bairong_Count WHERE RelatedTableName = @RelatedTableName";
+        private const string SqlDeleteByRelatedTableName = "DELETE FROM siteserver_Count WHERE RelatedTableName = @RelatedTableName";
 
-        private const string SqlDeleteByIdentity = "DELETE FROM bairong_Count WHERE RelatedTableName = @RelatedTableName AND RelatedIdentity = @RelatedIdentity";
+        private const string SqlDeleteByIdentity = "DELETE FROM siteserver_Count WHERE RelatedTableName = @RelatedTableName AND RelatedIdentity = @RelatedIdentity";
 
         private const string ParmRelatedTableName = "@RelatedTableName";
         private const string ParmRelatedIdentity = "@RelatedIdentity";
@@ -60,7 +59,7 @@ namespace SiteServer.CMS.Provider
 
         public void Insert(string relatedTableName, string relatedIdentity, ECountType countType, int countNum)
         {
-            const string sqlString = "INSERT INTO bairong_Count (RelatedTableName, RelatedIdentity, CountType, CountNum) VALUES (@RelatedTableName, @RelatedIdentity, @CountType, @CountNum)";
+            const string sqlString = "INSERT INTO siteserver_Count (RelatedTableName, RelatedIdentity, CountType, CountNum) VALUES (@RelatedTableName, @RelatedIdentity, @CountType, @CountNum)";
 
             var insertParms = new IDataParameter[]
 			{
@@ -75,7 +74,7 @@ namespace SiteServer.CMS.Provider
 
         public void AddCountNum(string relatedTableName, string relatedIdentity, ECountType countType)
         {
-            var sqlString = $"UPDATE bairong_Count SET {SqlUtils.ToPlusSqlString("CountNum")} WHERE RelatedTableName = @RelatedTableName AND RelatedIdentity = @RelatedIdentity AND CountType = @CountType";
+            var sqlString = $"UPDATE siteserver_Count SET {SqlUtils.ToPlusSqlString("CountNum")} WHERE RelatedTableName = @RelatedTableName AND RelatedIdentity = @RelatedIdentity AND CountType = @CountType";
 
             var insertParms = new IDataParameter[]
 			{
@@ -144,17 +143,17 @@ namespace SiteServer.CMS.Provider
         /// 获取站点的统计数据
         /// </summary>
         /// <param name="relatedTableName"></param>
-        /// <param name="publishmentSystemId"></param>
+        /// <param name="siteId"></param>
         /// <param name="countType"></param>
         /// <returns></returns>
-        public int GetCountNum(string relatedTableName, int publishmentSystemId, ECountType countType)
+        public int GetCountNum(string relatedTableName, int siteId, ECountType countType)
         {
             var countNum = 0;
 
             string sqlString =
-                $@"select sum(cou.CountNum) from bairong_Count cou left join {relatedTableName} con on cou.RelatedIdentity = con.ID
+                $@"select sum(cou.CountNum) from siteserver_Count cou left join {relatedTableName} con on cou.RelatedIdentity = con.ID
 where cou.RelatedTableName = '{relatedTableName}'
-and con.PublishmentSystemID = {publishmentSystemId}
+and con.SiteId = {siteId}
 and cou.CountType = '{ECountTypeUtils.GetValue(countType)}'";
 
             using (var rdr = ExecuteReader(sqlString))

@@ -5,7 +5,7 @@ using System.Net;
 using System.Text;
 using System.Web;
 using SiteServer.Utils;
-using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {

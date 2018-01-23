@@ -22,16 +22,16 @@
             }
             if (sourceId <= 0) return string.Empty;
 
-            var publishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(sourceId);
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            if (publishmentSystemInfo == null) return "内容转移";
+            var siteId = DataProvider.ChannelDao.GetSiteId(sourceId);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            if (siteInfo == null) return "内容转移";
 
-            var nodeNames = NodeManager.GetNodeNameNavigation(publishmentSystemId, sourceId);
+            var nodeNames = ChannelManager.GetChannelNameNavigation(siteId, sourceId);
             if (!string.IsNullOrEmpty(nodeNames))
             {
-                return publishmentSystemInfo.PublishmentSystemName + "：" + nodeNames;
+                return siteInfo.SiteName + "：" + nodeNames;
             }
-            return publishmentSystemInfo.PublishmentSystemName;
+            return siteInfo.SiteName;
         }
 	}
 }

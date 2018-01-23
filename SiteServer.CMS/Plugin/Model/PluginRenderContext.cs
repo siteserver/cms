@@ -4,16 +4,16 @@ namespace SiteServer.CMS.Plugin.Model
 {
     public class PluginRenderContext: IRenderContext
     {
-        public PluginRenderContext(string html, int publishmentSystemId, int channelId, int contentId)
+        public PluginRenderContext(string html, int siteId, int channelId, int contentId)
         {
             Html = html;
-            PublishmentSystemId = publishmentSystemId;
+            SiteId = siteId;
             ChannelId = channelId;
             ContentId = contentId;
         }
 
         public string Html  { get; set; }
-        public int PublishmentSystemId { get; set; }
+        public int SiteId { get; set; }
         public int ChannelId  { get; set; }
         public int ContentId { get; set; }
     }

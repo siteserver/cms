@@ -21,11 +21,11 @@
           <div class="col-1 help-block"></div>
         </div>
 
-        <asp:PlaceHolder id="PhPublishmentSystemId" runat="server">
+        <asp:PlaceHolder id="PhSiteId" runat="server">
           <div class="form-group form-row">
             <label class="col-3 text-right col-form-label">可以管理的站点</label>
             <div class="col-8">
-              <asp:CheckBoxList ID="CblPublishmentSystemId" class="checkbox checkbox-primary" repeatColumns="2" runat="server"></asp:CheckBoxList>
+              <asp:CheckBoxList ID="CblSiteId" class="checkbox checkbox-primary" repeatColumns="2" runat="server"></asp:CheckBoxList>
             </div>
             <div class="col-1 help-block"></div>
           </div>

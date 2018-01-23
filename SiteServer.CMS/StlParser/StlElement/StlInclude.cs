@@ -43,7 +43,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             if (string.IsNullOrEmpty(file)) return string.Empty;
 
-            var content = TemplateManager.GetIncludeContent(pageInfo.PublishmentSystemInfo, file, pageInfo.TemplateInfo.Charset);
+            var content = TemplateManager.GetIncludeContent(pageInfo.SiteInfo, file, pageInfo.TemplateInfo.Charset);
             content = StlParserUtility.Amp(content);
             var contentBuilder = new StringBuilder(content);
             StlParserManager.ParseTemplateContent(contentBuilder, pageInfo, contextInfo);

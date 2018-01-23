@@ -5,7 +5,6 @@ using System.Web;
 using System.Web.UI;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
-using SiteServer.Utils.Web.Controls;
 
 namespace SiteServer.BackgroundPages.Controls
 {

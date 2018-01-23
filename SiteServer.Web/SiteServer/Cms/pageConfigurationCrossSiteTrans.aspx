@@ -17,7 +17,7 @@
               <a class="nav-link" href="javascript:;">跨站转发审核设置</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageConfigurationCrossSiteTransChannels.aspx?publishmentSystemId=<%=PublishmentSystemId%>">跨站转发栏目设置</a>
+              <a class="nav-link" href="pageConfigurationCrossSiteTransChannels.aspx?siteId=<%=SiteId%>">跨站转发栏目设置</a>
             </li>
           </ul>
         </div>

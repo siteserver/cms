@@ -4,12 +4,12 @@ namespace SiteServer.CMS.Model
 {
     public class CreateTaskInfo
     {
-        public CreateTaskInfo(int id, string name, ECreateType createType, int publishmentSystemId, int channelId, int contentId, int templateId, int pageCount)
+        public CreateTaskInfo(int id, string name, ECreateType createType, int siteId, int channelId, int contentId, int templateId, int pageCount)
         {
             Id = id;
             Name = name;
             CreateType = createType;
-            PublishmentSystemId = publishmentSystemId;
+            SiteId = siteId;
             ChannelId = channelId;
             ContentId = contentId;
             TemplateId = templateId;
@@ -19,7 +19,7 @@ namespace SiteServer.CMS.Model
         public int Id { get; set; }
         public string Name { get; set; }
         public ECreateType CreateType { get; set; }
-        public int PublishmentSystemId { get; set; }
+        public int SiteId { get; set; }
         public int ChannelId { get; set; }
         public int ContentId { get; set; }
         public int TemplateId { get; set; }
@@ -27,7 +27,7 @@ namespace SiteServer.CMS.Model
 
         public bool Equals(CreateTaskInfo taskInfo)
         {
-            return CreateType == taskInfo?.CreateType && PublishmentSystemId == taskInfo.PublishmentSystemId && ChannelId == taskInfo.ChannelId && ContentId == taskInfo.ContentId && TemplateId == taskInfo.TemplateId;
+            return CreateType == taskInfo?.CreateType && SiteId == taskInfo.SiteId && ChannelId == taskInfo.ChannelId && ContentId == taskInfo.ContentId && TemplateId == taskInfo.TemplateId;
         }
     }
 }

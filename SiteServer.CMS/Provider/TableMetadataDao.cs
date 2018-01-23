@@ -4,7 +4,6 @@ using System.Data;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -12,20 +11,20 @@ namespace SiteServer.CMS.Provider
 {
     public class TableMetadataDao : DataProviderBase
     {
-        public override string TableName => "bairong_TableMetadata";
+        public override string TableName => "siteserver_TableMetadata";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
             new TableColumnInfo
             {
-                ColumnName = nameof(TableMetadataInfo.TableMetadataId),
+                ColumnName = nameof(TableMetadataInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
             new TableColumnInfo
             {
-                ColumnName = nameof(TableMetadataInfo.AuxiliaryTableEnName),
+                ColumnName = nameof(TableMetadataInfo.TableName),
                 DataType = DataType.VarChar,
                 Length = 50
             },
@@ -59,28 +58,28 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlSelectTableMetadata = "SELECT TableMetadataID, AuxiliaryTableEnName, AttributeName, DataType, DataLength, Taxis, IsSystem FROM bairong_TableMetadata WHERE TableMetadataID = @TableMetadataID";
+        private const string SqlSelectTableMetadata = "SELECT Id, TableName, AttributeName, DataType, DataLength, Taxis, IsSystem FROM siteserver_TableMetadata WHERE Id = @Id";
 
-        private const string SqlSelectAllTableMetadataByEnname = "SELECT TableMetadataID, AuxiliaryTableEnName, AttributeName, DataType, DataLength, Taxis, IsSystem FROM bairong_TableMetadata WHERE AuxiliaryTableEnName = @AuxiliaryTableEnName ORDER BY IsSystem DESC, Taxis";
+        private const string SqlSelectAllTableMetadataByEnname = "SELECT Id, TableName, AttributeName, DataType, DataLength, Taxis, IsSystem FROM siteserver_TableMetadata WHERE TableName = @TableName ORDER BY IsSystem DESC, Taxis";
 
-        private const string SqlSelectTableMetadataCountByEnname = "SELECT COUNT(*) FROM bairong_TableMetadata WHERE AuxiliaryTableEnName = @AuxiliaryTableEnName";
+        private const string SqlSelectTableMetadataCountByEnname = "SELECT COUNT(*) FROM siteserver_TableMetadata WHERE TableName = @TableName";
 
-        private const string SqlSelectTableMetadataByTableEnnameAndAttributeName = "SELECT TableMetadataID, AuxiliaryTableEnName, AttributeName, DataType, DataLength, Taxis, IsSystem FROM bairong_TableMetadata WHERE AuxiliaryTableEnName = @AuxiliaryTableEnName AND AttributeName = @AttributeName";
+        private const string SqlSelectTableMetadataByTableNameAndAttributeName = "SELECT Id, TableName, AttributeName, DataType, DataLength, Taxis, IsSystem FROM siteserver_TableMetadata WHERE TableName = @TableName AND AttributeName = @AttributeName";
 
-        private const string SqlSelectTableMetadataIdByTableEnnameAndAttributeName = "SELECT TableMetadataID FROM bairong_TableMetadata WHERE AuxiliaryTableEnName = @AuxiliaryTableEnName AND AttributeName = @AttributeName";
+        private const string SqlSelectIdByTableNameAndAttributeName = "SELECT Id FROM siteserver_TableMetadata WHERE TableName = @TableName AND AttributeName = @AttributeName";
 
-        private const string SqlSelectTableMetadataAllAttributeName = "SELECT AttributeName FROM bairong_TableMetadata WHERE AuxiliaryTableEnName = @AuxiliaryTableEnName ORDER BY Taxis";
+        private const string SqlSelectTableMetadataAllAttributeName = "SELECT AttributeName FROM siteserver_TableMetadata WHERE TableName = @TableName ORDER BY Taxis";
 
-        private const string SqlUpdateTableMetadata = "UPDATE bairong_TableMetadata SET AuxiliaryTableEnName = @AuxiliaryTableEnName, AttributeName = @AttributeName, DataType = @DataType, DataLength = @DataLength, IsSystem = @IsSystem WHERE  TableMetadataID = @TableMetadataID";
+        private const string SqlUpdateTableMetadata = "UPDATE siteserver_TableMetadata SET TableName = @TableName, AttributeName = @AttributeName, DataType = @DataType, DataLength = @DataLength, IsSystem = @IsSystem WHERE  Id = @Id";
 
-        private const string SqlDeleteTableMetadata = "DELETE FROM bairong_TableMetadata WHERE  TableMetadataID = @TableMetadataID";
+        private const string SqlDeleteTableMetadata = "DELETE FROM siteserver_TableMetadata WHERE  Id = @Id";
 
-        private const string SqlDeleteTableMetadataByTableName = "DELETE FROM bairong_TableMetadata WHERE  AuxiliaryTableEnName = @AuxiliaryTableEnName";
+        private const string SqlDeleteTableMetadataByTableName = "DELETE FROM siteserver_TableMetadata WHERE  TableName = @TableName";
 
-        private const string SqlUpdateTableMetadataTaxis = "UPDATE bairong_TableMetadata SET Taxis = @Taxis WHERE  TableMetadataID = @TableMetadataID";
+        private const string SqlUpdateTableMetadataTaxis = "UPDATE siteserver_TableMetadata SET Taxis = @Taxis WHERE  Id = @Id";
 
-        private const string ParmTableMetadataId = "@TableMetadataID";
-        private const string ParmTableCollectionInfoEnname = "@AuxiliaryTableEnName";
+        private const string ParmId = "@Id";
+        private const string ParmTableCollectionInfoEnname = "@TableName";
         private const string ParmAttributeName = "@AttributeName";
         private const string ParmDataType = "@DataType";
         private const string ParmDataLength = "@DataLength";
@@ -89,24 +88,24 @@ namespace SiteServer.CMS.Provider
 
         public void Insert(TableMetadataInfo info)
         {
-            if (IsExists(info.AuxiliaryTableEnName, info.AttributeName)) return;
+            if (IsExists(info.TableName, info.AttributeName)) return;
 
-            const string sqlString = "INSERT INTO bairong_TableMetadata (AuxiliaryTableEnName, AttributeName, DataType, DataLength, Taxis, IsSystem) VALUES (@AuxiliaryTableEnName, @AttributeName, @DataType, @DataLength, @Taxis, @IsSystem)";
+            const string sqlString = "INSERT INTO siteserver_TableMetadata (TableName, AttributeName, DataType, DataLength, Taxis, IsSystem) VALUES (@TableName, @AttributeName, @DataType, @DataLength, @Taxis, @IsSystem)";
 
             var parameters = new IDataParameter[]
 			{
-				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, info.AuxiliaryTableEnName),
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, info.TableName),
 				GetParameter(ParmAttributeName, DataType.VarChar, 50, info.AttributeName),
 				GetParameter(ParmDataType, DataType.VarChar, 50, info.DataType.Value),
 				GetParameter(ParmDataLength, DataType.Integer, info.DataLength),
-				GetParameter(ParmTaxis, DataType.Integer, GetMaxTaxis(info.AuxiliaryTableEnName) + 1),
+				GetParameter(ParmTaxis, DataType.Integer, GetMaxTaxis(info.TableName) + 1),
 				GetParameter(ParmIsSystem, DataType.VarChar, 18, info.IsSystem.ToString())
 			};
 
             ExecuteNonQuery(sqlString, parameters);
 
-            DataProvider.TableCollectionDao.UpdateAttributeNum(info.AuxiliaryTableEnName);
-            DataProvider.TableCollectionDao.UpdateIsChangedAfterCreatedInDbToTrue(info.AuxiliaryTableEnName);
+            DataProvider.TableDao.UpdateAttributeNum(info.TableName);
+            DataProvider.TableDao.UpdateIsChangedAfterCreatedInDbToTrue(info.TableName);
 
             TableMetadataManager.ClearCache();
         }
@@ -114,13 +113,13 @@ namespace SiteServer.CMS.Provider
 
         internal void InsertWithTransaction(TableMetadataInfo info, int taxis, IDbTransaction trans)
         {
-            if (IsExistsWithTransaction(info.AuxiliaryTableEnName, info.AttributeName, trans)) return;
+            if (IsExistsWithTransaction(info.TableName, info.AttributeName, trans)) return;
 
-            const string sqlString = "INSERT INTO bairong_TableMetadata (AuxiliaryTableEnName, AttributeName, DataType, DataLength, Taxis, IsSystem) VALUES (@AuxiliaryTableEnName, @AttributeName, @DataType, @DataLength, @Taxis, @IsSystem)";
+            const string sqlString = "INSERT INTO siteserver_TableMetadata (TableName, AttributeName, DataType, DataLength, Taxis, IsSystem) VALUES (@TableName, @AttributeName, @DataType, @DataLength, @Taxis, @IsSystem)";
 
             var insertParms = new IDataParameter[]
 		    {
-			    GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, info.AuxiliaryTableEnName),
+			    GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, info.TableName),
 			    GetParameter(ParmAttributeName, DataType.VarChar, 50, info.AttributeName),
 			    GetParameter(ParmDataType, DataType.VarChar, 50, info.DataType.Value),
 			    GetParameter(ParmDataLength, DataType.Integer, info.DataLength),
@@ -131,7 +130,7 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(trans, sqlString, insertParms);
             if (info.StyleInfo != null)
             {
-                info.StyleInfo.TableName = info.AuxiliaryTableEnName;
+                info.StyleInfo.TableName = info.TableName;
                 info.StyleInfo.AttributeName = info.AttributeName;
                 DataProvider.TableStyleDao.InsertWithTransaction(info.StyleInfo, trans);
                 TableStyleManager.IsChanged = true;
@@ -143,10 +142,10 @@ namespace SiteServer.CMS.Provider
         public void Update(TableMetadataInfo info)
         {
             var isSqlChanged = true;
-            var originalInfo = GetTableMetadataInfo(info.TableMetadataId);
+            var originalInfo = GetTableMetadataInfo(info.Id);
             if (originalInfo != null)
             {
-                if (StringUtils.EqualsIgnoreCase(info.AuxiliaryTableEnName, originalInfo.AuxiliaryTableEnName)
+                if (StringUtils.EqualsIgnoreCase(info.TableName, originalInfo.TableName)
                  && StringUtils.EqualsIgnoreCase(info.AttributeName, originalInfo.AttributeName)
                  && info.DataType == originalInfo.DataType
                  && info.DataLength == originalInfo.DataLength
@@ -160,46 +159,46 @@ namespace SiteServer.CMS.Provider
 
             var updateParms = new IDataParameter[]
             {
-                GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, info.AuxiliaryTableEnName),
+                GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, info.TableName),
                 GetParameter(ParmAttributeName, DataType.VarChar, 50, info.AttributeName),
                 GetParameter(ParmDataType, DataType.VarChar, 50, info.DataType.Value),
                 GetParameter(ParmDataLength, DataType.Integer, info.DataLength),
                 GetParameter(ParmIsSystem, DataType.VarChar, 18, info.IsSystem.ToString()),
-                GetParameter(ParmTableMetadataId, DataType.Integer, info.TableMetadataId)
+                GetParameter(ParmId, DataType.Integer, info.Id)
             };
 
             ExecuteNonQuery(SqlUpdateTableMetadata, updateParms);
 
-            DataProvider.TableCollectionDao.UpdateIsChangedAfterCreatedInDbToTrue(info.AuxiliaryTableEnName);
+            DataProvider.TableDao.UpdateIsChangedAfterCreatedInDbToTrue(info.TableName);
             TableMetadataManager.ClearCache();
         }
 
-        public void Delete(int tableMetadataId)
+        public void Delete(int id)
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableMetadataId, DataType.Integer, tableMetadataId)
+				GetParameter(ParmId, DataType.Integer, id)
 			};
 
-            var metadataInfo = GetTableMetadataInfo(tableMetadataId);
+            var metadataInfo = GetTableMetadataInfo(id);
 
             ExecuteNonQuery(SqlDeleteTableMetadata, parms);
 
-            DataProvider.TableCollectionDao.UpdateAttributeNum(metadataInfo.AuxiliaryTableEnName);
-            DataProvider.TableCollectionDao.UpdateIsChangedAfterCreatedInDbToTrue(metadataInfo.AuxiliaryTableEnName);
+            DataProvider.TableDao.UpdateAttributeNum(metadataInfo.TableName);
+            DataProvider.TableDao.UpdateIsChangedAfterCreatedInDbToTrue(metadataInfo.TableName);
             TableMetadataManager.ClearCache();
         }
 
-        public void Delete(string tableEnName)
+        public void Delete(string tableName)
         {
-            Delete(tableEnName, null);
+            Delete(tableName, null);
         }
 
-        public void Delete(string tableEnName, IDbTransaction trans)
+        public void Delete(string tableName, IDbTransaction trans)
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar,50, tableEnName)
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar,50, tableName)
 			};
             if (trans == null)
             {
@@ -213,13 +212,13 @@ namespace SiteServer.CMS.Provider
             }
         }
 
-        public TableMetadataInfo GetTableMetadataInfo(int tableMetadataId)
+        public TableMetadataInfo GetTableMetadataInfo(int id)
         {
             TableMetadataInfo info = null;
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableMetadataId, DataType.Integer, tableMetadataId)
+				GetParameter(ParmId, DataType.Integer, id)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectTableMetadata, parms))
@@ -235,17 +234,17 @@ namespace SiteServer.CMS.Provider
             return info;
         }
 
-        public TableMetadataInfo GetTableMetadataInfo(string tableEnName, string attributeName)
+        public TableMetadataInfo GetTableMetadataInfo(string tableName, string attributeName)
         {
             TableMetadataInfo info = null;
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableEnName),
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableName),
 				GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
 			};
 
-            using (var rdr = ExecuteReader(SqlSelectTableMetadataByTableEnnameAndAttributeName, parms))
+            using (var rdr = ExecuteReader(SqlSelectTableMetadataByTableNameAndAttributeName, parms))
             {
                 if (rdr.Read())
                 {
@@ -258,50 +257,50 @@ namespace SiteServer.CMS.Provider
             return info;
         }
 
-        public int GetTableMetadataId(string tableEnName, string attributeName)
+        public int GetId(string tableName, string attributeName)
         {
-            var tableMetadataId = 0;
+            var id = 0;
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableEnName),
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableName),
 				GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
 			};
 
             using (var conn = GetConnection())
             {
                 conn.Open();
-                using (var rdr = ExecuteReader(conn, SqlSelectTableMetadataIdByTableEnnameAndAttributeName, parms))
+                using (var rdr = ExecuteReader(conn, SqlSelectIdByTableNameAndAttributeName, parms))
                 {
                     if (rdr.Read())
                     {
-                        tableMetadataId = GetInt(rdr, 0);
+                        id = GetInt(rdr, 0);
                     }
                     rdr.Close();
                 }
             }
 
-            return tableMetadataId;
+            return id;
         }
 
-        public IEnumerable GetDataSource(string tableEnName)
+        public IEnumerable GetDataSource(string tableName)
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableEnName)
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableName)
 			};
 
             var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllTableMetadataByEnname, parms);
             return enumerable;
         }
 
-        public List<TableMetadataInfo> GetTableMetadataInfoList(string tableEnName)
+        public List<TableMetadataInfo> GetTableMetadataInfoList(string tableName)
         {
             var list = new List<TableMetadataInfo>();
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableEnName)
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableName)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAllTableMetadataByEnname, parms))
@@ -320,7 +319,7 @@ namespace SiteServer.CMS.Provider
         public Dictionary<string, List<TableMetadataInfo>> GetTableNameWithTableMetadataInfoList()
         {
             var dict = new Dictionary<string, List<TableMetadataInfo>>();
-            var tableNameList = DataProvider.TableCollectionDao.GetTableEnNameList();
+            var tableNameList = DataProvider.TableDao.GetTableNameList();
             foreach (var tableName in tableNameList)
             {
                 var list = GetTableMetadataInfoList(tableName);
@@ -335,13 +334,13 @@ namespace SiteServer.CMS.Provider
         /// <summary>
         /// Get Total TableCollectionInfo Count
         /// </summary>
-        public int GetTableMetadataCountByEnName(string tableEnName)
+        public int GetTableMetadataCountByEnName(string tableName)
         {
             var count = 0;
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableEnName)
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableName)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectTableMetadataCountByEnname, parms))
@@ -360,7 +359,7 @@ namespace SiteServer.CMS.Provider
         {
             var exists = false;
 
-            const string sqlString = "SELECT TableMetadataID FROM bairong_TableMetadata WHERE AuxiliaryTableEnName = @AuxiliaryTableEnName AND AttributeName = @AttributeName";
+            const string sqlString = "SELECT Id FROM siteserver_TableMetadata WHERE TableName = @TableName AND AttributeName = @AttributeName";
             var parms = new IDataParameter[]
             {
                 GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableName),
@@ -385,7 +384,7 @@ namespace SiteServer.CMS.Provider
         {
             var exists = false;
 
-            const string sqlString = "SELECT TableMetadataID FROM bairong_TableMetadata WHERE AuxiliaryTableEnName = @AuxiliaryTableEnName AND AttributeName = @AttributeName";
+            const string sqlString = "SELECT Id FROM siteserver_TableMetadata WHERE TableName = @TableName AND AttributeName = @AttributeName";
             var parms = new IDataParameter[]
             {
                 GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableName),
@@ -406,11 +405,11 @@ namespace SiteServer.CMS.Provider
             return exists;
         }
 
-        public List<string> GetAttributeNameList(string tableEnName)
+        public List<string> GetAttributeNameList(string tableName)
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableEnName)
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableName)
 			};
 
             var list = new List<string>();
@@ -429,13 +428,13 @@ namespace SiteServer.CMS.Provider
         /// <summary>
         /// Get max Taxis in the database
         /// </summary>
-        public int GetMaxTaxis(string tableEnName)
+        public int GetMaxTaxis(string tableName)
         {
-            const string sqlString = "SELECT MAX(Taxis) FROM bairong_TableMetadata WHERE AuxiliaryTableEnName = @AuxiliaryTableEnName";
+            const string sqlString = "SELECT MAX(Taxis) FROM siteserver_TableMetadata WHERE TableName = @TableName";
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableEnName)
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableName)
 			};
 
             return DataProvider.DatabaseDao.GetIntResult(sqlString, parms);
@@ -445,12 +444,12 @@ namespace SiteServer.CMS.Provider
         /// <summary>
         /// Change The Texis To Higher Level
         /// </summary>
-        public void TaxisUp(int selectedId, string tableEnName)
+        public void TaxisUp(int selectedId, string tableName)
         {
             //Get Higher Taxis and ClassID
-            //var sqlString = "SELECT TOP 1 TableMetadataID, Taxis FROM bairong_TableMetadata WHERE ((Taxis > (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableEnName = @AuxiliaryTableEnName1))) AND AuxiliaryTableEnName=@AuxiliaryTableEnName2) ORDER BY Taxis";
-            var sqlString = SqlUtils.ToTopSqlString("bairong_TableMetadata", "TableMetadataID, Taxis",
-                "WHERE ((Taxis > (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableEnName = @AuxiliaryTableEnName1))) AND AuxiliaryTableEnName=@AuxiliaryTableEnName2)",
+            //var sqlString = "SELECT TOP 1 Id, Taxis FROM siteserver_TableMetadata WHERE ((Taxis > (SELECT Taxis FROM siteserver_TableMetadata WHERE (Id = @Id AND TableName = @TableName1))) AND TableName=@TableName2) ORDER BY Taxis";
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_TableMetadata", "Id, Taxis",
+                "WHERE ((Taxis > (SELECT Taxis FROM siteserver_TableMetadata WHERE (Id = @Id AND TableName = @TableName1))) AND TableName=@TableName2)",
                 "ORDER BY Taxis",
                 1);
             var higherId = 0;
@@ -458,9 +457,9 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableMetadataId, DataType.Integer, selectedId),
-				GetParameter("@AuxiliaryTableEnName1", DataType.VarChar, 50, tableEnName),
-				GetParameter("@AuxiliaryTableEnName2", DataType.VarChar, 50, tableEnName)
+				GetParameter(ParmId, DataType.Integer, selectedId),
+				GetParameter("@TableName1", DataType.VarChar, 50, tableName),
+				GetParameter("@TableName2", DataType.VarChar, 50, tableName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -482,19 +481,19 @@ namespace SiteServer.CMS.Provider
                 SetTaxis(selectedId, higherTaxis);
                 //Set The Higher Class Taxis To Lower Level
                 SetTaxis(higherId, selectedTaxis);
-                //DataProvider.CreateTableCollectionInfoDAO().UpdateIsChangedAfterCreatedInDB(EBoolean.True, tableENName);
+                //DataProvider.CreateTableCollectionInfoDAO().UpdateIsChangedAfterCreatedInDB(EBoolean.True, tableName);
             }
         }
 
         /// <summary>
         /// Change The Texis To Lower Level
         /// </summary>
-        public void TaxisDown(int selectedId, string tableEnName)
+        public void TaxisDown(int selectedId, string tableName)
         {
             //Get Lower Taxis and ClassID
-            //var sqlString = "SELECT TOP 1 TableMetadataID, Taxis FROM bairong_TableMetadata WHERE ((Taxis < (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableEnName = @AuxiliaryTableEnName1))) AND AuxiliaryTableEnName = @AuxiliaryTableEnName2) ORDER BY Taxis DESC";
-            var sqlString = SqlUtils.ToTopSqlString("bairong_TableMetadata", "TableMetadataID, Taxis",
-                "WHERE ((Taxis < (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableEnName = @AuxiliaryTableEnName1))) AND AuxiliaryTableEnName = @AuxiliaryTableEnName2)",
+            //var sqlString = "SELECT TOP 1 Id, Taxis FROM siteserver_TableMetadata WHERE ((Taxis < (SELECT Taxis FROM siteserver_TableMetadata WHERE (Id = @Id AND TableName = @TableName1))) AND TableName = @TableName2) ORDER BY Taxis DESC";
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_TableMetadata", "Id, Taxis",
+                "WHERE ((Taxis < (SELECT Taxis FROM siteserver_TableMetadata WHERE (Id = @Id AND TableName = @TableName1))) AND TableName = @TableName2)",
                 "ORDER BY Taxis DESC", 1);
 
             var lowerId = 0;
@@ -502,9 +501,9 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableMetadataId, DataType.Integer, selectedId),
-				GetParameter("@AuxiliaryTableEnName1", DataType.VarChar, 50, tableEnName),
-				GetParameter("@AuxiliaryTableEnName2", DataType.VarChar, 50, tableEnName)
+				GetParameter(ParmId, DataType.Integer, selectedId),
+				GetParameter("@TableName1", DataType.VarChar, 50, tableName),
+				GetParameter("@TableName2", DataType.VarChar, 50, tableName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -526,18 +525,18 @@ namespace SiteServer.CMS.Provider
                 SetTaxis(selectedId, lowerTaxis);
                 //Set The Lower Class Taxis To Higher Level
                 SetTaxis(lowerId, selectedTaxis);
-                //DataProvider.CreateTableCollectionInfoDAO().UpdateIsChangedAfterCreatedInDB(EBoolean.True, tableENName);
+                //DataProvider.CreateTableCollectionInfoDAO().UpdateIsChangedAfterCreatedInDB(EBoolean.True, tableName);
             }
         }
 
         private int GetTaxis(int selectedId)
         {
-            const string sqlString = "SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID)";
+            const string sqlString = "SELECT Taxis FROM siteserver_TableMetadata WHERE (Id = @Id)";
             var taxis = 0;
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableMetadataId, DataType.Integer, selectedId)
+				GetParameter(ParmId, DataType.Integer, selectedId)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -557,7 +556,7 @@ namespace SiteServer.CMS.Provider
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmTaxis, DataType.Integer, taxis),
-				GetParameter(ParmTableMetadataId, DataType.Integer, id)
+				GetParameter(ParmId, DataType.Integer, id)
 			};
 
             ExecuteNonQuery(SqlUpdateTableMetadataTaxis, parms);

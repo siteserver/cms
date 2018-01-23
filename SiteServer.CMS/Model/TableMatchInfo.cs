@@ -6,7 +6,7 @@ namespace SiteServer.CMS.Model
     [Serializable]
 	public class TableMatchInfo
 	{
-		private int _tableMatchId;
+		private int _id;
 		private string _connectionString;
 		private string _tableName;
 		private string _connectionStringToMatch;
@@ -15,7 +15,7 @@ namespace SiteServer.CMS.Model
 
 		public TableMatchInfo()
 		{
-			_tableMatchId = 0;
+			_id = 0;
 			_connectionString = string.Empty;
 			_tableName = string.Empty;
 			_connectionStringToMatch = string.Empty;
@@ -23,9 +23,9 @@ namespace SiteServer.CMS.Model
 			_columnsMap = new NameValueCollection();
 		}
 
-		public TableMatchInfo(int tableMatchId, string connectionString, string tableName, string connectionStringToMatch, string tableNameToMatch, NameValueCollection columnsMap) 
+		public TableMatchInfo(int id, string connectionString, string tableName, string connectionStringToMatch, string tableNameToMatch, NameValueCollection columnsMap) 
 		{
-			_tableMatchId = tableMatchId;
+            _id = id;
 			_connectionString = connectionString;
 			_tableName = tableName;
 			_connectionStringToMatch = connectionStringToMatch;
@@ -33,10 +33,10 @@ namespace SiteServer.CMS.Model
 			_columnsMap = columnsMap;
 		}
 
-		public int TableMatchId
+		public int Id
 		{
-			get{ return _tableMatchId; }
-			set{ _tableMatchId = value; }
+			get{ return _id; }
+			set{ _id = value; }
 		}
 
 		public string ConnectionString

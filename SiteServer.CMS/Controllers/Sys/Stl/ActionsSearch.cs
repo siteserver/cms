@@ -13,7 +13,7 @@ namespace SiteServer.CMS.Controllers.Sys.Stl
             return PageUtils.Combine(apiUrl, Route);
         }
 
-        public static string GetParameters(bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int pageNum, bool isHighlight, bool isDefaultDisplay, int publishmentSystemId, string ajaxDivId, string template)
+        public static string GetParameters(bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int pageNum, bool isHighlight, bool isDefaultDisplay, int siteId, string ajaxDivId, string template)
         {
             return $@"
 {{
@@ -33,7 +33,7 @@ namespace SiteServer.CMS.Controllers.Sys.Stl
     {StlSearch.AttributePageNum.ToLower()}: {pageNum},
     {StlSearch.AttributeIsHighlight.ToLower()}: {isHighlight.ToString().ToLower()},
     {StlSearch.AttributeIsDefaultDisplay.ToLower()}: {isDefaultDisplay.ToString().ToLower()},
-    publishmentsystemid: '{publishmentSystemId}',
+    siteid: '{siteId}',
     ajaxdivid: '{ajaxDivId}',
     template: '{TranslateUtils.EncryptStringBySecretKey(template)}',
 }}";
@@ -57,7 +57,7 @@ namespace SiteServer.CMS.Controllers.Sys.Stl
             StlSearch.AttributePageNum.ToLower(),
             StlSearch.AttributeIsHighlight.ToLower(),
             StlSearch.AttributeIsDefaultDisplay.ToLower(),
-            "publishmentsystemid",
+            "siteid",
             "ajaxdivid",
             "template",
         };

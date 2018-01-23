@@ -4,8 +4,6 @@ using System.IO;
 using System.Web;
 using SiteServer.Utils;
 using SiteServer.Utils.Auth;
-using SiteServer.Utils.Auth.JWT;
-using SiteServer.Utils.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -54,7 +52,7 @@ namespace SiteServer.CMS.Plugin.Model
 
         public bool IsAdminLoggin => !string.IsNullOrEmpty(AdminName);
 
-        public int PublishmentSystemId => GetQueryInt("publishmentSystemId");
+        public int SiteId => GetQueryInt("siteId");
 
         public int ChannelId => GetQueryInt("channelId");
 
@@ -361,19 +359,19 @@ namespace SiteServer.CMS.Plugin.Model
             LogUtils.AddAdminLog(AdminName, action);
         }
 
-        public void AddSiteLog(int publishmentSystemId, string action)
+        public void AddSiteLog(int siteId, string action)
         {
-            AddSiteLog(publishmentSystemId, 0, 0, action, string.Empty);
+            AddSiteLog(siteId, 0, 0, action, string.Empty);
         }
 
-        public void AddSiteLog(int publishmentSystemId, string action, string summary)
+        public void AddSiteLog(int siteId, string action, string summary)
         {
-            AddSiteLog(publishmentSystemId, 0, 0, action, summary);
+            AddSiteLog(siteId, 0, 0, action, summary);
         }
 
-        public void AddSiteLog(int publishmentSystemId, int channelId, int contentId, string action, string summary)
+        public void AddSiteLog(int siteId, int channelId, int contentId, string action, string summary)
         {
-            if (publishmentSystemId <= 0)
+            if (siteId <= 0)
             {
                 LogUtils.AddAdminLog(AdminName, action, summary);
             }
@@ -393,8 +391,8 @@ namespace SiteServer.CMS.Plugin.Model
                     {
                         channelId = -channelId;
                     }
-                    var logInfo = new PublishmentSystemLogInfo(0, publishmentSystemId, channelId, contentId, AdminName, PageUtils.GetIpAddress(), DateTime.Now, action, summary);
-                    DataProvider.PublishmentSystemLogDao.Insert(logInfo);
+                    var logInfo = new SiteLogInfo(0, siteId, channelId, contentId, AdminName, PageUtils.GetIpAddress(), DateTime.Now, action, summary);
+                    DataProvider.SiteLogDao.Insert(logInfo);
                 }
                 catch
                 {

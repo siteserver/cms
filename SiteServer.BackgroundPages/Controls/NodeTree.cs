@@ -11,7 +11,7 @@ namespace SiteServer.BackgroundPages.Controls
 {
     public class NodeTree : Control
     {
-        private PublishmentSystemInfo _publishmentSystemInfo;
+        private SiteInfo _siteInfo;
 
         protected override void Render(HtmlTextWriter writer)
         {
@@ -19,23 +19,23 @@ namespace SiteServer.BackgroundPages.Controls
 
             var context = new RequestContext();
 
-            var publishmentSystemId = int.Parse(Page.Request.QueryString["PublishmentSystemID"]);
-            _publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var scripts = ChannelLoading.GetScript(_publishmentSystemInfo, ELoadingType.ContentTree, null);
+            var siteId = int.Parse(Page.Request.QueryString["SiteId"]);
+            _siteInfo = SiteManager.GetSiteInfo(siteId);
+            var scripts = ChannelLoading.GetScript(_siteInfo, ELoadingType.ContentTree, null);
             builder.Append(scripts);
-            if (Page.Request.QueryString["PublishmentSystemID"] != null)
+            if (Page.Request.QueryString["SiteId"] != null)
             {
-                var nodeIdList = DataProvider.NodeDao.GetNodeIdListByParentId(_publishmentSystemInfo.PublishmentSystemId, 0);
+                var nodeIdList = DataProvider.ChannelDao.GetIdListByParentId(_siteInfo.Id, 0);
                 foreach (var nodeId in nodeIdList)
                 {
-                    var nodeInfo = NodeManager.GetNodeInfo(_publishmentSystemInfo.PublishmentSystemId, nodeId);
-                    var enabled = AdminUtility.IsOwningNodeId(context.AdminName, nodeInfo.NodeId);
+                    var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, nodeId);
+                    var enabled = AdminUtility.IsOwningNodeId(context.AdminName, nodeInfo.Id);
                     if (!enabled)
                     {
-                        if (!AdminUtility.IsHasChildOwningNodeId(context.AdminName, nodeInfo.NodeId)) continue;
+                        if (!AdminUtility.IsHasChildOwningNodeId(context.AdminName, nodeInfo.Id)) continue;
                     }
 
-                    builder.Append(ChannelLoading.GetChannelRowHtml(_publishmentSystemInfo, nodeInfo, enabled, ELoadingType.ContentTree, null, context.AdminName));
+                    builder.Append(ChannelLoading.GetChannelRowHtml(_siteInfo, nodeInfo, enabled, ELoadingType.ContentTree, null, context.AdminName));
                 }
             }
             writer.Write(builder);

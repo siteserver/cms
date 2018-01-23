@@ -19,7 +19,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
             try
             {
                 var form = HttpContext.Current.Request.Form;
-                var publishmentSystemId = TranslateUtils.ToInt(form["publishmentSystemID"]);
+                var siteId = TranslateUtils.ToInt(form["siteID"]);
                 var parentId = TranslateUtils.ToInt(form["parentID"]);
                 var target = form["target"];
                 var isShowTreeLine = TranslateUtils.ToBool(form["isShowTreeLine"]);
@@ -29,14 +29,14 @@ namespace SiteServer.API.Controllers.Sys.Stl
                 var topParentsCount = TranslateUtils.ToInt(form["topParentsCount"]);
                 var currentNodeId = TranslateUtils.ToInt(form["currentNodeID"]);
 
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                var nodeIdList = DataProvider.NodeDao.GetNodeIdListByParentId(publishmentSystemId, parentId);
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var nodeIdList = DataProvider.ChannelDao.GetIdListByParentId(siteId, parentId);
 
                 foreach (var nodeId in nodeIdList)
                 {
-                    var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
+                    var nodeInfo = ChannelManager.GetChannelInfo(siteId, nodeId);
 
-                    builder.Append(StlTree.GetChannelRowHtml(publishmentSystemInfo, nodeInfo, target, isShowTreeLine, isShowContentNum, TranslateUtils.DecryptStringBySecretKey(currentFormatString), topNodeId, topParentsCount, currentNodeId, false));
+                    builder.Append(StlTree.GetChannelRowHtml(siteInfo, nodeInfo, target, isShowTreeLine, isShowContentNum, TranslateUtils.DecryptStringBySecretKey(currentFormatString), topNodeId, topParentsCount, currentNodeId, false));
                 }
             }
             catch

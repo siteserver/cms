@@ -19,41 +19,41 @@ namespace SiteServer.CMS.Core.Create
         /// <summary>
         /// 获取某个站点的所有任务
         /// </summary>
-        /// <param name="publishmentSystemId"></param>
+        /// <param name="siteId"></param>
         /// <returns></returns>
-        private static ConcurrentQueue<CreateTaskInfo> GetPendingTasks(int publishmentSystemId)
+        private static ConcurrentQueue<CreateTaskInfo> GetPendingTasks(int siteId)
         {
             lock (LockObject)
             {
-                if (!PendingTaskDict.ContainsKey(publishmentSystemId))
+                if (!PendingTaskDict.ContainsKey(siteId))
                 {
-                    PendingTaskDict.TryAdd(publishmentSystemId, new ConcurrentQueue<CreateTaskInfo>());
+                    PendingTaskDict.TryAdd(siteId, new ConcurrentQueue<CreateTaskInfo>());
                 }
-                return PendingTaskDict[publishmentSystemId];
+                return PendingTaskDict[siteId];
             }
         }
 
-        private static List<CreateTaskInfo> GetExecutingTasks(int publishmentSystemId)
+        private static List<CreateTaskInfo> GetExecutingTasks(int siteId)
         {
             lock (LockObject)
             {
-                if (!ExecutingTaskDict.ContainsKey(publishmentSystemId))
+                if (!ExecutingTaskDict.ContainsKey(siteId))
                 {
-                    ExecutingTaskDict.TryAdd(publishmentSystemId, new List<CreateTaskInfo>());
+                    ExecutingTaskDict.TryAdd(siteId, new List<CreateTaskInfo>());
                 }
-                return ExecutingTaskDict[publishmentSystemId];
+                return ExecutingTaskDict[siteId];
             }
         }
 
-        private static List<CreateTaskLogInfo> GetTaskLogs(int publishmentSystemId)
+        private static List<CreateTaskLogInfo> GetTaskLogs(int siteId)
         {
             lock (LockObject)
             {
-                if (!TaskLogDict.ContainsKey(publishmentSystemId))
+                if (!TaskLogDict.ContainsKey(siteId))
                 {
-                    TaskLogDict.TryAdd(publishmentSystemId, new List<CreateTaskLogInfo>());
+                    TaskLogDict.TryAdd(siteId, new List<CreateTaskLogInfo>());
                 }
-                return TaskLogDict[publishmentSystemId];
+                return TaskLogDict[siteId];
             }
         }
 
@@ -63,7 +63,7 @@ namespace SiteServer.CMS.Core.Create
         /// <param name="task"></param>
         public void AddPendingTask(CreateTaskInfo task)
         {
-            var pendingTasks = GetPendingTasks(task.PublishmentSystemId); // 查找某站点所有任务
+            var pendingTasks = GetPendingTasks(task.SiteId); // 查找某站点所有任务
             foreach (var taskInfo in pendingTasks)
             {
                 if (task.Equals(taskInfo))
@@ -74,23 +74,23 @@ namespace SiteServer.CMS.Core.Create
             pendingTasks.Enqueue(task);
         }
 
-        public int GetPendingTaskCount(int publishmentSystemId)
+        public int GetPendingTaskCount(int siteId)
         {
-            var pendingTasks = GetPendingTasks(publishmentSystemId);
+            var pendingTasks = GetPendingTasks(siteId);
             return pendingTasks.Count == 0 ? 0 : pendingTasks.Sum(taskInfo => taskInfo.PageCount);
         }
 
-        public CreateTaskInfo GetAndRemoveLastPendingTask(int publishmentSystemId)
+        public CreateTaskInfo GetAndRemoveLastPendingTask(int siteId)
         {
             lock (LockObject)
             {
-                var pendingTasks = GetPendingTasks(publishmentSystemId);
+                var pendingTasks = GetPendingTasks(siteId);
                 CreateTaskInfo taskInfo;
                 pendingTasks.TryDequeue(out taskInfo);
 
                 if (taskInfo != null)
                 {
-                    var executingTasks = GetExecutingTasks(publishmentSystemId);
+                    var executingTasks = GetExecutingTasks(siteId);
                     executingTasks.Add(taskInfo);
                 }
 
@@ -98,19 +98,19 @@ namespace SiteServer.CMS.Core.Create
             }
         }
 
-        public void RemoveCurrent(int publishmentSystemId, CreateTaskInfo taskInfo)
+        public void RemoveCurrent(int siteId, CreateTaskInfo taskInfo)
         {
             lock (LockObject)
             {
-                var executingTasks = GetExecutingTasks(publishmentSystemId);
+                var executingTasks = GetExecutingTasks(siteId);
                 executingTasks.Remove(taskInfo);
             }
         }
 
         public void AddSuccessLog(CreateTaskInfo taskInfo, string timeSpan)
         {
-            var taskLogs = GetTaskLogs(taskInfo.PublishmentSystemId);
-            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemId, taskInfo.ChannelId, taskInfo.ContentId, taskInfo.TemplateId, taskInfo.Name, timeSpan, true, string.Empty, DateTime.Now);
+            var taskLogs = GetTaskLogs(taskInfo.SiteId);
+            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.SiteId, taskInfo.ChannelId, taskInfo.ContentId, taskInfo.TemplateId, taskInfo.Name, timeSpan, true, string.Empty, DateTime.Now);
             if (taskLogs.Count > 20)
             {
                 taskLogs.RemoveAt(20);
@@ -120,8 +120,8 @@ namespace SiteServer.CMS.Core.Create
 
         public void AddFailureLog(CreateTaskInfo taskInfo, Exception ex)
         {
-            var taskLogs = GetTaskLogs(taskInfo.PublishmentSystemId);
-            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemId, taskInfo.ChannelId, taskInfo.ContentId, taskInfo.TemplateId, taskInfo.Name, string.Empty, false, ex.Message, DateTime.Now);
+            var taskLogs = GetTaskLogs(taskInfo.SiteId);
+            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.SiteId, taskInfo.ChannelId, taskInfo.ContentId, taskInfo.TemplateId, taskInfo.Name, string.Empty, false, ex.Message, DateTime.Now);
             if (taskLogs.Count > 20)
             {
                 taskLogs.RemoveAt(20);
@@ -131,22 +131,22 @@ namespace SiteServer.CMS.Core.Create
 
         public void ClearAllTask()
         {
-            foreach (var publishmentSystemId in PendingTaskDict.Keys)
+            foreach (var siteId in PendingTaskDict.Keys)
             {
-                PendingTaskDict[publishmentSystemId] = new ConcurrentQueue<CreateTaskInfo>();
+                PendingTaskDict[siteId] = new ConcurrentQueue<CreateTaskInfo>();
             }
         }
 
-        public void ClearAllTask(int publishmentSystemId)
+        public void ClearAllTask(int siteId)
         {
-            PendingTaskDict[publishmentSystemId] = new ConcurrentQueue<CreateTaskInfo>();
+            PendingTaskDict[siteId] = new ConcurrentQueue<CreateTaskInfo>();
         }
 
-        public CreateTaskSummary GetTaskSummary(int publishmentSystemId)
+        public CreateTaskSummary GetTaskSummary(int siteId)
         {
-            var executingTasks = GetExecutingTasks(publishmentSystemId);
-            var pendingTasks = GetPendingTasks(publishmentSystemId);
-            var taskLogs = GetTaskLogs(publishmentSystemId);
+            var executingTasks = GetExecutingTasks(siteId);
+            var pendingTasks = GetPendingTasks(siteId);
+            var taskLogs = GetTaskLogs(siteId);
 
             var list = new List<CreateTaskSummaryItem>();
 

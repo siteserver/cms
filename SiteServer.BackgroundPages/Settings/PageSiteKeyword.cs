@@ -3,11 +3,11 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {

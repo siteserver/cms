@@ -4,12 +4,12 @@ namespace SiteServer.CMS.Controllers.Sys.Editors
 {
     public class UEditor
     {
-        public const string Route = "sys/editors/ueditor/{publishmentSystemId}";
+        public const string Route = "sys/editors/ueditor/{siteId}";
 
-        public static string GetUrl(string apiUrl, int publishmentSystemId)
+        public static string GetUrl(string apiUrl, int siteId)
         {
             apiUrl = PageUtils.Combine(apiUrl, Route);
-            apiUrl = apiUrl.Replace("{publishmentSystemId}", publishmentSystemId.ToString());
+            apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             return apiUrl;
         }
     }

@@ -46,7 +46,7 @@
           <div class="form-group form-row">
             <label class="col-sm-2 col-form-label">转移到站点</label>
             <div class="col-sm-4">
-              <asp:DropDownList ID="DdlPublishmentSystemId" class="form-control" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DdlPublishmentSystemId_OnSelectedIndexChanged"></asp:DropDownList>
+              <asp:DropDownList ID="DdlSiteId" class="form-control" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DdlSiteId_OnSelectedIndexChanged"></asp:DropDownList>
             </div>
             <div class="col-sm-6"></div>
           </div>

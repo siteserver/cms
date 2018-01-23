@@ -2,14 +2,13 @@ using System.Collections.Generic;
 using System.Data;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
     public class RoleDao : DataProviderBase
 	{
-        public override string TableName => "bairong_Roles";
+        public override string TableName => "siteserver_Role";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
@@ -41,7 +40,7 @@ namespace SiteServer.CMS.Provider
 		public string GetRoleDescription(string roleName)
 		{
 			var roleDescription = string.Empty;
-            var sqlString = "SELECT Description FROM bairong_Roles WHERE RoleName = @RoleName";
+            var sqlString = "SELECT Description FROM siteserver_Role WHERE RoleName = @RoleName";
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmRoleName, DataType.VarChar, 255, roleName)
@@ -61,7 +60,7 @@ namespace SiteServer.CMS.Provider
 		public string GetRolesCreatorUserName(string roleName)
 		{
 			var creatorUserName = string.Empty;
-            var sqlString = "SELECT CreatorUserName FROM bairong_Roles WHERE RoleName = @RoleName";
+            var sqlString = "SELECT CreatorUserName FROM siteserver_Role WHERE RoleName = @RoleName";
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmRoleName, DataType.VarChar, 255, roleName)
@@ -81,7 +80,7 @@ namespace SiteServer.CMS.Provider
         public List<string> GetAllRoles()
         {
             var list = new List<string>();
-            const string sqlSelect = "SELECT RoleName FROM bairong_Roles ORDER BY RoleName";
+            const string sqlSelect = "SELECT RoleName FROM siteserver_Role ORDER BY RoleName";
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -101,7 +100,7 @@ namespace SiteServer.CMS.Provider
 
 		    if (string.IsNullOrEmpty(creatorUserName)) return list;
 
-		    const string sqlString = "SELECT RoleName FROM bairong_Roles WHERE CreatorUserName = @CreatorUserName";
+		    const string sqlString = "SELECT RoleName FROM siteserver_Role WHERE CreatorUserName = @CreatorUserName";
 		    var parms = new IDataParameter[]
 		    {
 		        GetParameter(ParmCreatorUsername, DataType.VarChar, 255, creatorUserName)
@@ -120,7 +119,7 @@ namespace SiteServer.CMS.Provider
 
         public void InsertRole(string roleName, string creatorUserName, string description)
         {
-            var sqlString = "INSERT INTO bairong_Roles (RoleName, CreatorUserName, Description) VALUES (@RoleName, @CreatorUserName, @Description)";
+            var sqlString = "INSERT INTO siteserver_Role (RoleName, CreatorUserName, Description) VALUES (@RoleName, @CreatorUserName, @Description)";
 
             var parms = new IDataParameter[]
 			{
@@ -134,7 +133,7 @@ namespace SiteServer.CMS.Provider
 
         public virtual void UpdateRole(string roleName, string description) 
 		{
-            var sqlString = "UPDATE bairong_Roles SET Description = @Description WHERE RoleName = @RoleName";
+            var sqlString = "UPDATE siteserver_Role SET Description = @Description WHERE RoleName = @RoleName";
 
             var parms = new IDataParameter[]
 			{
@@ -151,7 +150,7 @@ namespace SiteServer.CMS.Provider
             var isSuccess = false;
             try
             {
-                var sqlString = "DELETE FROM bairong_Roles WHERE RoleName = @RoleName";
+                var sqlString = "DELETE FROM siteserver_Role WHERE RoleName = @RoleName";
 
                 var parms = new IDataParameter[]
 			    {
@@ -171,7 +170,7 @@ namespace SiteServer.CMS.Provider
         public bool IsRoleExists(string roleName)
         {
             var exists = false;
-            var sqlString = "SELECT RoleName FROM bairong_Roles WHERE RoleName = @RoleName";
+            var sqlString = "SELECT RoleName FROM siteserver_Role WHERE RoleName = @RoleName";
             var parms = new IDataParameter[]
 			{
                 GetParameter("@RoleName", DataType.VarChar, 255, roleName)

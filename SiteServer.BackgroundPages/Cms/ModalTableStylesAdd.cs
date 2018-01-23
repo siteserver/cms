@@ -5,8 +5,8 @@ using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -33,11 +33,10 @@ namespace SiteServer.BackgroundPages.Cms
         private string _tableName;
         private string _redirectUrl;
 
-        public static string GetOpenWindowString(int publishmentSystemId, List<int> relatedIdentities, string tableName, string redirectUrl)
+        public static string GetOpenWindowString(int siteId, List<int> relatedIdentities, string tableName, string redirectUrl)
         {
-            return LayerUtils.GetOpenScript("批量添加显示样式", PageUtils.GetCmsUrl(nameof(ModalTableStylesAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("批量添加显示样式", PageUtils.GetCmsUrl(siteId, nameof(ModalTableStylesAdd), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedIdentities", TranslateUtils.ObjectCollectionToString(relatedIdentities)},
                 {"TableName", tableName},
                 {"RedirectUrl", StringUtils.ValueToUrl(redirectUrl)}
@@ -190,7 +189,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var rapidValues = TranslateUtils.StringCollectionToStringList(TbRapidValues.Text);
                     foreach (var rapidValue in rapidValues)
                     {
-                        var itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, rapidValue, rapidValue, false);
+                        var itemInfo = new TableStyleItemInfo(0, styleInfo.Id, rapidValue, rapidValue, false);
                         styleInfo.StyleItems.Add(itemInfo);
                     }
                 }
@@ -208,9 +207,9 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 
 
-                if (PublishmentSystemId > 0)
+                if (SiteId > 0)
                 {
-                    Body.AddSiteLog(PublishmentSystemId, "批量添加表单显示样式", $"字段名: {TranslateUtils.ObjectCollectionToString(attributeNames)}");
+                    Body.AddSiteLog(SiteId, "批量添加表单显示样式", $"字段名: {TranslateUtils.ObjectCollectionToString(attributeNames)}");
                 }
                 else
                 {

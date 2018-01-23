@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Data;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -10,13 +9,13 @@ namespace SiteServer.CMS.Provider
 {
 	public class ContentCheckDao : DataProviderBase
 	{
-        public override string TableName => "bairong_ContentCheck";
+        public override string TableName => "siteserver_ContentCheck";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
             new TableColumnInfo
             {
-                ColumnName = nameof(ContentCheckInfo.CheckId),
+                ColumnName = nameof(ContentCheckInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
@@ -29,12 +28,12 @@ namespace SiteServer.CMS.Provider
             },
             new TableColumnInfo
             {
-                ColumnName = nameof(ContentCheckInfo.PublishmentSystemId),
+                ColumnName = nameof(ContentCheckInfo.SiteId),
                 DataType = DataType.Integer
             },
             new TableColumnInfo
             {
-                ColumnName = nameof(ContentCheckInfo.NodeId),
+                ColumnName = nameof(ContentCheckInfo.ChannelId),
                 DataType = DataType.Integer
             },
             new TableColumnInfo
@@ -78,17 +77,17 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlSelect = "SELECT CheckID, TableName, PublishmentSystemID, NodeID, ContentID, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons FROM bairong_ContentCheck WHERE CheckID = @CheckID";
+        private const string SqlSelect = "SELECT Id, TableName, SiteId, ChannelId, ContentId, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons FROM siteserver_ContentCheck WHERE Id = @Id";
 
-        private const string SqlSelectAll = "SELECT CheckID, TableName, PublishmentSystemID, NodeID, ContentID, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons FROM bairong_ContentCheck WHERE TableName = @TableName AND ContentID = @ContentID ORDER BY CheckID DESC";
+        private const string SqlSelectAll = "SELECT Id, TableName, SiteId, ChannelId, ContentId, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons FROM siteserver_ContentCheck WHERE TableName = @TableName AND ContentId = @ContentId ORDER BY Id DESC";
 
-        private const string SqlDelete = "DELETE FROM bairong_ContentCheck WHERE CheckID = @CheckID";
+        private const string SqlDelete = "DELETE FROM siteserver_ContentCheck WHERE Id = @Id";
 
-        private const string ParmCheckid = "@CheckID";
+        private const string ParmId = "@Id";
         private const string ParmTableName = "@TableName";
-		private const string ParmPublishmentsystemid = "@PublishmentSystemID";
-        private const string ParmNodeid = "@NodeID";
-        private const string ParmContentid = "@ContentID";
+		private const string ParmSiteId = "@SiteId";
+        private const string ParmChannelId = "@ChannelId";
+        private const string ParmContentId = "@ContentId";
         private const string ParmIsAdmin = "@IsAdmin";
         private const string ParmUserName = "@UserName";
         private const string ParmIsChecked = "@IsChecked";
@@ -98,14 +97,14 @@ namespace SiteServer.CMS.Provider
 
 		public void Insert(ContentCheckInfo checkInfo)
 		{
-            const string sqlString = "INSERT INTO bairong_ContentCheck (TableName, PublishmentSystemID, NodeID, ContentID, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons) VALUES (@TableName, @PublishmentSystemID, @NodeID, @ContentID, @IsAdmin, @UserName, @IsChecked, @CheckedLevel, @CheckDate, @Reasons)";
+            const string sqlString = "INSERT INTO siteserver_ContentCheck (TableName, SiteId, ChannelId, ContentId, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons) VALUES (@TableName, @SiteId, @ChannelId, @ContentId, @IsAdmin, @UserName, @IsChecked, @CheckedLevel, @CheckDate, @Reasons)";
 
 			var parms = new IDataParameter[]
 			{
                 GetParameter(ParmTableName, DataType.VarChar, 50, checkInfo.TableName),
-				GetParameter(ParmPublishmentsystemid, DataType.Integer, checkInfo.PublishmentSystemId),
-                GetParameter(ParmNodeid, DataType.Integer, checkInfo.NodeId),
-                GetParameter(ParmContentid, DataType.Integer, checkInfo.ContentId),
+				GetParameter(ParmSiteId, DataType.Integer, checkInfo.SiteId),
+                GetParameter(ParmChannelId, DataType.Integer, checkInfo.ChannelId),
+                GetParameter(ParmContentId, DataType.Integer, checkInfo.ContentId),
                 GetParameter(ParmIsAdmin, DataType.VarChar, 18, checkInfo.IsAdmin.ToString()),
                 GetParameter(ParmUserName, DataType.VarChar, 255, checkInfo.UserName),
                 GetParameter(ParmIsChecked, DataType.VarChar, 18, checkInfo.IsChecked.ToString()),
@@ -121,7 +120,7 @@ namespace SiteServer.CMS.Provider
 		{
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmCheckid, DataType.Integer, checkId)
+				GetParameter(ParmId, DataType.Integer, checkId)
 			};
 
             ExecuteNonQuery(SqlDelete, parms);
@@ -133,7 +132,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmCheckid, DataType.Integer, checkId)
+				GetParameter(ParmId, DataType.Integer, checkId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms)) 
@@ -153,13 +152,13 @@ namespace SiteServer.CMS.Provider
         {
             ContentCheckInfo checkInfo = null;
 
-            //var sqlString = "SELECT TOP 1 CheckID, TableName, PublishmentSystemID, NodeID, ContentID, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons FROM bairong_ContentCheck WHERE TableName = @TableName AND ContentID = @ContentID ORDER BY CheckID DESC";
-            var sqlString = SqlUtils.ToTopSqlString(TableName, "CheckID, TableName, PublishmentSystemID, NodeID, ContentID, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons", "WHERE TableName = @TableName AND ContentID = @ContentID", "ORDER BY CheckID DESC", 1);
+            //var sqlString = "SELECT TOP 1 Id, TableName, SiteId, ChannelId, ContentId, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons FROM siteserver_ContentCheck WHERE TableName = @TableName AND ContentId = @ContentId ORDER BY Id DESC";
+            var sqlString = SqlUtils.ToTopSqlString(TableName, "Id, TableName, SiteId, ChannelId, ContentId, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons", "WHERE TableName = @TableName AND ContentId = @ContentId", "ORDER BY Id DESC", 1);
 
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmTableName, DataType.VarChar, 50, tableName),
-                GetParameter(ParmContentid, DataType.Integer, contentId)
+                GetParameter(ParmContentId, DataType.Integer, contentId)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -182,7 +181,7 @@ namespace SiteServer.CMS.Provider
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmTableName, DataType.VarChar, 50, tableName),
-                GetParameter(ParmContentid, DataType.Integer, contentId)
+                GetParameter(ParmContentId, DataType.Integer, contentId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAll, parms)) 

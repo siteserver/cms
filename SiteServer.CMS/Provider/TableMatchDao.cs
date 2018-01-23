@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Data;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -10,13 +9,13 @@ namespace SiteServer.CMS.Provider
 {
 	public class TableMatchDao : DataProviderBase
 	{
-        public override string TableName => "bairong_TableMatch";
+        public override string TableName => "siteserver_TableMatch";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
             new TableColumnInfo
             {
-                ColumnName = nameof(TableMatchInfo.TableMatchId),
+                ColumnName = nameof(TableMatchInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
@@ -52,13 +51,13 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlSelectTableMatch = "SELECT TableMatchID, ConnectionString, TableName, ConnectionStringToMatch, TableNameToMatch, ColumnsMap FROM bairong_TableMatch WHERE TableMatchID = @TableMatchID";
+        private const string SqlSelectTableMatch = "SELECT Id, ConnectionString, TableName, ConnectionStringToMatch, TableNameToMatch, ColumnsMap FROM siteserver_TableMatch WHERE Id = @Id";
 
-		private const string SqlUpdateTableMatch = "UPDATE bairong_TableMatch SET ConnectionString = @ConnectionString, TableName = @TableName, ConnectionStringToMatch = @ConnectionStringToMatch, TableNameToMatch = @TableNameToMatch, ColumnsMap = @ColumnsMap WHERE TableMatchID = @TableMatchID";
+		private const string SqlUpdateTableMatch = "UPDATE siteserver_TableMatch SET ConnectionString = @ConnectionString, TableName = @TableName, ConnectionStringToMatch = @ConnectionStringToMatch, TableNameToMatch = @TableNameToMatch, ColumnsMap = @ColumnsMap WHERE Id = @Id";
 
-		private const string SqlDeleteTableMatch = "DELETE FROM bairong_TableMatch WHERE TableMatchID = @TableMatchID";
+		private const string SqlDeleteTableMatch = "DELETE FROM siteserver_TableMatch WHERE Id = @Id";
 
-		private const string ParmTableMatchId = "@TableMatchID";
+		private const string ParmId = "@Id";
 		private const string ParmConnectionString = "@ConnectionString";
 		private const string ParmTableName = "@TableName";
 		private const string ParmConnectionStringToMatch = "@ConnectionStringToMatch";
@@ -67,7 +66,7 @@ namespace SiteServer.CMS.Provider
 
 		public int Insert(TableMatchInfo tableMatchInfo)
 		{
-            const string sqlString = "INSERT INTO bairong_TableMatch (ConnectionString, TableName, ConnectionStringToMatch, TableNameToMatch, ColumnsMap) VALUES (@ConnectionString, @TableName, @ConnectionStringToMatch, @TableNameToMatch, @ColumnsMap)";
+            const string sqlString = "INSERT INTO siteserver_TableMatch (ConnectionString, TableName, ConnectionStringToMatch, TableNameToMatch, ColumnsMap) VALUES (@ConnectionString, @TableName, @ConnectionStringToMatch, @TableNameToMatch, @ColumnsMap)";
 
 			var insertParms = new IDataParameter[]
 			{
@@ -78,7 +77,7 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmColumnsMap, DataType.Text, TranslateUtils.NameValueCollectionToString(tableMatchInfo.ColumnsMap))
 			};
 
-            return ExecuteNonQueryAndReturnId(TableName, nameof(TableMatchInfo.TableMatchId), sqlString, insertParms);
+            return ExecuteNonQueryAndReturnId(TableName, nameof(TableMatchInfo.Id), sqlString, insertParms);
 		}
 
 		public void Update(TableMatchInfo tableMatchInfo)
@@ -90,7 +89,7 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmConnectionStringToMatch, DataType.VarChar, 200, tableMatchInfo.ConnectionStringToMatch),
 				GetParameter(ParmTableNameToMatch, DataType.VarChar, 200, tableMatchInfo.TableNameToMatch),
 				GetParameter(ParmColumnsMap, DataType.Text, TranslateUtils.NameValueCollectionToString(tableMatchInfo.ColumnsMap)),
-				GetParameter(ParmTableMatchId, DataType.Integer, tableMatchInfo.TableMatchId)
+				GetParameter(ParmId, DataType.Integer, tableMatchInfo.Id)
 			};
 
 			using (var conn = GetConnection()) 
@@ -100,11 +99,11 @@ namespace SiteServer.CMS.Provider
 			}
 		}
 
-		public void Delete(int tableMatchId)
+		public void Delete(int id)
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableMatchId, DataType.Integer, tableMatchId)
+				GetParameter(ParmId, DataType.Integer, id)
 			};
 							
 			using (var conn = GetConnection()) 
@@ -114,13 +113,13 @@ namespace SiteServer.CMS.Provider
 			}
 		}
 
-		public TableMatchInfo GetTableMatchInfo(int tableMatchId)
+		public TableMatchInfo GetTableMatchInfo(int id)
 		{
 			TableMatchInfo tableMatchInfo = null;
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableMatchId, DataType.Integer, tableMatchId)
+				GetParameter(ParmId, DataType.Integer, id)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectTableMatch, parms))

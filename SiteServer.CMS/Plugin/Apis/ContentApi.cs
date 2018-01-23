@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Table;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -15,53 +13,53 @@ namespace SiteServer.CMS.Plugin.Apis
         private static ContentApi _instance;
         public static ContentApi Instance => _instance ?? (_instance = new ContentApi());
 
-        public IContentInfo GetContentInfo(int publishmentSystemId, int channelId, int contentId)
+        public IContentInfo GetContentInfo(int siteId, int channelId, int contentId)
         {
-            if (publishmentSystemId <= 0 || channelId <= 0 || contentId <= 0) return null;
+            if (siteId <= 0 || channelId <= 0 || contentId <= 0) return null;
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
             return DataProvider.ContentDao.GetContentInfo(tableName, contentId);
         }
 
-        public List<IContentInfo> GetContentInfoList(int publishmentSystemId, int channelId, string whereString, string orderString, int limit, int offset)
+        public List<IContentInfo> GetContentInfoList(int siteId, int channelId, string whereString, string orderString, int limit, int offset)
         {
-            if (publishmentSystemId <= 0 || channelId <= 0) return null;
+            if (siteId <= 0 || channelId <= 0) return null;
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
             return DataProvider.ContentDao.GetListByLimitAndOffset(tableName, channelId, whereString, orderString, limit, offset);
         }
 
-        public int GetCount(int publishmentSystemId, int channelId, string whereString)
+        public int GetCount(int siteId, int channelId, string whereString)
         {
-            if (publishmentSystemId <= 0 || channelId <= 0) return 0;
+            if (siteId <= 0 || channelId <= 0) return 0;
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
             return DataProvider.ContentDao.GetCount(tableName, channelId, whereString);
         }
 
-        public string GetTableName(int publishmentSystemId, int channelId)
+        public string GetTableName(int siteId, int channelId)
         {
-            if (publishmentSystemId <= 0 || channelId <= 0) return string.Empty;
+            if (siteId <= 0 || channelId <= 0) return string.Empty;
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-            return NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            return ChannelManager.GetTableName(siteInfo, nodeInfo);
         }
 
-        public List<TableColumn> GetTableColumns(int publishmentSystemId, int channelId)
+        public List<TableColumn> GetTableColumns(int siteId, int channelId)
         {
-            if (publishmentSystemId <= 0 || channelId <= 0) return null;
+            if (siteId <= 0 || channelId <= 0) return null;
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemId, channelId);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
+            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(siteId, channelId);
 
             var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
             var tableColumnList = new List<TableColumn>
@@ -161,12 +159,12 @@ namespace SiteServer.CMS.Plugin.Apis
             return tableColumnList;
         }
 
-        public string GetContentValue(int publishmentSystemId, int channelId, int contentId, string attributeName)
+        public string GetContentValue(int siteId, int channelId, int contentId, string attributeName)
         {
-            if (publishmentSystemId <= 0 || channelId <= 0 || contentId <= 0) return null;
+            if (siteId <= 0 || channelId <= 0 || contentId <= 0) return null;
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
             return DataProvider.ContentDao.GetValue(tableName, contentId, attributeName);
         }
@@ -176,13 +174,13 @@ namespace SiteServer.CMS.Plugin.Apis
             return new ContentInfo();
         }
 
-        //public void SetValuesToContentInfo(int publishmentSystemId, int channelId, NameValueCollection form, IContentInfo contentInfo)
+        //public void SetValuesToContentInfo(int siteId, int channelId, NameValueCollection form, IContentInfo contentInfo)
         //{
-        //    var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-        //    var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-        //    var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-        //    var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
-        //    var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemId, channelId);
+        //    var siteInfo = SiteManager.GetSiteInfo(siteId);
+        //    var nodeInfo = NodeManager.GetChannelInfo(siteId, channelId);
+        //    var tableName = NodeManager.GetTableName(siteInfo, nodeInfo);
+        //    var tableStyle = NodeManager.GetTableStyle(siteInfo, nodeInfo);
+        //    var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(siteId, channelId);
 
         //    var extendImageUrl = ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl);
         //    if (form.AllKeys.Contains(StringUtils.LowerFirst(extendImageUrl)))
@@ -190,41 +188,41 @@ namespace SiteServer.CMS.Plugin.Apis
         //        form[extendImageUrl] = form[StringUtils.LowerFirst(extendImageUrl)];
         //    }
 
-        //    InputTypeParser.AddValuesToAttributes(tableStyle, tableName, publishmentSystemInfo, relatedIdentities, form, contentInfo.ToNameValueCollection(), ContentAttribute.HiddenAttributes);
+        //    InputTypeParser.AddValuesToAttributes(tableStyle, tableName, siteInfo, relatedIdentities, form, contentInfo.ToNameValueCollection(), ContentAttribute.HiddenAttributes);
         //}
 
-        public int Insert(int publishmentSystemId, int channelId, IContentInfo contentInfo)
+        public int Insert(int siteId, int channelId, IContentInfo contentInfo)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
 
-            return DataProvider.ContentDao.Insert(tableName, publishmentSystemInfo, contentInfo);
+            return DataProvider.ContentDao.Insert(tableName, siteInfo, contentInfo);
         }
 
-        public void Update(int publishmentSystemId, int channelId, IContentInfo contentInfo)
+        public void Update(int siteId, int channelId, IContentInfo contentInfo)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
 
-            DataProvider.ContentDao.Update(tableName, publishmentSystemInfo, contentInfo);
+            DataProvider.ContentDao.Update(tableName, siteInfo, contentInfo);
         }
 
-        public void Delete(int publishmentSystemId, int channelId, int contentId)
+        public void Delete(int siteId, int channelId, int contentId)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
             var contentIdList = new List<int> { contentId };
-            DataProvider.ContentDao.TrashContents(publishmentSystemId, tableName, contentIdList);
+            DataProvider.ContentDao.TrashContents(siteId, tableName, contentIdList);
         }
 
-        public List<int> GetContentIdList(int publishmentSystemId, int channelId)
+        public List<int> GetContentIdList(int siteId, int channelId)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
-            return DataProvider.ContentDao.GetContentIdListCheckedByNodeId(tableName, publishmentSystemId, channelId);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+            return DataProvider.ContentDao.GetContentIdListCheckedByChannelId(tableName, siteId, channelId);
         }
     }
 }

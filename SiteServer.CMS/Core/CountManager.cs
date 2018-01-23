@@ -1,4 +1,4 @@
-using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
@@ -35,9 +35,9 @@ namespace SiteServer.CMS.Core
             return DataProvider.CountDao.GetCountNum(relatedTableName, relatedIdentity, countType);
         }
 
-        public static int GetCount(string relatedTableName, int publishmentSystemId, ECountType countType)
+        public static int GetCount(string relatedTableName, int siteId, ECountType countType)
         {
-            return DataProvider.CountDao.GetCountNum(relatedTableName, publishmentSystemId, countType);
+            return DataProvider.CountDao.GetCountNum(relatedTableName, siteId, countType);
         }
 	}
 }

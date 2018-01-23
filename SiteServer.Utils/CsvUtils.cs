@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
-using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils
 {

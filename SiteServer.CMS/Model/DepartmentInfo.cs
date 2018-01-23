@@ -6,7 +6,7 @@ namespace SiteServer.CMS.Model
 	{
 	    public DepartmentInfo()
 		{
-			DepartmentId = 0;
+            Id = 0;
 			DepartmentName = string.Empty;
             Code = string.Empty;
 			ParentId = 0;
@@ -20,9 +20,9 @@ namespace SiteServer.CMS.Model
             CountOfAdmin = 0;
 		}
 
-        public DepartmentInfo(int departmentId, string departmentName, string code, int parentId, string parentsPath, int parentsCount, int childrenCount, bool isLastNode, int taxis, DateTime addDate, string summary, int countOfAdmin) 
+        public DepartmentInfo(int id, string departmentName, string code, int parentId, string parentsPath, int parentsCount, int childrenCount, bool isLastNode, int taxis, DateTime addDate, string summary, int countOfAdmin) 
 		{
-            DepartmentId = departmentId;
+            Id = id;
             DepartmentName = departmentName;
             Code = code;
             ParentId = parentId;
@@ -36,7 +36,7 @@ namespace SiteServer.CMS.Model
             CountOfAdmin = countOfAdmin;
 		}
 
-        public int DepartmentId { get; set; }
+        public int Id { get; set; }
 
 	    public string DepartmentName { get; set; }
 

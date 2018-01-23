@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
@@ -27,19 +26,19 @@ namespace SiteServer.BackgroundPages.Cms
 
                 try
                 {
-                    var contentIdList = DataProvider.TagDao.GetContentIdListByTag(tagName, PublishmentSystemId);
+                    var contentIdList = DataProvider.TagDao.GetContentIdListByTag(tagName, SiteId);
                     if (contentIdList.Count > 0)
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var contentTags = DataProvider.ContentDao.GetValue(PublishmentSystemInfo.AuxiliaryTableForContent, contentId, ContentAttribute.Tags);
+                            var contentTags = DataProvider.ContentDao.GetValue(SiteInfo.TableName, contentId, ContentAttribute.Tags);
                             var contentTagArrayList = TranslateUtils.StringCollectionToStringList(contentTags);
                             contentTagArrayList.Remove(tagName);
-                            DataProvider.ContentDao.SetValue(PublishmentSystemInfo.AuxiliaryTableForContent, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagArrayList));
+                            DataProvider.ContentDao.SetValue(SiteInfo.TableName, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagArrayList));
                         }
                     }
-                    DataProvider.TagDao.DeleteTag(tagName, PublishmentSystemId);
-                    Body.AddSiteLog(PublishmentSystemId, "删除内容标签", $"内容标签:{tagName}");
+                    DataProvider.TagDao.DeleteTag(tagName, SiteId);
+                    Body.AddSiteLog(SiteId, "删除内容标签", $"内容标签:{tagName}");
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -49,9 +48,9 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             SpContents.ControlToPaginate = RptContents;
-            SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
+            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
 
-            SpContents.SelectCommand = DataProvider.TagDao.GetSqlString(PublishmentSystemId, 0, true, 0);
+            SpContents.SelectCommand = DataProvider.TagDao.GetSqlString(SiteId, 0, true, 0);
             SpContents.SortField = nameof(TagInfo.UseNum);
             SpContents.SortMode = SortMode.DESC;
 
@@ -63,7 +62,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             SpContents.DataBind();
 
-            var showPopWinString = ModalContentTagAdd.GetOpenWindowStringToAdd(PublishmentSystemId);
+            var showPopWinString = ModalContentTagAdd.GetOpenWindowStringToAdd(SiteId);
             BtnAddTag.Attributes.Add("onclick", showPopWinString);
         }
 
@@ -93,12 +92,11 @@ namespace SiteServer.BackgroundPages.Cms
             ltlTagName.Text = $@"<span class=""{cssClass}"">{tag}</span>";
             ltlCount.Text = useNum.ToString();
 
-            var showPopWinString = ModalContentTagAdd.GetOpenWindowStringToEdit(PublishmentSystemId, tag);
+            var showPopWinString = ModalContentTagAdd.GetOpenWindowStringToEdit(SiteId, tag);
             ltlEditUrl.Text = $"<a href=\"javascript:;\" onClick=\"{showPopWinString}\">编辑</a>";
 
-            var urlDelete = PageUtils.GetCmsUrl(nameof(PageContentTags), new NameValueCollection
+            var urlDelete = PageUtils.GetCmsUrl(SiteId, nameof(PageContentTags), new NameValueCollection
             {
-                {"PublishmentSystemID", PublishmentSystemId.ToString()},
                 {"TagName", tag},
                 {"Delete", true.ToString()}
             });

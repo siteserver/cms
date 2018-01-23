@@ -8,7 +8,7 @@ namespace SiteServer.CMS.Model
     {
         public UserInfo()
         {
-            UserId = 0;
+            Id = 0;
             UserName = string.Empty;
             Password = string.Empty;
             PasswordFormat = string.Empty;
@@ -43,7 +43,7 @@ namespace SiteServer.CMS.Model
         public UserInfo(object dataItem)
         {
             if (dataItem == null) return;
-            UserId = SqlUtils.EvalInt(dataItem, "UserID");
+            Id = SqlUtils.EvalInt(dataItem, "Id");
             UserName = SqlUtils.EvalString(dataItem, "UserName");
             Password = SqlUtils.EvalString(dataItem, "Password");
             PasswordFormat = SqlUtils.EvalString(dataItem, "PasswordFormat");
@@ -75,7 +75,7 @@ namespace SiteServer.CMS.Model
             Signature = SqlUtils.EvalString(dataItem, "Signature");
         }
 
-        public int UserId { get; set; }
+        public int Id { get; set; }
 
         public string UserName { get; set; }
 

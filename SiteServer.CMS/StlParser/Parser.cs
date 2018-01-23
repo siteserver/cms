@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using SiteServer.Utils;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -10,6 +9,7 @@ using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser
 {
@@ -19,7 +19,7 @@ namespace SiteServer.CMS.StlParser
 		{
 		}
 
-        public static void Parse(PublishmentSystemInfo publishmentSystemInfo, PageInfo pageInfo, ContextInfo contextInfo, StringBuilder contentBuilder, string filePath, bool isDynamic)
+        public static void Parse(SiteInfo siteInfo, PageInfo pageInfo, ContextInfo contextInfo, StringBuilder contentBuilder, string filePath, bool isDynamic)
         {
             if (contentBuilder.Length > 0)
             {
@@ -28,13 +28,6 @@ namespace SiteServer.CMS.StlParser
 
             if (EFileSystemTypeUtils.IsHtml(PathUtils.GetExtension(filePath)))
             {
-                if (pageInfo.TemplateInfo.TemplateType != ETemplateType.FileTemplate)
-                {
-                    StlUtility.AddSeoMetaToContent(pageInfo, contentBuilder);
-                }
-
-                StlUtility.AddAdvertisementsToContent(pageInfo);
-
                 if (isDynamic)
                 {
                     var pageUrl = PageUtils.AddProtocolToUrl(PageUtils.ParseNavigationUrl($"~/{PathUtils.GetPathDifference(WebConfigUtils.PhysicalApplicationPath, filePath)}"));
@@ -43,7 +36,7 @@ namespace SiteServer.CMS.StlParser
                     StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);
                 }
 
-                if (pageInfo.PublishmentSystemInfo.Additional.IsCreateBrowserNoCache)
+                if (pageInfo.SiteInfo.Additional.IsCreateBrowserNoCache)
                 {
                     const string templateString = @"
 <META HTTP-EQUIV=""Pragma"" CONTENT=""no-cache"">
@@ -51,50 +44,40 @@ namespace SiteServer.CMS.StlParser
                     StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);
                 }
 
-                if (pageInfo.PublishmentSystemInfo.Additional.IsCreateIe8Compatible)
+                if (pageInfo.SiteInfo.Additional.IsCreateIe8Compatible)
                 {
                     const string templateString = @"
 <META HTTP-EQUIV=""x-ua-compatible"" CONTENT=""ie=7"" />";
                     StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);
                 }
 
-                if (pageInfo.PublishmentSystemInfo.Additional.IsCreateJsIgnoreError)
+                if (pageInfo.SiteInfo.Additional.IsCreateJsIgnoreError)
                 {
                     const string templateString = @"
 <script type=""text/javascript"">window.onerror=function(){return true;}</script>";
                     StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);
                 }
 
-                if (pageInfo.PageContentId > 0 && pageInfo.PublishmentSystemInfo.Additional.IsCountHits && !pageInfo.IsPageScriptsExists(PageInfo.Const.JsAdStlCountHits))
+                if (pageInfo.PageContentId > 0 && pageInfo.SiteInfo.Additional.IsCountHits && !pageInfo.IsPageScriptsExists(PageInfo.Const.JsAdStlCountHits))
                 {
                     pageInfo.AddPageEndScriptsIfNotExists(PageInfo.Const.JsAdStlCountHits, $@"
-<script src=""{ActionsAddContentHits.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId)}"" type=""text/javascript""></script>");
+<script src=""{ActionsAddContentHits.GetUrl(pageInfo.ApiUrl, pageInfo.SiteId, pageInfo.PageNodeId, pageInfo.PageContentId)}"" type=""text/javascript""></script>");
                 }
 
-                var isShowPageInfo = pageInfo.PublishmentSystemInfo.Additional.IsCreateShowPageInfo;
+                var isShowPageInfo = pageInfo.SiteInfo.Additional.IsCreateShowPageInfo;
 
                 if (!pageInfo.IsLocal)
                 {
-                    if (pageInfo.PublishmentSystemInfo.Additional.IsTracker &&
-                        !pageInfo.IsPageScriptsExists(PageInfo.Const.JsAdAddTracker))
-                    {
-                        pageInfo.AddPageEndScriptsIfNotExists(PageInfo.Const.JsAdAddTracker, $@"
-<script src=""{SiteFilesAssets.Tracker.GetScriptUrl(pageInfo.ApiUrl)}"" type=""text/javascript""></script>
-<script type=""text/javascript"">AddTrackerCount('{ActionsAddTrackerCount.GetUrl(pageInfo.ApiUrl,
-                            pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId)}', {pageInfo
-                            .PublishmentSystemId});</script>");
-                    }
-
-                    if (pageInfo.PublishmentSystemInfo.Additional.IsCreateDoubleClick)
+                    if (pageInfo.SiteInfo.Additional.IsCreateDoubleClick)
                     {
                         var fileTemplateId = 0;
                         if (pageInfo.TemplateInfo.TemplateType == ETemplateType.FileTemplate)
                         {
-                            fileTemplateId = pageInfo.TemplateInfo.TemplateId;
+                            fileTemplateId = pageInfo.TemplateInfo.Id;
                         }
 
                         var apiUrl = pageInfo.ApiUrl;
-                        var ajaxUrl = ActionsTrigger.GetUrl(apiUrl, pageInfo.PublishmentSystemId, contextInfo.ChannelId,
+                        var ajaxUrl = ActionsTrigger.GetUrl(apiUrl, pageInfo.SiteId, contextInfo.ChannelId,
                             contextInfo.ContentId, fileTemplateId, true);
                         pageInfo.AddPageEndScriptsIfNotExists("CreateDoubleClick", $@"
 <script type=""text/javascript"" language=""javascript"">document.ondblclick=function(x){{location.href = '{ajaxUrl}&returnUrl=' + encodeURIComponent(location.search);}}</script>");
@@ -184,7 +167,7 @@ namespace SiteServer.CMS.StlParser
                     var render = renders[pluginId];
                     try
                     {
-                        var context = new PluginRenderContext(html, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId);
+                        var context = new PluginRenderContext(html, pageInfo.SiteId, pageInfo.PageNodeId, pageInfo.PageContentId);
                         html = render(context);
                     }
                     catch (Exception ex)

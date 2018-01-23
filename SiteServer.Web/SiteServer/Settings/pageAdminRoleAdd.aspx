@@ -61,7 +61,7 @@
             </div>
           </div>
 
-          <asp:PlaceHolder ID="PhPublishmentSystemPermissions" runat="server">
+          <asp:PlaceHolder ID="PhSitePermissions" runat="server">
 
             <div class="form-group">
               <label class="col-form-label">站点权限设置
@@ -73,7 +73,7 @@
               </label>
 
               <div class="m-5">
-                <asp:Literal ID="LtlPublishmentSystems" runat="server"></asp:Literal>
+                <asp:Literal ID="LtlSites" runat="server"></asp:Literal>
 
                 <div class="clearfix"></div>
               </div>

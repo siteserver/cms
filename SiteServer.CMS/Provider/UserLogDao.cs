@@ -4,7 +4,6 @@ using System.Data;
 using System.Text;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -12,7 +11,7 @@ namespace SiteServer.CMS.Provider
 {
     public class UserLogDao : DataProviderBase
     {
-        public override string TableName => "bairong_UserLog";
+        public override string TableName => "siteserver_UserLog";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
@@ -62,7 +61,7 @@ namespace SiteServer.CMS.Provider
 
         public void Insert(UserLogInfo userLog)
         {
-            var sqlString = "INSERT INTO bairong_UserLog(UserName, IPAddress, AddDate, Action, Summary) VALUES (@UserName, @IPAddress, @AddDate, @Action, @Summary)";
+            var sqlString = "INSERT INTO siteserver_UserLog(UserName, IPAddress, AddDate, Action, Summary) VALUES (@UserName, @IPAddress, @AddDate, @Action, @Summary)";
 
             var parms = new IDataParameter[]
             {
@@ -79,7 +78,7 @@ namespace SiteServer.CMS.Provider
         public void Delete(int days)
         {
             if (days <= 0) return;
-            ExecuteNonQuery($@"DELETE FROM bairong_UserLog WHERE AddDate < '{DateUtils.GetDateAndTimeString(DateTime.Now.AddDays(-days))}'");
+            ExecuteNonQuery($@"DELETE FROM siteserver_UserLog WHERE AddDate < '{DateUtils.GetDateAndTimeString(DateTime.Now.AddDays(-days))}'");
         }
 
         public void Delete(List<int> idList)
@@ -87,7 +86,7 @@ namespace SiteServer.CMS.Provider
             if (idList != null && idList.Count > 0)
             {
                 string sqlString =
-                    $"DELETE FROM bairong_UserLog WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
+                    $"DELETE FROM siteserver_UserLog WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
 
                 ExecuteNonQuery(sqlString);
             }
@@ -95,7 +94,7 @@ namespace SiteServer.CMS.Provider
 
         public void DeleteAll()
         {
-            var sqlString = "DELETE FROM bairong_UserLog";
+            var sqlString = "DELETE FROM siteserver_UserLog";
 
             ExecuteNonQuery(sqlString);
         }
@@ -103,7 +102,7 @@ namespace SiteServer.CMS.Provider
         public int GetCount()
         {
             var count = 0;
-            var sqlString = "SELECT Count(ID) FROM bairong_UserLog";
+            var sqlString = "SELECT Count(ID) FROM siteserver_UserLog";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -120,7 +119,7 @@ namespace SiteServer.CMS.Provider
         public int GetCount(string where)
         {
             var count = 0;
-            var sqlString = "SELECT Count(ID) FROM bairong_UserLog";
+            var sqlString = "SELECT Count(ID) FROM siteserver_UserLog";
             if (!string.IsNullOrEmpty(where))
                 sqlString += " WHERE " + where;
 
@@ -138,7 +137,7 @@ namespace SiteServer.CMS.Provider
 
         public string GetSelectCommend()
         {
-            return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM bairong_UserLog";
+            return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM siteserver_UserLog";
         }
 
         public string GetSelectCommend(string userName, string keyword, string dateFrom, string dateTo)
@@ -186,14 +185,14 @@ namespace SiteServer.CMS.Provider
                 whereString.Append($"(AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo))})");
             }
 
-            return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM bairong_UserLog " + whereString;
+            return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM siteserver_UserLog " + whereString;
         }
 
         public DateTime GetLastUserLoginDate(string userName)
         {
             var retval = DateTime.MinValue;
-            //const string sqlString = "SELECT TOP 1 AddDate FROM bairong_UserLog WHERE UserName = @UserName ORDER BY ID DESC";
-            var sqlString = SqlUtils.ToTopSqlString("bairong_UserLog", "AddDate", "WHERE UserName = @UserName",
+            //const string sqlString = "SELECT TOP 1 AddDate FROM siteserver_UserLog WHERE UserName = @UserName ORDER BY ID DESC";
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_UserLog", "AddDate", "WHERE UserName = @UserName",
                 "ORDER BY ID DESC", 1);
 
             var parms = new IDataParameter[]
@@ -215,8 +214,8 @@ namespace SiteServer.CMS.Provider
         public DateTime GetLastRemoveUserLogDate(string userName)
         {
             var retval = DateTime.MinValue;
-            //const string sqlString = "SELECT TOP 1 AddDate FROM bairong_UserLog WHERE UserName = @UserName AND Action = '清空数据库日志' ORDER BY ID DESC";
-            var sqlString = SqlUtils.ToTopSqlString("bairong_UserLog", "AddDate",
+            //const string sqlString = "SELECT TOP 1 AddDate FROM siteserver_UserLog WHERE UserName = @UserName AND Action = '清空数据库日志' ORDER BY ID DESC";
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_UserLog", "AddDate",
                 "WHERE UserName = @UserName AND Action = '清空数据库日志'", "ORDER BY ID DESC", 1);
 
             var parms = new IDataParameter[]
@@ -238,7 +237,7 @@ namespace SiteServer.CMS.Provider
         public List<ILogInfo> List(string userName, int totalNum, string action)
         {
             var list = new List<ILogInfo>();
-            var sqlString = "SELECT * FROM bairong_UserLog WHERE UserName = @UserName";
+            var sqlString = "SELECT * FROM siteserver_UserLog WHERE UserName = @UserName";
 
             if (!string.IsNullOrEmpty(action))
             {

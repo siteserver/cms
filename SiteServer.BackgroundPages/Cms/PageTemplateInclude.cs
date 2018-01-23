@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -15,21 +14,18 @@ namespace SiteServer.BackgroundPages.Cms
 
 	    private string _directoryPath;
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(nameof(PageTemplateInclude), new NameValueCollection
-            {
-                {"PublishmentSystemID", publishmentSystemId.ToString()}
-            });
+            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateInclude), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
-            _directoryPath = PathUtility.MapPath(PublishmentSystemInfo, "@/include");
+            _directoryPath = PathUtility.MapPath(SiteInfo, "@/include");
 
             if (Body.IsQueryExists("Delete"))
             {
@@ -38,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
                 try
                 {
                     FileUtils.DeleteFileIfExists(PathUtils.Combine(_directoryPath, fileName));
-                    Body.AddSiteLog(PublishmentSystemId, "删除包含文件", $"包含文件:{fileName}");
+                    Body.AddSiteLog(SiteId, "删除包含文件", $"包含文件:{fileName}");
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -69,7 +65,7 @@ namespace SiteServer.BackgroundPages.Cms
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
-            BtnAdd.Attributes.Add("onclick", $"location.href='{PageTemplateIncludeAdd.GetRedirectUrl(PublishmentSystemId)}';return false");
+            BtnAdd.Attributes.Add("onclick", $"location.href='{PageTemplateIncludeAdd.GetRedirectUrl(SiteId)}';return false");
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
@@ -89,9 +85,9 @@ namespace SiteServer.BackgroundPages.Cms
             ltlCharset.Text = ECharsetUtils.GetText(charset);
 
             ltlEdit.Text =
-                $@"<a href=""{PageTemplateIncludeAdd.GetRedirectUrl(PublishmentSystemId, fileName)}"">编辑</a>";
+                $@"<a href=""{PageTemplateIncludeAdd.GetRedirectUrl(SiteId, fileName)}"">编辑</a>";
             ltlDelete.Text =
-                $@"<a href=""javascript:;"" onclick=""{AlertUtils.ConfirmDelete("删除文件", "此操作将删除包含文件，确认吗", $"{GetRedirectUrl(PublishmentSystemId)}&Delete={true}&FileName={fileName}")}"">删除</a>";
+                $@"<a href=""javascript:;"" onclick=""{AlertUtils.ConfirmDelete("删除文件", "此操作将删除包含文件，确认吗", $"{GetRedirectUrl(SiteId)}&Delete={true}&FileName={fileName}")}"">删除</a>";
         }
     }
 }

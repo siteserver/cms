@@ -79,16 +79,13 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SiteServer.Plugin, Version=1.1.10.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.1.10\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.2.15.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.2.15-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -141,6 +138,7 @@
     <Compile Include="Cms\PageTemplatePreview.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Controls\TextEditorBase.cs" />
     <Compile Include="Core\AreaTreeItem.cs" />
     <Compile Include="Core\DepartmentTreeItem.cs" />
     <Compile Include="Plugins\ModalTaxis.cs">
@@ -302,9 +300,6 @@
     <Compile Include="Settings\PageSiteTableStyle.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Ajax\AjaxGatherService.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Ajax\AjaxOtherService.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -347,16 +342,10 @@
     <Compile Include="Cms\ModalContentCrossSiteTrans.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalContentDiggSet.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\ModalContentGroupAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalContentMultipleSelect.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\ModalContentStarSet.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalContentTagAdd.cs">
@@ -398,7 +387,7 @@
     <Compile Include="Cms\ModalNodeGroupAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalPublishmentSystemSelect.cs">
+    <Compile Include="Cms\ModalSiteSelect.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalRelatedFieldAdd.cs">
@@ -764,7 +753,7 @@
     <Compile Include="Settings\ModalKeywordImport.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\ModalChangePublishmentSystemType.cs">
+    <Compile Include="Settings\ModalChangeSiteType.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageSiteAuxiliaryTable.cs">

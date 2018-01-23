@@ -13,11 +13,10 @@ namespace SiteServer.BackgroundPages.Cms
         private string _returnUrl;
         private List<int> _contentIdList;
 
-        public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
+        public static string GetOpenWindowString(int siteId, int nodeId, string returnUrl)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("内容归档", PageUtils.GetCmsUrl(nameof(ModalContentArchive), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("内容归档", PageUtils.GetCmsUrl(siteId, nameof(ModalContentArchive), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             }), "ContentIDCollection", "请选择需要归档的内容！", 400, 230);
@@ -27,7 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID", "ReturnUrl", "ContentIDCollection");
+            PageUtils.CheckRequestParameter("siteId", "NodeID", "ReturnUrl", "ContentIDCollection");
 
             _nodeId = Body.GetQueryInt("NodeID");
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
@@ -36,22 +35,22 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeId);
-            ArchiveManager.CreateArchiveTableIfNotExists(PublishmentSystemInfo, tableName);
+            var tableName = ChannelManager.GetTableName(SiteInfo, _nodeId);
+            ArchiveManager.CreateArchiveTableIfNotExists(SiteInfo, tableName);
             var tableNameOfArchive = TableMetadataManager.GetTableNameOfArchive(tableName);
 
             foreach (var contentId in _contentIdList)
             {
                 var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
                 contentInfo.LastEditDate = DateTime.Now;
-                DataProvider.ContentDao.Insert(tableNameOfArchive, PublishmentSystemInfo, contentInfo);
+                DataProvider.ContentDao.Insert(tableNameOfArchive, SiteInfo, contentInfo);
             }
 
-            DataProvider.ContentDao.DeleteContents(PublishmentSystemId, tableName, _contentIdList, _nodeId);
+            DataProvider.ContentDao.DeleteContents(SiteId, tableName, _contentIdList, _nodeId);
 
-            CreateManager.CreateContentTrigger(PublishmentSystemId, _nodeId);
+            CreateManager.CreateContentTrigger(SiteId, _nodeId);
 
-            Body.AddSiteLog(PublishmentSystemId, _nodeId, 0, "归档内容", string.Empty);
+            Body.AddSiteLog(SiteId, _nodeId, 0, "归档内容", string.Empty);
 
             LayerUtils.CloseAndRedirect(Page, _returnUrl);
 		}

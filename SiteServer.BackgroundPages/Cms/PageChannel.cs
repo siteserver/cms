@@ -30,52 +30,48 @@ namespace SiteServer.BackgroundPages.Cms
 
         private int _currentNodeId;
 
-        public static string GetRedirectUrl(int publishmentSystemId, int currentNodeId)
+        public static string GetRedirectUrl(int siteId, int currentNodeId)
         {
-            if (currentNodeId > 0 && currentNodeId != publishmentSystemId)
+            if (currentNodeId > 0 && currentNodeId != siteId)
             {
-                return PageUtils.GetCmsUrl(nameof(PageChannel), new NameValueCollection
+                return PageUtils.GetCmsUrl(siteId, nameof(PageChannel), new NameValueCollection
                 {
-                    {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"CurrentNodeID", currentNodeId.ToString()}
                 });
             }
-            return PageUtils.GetCmsUrl(nameof(PageChannel), new NameValueCollection
-            {
-                {"PublishmentSystemID", publishmentSystemId.ToString()}
-            });
+            return PageUtils.GetCmsUrl(siteId, nameof(PageChannel), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
             if (Body.IsQueryExists("NodeID") && (Body.IsQueryExists("Subtract") || Body.IsQueryExists("Add")))
             {
                 var nodeId = Body.GetQueryInt("NodeID");
-                if (PublishmentSystemId != nodeId)
+                if (SiteId != nodeId)
                 {
                     var isSubtract = Body.IsQueryExists("Subtract");
-                    DataProvider.NodeDao.UpdateTaxis(PublishmentSystemId, nodeId, isSubtract);
+                    DataProvider.ChannelDao.UpdateTaxis(SiteId, nodeId, isSubtract);
 
-                    Body.AddSiteLog(PublishmentSystemId, nodeId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"),
-                        $"栏目:{NodeManager.GetNodeName(PublishmentSystemId, nodeId)}");
+                    Body.AddSiteLog(SiteId, nodeId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"),
+                        $"栏目:{ChannelManager.GetChannelName(SiteId, nodeId)}");
 
-                    PageUtils.Redirect(GetRedirectUrl(PublishmentSystemId, nodeId));
+                    PageUtils.Redirect(GetRedirectUrl(SiteId, nodeId));
                     return;
                 }
             }
 
             if (IsPostBack) return;
 
-            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.Channel, null));
+            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, ELoadingType.Channel, null));
 
             if (Body.IsQueryExists("CurrentNodeID"))
             {
                 _currentNodeId = Body.GetQueryInt("CurrentNodeID");
-                var onLoadScript = ChannelLoading.GetScriptOnLoad(PublishmentSystemId, _currentNodeId);
+                var onLoadScript = ChannelLoading.GetScriptOnLoad(SiteId, _currentNodeId);
                 if (!string.IsNullOrEmpty(onLoadScript))
                 {
                     ClientScriptRegisterClientScriptBlock("NodeTreeScriptOnLoad", onLoadScript);
@@ -85,18 +81,18 @@ namespace SiteServer.BackgroundPages.Cms
             PhAddChannel.Visible = HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.ChannelAdd);
             if (PhAddChannel.Visible)
             {
-                BtnAddChannel1.Attributes.Add("onclick", ModalChannelsAdd.GetOpenWindowString(PublishmentSystemId, PublishmentSystemId, GetRedirectUrl(PublishmentSystemId, PublishmentSystemId)));
+                BtnAddChannel1.Attributes.Add("onclick", ModalChannelsAdd.GetOpenWindowString(SiteId, SiteId, GetRedirectUrl(SiteId, SiteId)));
                 BtnAddChannel2.Attributes.Add("onclick",
-                    $"location.href='{PageChannelAdd.GetRedirectUrl(PublishmentSystemId, PublishmentSystemId, GetRedirectUrl(PublishmentSystemId, 0))}';return false;");
+                    $"location.href='{PageChannelAdd.GetRedirectUrl(SiteId, SiteId, GetRedirectUrl(SiteId, 0))}';return false;");
             }
 
             PhChannelEdit.Visible = HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.ChannelEdit);
             if (PhChannelEdit.Visible)
             {
-                var showPopWinString = ModalAddToGroup.GetOpenWindowStringToChannel(PublishmentSystemId);
+                var showPopWinString = ModalAddToGroup.GetOpenWindowStringToChannel(SiteId);
                 BtnAddToGroup.Attributes.Add("onclick", showPopWinString);
 
-                BtnSelectEditColumns.Attributes.Add("onclick", ModalSelectColumns.GetOpenWindowStringToChannel(PublishmentSystemId, false));
+                BtnSelectEditColumns.Attributes.Add("onclick", ModalSelectColumns.GetOpenWindowStringToChannel(SiteId, false));
             }
 
             PhTranslate.Visible = HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.ChannelTranslate);
@@ -104,31 +100,31 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 BtnTranslate.Attributes.Add("onclick",
                     PageUtils.GetRedirectStringWithCheckBoxValue(
-                        PageChannelTranslate.GetRedirectUrl(PublishmentSystemId,
-                            GetRedirectUrl(PublishmentSystemId, _currentNodeId)), "ChannelIDCollection",
+                        PageChannelTranslate.GetRedirectUrl(SiteId,
+                            GetRedirectUrl(SiteId, _currentNodeId)), "ChannelIDCollection",
                         "ChannelIDCollection", "请选择需要转移的栏目！"));
             }
 
             PhDelete.Visible = HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.ChannelDelete);
             if (PhDelete.Visible)
             {
-                BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValue(PageChannelDelete.GetRedirectUrl(PublishmentSystemId, GetRedirectUrl(PublishmentSystemId, PublishmentSystemId)), "ChannelIDCollection", "ChannelIDCollection", "请选择需要删除的栏目！"));
+                BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValue(PageChannelDelete.GetRedirectUrl(SiteId, GetRedirectUrl(SiteId, SiteId)), "ChannelIDCollection", "ChannelIDCollection", "请选择需要删除的栏目！"));
             }
 
             PhCreate.Visible = HasSitePermissions(AppManager.Permissions.WebSite.Create) || HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.CreatePage);
             if (PhCreate.Visible)
             {
-                BtnCreate.Attributes.Add("onclick", ModalCreateChannels.GetOpenWindowString(PublishmentSystemId));
+                BtnCreate.Attributes.Add("onclick", ModalCreateChannels.GetOpenWindowString(SiteId));
             }
 
             PhImport.Visible = PhAddChannel.Visible;
             if (PhImport.Visible)
             {
-                BtnImport.Attributes.Add("onclick", ModalChannelImport.GetOpenWindowString(PublishmentSystemId, PublishmentSystemId));
+                BtnImport.Attributes.Add("onclick", ModalChannelImport.GetOpenWindowString(SiteId, SiteId));
             }
-            BtnExport.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToChannel(PublishmentSystemId, "ChannelIDCollection", "请选择需要导出的栏目！"));
+            BtnExport.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToChannel(SiteId, "ChannelIDCollection", "请选择需要导出的栏目！"));
 
-            RptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
+            RptContents.DataSource = DataProvider.ChannelDao.GetIdListByParentId(SiteId, 0);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }
@@ -141,11 +137,11 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (!IsHasChildOwningNodeId(nodeId)) e.Item.Visible = false;
             }
-            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.Channel, null, Body.AdminName);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.Channel, null, Body.AdminName);
         }
     }
 }

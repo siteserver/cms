@@ -5,7 +5,6 @@ using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Model;
 using SiteServer.CMS.StlParser;
 
@@ -16,42 +15,42 @@ namespace SiteServer.API.Controllers.Sys.Stl
     {
         [HttpGet]
         [Route(ActionsTrigger.Route)]
-        public void Main()
+        public async void Main()
         {
             var context = new RequestContext();
 
-            var publishmentSystemId = context.GetQueryInt("publishmentSystemId");
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            var siteId = context.GetQueryInt("siteId");
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
 
             try
             {
                 var channelId = context.GetQueryInt("channelId");
                 if (channelId == 0)
                 {
-                    channelId = publishmentSystemId;
+                    channelId = siteId;
                 }
                 var contentId = context.GetQueryInt("contentId");
                 var fileTemplateId = context.GetQueryInt("fileTemplateId");
                 var isRedirect = TranslateUtils.ToBool(context.GetQueryString("isRedirect"));
 
-                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-                var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+                var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
 
                 if (fileTemplateId != 0)
                 {
-                    FileSystemObject.Execute(publishmentSystemId, ECreateType.File, 0, 0, fileTemplateId);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.File, 0, 0, fileTemplateId);
                 }
                 else if (contentId != 0)
                 {
-                    FileSystemObject.Execute(publishmentSystemId, ECreateType.Content, channelId, contentId, 0);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Content, channelId, contentId, 0);
                 }
                 else if (channelId != 0)
                 {
-                    FileSystemObject.Execute(publishmentSystemId, ECreateType.Channel, channelId, 0, 0);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Channel, channelId, 0, 0);
                 }
-                else if (publishmentSystemId != 0)
+                else if (siteId != 0)
                 {
-                    FileSystemObject.Execute(publishmentSystemId, ECreateType.Channel, publishmentSystemId, 0, 0);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Channel, siteId, 0, 0);
                 }
 
                 if (isRedirect)
@@ -59,20 +58,20 @@ namespace SiteServer.API.Controllers.Sys.Stl
                     var redirectUrl = string.Empty;
                     if (fileTemplateId != 0)
                     {
-                        redirectUrl = PageUtility.GetFileUrl(publishmentSystemInfo, fileTemplateId, false);
+                        redirectUrl = PageUtility.GetFileUrl(siteInfo, fileTemplateId, false);
                     }
                     else if (contentId != 0)
                     {
                         var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
-                        redirectUrl = PageUtility.GetContentUrl(publishmentSystemInfo, contentInfo, false);
+                        redirectUrl = PageUtility.GetContentUrl(siteInfo, contentInfo, false);
                     }
                     else if (channelId != 0)
                     {
-                        redirectUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, false);
+                        redirectUrl = PageUtility.GetChannelUrl(siteInfo, nodeInfo, false);
                     }
-                    else if (publishmentSystemId != 0)
+                    else if (siteId != 0)
                     {
-                        redirectUrl = PageUtility.GetIndexPageUrl(publishmentSystemInfo, false);
+                        redirectUrl = PageUtility.GetIndexPageUrl(siteInfo, false);
                     }
 
                     if (!string.IsNullOrEmpty(redirectUrl))
@@ -100,7 +99,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
             }
             catch
             {
-                var redirectUrl = PageUtility.GetIndexPageUrl(publishmentSystemInfo, false);
+                var redirectUrl = PageUtility.GetIndexPageUrl(siteInfo, false);
                 PageUtils.Redirect(redirectUrl);
                 return;
             }

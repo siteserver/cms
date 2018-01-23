@@ -10,7 +10,7 @@ namespace SiteServer.BackgroundPages.Settings
 {
 	public class PageLogSite : BasePageCms
     {
-        public DropDownList DdlPublishmentSystemId;
+        public DropDownList DdlSiteId;
         public DropDownList DdlLogType;
         public TextBox TbUserName;
         public TextBox TbKeyword;
@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public Repeater RptContents;
         public SqlPager SpContents;
-        public Literal LtlPublishmentSystem;
+        public Literal LtlSite;
 
 		public Button BtnDelete;
 		public Button BtnDeleteAll;
@@ -32,8 +32,8 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
             SpContents.SelectCommand = !Body.IsQueryExists("LogType")
-                ? DataProvider.PublishmentSystemLogDao.GetSelectCommend()
-                : DataProvider.PublishmentSystemLogDao.GetSelectCommend(PublishmentSystemId, Body.GetQueryString("LogType"),
+                ? DataProvider.SiteLogDao.GetSelectCommend()
+                : DataProvider.SiteLogDao.GetSelectCommend(SiteId, Body.GetQueryString("LogType"),
                     Body.GetQueryString("UserName"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"),
                     Body.GetQueryString("DateTo"));
 
@@ -46,7 +46,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var arraylist = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("IDCollection"));
                 try
                 {
-                    DataProvider.PublishmentSystemLogDao.Delete(arraylist);
+                    DataProvider.SiteLogDao.Delete(arraylist);
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -58,7 +58,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    DataProvider.PublishmentSystemLogDao.DeleteAll();
+                    DataProvider.SiteLogDao.DeleteAll();
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -71,17 +71,17 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifyAdministratorPermissions(AppManager.Permissions.Settings.Log);
 
-            if (PublishmentSystemId == 0)
+            if (SiteId == 0)
             {
-                LtlPublishmentSystem.Text = @"<th align=""text-center text-nowrap"">站点名称</th>";
+                LtlSite.Text = @"<th align=""text-center text-nowrap"">站点名称</th>";
             }
 
-            DdlPublishmentSystemId.Items.Add(new ListItem("<<全部站点>>", "0"));
+            DdlSiteId.Items.Add(new ListItem("<<全部站点>>", "0"));
 
-            var publishmentSystemIdList = PublishmentSystemManager.GetPublishmentSystemIdListOrderByLevel();
-            foreach (var psId in publishmentSystemIdList)
+            var siteIdList = SiteManager.GetSiteIdListOrderByLevel();
+            foreach (var psId in siteIdList)
             {
-                DdlPublishmentSystemId.Items.Add(new ListItem(PublishmentSystemManager.GetPublishmentSystemInfo(psId).PublishmentSystemName, psId.ToString())); 
+                DdlSiteId.Items.Add(new ListItem(SiteManager.GetSiteInfo(psId).SiteName, psId.ToString())); 
             }
 
             DdlLogType.Items.Add(new ListItem("全部记录", "All"));
@@ -90,7 +90,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (Body.IsQueryExists("LogType"))
             {
-                ControlUtils.SelectSingleItem(DdlPublishmentSystemId, PublishmentSystemId.ToString());
+                ControlUtils.SelectSingleItem(DdlSiteId, SiteId.ToString());
                 ControlUtils.SelectSingleItem(DdlLogType, Body.GetQueryString("LogType"));
                 TbUserName.Text = Body.GetQueryString("UserName");
                 TbKeyword.Text = Body.GetQueryString("Keyword");
@@ -119,23 +119,23 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var ltlPublishmentSystem = (Literal)e.Item.FindControl("ltlPublishmentSystem");
+            var ltlSite = (Literal)e.Item.FindControl("ltlSite");
             var ltlUserName = (Literal)e.Item.FindControl("ltlUserName");
             var ltlAddDate = (Literal)e.Item.FindControl("ltlAddDate");
             var ltlIpAddress = (Literal)e.Item.FindControl("ltlIpAddress");
             var ltlAction = (Literal)e.Item.FindControl("ltlAction");
             var ltlSummary = (Literal)e.Item.FindControl("ltlSummary");
 
-            if (PublishmentSystemId == 0)
+            if (SiteId == 0)
             {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(SqlUtils.EvalInt(e.Item.DataItem, "PublishmentSystemID"));
-                var publishmentSystemName = string.Empty;
-                if (publishmentSystemInfo != null)
+                var siteInfo = SiteManager.GetSiteInfo(SqlUtils.EvalInt(e.Item.DataItem, "SiteId"));
+                var siteName = string.Empty;
+                if (siteInfo != null)
                 {
-                    publishmentSystemName =
-                        $"<a href='{publishmentSystemInfo.Additional.WebUrl}' target='_blank'>{publishmentSystemInfo.PublishmentSystemName}</a>";
+                    siteName =
+                        $"<a href='{siteInfo.Additional.WebUrl}' target='_blank'>{siteInfo.SiteName}</a>";
                 }
-                ltlPublishmentSystem.Text = $@"<td align=""text-center text-nowrap"">{publishmentSystemName}</td>";
+                ltlSite.Text = $@"<td align=""text-center text-nowrap"">{siteName}</td>";
             }
             ltlUserName.Text = SqlUtils.EvalString(e.Item.DataItem, "UserName");
             ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, "AddDate"));
@@ -152,7 +152,7 @@ namespace SiteServer.BackgroundPages.Settings
                 {"Keyword", TbKeyword.Text},
                 {"DateFrom", TbDateFrom.Text},
                 {"DateTo", TbDateTo.Text},
-                {"PublishmentSystemID", DdlPublishmentSystemId.SelectedValue},
+                {"SiteId", DdlSiteId.SelectedValue},
                 {"LogType", DdlLogType.SelectedValue}
             }));
         }

@@ -3,7 +3,6 @@ using System.Data;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -11,7 +10,7 @@ namespace SiteServer.CMS.Provider
 {
     public class AdministratorsInRolesDao : DataProviderBase
     {
-        public override string TableName => "bairong_AdministratorsInRoles";
+        public override string TableName => "siteserver_AdministratorsInRoles";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
@@ -39,7 +38,7 @@ namespace SiteServer.CMS.Provider
         public string[] GetRolesForUser(string userName)
         {
             var tmpRoleNames = string.Empty;
-            var sqlString = "SELECT RoleName FROM bairong_AdministratorsInRoles WHERE UserName = @UserName ORDER BY RoleName";
+            var sqlString = "SELECT RoleName FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName ORDER BY RoleName";
             var parms = new IDataParameter[]
             {
                 GetParameter("@UserName", DataType.VarChar, 255, userName)
@@ -66,7 +65,7 @@ namespace SiteServer.CMS.Provider
         public string[] GetUsersInRole(string roleName)
         {
             var tmpUserNames = string.Empty;
-            var sqlString = "SELECT UserName FROM bairong_AdministratorsInRoles WHERE RoleName = @RoleName ORDER BY userName";
+            var sqlString = "SELECT UserName FROM siteserver_AdministratorsInRoles WHERE RoleName = @RoleName ORDER BY userName";
             var parms = new IDataParameter[]
             {
                 GetParameter("@RoleName", DataType.VarChar, 255, roleName)
@@ -92,7 +91,7 @@ namespace SiteServer.CMS.Provider
 
         public void RemoveUserFromRoles(string userName, string[] roleNames)
         {
-            var sqlString = "DELETE FROM bairong_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
+            var sqlString = "DELETE FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
             foreach (var roleName in roleNames)
             {
                 var parms = new IDataParameter[]
@@ -106,7 +105,7 @@ namespace SiteServer.CMS.Provider
 
         public void RemoveUserFromRole(string userName, string roleName)
         {
-            var sqlString = "DELETE FROM bairong_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
+            var sqlString = "DELETE FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
             var parms = new IDataParameter[]
             {
                 GetParameter("@UserName", DataType.VarChar, 255, userName),
@@ -120,7 +119,7 @@ namespace SiteServer.CMS.Provider
         {
             var tmpUserNames = string.Empty;
             string sqlString =
-                $"SELECT UserName FROM bairong_AdministratorsInRoles WHERE RoleName = @RoleName AND UserName LIKE '%{PageUtils.FilterSql(userNameToMatch)}%'";
+                $"SELECT UserName FROM siteserver_AdministratorsInRoles WHERE RoleName = @RoleName AND UserName LIKE '%{PageUtils.FilterSql(userNameToMatch)}%'";
 
             var parms = new IDataParameter[]
             {
@@ -148,7 +147,7 @@ namespace SiteServer.CMS.Provider
         public bool IsUserInRole(string userName, string roleName)
         {
             var isUserInRole = false;
-            const string sqlString = "SELECT * FROM bairong_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
+            const string sqlString = "SELECT * FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
             var parms = new IDataParameter[]
             {
                 GetParameter("@UserName", DataType.VarChar, 255, userName),
@@ -182,7 +181,7 @@ namespace SiteServer.CMS.Provider
             if (!DataProvider.AdministratorDao.IsAdminNameExists(userName)) return;
             if (!IsUserInRole(userName, roleName))
             {
-                var sqlString = "INSERT INTO bairong_AdministratorsInRoles (UserName, RoleName) VALUES (@UserName, @RoleName)";
+                var sqlString = "INSERT INTO siteserver_AdministratorsInRoles (UserName, RoleName) VALUES (@UserName, @RoleName)";
 
                 var parms = new IDataParameter[]
                 {

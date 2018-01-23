@@ -4,16 +4,15 @@ using System.Data;
 using System.Text;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.Plugin;
 using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Provider
 {
     public class LogDao : DataProviderBase
     {
-        public override string TableName => "bairong_Log";
+        public override string TableName => "siteserver_Log";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
@@ -63,7 +62,7 @@ namespace SiteServer.CMS.Provider
 
         public void Insert(LogInfo log)
         {
-            var sqlString = "INSERT INTO bairong_Log(UserName, IPAddress, AddDate, Action, Summary) VALUES (@UserName, @IPAddress, @AddDate, @Action, @Summary)";
+            var sqlString = "INSERT INTO siteserver_Log(UserName, IPAddress, AddDate, Action, Summary) VALUES (@UserName, @IPAddress, @AddDate, @Action, @Summary)";
             
             var parms = new IDataParameter[]
             {
@@ -82,7 +81,7 @@ namespace SiteServer.CMS.Provider
             if (idList != null && idList.Count > 0)
             {
                 string sqlString =
-                    $"DELETE FROM bairong_Log WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
+                    $"DELETE FROM siteserver_Log WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
 
                 ExecuteNonQuery(sqlString);
             }
@@ -91,12 +90,12 @@ namespace SiteServer.CMS.Provider
         public void Delete(int days)
         {
             if (days <= 0) return;
-            ExecuteNonQuery($@"DELETE FROM bairong_Log WHERE AddDate < '{DateUtils.GetDateAndTimeString(DateTime.Now.AddDays(-days))}'");
+            ExecuteNonQuery($@"DELETE FROM siteserver_Log WHERE AddDate < '{DateUtils.GetDateAndTimeString(DateTime.Now.AddDays(-days))}'");
         }
 
         public void DeleteAll()
         {
-            const string sqlString = "DELETE FROM bairong_Log";
+            const string sqlString = "DELETE FROM siteserver_Log";
 
             ExecuteNonQuery(sqlString);
         }
@@ -104,7 +103,7 @@ namespace SiteServer.CMS.Provider
         public int GetCount()
         {
             var count = 0;
-            const string sqlString = "SELECT Count(*) FROM bairong_Log";
+            const string sqlString = "SELECT Count(*) FROM siteserver_Log";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -120,7 +119,7 @@ namespace SiteServer.CMS.Provider
 
         public string GetSelectCommend()
         {
-            return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM bairong_Log";
+            return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM siteserver_Log";
         }
 
         public string GetSelectCommend(string userName, string keyword, string dateFrom, string dateTo)
@@ -168,13 +167,13 @@ namespace SiteServer.CMS.Provider
                 whereString.Append($"(AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo))})");
             }
 
-            return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM bairong_Log " + whereString;
+            return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM siteserver_Log " + whereString;
         }
 
         public DateTime GetLastRemoveLogDate(string userName)
         {
             var retval = DateTime.MinValue;
-            var sqlString = SqlUtils.ToTopSqlString("bairong_Log", "AddDate", "WHERE Action = '清空数据库日志'", "ORDER BY ID DESC", 1);
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_Log", "AddDate", "WHERE Action = '清空数据库日志'", "ORDER BY ID DESC", 1);
 
             var parms = new IDataParameter[]
 			{
@@ -221,7 +220,7 @@ namespace SiteServer.CMS.Provider
             string sqlSelectTrackingDay = $@"
 SELECT COUNT(*) AS AddNum, AddYear, AddMonth, AddDay FROM (
     SELECT {SqlUtils.GetDatePartYear("AddDate")} AS AddYear, {SqlUtils.GetDatePartMonth("AddDate")} AS AddMonth, {SqlUtils.GetDatePartDay("AddDate")} AS AddDay 
-    FROM bairong_Log 
+    FROM siteserver_Log 
     WHERE {SqlUtils.GetDateDiffLessThanDays("AddDate", 30.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear, AddMonth, AddDay ORDER BY AddNum DESC";//添加日统计
 
@@ -230,7 +229,7 @@ SELECT COUNT(*) AS AddNum, AddYear, AddMonth, AddDay FROM (
                 sqlSelectTrackingDay = $@"
 SELECT COUNT(*) AS AddNum, AddYear, AddMonth FROM (
     SELECT {SqlUtils.GetDatePartYear("AddDate")} AS AddYear, {SqlUtils.GetDatePartMonth("AddDate")} AS AddMonth 
-    FROM bairong_Log 
+    FROM siteserver_Log 
     WHERE {SqlUtils.GetDateDiffLessThanMonths("AddDate", 12.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear, AddMonth ORDER BY AddNum DESC";//添加月统计
             }
@@ -239,7 +238,7 @@ SELECT COUNT(*) AS AddNum, AddYear, AddMonth FROM (
                 sqlSelectTrackingDay = $@"
 SELECT COUNT(*) AS AddNum, AddYear FROM (
     SELECT {SqlUtils.GetDatePartYear("AddDate")} AS AddYear
-    FROM bairong_Log
+    FROM siteserver_Log
     WHERE {SqlUtils.GetDateDiffLessThanYears("AddDate", 10.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear ORDER BY AddNum DESC
 ";//添加年统计
@@ -298,7 +297,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
             string sqlSelectTrackingDay = $@"
 SELECT COUNT(*) AS AddNum, UserName FROM (
     SELECT {SqlUtils.GetDatePartYear("AddDate")} AS AddYear, {SqlUtils.GetDatePartMonth("AddDate")} AS AddMonth, {SqlUtils.GetDatePartDay("AddDate")} AS AddDay, UserName 
-    FROM bairong_Log 
+    FROM siteserver_Log 
     WHERE {SqlUtils.GetDateDiffLessThanDays("AddDate", 30.ToString())} {builder}
 ) DERIVEDTBL GROUP BY UserName ORDER BY AddNum DESC";//添加日统计
 

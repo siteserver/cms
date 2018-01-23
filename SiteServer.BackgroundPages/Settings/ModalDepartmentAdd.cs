@@ -61,7 +61,7 @@ namespace SiteServer.BackgroundPages.Settings
                 foreach (var theDepartmentId in departmentIdList)
                 {
                     var departmentInfo = DepartmentManager.GetDepartmentInfo(theDepartmentId);
-                    var listitem = new ListItem(GetTitle(departmentInfo.DepartmentId, departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode), theDepartmentId.ToString());
+                    var listitem = new ListItem(GetTitle(departmentInfo.Id, departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode), theDepartmentId.ToString());
                     DdlParentId.Items.Add(listitem);
                 }
             }

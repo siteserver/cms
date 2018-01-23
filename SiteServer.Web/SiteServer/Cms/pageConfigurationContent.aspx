@@ -14,13 +14,13 @@
         <div class="card-box">
           <ul class="nav nav-pills">
             <li class="nav-item">
-              <a class="nav-link" href="pageConfigurationSite.aspx?publishmentSystemId=<%=PublishmentSystemId%>">站点设置</a>
+              <a class="nav-link" href="pageConfigurationSite.aspx?siteId=<%=SiteId%>">站点设置</a>
             </li>
             <li class="nav-item active">
               <a class="nav-link" href="javascript:;">内容设置</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageConfigurationSiteAttributes.aspx?publishmentSystemId=<%=PublishmentSystemId%>">站点属性</a>
+              <a class="nav-link" href="pageConfigurationSiteAttributes.aspx?siteId=<%=SiteId%>">站点属性</a>
             </li>
           </ul>
         </div>

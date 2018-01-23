@@ -95,13 +95,13 @@ namespace SiteServer.BackgroundPages.Core
                 {
                     htmlBuilder.Append(
                         $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_areaInfo
-                            .AreaId}"" src=""{_iconMinusUrl}"" />");
+                            .Id}"" src=""{_iconMinusUrl}"" />");
                 }
                 else
                 {
                     htmlBuilder.Append(
                         $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_areaInfo
-                            .AreaId}"" src=""{_iconPlusUrl}"" />");
+                            .Id}"" src=""{_iconPlusUrl}"" />");
                 }
             }
             else

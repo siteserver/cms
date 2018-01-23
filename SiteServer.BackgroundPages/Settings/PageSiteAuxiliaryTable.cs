@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -28,8 +27,8 @@ namespace SiteServer.BackgroundPages.Settings
 			
 				try
 				{
-                    DataProvider.TableCollectionDao.DeleteCollectionTableInfoAndDbTable(enName);//删除辅助表
-                    DataProvider.TableCollectionDao.DeleteCollectionTableInfoAndDbTable(enNameArchive);//删除辅助表归档
+                    DataProvider.TableDao.DeleteCollectionTableInfoAndDbTable(enName);//删除辅助表
+                    DataProvider.TableDao.DeleteCollectionTableInfoAndDbTable(enNameArchive);//删除辅助表归档
 
                     Body.AddAdminLog("删除辅助表", $"辅助表:{enName}");
 
@@ -45,7 +44,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
 
-            RptContents.DataSource = DataProvider.TableCollectionDao.GetTableCollectionInfoList();
+            RptContents.DataSource = DataProvider.TableDao.GetTableCollectionInfoList();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
@@ -56,15 +55,15 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var collectionInfo = (TableCollectionInfo)e.Item.DataItem;
-            var tableName = collectionInfo.TableEnName;
+            var collectionInfo = (TableInfo)e.Item.DataItem;
+            var tableName = collectionInfo.TableName;
             //var isHighlight = !collectionInfo.IsCreatedInDb || collectionInfo.IsChangedAfterCreatedInDb;
-            var isTableUsed = DataProvider.PublishmentSystemDao.IsTableUsed(tableName);
+            var isTableUsed = DataProvider.SiteDao.IsTableUsed(tableName);
 
             //if (isHighlight) e.Item.Attributes.Add("style", "color: red");
 
             var ltlTableName = (Literal)e.Item.FindControl("ltlTableName");
-            var ltlTableCnName = (Literal)e.Item.FindControl("ltlTableCnName");
+            var ltlDisplayName = (Literal)e.Item.FindControl("ltlDisplayName");
             var ltlIsUsed = (Literal)e.Item.FindControl("ltlIsUsed");
             var ltlIsCreatedInDb = (Literal)e.Item.FindControl("ltlIsCreatedInDB");
             var ltlIsChangedAfterCreatedInDb = (Literal)e.Item.FindControl("ltlIsChangedAfterCreatedInDb");
@@ -74,7 +73,7 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlDelete = (Literal)e.Item.FindControl("ltlDelete");
 
             ltlTableName.Text = tableName;
-            ltlTableCnName.Text = collectionInfo.TableCnName;
+            ltlDisplayName.Text = collectionInfo.DisplayName;
             ltlIsUsed.Text = StringUtils.GetBoolText(isTableUsed);
             ltlIsCreatedInDb.Text = StringUtils.GetBoolText(collectionInfo.IsCreatedInDb);
             ltlIsChangedAfterCreatedInDb.Text = collectionInfo.IsCreatedInDb == false

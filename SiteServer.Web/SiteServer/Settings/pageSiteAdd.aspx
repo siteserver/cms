@@ -146,12 +146,12 @@
             <div class="form-group">
               <label class="col-form-label">
                 站点名称
-                <asp:RequiredFieldValidator ControlToValidate="TbPublishmentSystemName" errorMessage=" *" foreColor="red" Display="Dynamic"
+                <asp:RequiredFieldValidator ControlToValidate="TbSiteName" errorMessage=" *" foreColor="red" Display="Dynamic"
                   runat="server" />
-                <asp:RegularExpressionValidator runat="server" ControlToValidate="TbPublishmentSystemName" ValidationExpression="[^']+" errorMessage=" *"
+                <asp:RegularExpressionValidator runat="server" ControlToValidate="TbSiteName" ValidationExpression="[^']+" errorMessage=" *"
                   foreColor="red" Display="Dynamic" />
               </label>
-              <asp:TextBox id="TbPublishmentSystemName" class="form-control" runat="server" />
+              <asp:TextBox id="TbSiteName" class="form-control" runat="server" />
             </div>
 
             <div class="form-group">
@@ -170,17 +170,17 @@
                 <label class="col-form-label">
                   上级站点
                 </label>
-                <asp:DropDownList ID="DdlParentPublishmentSystemId" cssClass="form-control" runat="server"></asp:DropDownList>
+                <asp:DropDownList ID="DdlParentSiteId" cssClass="form-control" runat="server"></asp:DropDownList>
               </div>
               <div class="form-group">
                 <label class="col-form-label">
                   文件夹名称
-                  <asp:RequiredFieldValidator ControlToValidate="TbPublishmentSystemDir" errorMessage=" *" foreColor="red" Display="Dynamic"
+                  <asp:RequiredFieldValidator ControlToValidate="TbSiteDir" errorMessage=" *" foreColor="red" Display="Dynamic"
                     runat="server" />
-                  <asp:RegularExpressionValidator runat="server" ControlToValidate="TbPublishmentSystemDir" ValidationExpression="[\\.a-zA-Z0-9_-]+"
+                  <asp:RegularExpressionValidator runat="server" ControlToValidate="TbSiteDir" ValidationExpression="[\\.a-zA-Z0-9_-]+"
                     foreColor="red" ErrorMessage=" 只允许包含字母、数字、下划线、中划线及小数点" Display="Dynamic" />
                 </label>
-                <asp:TextBox id="TbPublishmentSystemDir" class="form-control" runat="server" />
+                <asp:TextBox id="TbSiteDir" class="form-control" runat="server" />
                 <small class="form-text text-muted">实际在服务器中保存此网站的文件夹名称，此路径必须以英文或拼音命名</small>
               </div>
             </asp:PlaceHolder>

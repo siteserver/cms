@@ -8,7 +8,6 @@ using System.Reflection;
 using System.Threading;
 using SiteServer.Utils;
 using SiteServer.Utils.IO;
-using SiteServer.Utils.Model.Enumerations;
 using NuGet;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
@@ -18,6 +17,7 @@ using SiteServer.CMS.Plugin.Core;
 using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
 using SiteServer.Plugin.Features;
+using SiteServer.Utils.Enumerations;
 using IFileSystem = SiteServer.Plugin.Features.IFileSystem;
 
 namespace SiteServer.CMS.Plugin
@@ -174,11 +174,9 @@ namespace SiteServer.CMS.Plugin
                     ContentApi = ContentApi.Instance,
                     DataApi = DataProvider.DataApi,
                     FilesApi = new FilesApi(metadata),
-                    NodeApi = NodeApi.Instance,
+                    ChannelApi = ChannelApi.Instance,
                     ParseApi = ParseApi.Instance,
-                    PaymentApi = PaymentApi.Instance,
-                    PublishmentSystemApi = PublishmentSystemApi.Instance,
-                    SmsApi = SmsApi.Instance,
+                    SiteApi = SiteApi.Instance,
                     UserApi = UserApi.Instance
                 };
                 plugin.PluginActive?.Invoke(context);
@@ -525,9 +523,9 @@ namespace SiteServer.CMS.Plugin
             return menus;
         }
 
-        //public static List<ContentModelInfo> GetAllContentModels(PublishmentSystemInfo publishmentSystemInfo)
+        //public static List<ContentModelInfo> GetAllContentModels(SiteInfo siteInfo)
         //{
-        //    var cacheName = nameof(GetAllContentModels) + publishmentSystemInfo.PublishmentSystemId;
+        //    var cacheName = nameof(GetAllContentModels) + siteInfo.Id;
         //    var contentModels = GetCache<List<ContentModelInfo>>(cacheName);
         //    if (contentModels != null) return contentModels;
 
@@ -539,7 +537,7 @@ namespace SiteServer.CMS.Plugin
 
         //        if (model == null) continue;
 
-        //        var tableName = publishmentSystemInfo.AuxiliaryTableForContent;
+        //        var tableName = siteInfo.AuxiliaryTableForContent;
         //        var tableType = EAuxiliaryTableType.BackgroundContent;
         //        if (model.ContentTableColumns != null && model.ContentTableColumns.Count > 0)
         //        {
@@ -594,7 +592,7 @@ namespace SiteServer.CMS.Plugin
             return list;
         }
 
-        public static List<IMetadata> GetContentRelatedPlugins(NodeInfo nodeInfo, bool includeContentTable)
+        public static List<IMetadata> GetContentRelatedPlugins(ChannelInfo nodeInfo, bool includeContentTable)
         {
             var list = new List<IMetadata>();
             var pluginIds = TranslateUtils.StringCollectionToStringList(nodeInfo.ContentRelatedPluginIds);
@@ -617,7 +615,7 @@ namespace SiteServer.CMS.Plugin
             return list;
         }
 
-        public static Dictionary<string, IContentRelated> GetContentRelatedFeatures(NodeInfo nodeInfo)
+        public static Dictionary<string, IContentRelated> GetContentRelatedFeatures(ChannelInfo nodeInfo)
         {
             if (string.IsNullOrEmpty(nodeInfo.ContentRelatedPluginIds) &&
                 string.IsNullOrEmpty(nodeInfo.ContentModelPluginId))
@@ -646,9 +644,9 @@ namespace SiteServer.CMS.Plugin
             return dict;
         }
 
-        //public static List<ContentModelInfo> GetAllContentModels(PublishmentSystemInfo publishmentSystemInfo)
+        //public static List<ContentModelInfo> GetAllContentModels(SiteInfo siteInfo)
         //{
-        //    var cacheName = nameof(GetAllContentModels) + publishmentSystemInfo.PublishmentSystemId;
+        //    var cacheName = nameof(GetAllContentModels) + siteInfo.Id;
         //    var contentModels = GetCache<List<ContentModelInfo>>(cacheName);
         //    if (contentModels != null) return contentModels;
 
@@ -670,7 +668,7 @@ namespace SiteServer.CMS.Plugin
         //                Target = link.Target
         //            }));
         //        }
-        //        var tableName = publishmentSystemInfo.AuxiliaryTableForContent;
+        //        var tableName = siteInfo.AuxiliaryTableForContent;
         //        var tableType = EAuxiliaryTableType.BackgroundContent;
         //        if (model.IsCustomContentTable && model.CustomContentTableColumns != null && model.CustomContentTableColumns.Count > 0)
         //        {
@@ -1057,7 +1055,7 @@ namespace SiteServer.CMS.Plugin
             return PageUtils.GetPluginDirectoryUrl(metadata.Id, url);
         }
 
-        public static string GetMenuHref(string pluginId, string href, int publishmentSystemId)
+        public static string GetMenuHref(string pluginId, string href, int siteId)
         {
             if (PageUtils.IsAbsoluteUrl(href))
             {
@@ -1068,17 +1066,17 @@ namespace SiteServer.CMS.Plugin
                 {"apiUrl", PageUtils.AddProtocolToUrl(PageUtility.OuterApiUrl)},
                 {"v", StringUtils.GetRandomInt(1, 1000).ToString()}
             });
-            if (publishmentSystemId > 0)
+            if (siteId > 0)
             {
                 url = PageUtils.AddQueryString(url, new NameValueCollection
                 {
-                    {"publishmentSystemId", publishmentSystemId.ToString()}
+                    {"siteId", siteId.ToString()}
                 });
             }
             return url;
         }
 
-        public static string GetMenuContentHref(string pluginId, string href, int publishmentSystemId, int channelId, int contentId, string returnUrl)
+        public static string GetMenuContentHref(string pluginId, string href, int siteId, int channelId, int contentId, string returnUrl)
         {
             if (PageUtils.IsAbsoluteUrl(href))
             {
@@ -1087,7 +1085,7 @@ namespace SiteServer.CMS.Plugin
             return PageUtils.AddQueryString(PageUtils.GetPluginDirectoryUrl(pluginId, href), new NameValueCollection
             {
                 {"apiUrl", PageUtils.AddProtocolToUrl(PageUtility.OuterApiUrl)},
-                {"publishmentSystemId", publishmentSystemId.ToString()},
+                {"siteId", siteId.ToString()},
                 {"channelId", channelId.ToString()},
                 {"contentId", contentId.ToString()},
                 {"returnUrl", returnUrl},
@@ -1095,7 +1093,7 @@ namespace SiteServer.CMS.Plugin
             });
         }
 
-        internal static Menu GetMenu(string pluginId, int publishmentSystemId, Menu metadataMenu, int i)
+        internal static Menu GetMenu(string pluginId, int siteId, Menu metadataMenu, int i)
         {
             var menu = new Menu
             {
@@ -1112,7 +1110,7 @@ namespace SiteServer.CMS.Plugin
             }
             if (!string.IsNullOrEmpty(menu.Href))
             {
-                menu.Href = GetMenuHref(pluginId, menu.Href, publishmentSystemId);
+                menu.Href = GetMenuHref(pluginId, menu.Href, siteId);
             }
             if (string.IsNullOrEmpty(menu.Target))
             {
@@ -1125,7 +1123,7 @@ namespace SiteServer.CMS.Plugin
                 var x = 1;
                 foreach (var childMetadataMenu in metadataMenu.Menus)
                 {
-                    var child = GetMenu(pluginId, publishmentSystemId, childMetadataMenu, x++);
+                    var child = GetMenu(pluginId, siteId, childMetadataMenu, x++);
 
                     chlildren.Add(child);
                 }

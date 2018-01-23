@@ -75,13 +75,11 @@
     <Reference Include="QQLoginAouth2">
       <HintPath>..\ref\QQLoginAouth2.dll</HintPath>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=1.1.10.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.1.10\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.2.15.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.2.15-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http, Version=4.1.1.2, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Net.Http.4.3.3\lib\net46\System.Net.Http.dll</HintPath>
@@ -89,7 +87,6 @@
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security.Cryptography.Algorithms, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.1\lib\net461\System.Security.Cryptography.Algorithms.dll</HintPath>
     </Reference>
@@ -103,13 +100,9 @@
       <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.2\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Web.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.3\lib\net45\System.Web.Cors.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.DynamicData" />
-    <Reference Include="System.Web.Entity" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
     </Reference>
@@ -120,21 +113,16 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
     </Reference>
     <Reference Include="System.XML" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml.Serialization" />
     <Reference Include="WordPlugin">
       <HintPath>..\ref\WordPlugin.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -143,9 +131,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Web.Services" />
-    <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
@@ -176,7 +161,6 @@
   <ItemGroup>
     <Compile Include="Controllers\Json\PluginJsonController.cs" />
     <Compile Include="Controllers\Sys\Integration\IntegrationPayController.cs" />
-    <Compile Include="Controllers\Sys\Stl\Comments\CommentsActionsLogoutController.cs" />
     <Compile Include="Controllers\Preview\PreviewController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\Http\PluginHttpController.cs" />
@@ -186,27 +170,18 @@
     <Compile Include="Global.cs" />
     <Compile Include="Controllers\Sys\Administrators\AdministratorsActionsLoginController.cs" />
     <Compile Include="Controllers\Sys\Administrators\AdministratorsSiteCheckListController.cs" />
-    <Compile Include="Controllers\Sys\Stl\Comments\CommentsActionsAddController.cs" />
-    <Compile Include="Controllers\Sys\Stl\Comments\CommentsActionsDeleteController.cs" />
-    <Compile Include="Controllers\Sys\Stl\Comments\CommentsActionsGoodController.cs" />
-    <Compile Include="Controllers\Sys\Stl\Comments\CommentsGetController.cs" />
     <Compile Include="Controllers\Sys\Editors\UEditorController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsAddContentHitsController.cs" />
-    <Compile Include="Controllers\Sys\Stl\StlActionsAddTrackerCountController.cs" />
-    <Compile Include="Controllers\Sys\Stl\StlActionsAdvHtmlController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsDownloadController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsLoadingChannelsController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsTriggerController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsUploadController.cs" />
-    <Compile Include="Controllers\Sys\Stl\StlDiggController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsDynamicController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsIfController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsPageContentsController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsSearchController.cs" />
-    <Compile Include="Controllers\Sys\Stl\StlStarController.cs" />
     <Compile Include="Core\SqlPager.cs" />
     <Compile Include="CreateHub.cs" />
-    <Compile Include="Model\Comment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

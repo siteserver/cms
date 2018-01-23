@@ -13,11 +13,10 @@ namespace SiteServer.BackgroundPages.Cms
         public Repeater RptContents;
         private string _nodeGroupName;
 
-        public static string GetRedirectUrl(int publishmentSystemId, string nodeGroupName)
+        public static string GetRedirectUrl(int siteId, string nodeGroupName)
         {
-            return PageUtils.GetCmsUrl(nameof(PageChannelsGroup), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageChannelsGroup), new NameValueCollection
             {
-                {"publishmentSystemID", publishmentSystemId.ToString()},
                 {"nodeGroupName", nodeGroupName}
             });
         }
@@ -34,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             LtlChannelGroupName.Text = "栏目组：" + _nodeGroupName;
 
-            RptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByGroupName(PublishmentSystemId, _nodeGroupName);
+            RptContents.DataSource = DataProvider.ChannelDao.GetIdListByGroupName(SiteId, _nodeGroupName);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }
@@ -44,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
             var nodeId = (int)e.Item.DataItem;
-            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
 
             if (nodeInfo == null)
             {
@@ -56,22 +55,22 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlItemChannelIndex = (Literal)e.Item.FindControl("ltlItemChannelIndex");
             var ltlItemAddDate = (Literal)e.Item.FindControl("ltlItemAddDate");
 
-            ltlItemChannelName.Text = NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId);
-            ltlItemChannelIndex.Text = nodeInfo.NodeIndexName;
+            ltlItemChannelName.Text = ChannelManager.GetChannelNameNavigation(SiteId, nodeId);
+            ltlItemChannelIndex.Text = nodeInfo.IndexName;
             ltlItemAddDate.Text = DateUtils.GetDateString(nodeInfo.AddDate);
 
             if (IsOwningNodeId(nodeId))
             {
-                if (AdminUtility.HasChannelPermissions(Body.AdminName, nodeInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.ChannelEdit))
+                if (AdminUtility.HasChannelPermissions(Body.AdminName, nodeInfo.SiteId, nodeInfo.Id, AppManager.Permissions.Channel.ChannelEdit))
                 {
-                    ltlItemChannelName.Text = $@"<a href=""javascript:;"" onclick=""{ModalChannelEdit.GetOpenWindowString(nodeInfo.PublishmentSystemId, nodeInfo.NodeId, GetRedirectUrl(nodeInfo.PublishmentSystemId, _nodeGroupName))}"">{ltlItemChannelName.Text}</a>";
+                    ltlItemChannelName.Text = $@"<a href=""javascript:;"" onclick=""{ModalChannelEdit.GetOpenWindowString(nodeInfo.SiteId, nodeInfo.Id, GetRedirectUrl(nodeInfo.SiteId, _nodeGroupName))}"">{ltlItemChannelName.Text}</a>";
                 }
             }
         }
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageNodeGroup.GetRedirectUrl(PublishmentSystemId));
+            PageUtils.Redirect(PageNodeGroup.GetRedirectUrl(SiteId));
         }
     }
 }

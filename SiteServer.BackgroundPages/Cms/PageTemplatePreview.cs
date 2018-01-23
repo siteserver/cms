@@ -21,13 +21,13 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
             VerifySitePermissions(AppManager.Permissions.WebSite.Template);
 
             ETemplateTypeUtils.AddListItems(DdlTemplateType);
-            NodeManager.AddListItems(DdlNodeId.Items, PublishmentSystemInfo, false, true, Body.AdminName);
+            ChannelManager.AddListItems(DdlNodeId.Items, SiteInfo, false, true, Body.AdminName);
             if (Body.IsQueryExists("fromCache"))
             {
                 TbTemplate.Text = TranslateUtils.DecryptStringBySecretKey(CacheUtils.Get<string>("SiteServer.BackgroundPages.Cms.PageTemplatePreview"));
@@ -61,17 +61,17 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             var templateType = ETemplateTypeUtils.GetEnumType(DdlTemplateType.SelectedValue);
-            var channelId = PublishmentSystemId;
+            var channelId = SiteId;
             var contentId = 0;
             if (templateType == ETemplateType.ChannelTemplate || templateType == ETemplateType.ContentTemplate)
             {
                 channelId = TranslateUtils.ToInt(DdlNodeId.SelectedValue);
                 if (templateType == ETemplateType.ContentTemplate)
                 {
-                    var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, channelId);
+                    var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
                     if (nodeInfo.ContentNum > 0)
                     {
-                        var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
+                        var tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
                         contentId = DataProvider.ContentDao.GetFirstContentId(tableName, channelId);
                     }
 
@@ -83,7 +83,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            TbCode.Text = LtlPreview.Text = StlParserManager.ParseTemplateContent(TbTemplate.Text, PublishmentSystemId, channelId, contentId);
+            TbCode.Text = LtlPreview.Text = StlParserManager.ParseTemplateContent(TbTemplate.Text, SiteId, channelId, contentId);
 
             LtlPreview.Text += "<script>$('#linkCode').click();</script>";
         }

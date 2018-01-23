@@ -2,7 +2,6 @@
 using System.Data;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
 
 namespace SiteServer.CMS.Model
 {
@@ -11,21 +10,19 @@ namespace SiteServer.CMS.Model
 		public ContentInfo()
 		{
 			Id = 0;
-			NodeId = 0;
-			PublishmentSystemId = 0;
+            ChannelId = 0;
+			SiteId = 0;
 			AddUserName = string.Empty;
 			LastEditUserName = string.Empty;
             WritingUserName = string.Empty;
             LastEditDate = DateTime.Now;
             Taxis = 0;
-			ContentGroupNameCollection = string.Empty;
+            GroupNameCollection = string.Empty;
             Tags = string.Empty;
             SourceId = 0;
             ReferenceId = 0;
 			IsChecked = false;
             CheckedLevel = 0;
-            Comments = 0;
-            Photos = 0;
             Hits = 0;
             HitsByDay = 0;
             HitsByWeek = 0;
@@ -56,16 +53,16 @@ namespace SiteServer.CMS.Model
             set { Set(ContentAttribute.Id, value.ToString()); }
 		}
 
-        public int NodeId
+        public int ChannelId
         {
-            get { return GetInt(ContentAttribute.NodeId); }
-            set { Set(ContentAttribute.NodeId, value.ToString()); }
+            get { return GetInt(ContentAttribute.ChannelId); }
+            set { Set(ContentAttribute.ChannelId, value.ToString()); }
         }
 
-        public int PublishmentSystemId
-		{
-            get { return GetInt(ContentAttribute.PublishmentSystemId); }
-            set { Set(ContentAttribute.PublishmentSystemId, value.ToString()); }
+        public int SiteId
+        {
+            get { return GetInt(ContentAttribute.SiteId); }
+            set { Set(ContentAttribute.SiteId, value.ToString()); }
 		}
 
         public string AddUserName
@@ -98,10 +95,10 @@ namespace SiteServer.CMS.Model
             set { Set(ContentAttribute.Taxis, value.ToString()); }
         }
 
-        public string ContentGroupNameCollection
-		{
-            get { return GetString(ContentAttribute.ContentGroupNameCollection); }
-            set { Set(ContentAttribute.ContentGroupNameCollection, value); }
+        public string GroupNameCollection
+        {
+            get { return GetString(ContentAttribute.GroupNameCollection); }
+            set { Set(ContentAttribute.GroupNameCollection, value); }
 		}
 
         public string Tags
@@ -133,18 +130,6 @@ namespace SiteServer.CMS.Model
             get { return GetInt(ContentAttribute.CheckedLevel); }
             set { Set(ContentAttribute.CheckedLevel, value.ToString()); }
 		}
-
-        public int Comments
-        {
-            get { return GetInt(ContentAttribute.Comments); }
-            set { Set(ContentAttribute.Comments, value.ToString()); }
-        }
-
-        public int Photos
-        {
-            get { return GetInt(ContentAttribute.Photos); }
-            set { Set(ContentAttribute.Photos, value.ToString()); }
-        }
 
         public int Hits
         {

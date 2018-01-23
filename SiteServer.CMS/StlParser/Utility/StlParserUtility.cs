@@ -5,7 +5,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
 using SiteServer.Utils.ThirdParty.Sgml;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -25,9 +24,6 @@ namespace SiteServer.CMS.StlParser.Utility
         public const string OrderHitsByDay = "HitsByDay";	    //日点击量
         public const string OrderHitsByWeek = "HitsByWeek";	//周点击量
         public const string OrderHitsByMonth = "HitsByMonth";	//月点击量
-        public const string OrderStars = "Stars";	            //评分数
-        public const string OrderDigg = "Digg";	            //Digg数
-        public const string OrderComments = "Comments";        //评论数
         public const string OrderRandom = "Random";            //随机
 
         private const string XmlDeclaration = "<?xml version='1.0'?>";
@@ -544,10 +540,6 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 dbItemIndex = contextInfo.ItemContainer.ContentItem.ItemIndex;
             }
-            //else if (contextInfo.ContextType == EContextType.InputContent)
-            //{
-            //    dbItemIndex = contextInfo.ItemContainer.InputItem.ItemIndex;
-            //}
             else if (contextInfo.ContextType == EContextType.SqlContent)
             {
                 dbItemIndex = contextInfo.ItemContainer.SqlItem.ItemIndex;
@@ -555,10 +547,6 @@ namespace SiteServer.CMS.StlParser.Utility
             else if (contextInfo.ContextType == EContextType.Site)
             {
                 dbItemIndex = contextInfo.ItemContainer.SiteItem.ItemIndex;
-            }
-            else if (contextInfo.ContextType == EContextType.Photo)
-            {
-                dbItemIndex = contextInfo.ItemContainer.PhotoItem.ItemIndex;
             }
             else if (contextInfo.ContextType == EContextType.Each)
             {

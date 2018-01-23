@@ -26,22 +26,20 @@ namespace SiteServer.BackgroundPages.Cms
 
         private string _returnUrl;
 
-        public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
+        public static string GetOpenWindowString(int siteId, int nodeId, string returnUrl)
         {
             return LayerUtils.GetOpenScript("添加栏目",
-                PageUtils.GetCmsUrl(nameof(ModalChannelsAdd), new NameValueCollection
+                PageUtils.GetCmsUrl(siteId, nameof(ModalChannelsAdd), new NameValueCollection
                 {
-                    {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"NodeID", nodeId.ToString()},
                     {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
                 }));
         }
 
-        public static string GetRedirectUrl(int publishmentSystemId, int nodeId, string returnUrl)
+        public static string GetRedirectUrl(int siteId, int nodeId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(nameof(ModalChannelsAdd), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(ModalChannelsAdd), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
@@ -51,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID", "ReturnUrl");
+            PageUtils.CheckRequestParameter("siteId", "NodeID", "ReturnUrl");
 
             var nodeId = Body.GetQueryInt("NodeID");
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
@@ -78,8 +76,8 @@ namespace SiteServer.BackgroundPages.Cms
                 PhContentRelatedPluginIds.Visible = false;
             }
 
-            DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(PublishmentSystemId, ETemplateType.ChannelTemplate);
-            DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(PublishmentSystemId, ETemplateType.ContentTemplate);
+            DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, ETemplateType.ChannelTemplate);
+            DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, ETemplateType.ContentTemplate);
 
             DdlChannelTemplateId.DataBind();
             DdlChannelTemplateId.Items.Insert(0, new ListItem("<默认>", "0"));
@@ -88,9 +86,9 @@ namespace SiteServer.BackgroundPages.Cms
             DdlContentTemplateId.Items.Insert(0, new ListItem("<默认>", "0"));
             DdlContentTemplateId.Items[0].Selected = true;
 
-            HlSelectChannel.Attributes.Add("onclick", ModalChannelSelect.GetOpenWindowString(PublishmentSystemId));
+            HlSelectChannel.Attributes.Add("onclick", ModalChannelSelect.GetOpenWindowString(SiteId));
             LtlSelectChannelScript.Text =
-                $@"<script>selectChannel('{NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId)}', '{nodeId}');</script>";
+                $@"<script>selectChannel('{ChannelManager.GetChannelNameNavigation(SiteId, nodeId)}', '{nodeId}');</script>";
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -99,7 +97,7 @@ namespace SiteServer.BackgroundPages.Cms
             var parentNodeId = TranslateUtils.ToInt(Request.Form["nodeID"]);
             if (parentNodeId == 0)
             {
-                parentNodeId = PublishmentSystemId;
+                parentNodeId = SiteId;
             }
 
             try
@@ -146,7 +144,7 @@ namespace SiteServer.BackgroundPages.Cms
                         {
                             if (nodeIndexNameList == null)
                             {
-                                nodeIndexNameList = DataProvider.NodeDao.GetNodeIndexNameList(PublishmentSystemId);
+                                nodeIndexNameList = DataProvider.ChannelDao.GetIndexNameList(SiteId);
                             }
                             if (nodeIndexNameList.IndexOf(nodeIndex) != -1)
                             {
@@ -162,21 +160,21 @@ namespace SiteServer.BackgroundPages.Cms
                         var contentModelPluginId = DdlContentModelPluginId.SelectedValue;
                         if (string.IsNullOrEmpty(contentModelPluginId))
                         {
-                            var parentNodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, parentId);
+                            var parentNodeInfo = ChannelManager.GetChannelInfo(SiteId, parentId);
                             contentModelPluginId = parentNodeInfo.ContentModelPluginId;
                         }
 
                         var channelTemplateId = TranslateUtils.ToInt(DdlChannelTemplateId.SelectedValue);
                         var contentTemplateId = TranslateUtils.ToInt(DdlContentTemplateId.SelectedValue);
 
-                        var insertedNodeId = DataProvider.NodeDao.InsertNodeInfo(PublishmentSystemId, parentId, nodeName, nodeIndex, contentModelPluginId, ControlUtils.GetSelectedListControlValueCollection(CblContentRelatedPluginIds), channelTemplateId, contentTemplateId);
+                        var insertedNodeId = DataProvider.ChannelDao.Insert(SiteId, parentId, nodeName, nodeIndex, contentModelPluginId, ControlUtils.GetSelectedListControlValueCollection(CblContentRelatedPluginIds), channelTemplateId, contentTemplateId);
                         insertedNodeIdHashtable[count + 1] = insertedNodeId;
 
-                        CreateManager.CreateChannel(PublishmentSystemId, insertedNodeId);
+                        CreateManager.CreateChannel(SiteId, insertedNodeId);
                     }
                 }
 
-                Body.AddSiteLog(PublishmentSystemId, parentNodeId, 0, "快速添加栏目", $"父栏目:{NodeManager.GetNodeName(PublishmentSystemId, parentNodeId)},栏目:{TbNodeNames.Text.Replace('\n', ',')}");
+                Body.AddSiteLog(SiteId, parentNodeId, 0, "快速添加栏目", $"父栏目:{ChannelManager.GetChannelName(SiteId, parentNodeId)},栏目:{TbNodeNames.Text.Replace('\n', ',')}");
 
                 isChanged = true;
             }

@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -16,11 +15,10 @@ namespace SiteServer.BackgroundPages.Cms
         private string _tableName;
         private string _returnUrl;
 
-        public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
+        public static string GetOpenWindowString(int siteId, int nodeId, string returnUrl)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("整理排序", PageUtils.GetCmsUrl(nameof(ModalContentTidyUp), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("整理排序", PageUtils.GetCmsUrl(siteId, nameof(ModalContentTidyUp), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             }), "ContentIDCollection", "", 460, 320);
@@ -47,8 +45,8 @@ namespace SiteServer.BackgroundPages.Cms
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             var nodeId = Body.GetQueryInt("NodeID");
-            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
-            _tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
+            _tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
 
             DataProvider.ContentDao.TidyUp(_tableName, nodeId, DdlAttributeName.SelectedValue, TranslateUtils.ToBool(DdlIsDesc.SelectedValue));
 

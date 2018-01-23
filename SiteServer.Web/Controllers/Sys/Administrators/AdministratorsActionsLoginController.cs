@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Web.Http;
-using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Administrators;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.API.Controllers.Sys.Administrators

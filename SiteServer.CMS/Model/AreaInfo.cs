@@ -4,7 +4,7 @@ namespace SiteServer.CMS.Model
     {
         public AreaInfo()
         {
-            AreaId = 0;
+            Id = 0;
             AreaName = string.Empty;
             ParentId = 0;
             ParentsPath = string.Empty;
@@ -15,9 +15,9 @@ namespace SiteServer.CMS.Model
             CountOfAdmin = 0;
         }
 
-        public AreaInfo(int areaId, string areaName, int parentId, string parentsPath, int parentsCount, int childrenCount, bool isLastNode, int taxis, int countOfAdmin)
+        public AreaInfo(int id, string areaName, int parentId, string parentsPath, int parentsCount, int childrenCount, bool isLastNode, int taxis, int countOfAdmin)
         {
-            AreaId = areaId;
+            Id = id;
             AreaName = areaName;
             ParentId = parentId;
             ParentsPath = parentsPath;
@@ -28,7 +28,7 @@ namespace SiteServer.CMS.Model
             CountOfAdmin = countOfAdmin;
         }
 
-        public int AreaId { get; set; }
+        public int Id { get; set; }
 
         public string AreaName { get; set; }
 

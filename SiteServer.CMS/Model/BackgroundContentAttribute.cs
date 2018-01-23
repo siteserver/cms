@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SiteServer.Utils.Model;
 
 namespace SiteServer.CMS.Model
 {
@@ -20,9 +19,6 @@ namespace SiteServer.CMS.Model
         public const string Content = "Content";
         //not exists
         public const string TitleFormatString = "TitleFormatString";
-        public const string StarSetting = "StarSetting";
-        public const string Star = "Star";
-        public const string Digg = "Digg";
         public const string PageContent = "PageContent";
         public const string NavigationUrl = "NavigationUrl";
         public const string CountOfPhotos = "CountOfPhotos";

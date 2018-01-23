@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
-using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils
 {
@@ -838,8 +838,10 @@ namespace SiteServer.Utils
             return AddQueryString(GetAdminDirectoryUrl(Combine("settings", className.ToLower() + ".aspx")), queryString);
         }
 
-        public static string GetCmsUrl(string className, NameValueCollection queryString)
+        public static string GetCmsUrl(int siteId, string className, NameValueCollection queryString)
         {
+            queryString = queryString ?? new NameValueCollection();
+            queryString["siteId"] = siteId.ToString();
             return AddQueryString(GetAdminDirectoryUrl(Combine("cms", className.ToLower() + ".aspx")), queryString);
         }
 
@@ -1119,9 +1121,9 @@ namespace SiteServer.Utils
                 return Combine(string.IsNullOrEmpty(proco) ? GetRootUrl("api") : proco, relatedPath);
             }
 
-            public static string GetPublishmentSystemClearCacheUrl()
+            public static string GetSiteClearCacheUrl()
             {
-                return GetUrl("cache/clearPublishmentSystemCache", string.Empty);
+                return GetUrl("cache/clearSiteCache", string.Empty);
             }
 
             public static string GetUserClearCacheUrl()

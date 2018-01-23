@@ -2,7 +2,7 @@ namespace SiteServer.CMS.Model
 {
 	public class CountInfo
 	{
-        public int CountId { get; set; }
+        public int Id { get; set; }
 
 	    public string RelatedTableName { get; set; }
 

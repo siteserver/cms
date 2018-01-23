@@ -1,5 +1,4 @@
-﻿using SiteServer.Utils.Model;
-using SiteServer.CMS.Core.Security;
+﻿using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using System.Text;
 using SiteServer.Utils;
@@ -18,7 +17,7 @@ namespace SiteServer.BackgroundPages.Core
         {
         }
 
-        private static string GetColumnValue(Dictionary<string, string> nameValueCacheDict, PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo, TableStyleInfo styleInfo)
+        private static string GetColumnValue(Dictionary<string, string> nameValueCacheDict, SiteInfo siteInfo, ContentInfo contentInfo, TableStyleInfo styleInfo)
         {
             var value = string.Empty;
             if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.AddUserName))
@@ -86,9 +85,9 @@ namespace SiteServer.BackgroundPages.Core
             {
                 value = contentInfo.Tags;
             }
-            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.ContentGroupNameCollection))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.GroupNameCollection))
             {
-                value = contentInfo.ContentGroupNameCollection;
+                value = contentInfo.GroupNameCollection;
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.Hits))
             {
@@ -116,50 +115,26 @@ namespace SiteServer.BackgroundPages.Core
             }
             else
             {
-                var isSettting = true;
-                if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, BackgroundContentAttribute.Star))
-                {
-                    var showPopWinString = ModalContentStarSet.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id);
-                    value =
-                        $@"<a href=""javascript:;"" onclick=""{showPopWinString}"" title=""点击设置评分"">{StarsManager
-                            .GetStarString(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id)}</a>";
-                }
-                else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, BackgroundContentAttribute.Digg))
-                {
-                    var showPopWinString = ModalContentDiggSet.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id);
-                    var nums = DataProvider.DiggDao.GetCount(publishmentSystemInfo.PublishmentSystemId, contentInfo.Id);
-                    string display = $"赞同：{nums[0]} 不赞同：{nums[1]}";
-                    value =
-                        $@"<a href=""javascript:;"" onclick=""{showPopWinString}"" title=""点击设置Digg数"">{display}</a>";
-                }
-                else
-                {
-                    isSettting = false;
-                }
-
-                if (!isSettting)
-                {
-                    value = InputParserUtility.GetContentByTableStyle(contentInfo.GetString(styleInfo.AttributeName), publishmentSystemInfo, styleInfo);
-                }
+                value = InputParserUtility.GetContentByTableStyle(contentInfo.GetString(styleInfo.AttributeName), siteInfo, styleInfo);
             }
             return value;
         }
 
-        public static bool IsEdit(PublishmentSystemInfo publishmentSystemInfo, int nodeId, string administratorName)
+        public static bool IsEdit(SiteInfo siteInfo, int nodeId, string administratorName)
         {
-            return AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Permissions.Channel.ContentEdit);
+            return AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeId, AppManager.Permissions.Channel.ContentEdit);
         }
 
-        //public static bool IsComment(PublishmentSystemInfo publishmentSystemInfo, int nodeId, string administratorName)
+        //public static bool IsComment(SiteInfo siteInfo, int nodeId, string administratorName)
         //{
-        //    return publishmentSystemInfo.Additional.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Permissions.Channel.CommentCheck, AppManager.Permissions.Channel.CommentDelete);
+        //    return siteInfo.Additional.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeId, AppManager.Permissions.Channel.CommentCheck, AppManager.Permissions.Channel.CommentDelete);
         //}
 
-        public static string GetColumnsHeadHtml(List<TableStyleInfo> tableStyleInfoArrayList, StringCollection attributesOfDisplay, PublishmentSystemInfo publishmentSystemInfo)
+        public static string GetColumnsHeadHtml(List<TableStyleInfo> tableStyleInfoArrayList, StringCollection attributesOfDisplay, SiteInfo siteInfo)
         {
             var builder = new StringBuilder();
 
-            var arrayList = ContentUtility.GetColumnTableStyleInfoList(publishmentSystemInfo, tableStyleInfoArrayList);
+            var arrayList = ContentUtility.GetColumnTableStyleInfoList(siteInfo, tableStyleInfoArrayList);
             foreach (var styleInfo in arrayList)
             {
                 if (attributesOfDisplay.Contains(styleInfo.AttributeName))
@@ -172,7 +147,7 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetColumnsHtml(Dictionary<string, string> nameValueCacheDict, PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo, StringCollection attributesOfDisplay, List<TableStyleInfo> displayStyleInfoList)
+        public static string GetColumnsHtml(Dictionary<string, string> nameValueCacheDict, SiteInfo siteInfo, ContentInfo contentInfo, StringCollection attributesOfDisplay, List<TableStyleInfo> displayStyleInfoList)
         {
             var builder = new StringBuilder();
 
@@ -180,26 +155,26 @@ namespace SiteServer.BackgroundPages.Core
             {
                 if (!attributesOfDisplay.Contains(styleInfo.AttributeName)) continue;
 
-                var value = GetColumnValue(nameValueCacheDict, publishmentSystemInfo, contentInfo, styleInfo);
+                var value = GetColumnValue(nameValueCacheDict, siteInfo, contentInfo, styleInfo);
                 builder.Append($@"<td class=""text-nowrap"">{value}</td>");
             }
 
             return builder.ToString();
         }
 
-        public static string GetCommandsHtml(PublishmentSystemInfo publishmentSystemInfo, Dictionary<string, IContentRelated> pluginChannels, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
+        public static string GetCommandsHtml(SiteInfo siteInfo, Dictionary<string, IContentRelated> pluginChannels, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
         {
             var builder = new StringBuilder();
 
             if (isEdit || administratorName == contentInfo.AddUserName)
             {
-                builder.Append($@"<a href=""{PageContentAdd.GetRedirectUrlOfEdit(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, pageUrl)}"">编辑</a>");
+                builder.Append($@"<a href=""{PageContentAdd.GetRedirectUrlOfEdit(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl)}"">编辑</a>");
             }
 
             //if (isComment)
             //{
-            //    //var urlComment = PageComment.GetRedirectUrl(publishmentSystemInfo.PublishmentSystemID, contentInfo.NodeId, contentInfo.Id, pageUrl);
-            //    var urlComment = PageComments.GetRedirectUrl(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, pageUrl);
+            //    //var urlComment = PageComment.GetRedirectUrl(siteInfo.SiteId, contentInfo.NodeId, contentInfo.Id, pageUrl);
+            //    var urlComment = PageComments.GetRedirectUrl(siteInfo.Id, contentInfo.NodeId, contentInfo.Id, pageUrl);
             //    builder.Append(
             //        $@"<a style=""margin:0 5px"" href=""{urlComment}"">评论<span style=""color:gray"">({contentInfo
             //            .Comments})</span></a>");
@@ -213,7 +188,7 @@ namespace SiteServer.BackgroundPages.Core
                     foreach (var link in pluginChannel.ContentLinks)
                     {
                         var originalUrl = link.NavigateUrl;
-                        link.NavigateUrl = PluginManager.GetMenuContentHref(pluginId, originalUrl, publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, pageUrl);
+                        link.NavigateUrl = PluginManager.GetMenuContentHref(pluginId, originalUrl, siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl);
 
                         builder.Append("&nbsp;&nbsp;").Append(ControlUtils.GetControlRenderHtml(link));
 
@@ -228,7 +203,7 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        //public static string GetCommandItemRowsHtml(PublishmentSystemInfo publishmentSystemInfo, Dictionary<string, IContentRelated> pluginChannels, ContentInfo contentInfo, string pageUrl, string administratorName)
+        //public static string GetCommandItemRowsHtml(SiteInfo siteInfo, Dictionary<string, IContentRelated> pluginChannels, ContentInfo contentInfo, string pageUrl, string administratorName)
         //{
         //    var builder = new StringBuilder();
 
@@ -240,7 +215,7 @@ namespace SiteServer.BackgroundPages.Core
         //            foreach (var link in pluginChannel.ContentLinks)
         //            {
         //                var href = PluginUtils.GetMenuContentHref(pluginId, link.Href,
-        //                    publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, pageUrl);
+        //                    siteInfo.Id, contentInfo.NodeId, contentInfo.Id, pageUrl);
         //                builder.Append(
         //                    $@"<td class=""center"" width=""80""><a href=""{href}"" {(string.IsNullOrEmpty(link.Target) ? string.Empty : "target='" + link.Target + "'")}>{link.Text}</a></td>");
         //            }
@@ -249,25 +224,25 @@ namespace SiteServer.BackgroundPages.Core
 
         //    //if (modelType == EContentModelType.Photo)
         //    //{
-        //    //    var contentPhotoUploadUrl = PageContentPhotoUpload.GetRedirectUrl(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, pageUrl);
+        //    //    var contentPhotoUploadUrl = PageContentPhotoUpload.GetRedirectUrl(siteInfo.Id, contentInfo.NodeId, contentInfo.Id, pageUrl);
         //    //    builder.Append(
         //    //        $@"<td class=""center"" width=""50""><a href=""{contentPhotoUploadUrl}"">图片</a><span style=""color:gray"">({contentInfo
         //    //            .Photos})</span></td>");
         //    //}
         //    //else if (modelType == EContentModelType.Job)
         //    //{
-        //    //    var resumeNum = DataProvider.ResumeContentDao.GetCount(publishmentSystemInfo.PublishmentSystemId, contentInfo.Id);
-        //    //    var urlResume = PageResumeContent.GetRedirectUrl(publishmentSystemInfo.PublishmentSystemId, contentInfo.Id, StringUtils.ValueToUrl(pageUrl));;
+        //    //    var resumeNum = DataProvider.ResumeContentDao.GetCount(siteInfo.Id, contentInfo.Id);
+        //    //    var urlResume = PageResumeContent.GetRedirectUrl(siteInfo.Id, contentInfo.Id, StringUtils.ValueToUrl(pageUrl));;
         //    //    builder.Append(
         //    //        $@"<td class=""center"" width=""50""><a href=""{urlResume}"">简历</a><span style=""color:gray"">({resumeNum})</span></td>");
         //    //}
 
-        //    if (publishmentSystemInfo.Additional.IsCommentable)
+        //    if (siteInfo.Additional.IsCommentable)
         //    {
-        //        if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, AppManager.Permissions.Channel.CommentCheck, AppManager.Permissions.Channel.CommentDelete))
+        //        if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, contentInfo.NodeId, AppManager.Permissions.Channel.CommentCheck, AppManager.Permissions.Channel.CommentDelete))
         //        {
-        //            //var urlComment = PageComment.GetRedirectUrl(publishmentSystemInfo.PublishmentSystemID, contentInfo.NodeId, contentInfo.Id, pageUrl);
-        //            var urlComment = PageComments.GetRedirectUrl(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, pageUrl);
+        //            //var urlComment = PageComment.GetRedirectUrl(siteInfo.SiteId, contentInfo.NodeId, contentInfo.Id, pageUrl);
+        //            var urlComment = PageComments.GetRedirectUrl(siteInfo.Id, contentInfo.NodeId, contentInfo.Id, pageUrl);
         //            builder.Append(
         //                $@"<td class=""center"" width=""50""><a href=""{urlComment}"">评论</a><span style=""color:gray"">({contentInfo
         //                    .Comments})</span></td>");

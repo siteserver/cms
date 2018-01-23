@@ -48,19 +48,13 @@ namespace SiteServer.CMS.StlParser.Parsers
         {
             {StlA.ElementName.ToLower(), StlA.Parse},
             {StlAction.ElementName.ToLower(), StlAction.Parse},
-            {StlAd.ElementName.ToLower(), StlAd.Parse},
-            {StlAnalysis.ElementName.ToLower(), StlAnalysis.Parse},
             {StlAudio.ElementName.ToLower(), StlAudio.Parse},
             {StlChannel.ElementName.ToLower(), StlChannel.Parse},
             {StlChannels.ElementName.ToLower(), StlChannels.Parse},
-            {StlComment.ElementName.ToLower(), StlComment.Parse},
-            {StlCommentInput.ElementName.ToLower(), StlCommentInput.Parse},
-            {StlComments.ElementName.ToLower(), StlComments.Parse},
             {StlContainer.ElementName.ToLower(), StlContainer.Parse},
             {StlContent.ElementName.ToLower(), StlContent.Parse},
             {StlContents.ElementName.ToLower(), StlContents.Parse},
             {StlCount.ElementName.ToLower(), StlCount.Parse},
-            {StlDigg.ElementName.ToLower(), StlDigg.Parse},
             {StlDynamic.ElementName.ToLower(), StlDynamic.Parse},
             {StlEach.ElementName.ToLower(), StlEach.Parse},
             {StlFile.ElementName.ToLower(), StlFile.Parse},
@@ -69,12 +63,9 @@ namespace SiteServer.CMS.StlParser.Parsers
             {StlIf.ElementName.ToLower(), StlIf.Parse},
             {StlImage.ElementName.ToLower(), StlImage.Parse},
             {StlInclude.ElementName.ToLower(), StlInclude.Parse},
-            //{StlInputContent.ElementName.ToLower(), StlInputContent.Parse},
-            //{StlInputContents.ElementName.ToLower(), StlInputContents.Parse},
             {StlLocation.ElementName.ToLower(), StlLocation.Parse},
             {StlMarquee.ElementName.ToLower(), StlMarquee.Parse},
             {StlNavigation.ElementName.ToLower(), StlNavigation.Parse},
-            {StlPhoto.ElementName.ToLower(), StlPhoto.Parse},
             {StlPlayer.ElementName.ToLower(), StlPlayer.Parse},
             {StlPrinter.ElementName.ToLower(), StlPrinter.Parse},
             {StlRss.ElementName.ToLower(), StlRss.Parse},
@@ -83,10 +74,8 @@ namespace SiteServer.CMS.StlParser.Parsers
             {StlSelect.ElementName.ToLower(), StlSelect.Parse},
             {StlSite.ElementName.ToLower(), StlSite.Parse},
             {StlSites.ElementName.ToLower(), StlSites.Parse},
-            {StlSlide.ElementName.ToLower(), StlSlide.Parse},
             {StlSqlContent.ElementName.ToLower(), StlSqlContent.Parse},
             {StlSqlContents.ElementName.ToLower(), StlSqlContents.Parse},
-            {StlStar.ElementName.ToLower(), StlStar.Parse},
             {StlTabs.ElementName.ToLower(), StlTabs.Parse},
             {StlTags.ElementName.ToLower(), StlTags.Parse},
             {StlTree.ElementName.ToLower(), StlTree.Parse},
@@ -230,7 +219,7 @@ namespace SiteServer.CMS.StlParser.Parsers
                                     Func<PluginParseContext, string> func;
                                     if (parsers.TryGetValue(elementName, out func))
                                     {
-                                        var context = new PluginParseContext(attributes, innerXml, pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, ETemplateTypeUtils.GetValue(pageInfo.TemplateInfo.TemplateType), pageInfo.TemplateInfo.TemplateId);
+                                        var context = new PluginParseContext(attributes, innerXml, pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, ETemplateTypeUtils.GetValue(pageInfo.TemplateInfo.TemplateType), pageInfo.TemplateInfo.Id);
                                         parsedContent = func(context);
                                     }
                                 }

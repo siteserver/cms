@@ -6,8 +6,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Text;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Model.Enumerations;
 using MySql.Data.MySqlClient;
 using Npgsql;
 using Oracle.ManagedDataAccess.Client;
@@ -16,6 +14,7 @@ using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Provider
 {
@@ -371,9 +370,9 @@ namespace SiteServer.CMS.Provider
             return datetime;
         }
 
-        public DataSet GetDataSetByWhereString(string tableEnName, string whereString)
+        public DataSet GetDataSetByWhereString(string tableName, string whereString)
         {
-            var sqlSelect = GetSelectSqlString(tableEnName, SqlUtils.Asterisk, whereString);
+            var sqlSelect = GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString);
             var dataset = ExecuteDataset(sqlSelect);
             return dataset;
         }
@@ -551,7 +550,7 @@ SELECT * FROM (
         //{
         //    var sqlPath = PathUtils.GetInstallSqlFilePath(WebConfigUtils.DatabaseType);
         //    DataProvider.DatabaseDao.ExecuteSqlInFile(sqlPath, errorBuilder);
-        //    DataProvider.TableCollectionDao.CreateAllAuxiliaryTableIfNotExists();
+        //    DataProvider.TableDao.CreateAllAuxiliaryTableIfNotExists();
         //}
 
         //public void Upgrade(EDatabaseType databaseType, StringBuilder errorBuilder)
@@ -565,10 +564,10 @@ SELECT * FROM (
         //    {
         //        try
         //        {
-        //            var tableList = DataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDb();
+        //            var tableList = DataProvider.TableDao.GetAuxiliaryTableListCreatedInDb();
         //            foreach (var table in tableList)
         //            {
-        //                DataProvider.DatabaseDao.ExecuteSqlInFile(filePathUpgradeTable, table.TableEnName, errorBuilder);
+        //                DataProvider.DatabaseDao.ExecuteSqlInFile(filePathUpgradeTable, table.TableName, errorBuilder);
         //            }
         //        }
         //        catch
@@ -577,7 +576,7 @@ SELECT * FROM (
         //        }
         //    }
 
-        //    DataProvider.TableCollectionDao.CreateAllAuxiliaryTableIfNotExists();
+        //    DataProvider.TableDao.CreateAllAuxiliaryTableIfNotExists();
         //}
 
         public bool ConnectToServer(EDatabaseType databaseType, string connectionStringWithoutDatabaseName, out List<string> databaseNameList, out string errorMessage)
@@ -1593,200 +1592,6 @@ FROM (SELECT TOP {totalNum} *
             }
 
             return sqlList;
-        }
-
-        public string GetCreateTableCollectionInfoSqlString(string tableName)
-        {
-            var columnSqlStringList = new List<string>();
-
-            var tableMetadataInfoList = TableMetadataManager.GetTableMetadataInfoList(tableName);
-            if (tableMetadataInfoList.Count > 0)
-            {
-                foreach (var metadataInfo in tableMetadataInfoList)
-                {
-                    var columnSql = SqlUtils.GetColumnSqlString(metadataInfo.DataType, metadataInfo.AttributeName, metadataInfo.DataLength);
-                    if (!string.IsNullOrEmpty(columnSql))
-                    {
-                        columnSqlStringList.Add(columnSql);
-                    }
-                }
-            }
-
-            var sqlBuilder = new StringBuilder();
-
-            //添加默认字段
-            switch (WebConfigUtils.DatabaseType)
-            {
-                case EDatabaseType.MySql:
-                    sqlBuilder.Append($@"CREATE TABLE `{tableName}` (");
-                    sqlBuilder.Append($@"
-`{nameof(ContentInfo.Id)}` INT AUTO_INCREMENT,
-`{nameof(ContentInfo.NodeId)}` INT,
-`{nameof(ContentInfo.PublishmentSystemId)}` INT,
-`{nameof(ContentInfo.AddUserName)}` VARCHAR(255),
-`{nameof(ContentInfo.LastEditUserName)}` VARCHAR(255),
-`{nameof(ContentInfo.WritingUserName)}` VARCHAR(255),
-`{nameof(ContentInfo.LastEditDate)}` DATETIME,
-`{nameof(ContentInfo.Taxis)}` INT,
-`{nameof(ContentInfo.ContentGroupNameCollection)}` VARCHAR(255),
-`{nameof(ContentInfo.Tags)}` VARCHAR(255),
-`{nameof(ContentInfo.SourceId)}` INT,
-`{nameof(ContentInfo.ReferenceId)}` INT,
-`{nameof(ContentInfo.IsChecked)}` VARCHAR(18),
-`{nameof(ContentInfo.CheckedLevel)}` INT,
-`{nameof(ContentInfo.Comments)}` INT,
-`{nameof(ContentInfo.Photos)}` INT,
-`{nameof(ContentInfo.Hits)}` INT,
-`{nameof(ContentInfo.HitsByDay)}` INT,
-`{nameof(ContentInfo.HitsByWeek)}` INT,
-`{nameof(ContentInfo.HitsByMonth)}` INT,
-`{nameof(ContentInfo.LastHitsDate)}` DATETIME,
-`{nameof(ContentInfo.SettingsXml)}` LONGTEXT,
-`{nameof(ContentInfo.Title)}` VARCHAR(255),
-`{nameof(ContentInfo.IsTop)}` VARCHAR(18),
-`{nameof(ContentInfo.IsRecommend)}` VARCHAR(18),
-`{nameof(ContentInfo.IsHot)}` VARCHAR(18),
-`{nameof(ContentInfo.IsColor)}` VARCHAR(18),
-`{nameof(ContentInfo.LinkUrl)}` VARCHAR(200),
-`{nameof(ContentInfo.AddDate)}` DATETIME,
-");
-                    break;
-                case EDatabaseType.SqlServer:
-                    sqlBuilder.Append($@"CREATE TABLE {tableName} (");
-                    sqlBuilder.Append($@"
-{nameof(ContentInfo.Id)} int IDENTITY (1, 1),
-{nameof(ContentInfo.NodeId)} int NULL,
-{nameof(ContentInfo.PublishmentSystemId)} int NULL,
-{nameof(ContentInfo.AddUserName)} nvarchar (255) NULL,
-{nameof(ContentInfo.LastEditUserName)} nvarchar (255) NULL,
-{nameof(ContentInfo.WritingUserName)} nvarchar (255) NULL,
-{nameof(ContentInfo.LastEditDate)} datetime NULL,
-{nameof(ContentInfo.Taxis)} int NULL,
-{nameof(ContentInfo.ContentGroupNameCollection)} nvarchar (255) NULL,
-{nameof(ContentInfo.Tags)} nvarchar (255) NULL,
-{nameof(ContentInfo.SourceId)} int NULL,
-{nameof(ContentInfo.ReferenceId)} int NULL,
-{nameof(ContentInfo.IsChecked)} nvarchar (18) NULL,
-{nameof(ContentInfo.CheckedLevel)} int NULL,
-{nameof(ContentInfo.Comments)} int NULL,
-{nameof(ContentInfo.Photos)} int NULL,
-{nameof(ContentInfo.Hits)} int NULL,
-{nameof(ContentInfo.HitsByDay)} int NULL,
-{nameof(ContentInfo.HitsByWeek)} int NULL,
-{nameof(ContentInfo.HitsByMonth)} int NULL,
-{nameof(ContentInfo.LastHitsDate)} datetime NULL,
-{nameof(ContentInfo.SettingsXml)} ntext NULL,
-{nameof(ContentInfo.Title)} nvarchar (255) NULL,
-{nameof(ContentInfo.IsTop)} nvarchar (18) NULL,
-{nameof(ContentInfo.IsRecommend)} nvarchar (18) NULL,
-{nameof(ContentInfo.IsHot)} nvarchar (18) NULL,
-{nameof(ContentInfo.IsColor)} nvarchar (18) NULL,
-{nameof(ContentInfo.LinkUrl)} nvarchar (200) NULL,
-{nameof(ContentInfo.AddDate)} datetime NULL,
-");
-                    break;
-                case EDatabaseType.PostgreSql:
-                    sqlBuilder.Append($@"CREATE TABLE {tableName} (");
-                    sqlBuilder.Append($@"
-{nameof(ContentInfo.Id)} SERIAL,
-{nameof(ContentInfo.NodeId)} int4 NULL,
-{nameof(ContentInfo.PublishmentSystemId)} int4 NULL,
-{nameof(ContentInfo.AddUserName)} varchar (255) NULL,
-{nameof(ContentInfo.LastEditUserName)} varchar (255) NULL,
-{nameof(ContentInfo.WritingUserName)} varchar (255) NULL,
-{nameof(ContentInfo.LastEditDate)} timestamptz NULL,
-{nameof(ContentInfo.Taxis)} int4 NULL,
-{nameof(ContentInfo.ContentGroupNameCollection)} varchar (255) NULL,
-{nameof(ContentInfo.Tags)} varchar (255) NULL,
-{nameof(ContentInfo.SourceId)} int4 NULL,
-{nameof(ContentInfo.ReferenceId)} int4 NULL,
-{nameof(ContentInfo.IsChecked)} varchar (18) NULL,
-{nameof(ContentInfo.CheckedLevel)} int4 NULL,
-{nameof(ContentInfo.Comments)} int4 NULL,
-{nameof(ContentInfo.Photos)} int4 NULL,
-{nameof(ContentInfo.Hits)} int4 NULL,
-{nameof(ContentInfo.HitsByDay)} int4 NULL,
-{nameof(ContentInfo.HitsByWeek)} int4 NULL,
-{nameof(ContentInfo.HitsByMonth)} int4 NULL,
-{nameof(ContentInfo.LastHitsDate)} timestamptz NULL,
-{nameof(ContentInfo.SettingsXml)} text NULL,
-{nameof(ContentInfo.Title)} varchar (255) NULL,
-{nameof(ContentInfo.IsTop)} varchar (18) NULL,
-{nameof(ContentInfo.IsRecommend)} varchar (18) NULL,
-{nameof(ContentInfo.IsHot)} varchar (18) NULL,
-{nameof(ContentInfo.IsColor)} varchar (18) NULL,
-{nameof(ContentInfo.LinkUrl)} varchar (200) NULL,
-{nameof(ContentInfo.AddDate)} timestamptz NULL,
-");
-                    break;
-                case EDatabaseType.Oracle:
-                    sqlBuilder.Append($@"CREATE TABLE {tableName} (");
-                    sqlBuilder.Append($@"
-{nameof(ContentInfo.Id)} NUMBER GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-{nameof(ContentInfo.NodeId)} number NULL,
-{nameof(ContentInfo.PublishmentSystemId)} number NULL,
-{nameof(ContentInfo.AddUserName)} nvarchar2(255) NULL,
-{nameof(ContentInfo.LastEditUserName)} nvarchar2(255) NULL,
-{nameof(ContentInfo.WritingUserName)} nvarchar2(255) NULL,
-{nameof(ContentInfo.LastEditDate)} timestamp(6) with time zone NULL,
-{nameof(ContentInfo.Taxis)} number NULL,
-{nameof(ContentInfo.ContentGroupNameCollection)} nvarchar2(255) NULL,
-{nameof(ContentInfo.Tags)} nvarchar2(255) NULL,
-{nameof(ContentInfo.SourceId)} number NULL,
-{nameof(ContentInfo.ReferenceId)} number NULL,
-{nameof(ContentInfo.IsChecked)} nvarchar2(18) NULL,
-{nameof(ContentInfo.CheckedLevel)} number NULL,
-{nameof(ContentInfo.Comments)} number NULL,
-{nameof(ContentInfo.Photos)} number NULL,
-{nameof(ContentInfo.Hits)} number NULL,
-{nameof(ContentInfo.HitsByDay)} number NULL,
-{nameof(ContentInfo.HitsByWeek)} number NULL,
-{nameof(ContentInfo.HitsByMonth)} number NULL,
-{nameof(ContentInfo.LastHitsDate)} timestamp(6) with time zone NULL,
-{nameof(ContentInfo.SettingsXml)} nclob NULL,
-{nameof(ContentInfo.Title)} nvarchar2(255) NULL,
-{nameof(ContentInfo.IsTop)} nvarchar2(18) NULL,
-{nameof(ContentInfo.IsRecommend)} nvarchar2(18) NULL,
-{nameof(ContentInfo.IsHot)} nvarchar2(18) NULL,
-{nameof(ContentInfo.IsColor)} nvarchar2(18) NULL,
-{nameof(ContentInfo.LinkUrl)} nvarchar2(200) NULL,
-{nameof(ContentInfo.AddDate)} timestamp(6) with time zone NULL,
-");
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            //添加后台定义字段
-            foreach (var sqlString in columnSqlStringList)
-            {
-                sqlBuilder.Append(sqlString).Append(@",");
-            }
-
-            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
-            {
-                sqlBuilder.Append($@"
-PRIMARY KEY ({nameof(ContentInfo.Id)})
-)
-GO
-CREATE INDEX `IX_{tableName}` ON `{tableName}`(`{nameof(ContentInfo.IsTop)}` DESC, `{nameof(ContentInfo.Taxis)}` DESC, `{nameof(ContentInfo.Id)}` DESC)
-GO
-CREATE INDEX `IX_{tableName}_Taxis` ON `{tableName}`(`{nameof(ContentInfo.Taxis)}` DESC)
-GO");
-            }
-            else
-            {
-                sqlBuilder.Append($@"
-CONSTRAINT PK_{tableName} PRIMARY KEY ({nameof(ContentInfo.Id)})
-)
-GO
-CREATE INDEX IX_{tableName} ON {tableName}({nameof(ContentInfo.IsTop)} DESC, {nameof(ContentInfo.Taxis)} DESC, {nameof(ContentInfo.Id)} DESC)
-GO
-CREATE INDEX IX_{tableName}_Taxis ON {tableName}({nameof(ContentInfo.Taxis)} DESC)
-GO");
-            }
-
-            return sqlBuilder.ToString();
         }
     }
 }

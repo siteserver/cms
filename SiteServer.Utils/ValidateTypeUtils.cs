@@ -1,7 +1,5 @@
 using System;
-using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 
 namespace SiteServer.Utils
@@ -59,37 +57,6 @@ namespace SiteServer.Utils
                 return "正则表达式验证";
             }
             throw new Exception();
-        }
-
-        public static string GetValidateInfo(TableStyleInfo styleInfo)
-        {
-            var builder = new StringBuilder();
-            if (styleInfo.Additional.IsRequired)
-            {
-                builder.Append("必填项;");
-            }
-            if (styleInfo.Additional.MinNum > 0)
-            {
-                builder.Append($"最少{styleInfo.Additional.MinNum}个字符;");
-            }
-            if (styleInfo.Additional.MaxNum > 0)
-            {
-                builder.Append($"最多{styleInfo.Additional.MaxNum}个字符;");
-            }
-            if (styleInfo.Additional.ValidateType != ValidateType.None)
-            {
-                builder.Append($"验证:{GetText(styleInfo.Additional.ValidateType)};");
-            }
-
-            if (builder.Length > 0)
-            {
-                builder.Length = builder.Length - 1;
-            }
-            else
-            {
-                builder.Append("无验证");
-            }
-            return builder.ToString();
         }
 
 		public static ValidateType GetEnumType(string typeStr)

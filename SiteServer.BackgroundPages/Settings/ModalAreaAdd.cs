@@ -57,7 +57,7 @@ namespace SiteServer.BackgroundPages.Settings
                 foreach (var theAreaId in areaIdList)
                 {
                     var areaInfo = AreaManager.GetAreaInfo(theAreaId);
-                    var listitem = new ListItem(GetTitle(areaInfo.AreaId, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode), theAreaId.ToString());
+                    var listitem = new ListItem(GetTitle(areaInfo.Id, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode), theAreaId.ToString());
                     DdlParentId.Items.Add(listitem);
                 }
             }

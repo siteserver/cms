@@ -19,31 +19,28 @@ namespace SiteServer.BackgroundPages.Cms
         private Dictionary<int, List<int>> _idsDictionary = new Dictionary<int, List<int>>();
         private string _returnUrl;
 
-        public static string GetRedirectUrl(int publishmentSystemId, int nodeId, string returnUrl)
+        public static string GetRedirectUrl(int siteId, int nodeId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(nameof(PageContentTranslate), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageContentTranslate), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
         }
 
-        public static string GetRedirectClickStringForMultiChannels(int publishmentSystemId, string returnUrl)
+        public static string GetRedirectClickStringForMultiChannels(int siteId, string returnUrl)
         {
-            var redirectUrl = PageUtils.GetCmsUrl(nameof(PageContentTranslate), new NameValueCollection
+            var redirectUrl = PageUtils.GetCmsUrl(siteId, nameof(PageContentTranslate), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
             return PageUtils.GetRedirectStringWithCheckBoxValue(redirectUrl, "IDsCollection", "IDsCollection", "请选择需要转移的内容！");
         }
 
-        public static string GetRedirectClickString(int publishmentSystemId, int nodeId, string returnUrl)
+        public static string GetRedirectClickString(int siteId, int nodeId, string returnUrl)
         {
-            var redirectUrl = PageUtils.GetCmsUrl(nameof(PageContentTranslate), new NameValueCollection
+            var redirectUrl = PageUtils.GetCmsUrl(siteId, nameof(PageContentTranslate), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
@@ -54,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-			PageUtils.CheckRequestParameter("PublishmentSystemID", "ReturnUrl");
+			PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
             //if (!base.HasChannelPermissions(this.nodeID, AppManager.CMS.Permission.Channel.ContentTranslate))
             //{
@@ -71,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
             var builder = new StringBuilder();
             foreach (var nodeId in _idsDictionary.Keys)
             {
-                var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
+                var tableName = ChannelManager.GetTableName(SiteInfo, nodeId);
                 var contentIdArrayList = _idsDictionary[nodeId];
                 if (contentIdArrayList != null)
                 {
@@ -81,14 +78,14 @@ namespace SiteServer.BackgroundPages.Cms
                         if (contentInfo != null)
                         {
                             builder.Append(
-                                $@"{WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, _returnUrl)}<br />");
+                                $@"{WebUtils.GetContentTitle(SiteInfo, contentInfo, _returnUrl)}<br />");
                         }
                     }
                 }
             }
             LtlContents.Text = builder.ToString();
 
-            BtnTranslateAdd.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(PublishmentSystemId, true));
+            BtnTranslateAdd.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
 
             ETranslateContentTypeUtils.AddListItems(RblTranslateType, isCut);
             ControlUtils.SelectSingleItem(RblTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
@@ -114,9 +111,9 @@ namespace SiteServer.BackgroundPages.Cms
                             {
                                 foreach (var contentId in contentIdArrayList)
                                 {
-                                    ContentUtility.Translate(PublishmentSystemInfo, nodeId, contentId, Request.Form["translateCollection"], translateType, Body.AdminName);
+                                    ContentUtility.Translate(SiteInfo, nodeId, contentId, Request.Form["translateCollection"], translateType, Body.AdminName);
 
-                                    Body.AddSiteLog(PublishmentSystemInfo.PublishmentSystemId, nodeId, contentId, "转移内容", string.Empty);
+                                    Body.AddSiteLog(SiteInfo.Id, nodeId, contentId, "转移内容", string.Empty);
                                 }
                             }
                         }

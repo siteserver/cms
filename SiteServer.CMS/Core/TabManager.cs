@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using SiteServer.Utils;
-using SiteServer.Utils.Tabs;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 
@@ -70,7 +69,7 @@ namespace SiteServer.CMS.Core
             return tab;
         }
 
-        public static List<Tab> GetTabList(string topId, int publishmentSystemId)
+        public static List<Tab> GetTabList(string topId, int siteId)
         {
             var tabs = new List<Tab>();
 
@@ -88,9 +87,9 @@ namespace SiteServer.CMS.Core
             }
 
             var menus = new Dictionary<string, Menu>();
-            if (publishmentSystemId > 0 && topId == string.Empty)
+            if (siteId > 0 && topId == string.Empty)
             {
-                var siteMenus = PluginManager.GetSiteMenus(publishmentSystemId);
+                var siteMenus = PluginManager.GetSiteMenus(siteId);
                 if (siteMenus != null)
                 {
                     foreach (var siteMenu in siteMenus)

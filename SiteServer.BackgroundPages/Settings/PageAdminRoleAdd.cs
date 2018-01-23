@@ -15,8 +15,8 @@ namespace SiteServer.BackgroundPages.Settings
         public TextBox TbRoleName;
         public TextBox TbDescription;
         public CheckBoxList CblPermissions;
-        public PlaceHolder PhPublishmentSystemPermissions;
-        public Literal LtlPublishmentSystems;
+        public PlaceHolder PhSitePermissions;
+        public Literal LtlSites;
         public Button BtnReturn;
 
         public const string SystemPermissionsInfoListKey = "SystemPermissionsInfoListKey";
@@ -45,26 +45,26 @@ namespace SiteServer.BackgroundPages.Settings
             return PageUtils.GetSettingsUrl(nameof(PageAdminRoleAdd), queryString);
         }
 
-        public string GetPublishmentSystemsHtml(List<int> allPublishmentSystemIdList, List<int> managedPublishmentSystemIdList)
+        public string GetSitesHtml(List<int> allSiteIdList, List<int> managedSiteIdList)
         {
             var htmlBuilder = new StringBuilder();
 
-            foreach (var publishmentSystemId in allPublishmentSystemIdList)
+            foreach (var siteId in allSiteIdList)
             {
-                var psInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+                var psInfo = SiteManager.GetSiteInfo(siteId);
                 var className = "bg-secondary";
-                if (managedPublishmentSystemIdList.Contains(publishmentSystemId))
+                if (managedSiteIdList.Contains(siteId))
                 {
                     className = "bg-primary";
                 }
 
-                var pageUrl = PageAdminPermissionAdd.GetRedirectUrl(publishmentSystemId, Body.GetQueryString("RoleName"));
+                var pageUrl = PageAdminPermissionAdd.GetRedirectUrl(siteId, Body.GetQueryString("RoleName"));
                 string content = $@"
 <div onclick=""location.href = '{pageUrl}'"" class=""card text-white {className} mb-3 ml-3 float-left"" style=""max-width: 18rem;cursor: pointer;"">
-    <div class=""card-header"">{psInfo.PublishmentSystemName}</div>
+    <div class=""card-header"">{psInfo.SiteName}</div>
     <div class=""card-body"">
-        <p class=""card-text"">文件夹：{psInfo.PublishmentSystemDir}</p>
-        <p class=""card-text"">创建日期：{DateUtils.GetDateString(NodeManager.GetAddDate(publishmentSystemId, publishmentSystemId))}</p>
+        <p class=""card-text"">文件夹：{psInfo.SiteDir}</p>
+        <p class=""card-text"">创建日期：{DateUtils.GetDateString(ChannelManager.GetAddDate(siteId, siteId))}</p>
     </div>
 </div>";
                 htmlBuilder.Append(content);
@@ -94,7 +94,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 if (Body.GetQueryString("Return") == null)
                 {
-                    var systemPermissionsInfoList = DataProvider.SystemPermissionsDao.GetSystemPermissionsInfoList(_theRoleName);
+                    var systemPermissionsInfoList = DataProvider.SitePermissionsDao.GetSystemPermissionsInfoList(_theRoleName);
                     Session[SystemPermissionsInfoListKey] = systemPermissionsInfoList;
                 }
             }
@@ -102,7 +102,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 if (Body.GetQueryString("Return") == null)
                 {
-                    Session[SystemPermissionsInfoListKey] = new List<SystemPermissionsInfo>();
+                    Session[SystemPermissionsInfoListKey] = new List<SitePermissionsInfo>();
                 }
             }
 
@@ -128,12 +128,12 @@ namespace SiteServer.BackgroundPages.Settings
                 }
             }
 
-            PhPublishmentSystemPermissions.Visible = false;
+            PhSitePermissions.Visible = false;
 
-            var psPermissionsInRolesInfoList = Session[SystemPermissionsInfoListKey] as List<SystemPermissionsInfo>;
+            var psPermissionsInRolesInfoList = Session[SystemPermissionsInfoListKey] as List<SitePermissionsInfo>;
             if (psPermissionsInRolesInfoList != null)
             {
-                var allPublishmentSystemIdList = new List<int>();
+                var allSiteIdList = new List<int>();
                 foreach (var itemForPsid in ProductPermissionsManager.Current.WebsitePermissionDict.Keys)
                 {
                     if (ProductPermissionsManager.Current.ChannelPermissionDict.ContainsKey(itemForPsid) && ProductPermissionsManager.Current.WebsitePermissionDict.ContainsKey(itemForPsid))
@@ -142,17 +142,17 @@ namespace SiteServer.BackgroundPages.Settings
                         var listTwo = ProductPermissionsManager.Current.WebsitePermissionDict[itemForPsid];
                         if (listOne != null && listOne.Count > 0 || listTwo != null && listTwo.Count > 0)
                         {
-                            PhPublishmentSystemPermissions.Visible = true;
-                            allPublishmentSystemIdList.Add(itemForPsid);
+                            PhSitePermissions.Visible = true;
+                            allSiteIdList.Add(itemForPsid);
                         }
                     }
                 }
-                var managedPublishmentSystemIdList = new List<int>();
+                var managedSiteIdList = new List<int>();
                 foreach (var systemPermissionsInfo in psPermissionsInRolesInfoList)
                 {
-                    managedPublishmentSystemIdList.Add(systemPermissionsInfo.PublishmentSystemId);
+                    managedSiteIdList.Add(systemPermissionsInfo.SiteId);
                 }
-                LtlPublishmentSystems.Text = GetPublishmentSystemsHtml(allPublishmentSystemIdList, managedPublishmentSystemIdList);
+                LtlSites.Text = GetSitesHtml(allSiteIdList, managedSiteIdList);
             }
             else
             {
@@ -191,12 +191,12 @@ if (ss_role) {
             {
                 try
                 {
-                    var publishmentSystemPermissionsInRolesInfoList = Session[SystemPermissionsInfoListKey] as List<SystemPermissionsInfo>;
+                    var sitePermissionsInRolesInfoList = Session[SystemPermissionsInfoListKey] as List<SitePermissionsInfo>;
 
                     var generalPermissionList = ControlUtils.GetSelectedListControlValueStringList(CblPermissions);
                     DataProvider.PermissionsInRolesDao.UpdateRoleAndGeneralPermissions(_theRoleName, TbDescription.Text, generalPermissionList);
 
-                    DataProvider.SystemPermissionsDao.UpdatePublishmentPermissions(_theRoleName, publishmentSystemPermissionsInRolesInfoList);
+                    DataProvider.SitePermissionsDao.UpdateSitePermissions(_theRoleName, sitePermissionsInRolesInfoList);
 
                     PermissionsManager.ClearAllCache();
 
@@ -217,12 +217,12 @@ if (ss_role) {
                 }
                 else
                 {
-                    var publishmentSystemPermissionsInRolesInfoList = Session[SystemPermissionsInfoListKey] as List<SystemPermissionsInfo>;
+                    var sitePermissionsInRolesInfoList = Session[SystemPermissionsInfoListKey] as List<SitePermissionsInfo>;
                     var generalPermissionList = ControlUtils.GetSelectedListControlValueStringList(CblPermissions);
 
                     try
                     {
-                        DataProvider.SystemPermissionsDao.InsertRoleAndPermissions(TbRoleName.Text, Body.AdminName, TbDescription.Text, generalPermissionList, publishmentSystemPermissionsInRolesInfoList);
+                        DataProvider.SitePermissionsDao.InsertRoleAndPermissions(TbRoleName.Text, Body.AdminName, TbDescription.Text, generalPermissionList, sitePermissionsInRolesInfoList);
 
                         PermissionsManager.ClearAllCache();
 

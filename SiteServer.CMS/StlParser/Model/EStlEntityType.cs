@@ -7,8 +7,6 @@
         StlElement,                 //STL元素实体
 		Content,					//内容实体
 		Channel,					//栏目实体
-        Photo,                      //商品图片实体
-        Comment,                    //评论实体
         Request,                    //参数获取实体
         Navigation,                 //导航地址
         Sql,                        //Sql实体
@@ -41,14 +39,6 @@
             if (type == EStlEntityType.Channel)
             {
                 return "Channel";
-            }
-            if (type == EStlEntityType.Photo)
-            {
-                return "Photo";
-            }
-            if (type == EStlEntityType.Comment)
-            {
-                return "Comment";
             }
             if (type == EStlEntityType.Request)
             {
@@ -101,14 +91,6 @@
                 if (stlEntity.StartsWith("{channel."))
                 {
                     return EStlEntityType.Channel;
-                }
-                if (stlEntity.StartsWith("{photo."))
-                {
-                    return EStlEntityType.Photo;
-                }
-                if (stlEntity.StartsWith("{comment."))
-                {
-                    return EStlEntityType.Comment;
                 }
                 if (stlEntity.StartsWith("{request."))
                 {

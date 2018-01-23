@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Script.Serialization;
-using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 using SiteServer.Plugin;
 
 namespace SiteServer.Utils

@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Model.Enumerations;
-using SiteServer.Utils.Table;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -68,15 +65,15 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     if (contextInfo.ContentInfo != null && contextInfo.ContentInfo.ReferenceId > 0 && contextInfo.ContentInfo.SourceId > 0 && contextInfo.ContentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
                     {
                         var targetNodeId = contextInfo.ContentInfo.SourceId;
-                        //var targetPublishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(targetNodeId);
-                        var targetPublishmentSystemId = Node.GetPublishmentSystemId(targetNodeId);
-                        var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
-                        var targetNodeInfo = NodeManager.GetNodeInfo(targetPublishmentSystemId, targetNodeId);
+                        //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetNodeId);
+                        var targetSiteId = Node.GetSiteId(targetNodeId);
+                        var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
+                        var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetNodeId);
 
-                        var tableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeInfo);
+                        var tableName = ChannelManager.GetTableName(targetSiteInfo, targetNodeInfo);
                         //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contextInfo.ContentInfo.ReferenceId);
                         var targetContentInfo = Cache.Content.GetContentInfo(tableName, contextInfo.ContentInfo.ReferenceId);
-                        if (targetContentInfo != null && targetContentInfo.NodeId > 0)
+                        if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                         {
                             //标题可以使用自己的
                             targetContentInfo.Title = contextInfo.ContentInfo.Title;
@@ -96,7 +93,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId));
+                            var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId));
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Id);
                             parsedContent = Cache.Content.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Id);
                         }
@@ -109,7 +106,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId));
+                            var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId));
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Title);
                             parsedContent = Cache.Content.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Title);
                         }
@@ -122,7 +119,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId));
+                            var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId));
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Title);
                             parsedContent = Cache.Content.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Title);
                         }
@@ -131,12 +128,12 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     {
                         if (contextInfo.ContentInfo != null)
                         {
-                            parsedContent = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ContentInfo, pageInfo.IsLocal);
+                            parsedContent = PageUtility.GetContentUrl(pageInfo.SiteInfo, contextInfo.ContentInfo, pageInfo.IsLocal);
                         }
                         else
                         {
-                            var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId);
-                            parsedContent = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, nodeInfo, contextInfo.ContentId, pageInfo.IsLocal);
+                            var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
+                            parsedContent = PageUtility.GetContentUrl(pageInfo.SiteInfo, nodeInfo, contextInfo.ContentId, pageInfo.IsLocal);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(ImageUrl, attributeName))//内容图片地址
@@ -147,14 +144,14 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId));
+                            var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId));
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, BackgroundContentAttribute.ImageUrl);
                             parsedContent = Cache.Content.GetValue(tableName, contextInfo.ContentId, BackgroundContentAttribute.ImageUrl);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, parsedContent, pageInfo.IsLocal);
+                            parsedContent = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, parsedContent, pageInfo.IsLocal);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(VideoUrl, attributeName))//内容视频地址
@@ -165,14 +162,14 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId));
+                            var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId));
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, BackgroundContentAttribute.VideoUrl);
                             parsedContent = Cache.Content.GetValue(tableName, contextInfo.ContentId, BackgroundContentAttribute.VideoUrl);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, parsedContent, pageInfo.IsLocal);
+                            parsedContent = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, parsedContent, pageInfo.IsLocal);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(FileUrl, attributeName))//内容附件地址
@@ -183,14 +180,14 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId));
+                            var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId));
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, BackgroundContentAttribute.FileUrl);
                             parsedContent = Cache.Content.GetValue(tableName, contextInfo.ContentId, BackgroundContentAttribute.FileUrl);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, parsedContent, pageInfo.IsLocal);
+                            parsedContent = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, parsedContent, pageInfo.IsLocal);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(DownloadUrl, attributeName))//内容附件地址(可统计下载量)
@@ -201,14 +198,14 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId));
+                            var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId));
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, BackgroundContentAttribute.FileUrl);
                             parsedContent = Cache.Content.GetValue(tableName, contextInfo.ContentId, BackgroundContentAttribute.FileUrl);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = ActionsDownload.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, parsedContent);
+                            parsedContent = ActionsDownload.GetUrl(pageInfo.ApiUrl, pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, parsedContent);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(AddDate, attributeName))//内容添加日期
@@ -219,7 +216,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
+                            var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
                             //parsedContent = DateUtils.Format(DataProvider.ContentDao.GetAddDate(tableName, contextInfo.ContentId), string.Empty);
                             parsedContent = DateUtils.Format(Cache.Content.GetAddDate(tableName, contextInfo.ContentId), string.Empty);
                         }
@@ -232,7 +229,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
+                            var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
                             //parsedContent = DateUtils.Format(DataProvider.ContentDao.GetLastEditDate(tableName, contextInfo.ContentId), string.Empty);
                             parsedContent = DateUtils.Format(Cache.Content.GetLastEditDate(tableName, contextInfo.ContentId), string.Empty);
                         }
@@ -245,23 +242,23 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId));
+                            var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId));
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, BackgroundContentAttribute.Content);
                             parsedContent = Cache.Content.GetValue(tableName, contextInfo.ContentId, BackgroundContentAttribute.Content);
                         }
-                        parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.PublishmentSystemInfo, parsedContent, pageInfo.IsLocal);
+                        parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.SiteInfo, parsedContent, pageInfo.IsLocal);
                     }
                     else if (StringUtils.EqualsIgnoreCase(Group, attributeName))//内容组别
                     {
                         if (contextInfo.ContentInfo != null)
                         {
-                            parsedContent = contextInfo.ContentInfo.ContentGroupNameCollection;
+                            parsedContent = contextInfo.ContentInfo.GroupNameCollection;
                         }
                         else
                         {
-                            var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId));
+                            var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId));
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection);
-                            parsedContent = Cache.Content.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection);
+                            parsedContent = Cache.Content.GetValue(tableName, contextInfo.ContentId, ContentAttribute.GroupNameCollection);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(Tags, attributeName))//标签
@@ -272,7 +269,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId));
+                            var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId));
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Tags);
                             parsedContent = Cache.Content.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Tags);
                         }
@@ -286,7 +283,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId));
+                            var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId));
                             //addUserName = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.AddUserName);
                             addUserName = Cache.Content.GetValue(tableName, contextInfo.ContentId, ContentAttribute.AddUserName);
                         }
@@ -306,7 +303,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         int contentNodeId;
                         if (contextInfo.ContentInfo != null)
                         {
-                            contentNodeId = contextInfo.ContentInfo.NodeId;
+                            contentNodeId = contextInfo.ContentInfo.ChannelId;
                             if (contextInfo.ContentInfo.ContainsKey(attributeName))
                             {
                                 parsedContent = contextInfo.ContentInfo.GetString(attributeName);
@@ -314,21 +311,21 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
+                            var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
                             //contentNodeId = DataProvider.ContentDao.GetNodeId(tableName, contextInfo.ContentId);
-                            contentNodeId = Cache.Content.GetNodeId(tableName, contextInfo.ContentId);
-                            tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contentNodeId));
+                            contentNodeId = Cache.Content.GetChannelId(tableName, contextInfo.ContentId);
+                            tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, ChannelManager.GetChannelInfo(pageInfo.SiteId, contentNodeId));
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, attributeName);
                             parsedContent = Cache.Content.GetValue(tableName, contextInfo.ContentId, attributeName);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(pageInfo.PublishmentSystemId, contentNodeId);
-                            var styleInfo = TableStyleManager.GetTableStyleInfo(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, attributeName, relatedIdentities);
+                            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, contentNodeId);
+                            var styleInfo = TableStyleManager.GetTableStyleInfo(pageInfo.SiteInfo.TableName, attributeName, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
-                            parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, ",", pageInfo.PublishmentSystemInfo, styleInfo, string.Empty, null, string.Empty, true);
+                            parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, ",", pageInfo.SiteInfo, styleInfo, string.Empty, null, string.Empty, true);
                         }
 
                     }

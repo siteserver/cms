@@ -6,10 +6,10 @@ namespace SiteServer.CMS.Model
 	{
 	    public ContentCheckInfo()
 		{
-            CheckId = 0;
+            Id = 0;
             TableName = string.Empty;
-			PublishmentSystemId = 0;
-            NodeId = 0;
+			SiteId = 0;
+            ChannelId = 0;
             ContentId = 0;
             IsAdmin = false;
             UserName = string.Empty;
@@ -19,12 +19,12 @@ namespace SiteServer.CMS.Model
             Reasons = string.Empty;
 		}
 
-        public ContentCheckInfo(int checkId, string tableName, int publishmentSystemId, int nodeId, int contentId, bool isAdmin, string userName, bool isChecked, int checkedLevel, DateTime checkDate, string reasons) 
+        public ContentCheckInfo(int id, string tableName, int siteId, int channelId, int contentId, bool isAdmin, string userName, bool isChecked, int checkedLevel, DateTime checkDate, string reasons) 
 		{
-            CheckId = checkId;
+            Id = id;
             TableName = tableName;
-            PublishmentSystemId = publishmentSystemId;
-            NodeId = nodeId;
+            SiteId = siteId;
+            ChannelId = channelId;
             ContentId = contentId;
             IsAdmin = isAdmin;
             UserName = userName;
@@ -34,13 +34,13 @@ namespace SiteServer.CMS.Model
             Reasons = reasons;
 		}
 
-        public int CheckId { get; set; }
+        public int Id { get; set; }
 
 	    public string TableName { get; set; }
 
-	    public int PublishmentSystemId { get; set; }
+	    public int SiteId { get; set; }
 
-	    public int NodeId { get; set; }
+	    public int ChannelId { get; set; }
 
 	    public int ContentId { get; set; }
 

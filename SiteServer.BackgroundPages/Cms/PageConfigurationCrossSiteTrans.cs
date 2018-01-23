@@ -2,10 +2,10 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -15,11 +15,10 @@ namespace SiteServer.BackgroundPages.Cms
 
         private int _currentNodeId;
 
-        public static string GetRedirectUrl(int publishmentSystemId, int currentNodeId)
+        public static string GetRedirectUrl(int siteId, int currentNodeId)
         {
-            return PageUtils.GetCmsUrl(nameof(PageConfigurationCrossSiteTrans), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageConfigurationCrossSiteTrans), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"CurrentNodeID", currentNodeId.ToString()}
             });
         }
@@ -28,18 +27,18 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-			PageUtils.CheckRequestParameter("PublishmentSystemID");
+			PageUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
             VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
 
-            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.ConfigurationCrossSiteTrans, null));
+            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, ELoadingType.ConfigurationCrossSiteTrans, null));
 
             if (Body.IsQueryExists("CurrentNodeID"))
             {
                 _currentNodeId = Body.GetQueryInt("CurrentNodeID");
-                var onLoadScript = ChannelLoading.GetScriptOnLoad(PublishmentSystemId, _currentNodeId);
+                var onLoadScript = ChannelLoading.GetScriptOnLoad(SiteId, _currentNodeId);
                 if (!string.IsNullOrEmpty(onLoadScript))
                 {
                     ClientScriptRegisterClientScriptBlock("NodeTreeScriptOnLoad", onLoadScript);
@@ -47,20 +46,20 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             EBooleanUtils.AddListItems(RblIsCrossSiteTransChecked, "无需审核", "需要审核");
-            ControlUtils.SelectSingleItem(RblIsCrossSiteTransChecked, PublishmentSystemInfo.Additional.IsCrossSiteTransChecked.ToString());
+            ControlUtils.SelectSingleItem(RblIsCrossSiteTransChecked, SiteInfo.Additional.IsCrossSiteTransChecked.ToString());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
 		{
 		    if (!Page.IsPostBack || !Page.IsValid) return;
 
-		    PublishmentSystemInfo.Additional.IsCrossSiteTransChecked = TranslateUtils.ToBool(RblIsCrossSiteTransChecked.SelectedValue);
+		    SiteInfo.Additional.IsCrossSiteTransChecked = TranslateUtils.ToBool(RblIsCrossSiteTransChecked.SelectedValue);
 				
 		    try
 		    {
-		        DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
+		        DataProvider.SiteDao.Update(SiteInfo);
 
-		        Body.AddSiteLog(PublishmentSystemId, "修改默认跨站转发设置");
+		        Body.AddSiteLog(SiteId, "修改默认跨站转发设置");
 
 		        SuccessMessage("默认跨站转发设置修改成功！");
 		    }

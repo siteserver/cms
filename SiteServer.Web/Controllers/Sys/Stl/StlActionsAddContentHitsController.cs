@@ -1,6 +1,5 @@
 ﻿using System.Web;
 using System.Web.Http;
-using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 
@@ -11,13 +10,13 @@ namespace SiteServer.API.Controllers.Sys.Stl
     {
         [HttpGet]
         [Route(ActionsAddContentHits.Route)]
-        public void Main(int publishmentSystemId, int channelId, int contentId)
+        public void Main(int siteId, int channelId, int contentId)
         {
             try
             {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
-                DataProvider.ContentDao.AddHits(tableName, publishmentSystemInfo.Additional.IsCountHits, publishmentSystemInfo.Additional.IsCountHitsByDay, contentId);
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+                DataProvider.ContentDao.AddHits(tableName, siteInfo.Additional.IsCountHits, siteInfo.Additional.IsCountHitsByDay, contentId);
             }
             catch
             {

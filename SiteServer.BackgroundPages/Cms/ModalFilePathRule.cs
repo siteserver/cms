@@ -16,11 +16,10 @@ namespace SiteServer.BackgroundPages.Cms
         private bool _isChannel;
         private string _textBoxClientId = string.Empty;
 
-        public static string GetOpenWindowString(int publishmentSystemId, int nodeId, bool isChannel, string textBoxclientId)
+        public static string GetOpenWindowString(int siteId, int nodeId, bool isChannel, string textBoxclientId)
         {
-            return LayerUtils.GetOpenScriptWithTextBoxValue(isChannel ? "栏目页文件名规则" : "内容页文件名规则", PageUtils.GetCmsUrl(nameof(ModalFilePathRule), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithTextBoxValue(isChannel ? "栏目页文件名规则" : "内容页文件名规则", PageUtils.GetCmsUrl(siteId, nameof(ModalFilePathRule), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"IsChannel", isChannel.ToString()},
                 {"TextBoxClientID", textBoxclientId}
@@ -54,8 +53,8 @@ namespace SiteServer.BackgroundPages.Cms
             var mod = 0;
             var count = 0;
             var entitiesDictionary = _isChannel
-                ? PathUtility.ChannelFilePathRules.GetDictionary(PublishmentSystemInfo, _nodeId)
-                : PathUtility.ContentFilePathRules.GetDictionary(PublishmentSystemInfo, _nodeId);
+                ? PathUtility.ChannelFilePathRules.GetDictionary(SiteInfo, _nodeId)
+                : PathUtility.ContentFilePathRules.GetDictionary(SiteInfo, _nodeId);
             
             foreach (string label in entitiesDictionary.Keys)
             {

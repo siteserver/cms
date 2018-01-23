@@ -17,10 +17,10 @@ namespace SiteServer.CMS.StlParser.Utility
         {
         }
 
-        public static string ParsePreviewContent(PublishmentSystemInfo publishmentSystemInfo, string content)
+        public static string ParsePreviewContent(SiteInfo siteInfo, string content)
         {
             var templateInfo = new TemplateInfo();
-            var pageInfo = new PageInfo(publishmentSystemInfo.PublishmentSystemId, 0, publishmentSystemInfo, templateInfo);
+            var pageInfo = new PageInfo(siteInfo.Id, 0, siteInfo, templateInfo);
             var contextInfo = new ContextInfo(pageInfo);
 
             var parsedBuilder = new StringBuilder(content);
@@ -44,13 +44,13 @@ namespace SiteServer.CMS.StlParser.Utility
             contextInfo.IsInnerElement = isInnerElement;
         }
 
-        public static string ParseTemplateContent(string template, int publishmentSystemId, int channelId, int contentId)
+        public static string ParseTemplateContent(string template, int siteId, int channelId, int contentId)
         {
             if (string.IsNullOrEmpty(template)) return string.Empty;
 
             var builder = new StringBuilder(template);
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var pageInfo = new PageInfo(channelId, contentId, publishmentSystemInfo, null);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var pageInfo = new PageInfo(channelId, contentId, siteInfo, null);
             var contextInfo = new ContextInfo(pageInfo);
             ParseTemplateContent(builder, pageInfo, contextInfo);
             return builder.ToString();
@@ -79,22 +79,22 @@ namespace SiteServer.CMS.StlParser.Utility
             if (string.IsNullOrEmpty(template)) return string.Empty;
 
             var builder = new StringBuilder(template);
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(context.PublishmentSystemId);
+            var siteInfo = SiteManager.GetSiteInfo(context.SiteId);
             var templateInfo = new TemplateInfo
             {
-                TemplateId = context.TemplateId,
+                Id = context.TemplateId,
                 TemplateType = ETemplateTypeUtils.GetEnumType(context.TemplateType)
             };
-            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, publishmentSystemInfo, templateInfo);
+            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, siteInfo, templateInfo);
             var contextInfo = new ContextInfo(pageInfo);
             ParseInnerContent(builder, pageInfo, contextInfo);
             return builder.ToString();
         }
 
-        //public static void ParseInnerContent(StringBuilder builder, int publishmentSystemId, int channelId, int contentId)
+        //public static void ParseInnerContent(StringBuilder builder, int siteId, int channelId, int contentId)
         //{
-        //    var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-        //    var pageInfo = new PageInfo(channelId, contentId, publishmentSystemInfo, null, null);
+        //    var siteInfo = SiteManager.GetSiteInfo(siteId);
+        //    var pageInfo = new PageInfo(channelId, contentId, siteInfo, null, null);
         //    var contextInfo = new ContextInfo(pageInfo);
         //    ParseInnerContent(builder, pageInfo, contextInfo);
         //}
@@ -189,7 +189,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var builder = new StringBuilder();
 
             builder.Append(
-                $@"<script>var $pageInfo = {{publishmentSystemID : {pageInfo.PublishmentSystemId}, channelID : {pageInfo.PageNodeId}, contentID : {pageInfo.PageContentId}, siteUrl : ""{pageInfo.PublishmentSystemInfo.Additional.WebUrl.TrimEnd('/')}"", currentUrl : ""{StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId, pageInfo.IsLocal)}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{pageInfo.ApiUrl.TrimEnd('/')}""}};</script>");
+                $@"<script>var $pageInfo = {{siteID : {pageInfo.SiteId}, channelID : {pageInfo.PageNodeId}, contentID : {pageInfo.PageContentId}, siteUrl : ""{pageInfo.SiteInfo.Additional.WebUrl.TrimEnd('/')}"", currentUrl : ""{StlUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal)}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{pageInfo.ApiUrl.TrimEnd('/')}""}};</script>");
 
             foreach (string key in pageInfo.PageHeadScriptKeys)
             {

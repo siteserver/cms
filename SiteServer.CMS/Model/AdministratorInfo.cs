@@ -1,6 +1,6 @@
 using System;
 using SiteServer.Utils;
-using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Model
 {
@@ -20,8 +20,8 @@ namespace SiteServer.CMS.Model
             CountOfFailedLogin = 0;
             CreatorUserName = string.Empty;
             IsLockedOut = false;
-            PublishmentSystemIdCollection = string.Empty;
-            PublishmentSystemId = 0;
+            SiteIdCollection = string.Empty;
+            SiteId = 0;
             DepartmentId = 0;
             AreaId = 0;
             _displayName = string.Empty;
@@ -29,7 +29,7 @@ namespace SiteServer.CMS.Model
             Mobile = string.Empty;
         }
 
-        public AdministratorInfo(string userName, string password, EPasswordFormat passwordFormat, string passwordSalt, DateTime creationDate, DateTime lastActivityDate, int countOfLogin, int countOfFailedLogin, string creatorUserName, bool isLockedOut, string publishmentSystemIdCollection, int publishmentSystemId, int departmentId, int areaId, string displayName, string email, string mobile)
+        public AdministratorInfo(string userName, string password, EPasswordFormat passwordFormat, string passwordSalt, DateTime creationDate, DateTime lastActivityDate, int countOfLogin, int countOfFailedLogin, string creatorUserName, bool isLockedOut, string siteIdCollection, int siteId, int departmentId, int areaId, string displayName, string email, string mobile)
         {
             UserName = userName;
             Password = password;
@@ -41,8 +41,8 @@ namespace SiteServer.CMS.Model
             CountOfFailedLogin = countOfFailedLogin;
             CreatorUserName = creatorUserName;
             IsLockedOut = isLockedOut;
-            PublishmentSystemIdCollection = publishmentSystemIdCollection;
-            PublishmentSystemId = publishmentSystemId;
+            SiteIdCollection = siteIdCollection;
+            SiteId = siteId;
             DepartmentId = departmentId;
             AreaId = areaId;
             _displayName = displayName;
@@ -70,9 +70,9 @@ namespace SiteServer.CMS.Model
 
         public bool IsLockedOut { get; set; }
 
-        public string PublishmentSystemIdCollection { get; set; }
+        public string SiteIdCollection { get; set; }
 
-        public int PublishmentSystemId { get; set; }
+        public int SiteId { get; set; }
 
         public int DepartmentId { get; set; }
 

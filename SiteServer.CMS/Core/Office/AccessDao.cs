@@ -2,10 +2,10 @@
 using System.Data.OleDb;
 using System.Collections;
 using System.Collections.Generic;
-using SiteServer.Utils.Model;
 using System.Text;
+using SiteServer.CMS.Model;
 using SiteServer.Utils;
-using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.Office
 {
@@ -40,7 +40,7 @@ namespace SiteServer.CMS.Core.Office
             return createBuilder.ToString();
         }
 
-        public ArrayList GetInsertSqlStringArrayList(string nodeName, int publishmentSystemId, int nodeId, string tableName, List<TableStyleInfo> styleInfoList, List<string> displayAttributes, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out bool isExport)
+        public ArrayList GetInsertSqlStringArrayList(string nodeName, int siteId, int nodeId, string tableName, List<TableStyleInfo> styleInfoList, List<string> displayAttributes, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out bool isExport)
         {
             var insertSqlArrayList = new ArrayList();
 

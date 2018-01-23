@@ -5,35 +5,35 @@ namespace SiteServer.CMS.Controllers.Preview
 {
     public class PreviewApi
     {
-        public const string Route = "preview/{publishmentSystemId}";
-        public const string RouteChannel = "preview/{publishmentSystemId}/{channelId}";
-        public const string RouteContent = "preview/{publishmentSystemId}/{channelId}/{contentId}";
-        public const string RouteFile = "preview/{publishmentSystemId}/file/{fileTemplateId}";
+        public const string Route = "preview/{siteId}";
+        public const string RouteChannel = "preview/{siteId}/{channelId}";
+        public const string RouteContent = "preview/{siteId}/{channelId}/{contentId}";
+        public const string RouteFile = "preview/{siteId}/file/{fileTemplateId}";
 
-        public static string GetPublishmentSystemUrl(int publishmentSystemId)
+        public static string GetSiteUrl(int siteId)
         {
-            return GetUrl(publishmentSystemId, 0, 0, 0);
+            return GetUrl(siteId, 0, 0, 0);
         }
 
-        public static string GetChannelUrl(int publishmentSystemId, int channelId)
+        public static string GetChannelUrl(int siteId, int channelId)
         {
-            return GetUrl(publishmentSystemId, channelId, 0, 0);
+            return GetUrl(siteId, channelId, 0, 0);
         }
 
-        public static string GetContentUrl(int publishmentSystemId, int channelId, int contentId)
+        public static string GetContentUrl(int siteId, int channelId, int contentId)
         {
-            return GetUrl(publishmentSystemId, channelId, contentId, 0);
+            return GetUrl(siteId, channelId, contentId, 0);
         }
 
-        public static string GetFileUrl(int publishmentSystemId, int fileTemplateId)
+        public static string GetFileUrl(int siteId, int fileTemplateId)
         {
-            return GetUrl(publishmentSystemId, 0, 0, fileTemplateId);
+            return GetUrl(siteId, 0, 0, fileTemplateId);
         }
 
-        private static string GetUrl(int publishmentSystemId, int channelId, int contentId, int fileTemplateId)
+        private static string GetUrl(int siteId, int channelId, int contentId, int fileTemplateId)
         {
             var apiUrl = PageUtils.Combine(PageUtility.InnerApiUrl, Route);
-            apiUrl = apiUrl.Replace("{publishmentSystemId}", publishmentSystemId.ToString());
+            apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             if (channelId > 0)
             {
                 apiUrl = PageUtils.Combine(apiUrl, channelId.ToString());

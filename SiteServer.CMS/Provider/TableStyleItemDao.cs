@@ -2,20 +2,19 @@ using System.Collections.Generic;
 using System.Data;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
     public class TableStyleItemDao : DataProviderBase
     {
-        public override string TableName => "bairong_TableStyleItem";
+        public override string TableName => "siteserver_TableStyleItem";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
             new TableColumnInfo
             {
-                ColumnName = nameof(TableStyleItemInfo.TableStyleItemId),
+                ColumnName = nameof(TableStyleItemInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
@@ -45,11 +44,11 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlSelectAllStyleItem = "SELECT TableStyleItemID, TableStyleID, ItemTitle, ItemValue, IsSelected FROM bairong_TableStyleItem WHERE (TableStyleID = @TableStyleID)";
+        private const string SqlSelectAllStyleItem = "SELECT Id, TableStyleID, ItemTitle, ItemValue, IsSelected FROM siteserver_TableStyleItem WHERE (TableStyleID = @TableStyleID)";
 
-        private const string SqlDeleteStyleItems = "DELETE FROM bairong_TableStyleItem WHERE TableStyleID = @TableStyleID";
+        private const string SqlDeleteStyleItems = "DELETE FROM siteserver_TableStyleItem WHERE TableStyleID = @TableStyleID";
 
-        private const string SqlInsertStyleItem = "INSERT INTO bairong_TableStyleItem (TableStyleID, ItemTitle, ItemValue, IsSelected) VALUES (@TableStyleID, @ItemTitle, @ItemValue, @IsSelected)";
+        private const string SqlInsertStyleItem = "INSERT INTO siteserver_TableStyleItem (TableStyleID, ItemTitle, ItemValue, IsSelected) VALUES (@TableStyleID, @ItemTitle, @ItemValue, @IsSelected)";
 
         private const string ParmTableStyleId = "@TableStyleID";
         private const string ParmItemTitle = "@ItemTitle";

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -95,18 +95,18 @@ namespace SiteServer.BackgroundPages.Settings
             ltlInputType.Text = InputTypeUtils.GetText(styleInfo.InputType);
             ltlFieldType.Text = TableMetadataManager.IsAttributeNameExists(_tableName, styleInfo.AttributeName) ? $"真实 {TableMetadataManager.GetTableMetadataDataType(_tableName, styleInfo.AttributeName)}" : "虚拟字段";
 
-            ltlValidate.Text = ValidateTypeUtils.GetValidateInfo(styleInfo);
+            ltlValidate.Text = TableStyleManager.GetValidateInfo(styleInfo);
 
-            var showPopWinString = ModalTableStyleAdd.GetOpenWindowString(0, styleInfo.TableStyleId, new List<int>{0}, _tableName, styleInfo.AttributeName, _redirectUrl);
-            var editText = styleInfo.TableStyleId != 0 ? "修改" : "添加";
+            var showPopWinString = ModalTableStyleAdd.GetOpenWindowString(0, styleInfo.Id, new List<int>{0}, _tableName, styleInfo.AttributeName, _redirectUrl);
+            var editText = styleInfo.Id != 0 ? "修改" : "添加";
             ltlEditStyle.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">{editText}</a>";
 
-            showPopWinString = ModalTableStyleValidateAdd.GetOpenWindowString(styleInfo.TableStyleId, new List<int> { 0 }, _tableName, styleInfo.AttributeName, _redirectUrl);
+            showPopWinString = ModalTableStyleValidateAdd.GetOpenWindowString(0, styleInfo.Id, new List<int> { 0 }, _tableName, styleInfo.AttributeName, _redirectUrl);
             ltlEditValidate.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">设置</a>";
 
             ltlTaxis.Text = styleInfo.Taxis.ToString();
 
-            if (styleInfo.TableStyleId == 0) return;
+            if (styleInfo.Id == 0) return;
 
             ltlEditStyle.Text +=
                 $@"&nbsp;&nbsp;<a href=""{PageUtils.GetSettingsUrl(nameof(PageSiteTableStyle), new NameValueCollection

@@ -4,7 +4,6 @@ using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -23,20 +22,18 @@ namespace SiteServer.BackgroundPages.Cms
         private string _tableName;
         private List<int> _idArrayList;
 
-        public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
+        public static string GetOpenWindowString(int siteId, int nodeId)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(nameof(ModalContentAttributes), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(siteId, nameof(ModalContentAttributes), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"nodeID", nodeId.ToString()}
             }), "ContentIDCollection", "请选择需要设置属性的内容！", 450, 350);
         }
 
-        public static string GetOpenWindowStringWithCheckBoxValue(int publishmentSystemId, int nodeId)
+        public static string GetOpenWindowStringWithCheckBoxValue(int siteId, int nodeId)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(nameof(ModalContentAttributes), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(siteId, nameof(ModalContentAttributes), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"nodeID", nodeId.ToString()}
             }), "ContentIDCollection", "请选择需要设置属性的内容！", 450, 350);
         }
@@ -45,10 +42,10 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID");
+            PageUtils.CheckRequestParameter("siteId", "NodeID");
 
             _nodeId = Body.GetQueryInt("NodeID");
-            _tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeId);
+            _tableName = ChannelManager.GetTableName(SiteInfo, _nodeId);
             _idArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection"));
 		}
 
@@ -83,11 +80,11 @@ namespace SiteServer.BackgroundPages.Cms
                                 {
                                     contentInfo.IsTop = true;
                                 }
-                                DataProvider.ContentDao.Update(_tableName, PublishmentSystemInfo, contentInfo);
+                                DataProvider.ContentDao.Update(_tableName, SiteInfo, contentInfo);
                             }
                         }
 
-                        Body.AddSiteLog(PublishmentSystemId, "设置内容属性");
+                        Body.AddSiteLog(SiteId, "设置内容属性");
 
                         isChanged = true;
                     }
@@ -117,11 +114,11 @@ namespace SiteServer.BackgroundPages.Cms
                                 {
                                     contentInfo.IsTop = false;
                                 }
-                                DataProvider.ContentDao.Update(_tableName, PublishmentSystemInfo, contentInfo);
+                                DataProvider.ContentDao.Update(_tableName, SiteInfo, contentInfo);
                             }
                         }
 
-                        Body.AddSiteLog(PublishmentSystemId, "取消内容属性");
+                        Body.AddSiteLog(SiteId, "取消内容属性");
 
                         isChanged = true;
                     }
@@ -135,7 +132,7 @@ namespace SiteServer.BackgroundPages.Cms
                         DataProvider.ContentDao.SetValue(_tableName, contentId, ContentAttribute.Hits, hits.ToString());
                     }
 
-                    Body.AddSiteLog(PublishmentSystemId, "设置内容点击量");
+                    Body.AddSiteLog(SiteId, "设置内容点击量");
 
                     isChanged = true;
                 }

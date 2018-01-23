@@ -1,8 +1,7 @@
 ﻿using System;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {

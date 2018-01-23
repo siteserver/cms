@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.Plugin;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -30,9 +30,9 @@ namespace SiteServer.BackgroundPages.Cms
         private string _redirectUrl;
         private TableStyleInfo _styleInfo;
 
-        public static string GetOpenWindowString(int tableStyleId, List<int> relatedIdentities, string tableName, string attributeName, string redirectUrl)
+        public static string GetOpenWindowString(int siteId, int tableStyleId, List<int> relatedIdentities, string tableName, string attributeName, string redirectUrl)
         {
-            return LayerUtils.GetOpenScript("设置表单验证", PageUtils.GetCmsUrl(nameof(ModalTableStyleValidateAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("设置表单验证", PageUtils.GetCmsUrl(siteId, nameof(ModalTableStyleValidateAdd), new NameValueCollection
             {
                 {"TableStyleID", tableStyleId.ToString()},
                 {"RelatedIdentities", TranslateUtils.ObjectCollectionToString(relatedIdentities)},
@@ -121,18 +121,18 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     var relatedIdentity = _relatedIdentities[0];
                     _styleInfo.RelatedIdentity = relatedIdentity;
-                    _styleInfo.TableStyleId = TableStyleManager.Insert(_styleInfo);
+                    _styleInfo.Id = TableStyleManager.Insert(_styleInfo);
                 }
 
-                if (_styleInfo.TableStyleId > 0)
+                if (_styleInfo.Id > 0)
                 {
                     TableStyleManager.Update(_styleInfo);
-                    Body.AddSiteLog(PublishmentSystemId, "修改表单验证", $"字段:{_styleInfo.AttributeName}");
+                    Body.AddSiteLog(SiteId, "修改表单验证", $"字段:{_styleInfo.AttributeName}");
                 }
                 else
                 {
                     TableStyleManager.Insert(_styleInfo);
-                    Body.AddSiteLog(PublishmentSystemId, "新增表单验证", $"字段:{_styleInfo.AttributeName}");
+                    Body.AddSiteLog(SiteId, "新增表单验证", $"字段:{_styleInfo.AttributeName}");
                 }
                 isChanged = true;
             }

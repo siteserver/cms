@@ -4,7 +4,6 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -17,7 +16,7 @@ namespace SiteServer.BackgroundPages.Controls
     {
         public IAttributes Attributes { get; set; }
 
-        public PublishmentSystemInfo PublishmentSystemInfo { get; set; }
+        public SiteInfo SiteInfo { get; set; }
 
         public int NodeId { get; set; }
 
@@ -57,7 +56,7 @@ namespace SiteServer.BackgroundPages.Controls
                     var html = string.Empty;
                     try
                     {
-                        html = formFunc(PublishmentSystemInfo.PublishmentSystemId, NodeId, Attributes);
+                        html = formFunc(SiteInfo.Id, NodeId, Attributes);
                     }
                     catch (Exception ex)
                     {
@@ -83,13 +82,13 @@ namespace SiteServer.BackgroundPages.Controls
                 }
 
                 string extra;
-                var value = BackgroundInputTypeParser.Parse(PublishmentSystemInfo, NodeId, styleInfo, Attributes, pageScripts, out extra);
+                var value = BackgroundInputTypeParser.Parse(SiteInfo, NodeId, styleInfo, Attributes, pageScripts, out extra);
 
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
                 if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
                 {
-                    var commands = WebUtils.GetTextEditorCommands(PublishmentSystemInfo, styleInfo.AttributeName);
+                    var commands = WebUtils.GetTextEditorCommands(SiteInfo, styleInfo.AttributeName);
                     builder.Append($@"
 <div class=""form-group form-row"">
     <label class=""col-sm-1 col-form-label text-right"">{styleInfo.DisplayName}</label>

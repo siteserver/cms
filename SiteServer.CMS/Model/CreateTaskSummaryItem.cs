@@ -6,7 +6,7 @@ namespace SiteServer.CMS.Model
     {
         public CreateTaskSummaryItem(CreateTaskInfo taskInfo, string timeSpan, bool isExecuting, bool isPending, bool isSuccess, string errorMessage)
         {
-            publishmentSystemId = taskInfo.PublishmentSystemId;
+            siteId = taskInfo.SiteId;
             channelId = taskInfo.ChannelId;
             contentId = taskInfo.ContentId;
             templateId = taskInfo.TemplateId;
@@ -21,7 +21,7 @@ namespace SiteServer.CMS.Model
 
         public CreateTaskSummaryItem(CreateTaskLogInfo logInfo)
         {
-            publishmentSystemId = logInfo.PublishmentSystemId;
+            siteId = logInfo.SiteId;
             channelId = logInfo.ChannelId;
             contentId = logInfo.ContentId;
             templateId = logInfo.TemplateId;
@@ -34,7 +34,7 @@ namespace SiteServer.CMS.Model
             errorMessage = logInfo.ErrorMessage;
         }
 
-        public int publishmentSystemId { get; set; }
+        public int siteId { get; set; }
         public int channelId { get; set; }
         public int contentId { get; set; }
         public int templateId { get; set; }

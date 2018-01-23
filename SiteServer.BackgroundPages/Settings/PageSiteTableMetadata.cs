@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Settings
             _tableName = Body.GetQueryString("ENName").Trim();
             _redirectUrl = GetRedirectUrl(_tableName);
 
-            var tableInfo = DataProvider.TableCollectionDao.GetTableCollectionInfo(_tableName);
+            var tableInfo = DataProvider.TableDao.GetTableCollectionInfo(_tableName);
 
             if (Body.IsQueryExists("Delete"))
             {
@@ -87,7 +87,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    DataProvider.TableCollectionDao.CreateDbTable(_tableName);
+                    DataProvider.TableDao.CreateDbTable(_tableName);
                     tableInfo.IsChangedAfterCreatedInDb = false;
 
                     Body.AddAdminLog("创建辅助表", $"辅助表:{_tableName}");
@@ -98,7 +98,7 @@ namespace SiteServer.BackgroundPages.Settings
                 catch (Exception ex)
                 {
                     FailMessage(ex, "<br>辅助表创建失败，失败原因为：" + ex.Message + "<br>请检查创建表SQL命令");
-                    var sqlString = DataProvider.DatabaseDao.GetCreateTableCollectionInfoSqlString(_tableName);
+                    var sqlString = DataProvider.ContentDao.GetCreateTableCollectionInfoSqlString(_tableName);
                     LtlSqlString.Text = sqlString.Replace("\r\n", "<br>").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
                     _showSqlTable = true;
                 }
@@ -107,7 +107,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    DataProvider.TableCollectionDao.DeleteDbTable(_tableName);
+                    DataProvider.TableDao.DeleteDbTable(_tableName);
                     tableInfo.IsChangedAfterCreatedInDb = false;
 
                     Body.AddAdminLog("删除辅助表", $"辅助表:{_tableName}");
@@ -125,8 +125,8 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    DataProvider.TableCollectionDao.ReCreateDbTable(_tableName);
-                    DataProvider.NodeDao.UpdateContentNumToZero(_tableName);
+                    DataProvider.TableDao.ReCreateDbTable(_tableName);
+                    DataProvider.ChannelDao.UpdateContentNumToZero(_tableName);
                     tableInfo.IsChangedAfterCreatedInDb = false;
 
                     Body.AddAdminLog("重建辅助表", $"辅助表:{_tableName}");
@@ -138,14 +138,14 @@ namespace SiteServer.BackgroundPages.Settings
                 {
 
                     FailMessage(ex, "<br>辅助表重建失败，失败原因为：" + ex.Message + "<br>请检查创建表SQL命令");
-                    var sqlString = DataProvider.DatabaseDao.GetCreateTableCollectionInfoSqlString(_tableName);
+                    var sqlString = DataProvider.ContentDao.GetCreateTableCollectionInfoSqlString(_tableName);
                     LtlSqlString.Text = sqlString.Replace("\r\n", "<br>").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
                     _showSqlTable = true;
                 }
             }
             else if (Body.IsQueryExists("ShowCrateDBCommand"))
             {
-                var sqlString = DataProvider.DatabaseDao.GetCreateTableCollectionInfoSqlString(_tableName);
+                var sqlString = DataProvider.ContentDao.GetCreateTableCollectionInfoSqlString(_tableName);
                 LtlSqlString.Text = sqlString.Replace("\r\n", "<br>").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
             }
             else if (Body.IsQueryExists("SetTaxis"))
@@ -166,7 +166,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             _tableIsRealCreated = DataProvider.DatabaseDao.IsTableExists(_tableName);
 
-            _isTableUsed = DataProvider.PublishmentSystemDao.IsTableUsed(_tableName);
+            _isTableUsed = DataProvider.SiteDao.IsTableUsed(_tableName);
 
             PhSyncTable.Visible = _tableIsRealCreated && tableInfo.IsChangedAfterCreatedInDb;
             PhSqlString.Visible = _showSqlTable;
@@ -268,7 +268,7 @@ namespace SiteServer.BackgroundPages.Settings
             hlUp.NavigateUrl = PageUtils.GetSettingsUrl(nameof(PageSiteTableMetadata),
                 new NameValueCollection
                 {
-                    {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                    {"SiteId", SiteId.ToString()},
                     {"SetTaxis", "True"},
                     {"Direction", "UP"},
                     {"TableMetadataId", tableMetadataId.ToString()},
@@ -278,7 +278,7 @@ namespace SiteServer.BackgroundPages.Settings
             hlDown.NavigateUrl = PageUtils.GetSettingsUrl(nameof(PageSiteTableMetadata),
                 new NameValueCollection
                 {
-                    {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                    {"SiteId", SiteId.ToString()},
                     {"SetTaxis", "True"},
                     {"Direction", "DOWN"},
                     {"TableMetadataId", tableMetadataId.ToString()},
@@ -300,7 +300,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            DataProvider.TableCollectionDao.SyncDbTable(_tableName);
+            DataProvider.TableDao.SyncDbTable(_tableName);
             PhSyncTable.Visible = false;
             SuccessMessage("同步辅助表成功！");
             PageUtils.Redirect(_redirectUrl);

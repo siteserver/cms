@@ -5,7 +5,6 @@ using System.Text;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -13,20 +12,20 @@ namespace SiteServer.CMS.Provider
 {
     public class TagDao : DataProviderBase
 	{
-        public override string TableName => "bairong_Tags";
+        public override string TableName => "siteserver_Tag";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
             new TableColumnInfo
             {
-                ColumnName = nameof(TagInfo.TagId),
+                ColumnName = nameof(TagInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
             new TableColumnInfo
             {
-                ColumnName = nameof(TagInfo.PublishmentSystemId),
+                ColumnName = nameof(TagInfo.SiteId),
                 DataType = DataType.Integer
             },
             new TableColumnInfo
@@ -48,50 +47,50 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string ParmTagId = "@TagID";
-        private const string ParmPublishmentSystemId = "@PublishmentSystemID";
-        private const string ParmContentIdCollection = "@ContentIDCollection";
+        private const string ParmId = "@Id";
+        private const string ParmSiteId = "@SiteId";
+        private const string ParmContentIdCollection = "@ContentIdCollection";
         private const string ParmTag = "@Tag";
         private const string ParmUseNum = "@UseNum";
         
         public int Insert(TagInfo tagInfo)
         {
-            const string sqlString = "INSERT INTO bairong_Tags (PublishmentSystemID, ContentIDCollection, Tag, UseNum) VALUES (@PublishmentSystemID, @ContentIDCollection, @Tag, @UseNum)";
+            const string sqlString = "INSERT INTO siteserver_Tag (SiteId, ContentIdCollection, Tag, UseNum) VALUES (@SiteId, @ContentIdCollection, @Tag, @UseNum)";
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, DataType.Integer, tagInfo.PublishmentSystemId),
+				GetParameter(ParmSiteId, DataType.Integer, tagInfo.SiteId),
 				GetParameter(ParmContentIdCollection, DataType.VarChar, 255, tagInfo.ContentIdCollection),
                 GetParameter(ParmTag, DataType.VarChar, 255, tagInfo.Tag),
                 GetParameter(ParmUseNum, DataType.Integer, tagInfo.UseNum)
 			};
 
-            return ExecuteNonQueryAndReturnId(TableName, nameof(TagInfo.TagId), sqlString, parms);
+            return ExecuteNonQueryAndReturnId(TableName, nameof(TagInfo.Id), sqlString, parms);
         }
 
         public void Update(TagInfo tagInfo)
         {
-            var sqlString = "UPDATE bairong_Tags SET ContentIDCollection = @ContentIDCollection, UseNum = @UseNum WHERE TagID = @TagID";
+            var sqlString = "UPDATE siteserver_Tag SET ContentIdCollection = @ContentIdCollection, UseNum = @UseNum WHERE Id = @Id";
 
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmContentIdCollection, DataType.VarChar, 255, tagInfo.ContentIdCollection),
                 GetParameter(ParmUseNum, DataType.Integer, tagInfo.UseNum),
-                GetParameter(ParmTagId, DataType.Integer, tagInfo.TagId)
+                GetParameter(ParmId, DataType.Integer, tagInfo.Id)
 			};
 
             ExecuteNonQuery(sqlString, parms);
         }
 
-        public TagInfo GetTagInfo(int publishmentSystemId, string tag)
+        public TagInfo GetTagInfo(int siteId, string tag)
         {
             TagInfo tagInfo = null;
 
-            var sqlString = "SELECT TagID, PublishmentSystemID, ContentIDCollection, Tag, UseNum FROM bairong_Tags WHERE PublishmentSystemID = @PublishmentSystemID AND Tag = @Tag";
+            var sqlString = "SELECT Id, SiteId, ContentIdCollection, Tag, UseNum FROM siteserver_Tag WHERE SiteId = @SiteId AND Tag = @Tag";
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmSiteId, DataType.Integer, siteId),
                 GetParameter(ParmTag, DataType.VarChar, 255, tag)
 			};
 
@@ -107,13 +106,13 @@ namespace SiteServer.CMS.Provider
             return tagInfo;
         }
 
-        public List<TagInfo> GetTagInfoList(int publishmentSystemId, int contentId)
+        public List<TagInfo> GetTagInfoList(int siteId, int contentId)
         {
             var list = new List<TagInfo>();
 
-            var whereString = GetWhereString(null, publishmentSystemId, contentId);
+            var whereString = GetWhereString(null, siteId, contentId);
             string sqlString =
-                $"SELECT TagID, PublishmentSystemID, ContentIDCollection, Tag, UseNum FROM bairong_Tags {whereString}";
+                $"SELECT Id, SiteId, ContentIdCollection, Tag, UseNum FROM siteserver_Tag {whereString}";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -128,30 +127,30 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public string GetSqlString(int publishmentSystemId, int contentId, bool isOrderByCount, int totalNum)
+        public string GetSqlString(int siteId, int contentId, bool isOrderByCount, int totalNum)
         {
-            var whereString = GetWhereString(null, publishmentSystemId, contentId);
+            var whereString = GetWhereString(null, siteId, contentId);
             var orderString = string.Empty;
             if (isOrderByCount)
             {
                 orderString = "ORDER BY UseNum DESC";
             }
 
-            return SqlUtils.ToTopSqlString("bairong_Tags", "TagID, PublishmentSystemID, ContentIDCollection, Tag, UseNum", whereString, orderString, totalNum);
+            return SqlUtils.ToTopSqlString("siteserver_Tag", "Id, SiteId, ContentIdCollection, Tag, UseNum", whereString, orderString, totalNum);
         }
 
-        public List<TagInfo> GetTagInfoList(int publishmentSystemId, int contentId, bool isOrderByCount, int totalNum)
+        public List<TagInfo> GetTagInfoList(int siteId, int contentId, bool isOrderByCount, int totalNum)
         {
             var list = new List<TagInfo>();
 
-            var whereString = GetWhereString(null, publishmentSystemId, contentId);
+            var whereString = GetWhereString(null, siteId, contentId);
             var orderString = string.Empty;
             if (isOrderByCount)
             {
                 orderString = "ORDER BY UseNum DESC";
             }
 
-            var sqlString = SqlUtils.ToTopSqlString("bairong_Tags", "TagID, PublishmentSystemID, ContentIDCollection, Tag, UseNum", whereString, orderString, totalNum);
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_Tag", "Id, SiteId, ContentIdCollection, Tag, UseNum", whereString, orderString, totalNum);
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -166,45 +165,45 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public List<string> GetTagListByStartString(int publishmentSystemId, string startString, int totalNum)
+        public List<string> GetTagListByStartString(int siteId, string startString, int totalNum)
         {
-            var sqlString = SqlUtils.GetDistinctTopSqlString("bairong_Tags", "Tag, UseNum",
-                $"WHERE PublishmentSystemID = {publishmentSystemId} AND {SqlUtils.GetInStr("Tag", PageUtils.FilterSql(startString))}",
+            var sqlString = SqlUtils.GetDistinctTopSqlString("siteserver_Tag", "Tag, UseNum",
+                $"WHERE SiteId = {siteId} AND {SqlUtils.GetInStr("Tag", PageUtils.FilterSql(startString))}",
                 "ORDER BY UseNum DESC", totalNum);
             return DataProvider.DatabaseDao.GetStringList(sqlString);
         }
 
-        public List<string> GetTagList(int publishmentSystemId)
+        public List<string> GetTagList(int siteId)
         {
             string sqlString =
-                $"SELECT Tag FROM bairong_Tags WHERE PublishmentSystemID = {publishmentSystemId} ORDER BY UseNum DESC";
+                $"SELECT Tag FROM siteserver_Tag WHERE SiteId = {siteId} ORDER BY UseNum DESC";
             return DataProvider.DatabaseDao.GetStringList(sqlString);
         }
 
-        public void DeleteTags(int publishmentSystemId)
+        public void DeleteTags(int siteId)
         {
-            var whereString = GetWhereString(null, publishmentSystemId, 0);
-            string sqlString = $"DELETE FROM bairong_Tags {whereString}";
+            var whereString = GetWhereString(null, siteId, 0);
+            string sqlString = $"DELETE FROM siteserver_Tag {whereString}";
             ExecuteNonQuery(sqlString);
         }
 
-        public void DeleteTag(string tag, int publishmentSystemId)
+        public void DeleteTag(string tag, int siteId)
         {
-            var whereString = GetWhereString(tag, publishmentSystemId, 0);
-            string sqlString = $"DELETE FROM bairong_Tags {whereString}";
+            var whereString = GetWhereString(tag, siteId, 0);
+            string sqlString = $"DELETE FROM siteserver_Tag {whereString}";
             ExecuteNonQuery(sqlString);
         }
 
-        public int GetTagCount(string tag, int publishmentSystemId)
+        public int GetTagCount(string tag, int siteId)
         {
-            var contentIdList = GetContentIdListByTag(tag, publishmentSystemId);
+            var contentIdList = GetContentIdListByTag(tag, siteId);
             return contentIdList.Count;
         }
 
-        private string GetWhereString(string tag, int publishmentSystemId, int contentId)
+        private string GetWhereString(string tag, int siteId, int contentId)
         {
             var builder = new StringBuilder();
-            builder.Append($" WHERE PublishmentSystemID = {publishmentSystemId} ");
+            builder.Append($" WHERE SiteId = {siteId} ");
             if (!string.IsNullOrEmpty(tag))
             {
                 builder.Append($"AND Tag = '{PageUtils.FilterSql(tag)}' ");
@@ -212,19 +211,19 @@ namespace SiteServer.CMS.Provider
             if (contentId > 0)
             {
                 builder.Append(
-                    $"AND (ContentIDCollection = '{contentId}' OR ContentIDCollection LIKE '{contentId},%' OR ContentIDCollection LIKE '%,{contentId},%' OR ContentIDCollection LIKE '%,{contentId}')");
+                    $"AND (ContentIdCollection = '{contentId}' OR ContentIdCollection LIKE '{contentId},%' OR ContentIdCollection LIKE '%,{contentId},%' OR ContentIdCollection LIKE '%,{contentId}')");
             }
 
             return builder.ToString();
         }
 
-        public List<int> GetContentIdListByTag(string tag, int publishmentSystemId)
+        public List<int> GetContentIdListByTag(string tag, int siteId)
         {
             var idList = new List<int>();
             if (string.IsNullOrEmpty(tag)) return idList;
 
-            var whereString = GetWhereString(tag, publishmentSystemId, 0);
-            var sqlString = "SELECT ContentIDCollection FROM bairong_Tags" + whereString;
+            var whereString = GetWhereString(tag, siteId, 0);
+            var sqlString = "SELECT ContentIdCollection FROM siteserver_Tag" + whereString;
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -245,7 +244,7 @@ namespace SiteServer.CMS.Provider
             return idList;
         }
 
-        public List<int> GetContentIdListByTagCollection(StringCollection tagCollection, int publishmentSystemId)
+        public List<int> GetContentIdListByTagCollection(StringCollection tagCollection, int siteId)
         {
             var contentIdList = new List<int>();
             if (tagCollection.Count > 0)
@@ -254,11 +253,11 @@ namespace SiteServer.CMS.Provider
                 var parameterList = GetInParameterList(ParmTag, DataType.VarChar, 255, tagCollection, out parameterNameList);
 
                 string sqlString =
-                    $"SELECT ContentIDCollection FROM bairong_Tags WHERE Tag IN ({parameterNameList}) AND PublishmentSystemID = @PublishmentSystemID";
+                    $"SELECT ContentIdCollection FROM siteserver_Tag WHERE Tag IN ({parameterNameList}) AND SiteId = @SiteId";
 
                 var paramList = new List<IDataParameter>();
                 paramList.AddRange(parameterList);
-                paramList.Add(GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId));
+                paramList.Add(GetParameter(ParmSiteId, DataType.Integer, siteId));
 
                 using (var rdr = ExecuteReader(sqlString, paramList.ToArray()))
                 {

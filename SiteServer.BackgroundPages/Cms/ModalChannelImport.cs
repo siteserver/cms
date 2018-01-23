@@ -3,9 +3,9 @@ using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.ImportExport;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -17,12 +17,11 @@ namespace SiteServer.BackgroundPages.Cms
 
         private bool[] _isLastNodeArray;
 
-        public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
+        public static string GetOpenWindowString(int siteId, int nodeId)
         {
             return LayerUtils.GetOpenScript("导入栏目",
-                PageUtils.GetCmsUrl(nameof(ModalChannelImport), new NameValueCollection
+                PageUtils.GetCmsUrl(siteId, nameof(ModalChannelImport), new NameValueCollection
                 {
-                    {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"NodeID", nodeId.ToString()}
                 }), 600, 300);
         }
@@ -33,15 +32,15 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            var nodeId = Body.GetQueryInt("NodeID", PublishmentSystemId);
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(PublishmentSystemId);
+            var nodeId = Body.GetQueryInt("NodeID", SiteId);
+            var nodeIdList = DataProvider.ChannelDao.GetIdListBySiteId(SiteId);
             var nodeCount = nodeIdList.Count;
             _isLastNodeArray = new bool[nodeCount];
             foreach (var theNodeId in nodeIdList)
             {
-                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, theNodeId);
-                var itemNodeId = nodeInfo.NodeId;
-                var nodeName = nodeInfo.NodeName;
+                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, theNodeId);
+                var itemNodeId = nodeInfo.Id;
+                var nodeName = nodeInfo.ChannelName;
                 var parentsCount = nodeInfo.ParentsCount;
                 var isLastNode = nodeInfo.IsLastNode;
                 var value = IsOwningNodeId(itemNodeId) ? itemNodeId.ToString() : string.Empty;
@@ -65,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
         public string GetTitle(int nodeId, string nodeName, int parentsCount, bool isLastNode)
         {
             var str = "";
-            if (nodeId == PublishmentSystemId)
+            if (nodeId == SiteId)
             {
                 isLastNode = true;
             }
@@ -103,10 +102,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                     HifFile.PostedFile.SaveAs(localFilePath);
 
-					var importObject = new ImportObject(PublishmentSystemId);
+					var importObject = new ImportObject(SiteId);
                     importObject.ImportChannelsAndContentsByZipFile(TranslateUtils.ToInt(DdlParentNodeId.SelectedValue), localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue));
 
-                    Body.AddSiteLog(PublishmentSystemId, "导入栏目");
+                    Body.AddSiteLog(SiteId, "导入栏目");
 
                     LayerUtils.Close(Page);
 				}

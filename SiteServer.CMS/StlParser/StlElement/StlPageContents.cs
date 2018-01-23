@@ -4,8 +4,6 @@ using System.Text;
 using System.Web.UI.WebControls;
 using System.Xml;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -13,6 +11,7 @@ using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -77,11 +76,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 ListInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.Content);
             }
 
-            var channelId = StlDataUtility.GetNodeIdByLevel(_pageInfo.PublishmentSystemId, _contextInfo.ChannelId, ListInfo.UpLevel, ListInfo.TopLevel);
+            var channelId = StlDataUtility.GetNodeIdByLevel(_pageInfo.SiteId, _contextInfo.ChannelId, ListInfo.UpLevel, ListInfo.TopLevel);
 
-            channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(_pageInfo.PublishmentSystemId, channelId, ListInfo.ChannelIndex, ListInfo.ChannelName);
+            channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(_pageInfo.SiteId, channelId, ListInfo.ChannelIndex, ListInfo.ChannelName);
 
-            SqlString = StlDataUtility.GetStlPageContentsSqlString(_pageInfo.PublishmentSystemInfo, channelId, ListInfo.GroupContent, ListInfo.GroupContentNot, ListInfo.Tags, ListInfo.IsImageExists, ListInfo.IsImage, ListInfo.IsVideoExists, ListInfo.IsVideo, ListInfo.IsFileExists, ListInfo.IsFile, ListInfo.IsNoDup, ListInfo.StartNum, ListInfo.TotalNum, ListInfo.OrderByString, ListInfo.IsTopExists, ListInfo.IsTop, ListInfo.IsRecommendExists, ListInfo.IsRecommend, ListInfo.IsHotExists, ListInfo.IsHot, ListInfo.IsColorExists, ListInfo.IsColor, ListInfo.Where, ListInfo.Scope, ListInfo.GroupChannel, ListInfo.GroupChannelNot);
+            SqlString = StlDataUtility.GetStlPageContentsSqlString(_pageInfo.SiteInfo, channelId, ListInfo.GroupContent, ListInfo.GroupContentNot, ListInfo.Tags, ListInfo.IsImageExists, ListInfo.IsImage, ListInfo.IsVideoExists, ListInfo.IsVideo, ListInfo.IsFileExists, ListInfo.IsFile, ListInfo.IsNoDup, ListInfo.StartNum, ListInfo.TotalNum, ListInfo.OrderByString, ListInfo.IsTopExists, ListInfo.IsTop, ListInfo.IsRecommendExists, ListInfo.IsRecommend, ListInfo.IsHotExists, ListInfo.IsHot, ListInfo.IsColorExists, ListInfo.IsColor, ListInfo.Where, ListInfo.Scope, ListInfo.GroupChannel, ListInfo.GroupChannelNot);
         }
 
         //API StlActionsSearchController调用
@@ -162,7 +161,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var maxPage = ListInfo.MaxPage;
                 if (maxPage == 0)
                 {
-                    maxPage = _pageInfo.PublishmentSystemInfo.Additional.CreateStaticMaxPage;
+                    maxPage = _pageInfo.SiteInfo.Additional.CreateStaticMaxPage;
                 }
                 if (maxPage > 0 && currentPageIndex + 1 > maxPage)
                 {
@@ -284,7 +283,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(_pageInfo.UniqueId);
             var apiUrl = ActionsPageContents.GetUrl(_pageInfo.ApiUrl);
-            var apiParameters = ActionsPageContents.GetParameters(_pageInfo.PublishmentSystemId, _pageInfo.PageNodeId, _pageInfo.TemplateInfo.TemplateId, totalNum, pageCount, currentPageIndex, _stlPageContentsElement);
+            var apiParameters = ActionsPageContents.GetParameters(_pageInfo.SiteId, _pageInfo.PageNodeId, _pageInfo.TemplateInfo.Id, totalNum, pageCount, currentPageIndex, _stlPageContentsElement);
 
             var builder = new StringBuilder();
             builder.Append($@"<div id=""{ajaxDivId}"">");

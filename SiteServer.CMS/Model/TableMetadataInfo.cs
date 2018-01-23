@@ -1,14 +1,13 @@
 using System;
 using SiteServer.Plugin;
-using SiteServer.Utils.Model;
 
 namespace SiteServer.CMS.Model
 {
 	[Serializable]
 	public class TableMetadataInfo
 	{
-		private int _tableMetadataId;
-		private string _auxiliaryTableEnName;
+		private int _id;
+		private string _tableName;
 		private string _attributeName;
 		private DataType _dataType;
 		private int _dataLength;
@@ -17,8 +16,8 @@ namespace SiteServer.CMS.Model
 
 		public TableMetadataInfo()
 		{
-			_tableMetadataId = 0;
-			_auxiliaryTableEnName = string.Empty;
+            _id = 0;
+            _tableName = string.Empty;
 			_attributeName = string.Empty;
 			_dataType = DataType.VarChar;
 			_dataLength = 50;
@@ -26,10 +25,10 @@ namespace SiteServer.CMS.Model
 			_isSystem = false;
 		}
 
-        public TableMetadataInfo(int tableMetadataId, string auxiliaryTableEnName, string attributeName, DataType dataType, int dataLength, int taxis, bool isSystem) 
+        public TableMetadataInfo(int id, string tableName, string attributeName, DataType dataType, int dataLength, int taxis, bool isSystem) 
 		{
-			_tableMetadataId = tableMetadataId;
-			_auxiliaryTableEnName = auxiliaryTableEnName;
+            _id = id;
+            _tableName = tableName;
 			_attributeName = attributeName;
 			_dataType = dataType;
 			_dataLength = dataLength;
@@ -37,16 +36,16 @@ namespace SiteServer.CMS.Model
 			_isSystem = isSystem;
 		}
 
-		public int TableMetadataId
+		public int Id
 		{
-			get{ return _tableMetadataId; }
-			set{ _tableMetadataId = value; }
+			get{ return _id; }
+			set{ _id = value; }
 		}
 
-		public string AuxiliaryTableEnName
+		public string TableName
 		{
-			get{ return _auxiliaryTableEnName; }
-			set{ _auxiliaryTableEnName = value; }
+			get{ return _tableName; }
+			set{ _tableName = value; }
 		}
 
 		public string AttributeName

@@ -4,7 +4,6 @@ using System.Text;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -12,13 +11,13 @@ namespace SiteServer.CMS.Provider
 {
     public class DepartmentDao : DataProviderBase
 	{
-        public override string TableName => "bairong_Department";
+        public override string TableName => "siteserver_Department";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
             new TableColumnInfo
             {
-                ColumnName = nameof(DepartmentInfo.DepartmentId),
+                ColumnName = nameof(DepartmentInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
@@ -85,15 +84,15 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlSelect = "SELECT DepartmentID, DepartmentName, Code, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, AddDate, Summary, CountOfAdmin FROM bairong_Department WHERE DepartmentID = @DepartmentID";
+        private const string SqlSelect = "SELECT Id, DepartmentName, Code, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, AddDate, Summary, CountOfAdmin FROM siteserver_Department WHERE Id = @Id";
 
-        private const string SqlSelectAll = "SELECT DepartmentID, DepartmentName, Code, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, AddDate, Summary, CountOfAdmin FROM bairong_Department ORDER BY TAXIS";
+        private const string SqlSelectAll = "SELECT Id, DepartmentName, Code, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, AddDate, Summary, CountOfAdmin FROM siteserver_Department ORDER BY TAXIS";
 
-        private const string SqlSelectCount = "SELECT COUNT(*) FROM bairong_Department WHERE ParentID = @ParentID";
+        private const string SqlSelectCount = "SELECT COUNT(*) FROM siteserver_Department WHERE ParentID = @ParentID";
 
-        private const string SqlUpdate = "UPDATE bairong_Department SET DepartmentName = @DepartmentName, Code = @Code, ParentsPath = @ParentsPath, ParentsCount = @ParentsCount, ChildrenCount = @ChildrenCount, IsLastNode = @IsLastNode, Summary = @Summary, CountOfAdmin = @CountOfAdmin WHERE DepartmentID = @DepartmentID";
+        private const string SqlUpdate = "UPDATE siteserver_Department SET DepartmentName = @DepartmentName, Code = @Code, ParentsPath = @ParentsPath, ParentsCount = @ParentsCount, ChildrenCount = @ChildrenCount, IsLastNode = @IsLastNode, Summary = @Summary, CountOfAdmin = @CountOfAdmin WHERE Id = @Id";
 
-        private const string ParmId = "@DepartmentID";
+        private const string ParmId = "@Id";
         private const string ParmName = "@DepartmentName";
         private const string ParmCode = "@Code";
         private const string ParmParentId = "@ParentID";
@@ -110,7 +109,7 @@ namespace SiteServer.CMS.Provider
         {
             if (parentInfo != null)
             {
-                departmentInfo.ParentsPath = parentInfo.ParentsPath + "," + parentInfo.DepartmentId;
+                departmentInfo.ParentsPath = parentInfo.ParentsPath + "," + parentInfo.Id;
                 departmentInfo.ParentsCount = parentInfo.ParentsCount + 1;
 
                 var maxTaxis = GetMaxTaxisByParentPath(departmentInfo.ParentsPath);
@@ -128,7 +127,7 @@ namespace SiteServer.CMS.Provider
                 departmentInfo.Taxis = maxTaxis + 1;
             }
 
-            var sqlInsert = "INSERT INTO bairong_Department (DepartmentName, Code, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, AddDate, Summary, CountOfAdmin) VALUES (@DepartmentName, @Code, @ParentID, @ParentsPath, @ParentsCount, @ChildrenCount, @IsLastNode, @Taxis, @AddDate, @Summary, @CountOfAdmin)";
+            var sqlInsert = "INSERT INTO siteserver_Department (DepartmentName, Code, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, AddDate, Summary, CountOfAdmin) VALUES (@DepartmentName, @Code, @ParentID, @ParentsPath, @ParentsCount, @ChildrenCount, @IsLastNode, @Taxis, @AddDate, @Summary, @CountOfAdmin)";
 
             var insertParms = new IDataParameter[]
 			{
@@ -146,27 +145,27 @@ namespace SiteServer.CMS.Provider
 			};
 
             string sqlString =
-                $"UPDATE bairong_Department SET {SqlUtils.ToPlusSqlString("Taxis")} WHERE (Taxis >= {departmentInfo.Taxis})";
+                $"UPDATE siteserver_Department SET {SqlUtils.ToPlusSqlString("Taxis")} WHERE (Taxis >= {departmentInfo.Taxis})";
             ExecuteNonQuery(trans, sqlString);
 
-            departmentInfo.DepartmentId = ExecuteNonQueryAndReturnId(TableName, nameof(DepartmentInfo.DepartmentId), trans, sqlInsert, insertParms);
+            departmentInfo.Id = ExecuteNonQueryAndReturnId(TableName, nameof(DepartmentInfo.Id), trans, sqlInsert, insertParms);
 
             if (!string.IsNullOrEmpty(departmentInfo.ParentsPath))
             {
-                sqlString = $"UPDATE bairong_Department SET {SqlUtils.ToPlusSqlString("ChildrenCount")} WHERE DepartmentID IN ({PageUtils.FilterSql(departmentInfo.ParentsPath)})";
+                sqlString = $"UPDATE siteserver_Department SET {SqlUtils.ToPlusSqlString("ChildrenCount")} WHERE Id IN ({PageUtils.FilterSql(departmentInfo.ParentsPath)})";
 
                 ExecuteNonQuery(trans, sqlString);
             }
 
-            sqlString = $"UPDATE bairong_Department SET IsLastNode = '{false}' WHERE ParentID = {departmentInfo.ParentId}";
+            sqlString = $"UPDATE siteserver_Department SET IsLastNode = '{false}' WHERE ParentID = {departmentInfo.ParentId}";
 
             ExecuteNonQuery(trans, sqlString);
 
             //sqlString =
-            //    $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN (SELECT TOP 1 DepartmentID FROM bairong_Department WHERE ParentID = {departmentInfo.ParentId} ORDER BY Taxis DESC))";
+            //    $"UPDATE siteserver_Department SET IsLastNode = '{true}' WHERE (Id IN (SELECT TOP 1 Id FROM siteserver_Department WHERE ParentID = {departmentInfo.ParentId} ORDER BY Taxis DESC))";
 
             sqlString =
-                $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN ({SqlUtils.ToInTopSqlString("bairong_Department", "DepartmentID", $"WHERE ParentID = {departmentInfo.ParentId}", "ORDER BY Taxis DESC", 1)}))";
+                $"UPDATE siteserver_Department SET IsLastNode = '{true}' WHERE (Id IN ({SqlUtils.ToInTopSqlString("siteserver_Department", "Id", $"WHERE ParentID = {departmentInfo.ParentId}", "ORDER BY Taxis DESC", 1)}))";
 
             ExecuteNonQuery(trans, sqlString);
 
@@ -177,34 +176,34 @@ namespace SiteServer.CMS.Provider
         {
             if (!string.IsNullOrEmpty(parentsPath))
             {
-                var sqlString = string.Concat("UPDATE bairong_Department SET ChildrenCount = ChildrenCount - ", subtractNum, " WHERE DepartmentID IN (", PageUtils.FilterSql(parentsPath) , ")");
+                var sqlString = string.Concat("UPDATE siteserver_Department SET ChildrenCount = ChildrenCount - ", subtractNum, " WHERE Id IN (", PageUtils.FilterSql(parentsPath) , ")");
                 ExecuteNonQuery(sqlString);
 
                 DepartmentManager.ClearCache();
             }
         }
 
-        private void TaxisSubtract(int selectedDepartmentId)
+        private void TaxisSubtract(int selectedId)
         {
-            var departmentInfo = GetDepartmentInfo(selectedDepartmentId);
+            var departmentInfo = GetDepartmentInfo(selectedId);
             if (departmentInfo == null) return;
-            //Get Lower Taxis and DepartmentID
-            int lowerDepartmentId;
+            //Get Lower Taxis and Id
+            int lowerId;
             int lowerChildrenCount;
             string lowerParentsPath;
-            //            var sqlString = @"SELECT TOP 1 DepartmentID, ChildrenCount, ParentsPath
-            //FROM bairong_Department
-            //WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis < @Taxis)
+            //            var sqlString = @"SELECT TOP 1 Id, ChildrenCount, ParentsPath
+            //FROM siteserver_Department
+            //WHERE (ParentID = @ParentID) AND (Id <> @Id) AND (Taxis < @Taxis)
             //ORDER BY Taxis DESC";
 
-            var sqlString = SqlUtils.ToTopSqlString("bairong_Department", "DepartmentID, ChildrenCount, ParentsPath",
-                "WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis < @Taxis)",
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_Department", "Id, ChildrenCount, ParentsPath",
+                "WHERE (ParentID = @ParentID) AND (Id <> @Id) AND (Taxis < @Taxis)",
                 "ORDER BY Taxis DESC", 1);
 
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmParentId, DataType.Integer, departmentInfo.ParentId),
-				GetParameter(ParmId, DataType.Integer, departmentInfo.DepartmentId),
+				GetParameter(ParmId, DataType.Integer, departmentInfo.Id),
 				GetParameter(ParmTaxis, DataType.Integer, departmentInfo.Taxis),
 			};
 
@@ -212,7 +211,7 @@ namespace SiteServer.CMS.Provider
             {
                 if (rdr.Read())
                 {
-                    lowerDepartmentId = GetInt(rdr, 0);
+                    lowerId = GetInt(rdr, 0);
                     lowerChildrenCount = GetInt(rdr, 1);
                     lowerParentsPath = GetString(rdr, 2);
                 }
@@ -224,36 +223,36 @@ namespace SiteServer.CMS.Provider
             }
 
 
-            var lowerNodePath = string.Concat(lowerParentsPath, ",", lowerDepartmentId);
-            var selectedNodePath = string.Concat(departmentInfo.ParentsPath, ",", departmentInfo.DepartmentId);
+            var lowerNodePath = string.Concat(lowerParentsPath, ",", lowerId);
+            var selectedNodePath = string.Concat(departmentInfo.ParentsPath, ",", departmentInfo.Id);
 
-            SetTaxisSubtract(selectedDepartmentId, selectedNodePath, lowerChildrenCount + 1);
-            SetTaxisAdd(lowerDepartmentId, lowerNodePath, departmentInfo.ChildrenCount + 1);
+            SetTaxisSubtract(selectedId, selectedNodePath, lowerChildrenCount + 1);
+            SetTaxisAdd(lowerId, lowerNodePath, departmentInfo.ChildrenCount + 1);
 
             UpdateIsLastNode(departmentInfo.ParentId);
         }
 
-        private void TaxisAdd(int selectedDepartmentId)
+        private void TaxisAdd(int selectedId)
         {
-            var departmentInfo = GetDepartmentInfo(selectedDepartmentId);
+            var departmentInfo = GetDepartmentInfo(selectedId);
             if (departmentInfo == null) return;
-            //Get Higher Taxis and DepartmentID
-            int higherDepartmentId;
+            //Get Higher Taxis and Id
+            int higherId;
             int higherChildrenCount;
             string higherParentsPath;
-            //            var sqlString = @"SELECT TOP 1 DepartmentID, ChildrenCount, ParentsPath
-            //FROM bairong_Department
-            //WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis > @Taxis)
+            //            var sqlString = @"SELECT TOP 1 Id, ChildrenCount, ParentsPath
+            //FROM siteserver_Department
+            //WHERE (ParentID = @ParentID) AND (Id <> @Id) AND (Taxis > @Taxis)
             //ORDER BY Taxis";
 
-            var sqlString = SqlUtils.ToTopSqlString("bairong_Department", "DepartmentID, ChildrenCount, ParentsPath",
-                "WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis > @Taxis)",
+            var sqlString = SqlUtils.ToTopSqlString("siteserver_Department", "Id, ChildrenCount, ParentsPath",
+                "WHERE (ParentID = @ParentID) AND (Id <> @Id) AND (Taxis > @Taxis)",
                 "ORDER BY Taxis", 1);
 
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmParentId, DataType.Integer, departmentInfo.ParentId),
-				GetParameter(ParmId, DataType.Integer, departmentInfo.DepartmentId),
+				GetParameter(ParmId, DataType.Integer, departmentInfo.Id),
 				GetParameter(ParmTaxis, DataType.Integer, departmentInfo.Taxis)
 			};
 
@@ -261,7 +260,7 @@ namespace SiteServer.CMS.Provider
             {
                 if (rdr.Read())
                 {
-                    higherDepartmentId = GetInt(rdr, 0);
+                    higherId = GetInt(rdr, 0);
                     higherChildrenCount = GetInt(rdr, 1);
                     higherParentsPath = GetString(rdr, 2);
                 }
@@ -273,31 +272,31 @@ namespace SiteServer.CMS.Provider
             }
 
 
-            var higherNodePath = string.Concat(higherParentsPath, ",", higherDepartmentId);
-            var selectedNodePath = string.Concat(departmentInfo.ParentsPath, ",", departmentInfo.DepartmentId);
+            var higherNodePath = string.Concat(higherParentsPath, ",", higherId);
+            var selectedNodePath = string.Concat(departmentInfo.ParentsPath, ",", departmentInfo.Id);
 
-            SetTaxisAdd(selectedDepartmentId, selectedNodePath, higherChildrenCount + 1);
-            SetTaxisSubtract(higherDepartmentId, higherNodePath, departmentInfo.ChildrenCount + 1);
+            SetTaxisAdd(selectedId, selectedNodePath, higherChildrenCount + 1);
+            SetTaxisSubtract(higherId, higherNodePath, departmentInfo.ChildrenCount + 1);
 
             UpdateIsLastNode(departmentInfo.ParentId);
         }
 
-        private void SetTaxisAdd(int departmentId, string parentsPath, int addNum)
+        private void SetTaxisAdd(int id, string parentsPath, int addNum)
         {
             var path = PageUtils.FilterSql(parentsPath);
             string sqlString =
-                $"UPDATE bairong_Department SET Taxis = Taxis + {addNum} WHERE DepartmentID = {departmentId} OR ParentsPath = '{path}' OR ParentsPath LIKE '{path},%'";
+                $"UPDATE siteserver_Department SET Taxis = Taxis + {addNum} WHERE Id = {id} OR ParentsPath = '{path}' OR ParentsPath LIKE '{path},%'";
 
             ExecuteNonQuery(sqlString);
 
             DepartmentManager.ClearCache();
         }
 
-        private void SetTaxisSubtract(int departmentId, string parentsPath, int subtractNum)
+        private void SetTaxisSubtract(int id, string parentsPath, int subtractNum)
         {
             var path = PageUtils.FilterSql(parentsPath);
             string sqlString =
-                $"UPDATE bairong_Department SET Taxis = Taxis - {subtractNum} WHERE  DepartmentID = {departmentId} OR ParentsPath = '{path}' OR ParentsPath LIKE '{path},%'";
+                $"UPDATE siteserver_Department SET Taxis = Taxis - {subtractNum} WHERE  Id = {id} OR ParentsPath = '{path}' OR ParentsPath LIKE '{path},%'";
 
             ExecuteNonQuery(sqlString);
 
@@ -308,7 +307,7 @@ namespace SiteServer.CMS.Provider
         {
             if (parentId > 0)
             {
-                var sqlString = "UPDATE bairong_Department SET IsLastNode = @IsLastNode WHERE  ParentID = @ParentID";
+                var sqlString = "UPDATE siteserver_Department SET IsLastNode = @IsLastNode WHERE  ParentID = @ParentID";
 
                 var parms = new IDataParameter[]
 			    {
@@ -319,10 +318,10 @@ namespace SiteServer.CMS.Provider
                 ExecuteNonQuery(sqlString, parms);
 
                 //sqlString =
-                //    $"UPDATE bairong_Department SET IsLastNode = '{true.ToString()}' WHERE (DepartmentID IN (SELECT TOP 1 DepartmentID FROM bairong_Department WHERE ParentID = {parentId} ORDER BY Taxis DESC))";
+                //    $"UPDATE siteserver_Department SET IsLastNode = '{true.ToString()}' WHERE (Id IN (SELECT TOP 1 Id FROM siteserver_Department WHERE ParentID = {parentId} ORDER BY Taxis DESC))";
 
                 sqlString =
-                    $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN ({SqlUtils.ToInTopSqlString("bairong_Department", "DepartmentID", $"WHERE ParentID = {parentId}", "ORDER BY Taxis DESC", 1)}))";
+                    $"UPDATE siteserver_Department SET IsLastNode = '{true}' WHERE (Id IN ({SqlUtils.ToInTopSqlString("siteserver_Department", "Id", $"WHERE ParentID = {parentId}", "ORDER BY Taxis DESC", 1)}))";
 
                 ExecuteNonQuery(sqlString);
             }
@@ -330,7 +329,7 @@ namespace SiteServer.CMS.Provider
 
         private int GetMaxTaxisByParentPath(string parentPath)
         {
-            var sqlString = string.Concat("SELECT MAX(Taxis) AS MaxTaxis FROM bairong_Department WHERE (ParentsPath = '", PageUtils.FilterSql(parentPath), "') OR (ParentsPath LIKE '", PageUtils.FilterSql(parentPath), ",%')");
+            var sqlString = string.Concat("SELECT MAX(Taxis) AS MaxTaxis FROM siteserver_Department WHERE (ParentsPath = '", PageUtils.FilterSql(parentPath), "') OR (ParentsPath LIKE '", PageUtils.FilterSql(parentPath), ",%')");
             var maxTaxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
@@ -369,7 +368,7 @@ namespace SiteServer.CMS.Provider
 
             DepartmentManager.ClearCache();
 
-            return departmentInfo.DepartmentId;
+            return departmentInfo.Id;
         }
 
         public void Update(DepartmentInfo departmentInfo)
@@ -384,7 +383,7 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmIsLastNode, DataType.VarChar, 18, departmentInfo.IsLastNode.ToString()),
 				GetParameter(ParmSummary, DataType.VarChar, 255, departmentInfo.Summary),
 				GetParameter(ParmCountOfAdmin, DataType.Integer, departmentInfo.CountOfAdmin),
-				GetParameter(ParmId, DataType.Integer, departmentInfo.DepartmentId)
+				GetParameter(ParmId, DataType.Integer, departmentInfo.Id)
 			};
 
             ExecuteNonQuery(SqlUpdate, updateParms);
@@ -392,44 +391,44 @@ namespace SiteServer.CMS.Provider
             DepartmentManager.ClearCache();
         }
 
-        public void UpdateTaxis(int selectedDepartmentId, bool isSubtract)
+        public void UpdateTaxis(int selectedId, bool isSubtract)
         {
             if (isSubtract)
             {
-                TaxisSubtract(selectedDepartmentId);
+                TaxisSubtract(selectedId);
             }
             else
             {
-                TaxisAdd(selectedDepartmentId);
+                TaxisAdd(selectedId);
             }
         }
 
         public void UpdateCountOfAdmin()
         {
-            var departmentIdList = DepartmentManager.GetDepartmentIdList();
-            foreach (var departmentId in departmentIdList)
+            var idList = DepartmentManager.GetDepartmentIdList();
+            foreach (var departmentId in idList)
             {
-                string sqlString =
-                    $"UPDATE bairong_Department SET CountOfAdmin = (SELECT COUNT(*) AS CountOfAdmin FROM bairong_Administrator WHERE DepartmentID = {departmentId}) WHERE DepartmentID = {departmentId}";
+                var count = DataProvider.AdministratorDao.GetCountByDepartmentId(departmentId);
+                string sqlString = $"UPDATE {TableName} SET CountOfAdmin = {count} WHERE Id = {departmentId}";
                 ExecuteNonQuery(sqlString);
             }
             DepartmentManager.ClearCache();
         }
 
-        public void Delete(int departmentId)
+        public void Delete(int id)
         {
-            var departmentInfo = GetDepartmentInfo(departmentId);
+            var departmentInfo = GetDepartmentInfo(id);
             if (departmentInfo != null)
             {
-                var departmentIdList = new List<int>();
+                var idList = new List<int>();
                 if (departmentInfo.ChildrenCount > 0)
                 {
-                    departmentIdList = GetDepartmentIdListForDescendant(departmentId);
+                    idList = GetIdListForDescendant(id);
                 }
-                departmentIdList.Add(departmentId);
+                idList.Add(id);
 
                 string sqlString =
-                    $"DELETE FROM bairong_Department WHERE DepartmentID IN ({TranslateUtils.ToSqlInStringWithoutQuote(departmentIdList)})";
+                    $"DELETE FROM siteserver_Department WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
 
                 int deletedNum;
 
@@ -445,7 +444,7 @@ namespace SiteServer.CMS.Provider
                             if (deletedNum > 0)
                             {
                                 string sqlStringTaxis =
-                                    $"UPDATE bairong_Department SET Taxis = Taxis - {deletedNum} WHERE (Taxis > {departmentInfo.Taxis})";
+                                    $"UPDATE siteserver_Department SET Taxis = Taxis - {deletedNum} WHERE (Taxis > {departmentInfo.Taxis})";
                                 ExecuteNonQuery(trans, sqlStringTaxis);
                             }
 
@@ -465,13 +464,13 @@ namespace SiteServer.CMS.Provider
             DepartmentManager.ClearCache();
         }
 
-        private DepartmentInfo GetDepartmentInfo(int departmentId)
+        private DepartmentInfo GetDepartmentInfo(int id)
 		{
             DepartmentInfo departmentInfo = null;
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmId, DataType.Integer, departmentId)
+				GetParameter(ParmId, DataType.Integer, id)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms)) 
@@ -503,13 +502,13 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-		public int GetNodeCount(int departmentId)
+		public int GetNodeCount(int id)
 		{
 			var nodeCount = 0;
 
 			var nodeParms = new IDataParameter[]
 			{
-				GetParameter(ParmParentId, DataType.Integer, departmentId)
+				GetParameter(ParmParentId, DataType.Integer, id)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectCount, nodeParms))
@@ -523,18 +522,18 @@ namespace SiteServer.CMS.Provider
 			return nodeCount;
 		}
 
-        public List<int> GetDepartmentIdListByParentId(int parentId)
+        public List<int> GetIdListByParentId(int parentId)
         {
             string sqlString =
-                $@"SELECT DepartmentID FROM bairong_Department WHERE ParentID = '{parentId}' ORDER BY Taxis";
+                $@"SELECT Id FROM siteserver_Department WHERE ParentID = '{parentId}' ORDER BY Taxis";
             var list = new List<int>();
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    var theDepartmentId = GetInt(rdr, 0);
-                    list.Add(theDepartmentId);
+                    var theId = GetInt(rdr, 0);
+                    list.Add(theId);
                 }
                 rdr.Close();
             }
@@ -542,14 +541,14 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-		public List<int> GetDepartmentIdListForDescendant(int departmentId)
+		public List<int> GetIdListForDescendant(int id)
 		{
-            string sqlString = $@"SELECT DepartmentID
-FROM bairong_Department
-WHERE (ParentsPath LIKE '{departmentId},%') OR
-      (ParentsPath LIKE '%,{departmentId},%') OR
-      (ParentsPath LIKE '%,{departmentId}') OR
-      (ParentID = {departmentId})
+            string sqlString = $@"SELECT Id
+FROM siteserver_Department
+WHERE (ParentsPath LIKE '{id},%') OR
+      (ParentsPath LIKE '%,{id},%') OR
+      (ParentsPath LIKE '%,{id}') OR
+      (ParentID = {id})
 ";
 			var list = new List<int>();
 
@@ -557,8 +556,8 @@ WHERE (ParentsPath LIKE '{departmentId},%') OR
             {
                 while (rdr.Read())
                 {
-                    var theDepartmentId = GetInt(rdr, 0);
-                    list.Add(theDepartmentId);
+                    var theId = GetInt(rdr, 0);
+                    list.Add(theId);
                 }
                 rdr.Close();
             }
@@ -566,21 +565,21 @@ WHERE (ParentsPath LIKE '{departmentId},%') OR
 			return list;
 		}
 
-        public List<int> GetDepartmentIdListByDepartmentIdCollection(string departmentIdCollection)
+        public List<int> GetIdListByIdCollection(string idCollection)
         {
             var list = new List<int>();
 
-            if (string.IsNullOrEmpty(departmentIdCollection)) return list;
+            if (string.IsNullOrEmpty(idCollection)) return list;
 
             string sqlString =
-                $@"SELECT DepartmentID FROM bairong_Department WHERE DepartmentID IN ({departmentIdCollection})";
+                $@"SELECT Id FROM siteserver_Department WHERE Id IN ({idCollection})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    var theDepartmentId = GetInt(rdr, 0);
-                    list.Add(theDepartmentId);
+                    var theId = GetInt(rdr, 0);
+                    list.Add(theId);
                 }
                 rdr.Close();
             }
@@ -588,28 +587,28 @@ WHERE (ParentsPath LIKE '{departmentId},%') OR
             return list;
         }
 
-        public List<int> GetDepartmentIdListByFirstDepartmentIdList(List<int> firstIdList)
+        public List<int> GetIdListByFirstIdList(List<int> firstIdList)
         {
             var list = new List<int>();
 
             if (firstIdList.Count <= 0) return list;
 
             var builder = new StringBuilder();
-            foreach (var departmentId in firstIdList)
+            foreach (var id in firstIdList)
             {
-                builder.Append($"DepartmentID = {departmentId} OR ParentID = {departmentId} OR ParentsPath LIKE '{departmentId},%' OR ");
+                builder.Append($"Id = {id} OR ParentID = {id} OR ParentsPath LIKE '{id},%' OR ");
             }
             builder.Length -= 3;
 
             string sqlString =
-                $"SELECT DepartmentID FROM bairong_Department WHERE {builder} ORDER BY Taxis";
+                $"SELECT Id FROM siteserver_Department WHERE {builder} ORDER BY Taxis";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    var departmentId = GetInt(rdr, 0);
-                    list.Add(departmentId);
+                    var id = GetInt(rdr, 0);
+                    list.Add(id);
                 }
                 rdr.Close();
             }
@@ -624,7 +623,7 @@ WHERE (ParentsPath LIKE '{departmentId},%') OR
             var departmentInfoList = GetDepartmentInfoList();
             foreach (var departmentInfo in departmentInfoList)
             {
-                var pair = new KeyValuePair<int, DepartmentInfo>(departmentInfo.DepartmentId, departmentInfo);
+                var pair = new KeyValuePair<int, DepartmentInfo>(departmentInfo.Id, departmentInfo);
                 list.Add(pair);
             }
 

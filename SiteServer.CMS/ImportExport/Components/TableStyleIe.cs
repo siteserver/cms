@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using Atom.Core;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Table;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
@@ -16,9 +15,9 @@ namespace SiteServer.CMS.ImportExport.Components
 			_directoryPath = directoryPath;
 		}
 
-		public void ExportTableStyles(int publishmentSystemId, string tableName)
+		public void ExportTableStyles(int siteId, string tableName)
 		{
-            var allRelatedIdentities = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(publishmentSystemId);
+            var allRelatedIdentities = DataProvider.ChannelDao.GetIdListBySiteId(siteId);
             allRelatedIdentities.Insert(0, 0);
             var tableStyleInfoWithItemsDict = TableStyleManager.GetTableStyleInfoWithItemsDictinary(tableName, allRelatedIdentities);
 		    if (tableStyleInfoWithItemsDict == null || tableStyleInfoWithItemsDict.Count <= 0) return;
@@ -39,12 +38,12 @@ namespace SiteServer.CMS.ImportExport.Components
 		            //仅导出当前系统内的表样式
 		            if (tableStyleInfo.RelatedIdentity != 0)
 		            {
-		                if (!NodeManager.IsAncestorOrSelf(publishmentSystemId, publishmentSystemId, tableStyleInfo.RelatedIdentity))
+		                if (!ChannelManager.IsAncestorOrSelf(siteId, siteId, tableStyleInfo.RelatedIdentity))
 		                {
 		                    continue;
 		                }
 		            }
-		            var filePath = attributeNameDirectoryPath + PathUtils.SeparatorChar + tableStyleInfo.TableStyleId + ".xml";
+		            var filePath = attributeNameDirectoryPath + PathUtils.SeparatorChar + tableStyleInfo.Id + ".xml";
 		            var feed = ExportTableStyleInfo(tableStyleInfo);
 		            if (tableStyleInfo.StyleItems != null && tableStyleInfo.StyleItems.Count > 0)
 		            {
@@ -63,7 +62,7 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var feed = AtomUtility.GetEmptyFeed();
 
-            AtomUtility.AddDcElement(feed.AdditionalElements, "TableStyleID", tableStyleInfo.TableStyleId.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, "Id", tableStyleInfo.Id.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, "RelatedIdentity", tableStyleInfo.RelatedIdentity.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, "TableName", tableStyleInfo.TableName);
             AtomUtility.AddDcElement(feed.AdditionalElements, "AttributeName", tableStyleInfo.AttributeName);
@@ -81,7 +80,7 @@ namespace SiteServer.CMS.ImportExport.Components
             var orderString = string.Empty;
             if (tableStyleInfo.RelatedIdentity != 0)
             {
-                orderString = DataProvider.NodeDao.GetOrderStringInPublishmentSystem(tableStyleInfo.RelatedIdentity);
+                orderString = DataProvider.ChannelDao.GetOrderStringInSite(tableStyleInfo.RelatedIdentity);
             }
 
             AtomUtility.AddDcElement(feed.AdditionalElements, "OrderString", orderString);
@@ -93,7 +92,7 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var entry = AtomUtility.GetEmptyEntry();
 
-            AtomUtility.AddDcElement(entry.AdditionalElements, "TableStyleItemID", styleItemInfo.TableStyleItemId.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, "Id", styleItemInfo.Id.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, "TableStyleID", styleItemInfo.TableStyleId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, "ItemTitle", styleItemInfo.ItemTitle);
             AtomUtility.AddDcElement(entry.AdditionalElements, "ItemValue", styleItemInfo.ItemValue);
@@ -102,9 +101,9 @@ namespace SiteServer.CMS.ImportExport.Components
 			return entry;
 		}
 
-        public static void SingleExportTableStyles(string tableName, int publishmentSystemId, int relatedIdentity, string styleDirectoryPath)
+        public static void SingleExportTableStyles(string tableName, int siteId, int relatedIdentity, string styleDirectoryPath)
         {
-            var relatedIdentities = RelatedIdentities.GetRelatedIdentities(publishmentSystemId, relatedIdentity);
+            var relatedIdentities = RelatedIdentities.GetRelatedIdentities(siteId, relatedIdentity);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
@@ -114,7 +113,7 @@ namespace SiteServer.CMS.ImportExport.Components
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
                 var feed = ExportTableStyleInfo(tableStyleInfo);
-                var styleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(tableStyleInfo.TableStyleId);
+                var styleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(tableStyleInfo.Id);
                 if (styleItems != null && styleItems.Count > 0)
                 {
                     foreach (var styleItemInfo in styleItems)
@@ -139,7 +138,7 @@ namespace SiteServer.CMS.ImportExport.Components
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
                 var feed = ExportTableStyleInfo(tableStyleInfo);
-                var styleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(tableStyleInfo.TableStyleId);
+                var styleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(tableStyleInfo.Id);
                 if (styleItems != null && styleItems.Count > 0)
                 {
                     foreach (var styleItemInfo in styleItems)
@@ -197,11 +196,11 @@ namespace SiteServer.CMS.ImportExport.Components
             }
         }
 
-        public void ImportTableStyles(int publishmentSystemId)
+        public void ImportTableStyles(int siteId)
 		{
 			if (!DirectoryUtils.IsDirectoryExists(_directoryPath)) return;
 
-            var importObject = new ImportObject(publishmentSystemId);
+            var importObject = new ImportObject(siteId);
             var tableNameCollection = importObject.GetTableNameCache();
 
 			var styleDirectoryPaths = DirectoryUtils.GetDirectoryPaths(_directoryPath);
@@ -234,7 +233,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                         var orderString = AtomUtility.GetDcElementContent(feed.AdditionalElements, "OrderString");
 
-                        var relatedIdentity = !string.IsNullOrEmpty(orderString) ? DataProvider.NodeDao.GetNodeId(publishmentSystemId, orderString) : publishmentSystemId;
+                        var relatedIdentity = !string.IsNullOrEmpty(orderString) ? DataProvider.ChannelDao.GetId(siteId, orderString) : siteId;
 
                         if (relatedIdentity <= 0 || TableStyleManager.IsExists(relatedIdentity, tableName, attributeName)) continue;
 

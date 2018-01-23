@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Table;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -40,28 +38,26 @@ namespace SiteServer.BackgroundPages.Cms
         public DateTimeTextBox TbAddDate;
         public Button BtnSubmit;
 
-        private NodeInfo _nodeInfo;
+        private ChannelInfo _nodeInfo;
         private List<TableStyleInfo> _styleInfoList;
         private string _tableName;
         private Dictionary<string, IContentRelated> _plugins;
 
         protected override bool IsSinglePage => true;
 
-        public static string GetRedirectUrlOfAdd(int publishmentSystemId, int channelId, string returnUrl)
+        public static string GetRedirectUrlOfAdd(int siteId, int channelId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(nameof(PageContentAdd), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageContentAdd), new NameValueCollection
             {
-                {"publishmentSystemId", publishmentSystemId.ToString()},
                 {"channelId", channelId.ToString()},
                 {"returnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
         }
 
-        public static string GetRedirectUrlOfEdit(int publishmentSystemId, int channelId, int id, string returnUrl)
+        public static string GetRedirectUrlOfEdit(int siteId, int channelId, int id, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(nameof(PageContentAdd), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageContentAdd), new NameValueCollection
             {
-                {"publishmentSystemId", publishmentSystemId.ToString()},
                 {"channelId", channelId.ToString()},
                 {"id", id.ToString()},
                 {"returnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -72,19 +68,19 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("publishmentSystemId", "channelId");
+            PageUtils.CheckRequestParameter("siteId", "channelId");
 
             var channelId = Body.GetQueryInt("channelId");
             var contentId = Body.GetQueryInt("id");
             ReturnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("returnUrl"));
             if (string.IsNullOrEmpty(ReturnUrl))
             {
-                ReturnUrl = PageContent.GetRedirectUrl(PublishmentSystemId, channelId);
+                ReturnUrl = PageContent.GetRedirectUrl(SiteId, channelId);
             }
 
-            _nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, channelId);
-            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, channelId);
-            _tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeInfo);
+            _nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, channelId);
+            _tableName = ChannelManager.GetTableName(SiteInfo, _nodeInfo);
             _plugins = PluginManager.GetContentRelatedFeatures(_nodeInfo);
             ContentInfo contentInfo = null;
             _styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, relatedIdentities);
@@ -97,10 +93,10 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             var titleFormat = IsPostBack ? Request.Form[ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)] : contentInfo?.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title));
-            LtlTitleHtml.Text = ContentUtility.GetTitleHtml(titleFormat, AjaxCmsService.GetTitlesUrl(PublishmentSystemId, _nodeInfo.NodeId));
+            LtlTitleHtml.Text = ContentUtility.GetTitleHtml(titleFormat, AjaxCmsService.GetTitlesUrl(SiteId, _nodeInfo.Id));
 
-            AcAttributes.PublishmentSystemInfo = PublishmentSystemInfo;
-            AcAttributes.NodeId = _nodeInfo.NodeId;
+            AcAttributes.SiteInfo = SiteInfo;
+            AcAttributes.NodeId = _nodeInfo.Id;
             AcAttributes.StyleInfoList = _styleInfoList;
             AcAttributes.Plugins = _plugins;
 
@@ -111,14 +107,14 @@ namespace SiteServer.BackgroundPages.Cms
                 LtlPageTitle.Text = pageTitle;
                 LtlPageTitle.Text += $@"
 <script language=""javascript"" type=""text/javascript"">
-var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeId, contentId)}';
+var previewUrl = '{PreviewApi.GetContentUrl(SiteId, _nodeInfo.Id, contentId)}';
 </script>
 ";
 
-                if (HasChannelPermissions(_nodeInfo.NodeId, AppManager.Permissions.Channel.ContentTranslate))
+                if (HasChannelPermissions(_nodeInfo.Id, AppManager.Permissions.Channel.ContentTranslate))
                 {
                     PhTranslate.Visible = true;
-                    BtnTranslate.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(PublishmentSystemId, true));
+                    BtnTranslate.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
 
                     ETranslateContentTypeUtils.AddListItems(DdlTranslateType, true);
                     ControlUtils.SelectSingleItem(DdlTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
@@ -135,32 +131,32 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
                 TbAddDate.DateTime = DateTime.Now;
                 TbAddDate.Now = true;
 
-                var contentGroupNameList = DataProvider.ContentGroupDao.GetContentGroupNameList(PublishmentSystemId);
+                var contentGroupNameList = DataProvider.ContentGroupDao.GetGroupNameList(SiteId);
                 foreach (var groupName in contentGroupNameList)
                 {
                     var item = new ListItem(groupName, groupName);
                     CblContentGroups.Items.Add(item);
                 }
                 
-                BtnContentGroupAdd.Attributes.Add("onclick", ModalContentGroupAdd.GetOpenWindowString(PublishmentSystemId));
+                BtnContentGroupAdd.Attributes.Add("onclick", ModalContentGroupAdd.GetOpenWindowString(SiteId));
 
-                LtlTags.Text = ContentUtility.GetTagsHtml(AjaxCmsService.GetTagsUrl(PublishmentSystemId));
+                LtlTags.Text = ContentUtility.GetTagsHtml(AjaxCmsService.GetTagsUrl(SiteId));
 
-                if (HasChannelPermissions(_nodeInfo.NodeId, AppManager.Permissions.Channel.ContentCheck))
+                if (HasChannelPermissions(_nodeInfo.Id, AppManager.Permissions.Channel.ContentCheck))
                 {
                     PhStatus.Visible = true;
                     int checkedLevel;
-                    var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, _nodeInfo.NodeId, out checkedLevel);
+                    var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, SiteInfo, _nodeInfo.Id, out checkedLevel);
                     if (Body.IsQueryExists("contentLevel"))
                     {
                         checkedLevel = TranslateUtils.ToIntWithNagetive(Body.GetQueryString("contentLevel"));
                         if (checkedLevel != CheckManager.LevelInt.NotChange)
                         {
-                            isChecked = checkedLevel >= PublishmentSystemInfo.CheckContentLevel;
+                            isChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
                         }
                     }
 
-                    CheckManager.LoadContentLevelToEdit(DdlContentLevel, PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo, isChecked, checkedLevel);
+                    CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, _nodeInfo.Id, contentInfo, isChecked, checkedLevel);
                 }
                 else
                 {
@@ -169,7 +165,7 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
 
                 BtnSubmit.Attributes.Add("onclick", InputParserUtils.GetValidateSubmitOnClickScript("myForm", true, "autoCheckKeywords()"));
                 //自动检测敏感词
-                ClientScriptRegisterStartupScript("autoCheckKeywords", WebUtils.GetAutoCheckKeywordsScript(PublishmentSystemInfo));
+                ClientScriptRegisterStartupScript("autoCheckKeywords", WebUtils.GetAutoCheckKeywordsScript(SiteInfo));
 
                 if (contentId == 0)
                 {
@@ -187,7 +183,7 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
                         var contentLevel = Body.GetQueryInt("contentLevel");
                         var fileName = Body.GetQueryString("fileName");
 
-                        var formCollection = WordUtils.GetWordNameValueCollection(PublishmentSystemId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, contentLevel, fileName);
+                        var formCollection = WordUtils.GetWordNameValueCollection(SiteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, contentLevel, fileName);
                         attributes.Load(formCollection);
                     }
 
@@ -219,7 +215,7 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
                     ControlUtils.SelectMultiItems(CblContentAttributes, list);
                     TbLinkUrl.Text = contentInfo.LinkUrl;
                     TbAddDate.DateTime = contentInfo.AddDate;
-                    ControlUtils.SelectMultiItems(CblContentGroups, TranslateUtils.StringCollectionToStringList(contentInfo.ContentGroupNameCollection));
+                    ControlUtils.SelectMultiItems(CblContentGroups, TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection));
 
                     AcAttributes.Attributes = contentInfo;
                 }
@@ -257,15 +253,15 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
                 var contentInfo = new ContentInfo();
                 try
                 {
-                    contentInfo.NodeId = _nodeInfo.NodeId;
-                    contentInfo.PublishmentSystemId = PublishmentSystemId;
+                    contentInfo.ChannelId = _nodeInfo.Id;
+                    contentInfo.SiteId = SiteId;
                     contentInfo.AddUserName = Body.AdminName;
                     contentInfo.LastEditUserName = contentInfo.AddUserName;
                     contentInfo.LastEditDate = DateTime.Now;
 
-                    BackgroundInputTypeParser.SaveAttributes(contentInfo, PublishmentSystemInfo, _styleInfoList, Request.Form, ContentAttribute.AllAttributesLowercase);
+                    BackgroundInputTypeParser.SaveAttributes(contentInfo, SiteInfo, _styleInfoList, Request.Form, ContentAttribute.AllAttributesLowercase);
 
-                    contentInfo.ContentGroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);
+                    contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);
                     var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
 
                     contentInfo.Title = TbTitle.Text;
@@ -289,32 +285,32 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
                     }
 
                     contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
-                    contentInfo.IsChecked = contentInfo.CheckedLevel >= PublishmentSystemInfo.CheckContentLevel;
+                    contentInfo.IsChecked = contentInfo.CheckedLevel >= SiteInfo.Additional.CheckContentLevel;
                     contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagCollection, " ");
 
                     foreach (var pluginId in _plugins.Keys)
                     {
                         var pluginChannel = _plugins[pluginId];
-                        pluginChannel.ContentFormSubmited?.Invoke(PublishmentSystemId, _nodeInfo.NodeId, contentInfo, Request.Form);
+                        pluginChannel.ContentFormSubmited?.Invoke(SiteId, _nodeInfo.Id, contentInfo, Request.Form);
                     }
 
                     if (isPreview)
                     {
-                        savedContentId = DataProvider.ContentDao.InsertPreview(_tableName, PublishmentSystemInfo, _nodeInfo, contentInfo);
+                        savedContentId = DataProvider.ContentDao.InsertPreview(_tableName, SiteInfo, _nodeInfo, contentInfo);
                     }
                     else
                     {
-                        savedContentId = DataProvider.ContentDao.Insert(_tableName, PublishmentSystemInfo, contentInfo);
+                        savedContentId = DataProvider.ContentDao.Insert(_tableName, SiteInfo, contentInfo);
                         //判断是不是有审核权限
                         int checkedLevelOfUser;
-                        var isCheckedOfUser = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, contentInfo.NodeId, out checkedLevelOfUser);
-                        if (CheckManager.IsCheckable(PublishmentSystemInfo, contentInfo.NodeId, contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
+                        var isCheckedOfUser = CheckManager.GetUserCheckLevel(Body.AdminName, SiteInfo, contentInfo.ChannelId, out checkedLevelOfUser);
+                        if (CheckManager.IsCheckable(SiteInfo, contentInfo.ChannelId, contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                         {
                             //添加审核记录
-                            DataProvider.ContentDao.UpdateIsChecked(_tableName, PublishmentSystemId, contentInfo.NodeId, new List<int> { savedContentId }, 0, true, Body.AdminName, contentInfo.IsChecked, contentInfo.CheckedLevel, "");
+                            DataProvider.ContentDao.UpdateIsChecked(_tableName, SiteId, contentInfo.ChannelId, new List<int> { savedContentId }, 0, true, Body.AdminName, contentInfo.IsChecked, contentInfo.CheckedLevel, "");
                         }
 
-                        TagUtils.AddTags(tagCollection, PublishmentSystemId, savedContentId);
+                        TagUtils.AddTags(tagCollection, SiteId, savedContentId);
                     }
 
                     contentInfo.Id = savedContentId;
@@ -328,15 +324,15 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
 
                 if (contentInfo.IsChecked)
                 {
-                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id);
+                    CreateManager.CreateContentAndTrigger(SiteId, _nodeInfo.Id, contentInfo.Id);
                 }
 
-                Body.AddSiteLog(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id, "添加内容",
-                    $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId)},内容标题:{contentInfo.Title}");
+                Body.AddSiteLog(SiteId, _nodeInfo.Id, contentInfo.Id, "添加内容",
+                    $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
-                ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdminName);
+                ContentUtility.Translate(SiteInfo, _nodeInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdminName);
 
-                redirectUrl = PageContentAddAfter.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id,
+                redirectUrl = PageContentAddAfter.GetRedirectUrl(SiteId, _nodeInfo.Id, contentInfo.Id,
                     ReturnUrl);
             }
             else
@@ -349,9 +345,9 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
                     contentInfo.LastEditUserName = Body.AdminName;
                     contentInfo.LastEditDate = DateTime.Now;
 
-                    BackgroundInputTypeParser.SaveAttributes(contentInfo, PublishmentSystemInfo, _styleInfoList, Request.Form, ContentAttribute.AllAttributesLowercase);
+                    BackgroundInputTypeParser.SaveAttributes(contentInfo, SiteInfo, _styleInfoList, Request.Form, ContentAttribute.AllAttributesLowercase);
 
-                    contentInfo.ContentGroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);
+                    contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);
                     var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
 
                     contentInfo.Title = TbTitle.Text;
@@ -373,7 +369,7 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
                     var checkedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
                     if (checkedLevel != CheckManager.LevelInt.NotChange)
                     {
-                        contentInfo.IsChecked = checkedLevel >= PublishmentSystemInfo.CheckContentLevel;
+                        contentInfo.IsChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
                         contentInfo.CheckedLevel = checkedLevel;
                     }
                     contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagCollection, " ");
@@ -381,14 +377,14 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
                     foreach (var pluginId in _plugins.Keys)
                     {
                         var pluginChannel = _plugins[pluginId];
-                        pluginChannel.ContentFormSubmited?.Invoke(PublishmentSystemId, _nodeInfo.NodeId, contentInfo, Request.Form);
+                        pluginChannel.ContentFormSubmited?.Invoke(SiteId, _nodeInfo.Id, contentInfo, Request.Form);
                     }
 
-                    DataProvider.ContentDao.Update(_tableName, PublishmentSystemInfo, contentInfo);
+                    DataProvider.ContentDao.Update(_tableName, SiteInfo, contentInfo);
 
-                    TagUtils.UpdateTags(tagsLast, contentInfo.Tags, tagCollection, PublishmentSystemId, contentId);
+                    TagUtils.UpdateTags(tagsLast, contentInfo.Tags, tagCollection, SiteId, contentId);
 
-                    ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdminName);
+                    ContentUtility.Translate(SiteInfo, _nodeInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdminName);
 
                     //更新引用该内容的信息
                     //如果不是异步自动保存，那么需要将引用此内容的content修改
@@ -396,26 +392,26 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
                     //{
                     //    contentInfo.Id
                     //};
-                    //var tableList = DataProvider.TableCollectionDao.GetTableCollectionInfoListCreatedInDb();
+                    //var tableList = DataProvider.TableDao.GetTableCollectionInfoListCreatedInDb();
                     //foreach (var table in tableList)
                     //{
-                    //    var targetContentIdList = DataProvider.ContentDao.GetReferenceIdList(table.TableEnName, sourceContentIdList);
+                    //    var targetContentIdList = DataProvider.ContentDao.GetReferenceIdList(table.TableName, sourceContentIdList);
                     //    foreach (var targetContentId in targetContentIdList)
                     //    {
-                    //        var targetContentInfo = DataProvider.ContentDao.GetContentInfo(table.TableEnName, targetContentId);
+                    //        var targetContentInfo = DataProvider.ContentDao.GetContentInfo(table.TableName, targetContentId);
                     //        if (targetContentInfo == null || targetContentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString()) continue;
 
                     //        contentInfo.Id = targetContentId;
-                    //        contentInfo.PublishmentSystemId = targetContentInfo.PublishmentSystemId;
+                    //        contentInfo.SiteId = targetContentInfo.SiteId;
                     //        contentInfo.NodeId = targetContentInfo.NodeId;
                     //        contentInfo.SourceId = targetContentInfo.SourceId;
                     //        contentInfo.ReferenceId = targetContentInfo.ReferenceId;
                     //        contentInfo.Taxis = targetContentInfo.Taxis;
                     //        contentInfo.Set(ContentAttribute.TranslateContentType, targetContentInfo.GetString(ContentAttribute.TranslateContentType));
-                    //        DataProvider.ContentDao.Update(table.TableEnName, contentInfo);
+                    //        DataProvider.ContentDao.Update(table.TableName, contentInfo);
 
                     //        //资源：图片，文件，视频
-                    //        var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetContentInfo.PublishmentSystemId);
+                    //        var targetSiteInfo = SiteManager.GetSiteInfo(targetContentInfo.SiteId);
                     //        var bgContentInfo = contentInfo as BackgroundContentInfo;
                     //        var bgTargetContentInfo = targetContentInfo as BackgroundContentInfo;
                     //        if (bgTargetContentInfo != null && bgContentInfo != null)
@@ -423,8 +419,8 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
                     //            if (bgContentInfo.ImageUrl != bgTargetContentInfo.ImageUrl)
                     //            {
                     //                //修改图片
-                    //                var sourceImageUrl = PathUtility.MapPath(PublishmentSystemInfo, bgContentInfo.ImageUrl);
-                    //                CopyReferenceFiles(targetPublishmentSystemInfo, sourceImageUrl);
+                    //                var sourceImageUrl = PathUtility.MapPath(SiteInfo, bgContentInfo.ImageUrl);
+                    //                CopyReferenceFiles(targetSiteInfo, sourceImageUrl);
                     //            }
                     //            else if (bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)) != bgTargetContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)))
                     //            {
@@ -432,15 +428,15 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
 
                     //                foreach (string imageUrl in sourceImageUrls)
                     //                {
-                    //                    var sourceImageUrl = PathUtility.MapPath(PublishmentSystemInfo, imageUrl);
-                    //                    CopyReferenceFiles(targetPublishmentSystemInfo, sourceImageUrl);
+                    //                    var sourceImageUrl = PathUtility.MapPath(SiteInfo, imageUrl);
+                    //                    CopyReferenceFiles(targetSiteInfo, sourceImageUrl);
                     //                }
                     //            }
                     //            if (bgContentInfo.FileUrl != bgTargetContentInfo.FileUrl)
                     //            {
                     //                //修改附件
-                    //                var sourceFileUrl = PathUtility.MapPath(PublishmentSystemInfo, bgContentInfo.FileUrl);
-                    //                CopyReferenceFiles(targetPublishmentSystemInfo, sourceFileUrl);
+                    //                var sourceFileUrl = PathUtility.MapPath(SiteInfo, bgContentInfo.FileUrl);
+                    //                CopyReferenceFiles(targetSiteInfo, sourceFileUrl);
 
                     //            }
                     //            else if (bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)) != bgTargetContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)))
@@ -449,8 +445,8 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
 
                     //                foreach (var fileUrl in sourceFileUrls)
                     //                {
-                    //                    var sourceFileUrl = PathUtility.MapPath(PublishmentSystemInfo, fileUrl);
-                    //                    CopyReferenceFiles(targetPublishmentSystemInfo, sourceFileUrl);
+                    //                    var sourceFileUrl = PathUtility.MapPath(SiteInfo, fileUrl);
+                    //                    CopyReferenceFiles(targetSiteInfo, sourceFileUrl);
                     //                }
                     //            }
                     //        }
@@ -466,11 +462,11 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
 
                 if (contentInfo.IsChecked)
                 {
-                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentId);
+                    CreateManager.CreateContentAndTrigger(SiteId, _nodeInfo.Id, contentId);
                 }
 
-                Body.AddSiteLog(PublishmentSystemId, _nodeInfo.NodeId, contentId, "修改内容",
-                    $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId)},内容标题:{contentInfo.Title}");
+                Body.AddSiteLog(SiteId, _nodeInfo.Id, contentId, "修改内容",
+                    $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
                 redirectUrl = ReturnUrl;
                 savedContentId = contentId;
@@ -506,7 +502,7 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
                     return false;
                 }
 
-                if (!HasChannelPermissions(_nodeInfo.NodeId, AppManager.Permissions.Channel.ContentAdd))
+                if (!HasChannelPermissions(_nodeInfo.Id, AppManager.Permissions.Channel.ContentAdd))
                 {
                     if (!Body.IsAdminLoggin)
                     {
@@ -520,7 +516,7 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
             }
             else
             {
-                if (!HasChannelPermissions(_nodeInfo.NodeId, AppManager.Permissions.Channel.ContentEdit))
+                if (!HasChannelPermissions(_nodeInfo.Id, AppManager.Permissions.Channel.ContentEdit))
                 {
                     if (!Body.IsAdminLoggin)
                     {

@@ -75,7 +75,7 @@ namespace SiteServer.BackgroundPages.Settings
                 {"Delete", "True" }
             }), "DepartmentIDCollection", "DepartmentIDCollection", "请选择需要删除的部门！", "此操作将删除对应部门以及所有下级部门，确认删除吗？"));
 
-            RptContents.DataSource = DataProvider.DepartmentDao.GetDepartmentIdListByParentId(0);
+            RptContents.DataSource = DataProvider.DepartmentDao.GetIdListByParentId(0);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }
@@ -131,23 +131,23 @@ namespace SiteServer.BackgroundPages.Settings
             else if (loadingType == EDepartmentLoadingType.ContentList)
             {
                 string editUrl = $@"<a href=""javascript:;"" onclick=""{ModalDepartmentAdd.GetOpenWindowStringToEdit(
-                    departmentInfo.DepartmentId, GetRedirectUrl(departmentInfo.DepartmentId))}"">编辑</a>";
+                    departmentInfo.Id, GetRedirectUrl(departmentInfo.Id))}"">编辑</a>";
 
                 var urlUp = PageUtils.GetSettingsUrl(nameof(PageAdminDepartment), new NameValueCollection
                 {
                     {"Subtract", "True"},
-                    {"DepartmentID", departmentInfo.DepartmentId.ToString()}
+                    {"DepartmentID", departmentInfo.Id.ToString()}
                 });
                 string upLink = $@"<a href=""{urlUp}""><img src=""../Pic/icon/up.gif"" border=""0"" alt=""上升"" /></a>";
 
                 var urlDown = PageUtils.GetSettingsUrl(nameof(PageAdminDepartment), new NameValueCollection
                 {
                     {"Add", "True"},
-                    {"DepartmentID", departmentInfo.DepartmentId.ToString()}
+                    {"DepartmentID", departmentInfo.Id.ToString()}
                 });
                 string downLink = $@"<a href=""{urlDown}""><img src=""../Pic/icon/down.gif"" border=""0"" alt=""下降"" /></a>";
 
-                string checkBoxHtml = $"<input type='checkbox' name='DepartmentIDCollection' value='{departmentInfo.DepartmentId}' />";
+                string checkBoxHtml = $"<input type='checkbox' name='DepartmentIDCollection' value='{departmentInfo.Id}' />";
 
                 rowHtml = $@"
 <tr treeItemLevel=""{departmentInfo.ParentsCount + 1}"">

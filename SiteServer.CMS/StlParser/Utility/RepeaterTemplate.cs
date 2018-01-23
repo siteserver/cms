@@ -1,7 +1,6 @@
 using System;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using SiteServer.Utils.Model;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Utils;
@@ -48,13 +47,13 @@ namespace SiteServer.CMS.StlParser.Utility
 
             if (_contextType == EContextType.Channel)
             {
-                var channelItemInfo = new ChannelItemInfo(SqlUtils.EvalInt(container.DataItem, NodeAttribute.NodeId), container.ItemIndex);
+                var channelItemInfo = new ChannelItemInfo(SqlUtils.EvalInt(container.DataItem, ChannelAttribute.Id), container.ItemIndex);
                 _pageInfo.ChannelItems.Push(channelItemInfo);
                 literal.Text = TemplateUtility.GetChannelsItemTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
             else if (_contextType == EContextType.Content)
             {
-                var contentItemInfo = new ContentItemInfo(SqlUtils.EvalInt(container.DataItem, ContentAttribute.NodeId), SqlUtils.EvalInt(container.DataItem, ContentAttribute.Id), container.ItemIndex);
+                var contentItemInfo = new ContentItemInfo(SqlUtils.EvalInt(container.DataItem, ContentAttribute.ChannelId), SqlUtils.EvalInt(container.DataItem, ContentAttribute.Id), container.ItemIndex);
                 _pageInfo.ContentItems.Push(contentItemInfo);
                 literal.Text = TemplateUtility.GetContentsItemTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
@@ -77,11 +76,6 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 _pageInfo.SiteItems.Push(itemInfo);
                 literal.Text = TemplateUtility.GetSitesTemplateString(_templateString, container.ClientID, _pageInfo, _contextType, _contextInfo);
-            }
-            else if (_contextType == EContextType.Photo)
-            {
-                _pageInfo.PhotoItems.Push(itemInfo);
-                literal.Text = TemplateUtility.GetPhotosTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
             else if (_contextType == EContextType.Each)
             {

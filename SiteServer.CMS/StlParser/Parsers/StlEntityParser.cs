@@ -73,14 +73,6 @@ namespace SiteServer.CMS.StlParser.Parsers
             {
                 parsedContent = StlChannelEntities.Parse(stlEntity, pageInfo, contextInfo);
             }
-            else if (entityType == EStlEntityType.Photo)
-            {
-                parsedContent = StlPhotoEntities.Parse(stlEntity, pageInfo, contextInfo);
-            }
-            else if (entityType == EStlEntityType.Comment)
-            {
-                parsedContent = StlCommentEntities.Parse(stlEntity, pageInfo, contextInfo);
-            }
             else if (entityType == EStlEntityType.Request)
             {
                 parsedContent = StlRequestEntities.Parse(stlEntity, pageInfo, contextInfo);

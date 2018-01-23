@@ -1,6 +1,6 @@
 using System;
 using System.Web;
-using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {

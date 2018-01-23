@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -11,7 +10,7 @@ namespace SiteServer.CMS.Provider
 {
     public class DbCacheDao : DataProviderBase
     {
-        public override string TableName => "bairong_DbCache";
+        public override string TableName => "siteserver_DbCache";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
@@ -35,15 +34,15 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlSelectValue = "SELECT CacheValue FROM bairong_DbCache WHERE CacheKey = @CacheKey";
+        private const string SqlSelectValue = "SELECT CacheValue FROM siteserver_DbCache WHERE CacheKey = @CacheKey";
 
-        private const string SqlSelectCount = "SELECT COUNT(*) FROM bairong_DbCache";
+        private const string SqlSelectCount = "SELECT COUNT(*) FROM siteserver_DbCache";
 
-        private const string SqlInsert = "INSERT INTO bairong_DbCache (CacheKey, CacheValue, AddDate) VALUES (@CacheKey, @CacheValue, @AddDate)";
+        private const string SqlInsert = "INSERT INTO siteserver_DbCache (CacheKey, CacheValue, AddDate) VALUES (@CacheKey, @CacheValue, @AddDate)";
 
-        private const string SqlDelete = "DELETE FROM bairong_DbCache WHERE CacheKey = @CacheKey";
+        private const string SqlDelete = "DELETE FROM siteserver_DbCache WHERE CacheKey = @CacheKey";
 
-        private const string SqlDeleteAll = "DELETE FROM bairong_DbCache";
+        private const string SqlDeleteAll = "DELETE FROM siteserver_DbCache";
 
         private const string ParmCacheKey = "@CacheKey";
         private const string ParmCacheValue = "@CacheValue";
@@ -195,7 +194,7 @@ namespace SiteServer.CMS.Provider
 
         public void DeleteExcess90Days()
         {
-            ExecuteNonQuery("DELETE FROM bairong_DbCache WHERE " + SqlUtils.GetDateDiffGreatThanDays("AddDate", 90.ToString()));
+            ExecuteNonQuery("DELETE FROM siteserver_DbCache WHERE " + SqlUtils.GetDateDiffGreatThanDays("AddDate", 90.ToString()));
         }
     }
 }

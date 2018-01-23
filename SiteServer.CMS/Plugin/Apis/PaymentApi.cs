@@ -3,7 +3,6 @@ using Aop.Api;
 using Aop.Api.Domain;
 using Aop.Api.Request;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin.Apis;
 using WxPayAPI;
 using System.Collections.Generic;
@@ -17,7 +16,7 @@ using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
-    public class PaymentApi : IPaymentApi
+    public class PaymentApi
     {
         private PaymentApi() { }
 

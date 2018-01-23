@@ -9,7 +9,7 @@ namespace SiteServer.BackgroundPages
 	{
         public bool HasChannelPermissions(int nodeId, params string[] channelPermissionArray)
         {
-            return AdminUtility.HasChannelPermissions(Body.AdminName, PublishmentSystemId, nodeId, channelPermissionArray);
+            return AdminUtility.HasChannelPermissions(Body.AdminName, SiteId, nodeId, channelPermissionArray);
         }
 
         public bool HasChannelPermissionsIgnoreNodeId(params string[] channelPermissionArray)
@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages
 
         public bool HasSitePermissions(params string[] websitePermissionArray)
         {
-            return AdminUtility.HasSitePermissions(Body.AdminName, PublishmentSystemId, websitePermissionArray);
+            return AdminUtility.HasSitePermissions(Body.AdminName, SiteId, websitePermissionArray);
         }
 
         public bool IsOwningNodeId(int nodeId)
@@ -32,34 +32,34 @@ namespace SiteServer.BackgroundPages
             return AdminUtility.IsHasChildOwningNodeId(Body.AdminName, nodeId);
         }
 
-        private int _publishmentSystemId = -1;
-        public virtual int PublishmentSystemId
+        private int _siteId = -1;
+        public virtual int SiteId
         {
             get
             {
-                if (_publishmentSystemId == -1)
+                if (_siteId == -1)
                 {
-                    _publishmentSystemId = Body.GetQueryInt("publishmentSystemId");
+                    _siteId = Body.GetQueryInt("siteId");
                 }
-                return _publishmentSystemId;
+                return _siteId;
             }
         }
 
-        private PublishmentSystemInfo _publishmentSystemInfo;
+        private SiteInfo _siteInfo;
 
-	    public PublishmentSystemInfo PublishmentSystemInfo
+	    public SiteInfo SiteInfo
 	    {
 	        get
 	        {
-	            if (_publishmentSystemInfo != null) return _publishmentSystemInfo;
-	            _publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(PublishmentSystemId);
-	            return _publishmentSystemInfo;
+	            if (_siteInfo != null) return _siteInfo;
+	            _siteInfo = SiteManager.GetSiteInfo(SiteId);
+	            return _siteInfo;
 	        }
 	    }
 
 	    public void VerifySitePermissions(string permission)
 	    {
-            AdminUtility.VerifySitePermissions(Body.AdminName, PublishmentSystemId, permission);
+            AdminUtility.VerifySitePermissions(Body.AdminName, SiteId, permission);
         }
 
         private NameValueCollection _attributes;

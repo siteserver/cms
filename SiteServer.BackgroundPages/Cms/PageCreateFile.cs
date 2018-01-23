@@ -18,17 +18,17 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
             VerifySitePermissions(AppManager.Permissions.WebSite.Create);
 
-            var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListOfFile(PublishmentSystemId);
+            var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListOfFile(SiteId);
 
             foreach (var templateInfo in templateInfoList)
             {
-                var listitem = new ListItem(templateInfo.CreatedFileFullName, templateInfo.TemplateId.ToString());
+                var listitem = new ListItem(templateInfo.CreatedFileFullName, templateInfo.Id.ToString());
                 LbTemplateIdList.Items.Add(listitem);
             }
 
@@ -56,17 +56,17 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var templateId in templateIdList)
             {
-                CreateManager.CreateFile(PublishmentSystemId, templateId);
+                CreateManager.CreateFile(SiteId, templateId);
             }
 
-            PageCreateStatus.Redirect(PublishmentSystemId);
+            PageCreateStatus.Redirect(SiteId);
         }
 
         public void BtnDeleteAll_OnClick(object sender, EventArgs e)
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var url = PageProgressBar.GetDeleteAllPageUrl(PublishmentSystemId, ETemplateType.FileTemplate);
+            var url = PageProgressBar.GetDeleteAllPageUrl(SiteId, ETemplateType.FileTemplate);
             PageUtils.RedirectToLoadingPage(url);
         }
     }

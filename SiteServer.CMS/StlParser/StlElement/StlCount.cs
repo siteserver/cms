@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using SiteServer.Utils;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -36,14 +36,12 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public const string TypeChannels = "Channels";
         public const string TypeContents = "Contents";
-        public const string TypeComments = "Comments";
         public const string TypeDownloads = "Downloads";
 
         public static SortedList<string, string> TypeList => new SortedList<string, string>
         {
             {TypeChannels, "栏目数"},
             {TypeContents, "内容数"},
-            {TypeComments, "评论数"},
             {TypeDownloads, "下载次数"}
         };
 
@@ -106,38 +104,33 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (string.IsNullOrEmpty(type) || StringUtils.EqualsIgnoreCase(type, TypeContents))
             {
-                var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
-                channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
+                var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
+                channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
 
-                var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
+                var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
 
-                //var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, scope, string.Empty, string.Empty);
-                var nodeIdList = Node.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, scope, string.Empty, string.Empty);
+                //var nodeIdList = DataProvider.ChannelDao.GetIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, scope, string.Empty, string.Empty);
+                var nodeIdList = Node.GetIdListByScopeType(nodeInfo.Id, nodeInfo.ChildrenCount, scope, string.Empty, string.Empty);
                 foreach (var nodeId in nodeIdList)
                 {
-                    var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, nodeId);
-                    //count += DataProvider.ContentDao.GetCountOfContentAdd(tableName, pageInfo.PublishmentSystemId, nodeId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty);
-                    count += Content.GetCountOfContentAdd(tableName, pageInfo.PublishmentSystemId, nodeId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty);
+                    var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, nodeId);
+                    //count += DataProvider.ContentDao.GetCountOfContentAdd(tableName, pageInfo.SiteId, nodeId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty);
+                    count += Content.GetCountOfContentAdd(tableName, pageInfo.SiteId, nodeId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeChannels))
             {
-                var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
-                channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
+                var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
+                channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
 
-                var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
+                var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
                 count = nodeInfo.ChildrenCount;
-            }
-            else if (StringUtils.EqualsIgnoreCase(type, TypeComments))
-            {
-                //count = DataProvider.CommentDao.GetCountChecked(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId);
-                count = Comment.GetCountChecked(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId);
-            }
+            }           
             else if (StringUtils.EqualsIgnoreCase(type, TypeDownloads))
             {
                 if (contextInfo.ContentId > 0)
                 {
-                    count = CountManager.GetCount(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contextInfo.ContentId.ToString(), ECountType.Download);
+                    count = CountManager.GetCount(pageInfo.SiteInfo.TableName, contextInfo.ContentId.ToString(), ECountType.Download);
                 }
             }
 

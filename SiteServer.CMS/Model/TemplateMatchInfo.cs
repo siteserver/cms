@@ -3,9 +3,10 @@ namespace SiteServer.CMS.Model
 	public class TemplateMatchInfo
 	{
 	    public TemplateMatchInfo()
-		{
-            NodeId = 0;
-			PublishmentSystemId = 0;
+	    {
+	        Id = 0;
+            ChannelId = 0;
+			SiteId = 0;
 			ChannelTemplateId = 0;
 			ContentTemplateId = 0;
             FilePath = string.Empty;
@@ -13,10 +14,11 @@ namespace SiteServer.CMS.Model
             ContentFilePathRule = string.Empty;
 		}
 
-        public TemplateMatchInfo(int nodeId, int publishmentSystemId, int channelTemplateId, int contentTemplateId, string filePath, string channelFilePathRule, string contentFilePathRule) 
-		{
-            NodeId = nodeId;
-            PublishmentSystemId = publishmentSystemId;
+        public TemplateMatchInfo(int id, int channelId, int siteId, int channelTemplateId, int contentTemplateId, string filePath, string channelFilePathRule, string contentFilePathRule)
+        {
+            Id = id;
+            ChannelId = channelId;
+            SiteId = siteId;
             ChannelTemplateId = channelTemplateId;
             ContentTemplateId = contentTemplateId;
             FilePath = filePath;
@@ -24,9 +26,11 @@ namespace SiteServer.CMS.Model
             ContentFilePathRule = contentFilePathRule;
 		}
 
-        public int NodeId { get; set; }
+        public int Id { get; set; }
 
-	    public int PublishmentSystemId { get; set; }
+        public int ChannelId { get; set; }
+
+	    public int SiteId { get; set; }
 
 	    public int ChannelTemplateId { get; set; }
 

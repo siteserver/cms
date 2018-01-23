@@ -4,7 +4,7 @@ using SiteServer.Plugin.Apis;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
-    public class SmsApi : ISmsApi
+    public class SmsApi
     {
         private SmsApi() { }
 

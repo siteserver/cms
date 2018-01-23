@@ -3,7 +3,6 @@ using System.Web.Http;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Controllers.Sys.Administrators;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.API.Controllers.Sys.Administrators
@@ -29,27 +28,27 @@ namespace SiteServer.API.Controllers.Sys.Administrators
 
             foreach (var pair in unCheckedList)
             {
-                var publishmentSystemId = pair.Key;
+                var siteId = pair.Key;
                 var count = pair.Value;
-                if (dict.ContainsKey(publishmentSystemId))
+                if (dict.ContainsKey(siteId))
                 {
-                    dict[publishmentSystemId] = dict[publishmentSystemId] + count;
+                    dict[siteId] = dict[siteId] + count;
                 }
                 else
                 {
-                    dict[publishmentSystemId] = count;
+                    dict[siteId] = count;
                 }
             }
 
-            foreach (var publishmentSystemId in dict.Keys)
+            foreach (var siteId in dict.Keys)
             {
-                var count = dict[publishmentSystemId];
-                if (!PublishmentSystemManager.IsExists(publishmentSystemId)) continue;
+                var count = dict[siteId];
+                if (!SiteManager.IsExists(siteId)) continue;
 
                 list.Add(new
                 {
-                    Url = PageContentCheck.GetRedirectUrl(publishmentSystemId),
-                    SiteName = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId).PublishmentSystemName,
+                    Url = PageContentCheck.GetRedirectUrl(siteId),
+                    SiteManager.GetSiteInfo(siteId).SiteName,
                     Count = count
                 });
             }

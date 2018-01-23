@@ -68,7 +68,7 @@
                             <asp:Literal id="ltlTableName" runat="server" />
                           </td>
                           <td>
-                            <asp:Literal id="ltlTableCnName" runat="server" />
+                            <asp:Literal id="ltlDisplayName" runat="server" />
                           </td>
                           <td class="text-center">
                             <asp:Literal id="ltlIsUsed" runat="server" />

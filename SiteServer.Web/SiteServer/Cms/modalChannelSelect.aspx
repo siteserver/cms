@@ -26,7 +26,7 @@
                 <img align="absmiddle" style="cursor:pointer" onClick="displayChildren(this);" isAjax="false" isOpen="true" src="../assets/icons/tree/minus.gif"
                 />
                 <img align="absmiddle" border="0" src="../assets/icons/tree/folder.gif" /> &nbsp;
-                <asp:Literal ID="LtlPublishmentSystem" runat="server"></asp:Literal>
+                <asp:Literal ID="LtlSite" runat="server"></asp:Literal>
               </td>
             </tr>
             <asp:Repeater ID="RptChannel" runat="server">

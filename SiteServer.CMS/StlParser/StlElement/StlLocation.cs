@@ -74,7 +74,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 separator = contextInfo.InnerXml;
             }
 
-            var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId);
+            var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
 
             var builder = new StringBuilder();
 
@@ -91,8 +91,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                 foreach (var nodeIdStr in nodeIdArrayList)
                 {
                     var currentId = int.Parse(nodeIdStr);
-                    var currentNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, currentId);
-                    if (currentId == pageInfo.PublishmentSystemId)
+                    var currentNodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, currentId);
+                    if (currentId == pageInfo.SiteId)
                     {
                         var stlAnchor = new HtmlAnchor();
                         if (!string.IsNullOrEmpty(target))
@@ -103,13 +103,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             stlAnchor.Attributes.Add("class", linkClass);
                         }
-                        var url = PageUtility.GetIndexPageUrl(pageInfo.PublishmentSystemInfo, pageInfo.IsLocal);
+                        var url = PageUtility.GetIndexPageUrl(pageInfo.SiteInfo, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
                             stlAnchor.Target = string.Empty;
                         }
                         stlAnchor.HRef = url;
-                        stlAnchor.InnerHtml = StringUtils.MaxLengthText(currentNodeInfo.NodeName, wordNum);
+                        stlAnchor.InnerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
                         ControlUtils.AddAttributesIfNotExists(stlAnchor, contextInfo.Attributes);
 
@@ -131,13 +131,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             stlAnchor.Attributes.Add("class", linkClass);
                         }
-                        var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, currentNodeInfo, pageInfo.IsLocal);
+                        var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, currentNodeInfo, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
                             stlAnchor.Target = string.Empty;
                         }
                         stlAnchor.HRef = url;
-                        stlAnchor.InnerHtml = StringUtils.MaxLengthText(currentNodeInfo.NodeName, wordNum);
+                        stlAnchor.InnerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
                         ControlUtils.AddAttributesIfNotExists(stlAnchor, contextInfo.Attributes);
 
@@ -154,13 +154,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             stlAnchor.Attributes.Add("class", linkClass);
                         }
-                        var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, currentNodeInfo, pageInfo.IsLocal);
+                        var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, currentNodeInfo, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
                             stlAnchor.Target = string.Empty;
                         }
                         stlAnchor.HRef = url;
-                        stlAnchor.InnerHtml = StringUtils.MaxLengthText(currentNodeInfo.NodeName, wordNum);
+                        stlAnchor.InnerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
                         ControlUtils.AddAttributesIfNotExists(stlAnchor, contextInfo.Attributes);
 

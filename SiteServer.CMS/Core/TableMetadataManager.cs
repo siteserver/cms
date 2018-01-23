@@ -6,7 +6,6 @@ using System.Text;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 using SiteServer.Utils.IO;
-using SiteServer.Utils.Model;
 
 namespace SiteServer.CMS.Core
 {
@@ -144,7 +143,7 @@ namespace SiteServer.CMS.Core
             {
                 if (StringUtils.EqualsIgnoreCase(tableMetadataInfo.AttributeName, attributeName))
                 {
-                    metadataId = tableMetadataInfo.TableMetadataId;
+                    metadataId = tableMetadataInfo.Id;
                     break;
                 }
             }

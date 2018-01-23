@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -162,7 +161,7 @@ namespace SiteServer.BackgroundPages.Settings
             foreach (var theDepartmentId in departmentIdList)
             {
                 var departmentInfo = DepartmentManager.GetDepartmentInfo(theDepartmentId);
-                DdlDepartmentId.Items.Add(new ListItem(GetTreeItem(departmentInfo.DepartmentId, departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode, _isLastNodeArrayOfDepartment), theDepartmentId.ToString()));
+                DdlDepartmentId.Items.Add(new ListItem(GetTreeItem(departmentInfo.Id, departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode, _isLastNodeArrayOfDepartment), theDepartmentId.ToString()));
             }
             ControlUtils.SelectSingleItem(DdlDepartmentId, departmentId.ToString());
 
@@ -173,7 +172,7 @@ namespace SiteServer.BackgroundPages.Settings
             foreach (var theAreaId in areaIdList)
             {
                 var areaInfo = AreaManager.GetAreaInfo(theAreaId);
-                DdlAreaId.Items.Add(new ListItem(GetTreeItem(areaInfo.AreaId, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode, _isLastNodeArrayOfArea), theAreaId.ToString()));
+                DdlAreaId.Items.Add(new ListItem(GetTreeItem(areaInfo.Id, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode, _isLastNodeArrayOfArea), theAreaId.ToString()));
             }
             ControlUtils.SelectSingleItem(DdlAreaId, areaId.ToString());
 

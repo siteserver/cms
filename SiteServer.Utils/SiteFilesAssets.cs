@@ -96,12 +96,6 @@ namespace SiteServer.Utils
             public static string GetStyleUrl(string apiUrl, string theme) => GetUrl(apiUrl, $"tags/{theme}.css");
         }
 
-        public class Tracker
-        {
-            public static string DirectoryName = "tracker";
-            public static string GetScriptUrl(string apiUrl) => GetUrl(apiUrl, "tracker/script.js");
-        }
-
         public class GovPublicApply
         {
             public static string GetScriptUrl(string apiUrl) => GetUrl(apiUrl, "govpublicapply/js/apply.js");

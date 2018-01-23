@@ -13,7 +13,7 @@ namespace SiteServer.BackgroundPages.Settings
 {
     public class PageAnalysisAdminWork : BasePageCms
     {
-        public DropDownList DdlPublishmentSystemId;
+        public DropDownList DdlSiteId;
         public DateTimeTextBox TbStartDate;
         public DateTimeTextBox TbEndDate;
         public PlaceHolder PhAnalysis;
@@ -35,11 +35,11 @@ namespace SiteServer.BackgroundPages.Settings
 
         protected override bool IsSinglePage => true;
 
-        public static string GetRedirectUrl(int publishmentSystemId, string startDate, string endDate)
+        public static string GetRedirectUrl(int siteId, string startDate, string endDate)
         {
             return PageUtils.GetSettingsUrl(nameof(PageAnalysisAdminWork), new NameValueCollection
             {
-                {"publishmentSystemId", publishmentSystemId.ToString()},
+                {"siteId", siteId.ToString()},
                 {"startDate", startDate},
                 {"endDate", endDate}
             });
@@ -59,11 +59,11 @@ namespace SiteServer.BackgroundPages.Settings
                 _begin = TranslateUtils.ToDateTime(Body.GetQueryString("startDate"));
                 _end = TranslateUtils.ToDateTime(Body.GetQueryString("endDate"));
             }
-            var publishmentSystemIdList = PublishmentSystemManager.GetPublishmentSystemIdListOrderByLevel();
+            var siteIdList = SiteManager.GetSiteIdListOrderByLevel();
 
-            if (PublishmentSystemId == 0 && publishmentSystemIdList.Count > 0)
+            if (SiteId == 0 && siteIdList.Count > 0)
             {
-                PageUtils.Redirect(GetRedirectUrl(publishmentSystemIdList[0], DateUtils.GetDateAndTimeString(_begin), DateUtils.GetDateAndTimeString(_end)));
+                PageUtils.Redirect(GetRedirectUrl(siteIdList[0], DateUtils.GetDateAndTimeString(_begin), DateUtils.GetDateAndTimeString(_end)));
                 return;
             }
 
@@ -71,23 +71,23 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifyAdministratorPermissions(AppManager.Permissions.Settings.Chart);
             
-            foreach (var publishmentSystemId in publishmentSystemIdList)
+            foreach (var siteId in siteIdList)
             {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                DdlPublishmentSystemId.Items.Add(new ListItem(publishmentSystemInfo.PublishmentSystemName, publishmentSystemId.ToString()));
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                DdlSiteId.Items.Add(new ListItem(siteInfo.SiteName, siteId.ToString()));
             }
-            ControlUtils.SelectSingleItem(DdlPublishmentSystemId, PublishmentSystemId.ToString());
+            ControlUtils.SelectSingleItem(DdlSiteId, SiteId.ToString());
 
             TbStartDate.Text = DateUtils.GetDateAndTimeString(_begin);
             TbEndDate.Text = DateUtils.GetDateAndTimeString(_end);
 
-            if (PublishmentSystemInfo == null)
+            if (SiteInfo == null)
             {
                 PhAnalysis.Visible = false;
                 return;
             }
 
-            var ds = DataProvider.ContentDao.GetDataSetOfAdminExcludeRecycle(PublishmentSystemInfo.AuxiliaryTableForContent, PublishmentSystemId, _begin, _end);
+            var ds = DataProvider.ContentDao.GetDataSetOfAdminExcludeRecycle(SiteInfo.TableName, SiteId, _begin, _end);
             if (ds == null || ds.Tables.Count <= 0) return;
 
             var dt = ds.Tables[0];
@@ -116,7 +116,7 @@ yArrayUpdate.push('{yValueUpdate}');";
             SpContents.SortField = "UserName";
             SpContents.SortMode = SortMode.DESC;
 
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommendOfAdminExcludeRecycle(PublishmentSystemInfo.AuxiliaryTableForContent, PublishmentSystemId, _begin, _end);
+            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommendOfAdminExcludeRecycle(SiteInfo.TableName, SiteId, _begin, _end);
 
             SpContents.DataBind();
         }
@@ -143,14 +143,14 @@ yArrayUpdate.push('{yValueUpdate}');";
 
         public void Analysis_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(GetRedirectUrl(TranslateUtils.ToInt(DdlPublishmentSystemId.SelectedValue), TbStartDate.Text, TbEndDate.Text));
+            PageUtils.Redirect(GetRedirectUrl(TranslateUtils.ToInt(DdlSiteId.SelectedValue), TbStartDate.Text, TbEndDate.Text));
         }
 
-        private void SetXHashtableUser(string userName, string publishmentSystemName)
+        private void SetXHashtableUser(string userName, string siteName)
         {
             if (!_xHashtableUser.ContainsKey(userName))
             {
-                _xHashtableUser.Add(userName, publishmentSystemName);
+                _xHashtableUser.Add(userName, siteName);
             }
             if (!_userNameList.Contains(userName))
             {

@@ -4,7 +4,6 @@ using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -75,7 +74,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var tableMetadataId = Body.GetQueryInt("TableMetadataID");
 
                 var info = DataProvider.TableMetadataDao.GetTableMetadataInfo(tableMetadataId);
-                info.AuxiliaryTableEnName = _tableName;
+                info.TableName = _tableName;
                 info.AttributeName = TbAttributeName.Text;
                 info.DataType = DataTypeUtils.GetEnumType(DdlDataType.SelectedValue);
 
@@ -121,7 +120,7 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     var info = new TableMetadataInfo
                     {
-                        AuxiliaryTableEnName = _tableName,
+                        TableName = _tableName,
                         AttributeName = TbAttributeName.Text,
                         DataType = DataTypeUtils.GetEnumType(DdlDataType.SelectedValue)
                     };

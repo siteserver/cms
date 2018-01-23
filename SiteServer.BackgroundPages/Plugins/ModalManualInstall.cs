@@ -3,8 +3,8 @@ using System.IO;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Plugin;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Plugins
 {

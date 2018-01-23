@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -165,7 +164,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
             var apiUrl = ActionsSearch.GetUrl(pageInfo.ApiUrl);
-            var apiParameters = ActionsSearch.GetParameters(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, isDefaultDisplay, pageInfo.PublishmentSystemId, ajaxDivId, yes);
+            var apiParameters = ActionsSearch.GetParameters(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, isDefaultDisplay, pageInfo.SiteId, ajaxDivId, yes);
 
             var builder = new StringBuilder();
             builder.Append($@"

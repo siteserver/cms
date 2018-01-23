@@ -15,11 +15,10 @@ namespace SiteServer.BackgroundPages.Cms
         private int _currentNodeId;
         private NameValueCollection _additional;
 
-        public static string GetRedirectUrl(int publishmentSystemId, int currentNodeId)
+        public static string GetRedirectUrl(int siteId, int currentNodeId)
         {
-            return PageUtils.GetCmsUrl(nameof(PageConfigurationCreateRule), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageConfigurationCreateRule), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"CurrentNodeID", currentNodeId.ToString()}
             });
         }
@@ -28,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
             _additional = new NameValueCollection();
 
@@ -36,19 +35,19 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(AppManager.Permissions.WebSite.Create);
 
-            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.TemplateFilePathRule, _additional));
+            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, ELoadingType.TemplateFilePathRule, _additional));
 
             if (Body.IsQueryExists("CurrentNodeID"))
             {
                 _currentNodeId = Body.GetQueryInt("CurrentNodeID");
-                var onLoadScript = ChannelLoading.GetScriptOnLoad(PublishmentSystemId, _currentNodeId);
+                var onLoadScript = ChannelLoading.GetScriptOnLoad(SiteId, _currentNodeId);
                 if (!string.IsNullOrEmpty(onLoadScript))
                 {
                     ClientScriptRegisterClientScriptBlock("NodeTreeScriptOnLoad", onLoadScript);
                 }
             }
 
-            RptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
+            RptContents.DataSource = DataProvider.ChannelDao.GetIdListByParentId(SiteId, 0);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }
@@ -62,11 +61,11 @@ namespace SiteServer.BackgroundPages.Cms
                 if (!IsHasChildOwningNodeId(nodeId)) e.Item.Visible = false;
             }
 
-            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.TemplateFilePathRule, _additional, Body.AdminName);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.TemplateFilePathRule, _additional, Body.AdminName);
         }
 	}
 }

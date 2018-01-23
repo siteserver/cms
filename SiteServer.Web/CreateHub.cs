@@ -10,12 +10,12 @@ namespace SiteServer.API
 {
     public class CreateHub : Hub
     {
-        public async Task Execute(int publishmentSystemId)
+        public async Task Execute(int siteId)
         {
             var pendingTaskCount = 0;
             try
             {
-                pendingTaskCount = await ExecuteTaskAsync(publishmentSystemId);
+                pendingTaskCount = await ExecuteTaskAsync(siteId);
             }
             catch (Exception ex)
             {
@@ -25,17 +25,17 @@ namespace SiteServer.API
             Clients.Client(Context.ConnectionId).next(pendingTaskCount);
         }
 
-        private static async Task<int> ExecuteTaskAsync(int publishmentSystemId)
+        private static async Task<int> ExecuteTaskAsync(int siteId)
         {
             var instance = CreateTaskManager.Instance;
 
-            var pendingTask = instance.GetAndRemoveLastPendingTask(publishmentSystemId);
+            var pendingTask = instance.GetAndRemoveLastPendingTask(siteId);
             if (pendingTask == null) return 0;
 
             try
             {
                 var start = DateTime.Now;
-                await FileSystemObjectAsync.ExecuteAsync(pendingTask.PublishmentSystemId, pendingTask.CreateType, pendingTask.ChannelId,
+                await FileSystemObjectAsync.ExecuteAsync(pendingTask.SiteId, pendingTask.CreateType, pendingTask.ChannelId,
                     pendingTask.ContentId, pendingTask.TemplateId);
                 var timeSpan = DateUtils.GetRelatedDateTimeString(start);
                 instance.AddSuccessLog(pendingTask, timeSpan);
@@ -46,22 +46,22 @@ namespace SiteServer.API
             }
             finally
             {
-                instance.RemoveCurrent(publishmentSystemId, pendingTask);
+                instance.RemoveCurrent(siteId, pendingTask);
             }
 
-            return instance.GetPendingTaskCount(publishmentSystemId);
+            return instance.GetPendingTaskCount(siteId);
         }
 
-        public async Task GetTasks(int publishmentSystemId)
+        public async Task GetTasks(int siteId)
         {
             try
             {
-                if (publishmentSystemId > 0)
+                if (siteId > 0)
                 {
-                    var summary = CreateTaskManager.Instance.GetTaskSummary(publishmentSystemId);
+                    var summary = CreateTaskManager.Instance.GetTaskSummary(siteId);
                     Clients.Client(Context.ConnectionId).show(true, summary.Tasks, summary.ChannelsCount, summary.ContentsCount, summary.FilesCount);
 
-                    await Execute(publishmentSystemId);
+                    await Execute(siteId);
                 }
                 else
                 {

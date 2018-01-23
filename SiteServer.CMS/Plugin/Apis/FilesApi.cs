@@ -15,34 +15,34 @@ namespace SiteServer.CMS.Plugin.Apis
             _metadata = metadata;
         }
 
-        public void MoveFiles(int sourcePublishmentSystemId, int targetPublishmentSystemId, List<string> relatedUrls)
+        public void MoveFiles(int sourceSiteId, int targetSiteId, List<string> relatedUrls)
         {
-            if (sourcePublishmentSystemId == targetPublishmentSystemId) return;
+            if (sourceSiteId == targetSiteId) return;
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(sourcePublishmentSystemId);
-            var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
-            if (publishmentSystemInfo == null || targetPublishmentSystemInfo == null) return;
+            var siteInfo = SiteManager.GetSiteInfo(sourceSiteId);
+            var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
+            if (siteInfo == null || targetSiteInfo == null) return;
 
             foreach (var relatedUrl in relatedUrls)
             {
                 if (!string.IsNullOrEmpty(relatedUrl) && !PageUtils.IsProtocolUrl(relatedUrl))
                 {
-                    FileUtility.MoveFile(publishmentSystemInfo, targetPublishmentSystemInfo, relatedUrl);
+                    FileUtility.MoveFile(siteInfo, targetSiteInfo, relatedUrl);
                 }
             }
         }
 
-        public void AddWaterMark(int publishmentSystemId, string filePath)
+        public void AddWaterMark(int siteId, string filePath)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            FileUtility.AddWaterMark(publishmentSystemInfo, filePath);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            FileUtility.AddWaterMark(siteInfo, filePath);
         }
 
-        public string GetUploadFilePath(int publishmentSystemId, string relatedPath)
+        public string GetUploadFilePath(int siteId, string relatedPath)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(publishmentSystemInfo, PathUtils.GetExtension(relatedPath));
-            var localFileName = PathUtility.GetUploadFileName(publishmentSystemInfo, relatedPath);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, PathUtils.GetExtension(relatedPath));
+            var localFileName = PathUtility.GetUploadFileName(siteInfo, relatedPath);
             return PathUtils.Combine(localDirectoryPath, localFileName);
         }
 
@@ -83,23 +83,23 @@ namespace SiteServer.CMS.Plugin.Apis
             return Controllers.Http.PluginHttpApi.GetUrl(PageUtility.OuterApiUrl, _metadata.Id, name, id);
         }
 
-        public string GetPublishmentSystemUrl(int publishmentSystemId)
+        public string GetSiteUrl(int siteId)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            return PageUtility.GetPublishmentSystemUrl(publishmentSystemInfo, false);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            return PageUtility.GetSiteUrl(siteInfo, false);
         }
 
-        public string GetPublishmentSystemUrl(int publishmentSystemId, string relatedUrl)
+        public string GetSiteUrl(int siteId, string relatedUrl)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            return PageUtility.GetPublishmentSystemUrl(publishmentSystemInfo, relatedUrl, false);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            return PageUtility.GetSiteUrl(siteInfo, relatedUrl, false);
         }
 
-        public string GetPublishmentSystemUrlByFilePath(string filePath)
+        public string GetSiteUrlByFilePath(string filePath)
         {
-            var publishmentSystemId = PublishmentSystemApi.Instance.GetPublishmentSystemIdByFilePath(filePath);
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            return PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, filePath, false);
+            var siteId = SiteApi.Instance.GetSiteIdByFilePath(filePath);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            return PageUtility.GetSiteUrlByPhysicalPath(siteInfo, filePath, false);
         }
 
         public string GetRootUrl(string relatedUrl)
@@ -112,16 +112,16 @@ namespace SiteServer.CMS.Plugin.Apis
             return PageUtils.GetAdminDirectoryUrl(relatedUrl);
         }
 
-        public string GetChannelUrl(int publishmentSystemId, int channelId)
+        public string GetChannelUrl(int siteId, int channelId)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            return PageUtility.GetChannelUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemId, channelId), false);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            return PageUtility.GetChannelUrl(siteInfo, ChannelManager.GetChannelInfo(siteId, channelId), false);
         }
 
-        public string GetContentUrl(int publishmentSystemId, int channelId, int contentId)
+        public string GetContentUrl(int siteId, int channelId, int contentId)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            return PageUtility.GetContentUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemId, channelId), contentId, false);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            return PageUtility.GetContentUrl(siteInfo, ChannelManager.GetChannelInfo(siteId, channelId), contentId, false);
         }
     }
 }

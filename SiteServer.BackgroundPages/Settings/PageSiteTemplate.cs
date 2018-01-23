@@ -144,8 +144,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (FileUtils.IsFileExists(filePath))
             {
                 ltlDownloadUrl.Text +=
-                    $@"<a href=""javascript:;"" onclick=""{ModalProgressBar.GetOpenWindowStringWithSiteTemplateZip(
-                        dirInfo.Name)}"">重新压缩</a>&nbsp;&nbsp;";
+                    $@"<a href=""javascript:;"" onclick=""{ModalProgressBar.GetOpenWindowStringWithSiteTemplateZip(0, dirInfo.Name)}"">重新压缩</a>&nbsp;&nbsp;";
 
                 ltlDownloadUrl.Text +=
                     $@"<a href=""{PageUtils.GetSiteTemplatesUrl(fileName)}"" target=""_blank"">下载压缩包</a>";
@@ -153,8 +152,7 @@ namespace SiteServer.BackgroundPages.Settings
             else
             {
                 ltlDownloadUrl.Text +=
-                    $@"<a href=""javascript:;"" onclick=""{ModalProgressBar.GetOpenWindowStringWithSiteTemplateZip(
-                        dirInfo.Name)}"">压缩</a>";
+                    $@"<a href=""javascript:;"" onclick=""{ModalProgressBar.GetOpenWindowStringWithSiteTemplateZip(0, dirInfo.Name)}"">压缩</a>";
             }
 
             var urlAdd = PageSiteAdd.GetRedirectUrl(dirInfo.Name, string.Empty);
@@ -186,8 +184,7 @@ namespace SiteServer.BackgroundPages.Settings
             ltlCreationDate.Text = DateUtils.GetDateString(fileInfo.CreationTime);
 
             ltlDownloadUrl.Text +=
-                    $@"<a href=""javascript:;"" onclick=""{ModalProgressBar.GetOpenWindowStringWithSiteTemplateUnZip(
-                        fileInfo.Name)}"">解压</a>&nbsp;&nbsp;";
+                    $@"<a href=""javascript:;"" onclick=""{ModalProgressBar.GetOpenWindowStringWithSiteTemplateUnZip(0, fileInfo.Name)}"">解压</a>&nbsp;&nbsp;";
 
             ltlDownloadUrl.Text +=
                 $@"<a href=""{PageUtils.GetSiteTemplatesUrl(fileInfo.Name)}"" target=""_blank"">下载压缩包</a>";

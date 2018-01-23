@@ -14,13 +14,13 @@
         <div class="card-box">
           <ul class="nav nav-pills">
             <li class="nav-item">
-              <a class="nav-link" href="pageConfigurationCreateRule.aspx?publishmentSystemId=<%=PublishmentSystemId%>">页面命名规则</a>
+              <a class="nav-link" href="pageConfigurationCreateRule.aspx?siteId=<%=SiteId%>">页面命名规则</a>
             </li>
             <li class="nav-item active">
               <a class="nav-link" href="javascript:;">页面生成设置</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageConfigurationCreateTrigger.aspx?publishmentSystemId=<%=PublishmentSystemId%>">页面生成触发器</a>
+              <a class="nav-link" href="pageConfigurationCreateTrigger.aspx?siteId=<%=SiteId%>">页面生成触发器</a>
             </li>
           </ul>
         </div>

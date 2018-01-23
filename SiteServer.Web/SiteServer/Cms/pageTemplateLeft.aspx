@@ -52,7 +52,7 @@
                 <img align="absmiddle" style="cursor: pointer" onclick="displayChildren(this);" isajax="false" isopen="true" src="../assets/icons/tree/minus.png"
                 />
                 <img align="absmiddle" border="0" src="../assets/Icons/tree/folder.gif" />
-                <a href='pageTemplate.aspx?PublishmentSystemID=<%=base.Request.QueryString["PublishmentSystemID"]%>' islink='true' onclick='fontWeightLink(this)'
+                <a href='pageTemplate.aspx?SiteID=<%=base.Request.QueryString["SiteID"]%>' islink='true' onclick='fontWeightLink(this)'
                   target='management'>所有模板</a>
                 </a>
                 <span style="font-size: 8pt; font-family: arial" class="gray">
@@ -67,7 +67,7 @@
                 <img align="absmiddle" style="cursor: pointer" onclick="displayChildren(this);" isajax="true" isopen="false" templatetype="IndexPageTemplate"
                   src="../assets/icons/tree/plus.png" />
                 <img align="absmiddle" border="0" src="../assets/icons/tree/folder.gif" />
-                <a href='pageTemplate.aspx?PublishmentSystemID=<%=base.Request.QueryString["PublishmentSystemID"]%>&TemplateType=IndexPageTemplate'
+                <a href='pageTemplate.aspx?SiteID=<%=base.Request.QueryString["SiteID"]%>&TemplateType=IndexPageTemplate'
                   islink='true' onclick='fontWeightLink(this)' target='management'>首页模板</a>
                 <span style="font-size: 8pt; font-family: arial" class="gray">
                   <asp:Literal id="LtlIndexPageCount" runat="server" />
@@ -81,7 +81,7 @@
                 <img align="absmiddle" style="cursor: pointer" onclick="displayChildren(this);" isajax="true" isopen="false" templatetype="ChannelTemplate"
                   src="../assets/icons/tree/plus.png" />
                 <img align="absmiddle" border="0" src="../assets/icons/tree/folder.gif" />
-                <a href='pageTemplate.aspx?PublishmentSystemID=<%=base.Request.QueryString["PublishmentSystemID"]%>&TemplateType=ChannelTemplate'
+                <a href='pageTemplate.aspx?SiteID=<%=base.Request.QueryString["SiteID"]%>&TemplateType=ChannelTemplate'
                   islink='true' onclick='fontWeightLink(this)' target='management'>栏目模板</a>
                 <span style="font-size: 8pt; font-family: arial" class="gray">
                   <asp:Literal id="LtlChannelCount" runat="server" />
@@ -95,7 +95,7 @@
                 <img align="absmiddle" style="cursor: pointer" onclick="displayChildren(this);" isajax="true" isopen="false" templatetype="ContentTemplate"
                   src="../assets/icons/tree/plus.png" />
                 <img align="absmiddle" border="0" src="../assets/icons/tree/folder.gif" />
-                <a href='pageTemplate.aspx?PublishmentSystemID=<%=base.Request.QueryString["PublishmentSystemID"]%>&TemplateType=ContentTemplate'
+                <a href='pageTemplate.aspx?SiteID=<%=base.Request.QueryString["SiteID"]%>&TemplateType=ContentTemplate'
                   islink='true' onclick='fontWeightLink(this)' target='management'>内容模板</a>
                 <span style="font-size: 8pt; font-family: arial" class="gray">
                   <asp:Literal id="LtlContentCount" runat="server" />
@@ -109,7 +109,7 @@
                 <img align="absmiddle" style="cursor: pointer" onclick="displayChildren(this);" isajax="true" isopen="false" templatetype="FileTemplate"
                   src="../assets/icons/tree/plus.png" />
                 <img align="absmiddle" border="0" src="../assets/icons/tree/folder.gif" />
-                <a href='pageTemplate.aspx?PublishmentSystemID=<%=base.Request.QueryString["PublishmentSystemID"]%>&TemplateType=FileTemplate'
+                <a href='pageTemplate.aspx?SiteID=<%=base.Request.QueryString["SiteID"]%>&TemplateType=FileTemplate'
                   islink='true' onclick='fontWeightLink(this)' target='management'>单页模板</a>
                 <span style="font-size: 8pt; font-family: arial" class="gray">
                   <asp:Literal id="LtlFileCount" runat="server" />

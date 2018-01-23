@@ -51,7 +51,7 @@
 
             <p class="text-muted font-13 m-b-25">
               整站替换将改变现有网站，请谨慎使用，您选择的站点为
-              <asp:Literal ID="LtlPublishmentSystemName" runat="server"></asp:Literal>
+              <asp:Literal ID="LtlSiteName" runat="server"></asp:Literal>
             </p>
 
             <input type="hidden" id="HihSiteTemplateDir" value="" runat="server" />

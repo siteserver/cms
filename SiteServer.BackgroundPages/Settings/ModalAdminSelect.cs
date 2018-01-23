@@ -67,7 +67,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void BindGrid()
         {
-            RptDepartment.DataSource = DataProvider.DepartmentDao.GetDepartmentIdListByParentId(0);
+            RptDepartment.DataSource = DataProvider.DepartmentDao.GetIdListByParentId(0);
             RptDepartment.ItemDataBound += rptDepartment_ItemDataBound;
             RptDepartment.DataBind();
         }

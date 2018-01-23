@@ -3,7 +3,7 @@ using System.IO;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Plugins
 {
@@ -44,10 +44,10 @@ namespace SiteServer.BackgroundPages.Plugins
 
                 //HifMyFile.PostedFile.SaveAs(localFilePath);
 
-                //var importObject = new ImportObject(PublishmentSystemId);
+                //var importObject = new ImportObject(SiteId);
                 //importObject.ImportRelatedFieldByZipFile(localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue));
 
-                //Body.AddSiteLog(PublishmentSystemId, "导入联动字段");
+                //Body.AddSiteLog(SiteId, "导入联动字段");
 
                 LayerUtils.Close(Page);
             }

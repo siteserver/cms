@@ -14,13 +14,13 @@
         <div class="card-box">
           <ul class="nav nav-pills">
             <li class="nav-item">
-              <a class="nav-link" href="pageConfigurationUploadImage.aspx?publishmentSystemId=<%=PublishmentSystemId%>">图片上传设置</a>
+              <a class="nav-link" href="pageConfigurationUploadImage.aspx?siteId=<%=SiteId%>">图片上传设置</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageConfigurationUploadVideo.aspx?publishmentSystemId=<%=PublishmentSystemId%>">视频上传设置</a>
+              <a class="nav-link" href="pageConfigurationUploadVideo.aspx?siteId=<%=SiteId%>">视频上传设置</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageConfigurationUploadFile.aspx?publishmentSystemId=<%=PublishmentSystemId%>">附件上传设置</a>
+              <a class="nav-link" href="pageConfigurationUploadFile.aspx?siteId=<%=SiteId%>">附件上传设置</a>
             </li>
             <li class="nav-item active">
               <a class="nav-link" href="javascript:;">图片水印设置</a>

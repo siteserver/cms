@@ -3,8 +3,6 @@ using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Table;
 using SiteServer.Plugin;
 using SiteServer.Plugin.Features;
 
@@ -19,7 +17,7 @@ namespace SiteServer.CMS.Plugin.Core
 
             var tableName = contentModel.ContentTableName;
 
-            if (!DataProvider.TableCollectionDao.IsExists(tableName))
+            if (!DataProvider.TableDao.IsExists(tableName))
             {
                 ContentModelCreateMetadatas(metadata, tableName, contentModel.ContentTableColumns);
             }
@@ -30,11 +28,11 @@ namespace SiteServer.CMS.Plugin.Core
 
             if (!DataProvider.DatabaseDao.IsTableExists(tableName))
             {
-                DataProvider.TableCollectionDao.CreateDbTable(tableName);
+                DataProvider.TableDao.CreateDbTable(tableName);
             }
             else
             {
-                DataProvider.TableCollectionDao.SyncDbTable(tableName);
+                DataProvider.TableDao.SyncDbTable(tableName);
             }
 
             ContentModelCreateOrUpdateStyles(tableName, contentModel.ContentTableColumns);
@@ -42,7 +40,7 @@ namespace SiteServer.CMS.Plugin.Core
 
         private static void ContentModelCreateMetadatas(IMetadata metadata, string tableName, List<TableColumn> tableColumns)
         {
-            DataProvider.TableCollectionDao.DeleteCollectionTableInfoAndDbTable(tableName);
+            DataProvider.TableDao.DeleteCollectionTableInfoAndDbTable(tableName);
             DataProvider.TableMetadataDao.Delete(tableName);
             DataProvider.TableStyleDao.Delete(tableName);
 
@@ -58,7 +56,7 @@ namespace SiteServer.CMS.Plugin.Core
                     0, true));
             }
 
-            DataProvider.TableCollectionDao.Insert(new TableCollectionInfo(tableName,
+            DataProvider.TableDao.Insert(new TableInfo(tableName,
                 $"插件内容表：{metadata.Title}", 0, false, false, false, string.Empty), metadataInfoList);
         }
 
@@ -221,7 +219,7 @@ namespace SiteServer.CMS.Plugin.Core
                             isEquals = false;
                             styleItems.Add(new TableStyleItemInfo
                             {
-                                TableStyleId = styleInfo.TableStyleId,
+                                TableStyleId = styleInfo.Id,
                                 ItemTitle = listItem.Text,
                                 ItemValue = listItem.Value,
                                 IsSelected = listItem.Selected
@@ -261,14 +259,14 @@ namespace SiteServer.CMS.Plugin.Core
 
             foreach (var styleInfo in styleInfoList)
             {
-                if (styleInfo.TableStyleId == 0)
+                if (styleInfo.Id == 0)
                 {
                     TableStyleManager.Insert(styleInfo);
                 }
                 else
                 {
                     TableStyleManager.Update(styleInfo);
-                    TableStyleManager.DeleteAndInsertStyleItems(styleInfo.TableStyleId, styleInfo.StyleItems);
+                    TableStyleManager.DeleteAndInsertStyleItems(styleInfo.Id, styleInfo.StyleItems);
                 }
             }
         }

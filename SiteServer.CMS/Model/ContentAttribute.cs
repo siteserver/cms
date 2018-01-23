@@ -9,21 +9,19 @@ namespace SiteServer.CMS.Model
         }
 
         public const string Id = nameof(Id);
-        public const string NodeId = nameof(NodeId);
-        public const string PublishmentSystemId = nameof(PublishmentSystemId);
+        public const string ChannelId = nameof(ChannelId);
+        public const string SiteId = nameof(SiteId);
         public const string AddUserName = nameof(AddUserName);
         public const string LastEditUserName = nameof(LastEditUserName);
         public const string WritingUserName = nameof(WritingUserName);
         public const string LastEditDate = nameof(LastEditDate);
         public const string Taxis = nameof(Taxis);
-        public const string ContentGroupNameCollection = nameof(ContentGroupNameCollection);
+        public const string GroupNameCollection = nameof(GroupNameCollection);
         public const string Tags = nameof(Tags);
         public const string SourceId = nameof(SourceId);
         public const string ReferenceId = nameof(ReferenceId);
         public const string IsChecked = nameof(IsChecked);
         public const string CheckedLevel = nameof(CheckedLevel);
-        public const string Comments = nameof(Comments);
-        public const string Photos = nameof(Photos);
         public const string Hits = nameof(Hits);
         public const string HitsByDay = nameof(HitsByDay);
         public const string HitsByWeek = nameof(HitsByWeek);
@@ -59,21 +57,19 @@ namespace SiteServer.CMS.Model
         public static List<string> AllAttributesLowercase => _allAttributesLowercase ?? (_allAttributesLowercase = new List<string>
         {
             Id.ToLower(),
-            NodeId.ToLower(),
-            PublishmentSystemId.ToLower(),
+            ChannelId.ToLower(),
+            SiteId.ToLower(),
             AddUserName.ToLower(),
             LastEditUserName.ToLower(),
             WritingUserName.ToLower(),
             LastEditDate.ToLower(),
             Taxis.ToLower(),
-            ContentGroupNameCollection.ToLower(),
+            GroupNameCollection.ToLower(),
             Tags.ToLower(),
             SourceId.ToLower(),
             ReferenceId.ToLower(),
             IsChecked.ToLower(),
             CheckedLevel.ToLower(),
-            Comments.ToLower(),
-            Photos.ToLower(),
             Hits.ToLower(),
             HitsByDay.ToLower(),
             HitsByWeek.ToLower(),

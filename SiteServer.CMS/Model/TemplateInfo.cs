@@ -1,14 +1,14 @@
 using System;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Model
 {
 	[Serializable]
 	public class TemplateInfo
 	{
-		private int _templateId;
-		private int _publishmentSystemId;
+		private int _id;
+		private int _siteId;
 		private string _templateName;
 		private ETemplateType _templateType;
 		private string _relatedFileName;
@@ -19,8 +19,8 @@ namespace SiteServer.CMS.Model
 
 		public TemplateInfo()
 		{
-			_templateId = 0;
-			_publishmentSystemId = 0;
+            _id = 0;
+			_siteId = 0;
 			_templateName = string.Empty;
 			_templateType = ETemplateType.ContentTemplate;
 			_relatedFileName = string.Empty;
@@ -30,10 +30,10 @@ namespace SiteServer.CMS.Model
 			_isDefault = false;
 		}
 
-        public TemplateInfo(int templateId, int publishmentSystemId, string templateName, ETemplateType templateType, string relatedFileName, string createdFileFullName, string createdFileExtName, ECharset charset, bool isDefault) 
+        public TemplateInfo(int id, int siteId, string templateName, ETemplateType templateType, string relatedFileName, string createdFileFullName, string createdFileExtName, ECharset charset, bool isDefault) 
 		{
-			_templateId = templateId;
-			_publishmentSystemId = publishmentSystemId;
+            _id = id;
+			_siteId = siteId;
 			_templateName = templateName;
 			_templateType = templateType;
             _relatedFileName = relatedFileName;
@@ -43,16 +43,16 @@ namespace SiteServer.CMS.Model
 			_isDefault = isDefault;
 		}
 
-		public int TemplateId
+		public int Id
 		{
-			get{ return _templateId; }
-			set{ _templateId = value; }
+			get{ return _id; }
+			set{ _id = value; }
 		}
 
-		public int PublishmentSystemId
+		public int SiteId
 		{
-			get{ return _publishmentSystemId; }
-			set{ _publishmentSystemId = value; }
+			get{ return _siteId; }
+			set{ _siteId = value; }
 		}
 
 		public string TemplateName
@@ -97,7 +97,6 @@ namespace SiteServer.CMS.Model
 			set{ _isDefault = value; }
 		}
 
-        //ÐéÄâ×Ö¶Î
         private string _content;
         public string Content
         {

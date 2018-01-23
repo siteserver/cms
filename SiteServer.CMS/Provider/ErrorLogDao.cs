@@ -4,7 +4,6 @@ using System.Data;
 using System.Text;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -12,7 +11,7 @@ namespace SiteServer.CMS.Provider
 {
     public class ErrorLogDao : DataProviderBase
     {
-        public override string TableName => "bairong_ErrorLog";
+        public override string TableName => "siteserver_ErrorLog";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {

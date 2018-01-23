@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
@@ -98,10 +97,10 @@ namespace SiteServer.BackgroundPages.Settings
 
             ltlCreateDate.Text = DateUtils.GetDateAndTimeString(userInfo.CreateDate);
 
-            var userAddUrl = PageUserAdd.GetRedirectUrlToEdit(userInfo.UserId, GetRedirectUrl());
+            var userAddUrl = PageUserAdd.GetRedirectUrlToEdit(userInfo.Id, GetRedirectUrl());
             hlEditLink.NavigateUrl = userAddUrl;
 
-            ltlSelect.Text = $@"<input type=""checkbox"" name=""UserIDCollection"" value=""{userInfo.UserId}"" />";
+            ltlSelect.Text = $@"<input type=""checkbox"" name=""UserIDCollection"" value=""{userInfo.Id}"" />";
         }
     }
 }

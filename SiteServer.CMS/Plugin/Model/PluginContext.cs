@@ -19,15 +19,11 @@ namespace SiteServer.CMS.Plugin.Model
 
         public IFilesApi FilesApi { get; set; }
 
-        public INodeApi NodeApi { get; set; }
+        public IChannelApi ChannelApi { get; set; }
 
         public IParseApi ParseApi { get; set; }
 
-        public IPaymentApi PaymentApi { get; set; }
-
-        public IPublishmentSystemApi PublishmentSystemApi { get; set; }
-
-        public ISmsApi SmsApi { get; set; }
+        public ISiteApi SiteApi { get; set; }
 
         public IUserApi UserApi { get; set; }
     }

@@ -6,16 +6,16 @@ namespace SiteServer.CMS.Model
 		{
             Id = 0;
 		    PluginId = string.Empty;
-            PublishmentSystemId = 0;
+            SiteId = 0;
             ConfigName = string.Empty;
             ConfigValue = string.Empty;
 		}
 
-        public PluginConfigInfo(int id, string pluginId, int publishmentSystemId, string configName, string configValue) 
+        public PluginConfigInfo(int id, string pluginId, int siteId, string configName, string configValue) 
 		{
             Id = id;
             PluginId = pluginId;
-            PublishmentSystemId = publishmentSystemId;
+            SiteId = siteId;
             ConfigName = configName;
             ConfigValue = configValue;
         }
@@ -24,7 +24,7 @@ namespace SiteServer.CMS.Model
 
         public string PluginId { get; set; }
 
-        public int PublishmentSystemId { get; set; }
+        public int SiteId { get; set; }
 
 	    public string ConfigName { get; set; }
 

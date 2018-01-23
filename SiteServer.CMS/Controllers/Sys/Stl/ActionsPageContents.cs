@@ -11,12 +11,12 @@ namespace SiteServer.CMS.Controllers.Sys.Stl
             return PageUtils.Combine(apiUrl, Route);
         }
 
-        public static string GetParameters(int publishmentSystemId, int pageNodeId, int templateId, int totalNum, int pageCount,
+        public static string GetParameters(int siteId, int pageNodeId, int templateId, int totalNum, int pageCount,
             int currentPageIndex, string stlPageContentsElement)
         {
             return $@"
 {{
-    publishmentSystemId: {publishmentSystemId},
+    siteId: {siteId},
     pageNodeId: {pageNodeId},
     templateId: {templateId},
     totalNum: {totalNum},

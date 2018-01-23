@@ -3,7 +3,7 @@ using System.Web;
 using System.Text.RegularExpressions;
 using System;
 using System.Linq;
-using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils
 {

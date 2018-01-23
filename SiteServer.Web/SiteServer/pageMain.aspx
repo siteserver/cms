@@ -31,7 +31,7 @@
             <ul class="navigation-menu">
               <asp:Literal id="LtlTopMenus" runat="server" />
             </ul>
-            <asp:PlaceHolder id="PhPublishmentSystem" runat="server" visible="false">
+            <asp:PlaceHolder id="PhSite" runat="server" visible="false">
               <div class="menu-extras">
                 <ul class="nav navbar-nav navbar-right float-right">
                   <!-- <li class="dropdown hidden-xs">
@@ -64,9 +64,9 @@
                     <asp:Literal id="LtlCreateStatus" runat="server" />
                   </li>
                   <li>
-                    <form id="search" role="search" class="navbar-left app-search float-left hidden-xs" action="cms/pagecontentsearch.aspx?publishmentSystemId=<%=PublishmentSystemId%>"
+                    <form id="search" role="search" class="navbar-left app-search float-left hidden-xs" action="cms/pagecontentsearch.aspx?siteId=<%=SiteId%>"
                       target="right" method="get">
-                      <input name="publishmentSystemId" type="hidden" value="<%=PublishmentSystemId%>">
+                      <input name="siteId" type="hidden" value="<%=SiteId%>">
                       <input name="keyword" type="text" placeholder="内容搜索..." class="form-control">
                       <a href="javascript:;" onclick="$('#search').submit();">
                         <i class="ion-search"></i>
@@ -121,7 +121,7 @@
         $('#right').src = url;
       }
 
-      var siteId = <%=PublishmentSystemId%>;
+      var siteId = <%=SiteId%>;
 
       var create = $.connection.createHub;
       create.client.next = function (total) {

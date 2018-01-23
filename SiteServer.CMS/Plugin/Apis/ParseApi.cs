@@ -29,13 +29,13 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string ParseAttributeValue(string attributeValue, IParseContext context)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(context.PublishmentSystemId);
+            var siteInfo = SiteManager.GetSiteInfo(context.SiteId);
             var templateInfo = new TemplateInfo
             {
-                TemplateId = context.TemplateId,
+                Id = context.TemplateId,
                 TemplateType = ETemplateTypeUtils.GetEnumType(context.TemplateType)
             };
-            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, publishmentSystemInfo, templateInfo);
+            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, siteInfo, templateInfo);
             var contextInfo = new ContextInfo(pageInfo);
             return StlEntityParser.ReplaceStlEntitiesForAttributeValue(attributeValue, pageInfo, contextInfo);
         }
@@ -52,8 +52,8 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string GetCurrentUrl(IParseContext context)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(context.PublishmentSystemId);
-            return StlUtility.GetStlCurrentUrl(publishmentSystemInfo, context.ChannelId, context.ContentId,
+            var siteInfo = SiteManager.GetSiteInfo(context.SiteId);
+            return StlUtility.GetStlCurrentUrl(siteInfo, context.ChannelId, context.ContentId,
                 context.ContentInfo, ETemplateTypeUtils.GetEnumType(context.TemplateType), context.TemplateId, false);
         }
     }

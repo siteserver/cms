@@ -13,40 +13,38 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalChannelMultipleSelect : BasePageCms
     {
-        public PlaceHolder PhPublishmentSystemId;
-        public DropDownList DdlPublishmentSystemId;
+        public PlaceHolder PhSiteId;
+        public DropDownList DdlSiteId;
         public Literal LtlChannelName;
         public Repeater RptChannel;
 
-        private int _targetPublishmentSystemId;
-        private bool _isPublishmentSystemSelect;
+        private int _targetSiteId;
+        private bool _isSiteSelect;
         private string _jsMethod;
 
-        public static string GetOpenWindowString(int publishmentSystemId, bool isPublishmentSystemSelect,
+        public static string GetOpenWindowString(int siteId, bool isSiteSelect,
             string jsMethod)
         {
             return LayerUtils.GetOpenScript("选择目标栏目",
-                PageUtils.GetCmsUrl(nameof(ModalChannelMultipleSelect), new NameValueCollection
+                PageUtils.GetCmsUrl(siteId, nameof(ModalChannelMultipleSelect), new NameValueCollection
                 {
-                    {"publishmentSystemID", publishmentSystemId.ToString()},
-                    {"isPublishmentSystemSelect", isPublishmentSystemSelect.ToString()},
+                    {"isSiteSelect", isSiteSelect.ToString()},
                     {"jsMethod", jsMethod}
                 }), 650, 580);
         }
 
-        public static string GetOpenWindowString(int publishmentSystemId, bool isPublishmentSystemSelect)
+        public static string GetOpenWindowString(int siteId, bool isSiteSelect)
         {
-            return GetOpenWindowString(publishmentSystemId, isPublishmentSystemSelect, "translateNodeAdd");
+            return GetOpenWindowString(siteId, isSiteSelect, "translateNodeAdd");
         }
 
-        public string GetRedirectUrl(string targetPublishmentSystemId, string targetNodeId)
+        public string GetRedirectUrl(string targetSiteId, string targetNodeId)
         {
-            return PageUtils.GetCmsUrl(nameof(ModalChannelMultipleSelect), new NameValueCollection
+            return PageUtils.GetCmsUrl(SiteId, nameof(ModalChannelMultipleSelect), new NameValueCollection
             {
-                {"publishmentSystemID", PublishmentSystemId.ToString()},
-                {"isPublishmentSystemSelect", _isPublishmentSystemSelect.ToString()},
+                {"isSiteSelect", _isSiteSelect.ToString()},
                 {"jsMethod", _jsMethod},
-                {"targetPublishmentSystemID", targetPublishmentSystemId},
+                {"targetSiteId", targetSiteId},
                 {"targetNodeID", targetNodeId}
             });
         }
@@ -55,58 +53,58 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _isPublishmentSystemSelect = Body.GetQueryBool("isPublishmentSystemSelect");
+            _isSiteSelect = Body.GetQueryBool("isSiteSelect");
             _jsMethod = Body.GetQueryString("jsMethod");
 
-            _targetPublishmentSystemId = Body.GetQueryInt("TargetPublishmentSystemID");
-            if (_targetPublishmentSystemId == 0)
+            _targetSiteId = Body.GetQueryInt("TargetSiteId");
+            if (_targetSiteId == 0)
             {
-                _targetPublishmentSystemId = PublishmentSystemId;
+                _targetSiteId = SiteId;
             }
 
             if (!IsPostBack)
             {
-                PhPublishmentSystemId.Visible = _isPublishmentSystemSelect;
+                PhSiteId.Visible = _isSiteSelect;
 
-                var publishmentSystemIdList = ProductPermissionsManager.Current.PublishmentSystemIdList;
+                var siteIdList = ProductPermissionsManager.Current.SiteIdList;
 
                 var mySystemInfoArrayList = new ArrayList();
                 var parentWithChildren = new Hashtable();
-                foreach (var publishmentSystemId in publishmentSystemIdList)
+                foreach (var siteId in siteIdList)
                 {
-                    var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                    if (publishmentSystemInfo.ParentPublishmentSystemId == 0)
+                    var siteInfo = SiteManager.GetSiteInfo(siteId);
+                    if (siteInfo.ParentId == 0)
                     {
-                        mySystemInfoArrayList.Add(publishmentSystemInfo);
+                        mySystemInfoArrayList.Add(siteInfo);
                     }
                     else
                     {
                         var children = new ArrayList();
-                        if (parentWithChildren.Contains(publishmentSystemInfo.ParentPublishmentSystemId))
+                        if (parentWithChildren.Contains(siteInfo.ParentId))
                         {
-                            children = (ArrayList)parentWithChildren[publishmentSystemInfo.ParentPublishmentSystemId];
+                            children = (ArrayList)parentWithChildren[siteInfo.ParentId];
                         }
-                        children.Add(publishmentSystemInfo);
-                        parentWithChildren[publishmentSystemInfo.ParentPublishmentSystemId] = children;
+                        children.Add(siteInfo);
+                        parentWithChildren[siteInfo.ParentId] = children;
                     }
                 }
-                foreach (PublishmentSystemInfo publishmentSystemInfo in mySystemInfoArrayList)
+                foreach (SiteInfo siteInfo in mySystemInfoArrayList)
                 {
-                    AddSite(DdlPublishmentSystemId, publishmentSystemInfo, parentWithChildren, 0);
+                    AddSite(DdlSiteId, siteInfo, parentWithChildren, 0);
                 }
-                ControlUtils.SelectSingleItem(DdlPublishmentSystemId, _targetPublishmentSystemId.ToString());
+                ControlUtils.SelectSingleItem(DdlSiteId, _targetSiteId.ToString());
 
                 var targetNodeId = Body.GetQueryInt("TargetNodeID");
                 if (targetNodeId > 0)
                 {
-                    var siteName = PublishmentSystemManager.GetPublishmentSystemInfo(_targetPublishmentSystemId).PublishmentSystemName;
-                    var nodeNames = NodeManager.GetNodeNameNavigation(_targetPublishmentSystemId, targetNodeId);
-                    if (_targetPublishmentSystemId != PublishmentSystemId)
+                    var siteName = SiteManager.GetSiteInfo(_targetSiteId).SiteName;
+                    var nodeNames = ChannelManager.GetChannelNameNavigation(_targetSiteId, targetNodeId);
+                    if (_targetSiteId != SiteId)
                     {
                         nodeNames = siteName + "：" + nodeNames;
                     }
-                    string value = $"{_targetPublishmentSystemId}_{targetNodeId}";
-                    if (!_isPublishmentSystemSelect)
+                    string value = $"{_targetSiteId}_{targetNodeId}";
+                    if (!_isSiteSelect)
                     {
                         value = targetNodeId.ToString();
                     }
@@ -115,17 +113,17 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    var nodeInfo = NodeManager.GetNodeInfo(_targetPublishmentSystemId, _targetPublishmentSystemId);
-                    var linkUrl = GetRedirectUrl(_targetPublishmentSystemId.ToString(), _targetPublishmentSystemId.ToString());
-                    LtlChannelName.Text = $"<a href='{linkUrl}'>{nodeInfo.NodeName}</a>";
+                    var nodeInfo = ChannelManager.GetChannelInfo(_targetSiteId, _targetSiteId);
+                    var linkUrl = GetRedirectUrl(_targetSiteId.ToString(), _targetSiteId.ToString());
+                    LtlChannelName.Text = $"<a href='{linkUrl}'>{nodeInfo.ChannelName}</a>";
 
                     var additional = new NameValueCollection
                     {
-                        ["linkUrl"] = GetRedirectUrl(_targetPublishmentSystemId.ToString(), string.Empty)
+                        ["linkUrl"] = GetRedirectUrl(_targetSiteId.ToString(), string.Empty)
                     };
-                    ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemManager.GetPublishmentSystemInfo(_targetPublishmentSystemId), ELoadingType.ChannelSelect, additional));
+                    ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteManager.GetSiteInfo(_targetSiteId), ELoadingType.ChannelSelect, additional));
 
-                    RptChannel.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(_targetPublishmentSystemId, _targetPublishmentSystemId);
+                    RptChannel.DataSource = DataProvider.ChannelDao.GetIdListByParentId(_targetSiteId, _targetSiteId);
                     RptChannel.ItemDataBound += RptChannel_ItemDataBound;
                     RptChannel.DataBind();
                 }
@@ -140,25 +138,25 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (!IsHasChildOwningNodeId(nodeId)) e.Item.Visible = false;
             }
-            var nodeInfo = NodeManager.GetNodeInfo(_targetPublishmentSystemId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(_targetSiteId, nodeId);
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
             var additional = new NameValueCollection
             {
-                ["linkUrl"] = GetRedirectUrl(_targetPublishmentSystemId.ToString(), string.Empty)
+                ["linkUrl"] = GetRedirectUrl(_targetSiteId.ToString(), string.Empty)
             };
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.ChannelSelect, additional, Body.AdminName);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ChannelSelect, additional, Body.AdminName);
         }
 
-        public void DdlPublishmentSystemId_OnSelectedIndexChanged(object sender, EventArgs e)
+        public void DdlSiteId_OnSelectedIndexChanged(object sender, EventArgs e)
         {
-            var redirectUrl = GetRedirectUrl(DdlPublishmentSystemId.SelectedValue, string.Empty);
+            var redirectUrl = GetRedirectUrl(DdlSiteId.SelectedValue, string.Empty);
             PageUtils.Redirect(redirectUrl);
         }
 
-        private void AddSite(ListControl listControl, PublishmentSystemInfo publishmentSystemInfo, Hashtable parentWithChildren, int level)
+        private void AddSite(ListControl listControl, SiteInfo siteInfo, Hashtable parentWithChildren, int level)
         {
             var padding = string.Empty;
             for (var i = 0; i < level; i++)
@@ -170,25 +168,25 @@ namespace SiteServer.BackgroundPages.Cms
                 padding += "└ ";
             }
 
-            if (parentWithChildren[publishmentSystemInfo.PublishmentSystemId] != null)
+            if (parentWithChildren[siteInfo.Id] != null)
             {
-                var children = (ArrayList)parentWithChildren[publishmentSystemInfo.PublishmentSystemId];
+                var children = (ArrayList)parentWithChildren[siteInfo.Id];
 
-                var listitem = new ListItem(padding + publishmentSystemInfo.PublishmentSystemName +
-                                                 $"({children.Count})", publishmentSystemInfo.PublishmentSystemId.ToString());
-                if (publishmentSystemInfo.PublishmentSystemId == PublishmentSystemId) listitem.Selected = true;
+                var listitem = new ListItem(padding + siteInfo.SiteName +
+                                                 $"({children.Count})", siteInfo.Id.ToString());
+                if (siteInfo.Id == SiteId) listitem.Selected = true;
 
                 listControl.Items.Add(listitem);
                 level++;
-                foreach (PublishmentSystemInfo subSiteInfo in children)
+                foreach (SiteInfo subSiteInfo in children)
                 {
                     AddSite(listControl, subSiteInfo, parentWithChildren, level);
                 }
             }
             else
             {
-                var listitem = new ListItem(padding + publishmentSystemInfo.PublishmentSystemName, publishmentSystemInfo.PublishmentSystemId.ToString());
-                if (publishmentSystemInfo.PublishmentSystemId == PublishmentSystemId) listitem.Selected = true;
+                var listitem = new ListItem(padding + siteInfo.SiteName, siteInfo.Id.ToString());
+                if (siteInfo.Id == SiteId) listitem.Selected = true;
 
                 listControl.Items.Add(listitem);
             }

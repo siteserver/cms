@@ -4,7 +4,6 @@ using System.Data;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -12,7 +11,7 @@ namespace SiteServer.CMS.Provider
 {
     public class PermissionsInRolesDao : DataProviderBase
 	{
-        public override string TableName => "bairong_PermissionsInRoles";
+        public override string TableName => "siteserver_PermissionsInRoles";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
@@ -30,10 +29,10 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlSelect = "SELECT RoleName, GeneralPermissions FROM bairong_PermissionsInRoles WHERE RoleName = @RoleName";
+        private const string SqlSelect = "SELECT RoleName, GeneralPermissions FROM siteserver_PermissionsInRoles WHERE RoleName = @RoleName";
 
-		private const string SqlInsert = "INSERT INTO bairong_PermissionsInRoles (RoleName, GeneralPermissions) VALUES (@RoleName, @GeneralPermissions)";
-		private const string SqlDelete = "DELETE FROM bairong_PermissionsInRoles WHERE RoleName = @RoleName";
+		private const string SqlInsert = "INSERT INTO siteserver_PermissionsInRoles (RoleName, GeneralPermissions) VALUES (@RoleName, @GeneralPermissions)";
+		private const string SqlDelete = "DELETE FROM siteserver_PermissionsInRoles WHERE RoleName = @RoleName";
 
 		private const string ParmRoleRoleName = "@RoleName";
 		private const string ParmGeneralPermissions = "@GeneralPermissions";

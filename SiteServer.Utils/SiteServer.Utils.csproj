@@ -128,20 +128,53 @@
   <ItemGroup>
     <Compile Include="AlertUtils.cs" />
     <Compile Include="Auth\Base64Utils.cs" />
-    <Compile Include="Auth\JWT\DefaultJsonSerializer.cs" />
-    <Compile Include="Auth\JWT\IJsonSerializer.cs" />
-    <Compile Include="Auth\JWT\JWT.cs" />
+    <Compile Include="Auth\DefaultJsonSerializer.cs" />
+    <Compile Include="Auth\IJsonSerializer.cs" />
+    <Compile Include="Auth\JWT.cs" />
     <Compile Include="Auth\AdministratorToken.cs" />
     <Compile Include="Auth\UserToken.cs" />
+    <Compile Include="Enumerations\EBoolean.cs" />
+    <Compile Include="Enumerations\ECharset.cs" />
+    <Compile Include="Enumerations\ECountType.cs" />
+    <Compile Include="Enumerations\EDatabaseType.cs" />
+    <Compile Include="Enumerations\EDataFormat.cs" />
+    <Compile Include="Enumerations\EDateFormatType.cs" />
+    <Compile Include="Enumerations\EDiggType.cs" />
+    <Compile Include="Enumerations\EFileSystemType.cs" />
+    <Compile Include="Enumerations\EGender.cs" />
+    <Compile Include="Enumerations\EImageSizeType.cs" />
+    <Compile Include="Enumerations\EImageType.cs" />
+    <Compile Include="Enumerations\ELevelPeriodType.cs" />
+    <Compile Include="Enumerations\EMonth.cs" />
+    <Compile Include="Enumerations\EPasswordFormat.cs" />
+    <Compile Include="Enumerations\EPhotoListType.cs" />
+    <Compile Include="Enumerations\EPredefinedRole.cs" />
+    <Compile Include="Enumerations\EScopeType.cs" />
+    <Compile Include="Enumerations\ESecurityType.cs" />
+    <Compile Include="Enumerations\ESmsProviderType.cs" />
+    <Compile Include="Enumerations\ESSOAppType.cs" />
+    <Compile Include="Enumerations\EStaticXType.cs" />
+    <Compile Include="Enumerations\ESubscribePushType.cs" />
+    <Compile Include="Enumerations\ETaxisType.cs" />
+    <Compile Include="Enumerations\ETextEditorType.cs" />
+    <Compile Include="Enumerations\ETheme.cs" />
+    <Compile Include="Enumerations\ETimeFormatType.cs" />
+    <Compile Include="Enumerations\ETriState.cs" />
+    <Compile Include="Enumerations\EUploadType.cs" />
+    <Compile Include="Enumerations\EUserActionType.cs" />
+    <Compile Include="Enumerations\EUserBindingType.cs" />
+    <Compile Include="Enumerations\EUserLockType.cs" />
+    <Compile Include="Enumerations\EUserPasswordRestriction.cs" />
+    <Compile Include="Enumerations\EUserVerifyType.cs" />
+    <Compile Include="Enumerations\EVoteItemType.cs" />
+    <Compile Include="Enumerations\EVoteRestrictType.cs" />
+    <Compile Include="Enumerations\EVoteType.cs" />
     <Compile Include="LayerUtils.cs" />
+    <Compile Include="LowerNameValueCollection.cs" />
+    <Compile Include="Serializer.cs" />
     <Compile Include="SqlUtils.cs" />
-    <Compile Include="Table\InputParserUtils.cs" />
-    <Compile Include="Collection\Pair.cs" />
-    <Compile Include="Model\ExtendedAttributes.cs" />
-    <Compile Include="Model\Enumerations\EDatabaseType.cs" />
-    <Compile Include="Model\Serializer.cs" />
-    <Compile Include="Model\SerializerData.cs" />
-    <Compile Include="Model\TableStyleInfoExtend.cs" />
+    <Compile Include="InputParserUtils.cs" />
+    <Compile Include="Pair.cs" />
     <Compile Include="SiteFilesAssets.cs" />
     <Compile Include="SiteServerAssets.cs" />
     <Compile Include="QRCodeUtils.cs" />
@@ -2944,30 +2977,19 @@
     <Compile Include="ThirdParty\Atom\AtomWriter.cs" />
     <Compile Include="AppManager.cs" />
     <Compile Include="CsvUtils.cs" />
-    <Compile Include="Model\BaseInfo.cs" />
-    <Compile Include="Model\Enumerations\EDataFormat.cs" />
-    <Compile Include="Model\Enumerations\EStaticXType.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Model\Enumerations\ESubscribePushType.cs" />
-    <Compile Include="Model\Enumerations\EUserActionType.cs" />
-    <Compile Include="Model\Enumerations\ELevelPeriodType.cs" />
-    <Compile Include="Model\Enumerations\EUploadType.cs" />
-    <Compile Include="Model\Enumerations\EUserLockType.cs" />
-    <Compile Include="Model\Enumerations\ESmsProviderType.cs" />
     <Compile Include="Auth\DesEncryptor.cs" />
-    <Compile Include="Diagnostics\ComputerUtils.cs" />
+    <Compile Include="ComputerUtils.cs" />
     <Compile Include="Images\BitmapFilter.cs" />
     <Compile Include="Images\ConvMatrix.cs" />
     <Compile Include="Images\FloatPoint.cs" />
     <Compile Include="Images\ImageUtils.cs" />
     <Compile Include="DirectoryUtils.cs" />
     <Compile Include="IO\EncodedStringWriter.cs" />
-    <Compile Include="IO\FileManagement\FileManager.cs" />
-    <Compile Include="IO\FileManagement\FileSystemInfoExtend.cs" />
-    <Compile Include="IO\FileManagement\FileSystemInfosExtend.cs" />
-    <Compile Include="IO\FileManagement\FTPFileSystemInfo.cs" />
-    <Compile Include="IO\FileManagement\SimpleFileInfoBase.cs" />
+    <Compile Include="IO\FileManager.cs" />
+    <Compile Include="IO\FileSystemInfoExtend.cs" />
+    <Compile Include="IO\FileSystemInfosExtend.cs" />
+    <Compile Include="IO\FTPFileSystemInfo.cs" />
+    <Compile Include="IO\SimpleFileInfoBase.cs" />
     <Compile Include="FileUtils.cs" />
     <Compile Include="IO\FileWatcherClass.cs" />
     <Compile Include="PathUtils.cs" />
@@ -4458,23 +4480,7 @@
     <Compile Include="ThirdParty\Jdpay\SignUtil.cs" />
     <Compile Include="WebConfigUtils.cs" />
     <Compile Include="ZipUtils.cs" />
-    <Compile Include="Model\Enumerations\EDiggType.cs" />
-    <Compile Include="Model\Enumerations\EMonth.cs" />
-    <Compile Include="Model\Enumerations\EScopeType.cs" />
-    <Compile Include="Model\Enumerations\ETaxisType.cs" />
-    <Compile Include="Model\Enumerations\ETextEditorType.cs" />
-    <Compile Include="Model\Enumerations\ESSOAppType.cs" />
-    <Compile Include="Model\Enumerations\ETheme.cs" />
-    <Compile Include="Model\Enumerations\ECountType.cs" />
-    <Compile Include="Model\Enumerations\EPhotoListType.cs" />
-    <Compile Include="Model\Enumerations\EGender.cs" />
-    <Compile Include="Net\SmtpMail\ISmtpMail.cs" />
-    <Compile Include="Net\WebClientUtils.cs" />
-    <Compile Include="Controls\HelpControl.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\TemplatedWebControl.cs" />
-    <Compile Include="Controls\TextEditorBase.cs" />
+    <Compile Include="WebClientUtils.cs" />
     <Compile Include="HtmlClearUtils.cs" />
     <Compile Include="ThirdParty\WxPay\business\DownloadBill.cs" />
     <Compile Include="ThirdParty\WxPay\business\JsApiPay.cs" />
@@ -4494,11 +4500,6 @@
     <Compile Include="ThirdParty\WxPay\lib\WxPayApi.cs" />
     <Compile Include="DirectoryTreeItem.cs" />
     <Compile Include="UEditorUploaderForUser.cs" />
-    <Compile Include="Model\Enumerations\EPredefinedRole.cs" />
-    <Compile Include="Model\Enumerations\ESecurityType.cs" />
-    <Compile Include="Model\Enumerations\EUserBindingType.cs" />
-    <Compile Include="Model\Enumerations\EUserPasswordRestriction.cs" />
-    <Compile Include="Model\Enumerations\EUserVerifyType.cs" />
     <Compile Include="Base64Decoder.cs" />
     <Compile Include="Base64Encoder.cs" />
     <Compile Include="ThirdParty\AntiXSS\AntiXSS.cs">
@@ -4762,35 +4763,19 @@
     <Compile Include="ThirdParty\LitJson\ParserToken.cs" />
     <Compile Include="ConvertHelper.cs" />
     <Compile Include="DateUtils.cs" />
-    <Compile Include="Model\Enumerations\EBoolean.cs" />
-    <Compile Include="Model\Enumerations\ECharset.cs" />
     <Compile Include="DataTypeUtils.cs" />
-    <Compile Include="Model\Enumerations\EDateFormatType.cs" />
-    <Compile Include="Model\Enumerations\EFileSystemType.cs" />
-    <Compile Include="Model\Enumerations\EImageSizeType.cs" />
-    <Compile Include="Model\Enumerations\EImageType.cs" />
     <Compile Include="InputTypeUtils.cs" />
     <Compile Include="ValidateTypeUtils.cs" />
-    <Compile Include="Model\Enumerations\EPasswordFormat.cs" />
-    <Compile Include="Model\Enumerations\ETimeFormatType.cs" />
-    <Compile Include="Model\Enumerations\ETriState.cs" />
-    <Compile Include="Model\Enumerations\EVoteItemType.cs" />
-    <Compile Include="Model\Enumerations\EVoteRestrictType.cs" />
-    <Compile Include="Model\Enumerations\EVoteType.cs" />
-    <Compile Include="Model\TableStyleInfo.cs" />
-    <Compile Include="Model\TableStyleItemInfo.cs" />
-    <Compile Include="Tabs\Tab.cs" />
-    <Compile Include="Tabs\TabCollection.cs" />
-    <Compile Include="Model\LowerNameValueCollection.cs" />
+    <Compile Include="Tab.cs" />
+    <Compile Include="TabCollection.cs" />
     <Compile Include="ThirdParty\Sgml\SgmlParser.cs" />
     <Compile Include="ThirdParty\Sgml\SgmlReader.cs" />
     <Compile Include="XmlUtils.cs" />
     <Compile Include="CompareUtils.cs" />
-    <Compile Include="Collection\PairList.cs" />
+    <Compile Include="PairList.cs" />
     <Compile Include="CacheUtils.cs" />
     <Compile Include="ControlUtils.cs" />
     <Compile Include="CookieUtils.cs" />
-    <Compile Include="Net\SmtpMail\MailUtils.cs" />
     <Compile Include="MessageUtils.cs" />
     <Compile Include="PageUtils.cs" />
     <Compile Include="RegexUtils.cs" />
@@ -4847,8 +4832,6 @@
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.4.369, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\ICSharpCode.SharpZipLib.dll.0.85.4.369\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Build" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="MySql.Data, Version=6.10.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.6.10.5\lib\net452\MySql.Data.dll</HintPath>
     </Reference>
@@ -4861,39 +4844,22 @@
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.1.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=1.1.10.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.1.10\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.2.15.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.2.15-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
-    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Data" />
-    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Drawing.Design" />
-    <Reference Include="System.IdentityModel" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Management" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.WebRequest" />
-    <Reference Include="System.Runtime" />
-    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="system.runtime.serialization" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.4.0\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Web.RegularExpressions" />
-    <Reference Include="System.Web.Services" />
     <Reference Include="System.XML" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="ThoughtWorks.QRCode, Version=1.0.4778.30637, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ThoughtWorks.QRCode.1.1.0\lib\ThoughtWorks.QRCode.dll</HintPath>
     </Reference>
@@ -4939,8 +4905,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Integration\" />
-    <Folder Include="IO\Serialization\" />
     <Folder Include="ThirdParty\Alipay\openapi\Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

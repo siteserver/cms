@@ -9,17 +9,16 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalContentCrossSiteTrans : BasePageCms
     {
-	    protected DropDownList DdlPublishmentSystemId;
+	    protected DropDownList DdlSiteId;
         protected ListBox LbNodeId;
 
         private int _nodeId;
 	    private List<int> _contentIdArrayList;
 
-        public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
+        public static string GetOpenWindowString(int siteId, int nodeId)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("跨站转发", PageUtils.GetCmsUrl(nameof(ModalContentCrossSiteTrans), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("跨站转发", PageUtils.GetCmsUrl(siteId, nameof(ModalContentCrossSiteTrans), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()}
             }), "ContentIDCollection", "请选择需要转发的内容！", 400, 410);
         }
@@ -28,32 +27,32 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID", "ContentIDCollection");
+            PageUtils.CheckRequestParameter("siteId", "NodeID", "ContentIDCollection");
 
             _nodeId = Body.GetQueryInt("NodeID");
             _contentIdArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection"));
 
 			if (!IsPostBack)
 			{
-                CrossSiteTransUtility.LoadPublishmentSystemIdDropDownList(DdlPublishmentSystemId, PublishmentSystemInfo, _nodeId);
+                CrossSiteTransUtility.LoadSiteIdDropDownList(DdlSiteId, SiteInfo, _nodeId);
 
-                if (DdlPublishmentSystemId.Items.Count > 0)
+                if (DdlSiteId.Items.Count > 0)
                 {
-                    DdlPublishmentSystemId_SelectedIndexChanged(null, EventArgs.Empty);
+                    DdlSiteId_SelectedIndexChanged(null, EventArgs.Empty);
                 }
 			}
 		}
 
-        public void DdlPublishmentSystemId_SelectedIndexChanged(object sender, EventArgs e)
+        public void DdlSiteId_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var psId = int.Parse(DdlPublishmentSystemId.SelectedValue);
-            CrossSiteTransUtility.LoadNodeIdListBox(LbNodeId, PublishmentSystemInfo, psId, NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId), Body.AdminName);
+            var psId = int.Parse(DdlSiteId.SelectedValue);
+            CrossSiteTransUtility.LoadNodeIdListBox(LbNodeId, SiteInfo, psId, ChannelManager.GetChannelInfo(SiteId, _nodeId), Body.AdminName);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var targetPublishmentSystemId = int.Parse(DdlPublishmentSystemId.SelectedValue);
-            var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
+            var targetSiteId = int.Parse(DdlSiteId.SelectedValue);
+            var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
             try
             {
                 foreach (ListItem listItem in LbNodeId.Items)
@@ -63,26 +62,26 @@ namespace SiteServer.BackgroundPages.Cms
                         var targetNodeId = TranslateUtils.ToInt(listItem.Value);
                         if (targetNodeId != 0)
                         {
-                            var targetTableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeId);
-                            var tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeId);
+                            var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetNodeId);
+                            var tableName = ChannelManager.GetTableName(SiteInfo, _nodeId);
                             foreach (var contentId in _contentIdArrayList)
                             {
                                 var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
-                                FileUtility.MoveFileByContentInfo(PublishmentSystemInfo, targetPublishmentSystemInfo, contentInfo);
-                                contentInfo.PublishmentSystemId = targetPublishmentSystemId;
-                                contentInfo.SourceId = contentInfo.NodeId;
-                                contentInfo.NodeId = targetNodeId;
+                                FileUtility.MoveFileByContentInfo(SiteInfo, targetSiteInfo, contentInfo);
+                                contentInfo.SiteId = targetSiteId;
+                                contentInfo.SourceId = contentInfo.ChannelId;
+                                contentInfo.ChannelId = targetNodeId;
                                 
-                                contentInfo.IsChecked = targetPublishmentSystemInfo.Additional.IsCrossSiteTransChecked;
+                                contentInfo.IsChecked = targetSiteInfo.Additional.IsCrossSiteTransChecked;
                                 contentInfo.CheckedLevel = 0;
 
-                                DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
+                                DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, contentInfo);
                             }
                         }
                     }
                 }
 
-                Body.AddSiteLog(PublishmentSystemId, _nodeId, 0, "跨站转发", string.Empty);
+                Body.AddSiteLog(SiteId, _nodeId, 0, "跨站转发", string.Empty);
 
                 SuccessMessage("内容转发成功，请选择后续操作。");
             }

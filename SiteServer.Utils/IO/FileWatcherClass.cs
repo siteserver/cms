@@ -1,13 +1,13 @@
 using System;
 using System.IO;
-using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils.IO
 {
     public class FileWatcherClass
     {
         public const string Node = nameof(Node);
-        public const string PublishmentSystem = nameof(PublishmentSystem);
+        public const string Site = nameof(Site);
         public const string TableMetadata = nameof(TableMetadata);
         public const string TableColumn = nameof(TableColumn);
         public const string Plugin = nameof(Plugin);

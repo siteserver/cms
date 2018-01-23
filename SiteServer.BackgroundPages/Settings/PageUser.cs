@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -205,9 +204,9 @@ namespace SiteServer.BackgroundPages.Settings
             ltlLoginCount.Text = userInfo.CountOfLogin.ToString();
             ltlCreationDate.Text = DateUtils.GetDateAndTimeString(userInfo.CreateDate);
 
-            hlEditLink.NavigateUrl = PageUserAdd.GetRedirectUrlToEdit(userInfo.UserId, GetRedirectUrl());
+            hlEditLink.NavigateUrl = PageUserAdd.GetRedirectUrlToEdit(userInfo.Id, GetRedirectUrl());
             hlChangePassword.Attributes.Add("onclick", ModalUserPassword.GetOpenWindowString(userInfo.UserName));
-            ltlSelect.Text = $@"<input type=""checkbox"" name=""UserIDCollection"" value=""{userInfo.UserId}"" />";
+            ltlSelect.Text = $@"<input type=""checkbox"" name=""UserIDCollection"" value=""{userInfo.Id}"" />";
 
             ltlWritingCount.Text = userInfo.CountOfWriting.ToString();
         }

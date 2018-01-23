@@ -15,12 +15,12 @@
         <div class="form-group form-row">
           <label class="col-3 text-right col-form-label">辅助表标识</label>
           <div class="col-8">
-            <asp:TextBox id="TbTableEnName" cssClass="form-control" runat="server" />
+            <asp:TextBox id="TbTableName" cssClass="form-control" runat="server" />
           </div>
           <div class="col-1">
-            <asp:RequiredFieldValidator ControlToValidate="TbTableEnName" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+            <asp:RequiredFieldValidator ControlToValidate="TbTableName" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
             />
-            <asp:RegularExpressionValidator runat="server" ControlToValidate="TbTableEnName" ValidationExpression="[a-zA-Z0-9_]+" ErrorMessage=" *"
+            <asp:RegularExpressionValidator runat="server" ControlToValidate="TbTableName" ValidationExpression="[a-zA-Z0-9_]+" ErrorMessage=" *"
               foreColor="red" Display="Dynamic" />
           </div>
         </div>
@@ -28,12 +28,12 @@
         <div class="form-group form-row">
           <label class="col-3 text-right col-form-label">辅助表名称</label>
           <div class="col-8">
-            <asp:TextBox id="TbTableCnName" cssClass="form-control" runat="server" />
+            <asp:TextBox id="TbDisplayName" cssClass="form-control" runat="server" />
           </div>
           <div class="col-1">
-            <asp:RequiredFieldValidator ControlToValidate="TbTableCnName" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+            <asp:RequiredFieldValidator ControlToValidate="TbDisplayName" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
             />
-            <asp:RegularExpressionValidator runat="server" ControlToValidate="TbTableCnName" ValidationExpression="[^']+" errorMessage=" *"
+            <asp:RegularExpressionValidator runat="server" ControlToValidate="TbDisplayName" ValidationExpression="[^']+" errorMessage=" *"
               foreColor="red" display="Dynamic" />
           </div>
         </div>

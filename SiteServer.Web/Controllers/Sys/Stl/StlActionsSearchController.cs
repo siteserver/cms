@@ -3,18 +3,17 @@ using System.Text;
 using System.Web;
 using System.Web.Http;
 using SiteServer.Utils;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Model;
 using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.StlEntity;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys.Stl
 {
@@ -45,14 +44,14 @@ namespace SiteServer.API.Controllers.Sys.Stl
                 var pageNum = context.GetPostInt(StlSearch.AttributePageNum.ToLower());
                 var isHighlight = context.GetPostBool(StlSearch.AttributeIsHighlight.ToLower());
                 var isDefaultDisplay = context.GetPostBool(StlSearch.AttributeIsDefaultDisplay.ToLower());
-                var publishmentSystemId = context.GetPostInt("publishmentsystemid");
+                var siteId = context.GetPostInt("siteid");
                 var ajaxDivId = PageUtils.FilterSqlAndXss(context.GetPostString("ajaxdivid"));
                 var template = TranslateUtils.DecryptStringBySecretKey(context.GetPostString("template"));
                 var pageIndex = context.GetPostInt("page", 1) - 1;
 
-                var templateInfo = new TemplateInfo(0, publishmentSystemId, string.Empty, ETemplateType.FileTemplate, string.Empty, string.Empty, string.Empty, ECharset.utf_8, false);
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                var pageInfo = new PageInfo(publishmentSystemId, 0, publishmentSystemInfo, templateInfo)
+                var templateInfo = new TemplateInfo(0, siteId, string.Empty, ETemplateType.FileTemplate, string.Empty, string.Empty, string.Empty, ECharset.utf_8, false);
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var pageInfo = new PageInfo(siteId, 0, siteInfo, templateInfo)
                 {
                     UserInfo = context.UserInfo
                 };
@@ -68,7 +67,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
                     var stlPageContentsElementReplaceString = stlElement;
 
                     bool isDefaultCondition;
-                    var whereString = DataProvider.ContentDao.GetWhereStringByStlSearch(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, publishmentSystemId, ActionsSearch.ExlcudeAttributeNames, form, out isDefaultCondition);
+                    var whereString = DataProvider.ContentDao.GetWhereStringByStlSearch(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, siteId, ActionsSearch.ExlcudeAttributeNames, form, out isDefaultCondition);
 
                     //没搜索条件时不显示搜索结果
                     if (isDefaultCondition && !isDefaultDisplay)
@@ -76,7 +75,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
                         return NotFound();
                     }
 
-                    var stlPageContents = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, pageNum, publishmentSystemInfo.AuxiliaryTableForContent, whereString);
+                    var stlPageContents = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, pageNum, siteInfo.TableName, whereString);
 
                     int totalNum;
                     var pageCount = stlPageContents.GetPageCount(out totalNum);
@@ -104,12 +103,12 @@ namespace SiteServer.API.Controllers.Sys.Stl
                                 $"<span style='color:#cc0000'>{word}</span>"));
                         }
 
-                        Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, pagedBuilder, string.Empty, false);
+                        Parser.Parse(siteInfo, pageInfo, contextInfo, pagedBuilder, string.Empty, false);
                         return Ok(pagedBuilder.ToString());
                     }
                 }
 
-                Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, string.Empty, false);
+                Parser.Parse(siteInfo, pageInfo, contextInfo, contentBuilder, string.Empty, false);
                 return Ok(contentBuilder.ToString());
             }
             catch (Exception ex)

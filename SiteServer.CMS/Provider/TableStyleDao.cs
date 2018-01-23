@@ -4,8 +4,6 @@ using System.Data;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Collection;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -13,13 +11,13 @@ namespace SiteServer.CMS.Provider
 {
     public class TableStyleDao : DataProviderBase
     {
-        public override string TableName => "bairong_TableStyle";
+        public override string TableName => "siteserver_TableStyle";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
             new TableColumnInfo
             {
-                ColumnName = nameof(TableStyleInfo.TableStyleId),
+                ColumnName = nameof(TableStyleInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
@@ -89,23 +87,23 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlSelectTableStyle = "SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
+        private const string SqlSelectTableStyle = "SELECT Id, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM siteserver_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
 
-        private const string SqlSelectTableStyleId = "SELECT TableStyleID FROM bairong_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
+        private const string SqlSelectId = "SELECT Id FROM siteserver_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
 
-        private const string SqlSelectTableStyleByTableStyleId = "SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle WHERE TableStyleID = @TableStyleID";
+        private const string SqlSelectTableStyleById = "SELECT Id, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM siteserver_TableStyle WHERE Id = @Id";
 
-        //private const string SqlSelectTableStyles = "SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle WHERE TableName = @TableName AND AttributeName = @AttributeName ORDER BY RelatedIdentity";
+        //private const string SqlSelectTableStyles = "SELECT Id, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM siteserver_TableStyle WHERE TableName = @TableName AND AttributeName = @AttributeName ORDER BY RelatedIdentity";
 
-        private const string SqlSelectAllTableStyle = "SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle ORDER BY Taxis DESC, TableStyleID DESC";
+        private const string SqlSelectAllTableStyle = "SELECT Id, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM siteserver_TableStyle ORDER BY Taxis DESC, Id DESC";
 
-        private const string SqlUpdateTableStyle = "UPDATE bairong_TableStyle SET AttributeName = @AttributeName, Taxis = @Taxis, DisplayName = @DisplayName, HelpText = @HelpText, IsVisibleInList = @IsVisibleInList, InputType = @InputType, DefaultValue = @DefaultValue, IsHorizontal = @IsHorizontal, ExtendValues = @ExtendValues WHERE TableStyleID = @TableStyleID";
+        private const string SqlUpdateTableStyle = "UPDATE siteserver_TableStyle SET AttributeName = @AttributeName, Taxis = @Taxis, DisplayName = @DisplayName, HelpText = @HelpText, IsVisibleInList = @IsVisibleInList, InputType = @InputType, DefaultValue = @DefaultValue, IsHorizontal = @IsHorizontal, ExtendValues = @ExtendValues WHERE Id = @Id";
 
-        private const string SqlDeleteTableStyle = "DELETE FROM bairong_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
+        private const string SqlDeleteTableStyle = "DELETE FROM siteserver_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
 
-        private const string SqlInsertTableStyle = "INSERT INTO bairong_TableStyle (RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues) VALUES (@RelatedIdentity, @TableName, @AttributeName, @Taxis, @DisplayName, @HelpText, @IsVisibleInList, @InputType, @DefaultValue, @IsHorizontal, @ExtendValues)";
+        private const string SqlInsertTableStyle = "INSERT INTO siteserver_TableStyle (RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues) VALUES (@RelatedIdentity, @TableName, @AttributeName, @Taxis, @DisplayName, @HelpText, @IsVisibleInList, @InputType, @DefaultValue, @IsHorizontal, @ExtendValues)";
 
-        private const string ParmTableStyleId = "@TableStyleID";
+        private const string ParmId = "@Id";
         private const string ParmRelatedIdentity = "@RelatedIdentity";
         private const string ParmTableName = "@TableName";
         private const string ParmAttributeName = "@AttributeName";
@@ -120,7 +118,7 @@ namespace SiteServer.CMS.Provider
 
         public int Insert(TableStyleInfo styleInfo)
         {
-            int tableStyleId;
+            int id;
 
             var insertParms = new IDataParameter[]
 			{
@@ -144,9 +142,9 @@ namespace SiteServer.CMS.Provider
                 {
                     try
                     {
-                        tableStyleId = ExecuteNonQueryAndReturnId(TableName, nameof(TableStyleInfo.TableStyleId), trans, SqlInsertTableStyle, insertParms);
+                        id = ExecuteNonQueryAndReturnId(TableName, nameof(TableStyleInfo.Id), trans, SqlInsertTableStyle, insertParms);
 
-                        DataProvider.TableStyleItemDao.Insert(trans, tableStyleId, styleInfo.StyleItems);
+                        DataProvider.TableStyleItemDao.Insert(trans, id, styleInfo.StyleItems);
 
                         trans.Commit();
                     }
@@ -158,7 +156,7 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            return tableStyleId;
+            return id;
         }
 
         public void InsertWithTransaction(TableStyleInfo styleInfo, IDbTransaction trans)
@@ -184,9 +182,9 @@ namespace SiteServer.CMS.Provider
             }
             else
             {
-                var tableStyleId = ExecuteNonQueryAndReturnId(TableName, nameof(TableStyleInfo.TableStyleId), trans, SqlInsertTableStyle, insertParms);
+                var id = ExecuteNonQueryAndReturnId(TableName, nameof(TableStyleInfo.Id), trans, SqlInsertTableStyle, insertParms);
 
-                DataProvider.TableStyleItemDao.Insert(trans, tableStyleId, styleInfo.StyleItems);
+                DataProvider.TableStyleItemDao.Insert(trans, id, styleInfo.StyleItems);
             }
         }
 
@@ -203,7 +201,7 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmDefaultValue, DataType.VarChar, 255, info.DefaultValue),
                 GetParameter(ParmIsHorizontal, DataType.VarChar, 18, info.IsHorizontal.ToString()),
                 GetParameter(ParmExtendValues, DataType.Text, info.Additional.ToString()),
-                GetParameter(ParmTableStyleId, DataType.Integer, info.TableStyleId)
+                GetParameter(ParmId, DataType.Integer, info.Id)
 			};
 
             ExecuteNonQuery(SqlUpdateTableStyle, updateParms);
@@ -213,7 +211,7 @@ namespace SiteServer.CMS.Provider
         {
             if (string.IsNullOrEmpty(tableName)) return;
 
-            const string sqlString = "DELETE FROM bairong_TableStyle WHERE TableName = @TableName";
+            const string sqlString = "DELETE FROM siteserver_TableStyle WHERE TableName = @TableName";
 
             var parameters = new IDataParameter[]
             {
@@ -243,7 +241,7 @@ namespace SiteServer.CMS.Provider
             if (relatedIdentities == null || relatedIdentities.Count <= 0) return;
 
             string sqlString =
-                $"DELETE FROM bairong_TableStyle WHERE RelatedIdentity IN ({TranslateUtils.ToSqlInStringWithoutQuote(relatedIdentities)}) AND TableName = '{PageUtils.FilterSql(tableName)}'";
+                $"DELETE FROM siteserver_TableStyle WHERE RelatedIdentity IN ({TranslateUtils.ToSqlInStringWithoutQuote(relatedIdentities)}) AND TableName = '{PageUtils.FilterSql(tableName)}'";
             ExecuteNonQuery(sqlString);
             TableStyleManager.IsChanged = true;
         }
@@ -253,7 +251,7 @@ namespace SiteServer.CMS.Provider
             var list = new List<TableStyleInfo>();
 
             string sqlString =
-                $"SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle WHERE RelatedIdentity IN ({TranslateUtils.ToSqlInStringWithoutQuote(relatedIdentities)}) AND TableName = '{PageUtils.FilterSql(tableName)}' ORDER BY TableStyleID DESC";
+                $"SELECT Id, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM siteserver_TableStyle WHERE RelatedIdentity IN ({TranslateUtils.ToSqlInStringWithoutQuote(relatedIdentities)}) AND TableName = '{PageUtils.FilterSql(tableName)}' ORDER BY Id DESC";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -278,7 +276,7 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
 			};
 
-            using (var rdr = ExecuteReader(SqlSelectTableStyleId, parms))
+            using (var rdr = ExecuteReader(SqlSelectId, parms))
             {
                 if (rdr.Read() && !rdr.IsDBNull(0))
                 {
@@ -290,16 +288,16 @@ namespace SiteServer.CMS.Provider
             return exists;
         }
 
-        public TableStyleInfo GetTableStyleInfo(int tableStyleId)
+        public TableStyleInfo GetTableStyleInfo(int id)
         {
             TableStyleInfo styleInfo = null;
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmTableStyleId, DataType.Integer, tableStyleId)
+                GetParameter(ParmId, DataType.Integer, id)
 			};
 
-            using (var rdr = ExecuteReader(SqlSelectTableStyleByTableStyleId, parms))
+            using (var rdr = ExecuteReader(SqlSelectTableStyleById, parms))
             {
                 if (rdr.Read())
                 {
@@ -337,7 +335,7 @@ namespace SiteServer.CMS.Provider
         private TableStyleInfo GetTableStyleInfoByReader(IDataReader rdr)
         {
             var i = 0;
-            var tableStyleId = GetInt(rdr, i++);
+            var id = GetInt(rdr, i++);
             var relatedIdentity = GetInt(rdr, i++);
             var tableName = GetString(rdr, i++);
             var attributeName = GetString(rdr, i++);
@@ -350,7 +348,7 @@ namespace SiteServer.CMS.Provider
             var isHorizontal = GetBool(rdr, i++);
             var extendValues = GetString(rdr, i);
 
-            var styleInfo = new TableStyleInfo(tableStyleId, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisibleInList, InputTypeUtils.GetEnumType(inputType), defaultValue, isHorizontal, extendValues);
+            var styleInfo = new TableStyleInfo(id, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisibleInList, InputTypeUtils.GetEnumType(inputType), defaultValue, isHorizontal, extendValues);
 
             return styleInfo;
         }
@@ -367,7 +365,7 @@ namespace SiteServer.CMS.Provider
                     var inputType = styleInfo.InputType;
                     if (InputTypeUtils.IsWithStyleItems(inputType))
                     {
-                        styleInfo.StyleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+                        styleInfo.StyleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
                     }
 
                     var key = TableStyleManager.GetCacheKey(styleInfo.RelatedIdentity, styleInfo.TableName, styleInfo.AttributeName);
@@ -400,7 +398,7 @@ namespace SiteServer.CMS.Provider
    //                 var styleInfo = GetTableStyleInfoByReader(rdr);
    //                 if (InputTypeUtils.Equals(styleInfo.InputType, InputType.CheckBox) || InputTypeUtils.Equals(styleInfo.InputType, InputType.Radio) || InputTypeUtils.Equals(styleInfo.InputType, InputType.SelectMultiple) || InputTypeUtils.Equals(styleInfo.InputType, InputType.SelectOne))
    //                 {
-   //                     var styleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+   //                     var styleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
    //                     if (styleItems != null && styleItems.Count > 0)
    //                     {
    //                         styleInfo.StyleItems = styleItems;

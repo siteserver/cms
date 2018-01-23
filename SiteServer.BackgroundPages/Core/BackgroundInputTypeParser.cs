@@ -4,9 +4,6 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Model.Enumerations;
-using SiteServer.Utils.Table;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -15,6 +12,7 @@ using SiteServer.CMS.Controllers.Sys.Editors;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -27,7 +25,7 @@ namespace SiteServer.BackgroundPages.Core
         public const string Current = "{Current}";
         public const string Value = "{Value}";
 
-        public static string Parse(PublishmentSystemInfo publishmentSystemInfo, int nodeId, TableStyleInfo styleInfo, IAttributes attributes, NameValueCollection pageScripts, out string extraHtml)
+        public static string Parse(SiteInfo siteInfo, int nodeId, TableStyleInfo styleInfo, IAttributes attributes, NameValueCollection pageScripts, out string extraHtml)
         {
             var retval = string.Empty;
             var extraBuilder = new StringBuilder();
@@ -40,7 +38,7 @@ namespace SiteServer.BackgroundPages.Core
 
             if (inputType == InputType.Text)
             {
-                retval = ParseText(attributes, publishmentSystemInfo, nodeId, styleInfo, extraBuilder);
+                retval = ParseText(attributes, siteInfo, nodeId, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.TextArea)
             {
@@ -48,7 +46,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (inputType == InputType.TextEditor)
             {
-                retval = ParseTextEditor(attributes, styleInfo.AttributeName, publishmentSystemInfo, pageScripts, extraBuilder);
+                retval = ParseTextEditor(attributes, styleInfo.AttributeName, siteInfo, pageScripts, extraBuilder);
             }
             else if (inputType == InputType.SelectOne)
             {
@@ -60,7 +58,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (inputType == InputType.SelectCascading)
             {
-                retval = ParseSelectCascading(attributes, publishmentSystemInfo, styleInfo, extraBuilder);
+                retval = ParseSelectCascading(attributes, siteInfo, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.CheckBox)
             {
@@ -80,15 +78,15 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (inputType == InputType.Image)
             {
-                retval = ParseImage(attributes, publishmentSystemInfo, nodeId, styleInfo, extraBuilder);
+                retval = ParseImage(attributes, siteInfo, nodeId, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.Video)
             {
-                retval = ParseVideo(attributes, publishmentSystemInfo, nodeId, styleInfo, extraBuilder);
+                retval = ParseVideo(attributes, siteInfo, nodeId, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.File)
             {
-                retval = ParseFile(attributes, publishmentSystemInfo, nodeId, styleInfo, extraBuilder);
+                retval = ParseFile(attributes, siteInfo, nodeId, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.Customize)
             {
@@ -104,7 +102,7 @@ namespace SiteServer.BackgroundPages.Core
             return retval;
         }
 
-        public static string ParseText(IAttributes attributes, PublishmentSystemInfo publishmentSystemInfo, int nodeId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        public static string ParseText(IAttributes attributes, SiteInfo siteInfo, int nodeId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
 
@@ -236,7 +234,7 @@ $('#Title').keyup(function (e) {
 })});
 </script>
 <div id=""titleTips"" class=""inputTips""></div>");
-                extraBuilder.Replace("[url]", AjaxCmsService.GetTitlesUrl(publishmentSystemInfo.PublishmentSystemId, nodeId));
+                extraBuilder.Replace("[url]", AjaxCmsService.GetTitlesUrl(siteInfo.Id, nodeId));
             }
 
             var value = StringUtils.HtmlDecode(attributes.GetString(styleInfo.AttributeName));
@@ -268,15 +266,15 @@ $('#Title').keyup(function (e) {
                 $@"<textarea id=""{styleInfo.AttributeName}"" name=""{styleInfo.AttributeName}"" class=""form-control"" {style} {validateAttributes}>{value}</textarea>";
         }
 
-        public static string ParseTextEditor(IAttributes attributes, string attributeName, PublishmentSystemInfo publishmentSystemInfo, NameValueCollection pageScripts, StringBuilder extraBuilder)
+        public static string ParseTextEditor(IAttributes attributes, string attributeName, SiteInfo siteInfo, NameValueCollection pageScripts, StringBuilder extraBuilder)
         {
             var value = attributes.GetString(attributeName);
 
-            value = ContentUtility.TextEditorContentDecode(publishmentSystemInfo, value, true);
+            value = ContentUtility.TextEditorContentDecode(siteInfo, value, true);
             value = ETextEditorTypeUtils.TranslateToHtml(value);
             value = StringUtils.HtmlEncode(value);
 
-            var controllerUrl = UEditor.GetUrl(PageUtility.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId);
+            var controllerUrl = UEditor.GetUrl(PageUtility.OuterApiUrl, siteInfo.Id);
             var editorUrl = SiteFilesAssets.GetUrl(PageUtility.OuterApiUrl, "ueditor");
 
             if (pageScripts["uEditor"] == null)
@@ -306,7 +304,7 @@ $(function(){{
             }
 
             var builder = new StringBuilder();
-            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
 
             var selectedValue = attributes.GetString(styleInfo.AttributeName);
 
@@ -339,7 +337,7 @@ $(function(){{
             }
 
             var builder = new StringBuilder();
-            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
 
             var selectedValues = TranslateUtils.StringCollectionToStringList(attributes.GetString(styleInfo.AttributeName));
 
@@ -356,7 +354,7 @@ $(function(){{
             return builder.ToString();
         }
 
-        private static string ParseSelectCascading(IAttributes attributes, PublishmentSystemInfo publishmentSystemInfo, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseSelectCascading(IAttributes attributes, SiteInfo siteInfo, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             var attributeName = styleInfo.AttributeName;
             var fieldInfo = DataProvider.RelatedFieldDao.GetRelatedFieldInfo(styleInfo.Additional.RelatedFieldId);
@@ -373,7 +371,7 @@ $(function(){{
             builder.Append($@"
 <span id=""c_{attributeName}_1"">
     {prefixes[0]}
-    <select name=""{attributeName}"" id=""{attributeName}_1"" class=""select"" onchange=""getRelatedField_{fieldInfo.RelatedFieldId}(2);"">
+    <select name=""{attributeName}"" id=""{attributeName}_1"" class=""select"" onchange=""getRelatedField_{fieldInfo.Id}(2);"">
         <option value="""">请选择</option>");
 
             var values = attributes.GetString(attributeName);
@@ -403,7 +401,7 @@ $(function(){{
                     builder.Append(style == ERelatedFieldStyle.Virtical ? @"<br />" : "&nbsp;");
                     builder.Append($@"
 {prefixes[i - 1]}
-<select name=""{attributeName}"" id=""{attributeName}_{i}"" class=""select"" onchange=""getRelatedField_{fieldInfo.RelatedFieldId}({i} + 1);""></select>
+<select name=""{attributeName}"" id=""{attributeName}_{i}"" class=""select"" onchange=""getRelatedField_{fieldInfo.Id}({i} + 1);""></select>
 {suffixes[i - 1]}
 </span>
 ");
@@ -412,7 +410,7 @@ $(function(){{
 
             extraBuilder.Append($@"
 <script>
-function getRelatedField_{fieldInfo.RelatedFieldId}(level){{
+function getRelatedField_{fieldInfo.Id}(level){{
     var attributeName = '{styleInfo.AttributeName}';
     var totalLevel = {fieldInfo.TotalLevel};
     for(i=level;i<=totalLevel;i++){{
@@ -421,7 +419,7 @@ function getRelatedField_{fieldInfo.RelatedFieldId}(level){{
     var obj = $('#c_' + attributeName + '_' + (level - 1));
     var itemID = $('option:selected', obj).attr('itemID');
     if (itemID){{
-        var url = '{ActionsRelatedField.GetUrl(PageUtility.InnerApiUrl, publishmentSystemInfo.PublishmentSystemId,
+        var url = '{ActionsRelatedField.GetUrl(PageUtility.InnerApiUrl, siteInfo.Id,
                 styleInfo.Additional.RelatedFieldId, 0)}' + itemID;
         var values = '{values}';
         var value = (values) ? values.split(',')[level - 1] : '';
@@ -445,7 +443,7 @@ function getRelatedField_{fieldInfo.RelatedFieldId}(level){{
             }});
             if (show) $('#c_' + attributeName + '_' + level).show();
             if (isLoad && level <= totalLevel){{
-                getRelatedField_{fieldInfo.RelatedFieldId}(level + 1);
+                getRelatedField_{fieldInfo.Id}(level + 1);
             }}
         }}, 'jsonp');
     }}
@@ -456,7 +454,7 @@ function getRelatedField_{fieldInfo.RelatedFieldId}(level){{
             {
                 extraBuilder.Append($@"
 $(document).ready(function(){{
-    getRelatedField_{fieldInfo.RelatedFieldId}(2);
+    getRelatedField_{fieldInfo.Id}(2);
 }});
 ");
             }
@@ -476,7 +474,7 @@ $(document).ready(function(){{
 
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
 
             var checkBoxList = new CheckBoxList
             {
@@ -524,7 +522,7 @@ $(document).ready(function(){{
 
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
             if (styleItems == null || styleItems.Count == 0)
             {
                 styleItems = new List<TableStyleItemInfo>
@@ -627,7 +625,7 @@ $(document).ready(function(){{
             return $@"<input id=""{styleInfo.AttributeName}"" name=""{styleInfo.AttributeName}"" type=""text"" class=""form-control"" value=""{value}"" onfocus=""{SiteServerAssets.DatePicker.OnFocus}"" style=""width: 180px"" />";
         }
 
-        private static string ParseImage(IAttributes attributes, PublishmentSystemInfo publishmentSystemInfo, int nodeId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseImage(IAttributes attributes, SiteInfo siteInfo, int nodeId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             var btnAddHtml = string.Empty;
 
@@ -642,16 +640,16 @@ $(document).ready(function(){{
 
             extraBuilder.Append($@"
 <div class=""btn-group btn-group-sm"">
-    <button class=""btn"" onclick=""{ModalUploadImage.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, styleInfo.AttributeName)}"">
+    <button class=""btn"" onclick=""{ModalUploadImage.GetOpenWindowString(siteInfo.Id, styleInfo.AttributeName)}"">
         上传
     </button>
-    <button class=""btn"" onclick=""{ModalSelectImage.GetOpenWindowString(publishmentSystemInfo, styleInfo.AttributeName)}"">
+    <button class=""btn"" onclick=""{ModalSelectImage.GetOpenWindowString(siteInfo, styleInfo.AttributeName)}"">
         选择
     </button>
-    <button class=""btn"" onclick=""{ModalCuttingImage.GetOpenWindowStringWithTextBox(publishmentSystemInfo.PublishmentSystemId, styleInfo.AttributeName)}"">
+    <button class=""btn"" onclick=""{ModalCuttingImage.GetOpenWindowStringWithTextBox(siteInfo.Id, styleInfo.AttributeName)}"">
         裁切
     </button>
-    <button class=""btn"" onclick=""{ModalMessage.GetOpenWindowStringToPreviewImage(publishmentSystemInfo.PublishmentSystemId, styleInfo.AttributeName)}"">
+    <button class=""btn"" onclick=""{ModalMessage.GetOpenWindowStringToPreviewImage(siteInfo.Id, styleInfo.AttributeName)}"">
         预览
     </button>
     {btnAddHtml}
@@ -664,19 +662,19 @@ $(document).ready(function(){{
             extraBuilder.Append($@"
 <script type=""text/javascript"">
 function select_{styleInfo.AttributeName}(obj, index){{
-  var cmd = ""{ModalSelectImage.GetOpenWindowString(publishmentSystemInfo, styleInfo.AttributeName)}"".replace('{attributeName}', '{attributeName}_' + index).replace('return false;', '');
+  var cmd = ""{ModalSelectImage.GetOpenWindowString(siteInfo, styleInfo.AttributeName)}"".replace('{attributeName}', '{attributeName}_' + index).replace('return false;', '');
   eval(cmd);
 }}
 function upload_{attributeName}(obj, index){{
-  var cmd = ""{ModalUploadImage.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, attributeName)}"".replace('{attributeName}', '{attributeName}_' + index).replace('return false;', '');
+  var cmd = ""{ModalUploadImage.GetOpenWindowString(siteInfo.Id, attributeName)}"".replace('{attributeName}', '{attributeName}_' + index).replace('return false;', '');
   eval(cmd);
 }}
 function cutting_{attributeName}(obj, index){{
-  var cmd = ""{ModalCuttingImage.GetOpenWindowStringWithTextBox(publishmentSystemInfo.PublishmentSystemId, attributeName)}"".replace('{attributeName}', '{attributeName}_' + index).replace('return false;', '');
+  var cmd = ""{ModalCuttingImage.GetOpenWindowStringWithTextBox(siteInfo.Id, attributeName)}"".replace('{attributeName}', '{attributeName}_' + index).replace('return false;', '');
   eval(cmd);
 }}
 function preview_{attributeName}(obj, index){{
-  var cmd = ""{ModalMessage.GetOpenWindowStringToPreviewImage(publishmentSystemInfo.PublishmentSystemId, attributeName)}"".replace(/{attributeName}/g, '{attributeName}_' + index).replace('return false;', '');
+  var cmd = ""{ModalMessage.GetOpenWindowStringToPreviewImage(siteInfo.Id, attributeName)}"".replace(/{attributeName}/g, '{attributeName}_' + index).replace('return false;', '');
   eval(cmd);
 }}
 function delete_{attributeName}(obj){{
@@ -718,7 +716,7 @@ function add_{attributeName}(val,foucs){{
             return $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""form-control"" value=""{attributes.GetString(attributeName)}"" />";
         }
 
-        private static string ParseVideo(IAttributes attributes, PublishmentSystemInfo publishmentSystemInfo, int nodeId, TableStyleInfo styleInfo, StringBuilder extraBulder)
+        private static string ParseVideo(IAttributes attributes, SiteInfo siteInfo, int nodeId, TableStyleInfo styleInfo, StringBuilder extraBulder)
         {
             var attributeName = styleInfo.AttributeName;
 
@@ -734,13 +732,13 @@ function add_{attributeName}(val,foucs){{
 
             extraBulder.Append($@"
 <div class=""btn-group btn-group-sm"">
-    <button class=""btn"" onclick=""{ModalUploadVideo.GetOpenWindowStringToTextBox(publishmentSystemInfo.PublishmentSystemId, attributeName)}"">
+    <button class=""btn"" onclick=""{ModalUploadVideo.GetOpenWindowStringToTextBox(siteInfo.Id, attributeName)}"">
         上传
     </button>
-    <button class=""btn"" onclick=""{ModalSelectVideo.GetOpenWindowString(publishmentSystemInfo, attributeName)}"">
+    <button class=""btn"" onclick=""{ModalSelectVideo.GetOpenWindowString(siteInfo, attributeName)}"">
         选择
     </button>
-    <button class=""btn"" onclick=""{ModalMessage.GetOpenWindowStringToPreviewVideo(publishmentSystemInfo.PublishmentSystemId, attributeName)}"">
+    <button class=""btn"" onclick=""{ModalMessage.GetOpenWindowStringToPreviewVideo(siteInfo.Id, attributeName)}"">
         预览
     </button>
     {btnAddHtml}
@@ -751,15 +749,15 @@ function add_{attributeName}(val,foucs){{
             extraBulder.Append($@"
 <script type=""text/javascript"">
 function select_{attributeName}(obj, index){{
-  var cmd = ""{ModalSelectVideo.GetOpenWindowString(publishmentSystemInfo, attributeName)}"".replace('{attributeName}', '{attributeName}_' + index).replace('return false;', '');
+  var cmd = ""{ModalSelectVideo.GetOpenWindowString(siteInfo, attributeName)}"".replace('{attributeName}', '{attributeName}_' + index).replace('return false;', '');
   eval(cmd);
 }}
 function upload_{attributeName}(obj, index){{
-  var cmd = ""{ModalUploadVideo.GetOpenWindowStringToTextBox(publishmentSystemInfo.PublishmentSystemId, attributeName)}"".replace('{attributeName}', '{attributeName}_' + index).replace('return false;', '');
+  var cmd = ""{ModalUploadVideo.GetOpenWindowStringToTextBox(siteInfo.Id, attributeName)}"".replace('{attributeName}', '{attributeName}_' + index).replace('return false;', '');
   eval(cmd);
 }}
 function preview_{attributeName}(obj, index){{
-  var cmd = ""{ModalMessage.GetOpenWindowStringToPreviewVideo(publishmentSystemInfo.PublishmentSystemId, attributeName)}"".replace(/{attributeName}/g, '{attributeName}_' + index).replace('return false;', '');
+  var cmd = ""{ModalMessage.GetOpenWindowStringToPreviewVideo(siteInfo.Id, attributeName)}"".replace(/{attributeName}/g, '{attributeName}_' + index).replace('return false;', '');
   eval(cmd);
 }}
 function delete_{attributeName}(obj){{
@@ -800,7 +798,7 @@ function add_{attributeName}(val,foucs){{
             return $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""form-control"" value=""{attributes.GetString(attributeName)}"" />";
         }
 
-        private static string ParseFile(IAttributes attributes, PublishmentSystemInfo publishmentSystemInfo, int nodeId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseFile(IAttributes attributes, SiteInfo siteInfo, int nodeId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             var attributeName = styleInfo.AttributeName;
             var value = attributes.GetString(attributeName);
@@ -827,13 +825,13 @@ function add_{attributeName}(val,foucs){{
 
             extraBuilder.Append($@"
 <div class=""btn-group btn-group-sm"">
-    <button class=""btn"" onclick=""{ModalUploadFile.GetOpenWindowStringToTextBox(publishmentSystemInfo.PublishmentSystemId, EUploadType.File, attributeName)}"">
+    <button class=""btn"" onclick=""{ModalUploadFile.GetOpenWindowStringToTextBox(siteInfo.Id, EUploadType.File, attributeName)}"">
         上传
     </button>
-    <button class=""btn"" onclick=""{ModalSelectFile.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, attributeName, relatedPath)}"">
+    <button class=""btn"" onclick=""{ModalSelectFile.GetOpenWindowString(siteInfo.Id, attributeName, relatedPath)}"">
         选择
     </button>
-    <button class=""btn"" onclick=""{ModalFileView.GetOpenWindowStringWithTextBoxValue(publishmentSystemInfo.PublishmentSystemId, attributeName)}"">
+    <button class=""btn"" onclick=""{ModalFileView.GetOpenWindowStringWithTextBoxValue(siteInfo.Id, attributeName)}"">
         查看
     </button>
     {btnAddHtml}
@@ -845,16 +843,16 @@ function add_{attributeName}(val,foucs){{
             extraBuilder.Append($@"
 <script type=""text/javascript"">
 function select_{attributeName}(obj, index){{
-  var cmd = ""{ModalSelectFile.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, attributeName, relatedPath)}"".replace('{attributeName}', '{attributeName}_' + index).replace('return false;', '');
+  var cmd = ""{ModalSelectFile.GetOpenWindowString(siteInfo.Id, attributeName, relatedPath)}"".replace('{attributeName}', '{attributeName}_' + index).replace('return false;', '');
   eval(cmd);
 }}
 function upload_{attributeName}(obj, index){{
-  var cmd = ""{ModalUploadFile.GetOpenWindowStringToTextBox(publishmentSystemInfo.PublishmentSystemId, EUploadType.File,
+  var cmd = ""{ModalUploadFile.GetOpenWindowStringToTextBox(siteInfo.Id, EUploadType.File,
                 attributeName)}"".replace('{attributeName}', '{attributeName}_' + index).replace('return false;', '');
   eval(cmd);
 }}
 function preview_{attributeName}(obj, index){{
-  var cmd = ""{ModalFileView.GetOpenWindowStringWithTextBoxValue(publishmentSystemInfo.PublishmentSystemId,
+  var cmd = ""{ModalFileView.GetOpenWindowStringWithTextBoxValue(siteInfo.Id,
                 attributeName)}"".replace(/{attributeName}/g, '{attributeName}_' + index).replace('return false;', '');
   eval(cmd);
 }}
@@ -913,7 +911,7 @@ function add_{attributeName}(val,foucs){{
             return left;
         }
 
-        public static void SaveAttributes(IAttributes attributes, PublishmentSystemInfo publishmentSystemInfo, List<TableStyleInfo> styleInfoList, NameValueCollection formCollection, List<string> dontAddAttributesLowercase)
+        public static void SaveAttributes(IAttributes attributes, SiteInfo siteInfo, List<TableStyleInfo> styleInfoList, NameValueCollection formCollection, List<string> dontAddAttributesLowercase)
         {
             if (dontAddAttributesLowercase == null)
             {
@@ -923,13 +921,13 @@ function add_{attributeName}(val,foucs){{
             foreach (var styleInfo in styleInfoList)
             {
                 if (dontAddAttributesLowercase.Contains(styleInfo.AttributeName.ToLower())) continue;
-                //var theValue = GetValueByForm(styleInfo, publishmentSystemInfo, formCollection);
+                //var theValue = GetValueByForm(styleInfo, siteInfo, formCollection);
 
                 var theValue = formCollection[styleInfo.AttributeName] ?? string.Empty;
                 var inputType = styleInfo.InputType;
                 if (inputType == InputType.TextEditor)
                 {
-                    theValue = ContentUtility.TextEditorContentEncode(publishmentSystemInfo, theValue);
+                    theValue = ContentUtility.TextEditorContentEncode(siteInfo, theValue);
                     theValue = ETextEditorTypeUtils.TranslateToStlElement(theValue);
                 }
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
-using SiteServer.Utils.Model.Enumerations;
-using static System.String;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils
 {
@@ -64,19 +63,19 @@ namespace SiteServer.Utils
 
         public static string GetDateAndTimeString(DateTime datetime)
         {
-            if (datetime == SqlMinValue) return Empty;
+            if (datetime == SqlMinValue) return string.Empty;
             return GetDateAndTimeString(datetime, EDateFormatType.Day, ETimeFormatType.ShortTime);
         }
 
         public static string GetDateString(DateTime datetime)
         {
-            if (datetime == SqlMinValue) return Empty;
+            if (datetime == SqlMinValue) return string.Empty;
             return GetDateString(datetime, EDateFormatType.Day);
         }
 
         public static string GetDateString(DateTime datetime, EDateFormatType dateFormat)
         {
-            var format = Empty;
+            var format = string.Empty;
             if (dateFormat == EDateFormatType.Year)
             {
                 format = "yyyy年MM月";
@@ -103,7 +102,7 @@ namespace SiteServer.Utils
 
         public static string GetTimeString(DateTime datetime, ETimeFormatType timeFormat)
         {
-            var retval = Empty;
+            var retval = string.Empty;
             if (timeFormat == ETimeFormatType.LongTime)
             {
                 retval = datetime.ToLongTimeString();
@@ -118,7 +117,7 @@ namespace SiteServer.Utils
 		public static int GetSeconds(string intWithUnitString)
 		{
 			var seconds = 0;
-			if (!IsNullOrEmpty(intWithUnitString))
+			if (!string.IsNullOrEmpty(intWithUnitString))
 			{
 				intWithUnitString = intWithUnitString.Trim().ToLower();
 				if (intWithUnitString.EndsWith("h"))
@@ -143,7 +142,7 @@ namespace SiteServer.Utils
 
         public static bool IsSince(string val)
         {
-            if (!IsNullOrEmpty(val))
+            if (!string.IsNullOrEmpty(val))
             {
                 val = val.Trim().ToLower();
                 if (val.EndsWith("y") || val.EndsWith("m") || val.EndsWith("d") || val.EndsWith("h"))
@@ -157,7 +156,7 @@ namespace SiteServer.Utils
         public static int GetSinceHours(string intWithUnitString)
         {
             var hours = 0;
-            if (!IsNullOrEmpty(intWithUnitString))
+            if (!string.IsNullOrEmpty(intWithUnitString))
             {
                 intWithUnitString = intWithUnitString.Trim().ToLower();
                 if (intWithUnitString.EndsWith("y"))
@@ -196,16 +195,9 @@ namespace SiteServer.Utils
         public static string Format(DateTime datetime, string formatString)
         {
             string retval;
-            if (!IsNullOrEmpty(formatString))
+            if (!string.IsNullOrEmpty(formatString))
             {
-                if (formatString.IndexOf("{0:", StringComparison.Ordinal) != -1)
-                {
-                    retval = string.Format(DateTimeFormatInfo.InvariantInfo, formatString, datetime);
-                }
-                else
-                {
-                    retval = datetime.ToString(formatString, DateTimeFormatInfo.InvariantInfo);
-                }
+                retval = formatString.IndexOf("{0:", StringComparison.Ordinal) != -1 ? string.Format(DateTimeFormatInfo.InvariantInfo, formatString, datetime) : datetime.ToString(formatString, DateTimeFormatInfo.InvariantInfo);
             }
             else
             {
@@ -250,7 +242,7 @@ namespace SiteServer.Utils
             {
                 return ParseThisMoment(dateTime, DateTime.Now);
             }
-            return Empty;
+            return string.Empty;
         }
 
         /// <summary>

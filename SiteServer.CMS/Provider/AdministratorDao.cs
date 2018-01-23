@@ -8,16 +8,15 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Utils.Auth;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.Plugin;
 using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Provider
 {
     public class AdministratorDao : DataProviderBase
     {
-        public override string TableName => "bairong_Administrator";
+        public override string TableName => "siteserver_Administrator";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
@@ -80,13 +79,13 @@ namespace SiteServer.CMS.Provider
             },
             new TableColumnInfo
             {
-                ColumnName = nameof(AdministratorInfo.PublishmentSystemIdCollection),
+                ColumnName = nameof(AdministratorInfo.SiteIdCollection),
                 DataType = DataType.VarChar,
                 Length = 50
             },
             new TableColumnInfo
             {
-                ColumnName = nameof(AdministratorInfo.PublishmentSystemId),
+                ColumnName = nameof(AdministratorInfo.SiteId),
                 DataType = DataType.Integer
             },
             new TableColumnInfo
@@ -120,58 +119,58 @@ namespace SiteServer.CMS.Provider
         };
 
         private const string SqlSelectUser =
-            "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator WHERE UserName = @UserName";
+            "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator WHERE UserName = @UserName";
 
         private const string SqlSelectUserByEmail =
-            "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator WHERE Email = @Email";
+            "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator WHERE Email = @Email";
 
         private const string SqlSelectUserByMobile =
-            "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator WHERE Mobile = @Mobile";
+            "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator WHERE Mobile = @Mobile";
 
-        private const string SqlSelectUsername = "SELECT UserName FROM bairong_Administrator WHERE UserName = @UserName";
+        private const string SqlSelectUsername = "SELECT UserName FROM siteserver_Administrator WHERE UserName = @UserName";
 
         private const string SqlSelectUsernameByEmail =
-            "SELECT UserName FROM bairong_Administrator WHERE Email = @Email";
+            "SELECT UserName FROM siteserver_Administrator WHERE Email = @Email";
 
         private const string SqlSelectUsernameByMobile =
-            "SELECT UserName FROM bairong_Administrator WHERE Mobile = @Mobile";
+            "SELECT UserName FROM siteserver_Administrator WHERE Mobile = @Mobile";
 
         private const string SqlSelectMobileByUsername =
-            "SELECT Mobile FROM bairong_Administrator WHERE UserName = @UserName";
+            "SELECT Mobile FROM siteserver_Administrator WHERE UserName = @UserName";
 
         private const string SqlSelectCreatorUserName =
-            "SELECT CreatorUserName FROM bairong_Administrator WHERE UserName = @UserName";
+            "SELECT CreatorUserName FROM siteserver_Administrator WHERE UserName = @UserName";
 
         private const string SqlSelectDisplayName =
-            "SELECT DisplayName FROM bairong_Administrator WHERE UserName = @UserName";
+            "SELECT DisplayName FROM siteserver_Administrator WHERE UserName = @UserName";
 
         private const string SqlSelectDepartmentId =
-            "SELECT DepartmentID FROM bairong_Administrator WHERE UserName = @UserName";
+            "SELECT DepartmentId FROM siteserver_Administrator WHERE UserName = @UserName";
 
-        private const string SqlSelectAreaId = "SELECT AreaID FROM bairong_Administrator WHERE UserName = @UserName";
+        private const string SqlSelectAreaId = "SELECT AreaId FROM siteserver_Administrator WHERE UserName = @UserName";
 
-        private const string SqlSelectPublishmentsystemidCollection =
-            "SELECT PublishmentSystemIDCollection FROM bairong_Administrator WHERE UserName = @UserName";
+        private const string SqlSelectSiteIdCollection =
+            "SELECT SiteIdCollection FROM siteserver_Administrator WHERE UserName = @UserName";
 
-        private const string SqlSelectPublishmentsystemid =
-            "SELECT PublishmentSystemID FROM bairong_Administrator WHERE UserName = @UserName";
+        private const string SqlSelectSiteId =
+            "SELECT SiteId FROM siteserver_Administrator WHERE UserName = @UserName";
 
         private const string SqlInsertUser =
-            "INSERT INTO bairong_Administrator (UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreationDate, @LastActivityDate, @CountOfLogin, @CountOfFailedLogin, @CreatorUserName, @IsLockedOut, @PublishmentSystemIDCollection, @PublishmentSystemID, @DepartmentID, @AreaID, @DisplayName, @Email, @Mobile)";
+            "INSERT INTO siteserver_Administrator (UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreationDate, @LastActivityDate, @CountOfLogin, @CountOfFailedLogin, @CreatorUserName, @IsLockedOut, @SiteIdCollection, @SiteId, @DepartmentId, @AreaId, @DisplayName, @Email, @Mobile)";
 
         private const string SqlUpdateUser =
-            "UPDATE bairong_Administrator SET LastActivityDate = @LastActivityDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin, IsLockedOut = @IsLockedOut, PublishmentSystemIDCollection = @PublishmentSystemIDCollection, PublishmentSystemID = @PublishmentSystemID, DepartmentID = @DepartmentID, AreaID = @AreaID, DisplayName = @DisplayName, Email = @Email, Mobile = @Mobile WHERE UserName = @UserName";
+            "UPDATE siteserver_Administrator SET LastActivityDate = @LastActivityDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin, IsLockedOut = @IsLockedOut, SiteIdCollection = @SiteIdCollection, SiteId = @SiteId, DepartmentId = @DepartmentId, AreaId = @AreaId, DisplayName = @DisplayName, Email = @Email, Mobile = @Mobile WHERE UserName = @UserName";
 
-        private const string SqlUpdatePublishmentsystemid =
-            "UPDATE bairong_Administrator SET PublishmentSystemID = @PublishmentSystemID WHERE UserName = @UserName";
+        private const string SqlUpdateSiteId =
+            "UPDATE siteserver_Administrator SET SiteId = @SiteId WHERE UserName = @UserName";
 
-        private const string SqlUpdatePublishmentsystemidCollection =
-            "UPDATE bairong_Administrator SET PublishmentSystemIDCollection = @PublishmentSystemIDCollection WHERE UserName = @UserName";
+        private const string SqlUpdateSiteIdCollection =
+            "UPDATE siteserver_Administrator SET SiteIdCollection = @SiteIdCollection WHERE UserName = @UserName";
 
         private const string SqlUpdatePassword =
-            "UPDATE bairong_Administrator SET Password = @Password, PasswordFormat = @PasswordFormat, PasswordSalt = @PasswordSalt WHERE UserName = @UserName";
+            "UPDATE siteserver_Administrator SET Password = @Password, PasswordFormat = @PasswordFormat, PasswordSalt = @PasswordSalt WHERE UserName = @UserName";
 
-        private const string SqlDeleteUser = "DELETE FROM bairong_Administrator WHERE UserName = @UserName";
+        private const string SqlDeleteUser = "DELETE FROM siteserver_Administrator WHERE UserName = @UserName";
 
         private const string ParmUsername = "@UserName";
         private const string ParmPassword = "@Password";
@@ -183,10 +182,10 @@ namespace SiteServer.CMS.Provider
         private const string ParmCountOfFailedLogin = "@CountOfFailedLogin";
         private const string ParmCreatorUsername = "@CreatorUserName";
         private const string ParmIsLockedOut = "@IsLockedOut";
-        private const string ParmPublishmentsystemidCollection = "@PublishmentSystemIDCollection";
-        private const string ParmPublishmentsystemid = "@PublishmentSystemID";
-        private const string ParmDepartmentId = "@DepartmentID";
-        private const string ParmAreaId = "@AreaID";
+        private const string ParmSiteIdCollection = "@SiteIdCollection";
+        private const string ParmSiteId = "@SiteId";
+        private const string ParmDepartmentId = "@DepartmentId";
+        private const string ParmAreaId = "@AreaId";
         private const string ParmDisplayname = "@DisplayName";
         private const string ParmEmail = "@Email";
         private const string ParmMobile = "@Mobile";
@@ -206,8 +205,8 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmCountOfFailedLogin, DataType.Integer, info.CountOfFailedLogin),
                 GetParameter(ParmCreatorUsername, DataType.VarChar, 255, info.CreatorUserName),
                 GetParameter(ParmIsLockedOut, DataType.VarChar, 18, info.IsLockedOut.ToString()),
-                GetParameter(ParmPublishmentsystemidCollection, DataType.VarChar, 50, info.PublishmentSystemIdCollection),
-                GetParameter(ParmPublishmentsystemid, DataType.Integer, info.PublishmentSystemId),
+                GetParameter(ParmSiteIdCollection, DataType.VarChar, 50, info.SiteIdCollection),
+                GetParameter(ParmSiteId, DataType.Integer, info.SiteId),
                 GetParameter(ParmDepartmentId, DataType.Integer, info.DepartmentId),
                 GetParameter(ParmAreaId, DataType.Integer, info.AreaId),
                 GetParameter(ParmDisplayname, DataType.VarChar, 255, info.DisplayName),
@@ -229,8 +228,8 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmCountOfLogin, DataType.Integer, info.CountOfLogin),
                 GetParameter(ParmCountOfFailedLogin, DataType.Integer, info.CountOfFailedLogin),
                 GetParameter(ParmIsLockedOut, DataType.VarChar, 18, info.IsLockedOut.ToString()),
-                GetParameter(ParmPublishmentsystemidCollection, DataType.VarChar, 50, info.PublishmentSystemIdCollection),
-                GetParameter(ParmPublishmentsystemid, DataType.Integer, info.PublishmentSystemId),
+                GetParameter(ParmSiteIdCollection, DataType.VarChar, 50, info.SiteIdCollection),
+                GetParameter(ParmSiteId, DataType.Integer, info.SiteId),
                 GetParameter(ParmDepartmentId, DataType.Integer, info.DepartmentId),
                 GetParameter(ParmAreaId, DataType.Integer, info.AreaId),
                 GetParameter(ParmDisplayname, DataType.VarChar, 255, info.DisplayName),
@@ -252,7 +251,7 @@ namespace SiteServer.CMS.Provider
             if (string.IsNullOrEmpty(userName)) return;
 
             var sqlString =
-                $"UPDATE bairong_Administrator SET LastActivityDate = @LastActivityDate, {SqlUtils.ToPlusSqlString("CountOfFailedLogin")} WHERE UserName = @UserName";
+                $"UPDATE siteserver_Administrator SET LastActivityDate = @LastActivityDate, {SqlUtils.ToPlusSqlString("CountOfFailedLogin")} WHERE UserName = @UserName";
 
             IDataParameter[] updateParms =
             {
@@ -270,7 +269,7 @@ namespace SiteServer.CMS.Provider
             if (string.IsNullOrEmpty(userName)) return;
 
             var sqlString =
-                $"UPDATE bairong_Administrator SET LastActivityDate = @LastActivityDate, {SqlUtils.ToPlusSqlString("CountOfLogin")}, CountOfFailedLogin = 0 WHERE UserName = @UserName";
+                $"UPDATE siteserver_Administrator SET LastActivityDate = @LastActivityDate, {SqlUtils.ToPlusSqlString("CountOfLogin")}, CountOfFailedLogin = 0 WHERE UserName = @UserName";
 
             IDataParameter[] updateParms =
             {
@@ -283,32 +282,32 @@ namespace SiteServer.CMS.Provider
             AdminManager.RemoveCache(userName);
         }
 
-        public void UpdatePublishmentSystemIdCollection(string userName, string publishmentSystemIdCollection)
+        public void UpdateSiteIdCollection(string userName, string siteIdCollection)
         {
             if (string.IsNullOrEmpty(userName)) return;
 
             IDataParameter[] updateParms =
             {
-                GetParameter(ParmPublishmentsystemidCollection, DataType.VarChar, 50, publishmentSystemIdCollection),
+                GetParameter(ParmSiteIdCollection, DataType.VarChar, 50, siteIdCollection),
                 GetParameter(ParmUsername, DataType.VarChar, 255, userName)
             };
 
-            ExecuteNonQuery(SqlUpdatePublishmentsystemidCollection, updateParms);
+            ExecuteNonQuery(SqlUpdateSiteIdCollection, updateParms);
 
             AdminManager.RemoveCache(userName);
         }
 
-        public void UpdatePublishmentSystemId(string userName, int publishmentSystemId)
+        public void UpdateSiteId(string userName, int siteId)
         {
             if (string.IsNullOrEmpty(userName)) return;
 
             IDataParameter[] updateParms =
             {
-                GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmSiteId, DataType.Integer, siteId),
                 GetParameter(ParmUsername, DataType.VarChar, 255, userName)
             };
 
-            ExecuteNonQuery(SqlUpdatePublishmentsystemid, updateParms);
+            ExecuteNonQuery(SqlUpdateSiteId, updateParms);
 
             AdminManager.RemoveCache(userName);
         }
@@ -357,7 +356,7 @@ namespace SiteServer.CMS.Provider
         public void Lock(List<string> userNameList)
         {
             string sqlString =
-                $"UPDATE bairong_Administrator SET IsLockedOut = '{true}' WHERE UserName IN ({TranslateUtils.ToSqlInStringWithQuote(userNameList)})";
+                $"UPDATE siteserver_Administrator SET IsLockedOut = '{true}' WHERE UserName IN ({TranslateUtils.ToSqlInStringWithQuote(userNameList)})";
 
             ExecuteNonQuery(sqlString);
 
@@ -367,7 +366,7 @@ namespace SiteServer.CMS.Provider
         public void UnLock(List<string> userNameList)
         {
             string sqlString =
-                $"UPDATE bairong_Administrator SET IsLockedOut = '{false}', CountOfFailedLogin = 0 WHERE UserName IN ({TranslateUtils.ToSqlInStringWithQuote(userNameList)})";
+                $"UPDATE siteserver_Administrator SET IsLockedOut = '{false}', CountOfFailedLogin = 0 WHERE UserName IN ({TranslateUtils.ToSqlInStringWithQuote(userNameList)})";
 
             ExecuteNonQuery(sqlString);
 
@@ -495,11 +494,11 @@ namespace SiteServer.CMS.Provider
         public string GetSelectCommand(bool isConsoleAdministrator, string creatorUserName)
         {
             var sqlString =
-                    "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator";
+                    "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator";
             if (!isConsoleAdministrator)
             {
                 sqlString =
-                    $"SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator WHERE CreatorUserName = '{PageUtils.FilterSql(creatorUserName)}'";
+                    $"SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator WHERE CreatorUserName = '{PageUtils.FilterSql(creatorUserName)}'";
             }
 
             return sqlString;
@@ -540,7 +539,7 @@ namespace SiteServer.CMS.Provider
                 {
                     whereBuilder.Append(" AND ");
                 }
-                whereBuilder.Append($"DepartmentID = {departmentId}");
+                whereBuilder.Append($"DepartmentId = {departmentId}");
             }
 
             if (areaId != 0)
@@ -549,7 +548,7 @@ namespace SiteServer.CMS.Provider
                 {
                     whereBuilder.Append(" AND ");
                 }
-                whereBuilder.Append($"AreaID = {areaId}");
+                whereBuilder.Append($"AreaId = {areaId}");
             }
 
             var whereString = string.Empty;
@@ -571,7 +570,7 @@ namespace SiteServer.CMS.Provider
             }
 
             var sqlString =
-                "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator " +
+                "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator " +
                 whereString;
 
             return sqlString;
@@ -723,48 +722,62 @@ namespace SiteServer.CMS.Provider
             return (!string.IsNullOrEmpty(displayName)) ? displayName : userName;
         }
 
-        public List<int> GetPublishmentSystemIdList(string userName)
+        public List<int> GetSiteIdList(string userName)
         {
-            var publishmentSystemIdList = new List<int>();
+            var siteIdList = new List<int>();
 
             IDataParameter[] parms =
             {
                 GetParameter(ParmUsername, DataType.VarChar, 255, userName)
             };
 
-            using (var rdr = ExecuteReader(SqlSelectPublishmentsystemidCollection, parms))
+            using (var rdr = ExecuteReader(SqlSelectSiteIdCollection, parms))
             {
                 if (rdr.Read())
                 {
                     var collection = GetString(rdr, 0);
                     if (!string.IsNullOrEmpty(collection))
                     {
-                        publishmentSystemIdList = TranslateUtils.StringCollectionToIntList(collection);
+                        siteIdList = TranslateUtils.StringCollectionToIntList(collection);
                     }
                 }
                 rdr.Close();
             }
-            return publishmentSystemIdList;
+            return siteIdList;
         }
 
-        public int GetPublishmentSystemId(string userName)
+        public int GetSiteId(string userName)
         {
-            var publishmentSystemId = 0;
+            var siteId = 0;
 
             IDataParameter[] parms =
             {
                 GetParameter(ParmUsername, DataType.VarChar, 255, userName)
             };
 
-            using (var rdr = ExecuteReader(SqlSelectPublishmentsystemid, parms))
+            using (var rdr = ExecuteReader(SqlSelectSiteId, parms))
             {
                 if (rdr.Read())
                 {
-                    publishmentSystemId = GetInt(rdr, 0);
+                    siteId = GetInt(rdr, 0);
                 }
                 rdr.Close();
             }
-            return publishmentSystemId;
+            return siteId;
+        }
+
+        public int GetCountByAreaId(int areaId)
+        {
+            var sqlString = $"SELECT COUNT(*) FROM {TableName} WHERE {nameof(AdministratorInfo.AreaId)} = {areaId}";
+            
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
+        }
+
+        public int GetCountByDepartmentId(int departmentId)
+        {
+            var sqlString = $"SELECT COUNT(*) FROM {TableName} WHERE {nameof(AdministratorInfo.DepartmentId)} = {departmentId}";
+
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         public ArrayList GetUserNameArrayListByCreatorUserName(string creatorUserName)
@@ -773,7 +786,7 @@ namespace SiteServer.CMS.Provider
             if (creatorUserName != null)
             {
                 const string sqlString =
-                    "SELECT UserName FROM bairong_Administrator WHERE CreatorUserName = @CreatorUserName";
+                    "SELECT UserName FROM siteserver_Administrator WHERE CreatorUserName = @CreatorUserName";
 
                 IDataParameter[] parms =
                 {
@@ -795,7 +808,7 @@ namespace SiteServer.CMS.Provider
         public ArrayList GetUserNameArrayList()
         {
             var arraylist = new ArrayList();
-            const string sqlSelect = "SELECT UserName FROM bairong_Administrator";
+            const string sqlSelect = "SELECT UserName FROM siteserver_Administrator";
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -812,7 +825,7 @@ namespace SiteServer.CMS.Provider
         {
             var arraylist = new ArrayList();
             string sqlSelect =
-                $"SELECT UserName FROM bairong_Administrator WHERE DepartmentID IN ({TranslateUtils.ToSqlInStringWithoutQuote(departmentIdList)}) ORDER BY DepartmentID";
+                $"SELECT UserName FROM siteserver_Administrator WHERE DepartmentId IN ({TranslateUtils.ToSqlInStringWithoutQuote(departmentIdList)}) ORDER BY DepartmentId";
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -828,13 +841,13 @@ namespace SiteServer.CMS.Provider
         public ArrayList GetUserNameArrayList(int departmentId, bool isAll)
         {
             var arraylist = new ArrayList();
-            string sqlSelect = $"SELECT UserName FROM bairong_Administrator WHERE DepartmentID = {departmentId}";
+            string sqlSelect = $"SELECT UserName FROM siteserver_Administrator WHERE DepartmentId = {departmentId}";
             if (isAll)
             {
-                var departmentIdList = DataProvider.DepartmentDao.GetDepartmentIdListForDescendant(departmentId);
+                var departmentIdList = DataProvider.DepartmentDao.GetIdListForDescendant(departmentId);
                 departmentIdList.Add(departmentId);
                 sqlSelect =
-                    $"SELECT UserName FROM bairong_Administrator WHERE DepartmentID IN ({TranslateUtils.ObjectCollectionToString(departmentIdList)})";
+                    $"SELECT UserName FROM siteserver_Administrator WHERE DepartmentId IN ({TranslateUtils.ObjectCollectionToString(departmentIdList)})";
             }
 
             using (var rdr = ExecuteReader(sqlSelect))
@@ -870,7 +883,7 @@ namespace SiteServer.CMS.Provider
             }
 
             string sqlString =
-                $"SELECT * FROM bairong_Administrator WHERE IsChecked = '{isChecked}' {whereString}";
+                $"SELECT * FROM siteserver_Administrator WHERE IsChecked = '{isChecked}' {whereString}";
 
             using (var rdr = ExecuteReader(sqlString))
             {

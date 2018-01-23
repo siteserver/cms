@@ -138,13 +138,13 @@ namespace SiteServer.BackgroundPages.Core
                 {
                     htmlBuilder.Append(
                         $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_departmentInfo
-                            .DepartmentId}"" src=""{_iconMinusUrl}"" />");
+                            .Id}"" src=""{_iconMinusUrl}"" />");
                 }
                 else
                 {
                     htmlBuilder.Append(
                         $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_departmentInfo
-                            .DepartmentId}"" src=""{_iconPlusUrl}"" />");
+                            .Id}"" src=""{_iconPlusUrl}"" />");
                 }
             }
             else
@@ -170,14 +170,14 @@ namespace SiteServer.BackgroundPages.Core
             {
                 var linkUrl = PageUtils.AddQueryString(additional["UrlFormatString"], new NameValueCollection
                 {
-                    {"DepartmentId", _departmentInfo.DepartmentId.ToString() }
+                    {"DepartmentId", _departmentInfo.Id.ToString() }
                 });
 
                 htmlBuilder.Append($"<a href='{linkUrl}'>{_departmentInfo.DepartmentName}</a>");
             }
             else if (loadingType == EDepartmentLoadingType.ContentTree)
             {
-                var linkUrl = PageContent.GetRedirectUrl(TranslateUtils.ToInt(additional["PublishmentSystemID"]), _departmentInfo.DepartmentId);
+                var linkUrl = PageContent.GetRedirectUrl(TranslateUtils.ToInt(additional["SiteId"]), _departmentInfo.Id);
 
                 htmlBuilder.Append(
                     $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_departmentInfo.DepartmentName}</a>");

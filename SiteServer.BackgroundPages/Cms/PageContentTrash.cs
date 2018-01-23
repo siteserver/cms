@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -42,27 +41,27 @@ namespace SiteServer.BackgroundPages.Cms
 
             var permissions = PermissionsManager.GetPermissions(Body.AdminName);
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
             _nodeId = Body.GetQueryInt("NodeID");
             if (_nodeId == 0)
             {
-                _nodeId = PublishmentSystemId;
+                _nodeId = SiteId;
             }
-            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
-            var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
-            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _nodeId);
+            var tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
+            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _nodeId);
             _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, _relatedIdentities);
 
             SpContents.ControlToPaginate = RptContents;
             if (string.IsNullOrEmpty(Body.GetQueryString("NodeID")))
             {
-                SpContents.ItemsPerPage = TranslateUtils.ToInt(DdlPageNum.SelectedValue) == 0 ? PublishmentSystemInfo.Additional.PageSize : TranslateUtils.ToInt(DdlPageNum.SelectedValue);
-                SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableName, PublishmentSystemId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, DdlSearchType.SelectedValue, TbKeyword.Text, TbDateFrom.Text, TbDateTo.Text, true, ETriState.All, false, true);
+                SpContents.ItemsPerPage = TranslateUtils.ToInt(DdlPageNum.SelectedValue) == 0 ? SiteInfo.Additional.PageSize : TranslateUtils.ToInt(DdlPageNum.SelectedValue);
+                SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableName, SiteId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningChannelIdList, DdlSearchType.SelectedValue, TbKeyword.Text, TbDateFrom.Text, TbDateTo.Text, true, ETriState.All, false, true);
             }
             else
             {
-                SpContents.ItemsPerPage = Body.GetQueryInt("PageNum") == 0 ? PublishmentSystemInfo.Additional.PageSize : Body.GetQueryInt("PageNum");
-                SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableName, PublishmentSystemId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true, ETriState.All, false, true);
+                SpContents.ItemsPerPage = Body.GetQueryInt("PageNum") == 0 ? SiteInfo.Additional.PageSize : Body.GetQueryInt("PageNum");
+                SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableName, SiteId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningChannelIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true, ETriState.All, false, true);
             }
             SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
@@ -73,8 +72,8 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (Body.IsQueryExists("IsDeleteAll"))
                 {
-                    DataProvider.ContentDao.DeleteContentsByTrash(PublishmentSystemId, tableName);
-                    Body.AddSiteLog(PublishmentSystemId, "清空回收站");
+                    DataProvider.ContentDao.DeleteContentsByTrash(SiteId, tableName);
+                    Body.AddSiteLog(SiteId, "清空回收站");
                     SuccessMessage("成功清空回收站!");
                     AddWaitAndRedirectScript(PageUrl);
                     return;
@@ -85,22 +84,22 @@ namespace SiteServer.BackgroundPages.Cms
                     foreach (var nodeId in idsDictionary.Keys)
                     {
                         var contentIdArrayList = idsDictionary[nodeId];
-                        DataProvider.ContentDao.TrashContents(PublishmentSystemId, NodeManager.GetTableName(PublishmentSystemInfo, nodeId), contentIdArrayList);
+                        DataProvider.ContentDao.TrashContents(SiteId, ChannelManager.GetTableName(SiteInfo, nodeId), contentIdArrayList);
                     }
-                    Body.AddSiteLog(PublishmentSystemId, "从回收站还原内容");
+                    Body.AddSiteLog(SiteId, "从回收站还原内容");
                     SuccessMessage("成功还原内容!");
                     AddWaitAndRedirectScript(PageUrl);
                     return;
                 }
                 if (Body.IsQueryExists("IsRestoreAll"))
                 {
-                    DataProvider.ContentDao.RestoreContentsByTrash(PublishmentSystemId, tableName);
-                    Body.AddSiteLog(PublishmentSystemId, "从回收站还原所有内容");
+                    DataProvider.ContentDao.RestoreContentsByTrash(SiteId, tableName);
+                    Body.AddSiteLog(SiteId, "从回收站还原所有内容");
                     SuccessMessage("成功还原所有内容!");
                     AddWaitAndRedirectScript(PageUrl);
                     return;
                 }
-                NodeManager.AddListItems(DdlChannelId.Items, PublishmentSystemInfo, true, false, Body.AdminName);
+                ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, true, false, Body.AdminName);
 
                 if (_tableStyleInfoList != null)
                 {
@@ -117,7 +116,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (Body.IsQueryExists("NodeID"))
                 {
-                    if (PublishmentSystemId != _nodeId)
+                    if (SiteId != _nodeId)
                     {
                         ControlUtils.SelectSingleItem(DdlChannelId, _nodeId.ToString());
                     }
@@ -138,7 +137,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                BtnDelete.Attributes.Add("onclick", PageContentDelete.GetRedirectClickStringForMultiChannels(PublishmentSystemId, true, PageUrl));
+                BtnDelete.Attributes.Add("onclick", PageContentDelete.GetRedirectClickStringForMultiChannels(SiteId, true, PageUrl));
                 BtnDeleteAll.Attributes.Add("onclick", PageUtils.GetRedirectStringWithConfirm(PageUtils.AddQueryString(PageUrl, "IsDeleteAll", "True"), "确实要清空回收站吗?"));
             }
             BtnRestore.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValue(PageUtils.AddQueryString(PageUrl, "IsRestore", "True"), "IDsCollection", "IDsCollection", "请选择需要还原的内容！"));
@@ -156,37 +155,37 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlSelect = (Literal)e.Item.FindControl("ltlSelect");
 
             var contentInfo = new ContentInfo(e.Item.DataItem);
-            contentInfo.NodeId = -contentInfo.NodeId;
+            contentInfo.ChannelId = -contentInfo.ChannelId;
 
-            ltlItemTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, PageUrl);
+            ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
             string nodeNameNavigation;
-            if (!_nodeNameNavigations.ContainsKey(contentInfo.NodeId))
+            if (!_nodeNameNavigations.ContainsKey(contentInfo.ChannelId))
             {
-                nodeNameNavigation = NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId);
-                _nodeNameNavigations.Add(contentInfo.NodeId, nodeNameNavigation);
+                nodeNameNavigation = ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId);
+                _nodeNameNavigations.Add(contentInfo.ChannelId, nodeNameNavigation);
             }
             else
             {
-                nodeNameNavigation = _nodeNameNavigations[contentInfo.NodeId] as string;
+                nodeNameNavigation = _nodeNameNavigations[contentInfo.ChannelId] as string;
             }
             ltlChannel.Text = nodeNameNavigation;
             ltlDeleteDate.Text = DateUtils.GetDateAndTimeString(contentInfo.LastEditDate);
 
-            if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdminName == contentInfo.AddUserName)
+            if (HasChannelPermissions(contentInfo.ChannelId, AppManager.Permissions.Channel.ContentEdit) || Body.AdminName == contentInfo.AddUserName)
             {
-                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, contentInfo.NodeId);
+                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, contentInfo.ChannelId);
                 ltlItemEditUrl.Text =
-                    $"<a href=\"{WebUtils.GetContentAddEditUrl(PublishmentSystemId, nodeInfo, contentInfo.Id, PageUrl)}\">修改</a>";
+                    $"<a href=\"{WebUtils.GetContentAddEditUrl(SiteId, nodeInfo, contentInfo.Id, PageUrl)}\">修改</a>";
             }
 
             ltlSelect.Text =
-                $@"<input type=""checkbox"" name=""IDsCollection"" value=""{contentInfo.NodeId}_{contentInfo.Id}"" />";
+                $@"<input type=""checkbox"" name=""IDsCollection"" value=""{contentInfo.ChannelId}_{contentInfo.Id}"" />";
         }
 
 		public void AddContent_OnClick(object sender, EventArgs e)
 		{
-            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
-            PageUtils.Redirect(WebUtils.GetContentAddAddUrl(PublishmentSystemId, nodeInfo, PageUrl));
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _nodeId);
+            PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, nodeInfo, PageUrl));
 		}
 
         public void Search_OnClick(object sender, EventArgs e)
@@ -201,9 +200,8 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (string.IsNullOrEmpty(_pageUrl))
                 {
-                    _pageUrl = PageUtils.GetCmsUrl(nameof(PageContentTrash), new NameValueCollection
+                    _pageUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageContentTrash), new NameValueCollection
                     {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
                         {"NodeID", DdlChannelId.SelectedValue},
                         {"PageNum", DdlPageNum.SelectedValue},
                         {"SearchType", DdlSearchType.SelectedValue},

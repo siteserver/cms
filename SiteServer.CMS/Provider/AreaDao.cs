@@ -4,7 +4,6 @@ using System.Text;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -12,13 +11,13 @@ namespace SiteServer.CMS.Provider
 {
     public class AreaDao : DataProviderBase
     {
-        public override string TableName => "bairong_Area";
+        public override string TableName => "siteserver_Area";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
             new TableColumnInfo
             {
-                ColumnName = nameof(AreaInfo.AreaId),
+                ColumnName = nameof(AreaInfo.Id),
                 DataType = DataType.Integer,
                 IsPrimaryKey = true,
                 IsIdentity = true
@@ -68,12 +67,12 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlSelect = "SELECT AreaID, AreaName, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, CountOfAdmin FROM bairong_Area WHERE AreaID = @AreaID";
-        private const string SqlSelectAll = "SELECT AreaID, AreaName, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, CountOfAdmin FROM bairong_Area ORDER BY TAXIS";
-        private const string SqlSelectCount = "SELECT COUNT(*) FROM bairong_Area WHERE ParentID = @ParentID";
-        private const string SqlUpdate = "UPDATE bairong_Area SET AreaName = @AreaName, ParentsPath = @ParentsPath, ParentsCount = @ParentsCount, ChildrenCount = @ChildrenCount, IsLastNode = @IsLastNode, CountOfAdmin = @CountOfAdmin WHERE AreaID = @AreaID";
+        private const string SqlSelect = "SELECT Id, AreaName, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, CountOfAdmin FROM siteserver_Area WHERE Id = @Id";
+        private const string SqlSelectAll = "SELECT Id, AreaName, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, CountOfAdmin FROM siteserver_Area ORDER BY TAXIS";
+        private const string SqlSelectCount = "SELECT COUNT(*) FROM siteserver_Area WHERE ParentID = @ParentID";
+        private const string SqlUpdate = "UPDATE siteserver_Area SET AreaName = @AreaName, ParentsPath = @ParentsPath, ParentsCount = @ParentsCount, ChildrenCount = @ChildrenCount, IsLastNode = @IsLastNode, CountOfAdmin = @CountOfAdmin WHERE Id = @Id";
 
-        private const string ParmId = "@AreaID";
+        private const string ParmId = "@Id";
         private const string ParmName = "@AreaName";
         private const string ParmParentId = "@ParentID";
         private const string ParmParentsPath = "@ParentsPath";
@@ -87,7 +86,7 @@ namespace SiteServer.CMS.Provider
         {
             if (parentInfo != null)
             {
-                areaInfo.ParentsPath = parentInfo.ParentsPath + "," + parentInfo.AreaId;
+                areaInfo.ParentsPath = parentInfo.ParentsPath + "," + parentInfo.Id;
                 areaInfo.ParentsCount = parentInfo.ParentsCount + 1;
 
                 var maxTaxis = GetMaxTaxisByParentPath(areaInfo.ParentsPath);
@@ -105,7 +104,7 @@ namespace SiteServer.CMS.Provider
                 areaInfo.Taxis = maxTaxis + 1;
             }
 
-            var sqlInsert = "INSERT INTO bairong_Area (AreaName, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, CountOfAdmin) VALUES (@AreaName, @ParentID, @ParentsPath, @ParentsCount, @ChildrenCount, @IsLastNode, @Taxis, @CountOfAdmin)";
+            var sqlInsert = "INSERT INTO siteserver_Area (AreaName, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, CountOfAdmin) VALUES (@AreaName, @ParentID, @ParentsPath, @ParentsCount, @ChildrenCount, @IsLastNode, @Taxis, @CountOfAdmin)";
 
             IDataParameter[] insertParms = {
 				GetParameter(ParmName, DataType.VarChar, 255, areaInfo.AreaName),
@@ -118,26 +117,26 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmCountOfAdmin, DataType.Integer, areaInfo.CountOfAdmin)
 			};
 
-            string sqlString = $"UPDATE bairong_Area SET {SqlUtils.ToPlusSqlString("Taxis")} WHERE (Taxis >= {areaInfo.Taxis})";
+            string sqlString = $"UPDATE siteserver_Area SET {SqlUtils.ToPlusSqlString("Taxis")} WHERE (Taxis >= {areaInfo.Taxis})";
             ExecuteNonQuery(trans, sqlString);
 
-            areaInfo.AreaId = ExecuteNonQueryAndReturnId(TableName, nameof(AreaInfo.AreaId), trans, sqlInsert, insertParms);
+            areaInfo.Id = ExecuteNonQueryAndReturnId(TableName, nameof(AreaInfo.Id), trans, sqlInsert, insertParms);
 
             if (!string.IsNullOrEmpty(areaInfo.ParentsPath) && areaInfo.ParentsPath != "0")
             {
-                sqlString = $"UPDATE bairong_Area SET {SqlUtils.ToPlusSqlString("ChildrenCount")} WHERE AreaID IN ({PageUtils.FilterSql(areaInfo.ParentsPath)})";
+                sqlString = $"UPDATE siteserver_Area SET {SqlUtils.ToPlusSqlString("ChildrenCount")} WHERE Id IN ({PageUtils.FilterSql(areaInfo.ParentsPath)})";
 
                 ExecuteNonQuery(trans, sqlString);
             }
 
-            sqlString = $"UPDATE bairong_Area SET IsLastNode = '{false}' WHERE ParentID = {areaInfo.ParentId}";
+            sqlString = $"UPDATE siteserver_Area SET IsLastNode = '{false}' WHERE ParentID = {areaInfo.ParentId}";
 
             ExecuteNonQuery(trans, sqlString);
 
             //sqlString =
-            //    $"UPDATE bairong_Area SET IsLastNode = 'True' WHERE (AreaID IN (SELECT TOP 1 AreaID FROM bairong_Area WHERE ParentID = {areaInfo.ParentId} ORDER BY Taxis DESC))";            
+            //    $"UPDATE siteserver_Area SET IsLastNode = 'True' WHERE (Id IN (SELECT TOP 1 Id FROM siteserver_Area WHERE ParentID = {areaInfo.ParentId} ORDER BY Taxis DESC))";            
             sqlString =
-                $"UPDATE bairong_Area SET IsLastNode = '{true}' WHERE AreaID IN ({SqlUtils.ToInTopSqlString(TableName, "AreaID", $"WHERE ParentID = {areaInfo.ParentId}", "ORDER BY Taxis DESC", 1)})";
+                $"UPDATE siteserver_Area SET IsLastNode = '{true}' WHERE Id IN ({SqlUtils.ToInTopSqlString(TableName, "Id", $"WHERE ParentID = {areaInfo.ParentId}", "ORDER BY Taxis DESC", 1)})";
 
             ExecuteNonQuery(trans, sqlString);
 
@@ -148,31 +147,31 @@ namespace SiteServer.CMS.Provider
         {
             if (!string.IsNullOrEmpty(parentsPath))
             {
-                var sqlString = string.Concat("UPDATE bairong_Area SET ChildrenCount = ChildrenCount - ", subtractNum, " WHERE AreaID IN (", PageUtils.FilterSql(parentsPath), ")");
+                var sqlString = string.Concat("UPDATE siteserver_Area SET ChildrenCount = ChildrenCount - ", subtractNum, " WHERE Id IN (", PageUtils.FilterSql(parentsPath), ")");
                 ExecuteNonQuery(sqlString);
 
                 AreaManager.ClearCache();
             }
         }
 
-        private void TaxisSubtract(int selectedAreaId)
+        private void TaxisSubtract(int selectedId)
         {
-            var areaInfo = GetAreaInfo(selectedAreaId);
+            var areaInfo = GetAreaInfo(selectedId);
             if (areaInfo == null) return;
-            //Get Lower Taxis and AreaID
-            int lowerAreaId;
+            //Get Lower Taxis and Id
+            int lowerId;
             int lowerChildrenCount;
             string lowerParentsPath;
-            //            const string sqlString = @"SELECT TOP 1 AreaID, ChildrenCount, ParentsPath
-            //FROM bairong_Area
-            //WHERE (ParentID = @ParentID) AND (AreaID <> @AreaID) AND (Taxis < @Taxis)
+            //            const string sqlString = @"SELECT TOP 1 Id, ChildrenCount, ParentsPath
+            //FROM siteserver_Area
+            //WHERE (ParentID = @ParentID) AND (Id <> @Id) AND (Taxis < @Taxis)
             //ORDER BY Taxis DESC";
-            var sqlString = SqlUtils.ToTopSqlString(TableName, "AreaID, ChildrenCount, ParentsPath",
-                "WHERE (ParentID = @ParentID) AND (AreaID <> @AreaID) AND (Taxis < @Taxis)", "ORDER BY Taxis DESC", 1);
+            var sqlString = SqlUtils.ToTopSqlString(TableName, "Id, ChildrenCount, ParentsPath",
+                "WHERE (ParentID = @ParentID) AND (Id <> @Id) AND (Taxis < @Taxis)", "ORDER BY Taxis DESC", 1);
 
             IDataParameter[] parms = {
 				GetParameter(ParmParentId, DataType.Integer, areaInfo.ParentId),
-				GetParameter(ParmId, DataType.Integer, areaInfo.AreaId),
+				GetParameter(ParmId, DataType.Integer, areaInfo.Id),
 				GetParameter(ParmTaxis, DataType.Integer, areaInfo.Taxis),
 			};
 
@@ -180,7 +179,7 @@ namespace SiteServer.CMS.Provider
             {
                 if (rdr.Read())
                 {
-                    lowerAreaId = GetInt(rdr, 0);
+                    lowerId = GetInt(rdr, 0);
                     lowerChildrenCount = GetInt(rdr, 1);
                     lowerParentsPath = GetString(rdr, 2);
                 }
@@ -192,33 +191,33 @@ namespace SiteServer.CMS.Provider
             }
 
 
-            var lowerNodePath = string.Concat(lowerParentsPath, ",", lowerAreaId);
-            var selectedNodePath = string.Concat(areaInfo.ParentsPath, ",", areaInfo.AreaId);
+            var lowerNodePath = string.Concat(lowerParentsPath, ",", lowerId);
+            var selectedNodePath = string.Concat(areaInfo.ParentsPath, ",", areaInfo.Id);
 
-            SetTaxisSubtract(selectedAreaId, selectedNodePath, lowerChildrenCount + 1);
-            SetTaxisAdd(lowerAreaId, lowerNodePath, areaInfo.ChildrenCount + 1);
+            SetTaxisSubtract(selectedId, selectedNodePath, lowerChildrenCount + 1);
+            SetTaxisAdd(lowerId, lowerNodePath, areaInfo.ChildrenCount + 1);
 
             UpdateIsLastNode(areaInfo.ParentId);
         }
 
-        private void TaxisAdd(int selectedAreaId)
+        private void TaxisAdd(int selectedId)
         {
-            var areaInfo = GetAreaInfo(selectedAreaId);
+            var areaInfo = GetAreaInfo(selectedId);
             if (areaInfo == null) return;
-            //Get Higher Taxis and AreaID
-            int higherAreaId;
+            //Get Higher Taxis and Id
+            int higherId;
             int higherChildrenCount;
             string higherParentsPath;
-            //            var sqlString = @"SELECT TOP 1 AreaID, ChildrenCount, ParentsPath
-            //FROM bairong_Area
-            //WHERE (ParentID = @ParentID) AND (AreaID <> @AreaID) AND (Taxis > @Taxis)
+            //            var sqlString = @"SELECT TOP 1 Id, ChildrenCount, ParentsPath
+            //FROM siteserver_Area
+            //WHERE (ParentID = @ParentID) AND (Id <> @Id) AND (Taxis > @Taxis)
             //ORDER BY Taxis";
-            var sqlString = SqlUtils.ToTopSqlString(TableName, "AreaID, ChildrenCount, ParentsPath",
-                "WHERE (ParentID = @ParentID) AND (AreaID <> @AreaID) AND (Taxis > @Taxis)", "ORDER BY Taxis", 1);
+            var sqlString = SqlUtils.ToTopSqlString(TableName, "Id, ChildrenCount, ParentsPath",
+                "WHERE (ParentID = @ParentID) AND (Id <> @Id) AND (Taxis > @Taxis)", "ORDER BY Taxis", 1);
 
             IDataParameter[] parms = {
 				GetParameter(ParmParentId, DataType.Integer, areaInfo.ParentId),
-				GetParameter(ParmId, DataType.Integer, areaInfo.AreaId),
+				GetParameter(ParmId, DataType.Integer, areaInfo.Id),
 				GetParameter(ParmTaxis, DataType.Integer, areaInfo.Taxis)
 			};
 
@@ -226,7 +225,7 @@ namespace SiteServer.CMS.Provider
             {
                 if (rdr.Read())
                 {
-                    higherAreaId = GetInt(rdr, 0);
+                    higherId = GetInt(rdr, 0);
                     higherChildrenCount = GetInt(rdr, 1);
                     higherParentsPath = GetString(rdr, 2);
                 }
@@ -238,11 +237,11 @@ namespace SiteServer.CMS.Provider
             }
 
 
-            var higherNodePath = string.Concat(higherParentsPath, ",", higherAreaId);
-            var selectedNodePath = string.Concat(areaInfo.ParentsPath, ",", areaInfo.AreaId);
+            var higherNodePath = string.Concat(higherParentsPath, ",", higherId);
+            var selectedNodePath = string.Concat(areaInfo.ParentsPath, ",", areaInfo.Id);
 
-            SetTaxisAdd(selectedAreaId, selectedNodePath, higherChildrenCount + 1);
-            SetTaxisSubtract(higherAreaId, higherNodePath, areaInfo.ChildrenCount + 1);
+            SetTaxisAdd(selectedId, selectedNodePath, higherChildrenCount + 1);
+            SetTaxisSubtract(higherId, higherNodePath, areaInfo.ChildrenCount + 1);
 
             UpdateIsLastNode(areaInfo.ParentId);
         }
@@ -251,7 +250,7 @@ namespace SiteServer.CMS.Provider
         {
             var path = PageUtils.FilterSql(parentsPath);
             string sqlString =
-                $"UPDATE bairong_Area SET Taxis = Taxis + {addNum} WHERE AreaID = {areaId} OR ParentsPath = '{path}' OR ParentsPath LIKE '{path},%'";
+                $"UPDATE siteserver_Area SET Taxis = Taxis + {addNum} WHERE Id = {areaId} OR ParentsPath = '{path}' OR ParentsPath LIKE '{path},%'";
 
             ExecuteNonQuery(sqlString);
 
@@ -262,7 +261,7 @@ namespace SiteServer.CMS.Provider
         {
             var path = PageUtils.FilterSql(parentsPath);
             string sqlString =
-                $"UPDATE bairong_Area SET Taxis = Taxis - {subtractNum} WHERE  AreaID = {areaId} OR ParentsPath = '{path}' OR ParentsPath LIKE '{path},%'";
+                $"UPDATE siteserver_Area SET Taxis = Taxis - {subtractNum} WHERE  Id = {areaId} OR ParentsPath = '{path}' OR ParentsPath LIKE '{path},%'";
 
             ExecuteNonQuery(sqlString);
 
@@ -273,7 +272,7 @@ namespace SiteServer.CMS.Provider
         {
             if (parentId > 0)
             {
-                var sqlString = "UPDATE bairong_Area SET IsLastNode = @IsLastNode WHERE ParentID = @ParentID";
+                var sqlString = "UPDATE siteserver_Area SET IsLastNode = @IsLastNode WHERE ParentID = @ParentID";
 
                 IDataParameter[] parms = {
 				    GetParameter(ParmIsLastNode, DataType.VarChar, 18, false.ToString()),
@@ -283,9 +282,9 @@ namespace SiteServer.CMS.Provider
                 ExecuteNonQuery(sqlString, parms);
 
                 //sqlString =
-                //    $"UPDATE bairong_Area SET IsLastNode = '{true}' WHERE (AreaID IN (SELECT TOP 1 AreaID FROM bairong_Area WHERE ParentID = {parentId} ORDER BY Taxis DESC))";
+                //    $"UPDATE siteserver_Area SET IsLastNode = '{true}' WHERE (Id IN (SELECT TOP 1 Id FROM siteserver_Area WHERE ParentID = {parentId} ORDER BY Taxis DESC))";
                 sqlString =
-                    $"UPDATE bairong_Area SET IsLastNode = '{true}' WHERE AreaID IN ({SqlUtils.ToInTopSqlString(TableName, "AreaID", $"WHERE ParentID = {parentId}", "ORDER BY Taxis DESC", 1)})";
+                    $"UPDATE siteserver_Area SET IsLastNode = '{true}' WHERE Id IN ({SqlUtils.ToInTopSqlString(TableName, "Id", $"WHERE ParentID = {parentId}", "ORDER BY Taxis DESC", 1)})";
 
                 ExecuteNonQuery(sqlString);
             }
@@ -293,7 +292,7 @@ namespace SiteServer.CMS.Provider
 
         private int GetMaxTaxisByParentPath(string parentPath)
         {
-            var sqlString = string.Concat("SELECT MAX(Taxis) AS MaxTaxis FROM bairong_Area WHERE (ParentsPath = '", PageUtils.FilterSql(parentPath), "') OR (ParentsPath LIKE '", PageUtils.FilterSql(parentPath), ",%')");
+            var sqlString = string.Concat("SELECT MAX(Taxis) AS MaxTaxis FROM siteserver_Area WHERE (ParentsPath = '", PageUtils.FilterSql(parentPath), "') OR (ParentsPath LIKE '", PageUtils.FilterSql(parentPath), ",%')");
             var maxTaxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
@@ -332,7 +331,7 @@ namespace SiteServer.CMS.Provider
 
             AreaManager.ClearCache();
 
-            return areaInfo.AreaId;
+            return areaInfo.Id;
         }
 
         public void Update(AreaInfo areaInfo)
@@ -344,7 +343,7 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmChildrenCount, DataType.Integer, areaInfo.ChildrenCount),
 				GetParameter(ParmIsLastNode, DataType.VarChar, 18, areaInfo.IsLastNode.ToString()),
 				GetParameter(ParmCountOfAdmin, DataType.Integer, areaInfo.CountOfAdmin),
-				GetParameter(ParmId, DataType.Integer, areaInfo.AreaId)
+				GetParameter(ParmId, DataType.Integer, areaInfo.Id)
 			};
 
             ExecuteNonQuery(SqlUpdate, updateParms);
@@ -352,15 +351,15 @@ namespace SiteServer.CMS.Provider
             AreaManager.ClearCache();
         }
 
-        public void UpdateTaxis(int selectedAreaId, bool isSubtract)
+        public void UpdateTaxis(int selectedId, bool isSubtract)
         {
             if (isSubtract)
             {
-                TaxisSubtract(selectedAreaId);
+                TaxisSubtract(selectedId);
             }
             else
             {
-                TaxisAdd(selectedAreaId);
+                TaxisAdd(selectedId);
             }
         }
 
@@ -369,8 +368,8 @@ namespace SiteServer.CMS.Provider
             var areaIdList = AreaManager.GetAreaIdList();
             foreach (var areaId in areaIdList)
             {
-                string sqlString =
-                    $"UPDATE bairong_Area SET CountOfAdmin = (SELECT COUNT(*) AS CountOfAdmin FROM bairong_Administrator WHERE AreaID = {areaId}) WHERE AreaID = {areaId}";
+                var count = DataProvider.AdministratorDao.GetCountByAreaId(areaId);
+                string sqlString = $"UPDATE {TableName} SET CountOfAdmin = {count} WHERE Id = {areaId}";
                 ExecuteNonQuery(sqlString);
             }
             AreaManager.ClearCache();
@@ -384,12 +383,12 @@ namespace SiteServer.CMS.Provider
                 var areaIdList = new List<int>();
                 if (areaInfo.ChildrenCount > 0)
                 {
-                    areaIdList = GetAreaIdListForDescendant(areaId);
+                    areaIdList = GetIdListForDescendant(areaId);
                 }
                 areaIdList.Add(areaId);
 
                 string sqlString =
-                    $"DELETE FROM bairong_Area WHERE AreaID IN ({TranslateUtils.ToSqlInStringWithoutQuote(areaIdList)})";
+                    $"DELETE FROM siteserver_Area WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(areaIdList)})";
 
                 int deletedNum;
 
@@ -405,7 +404,7 @@ namespace SiteServer.CMS.Provider
                             if (deletedNum > 0)
                             {
                                 string sqlStringTaxis =
-                                    $"UPDATE bairong_Area SET Taxis = Taxis - {deletedNum} WHERE (Taxis > {areaInfo.Taxis})";
+                                    $"UPDATE siteserver_Area SET Taxis = Taxis - {deletedNum} WHERE (Taxis > {areaInfo.Taxis})";
                                 ExecuteNonQuery(trans, sqlStringTaxis);
                             }
 
@@ -481,9 +480,9 @@ namespace SiteServer.CMS.Provider
             return nodeCount;
         }
 
-        public List<int> GetAreaIdListByParentId(int parentId)
+        public List<int> GetIdListByParentId(int parentId)
         {
-            string sqlString = $@"SELECT AreaID FROM bairong_Area WHERE ParentID = '{parentId}' ORDER BY Taxis";
+            string sqlString = $@"SELECT Id FROM siteserver_Area WHERE ParentID = '{parentId}' ORDER BY Taxis";
             var list = new List<int>();
 
             using (var rdr = ExecuteReader(sqlString))
@@ -498,10 +497,10 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public List<int> GetAreaIdListForDescendant(int areaId)
+        public List<int> GetIdListForDescendant(int areaId)
         {
-            string sqlString = $@"SELECT AreaID
-FROM bairong_Area
+            string sqlString = $@"SELECT Id
+FROM siteserver_Area
 WHERE (ParentsPath LIKE '{areaId},%') OR
       (ParentsPath LIKE '%,{areaId},%') OR
       (ParentsPath LIKE '%,{areaId}') OR
@@ -513,8 +512,8 @@ WHERE (ParentsPath LIKE '{areaId},%') OR
             {
                 while (rdr.Read())
                 {
-                    var theAreaId = GetInt(rdr, 0);
-                    list.Add(theAreaId);
+                    var theId = GetInt(rdr, 0);
+                    list.Add(theId);
                 }
                 rdr.Close();
             }
@@ -522,13 +521,13 @@ WHERE (ParentsPath LIKE '{areaId},%') OR
             return list;
         }
 
-        public List<int> GetAreaIdListByAreaIdCollection(string areaIdCollection)
+        public List<int> GetIdListByIdCollection(string areaIdCollection)
         {
             var list = new List<int>();
 
             if (string.IsNullOrEmpty(areaIdCollection)) return list;
 
-            string sqlString = $@"SELECT AreaID FROM bairong_Area WHERE AreaID IN ({areaIdCollection})";
+            string sqlString = $@"SELECT Id FROM siteserver_Area WHERE Id IN ({areaIdCollection})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -542,7 +541,7 @@ WHERE (ParentsPath LIKE '{areaId},%') OR
             return list;
         }
 
-        public List<int> GetAreaIdListByFirstAreaIdList(List<int> firstIdList)
+        public List<int> GetIdListByFirstIdList(List<int> firstIdList)
         {
             var list = new List<int>();
 
@@ -551,11 +550,11 @@ WHERE (ParentsPath LIKE '{areaId},%') OR
                 var builder = new StringBuilder();
                 foreach (var areaId in firstIdList)
                 {
-                    builder.Append($"AreaID = {areaId} OR ParentID = {areaId} OR ParentsPath LIKE '{areaId},%' OR ");
+                    builder.Append($"Id = {areaId} OR ParentID = {areaId} OR ParentsPath LIKE '{areaId},%' OR ");
                 }
                 builder.Length -= 3;
 
-                string sqlString = $"SELECT AreaID FROM bairong_Area WHERE {builder} ORDER BY Taxis";
+                string sqlString = $"SELECT Id FROM siteserver_Area WHERE {builder} ORDER BY Taxis";
 
                 using (var rdr = ExecuteReader(sqlString))
                 {
@@ -577,7 +576,7 @@ WHERE (ParentsPath LIKE '{areaId},%') OR
             var areaInfoList = GetAreaInfoList();
             foreach (var areaInfo in areaInfoList)
             {
-                var pair = new KeyValuePair<int, AreaInfo>(areaInfo.AreaId, areaInfo);
+                var pair = new KeyValuePair<int, AreaInfo>(areaInfo.Id, areaInfo);
                 pairList.Add(pair);
             }
 

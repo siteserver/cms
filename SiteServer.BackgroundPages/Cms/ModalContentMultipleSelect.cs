@@ -5,13 +5,12 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -27,18 +26,17 @@ namespace SiteServer.BackgroundPages.Cms
         public Repeater RptContents;
         public SqlPager SpContents;
 
-        private NodeInfo _nodeInfo;
+        private ChannelInfo _nodeInfo;
         private string _tableName;
         private List<int> _relatedIdentities;
         private List<TableStyleInfo> _tableStyleInfoList;
         private string _jsMethod;
         private readonly Hashtable _valueHashtable = new Hashtable();
 
-        public static string GetOpenWindowString(int publishmentSystemId, string jsMethod)
+        public static string GetOpenWindowString(int siteId, string jsMethod)
         {
-            return LayerUtils.GetOpenScript("选择内容", PageUtils.GetCmsUrl(nameof(ModalContentMultipleSelect), new NameValueCollection
+            return LayerUtils.GetOpenScript("选择内容", PageUtils.GetCmsUrl(siteId, nameof(ModalContentMultipleSelect), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"jsMethod", jsMethod}
             }));
         }
@@ -51,29 +49,29 @@ namespace SiteServer.BackgroundPages.Cms
 
             _jsMethod = Body.GetQueryString("jsMethod");
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
             var nodeId = Body.GetQueryInt("NodeID");
             if (nodeId == 0)
             {
-                nodeId = PublishmentSystemId;
+                nodeId = SiteId;
             }
-            _nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
-            _tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeInfo);
-            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeInfo.NodeId);
+            _nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
+            _tableName = ChannelManager.GetTableName(SiteInfo, _nodeInfo);
+            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _nodeInfo.Id);
             _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);
 
             SpContents.ControlToPaginate = RptContents;
             SpContents.SelectCommand = string.IsNullOrEmpty(Body.GetQueryString("NodeID"))
-                ? DataProvider.ContentDao.GetSelectCommend(_tableName, PublishmentSystemId,
-                    _nodeInfo.NodeId, permissions.IsSystemAdministrator,
-                    ProductPermissionsManager.Current.OwningNodeIdList, DdlSearchType.SelectedValue, TbKeyword.Text,
+                ? DataProvider.ContentDao.GetSelectCommend(_tableName, SiteId,
+                    _nodeInfo.Id, permissions.IsSystemAdministrator,
+                    ProductPermissionsManager.Current.OwningChannelIdList, DdlSearchType.SelectedValue, TbKeyword.Text,
                     TbDateFrom.Text, TbDateTo.Text, true, ETriState.True, !CbIsDuplicate.Checked, false)
-                : DataProvider.ContentDao.GetSelectCommend(_tableName, PublishmentSystemId,
-                    _nodeInfo.NodeId, permissions.IsSystemAdministrator,
-                    ProductPermissionsManager.Current.OwningNodeIdList, Body.GetQueryString("SearchType"),
+                : DataProvider.ContentDao.GetSelectCommend(_tableName, SiteId,
+                    _nodeInfo.Id, permissions.IsSystemAdministrator,
+                    ProductPermissionsManager.Current.OwningChannelIdList, Body.GetQueryString("SearchType"),
                     Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true,
                     ETriState.True, !Body.GetQueryBool("IsDuplicate"), true);
-            SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
+            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
             SpContents.SortField = ContentAttribute.Id;
             SpContents.SortMode = SortMode.DESC;
             SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc);
@@ -81,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            NodeManager.AddListItems(DdlNodeId.Items, PublishmentSystemInfo, false, true, Body.AdminName);
+            ChannelManager.AddListItems(DdlNodeId.Items, SiteInfo, false, true, Body.AdminName);
 
             if (_tableStyleInfoList != null)
             {
@@ -99,9 +97,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (Body.IsQueryExists("NodeID"))
             {
-                if (PublishmentSystemId != _nodeInfo.NodeId)
+                if (SiteId != _nodeInfo.Id)
                 {
-                    ControlUtils.SelectSingleItem(DdlNodeId, _nodeInfo.NodeId.ToString());
+                    ControlUtils.SelectSingleItem(DdlNodeId, _nodeInfo.Id.ToString());
                 }
                 CbIsDuplicate.Checked = Body.GetQueryBool("IsDuplicate");
                 ControlUtils.SelectSingleItem(DdlSearchType, Body.GetQueryString("SearchType"));
@@ -123,24 +121,24 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var contentInfo = new ContentInfo(e.Item.DataItem);
 
-                var nodeName = _valueHashtable[contentInfo.NodeId] as string;
+                var nodeName = _valueHashtable[contentInfo.ChannelId] as string;
                 if (nodeName == null)
                 {
-                    nodeName = NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId);
-                    _valueHashtable[contentInfo.NodeId] = nodeName;
+                    nodeName = ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId);
+                    _valueHashtable[contentInfo.ChannelId] = nodeName;
                 }
                 ltlChannel.Text = nodeName;
 
-                ltlTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, PageUrl);
+                ltlTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
 
                 ltlSelect.Text =
-                    $@"<input type=""checkbox"" name=""IDsCollection"" value=""{contentInfo.NodeId}_{contentInfo.Id}"" />";
+                    $@"<input type=""checkbox"" name=""IDsCollection"" value=""{contentInfo.ChannelId}_{contentInfo.Id}"" />";
             }
         }
 
         public void AddContent_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(WebUtils.GetContentAddAddUrl(PublishmentSystemId, _nodeInfo, PageUrl));
+            PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _nodeInfo, PageUrl));
         }
 
         public void Search_OnClick(object sender, EventArgs e)
@@ -158,7 +156,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var channelId = TranslateUtils.ToInt(pair.Split('_')[0]);
                     var contentId = TranslateUtils.ToInt(pair.Split('_')[1]);
 
-                    var tableName = NodeManager.GetTableName(PublishmentSystemInfo, channelId);
+                    var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
                     var title = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
                     builder.Append($@"parent.{_jsMethod}('{title}', '{pair}');");
                 }
@@ -177,9 +175,8 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (string.IsNullOrEmpty(_pageUrl))
                 {
-                    _pageUrl = PageUtils.GetCmsUrl(nameof(ModalContentMultipleSelect), new NameValueCollection
+                    _pageUrl = PageUtils.GetCmsUrl(SiteId, nameof(ModalContentMultipleSelect), new NameValueCollection
                     {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
                         {"NodeID", DdlNodeId.SelectedValue},
                         {"IsDuplicate", CbIsDuplicate.Checked.ToString()},
                         {"SearchType", DdlSearchType.SelectedValue},

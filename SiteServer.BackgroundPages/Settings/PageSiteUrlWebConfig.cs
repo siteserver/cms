@@ -2,25 +2,25 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.Utils.Model.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
 	public class PageSiteUrlWebConfig : BasePageCms
     {
-        public Literal LtlPublishmentSystemName;
+        public Literal LtlSiteName;
 
         public RadioButtonList RblIsSeparatedWeb;
         public PlaceHolder PhSeparatedWeb;
         public TextBox TbSeparatedWebUrl;
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
             return PageUtils.GetSettingsUrl(nameof(PageSiteUrlWebConfig), new NameValueCollection
             {
                 {
-                    "PublishmentSystemID", publishmentSystemId.ToString()
+                    "SiteId", siteId.ToString()
                 }
             });
         }
@@ -32,12 +32,12 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
 
-            LtlPublishmentSystemName.Text = PublishmentSystemInfo.PublishmentSystemName;
+            LtlSiteName.Text = SiteInfo.SiteName;
 
             EBooleanUtils.AddListItems(RblIsSeparatedWeb, "Web独立部署", "Web与CMS部署在一起");
-            ControlUtils.SelectSingleItem(RblIsSeparatedWeb, PublishmentSystemInfo.Additional.IsSeparatedWeb.ToString());
-            PhSeparatedWeb.Visible = PublishmentSystemInfo.Additional.IsSeparatedWeb;
-            TbSeparatedWebUrl.Text = PublishmentSystemInfo.Additional.SeparatedWebUrl;
+            ControlUtils.SelectSingleItem(RblIsSeparatedWeb, SiteInfo.Additional.IsSeparatedWeb.ToString());
+            PhSeparatedWeb.Visible = SiteInfo.Additional.IsSeparatedWeb;
+            TbSeparatedWebUrl.Text = SiteInfo.Additional.SeparatedWebUrl;
         }
 
         public void RblIsSeparatedWeb_SelectedIndexChanged(object sender, EventArgs e)
@@ -47,11 +47,11 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            PublishmentSystemInfo.Additional.IsSeparatedWeb = TranslateUtils.ToBool(RblIsSeparatedWeb.SelectedValue);
-            PublishmentSystemInfo.Additional.SeparatedWebUrl = TbSeparatedWebUrl.Text;
+            SiteInfo.Additional.IsSeparatedWeb = TranslateUtils.ToBool(RblIsSeparatedWeb.SelectedValue);
+            SiteInfo.Additional.SeparatedWebUrl = TbSeparatedWebUrl.Text;
 
-            DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
-            Body.AddSiteLog(PublishmentSystemId, "修改Web访问地址");
+            DataProvider.SiteDao.Update(SiteInfo);
+            Body.AddSiteLog(SiteId, "修改Web访问地址");
 
             SuccessMessage("Web访问地址修改成功！");
             AddWaitAndRedirectScript(PageSiteUrlWeb.GetRedirectUrl());

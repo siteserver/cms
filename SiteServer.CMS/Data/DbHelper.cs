@@ -29,7 +29,7 @@ using System.Reflection;
 using System.Xml;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
-using SiteServer.Utils.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Data
 {

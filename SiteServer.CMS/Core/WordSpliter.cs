@@ -31,14 +31,14 @@ namespace SiteServer.CMS.Core
             return System.Web.HttpContext.Current.Application.Get(key);
         }
 
-        private static SortedList ReadContent(int publishmentSystemId)
+        private static SortedList ReadContent(int siteId)
         {
-            var cacheKey = "BaiRong.Core.WordSpliter." + publishmentSystemId;
+            var cacheKey = "BaiRong.Core.WordSpliter." + siteId;
             if (GetCache(cacheKey) == null)
             {
                 var arrText = new SortedList();
 
-                var tagList = DataProvider.TagDao.GetTagList(publishmentSystemId);
+                var tagList = DataProvider.TagDao.GetTagList(siteId);
                 if (tagList.Count > 0)
                 {
                     foreach (var line in tagList)
@@ -149,10 +149,10 @@ namespace SiteServer.CMS.Core
         /// 分词
         /// </summary>
         /// <returns></returns>
-        private static ArrayList StringSpliter(string[] key, int publishmentSystemId)
+        private static ArrayList StringSpliter(string[] key, int siteId)
         {
             var list = new ArrayList();
-            var dict = ReadContent(publishmentSystemId);//载入词典
+            var dict = ReadContent(siteId);//载入词典
             //
             for (var i = 0; i < key.Length; i++)
             {
@@ -193,9 +193,9 @@ namespace SiteServer.CMS.Core
         /// <summary>
         /// 得到分词结果
         /// </summary>
-        public static string[] DoSplit(string content, int publishmentSystemId)
+        public static string[] DoSplit(string content, int siteId)
         {
-            var keyList = StringSpliter(FormatStr(content).Split(SplitChar.ToCharArray()), publishmentSystemId);
+            var keyList = StringSpliter(FormatStr(content).Split(SplitChar.ToCharArray()), siteId);
             keyList.Insert(0, content);
             //去掉重复的关键词
             for (var i = 0; i < keyList.Count; i++)
@@ -216,10 +216,10 @@ namespace SiteServer.CMS.Core
         /// <summary>
         /// 得到分词关键字，以逗号隔开
         /// </summary>
-        public static string GetKeywords(string content, int publishmentSystemId, int totalNum)
+        public static string GetKeywords(string content, int siteId, int totalNum)
         {
             var value = "";
-            var _key = DoSplit(content, publishmentSystemId);
+            var _key = DoSplit(content, siteId);
             var currentNum = 1;
             for (var i = 1; i < _key.Length; i++)
             {

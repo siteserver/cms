@@ -1,7 +1,6 @@
 using System.Collections.Generic;
+using System.Text;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Collection;
-using SiteServer.Utils.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -303,7 +302,7 @@ namespace SiteServer.CMS.Core
                 var styleInfo = (TableStyleInfo)entries.GetValue(key);
                 if (InputTypeUtils.IsWithStyleItems(styleInfo.InputType))
                 {
-                    styleInfo.StyleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+                    styleInfo.StyleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
                 }
                 var tableStyleInfoWithItemList = dict.ContainsKey(styleInfo.AttributeName) ? dict[styleInfo.AttributeName] : new List<TableStyleInfo>();
                 tableStyleInfoWithItemList.Add(styleInfo);
@@ -311,6 +310,37 @@ namespace SiteServer.CMS.Core
             }
 
             return dict;
+        }
+
+        public static string GetValidateInfo(TableStyleInfo styleInfo)
+        {
+            var builder = new StringBuilder();
+            if (styleInfo.Additional.IsRequired)
+            {
+                builder.Append("必填项;");
+            }
+            if (styleInfo.Additional.MinNum > 0)
+            {
+                builder.Append($"最少{styleInfo.Additional.MinNum}个字符;");
+            }
+            if (styleInfo.Additional.MaxNum > 0)
+            {
+                builder.Append($"最多{styleInfo.Additional.MaxNum}个字符;");
+            }
+            if (styleInfo.Additional.ValidateType != ValidateType.None)
+            {
+                builder.Append($"验证:{ValidateTypeUtils.GetText(styleInfo.Additional.ValidateType)};");
+            }
+
+            if (builder.Length > 0)
+            {
+                builder.Length = builder.Length - 1;
+            }
+            else
+            {
+                builder.Append("无验证");
+            }
+            return builder.ToString();
         }
 
         public static TableStyleInfo GetDefaultTableStyleInfo(string tableName, string attributeName)

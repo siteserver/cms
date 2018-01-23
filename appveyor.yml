@@ -94,7 +94,7 @@
 
   after_build:
     - gulp build --build 5.0.{build}-beta
-    - nuget build build/SiteServer.Update.nuspec
+    - nuget pack build/SiteServer.Update.nuspec
     - gulp zip
 
   artifacts:

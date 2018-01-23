@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
             listitem = new ListItem("2小时内更新的内容", "2Hour");
             DdlScope.Items.Add(listitem);
 
-            NodeManager.AddListItems(LbNodeIdList.Items, PublishmentSystemInfo, false, true, Body.AdminName);
+            ChannelManager.AddListItems(LbNodeIdList.Items, SiteInfo, false, true, Body.AdminName);
             BtnDeleteAll.Attributes.Add("onclick", "return confirm(\"此操作将删除所有已生成的内容页面，确定吗？\");");
         }
 
@@ -46,11 +46,11 @@ namespace SiteServer.BackgroundPages.Cms
             var nodeIdList = new List<int>();
             var selectedNodeIdArrayList = ControlUtils.GetSelectedListControlValueArrayList(LbNodeIdList);
 
-            var tableName = PublishmentSystemInfo.AuxiliaryTableForContent;
+            var tableName = SiteInfo.TableName;
 
             if (DdlScope.SelectedValue == "Month")
             {
-                var lastEditList = DataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 720);
+                var lastEditList = DataProvider.ContentDao.GetChannelIdListCheckedByLastEditDateHour(tableName, SiteId, 720);
                 foreach (var nodeId in lastEditList)
                 {
                     if (selectedNodeIdArrayList.Contains(nodeId.ToString()))
@@ -61,7 +61,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else if (DdlScope.SelectedValue == "Day")
             {
-                var lastEditList = DataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 24);
+                var lastEditList = DataProvider.ContentDao.GetChannelIdListCheckedByLastEditDateHour(tableName, SiteId, 24);
                 foreach (var nodeId in lastEditList)
                 {
                     if (selectedNodeIdArrayList.Contains(nodeId.ToString()))
@@ -72,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else if (DdlScope.SelectedValue == "2Hour")
             {
-                var lastEditList = DataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 2);
+                var lastEditList = DataProvider.ContentDao.GetChannelIdListCheckedByLastEditDateHour(tableName, SiteId, 2);
                 foreach (var nodeId in lastEditList)
                 {
                     if (selectedNodeIdArrayList.Contains(nodeId.ToString()))
@@ -95,17 +95,17 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var nodeId in nodeIdList)
             {
-                CreateManager.CreateAllContent(PublishmentSystemId, nodeId);
+                CreateManager.CreateAllContent(SiteId, nodeId);
             }
 
-            PageCreateStatus.Redirect(PublishmentSystemId);
+            PageCreateStatus.Redirect(SiteId);
         }
 
         public void BtnDeleteAll_OnClick(object sender, EventArgs e)
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var url = PageProgressBar.GetDeleteAllPageUrl(PublishmentSystemId, ETemplateType.ContentTemplate);
+            var url = PageProgressBar.GetDeleteAllPageUrl(SiteId, ETemplateType.ContentTemplate);
             PageUtils.RedirectToLoadingPage(url);
         }
     }

@@ -16,11 +16,10 @@ namespace SiteServer.BackgroundPages.Cms
 
         private int _templateId;
 
-        public static string GetRedirectUrl(int publishmentSystemId, int templateId)
+        public static string GetRedirectUrl(int siteId, int templateId)
         {
-            return PageUtils.GetCmsUrl(nameof(PageTemplateLog), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateLog), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"TemplateID", templateId.ToString()}
             });
         }
@@ -48,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
-            SpContents.SelectCommand = DataProvider.TemplateLogDao.GetSelectCommend(PublishmentSystemId, _templateId);
+            SpContents.SelectCommand = DataProvider.TemplateLogDao.GetSelectCommend(SiteId, _templateId);
 
             SpContents.SortField = "ID";
             SpContents.SortMode = SortMode.DESC;
@@ -60,9 +59,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             BtnDelete.Attributes.Add("onclick",
                 PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
-                    PageUtils.GetCmsUrl(nameof(PageTemplateLog), new NameValueCollection
+                    PageUtils.GetCmsUrl(SiteId, nameof(PageTemplateLog), new NameValueCollection
                     {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
                         {"TemplateID", _templateId.ToString()},
                         {"Delete", true.ToString()}
                     }), "IDCollection", "IDCollection", "请选择需要删除的修订历史！", "此操作将删除所选修订历史，确认吗？"));
@@ -87,7 +85,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, "AddDate"));
             ltlContentLength.Text = SqlUtils.EvalInt(e.Item.DataItem, "ContentLength").ToString();
             ltlView.Text =
-                $@"<a href=""javascript:;"" onclick=""{ModalTemplateView.GetOpenWindowString(PublishmentSystemId,
+                $@"<a href=""javascript:;"" onclick=""{ModalTemplateView.GetOpenWindowString(SiteId,
                     logId)}"">查看</a>";
         }
     }
