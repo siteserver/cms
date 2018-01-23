@@ -97,6 +97,8 @@
   artifacts:
     - path: siteserver_install.zip
       name: siteserver_install
+      
+    - path: '**\*.nupkg'
 
   deploy:
     - provider: GitHub
@@ -117,5 +119,4 @@
         secure: i9vISdFyCeWbRUQw+jhcF748i4oWdeatGBrx+dJ07SDTpt7Hsk9YCRp/ha3ZXfZF
       skip_symbols: false
       symbol_server:           # remove to push symbols to SymbolSource.org
-      artifacts:
-        - path: '*.nupkg'
+      artifact: /.*\.nupkg/
