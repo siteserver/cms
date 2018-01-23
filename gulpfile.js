@@ -27,6 +27,7 @@ function build(v, beta) {
   if (beta) {
     version += '-beta';
   }
+  console.log('build SiteServer CMS started, version: ' + version);
 
   //nuspec
   gulp.src('./SiteServer.Update.nuspec').pipe(replace('$version$', version)).pipe(gulp.dest('./build'));
@@ -44,6 +45,8 @@ function build(v, beta) {
   gulp.src('./SiteServer.Web/Global.asax').pipe(gulp.dest('./build'));
   gulp.src('./SiteServer.Web/robots.txt').pipe(gulp.dest('./build'));
   gulp.src('./SiteServer.Web/Web.Release.config').pipe(rename('Web.config')).pipe(gulp.dest('./build'));
+
+  console.log('build SiteServer CMS successed!');
 }
 
 gulp.task('release', function () {
