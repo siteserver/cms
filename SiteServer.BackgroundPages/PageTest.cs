@@ -9,7 +9,7 @@ namespace SiteServer.BackgroundPages
     {
         public Literal LtlContent;
 
-        public async void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             LtlContent.Text = NuGetManager.TestGetLastPackage(false);
 

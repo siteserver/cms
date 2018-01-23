@@ -25,7 +25,9 @@ function min(src, dest) {
 gulp.task('build', function () {
   //nuspec
   var version = argv.build;
-  console.log(version);
+  if (argv.beta) {
+    version += '-beta';
+  }
   gulp.src('./SiteServer.Update.nuspec').pipe(replace('$version$', version)).pipe(gulp.dest('./build/SiteServer.Update.nuspec'));
 
   //bin
