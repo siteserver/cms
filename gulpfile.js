@@ -22,12 +22,13 @@ function min(src, dest) {
   }
 }
 
-gulp.task('build', function () {
-  //nuspec
-  var version = argv.build;
-  if (argv.beta) {
+function build(v, beta) {
+  var version = v;
+  if (beta) {
     version += '-beta';
   }
+
+  //nuspec
   gulp.src('./SiteServer.Update.nuspec').pipe(replace('$version$', version)).pipe(gulp.dest('./build/SiteServer.Update.nuspec'));
 
   //bin
@@ -43,6 +44,14 @@ gulp.task('build', function () {
   gulp.src('./SiteServer.Web/Global.asax').pipe(gulp.dest('./build'));
   gulp.src('./SiteServer.Web/robots.txt').pipe(gulp.dest('./build'));
   gulp.src('./SiteServer.Web/Web.Release.config').pipe(rename('Web.config')).pipe(gulp.dest('./build'));
+}
+
+gulp.task('release', function () {
+  build(argv.build, false);
+});
+
+gulp.task('preview', function () {
+  build(argv.build, true);
 });
 
 gulp.task('zip', function () {

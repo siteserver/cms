@@ -4,7 +4,7 @@
     only:
       - master
 
-  version: 5.0.{build}
+  version: 6.0.{build}
 
   configuration:
     - Release
@@ -32,15 +32,12 @@
     - nuget restore siteserver.sln
 
   after_build:
-    - gulp build
+    - gulp release --build=6.0.$(appveyor_build_version)
     - gulp zip
 
   artifacts:
     - path: siteserver_install.zip
       name: siteserver_install
-
-    - path: siteserver_upgrade.zip
-      name: siteserver_upgrade
 
   deploy:
     provider: GitHub
@@ -93,7 +90,7 @@
     publish_nuget: true
 
   after_build:
-    - gulp build --build=6.0.$(appveyor_build_version) --beta=true
+    - gulp preview --build=6.0.$(appveyor_build_version)
     - nuget pack build/SiteServer.Update.nuspec
     - gulp zip
 
@@ -103,7 +100,7 @@
 
   deploy:
     - provider: GitHub
-      release: siteserver-v$(appveyor_build_version)
+      release: siteserver-v$(appveyor_build_version)-preview
       description: 'SiteServer CMS'
       auth_token:
         secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
