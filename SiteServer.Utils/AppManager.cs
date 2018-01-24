@@ -51,7 +51,6 @@ namespace SiteServer.Utils
                 public const string Site = "settings_site";
                 public const string Admin = "settings_admin";
                 public const string User = "settings_user";
-                public const string Integration = "settings_integration";
                 public const string Chart = "settings_chart";
                 public const string Log = "settings_log";
                 public const string Utility = "settings_utility";
