@@ -2,7 +2,6 @@
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
-using SiteServer.Plugin.Apis;
 
 namespace SiteServer.CMS.Plugin.Apis
 {

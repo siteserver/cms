@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using SiteServer.Utils;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Model;
 using SiteServer.CMS.StlParser.Model;
@@ -174,7 +173,7 @@ namespace SiteServer.CMS.StlParser.Parsers
                     }
                     else
                     {
-                        var parsers = PluginManager.GetParses();
+                        var parsers = PluginStlParserContentManager.GetParses();
                         if (parsers.ContainsKey(elementName))
                         {
                             var isDynamic = false;
@@ -219,7 +218,7 @@ namespace SiteServer.CMS.StlParser.Parsers
                                     Func<PluginParseContext, string> func;
                                     if (parsers.TryGetValue(elementName, out func))
                                     {
-                                        var context = new PluginParseContext(attributes, innerXml, pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, ETemplateTypeUtils.GetValue(pageInfo.TemplateInfo.TemplateType), pageInfo.TemplateInfo.Id);
+                                        var context = new PluginParseContext(attributes, innerXml, pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id);
                                         parsedContent = func(context);
                                     }
                                 }

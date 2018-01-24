@@ -10,6 +10,7 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
+using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -85,14 +86,14 @@ namespace SiteServer.BackgroundPages.Cms
             if (!IsPostBack)
             {
                 DdlContentModelPluginId.Items.Add(new ListItem("<默认>", string.Empty));
-                var contentTables = PluginManager.GetContentModelPlugins();
+                var contentTables = PluginContentManager.GetContentModelPlugins();
                 foreach (var contentTable in contentTables)
                 {
                     DdlContentModelPluginId.Items.Add(new ListItem(contentTable.Title, contentTable.Id));
                 }
                 ControlUtils.SelectSingleItem(DdlContentModelPluginId, nodeInfo.ContentModelPluginId);
 
-                var plugins = PluginManager.GetAllContentRelatedPlugins(false);
+                var plugins = PluginContentManager.GetAllContentRelatedPlugins(false);
                 if (plugins.Count > 0)
                 {
                     var relatedPluginIds =
@@ -131,9 +132,9 @@ namespace SiteServer.BackgroundPages.Cms
 
                 CblNodeGroupNameCollection.DataSource = DataProvider.ChannelGroupDao.GetDataSource(SiteId);
 
-                DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, ETemplateType.ChannelTemplate);
+                DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ChannelTemplate);
 
-                DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, ETemplateType.ContentTemplate);
+                DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ContentTemplate);
 
                 DataBind();
 

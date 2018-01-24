@@ -2,7 +2,6 @@
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
-using SiteServer.Plugin.Apis;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
@@ -60,25 +59,15 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string GetPluginUrl(string relatedUrl = "")
         {
-            return PageUtility.GetSiteFilesUrl(PageUtility.InnerApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
-        }
-
-        public string GetApiUrl(string relatedUrl = "")
-        {
-            return PageUtils.Combine(PageUtility.OuterApiUrl, relatedUrl);
-        }
-
-        public string GetApiPluginUrl(string relatedUrl = "")
-        {
             return PageUtility.GetSiteFilesUrl(PageUtility.OuterApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
         }
 
-        public string GetApiPluginJsonUrl(string name = "", string id = "")
+        public string GetApiJsonUrl(string name = "", string id = "")
         {
             return Controllers.Json.PluginJsonApi.GetUrl(PageUtility.OuterApiUrl, _metadata.Id, name, id);
         }
 
-        public string GetApiPluginHttpUrl(string name = "", string id = "")
+        public string GetApiHttpUrl(string name = "", string id = "")
         {
             return Controllers.Http.PluginHttpApi.GetUrl(PageUtility.OuterApiUrl, _metadata.Id, name, id);
         }

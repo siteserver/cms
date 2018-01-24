@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -54,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (nodeInfo.ParentId == 0)
 			{
-                var indexTemplateId = TemplateManager.GetDefaultTemplateId(SiteId, ETemplateType.IndexPageTemplate);
+                var indexTemplateId = TemplateManager.GetDefaultTemplateId(SiteId, TemplateType.IndexPageTemplate);
                 var indexTemplateName = TemplateManager.GetTemplateName(SiteId, indexTemplateId);
 				str = string.Concat(str, $" ({indexTemplateName})");
             }
@@ -95,10 +94,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId");
 
-            var defaultChannelTemplateId = TemplateManager.GetDefaultTemplateId(SiteId, ETemplateType.ChannelTemplate);
+            var defaultChannelTemplateId = TemplateManager.GetDefaultTemplateId(SiteId, TemplateType.ChannelTemplate);
             _defaultChannelTemplateName = TemplateManager.GetTemplateName(SiteId, defaultChannelTemplateId);
 
-            var defaultContentTemplateId = TemplateManager.GetDefaultTemplateId(SiteId, ETemplateType.ContentTemplate);
+            var defaultContentTemplateId = TemplateManager.GetDefaultTemplateId(SiteId, TemplateType.ContentTemplate);
             _defaultContentTemplateName = TemplateManager.GetTemplateName(SiteId, defaultContentTemplateId);
 
             if (IsPostBack) return;
@@ -140,8 +139,8 @@ namespace SiteServer.BackgroundPages.Cms
                 LbNodeId.Items.Add(listitem);
 			}
 
-            LbChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, ETemplateType.ChannelTemplate);
-            LbContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, ETemplateType.ContentTemplate);
+            LbChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ChannelTemplate);
+            LbContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ContentTemplate);
 			DataBind();
 
 			ControlUtils.SelectMultiItems(LbNodeId, selectedNodeIdList);
@@ -301,9 +300,9 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 		    if (!Page.IsPostBack || !Page.IsValid || !Validate(false, false)) return;
 
-		    var defaultChannelTemplateId = TemplateManager.GetDefaultTemplateId(SiteId, ETemplateType.ChannelTemplate);
-		    var relatedFileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(SiteId, ETemplateType.ChannelTemplate);
-		    var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(SiteId, ETemplateType.ChannelTemplate);
+		    var defaultChannelTemplateId = TemplateManager.GetDefaultTemplateId(SiteId, TemplateType.ChannelTemplate);
+		    var relatedFileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(SiteId, TemplateType.ChannelTemplate);
+		    var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(SiteId, TemplateType.ChannelTemplate);
 		    foreach (ListItem item in LbNodeId.Items)
 		    {
 		        if (!item.Selected) continue;
@@ -327,7 +326,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 		        if (channelTemplateId != -1)
 		        {
-		            var templateInfo = new TemplateInfo(0, SiteId, nodeInfo.ChannelName, ETemplateType.ChannelTemplate, "T_" + nodeInfo.ChannelName + ".html", "index.html", ".html", ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset), false);
+		            var templateInfo = new TemplateInfo(0, SiteId, nodeInfo.ChannelName, TemplateType.ChannelTemplate, "T_" + nodeInfo.ChannelName + ".html", "index.html", ".html", ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset), false);
 								
 		            if (relatedFileNameList.Contains(templateInfo.RelatedFileName.ToLower()))
 		            {
@@ -358,8 +357,8 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 		    if (!Page.IsPostBack || !Page.IsValid || !Validate(false, false)) return;
 
-		    var relatedFileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(SiteId, ETemplateType.ChannelTemplate);
-		    var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(SiteId, ETemplateType.ChannelTemplate);
+		    var relatedFileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(SiteId, TemplateType.ChannelTemplate);
+		    var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(SiteId, TemplateType.ChannelTemplate);
 		    foreach (ListItem item in LbNodeId.Items)
 		    {
 		        if (!item.Selected) continue;
@@ -367,7 +366,7 @@ namespace SiteServer.BackgroundPages.Cms
 		        var nodeId = int.Parse(item.Value);
 		        var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
 
-		        var templateInfo = new TemplateInfo(0, SiteId, nodeInfo.ChannelName + "_下级", ETemplateType.ChannelTemplate, "T_" + nodeInfo.ChannelName + "_下级.html", "index.html", ".html", ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset), false);
+		        var templateInfo = new TemplateInfo(0, SiteId, nodeInfo.ChannelName + "_下级", TemplateType.ChannelTemplate, "T_" + nodeInfo.ChannelName + "_下级.html", "index.html", ".html", ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset), false);
 								
 		        if (relatedFileNameList.Contains(templateInfo.RelatedFileName.ToLower()))
 		        {
@@ -397,9 +396,9 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 		    if (!Page.IsPostBack || !Page.IsValid || !Validate(false, false)) return;
 
-		    var defaultContentTemplateId = TemplateManager.GetDefaultTemplateId(SiteId, ETemplateType.ContentTemplate);
-		    var relatedFileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(SiteId, ETemplateType.ContentTemplate);
-		    var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(SiteId, ETemplateType.ContentTemplate);
+		    var defaultContentTemplateId = TemplateManager.GetDefaultTemplateId(SiteId, TemplateType.ContentTemplate);
+		    var relatedFileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(SiteId, TemplateType.ContentTemplate);
+		    var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(SiteId, TemplateType.ContentTemplate);
 		    foreach (ListItem item in LbNodeId.Items)
 		    {
 		        if (!item.Selected) continue;
@@ -420,7 +419,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 		        if (contentTemplateId != -1)
 		        {
-		            var templateInfo = new TemplateInfo(0, SiteId, nodeInfo.ChannelName, ETemplateType.ContentTemplate, "T_" + nodeInfo.ChannelName + ".html", "index.html", ".html", ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset), false);
+		            var templateInfo = new TemplateInfo(0, SiteId, nodeInfo.ChannelName, TemplateType.ContentTemplate, "T_" + nodeInfo.ChannelName + ".html", "index.html", ".html", ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset), false);
 		            if (relatedFileNameList.Contains(templateInfo.RelatedFileName.ToLower()))
 		            {
 		                continue;
@@ -446,8 +445,8 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 		    if (!Page.IsPostBack || !Page.IsValid || !Validate(false, false)) return;
 
-		    var relatedFileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(SiteId, ETemplateType.ContentTemplate);
-		    var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(SiteId, ETemplateType.ContentTemplate);
+		    var relatedFileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(SiteId, TemplateType.ContentTemplate);
+		    var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(SiteId, TemplateType.ContentTemplate);
 		    foreach (ListItem item in LbNodeId.Items)
 		    {
 		        if (!item.Selected) continue;
@@ -455,7 +454,7 @@ namespace SiteServer.BackgroundPages.Cms
 		        var nodeId = int.Parse(item.Value);
 		        var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
 
-		        var templateInfo = new TemplateInfo(0, SiteId, nodeInfo.ChannelName + "_下级", ETemplateType.ContentTemplate, "T_" + nodeInfo.ChannelName + "_下级.html", "index.html", ".html", ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset), false);
+		        var templateInfo = new TemplateInfo(0, SiteId, nodeInfo.ChannelName + "_下级", TemplateType.ContentTemplate, "T_" + nodeInfo.ChannelName + "_下级.html", "index.html", ".html", ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset), false);
 								
 		        if (relatedFileNameList.Contains(templateInfo.RelatedFileName.ToLower()))
 		        {

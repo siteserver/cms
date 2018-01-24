@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Cms
         public Literal LtlContentCount;
         public Literal LtlFileCount;
 
-        private Dictionary<ETemplateType, int> _dictionary;
+        private Dictionary<TemplateType, int> _dictionary;
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                var eTemplateType = ETemplateTypeUtils.GetEnumType(templateType);
+                var eTemplateType = TemplateTypeUtils.GetEnumType(templateType);
                 if (_dictionary.ContainsKey(eTemplateType))
                 {
                     count = _dictionary[eTemplateType];

@@ -4,6 +4,7 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages
@@ -72,7 +73,7 @@ namespace SiteServer.BackgroundPages
             LtlVersionInfo.Text = AppManager.GetFullVersion();
             SetSetp(1);
 
-            EDatabaseTypeUtils.AddListItems(DdlSqlDatabaseType);
+            DatabaseTypeUtils.AddListItems(DdlSqlDatabaseType);
 
             EBooleanUtils.AddListItems(DdlIsDefaultPort, "默认数据库端口", "自定义数据库端口");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsDefaultPort, true.ToString());
@@ -87,8 +88,8 @@ namespace SiteServer.BackgroundPages
 
         public void DdlSqlDatabaseType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var databaseType = EDatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
-            PhSqlOracleDatabase.Visible = databaseType == EDatabaseType.Oracle;
+            var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
+            PhSqlOracleDatabase.Visible = databaseType == DatabaseType.Oracle;
         }
 
         public void DdlIsDefaultPort_SelectedIndexChanged(object sender, EventArgs e)
@@ -163,7 +164,7 @@ Disallow: /SiteFiles/");
                 bool isConnectValid;
                 string errorMessage;
                 var databaseNameList = new List<string>();
-                var databaseType = EDatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
+                var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
                 if (string.IsNullOrEmpty(TbSqlServer.Text))
                 {
                     isConnectValid = false;
@@ -179,20 +180,20 @@ Disallow: /SiteFiles/");
                     isConnectValid = false;
                     errorMessage = "数据库用户必须填写。";
                 }
-                else if (databaseType == EDatabaseType.Oracle && string.IsNullOrEmpty(TbSqlOracleDatabase.Text))
+                else if (databaseType == DatabaseType.Oracle && string.IsNullOrEmpty(TbSqlOracleDatabase.Text))
                 {
                     isConnectValid = false;
                     errorMessage = "数据库名称必须填写。";
                 }
                 else
                 {
-                    var connectionStringWithoutDatabaseName = GetConnectionString(databaseType == EDatabaseType.Oracle);
+                    var connectionStringWithoutDatabaseName = GetConnectionString(databaseType == DatabaseType.Oracle);
                     isConnectValid = DataProvider.DatabaseDao.ConnectToServer(databaseType, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
                 }
                 
                 if (isConnectValid)
                 {
-                    if (databaseType != EDatabaseType.Oracle)
+                    if (databaseType != DatabaseType.Oracle)
                     {
                         DdlSqlDatabaseName.Items.Clear();
 
@@ -298,11 +299,11 @@ Disallow: /SiteFiles/");
 
         private string GetConnectionString(bool isDatabaseName)
         {
-            var databaseType = EDatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
+            var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
             var databaseName = string.Empty;
             if (isDatabaseName)
             {
-                databaseName = databaseType == EDatabaseType.Oracle ? TbSqlOracleDatabase.Text : DdlSqlDatabaseName.SelectedValue;
+                databaseName = databaseType == DatabaseType.Oracle ? TbSqlOracleDatabase.Text : DdlSqlDatabaseName.SelectedValue;
             }
             return SqlUtils.GetConnectionString(databaseType, TbSqlServer.Text, TranslateUtils.ToBool(DdlIsDefaultPort.SelectedValue), TranslateUtils.ToInt(TbSqlPort.Text), TbSqlUserName.Text, HihSqlHiddenPassword.Value, databaseName);
         }
@@ -371,7 +372,7 @@ Disallow: /SiteFiles/");
             try
             {
                 var isProtectData = TranslateUtils.ToBool(DdlIsProtectData.SelectedValue);
-                var databaseType = EDatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
+                var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
                 var connectionString = GetConnectionString(true);
 
                 WebConfigUtils.UpdateWebConfig(isProtectData, databaseType, connectionString, "siteserver", "vEnfkn16t8aeaZKG3a4Gl9UUlzf4vgqU9xwh8ZV5");

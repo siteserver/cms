@@ -988,7 +988,7 @@ namespace SiteServer.CMS.Core
             var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, nodeId);
             if (nodeInfo.ParentId == 0)
             {
-                var templateInfo = TemplateManager.GetDefaultTemplateInfo(siteInfo.Id, ETemplateType.IndexPageTemplate);
+                var templateInfo = TemplateManager.GetDefaultTemplateInfo(siteInfo.Id, TemplateType.IndexPageTemplate);
                 return GetIndexPageFilePath(siteInfo, templateInfo.CreatedFileFullName, siteInfo.IsRoot, currentPageIndex);
             }
             var filePath = nodeInfo.FilePath;

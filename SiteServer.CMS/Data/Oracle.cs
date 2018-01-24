@@ -3,7 +3,7 @@ using System.Data;
 using System.IO;
 using System.Xml;
 using Oracle.ManagedDataAccess.Client;
-using SiteServer.Plugin.Apis;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Data

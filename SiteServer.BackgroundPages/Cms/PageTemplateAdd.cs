@@ -6,7 +6,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -27,15 +27,15 @@ namespace SiteServer.BackgroundPages.Cms
         public PlaceHolder PhCodeMirror;
         public Button BtnEditorType;
 
-		private ETemplateType _templateType = ETemplateType.IndexPageTemplate;
+		private TemplateType _templateType = TemplateType.IndexPageTemplate;
         private bool _isCopy;
 
-        public static string GetRedirectUrl(int siteId, int templateId, ETemplateType templateType)
+        public static string GetRedirectUrl(int siteId, int templateId, TemplateType templateType)
         {
             return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateAdd), new NameValueCollection
             {
                 {"TemplateID", templateId.ToString()},
-                {"TemplateType", ETemplateTypeUtils.GetValue(templateType)}
+                {"TemplateType", TemplateTypeUtils.GetValue(templateType)}
             });
         }
 
@@ -76,10 +76,10 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                _templateType = ETemplateTypeUtils.GetEnumType(Request.QueryString["TemplateType"]);
+                _templateType = TemplateTypeUtils.GetEnumType(Request.QueryString["TemplateType"]);
             }
 
-            if (_templateType == ETemplateType.IndexPageTemplate || _templateType == ETemplateType.FileTemplate)
+            if (_templateType == TemplateType.IndexPageTemplate || _templateType == TemplateType.FileTemplate)
             {
                 PhCreatedFileFullName.Visible = true;
             }
@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(AppManager.Permissions.WebSite.Template);
 
-            LtlTemplateType.Text = ETemplateTypeUtils.GetText(_templateType);
+            LtlTemplateType.Text = TemplateType.GetText(_templateType);
 
             LtlPageTitle.Text = Body.GetQueryInt("TemplateID") > 0 ? "编辑模板" : "添加模板";
 
@@ -140,12 +140,12 @@ namespace SiteServer.BackgroundPages.Cms
                 ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, ECharsetUtils.GetValue(templateInfo.Charset));
 
                 ControlUtils.SelectSingleItem(DdlCreatedFileExtName, GetTemplateFileExtension(templateInfo));
-                HihTemplateType.Value = ETemplateTypeUtils.GetValue(templateInfo.TemplateType);
+                HihTemplateType.Value = TemplateTypeUtils.GetValue(templateInfo.TemplateType);
             }
             else
             {
                 TbRelatedFileName.Text = "T_";
-                TbCreatedFileFullName.Text = _templateType == ETemplateType.ChannelTemplate ? "index" : "@/";
+                TbCreatedFileFullName.Text = _templateType == TemplateType.ChannelTemplate ? "index" : "@/";
                 ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, SiteInfo.Additional.Charset);
                 ControlUtils.SelectSingleItem(DdlCreatedFileExtName, EFileSystemTypeUtils.GetValue(EFileSystemType.Html));
                 HihTemplateType.Value = Body.GetQueryString("TemplateType");
@@ -169,7 +169,7 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 		    if (!Page.IsPostBack || !Page.IsValid) return;
 
-		    if (_templateType != ETemplateType.ChannelTemplate)
+		    if (_templateType != TemplateType.ChannelTemplate)
 		    {
 		        if (!TbCreatedFileFullName.Text.StartsWith("~") && !TbCreatedFileFullName.Text.StartsWith("@"))
 		        {
@@ -237,20 +237,20 @@ namespace SiteServer.BackgroundPages.Cms
 		        CreatePages(templateInfo);
 
 		        Body.AddSiteLog(SiteId,
-		            $"修改{ETemplateTypeUtils.GetText(templateInfo.TemplateType)}",
+		            $"修改{TemplateType.GetText(templateInfo.TemplateType)}",
 		            $"模板名称:{templateInfo.TemplateName}");
 
 		        SuccessMessage("模板修改成功！");
 		    }
 		    else
 		    {
-		        var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(SiteId, ETemplateTypeUtils.GetEnumType(HihTemplateType.Value));
+		        var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(SiteId, TemplateTypeUtils.GetEnumType(HihTemplateType.Value));
 		        if (templateNameList.IndexOf(TbTemplateName.Text) != -1)
 		        {
 		            FailMessage("模板添加失败，模板名称已存在！");
 		            return;
 		        }
-		        var fileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(SiteId, ETemplateTypeUtils.GetEnumType(HihTemplateType.Value));
+		        var fileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(SiteId, TemplateTypeUtils.GetEnumType(HihTemplateType.Value));
 		        if (fileNameList.IndexOf(TbRelatedFileName.Text.ToLower()) != -1)
 		        {
 		            FailMessage("模板添加失败，模板文件已存在！");
@@ -261,7 +261,7 @@ namespace SiteServer.BackgroundPages.Cms
 		        {
 		            SiteId = SiteId,
 		            TemplateName = TbTemplateName.Text,
-		            TemplateType = ETemplateTypeUtils.GetEnumType(HihTemplateType.Value),
+		            TemplateType = TemplateTypeUtils.GetEnumType(HihTemplateType.Value),
 		            RelatedFileName = TbRelatedFileName.Text + DdlCreatedFileExtName.SelectedValue,
 		            CreatedFileExtName = DdlCreatedFileExtName.SelectedValue,
 		            CreatedFileFullName = TbCreatedFileFullName.Text + DdlCreatedFileExtName.SelectedValue,
@@ -272,7 +272,7 @@ namespace SiteServer.BackgroundPages.Cms
 		        templateInfo.Id = DataProvider.TemplateDao.Insert(templateInfo, TbContent.Text, Body.AdminName);
 		        CreatePages(templateInfo);
 		        Body.AddSiteLog(SiteId,
-		            $"添加{ETemplateTypeUtils.GetText(templateInfo.TemplateType)}",
+		            $"添加{TemplateType.GetText(templateInfo.TemplateType)}",
 		            $"模板名称:{templateInfo.TemplateName}");
 		        SuccessMessage("模板添加成功！");
 		        AddWaitAndRedirectScript(PageTemplate.GetRedirectUrl(SiteId));
@@ -286,11 +286,11 @@ namespace SiteServer.BackgroundPages.Cms
 
         private void CreatePages(TemplateInfo templateInfo)
         {
-            if (templateInfo.TemplateType == ETemplateType.FileTemplate)
+            if (templateInfo.TemplateType == TemplateType.FileTemplate)
             {
                 CreateManager.CreateFile(SiteId, templateInfo.Id);
             }
-            else if (templateInfo.TemplateType == ETemplateType.IndexPageTemplate)
+            else if (templateInfo.TemplateType == TemplateType.IndexPageTemplate)
             {
                 if (templateInfo.IsDefault)
                 {
@@ -302,7 +302,7 @@ namespace SiteServer.BackgroundPages.Cms
         private static string GetTemplateFileExtension(TemplateInfo templateInfo)
         {
             string extension;
-            if (templateInfo.TemplateType == ETemplateType.IndexPageTemplate || templateInfo.TemplateType == ETemplateType.FileTemplate)
+            if (templateInfo.TemplateType == TemplateType.IndexPageTemplate || templateInfo.TemplateType == TemplateType.FileTemplate)
             {
                 extension = PathUtils.GetExtension(templateInfo.CreatedFileFullName);
             }

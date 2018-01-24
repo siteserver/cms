@@ -8,7 +8,6 @@ using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser.Cache;
-using SiteServer.Plugin.Features;
 
 namespace SiteServer.CMS.Core
 {
@@ -143,16 +142,16 @@ namespace SiteServer.CMS.Core
             return nodeInfo != null ? GetTableName(siteInfo, nodeInfo.ContentModelPluginId) : string.Empty;
         }
 
-        public static string GetTableName(SiteInfo siteInfo, string contentModelId)
+        public static string GetTableName(SiteInfo siteInfo, string pluginId)
         {
             var tableName = siteInfo.TableName;
 
-            if (string.IsNullOrEmpty(contentModelId)) return tableName;
+            if (string.IsNullOrEmpty(pluginId)) return tableName;
 
-            var contentTable = PluginManager.GetEnabledFeature<IContentModel>(contentModelId);
-            if (!string.IsNullOrEmpty(contentTable?.ContentTableName))
+            var contentTable = PluginContentTableManager.GetTableName(pluginId);
+            if (!string.IsNullOrEmpty(contentTable))
             {
-                tableName = contentTable.ContentTableName;
+                tableName = contentTable;
             }
 
             return tableName;
@@ -182,15 +181,8 @@ namespace SiteServer.CMS.Core
         {
             if (string.IsNullOrEmpty(nodeInfo.ContentModelPluginId)) return false;
 
-            var retval = false;
-
-            var contentTable = PluginManager.GetEnabledPluginMetadata<IContentModel>(nodeInfo.ContentModelPluginId);
-            if (contentTable != null)
-            {
-                retval = true;
-            }
-
-            return retval;
+            var contentTable = PluginContentTableManager.GetTableName(nodeInfo.ContentModelPluginId);
+            return !string.IsNullOrEmpty(contentTable);
         }
 
         public static string GetNodeTreeLastImageHtml(SiteInfo siteInfo, ChannelInfo nodeInfo)
@@ -214,11 +206,10 @@ namespace SiteServer.CMS.Core
             }
             if (!string.IsNullOrEmpty(nodeInfo.ContentRelatedPluginIds))
             {
-                var plugins = PluginManager.GetContentRelatedPlugins(nodeInfo, false);
-                foreach (var plugin in plugins)
+                foreach (var service in PluginContentManager.GetContentPlugins(nodeInfo, false))
                 {
                     imageHtml +=
-                        $@"<img align=""absmiddle"" title=""插件：{plugin.Title}"" border=""0"" src=""{PluginManager.GetPluginIconUrl(plugin)}"" width=""18"" height=""18"" />";
+                        $@"<img align=""absmiddle"" title=""插件：{service.Metadata.Title}"" border=""0"" src=""{PluginManager.GetPluginIconUrl(service)}"" width=""18"" height=""18"" />";
                 }
             }
             return imageHtml;

@@ -13,7 +13,7 @@ using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin.Features;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -41,7 +41,7 @@ namespace SiteServer.BackgroundPages.Cms
         private ChannelInfo _nodeInfo;
         private List<TableStyleInfo> _styleInfoList;
         private string _tableName;
-        private Dictionary<string, IContentRelated> _plugins;
+        private Dictionary<string, Dictionary<string, Func<int, int, IAttributes, string>>> _plugins;
 
         protected override bool IsSinglePage => true;
 
@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
             _nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, channelId);
             _tableName = ChannelManager.GetTableName(SiteInfo, _nodeInfo);
-            _plugins = PluginManager.GetContentRelatedFeatures(_nodeInfo);
+            _plugins = PluginContentManager.GetContentFormCustomized(_nodeInfo);
             ContentInfo contentInfo = null;
             _styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, relatedIdentities);
 
@@ -288,10 +288,17 @@ var previewUrl = '{PreviewApi.GetContentUrl(SiteId, _nodeInfo.Id, contentId)}';
                     contentInfo.IsChecked = contentInfo.CheckedLevel >= SiteInfo.Additional.CheckContentLevel;
                     contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagCollection, " ");
 
-                    foreach (var pluginId in _plugins.Keys)
+                    foreach (var service in PluginManager.Services)
                     {
-                        var pluginChannel = _plugins[pluginId];
-                        pluginChannel.ContentFormSubmited?.Invoke(SiteId, _nodeInfo.Id, contentInfo, Request.Form);
+                        try
+                        {
+                            service.OnContentFormSubmited(new ContentFormSubmitedEventArgs(SiteId, _nodeInfo.Id,
+                                contentInfo, Request.Form));
+                        }
+                        catch (Exception ex)
+                        {
+                            LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmited));
+                        }
                     }
 
                     if (isPreview)
@@ -374,10 +381,17 @@ var previewUrl = '{PreviewApi.GetContentUrl(SiteId, _nodeInfo.Id, contentId)}';
                     }
                     contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagCollection, " ");
 
-                    foreach (var pluginId in _plugins.Keys)
+                    foreach (var service in PluginManager.Services)
                     {
-                        var pluginChannel = _plugins[pluginId];
-                        pluginChannel.ContentFormSubmited?.Invoke(SiteId, _nodeInfo.Id, contentInfo, Request.Form);
+                        try
+                        {
+                            service.OnContentFormSubmited(new ContentFormSubmitedEventArgs(SiteId, _nodeInfo.Id,
+                                contentInfo, Request.Form));
+                        }
+                        catch (Exception ex)
+                        {
+                            LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmited));
+                        }
                     }
 
                     DataProvider.ContentDao.Update(_tableName, SiteInfo, contentInfo);

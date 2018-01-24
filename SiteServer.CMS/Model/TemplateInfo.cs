@@ -1,5 +1,5 @@
 using System;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Model
@@ -10,7 +10,7 @@ namespace SiteServer.CMS.Model
 		private int _id;
 		private int _siteId;
 		private string _templateName;
-		private ETemplateType _templateType;
+		private TemplateType _templateType;
 		private string _relatedFileName;
         private string _createdFileFullName;
         private string _createdFileExtName;
@@ -22,7 +22,7 @@ namespace SiteServer.CMS.Model
             _id = 0;
 			_siteId = 0;
 			_templateName = string.Empty;
-			_templateType = ETemplateType.ContentTemplate;
+			_templateType = TemplateType.ContentTemplate;
 			_relatedFileName = string.Empty;
             _createdFileFullName = string.Empty;
             _createdFileExtName = string.Empty;
@@ -30,7 +30,7 @@ namespace SiteServer.CMS.Model
 			_isDefault = false;
 		}
 
-        public TemplateInfo(int id, int siteId, string templateName, ETemplateType templateType, string relatedFileName, string createdFileFullName, string createdFileExtName, ECharset charset, bool isDefault) 
+        public TemplateInfo(int id, int siteId, string templateName, TemplateType templateType, string relatedFileName, string createdFileFullName, string createdFileExtName, ECharset charset, bool isDefault) 
 		{
             _id = id;
 			_siteId = siteId;
@@ -61,7 +61,7 @@ namespace SiteServer.CMS.Model
 			set{ _templateName = value; }
 		}
 
-		public ETemplateType TemplateType
+		public TemplateType TemplateType
 		{
 			get{ return _templateType; }
 			set{ _templateType = value; }

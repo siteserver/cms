@@ -6,7 +6,6 @@ using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
-using SiteServer.Plugin.Apis;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
@@ -33,7 +32,7 @@ namespace SiteServer.CMS.Plugin.Apis
             var templateInfo = new TemplateInfo
             {
                 Id = context.TemplateId,
-                TemplateType = ETemplateTypeUtils.GetEnumType(context.TemplateType)
+                TemplateType = context.TemplateType
             };
             var pageInfo = new PageInfo(context.ChannelId, context.ContentId, siteInfo, templateInfo);
             var contextInfo = new ContextInfo(pageInfo);
@@ -54,7 +53,7 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             var siteInfo = SiteManager.GetSiteInfo(context.SiteId);
             return StlUtility.GetStlCurrentUrl(siteInfo, context.ChannelId, context.ContentId,
-                context.ContentInfo, ETemplateTypeUtils.GetEnumType(context.TemplateType), context.TemplateId, false);
+                context.ContentInfo, context.TemplateType, context.TemplateId, false);
         }
     }
 }

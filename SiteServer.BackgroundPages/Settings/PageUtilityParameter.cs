@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -32,7 +31,7 @@ namespace SiteServer.BackgroundPages.Settings
                 new KeyValuePair<string, string>(".NET版本", Environment.Version.ToString()),
                 new KeyValuePair<string, string>("SiteServer CMS 版本", AppManager.GetFullVersion()),
                 new KeyValuePair<string, string>("最近升级时间", DateUtils.GetDateAndTimeString(ConfigManager.Instance.UpdateDate)),
-                new KeyValuePair<string, string>("数据库类型", EDatabaseTypeUtils.GetValue(WebConfigUtils.DatabaseType)),
+                new KeyValuePair<string, string>("数据库类型", WebConfigUtils.DatabaseType.Value),
                 new KeyValuePair<string, string>("数据库名称", SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             };
 

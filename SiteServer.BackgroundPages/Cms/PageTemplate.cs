@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -22,11 +22,11 @@ namespace SiteServer.BackgroundPages.Cms
             return PageUtils.GetCmsUrl(siteId, nameof(PageTemplate), null);
         }
 
-        public static string GetRedirectUrl(int siteId, ETemplateType templateType)
+        public static string GetRedirectUrl(int siteId, TemplateType templateType)
         {
             return PageUtils.GetCmsUrl(siteId, nameof(PageTemplate), new NameValueCollection
             {
-                {"templateType", ETemplateTypeUtils.GetValue(templateType)}
+                {"templateType", TemplateTypeUtils.GetValue(templateType)}
             });
         }
 
@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
             VerifySitePermissions(AppManager.Permissions.WebSite.Template);
 
             DdlTemplateType.Items.Add(new ListItem("<所有类型>", string.Empty));
-            ETemplateTypeUtils.AddListItems(DdlTemplateType);
+            TemplateTypeUtils.AddListItems(DdlTemplateType);
             ControlUtils.SelectSingleItem(DdlTemplateType, _templateType);
 
             TbKeywords.Text = _keywords;
@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         DataProvider.TemplateDao.Delete(SiteId, templateId);
                         Body.AddSiteLog(SiteId,
-                            $"删除{ETemplateTypeUtils.GetText(templateInfo.TemplateType)}",
+                            $"删除{TemplateType.GetText(templateInfo.TemplateType)}",
                             $"模板名称:{templateInfo.TemplateName}");
                     }
                     SuccessDeleteMessage();
@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         DataProvider.TemplateDao.SetDefault(SiteId, templateId);
                         Body.AddSiteLog(SiteId,
-                            $"设置默认{ETemplateTypeUtils.GetText(templateInfo.TemplateType)}",
+                            $"设置默认{TemplateType.GetText(templateInfo.TemplateType)}",
                             $"模板名称:{templateInfo.TemplateName}");
                     }
                     SuccessMessage();
@@ -95,17 +95,17 @@ namespace SiteServer.BackgroundPages.Cms
             if (string.IsNullOrEmpty(_templateType))
             {
                 LtlCommands.Text = $@"
-<input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(SiteId, 0, ETemplateType.IndexPageTemplate)}';"" value=""添加首页模板"" />
-<input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(SiteId, 0, ETemplateType.ChannelTemplate)}';"" value=""添加栏目模板"" />
-<input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(SiteId, 0, ETemplateType.ContentTemplate)}';"" value=""添加内容模板"" />
-<input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(SiteId, 0, ETemplateType.FileTemplate)}';"" value=""添加单页模板"" />
+<input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(SiteId, 0, TemplateType.IndexPageTemplate)}';"" value=""添加首页模板"" />
+<input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(SiteId, 0, TemplateType.ChannelTemplate)}';"" value=""添加栏目模板"" />
+<input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(SiteId, 0, TemplateType.ContentTemplate)}';"" value=""添加内容模板"" />
+<input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(SiteId, 0, TemplateType.FileTemplate)}';"" value=""添加单页模板"" />
 ";
             }
             else
             {
-                var eTemplateType = ETemplateTypeUtils.GetEnumType(_templateType);
+                var templateType = TemplateTypeUtils.GetEnumType(_templateType);
                 LtlCommands.Text = $@"
-<input type=""button"" class=""btn btn-success"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(SiteId, 0, eTemplateType)}';"" value=""添加{ETemplateTypeUtils.GetText(eTemplateType)}"" />
+<input type=""button"" class=""btn btn-success"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(SiteId, 0, templateType)}';"" value=""添加{TemplateType.GetText(templateType)}"" />
 ";
             }
 
@@ -137,7 +137,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
             var templateId = SqlUtils.EvalInt(e.Item.DataItem, "TemplateID");
-            var templateType = ETemplateTypeUtils.GetEnumType(SqlUtils.EvalString(e.Item.DataItem, "TemplateType"));
+            var templateType = TemplateTypeUtils.GetEnumType(SqlUtils.EvalString(e.Item.DataItem, "TemplateType"));
             var templateName = SqlUtils.EvalString(e.Item.DataItem, "TemplateName");
             var relatedFileName = SqlUtils.EvalString(e.Item.DataItem, "RelatedFileName");
             var createdFileFullName = SqlUtils.EvalString(e.Item.DataItem, "CreatedFileFullName");
@@ -158,7 +158,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlTemplateName.Text = $@"<a href=""{templateAddUrl}"">{templateName}</a>";
             ltlRelatedFileName.Text = relatedFileName;
 
-            if (templateType == ETemplateType.IndexPageTemplate || templateType == ETemplateType.FileTemplate)
+            if (templateType == TemplateType.IndexPageTemplate || templateType == TemplateType.FileTemplate)
             {
                 var url = PageUtility.ParseNavigationUrl(SiteInfo, createdFileFullName, false);
                 ltlFileName.Text = $"<a href='{url}' target='_blank'>{createdFileFullName}</a>";
@@ -166,9 +166,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             ltlUseCount.Text = DataProvider.ChannelDao.GetTemplateUseCount(SiteId, templateId, templateType, isDefault).ToString();
 
-            ltlTemplateType.Text = ETemplateTypeUtils.GetText(templateType);
+            ltlTemplateType.Text = TemplateType.GetText(templateType);
 
-            if (templateType != ETemplateType.FileTemplate)
+            if (templateType != TemplateType.FileTemplate)
             {
                 if (isDefault)
                 {

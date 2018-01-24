@@ -28,8 +28,8 @@ using System.Data.Common;
 using System.Reflection;
 using System.Xml;
 using SiteServer.CMS.Core;
+using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Data
 {
@@ -436,10 +436,10 @@ namespace SiteServer.CMS.Data
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException(nameof(commandText));
-            if (WebConfigUtils.DatabaseType != EDatabaseType.SqlServer)
+            if (WebConfigUtils.DatabaseType != DatabaseType.SqlServer)
             {
                 commandText = commandText.Replace("[", string.Empty).Replace("]", string.Empty);
-                if (WebConfigUtils.DatabaseType == EDatabaseType.Oracle)
+                if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
                 {
                     commandText = commandText.Replace("@", ":");
                 }
@@ -833,29 +833,69 @@ namespace SiteServer.CMS.Data
 
             var id = 0;
 
-            switch (WebConfigUtils.DatabaseType)
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    ExecuteNonQuery(trans, commandText, commandParameters);
+                ExecuteNonQuery(trans, commandText, commandParameters);
 
-                    using (var rdr = ExecuteReader(trans, $"SELECT @@IDENTITY AS '{idColumnName}'"))
+                using (var rdr = ExecuteReader(trans, $"SELECT @@IDENTITY AS '{idColumnName}'"))
+                {
+                    if (rdr.Read() && !rdr.IsDBNull(0))
                     {
-                        if (rdr.Read() && !rdr.IsDBNull(0))
-                        {
-                            id = rdr.GetInt32(0);
-                        }
-                        rdr.Close();
+                        id = rdr.GetInt32(0);
                     }
+                    rdr.Close();
+                }
 
-                    if (id == 0)
+                if (id == 0)
+                {
+                    trans.Rollback();
+                }
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                ExecuteNonQuery(trans, commandText, commandParameters);
+
+                using (var rdr = ExecuteReader(trans, $"SELECT @@IDENTITY AS '{idColumnName}'"))
+                {
+                    if (rdr.Read() && !rdr.IsDBNull(0))
                     {
-                        trans.Rollback();
+                        id = Convert.ToInt32(rdr[0]);
                     }
-                    break;
-                case EDatabaseType.SqlServer:
-                    ExecuteNonQuery(trans, commandText, commandParameters);
+                    rdr.Close();
+                }
 
-                    using (var rdr = ExecuteReader(trans, $"SELECT @@IDENTITY AS '{idColumnName}'"))
+                if (id == 0)
+                {
+                    trans.Rollback();
+                }
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                commandText += " RETURNING " + idColumnName;
+
+                using (var rdr = ExecuteReader(trans, commandText, commandParameters))
+                {
+                    if (rdr.Read() && !rdr.IsDBNull(0))
+                    {
+                        id = rdr.GetInt32(0);
+                    }
+                    rdr.Close();
+                }
+
+                if (id == 0)
+                {
+                    trans.Rollback();
+                }
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                ExecuteNonQuery(trans, commandText, commandParameters);
+
+                var sequence = DataProvider.DatabaseDao.GetOracleSequence(tableName, idColumnName);
+
+                if (!string.IsNullOrEmpty(sequence))
+                {
+                    using (var rdr = ExecuteReader(trans, $"SELECT {sequence}.currval from dual"))
                     {
                         if (rdr.Read() && !rdr.IsDBNull(0))
                         {
@@ -863,53 +903,12 @@ namespace SiteServer.CMS.Data
                         }
                         rdr.Close();
                     }
+                }
 
-                    if (id == 0)
-                    {
-                        trans.Rollback();
-                    }
-                    break;
-                case EDatabaseType.PostgreSql:
-                    commandText += " RETURNING " + idColumnName;
-
-                    using (var rdr = ExecuteReader(trans, commandText, commandParameters))
-                    {
-                        if (rdr.Read() && !rdr.IsDBNull(0))
-                        {
-                            id = rdr.GetInt32(0);
-                        }
-                        rdr.Close();
-                    }
-
-                    if (id == 0)
-                    {
-                        trans.Rollback();
-                    }
-                    break;
-                case EDatabaseType.Oracle:
-                    ExecuteNonQuery(trans, commandText, commandParameters);
-
-                    var sequence = DataProvider.DatabaseDao.GetOracleSequence(tableName, idColumnName);
-
-                    if (!string.IsNullOrEmpty(sequence))
-                    {
-                        using (var rdr = ExecuteReader(trans, $"SELECT {sequence}.currval from dual"))
-                        {
-                            if (rdr.Read() && !rdr.IsDBNull(0))
-                            {
-                                id = Convert.ToInt32(rdr[0]);
-                            }
-                            rdr.Close();
-                        }
-                    }
-
-                    if (id == 0)
-                    {
-                        trans.Rollback();
-                    }
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                if (id == 0)
+                {
+                    trans.Rollback();
+                }
             }
 
             return id;

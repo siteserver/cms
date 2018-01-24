@@ -5,7 +5,7 @@ namespace SiteServer.CMS.Plugin.Model
 {
     public class PluginParseContext: IParseContext
     {
-        public PluginParseContext(Dictionary<string, string> attributes, string innerXml, int siteId, int channelId, int contentId, IContentInfo contentInfo, string templateType, int templateId)
+        public PluginParseContext(Dictionary<string, string> attributes, string innerXml, int siteId, int channelId, int contentId, IContentInfo contentInfo, TemplateType templateType, int templateId)
         {
             Attributes = attributes;
             InnerXml = innerXml;
@@ -23,7 +23,7 @@ namespace SiteServer.CMS.Plugin.Model
         public int ChannelId  { get; set; }
         public int ContentId { get; set; }
         public IContentInfo ContentInfo { get; set; }
-        public string TemplateType { get; set; }
+        public TemplateType TemplateType { get; set; }
         public int TemplateId { get; set; }
     }
 }

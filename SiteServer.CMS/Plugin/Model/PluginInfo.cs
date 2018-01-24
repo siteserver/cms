@@ -11,9 +11,10 @@ namespace SiteServer.CMS.Plugin.Model
             ErrorMessage = errorMessage;
         }
 
-        public PluginInfo(PluginContext context, IPlugin plugin, long initTime)
+        public PluginInfo(PluginContext context, PluginService service, IPlugin plugin, long initTime)
         {
             Context = context;
+            Service = service;
             Plugin = plugin;
             Metadata = Context.Metadata;
             Id = Metadata.Id;
@@ -29,6 +30,8 @@ namespace SiteServer.CMS.Plugin.Model
         public PluginContext Context { get; }
 
         public IPlugin Plugin { get; }
+
+        public PluginService Service { get; }
 
         public IMetadata Metadata { get; }
 

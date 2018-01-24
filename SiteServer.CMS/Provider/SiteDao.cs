@@ -9,7 +9,6 @@ using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
-using SiteServer.Plugin.Features;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Provider
@@ -292,8 +291,8 @@ namespace SiteServer.CMS.Provider
             var contentModelPluginIdList = DataProvider.ChannelDao.GetContentModelPluginIdList();
             foreach (var pluginId in contentModelPluginIdList)
             {
-                var plugin = PluginManager.GetEnabledFeature<IContentModel>(pluginId);
-                if (plugin != null && plugin.ContentTableName == tableName)
+                var service = PluginManager.GetService(pluginId);
+                if (service != null && PluginContentTableManager.IsContentTable(service) && service.ContentTableName == tableName)
                 {
                     return true;
                 }

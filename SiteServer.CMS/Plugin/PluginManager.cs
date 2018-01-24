@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -10,15 +9,10 @@ using SiteServer.Utils;
 using SiteServer.Utils.IO;
 using NuGet;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Apis;
 using SiteServer.CMS.Plugin.Core;
 using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
-using SiteServer.Plugin.Features;
-using SiteServer.Utils.Enumerations;
-using IFileSystem = SiteServer.Plugin.Features.IFileSystem;
 
 namespace SiteServer.CMS.Plugin
 {
@@ -48,7 +42,7 @@ namespace SiteServer.CMS.Plugin
 
             private static SortedList<string, PluginInfo> Load()
             {
-                Environment = new PluginEnvironment(EDatabaseTypeUtils.GetValue(WebConfigUtils.DatabaseType), WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath);
+                Environment = new PluginEnvironment(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath);
                 var dict = new SortedList<string, PluginInfo>();
 
                 Thread.Sleep(2000);
@@ -179,15 +173,14 @@ namespace SiteServer.CMS.Plugin
                     SiteApi = SiteApi.Instance,
                     UserApi = UserApi.Instance
                 };
-                plugin.PluginActive?.Invoke(context);
+                var service = new PluginService(metadata);
 
-                var contentModel = plugin as IContentModel;
-                PluginTableUtils.SyncContentModel(contentModel, metadata);
+                plugin.Startup(context, service);
 
-                var table = plugin as ITable;
-                PluginTableUtils.SyncTable(table, metadata);
+                PluginContentTableManager.SyncContentTable(service);
+                PluginDatabaseTableManager.SyncTable(service);
 
-                return new PluginInfo(context, plugin, s.ElapsedMilliseconds);
+                return new PluginInfo(context, service, plugin, s.ElapsedMilliseconds);
             }
 
             private static void Watcher_EventHandler(object sender, FileSystemEventArgs e)
@@ -343,6 +336,19 @@ namespace SiteServer.CMS.Plugin
                         .ToList();
         }
 
+        public static List<PluginService> Services
+        {
+            get
+            {
+                var dict = PluginManagerCache.GetPluginSortedList();
+
+                return dict.Values.Where(
+                            pluginInfo =>
+                                pluginInfo?.Metadata != null && pluginInfo.Plugin != null && !pluginInfo.IsDisabled
+                        ).Select(pluginInfo => pluginInfo.Service).ToList();
+            }
+        }
+
         public static PluginInfo GetPluginInfo(string pluginId)
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
@@ -441,87 +447,22 @@ namespace SiteServer.CMS.Plugin
             return pluginInfos.Select(pluginInfo => (T)pluginInfo.Plugin).ToList();
         }
 
-        public static List<PermissionConfig> GetTopPermissions()
+        public static PluginService GetService(string pluginId)
         {
-            var permissions = new List<PermissionConfig>();
-            foreach (var pluginInfo in GetEnabledPluginInfoList<IMenu>())
+            if (string.IsNullOrEmpty(pluginId)) return null;
+
+            foreach (var service in Services)
             {
-                permissions.Add(new PermissionConfig(pluginInfo.Id,
-                        $"系统管理 -> {pluginInfo.Metadata.Title}（插件）"));
-            }
-
-            return permissions;
-        }
-
-        public static List<PermissionConfig> GetSitePermissions(int siteId)
-        {
-            var pluginInfoList = GetEnabledPluginInfoList<IMenu>();
-            var permissions = new List<PermissionConfig>();
-
-            foreach (var pluginInfo in pluginInfoList)
-            {
-                permissions.Add(new PermissionConfig(pluginInfo.Id, $"{pluginInfo.Metadata.Title}（插件）"));
-            }
-
-            return permissions;
-        }
-
-        public static Dictionary<string, Menu> GetTopMenus()
-        {
-            var menus = new Dictionary<string, Menu>();
-
-            var pluginInfoList = GetEnabledPluginInfoList<IMenu>();
-            if (pluginInfoList != null && pluginInfoList.Count > 0)
-            {
-                foreach (var pluginInfo in pluginInfoList)
+                if (service.PluginId == pluginId)
                 {
-                    var feature = pluginInfo.Plugin as IMenu;
-                    if (feature == null) continue;
-
-                    try
-                    {
-                        var metadataMenu = feature.PluginMenu;
-                        var pluginMenu = GetMenu(pluginInfo.Id, 0, metadataMenu, 0);
-                        menus.Add(pluginInfo.Id, pluginMenu);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogUtils.AddPluginErrorLog(pluginInfo.Id, ex);
-                    }
+                    return service;
                 }
             }
 
-            return menus;
+            return null;
         }
 
-        public static Dictionary<string, Menu> GetSiteMenus(int siteId)
-        {
-            var pluginInfoList = GetEnabledPluginInfoList<IMenu>();
-            if (pluginInfoList == null || pluginInfoList.Count == 0) return null;
 
-            var menus = new Dictionary<string, Menu>();
-
-            foreach (var pluginInfo in pluginInfoList)
-            {
-                var feature = pluginInfo.Plugin as IMenu;
-
-                Menu metadataMenu = null;
-                try
-                {
-                    metadataMenu = feature?.SiteMenu?.Invoke(siteId);
-                }
-                catch (Exception ex)
-                {
-                    LogUtils.AddPluginErrorLog(pluginInfo.Id, ex);
-                }
-                if (metadataMenu == null) continue;
-                var pluginMenu = GetMenu(pluginInfo.Id, siteId, metadataMenu, 0);
-
-                menus.Add(pluginInfo.Id, pluginMenu);
-            }
-
-            return menus;
-        }
 
         //public static List<ContentModelInfo> GetAllContentModels(SiteInfo siteInfo)
         //{
@@ -560,89 +501,7 @@ namespace SiteServer.CMS.Plugin
         //    return contentModels;
         //}
 
-        public static List<IMetadata> GetContentModelPlugins()
-        {
-            var list = new List<IMetadata>();
 
-            var pluginInfoList = GetEnabledPluginInfoList<IContentModel>();
-            foreach (var pluginInfo in pluginInfoList)
-            {
-                var plugin = (IContentModel) pluginInfo.Plugin;
-
-                if (string.IsNullOrEmpty(plugin.ContentTableName) || plugin.ContentTableColumns == null || plugin.ContentTableColumns.Count == 0) continue;
-
-                list.Add(pluginInfo.Metadata);
-            }
-
-            return list;
-        }
-
-        public static List<IMetadata> GetAllContentRelatedPlugins(bool includeContentTable)
-        {
-            var list = new List<IMetadata>();
-
-            var pluginInfoList = GetEnabledPluginInfoList<IContentRelated>();
-            foreach (var pluginInfo in pluginInfoList)
-            {
-                if (!includeContentTable && pluginInfo.Plugin is IContentModel) continue;
-
-                list.Add(pluginInfo.Metadata);
-            }
-
-            return list;
-        }
-
-        public static List<IMetadata> GetContentRelatedPlugins(ChannelInfo nodeInfo, bool includeContentTable)
-        {
-            var list = new List<IMetadata>();
-            var pluginIds = TranslateUtils.StringCollectionToStringList(nodeInfo.ContentRelatedPluginIds);
-            if (!string.IsNullOrEmpty(nodeInfo.ContentModelPluginId))
-            {
-                pluginIds.Add(nodeInfo.ContentModelPluginId);
-            }
-
-            var pluginInfoList = GetEnabledPluginInfoList<IContentRelated>();
-            foreach (var pluginInfo in pluginInfoList)
-            {
-                var pluginId = pluginInfo.Id;
-                if (!pluginIds.Contains(pluginId)) continue;
-
-                if (!includeContentTable && pluginInfo.Plugin is IContentModel) continue;
-
-                list.Add(pluginInfo.Metadata);
-            }
-
-            return list;
-        }
-
-        public static Dictionary<string, IContentRelated> GetContentRelatedFeatures(ChannelInfo nodeInfo)
-        {
-            if (string.IsNullOrEmpty(nodeInfo.ContentRelatedPluginIds) &&
-                string.IsNullOrEmpty(nodeInfo.ContentModelPluginId))
-            {
-                return new Dictionary<string, IContentRelated>();
-            }
-
-            var dict = new Dictionary<string, IContentRelated>();
-            var pluginIds = TranslateUtils.StringCollectionToStringList(nodeInfo.ContentRelatedPluginIds);
-            if (!string.IsNullOrEmpty(nodeInfo.ContentModelPluginId))
-            {
-                pluginIds.Add(nodeInfo.ContentModelPluginId);
-            }
-
-            var pluginInfoList = GetEnabledPluginInfoList<IContentRelated>();
-            foreach (var pluginInfo in pluginInfoList)
-            {
-                var pluginId = pluginInfo.Id;
-                if (!pluginIds.Contains(pluginId)) continue;
-
-                var feature = (IContentRelated)pluginInfo.Plugin;
-
-                dict[pluginId] = feature;
-            }
-
-            return dict;
-        }
 
         //public static List<ContentModelInfo> GetAllContentModels(SiteInfo siteInfo)
         //{
@@ -692,72 +551,52 @@ namespace SiteServer.CMS.Plugin
         //    return contentModels;
         //}
 
-        public static Dictionary<string, Func<PluginParseContext, string>> GetParses()
-        {
-            var elementsToParse = new Dictionary<string, Func<PluginParseContext, string>>();
 
-            var plugins = GetEnabledFeatures<IParse>();
-            if (plugins != null && plugins.Count > 0)
-            {
-                foreach (var plugin in plugins)
-                {
-                    if (plugin.ElementsToParse != null && plugin.ElementsToParse.Count > 0)
-                    {
-                        foreach (var elementName in plugin.ElementsToParse.Keys)
-                        {
-                            elementsToParse[elementName.ToLower()] = plugin.ElementsToParse[elementName];
-                        }
-                    }
-                }
-            }
 
-            return elementsToParse;
-        }
+        //public static Dictionary<string, Func<PluginRenderContext, string>> GetRenders()
+        //{
+        //    var renders = new Dictionary<string, Func<PluginRenderContext, string>>();
 
-        public static Dictionary<string, Func<PluginRenderContext, string>> GetRenders()
-        {
-            var renders = new Dictionary<string, Func<PluginRenderContext, string>>();
+        //    var pluginInfoList = GetEnabledPluginInfoList<IRender>();
+        //    if (pluginInfoList != null && pluginInfoList.Count > 0)
+        //    {
+        //        foreach (var pluginInfo in pluginInfoList)
+        //        {
+        //            var plugin = pluginInfo.Plugin as IRender;
+        //            if (plugin?.Render != null)
+        //            {
+        //                renders.Add(pluginInfo.Metadata.Id, plugin.Render);
+        //            }
+        //            //if (!(pluginInfo.Plugin is IRender plugin)) continue;
 
-            var pluginInfoList = GetEnabledPluginInfoList<IRender>();
-            if (pluginInfoList != null && pluginInfoList.Count > 0)
-            {
-                foreach (var pluginInfo in pluginInfoList)
-                {
-                    var plugin = pluginInfo.Plugin as IRender;
-                    if (plugin?.Render != null)
-                    {
-                        renders.Add(pluginInfo.Metadata.Id, plugin.Render);
-                    }
-                    //if (!(pluginInfo.Plugin is IRender plugin)) continue;
+        //            //if (plugin.Render != null)
+        //            //{
+        //            //    renders.Add(pluginInfo.Metadata.Id, plugin.Render);
+        //            //}
+        //        }
+        //    }
 
-                    //if (plugin.Render != null)
-                    //{
-                    //    renders.Add(pluginInfo.Metadata.Id, plugin.Render);
-                    //}
-                }
-            }
+        //    return renders;
+        //}
 
-            return renders;
-        }
+        //public static List<Action<object, FileSystemEventArgs>> GetFileSystemChangedActions()
+        //{
+        //    var actions = new List<Action<object, FileSystemEventArgs>>();
 
-        public static List<Action<object, FileSystemEventArgs>> GetFileSystemChangedActions()
-        {
-            var actions = new List<Action<object, FileSystemEventArgs>>();
+        //    var plugins = GetEnabledFeatures<IFileSystem>();
+        //    if (plugins != null && plugins.Count > 0)
+        //    {
+        //        foreach (var plugin in plugins)
+        //        {
+        //            if (plugin.FileSystemChanged != null)
+        //            {
+        //                actions.Add(plugin.FileSystemChanged);
+        //            }
+        //        }
+        //    }
 
-            var plugins = GetEnabledFeatures<IFileSystem>();
-            if (plugins != null && plugins.Count > 0)
-            {
-                foreach (var plugin in plugins)
-                {
-                    if (plugin.FileSystemChanged != null)
-                    {
-                        actions.Add(plugin.FileSystemChanged);
-                    }
-                }
-            }
-
-            return actions;
-        }
+        //    return actions;
+        //}
 
         public static bool GetAndInstall(string pluginId, string version, out string errorMessage)
         {
@@ -1045,92 +884,26 @@ namespace SiteServer.CMS.Plugin
             return metadata;
         }
 
-        public static string GetPluginIconUrl(IMetadata metadata)
+        public static string GetPluginIconUrl(string pluginId)
+        {
+            foreach (var service in Services)
+            {
+                if (service.PluginId == pluginId)
+                {
+                    return GetPluginIconUrl(service);
+                }
+            }
+            return string.Empty;
+        }
+
+        public static string GetPluginIconUrl(PluginService service)
         {
             var url = string.Empty;
-            if (metadata.IconUrl != null)
+            if (service.Metadata.IconUrl != null)
             {
-                url = metadata.IconUrl.ToString();
-            }
-            return PageUtils.GetPluginDirectoryUrl(metadata.Id, url);
-        }
-
-        public static string GetMenuHref(string pluginId, string href, int siteId)
-        {
-            if (PageUtils.IsAbsoluteUrl(href))
-            {
-                return href;
-            }
-            var url = PageUtils.AddQueryString(PageUtils.GetPluginDirectoryUrl(pluginId, href), new NameValueCollection
-            {
-                {"apiUrl", PageUtils.AddProtocolToUrl(PageUtility.OuterApiUrl)},
-                {"v", StringUtils.GetRandomInt(1, 1000).ToString()}
-            });
-            if (siteId > 0)
-            {
-                url = PageUtils.AddQueryString(url, new NameValueCollection
-                {
-                    {"siteId", siteId.ToString()}
-                });
+                url = service.Metadata.IconUrl.ToString();
             }
             return url;
-        }
-
-        public static string GetMenuContentHref(string pluginId, string href, int siteId, int channelId, int contentId, string returnUrl)
-        {
-            if (PageUtils.IsAbsoluteUrl(href))
-            {
-                return href;
-            }
-            return PageUtils.AddQueryString(PageUtils.GetPluginDirectoryUrl(pluginId, href), new NameValueCollection
-            {
-                {"apiUrl", PageUtils.AddProtocolToUrl(PageUtility.OuterApiUrl)},
-                {"siteId", siteId.ToString()},
-                {"channelId", channelId.ToString()},
-                {"contentId", contentId.ToString()},
-                {"returnUrl", returnUrl},
-                {"v", StringUtils.GetRandomInt(1, 1000).ToString()}
-            });
-        }
-
-        internal static Menu GetMenu(string pluginId, int siteId, Menu metadataMenu, int i)
-        {
-            var menu = new Menu
-            {
-                Id = metadataMenu.Id,
-                Text = metadataMenu.Text,
-                Href = metadataMenu.Href,
-                Target = metadataMenu.Target,
-                IconClass = metadataMenu.IconClass
-            };
-
-            if (string.IsNullOrEmpty(menu.Id))
-            {
-                menu.Id = pluginId + i;
-            }
-            if (!string.IsNullOrEmpty(menu.Href))
-            {
-                menu.Href = GetMenuHref(pluginId, menu.Href, siteId);
-            }
-            if (string.IsNullOrEmpty(menu.Target))
-            {
-                menu.Target = "right";
-            }
-
-            if (metadataMenu.Menus != null && metadataMenu.Menus.Count > 0)
-            {
-                var chlildren = new List<Menu>();
-                var x = 1;
-                foreach (var childMetadataMenu in metadataMenu.Menus)
-                {
-                    var child = GetMenu(pluginId, siteId, childMetadataMenu, x++);
-
-                    chlildren.Add(child);
-                }
-                menu.Menus = chlildren;
-            }
-
-            return menu;
         }
     }
 }

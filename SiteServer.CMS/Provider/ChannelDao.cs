@@ -624,8 +624,8 @@ namespace SiteServer.CMS.Provider
         {
             if (siteId > 0 && parentId == 0) return 0;
 
-            var defaultChannelTemplateInfo = TemplateManager.GetDefaultTemplateInfo(siteId, ETemplateType.ChannelTemplate);
-            var defaultContentTemplateInfo = TemplateManager.GetDefaultTemplateInfo(siteId, ETemplateType.ContentTemplate);
+            var defaultChannelTemplateInfo = TemplateManager.GetDefaultTemplateInfo(siteId, TemplateType.ChannelTemplate);
+            var defaultContentTemplateInfo = TemplateManager.GetDefaultTemplateInfo(siteId, TemplateType.ContentTemplate);
 
             var channelInfo = new ChannelInfo
             {
@@ -667,8 +667,8 @@ namespace SiteServer.CMS.Provider
         {
             if (siteId > 0 && parentId == 0) return 0;
 
-            var defaultChannelTemplateInfo = TemplateManager.GetDefaultTemplateInfo(siteId, ETemplateType.ChannelTemplate);
-            var defaultContentTemplateInfo = TemplateManager.GetDefaultTemplateInfo(siteId, ETemplateType.ContentTemplate);
+            var defaultChannelTemplateInfo = TemplateManager.GetDefaultTemplateInfo(siteId, TemplateType.ChannelTemplate);
+            var defaultContentTemplateInfo = TemplateManager.GetDefaultTemplateInfo(siteId, TemplateType.ContentTemplate);
 
             var channelInfo = new ChannelInfo
             {
@@ -1983,11 +1983,11 @@ ORDER BY Taxis";
             return retval;
         }
 
-        public int GetTemplateUseCount(int siteId, int templateId, ETemplateType templateType, bool isDefault)
+        public int GetTemplateUseCount(int siteId, int templateId, TemplateType templateType, bool isDefault)
         {
             var sqlString = string.Empty;
 
-            if (templateType == ETemplateType.IndexPageTemplate)
+            if (templateType == TemplateType.IndexPageTemplate)
             {
                 if (isDefault)
                 {
@@ -1995,17 +1995,17 @@ ORDER BY Taxis";
                 }
                 return 0;
             }
-            if (templateType == ETemplateType.FileTemplate)
+            if (templateType == TemplateType.FileTemplate)
             {
                 return 1;
             }
-            if (templateType == ETemplateType.ChannelTemplate)
+            if (templateType == TemplateType.ChannelTemplate)
             {
                 sqlString = isDefault
                     ? $"SELECT COUNT(*) FROM {TableName} WHERE ({nameof(ChannelInfo.ChannelTemplateId)} = {templateId} OR {nameof(ChannelInfo.ChannelTemplateId)} = 0) AND {nameof(ChannelInfo.SiteId)} = {siteId}"
                     : $"SELECT COUNT(*) FROM {TableName} WHERE {nameof(ChannelInfo.ChannelTemplateId)} = {templateId} AND {nameof(ChannelInfo.SiteId)} = {siteId}";
             }
-            else if (templateType == ETemplateType.ContentTemplate)
+            else if (templateType == TemplateType.ContentTemplate)
             {
                 sqlString = isDefault
                     ? $"SELECT COUNT(*) FROM {TableName} WHERE ({nameof(ChannelInfo.ContentTemplateId)} = {templateId} OR {nameof(ChannelInfo.ContentTemplateId)} = 0) AND {nameof(ChannelInfo.SiteId)} = {siteId}"
@@ -2020,13 +2020,13 @@ ORDER BY Taxis";
             var list = new List<int>();
             var sqlString = string.Empty;
 
-            if (templateInfo.TemplateType == ETemplateType.ChannelTemplate)
+            if (templateInfo.TemplateType == TemplateType.ChannelTemplate)
             {
                 sqlString = templateInfo.IsDefault
                     ? $"SELECT {nameof(ChannelInfo.Id)} FROM {TableName} WHERE ({nameof(ChannelInfo.ChannelTemplateId)} = {templateInfo.Id} OR {nameof(ChannelInfo.ChannelTemplateId)} = 0) AND {nameof(ChannelInfo.SiteId)} = {templateInfo.SiteId}"
                     : $"SELECT {nameof(ChannelInfo.Id)} FROM {TableName} WHERE {nameof(ChannelInfo.ChannelTemplateId)} = {templateInfo.Id} AND {nameof(ChannelInfo.SiteId)} = {templateInfo.SiteId}";
             }
-            else if (templateInfo.TemplateType == ETemplateType.ContentTemplate)
+            else if (templateInfo.TemplateType == TemplateType.ContentTemplate)
             {
                 sqlString = templateInfo.IsDefault
                     ? $"SELECT {nameof(ChannelInfo.Id)} FROM {TableName} WHERE ({nameof(ChannelInfo.ContentTemplateId)} = {templateInfo.Id} OR {nameof(ChannelInfo.ContentTemplateId)} = 0) AND {nameof(ChannelInfo.SiteId)} = {templateInfo.SiteId}"

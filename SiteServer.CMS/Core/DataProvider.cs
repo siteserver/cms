@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Provider;
-using SiteServer.Plugin.Apis;
+using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
@@ -17,23 +15,23 @@ namespace SiteServer.CMS.Core
             {
                 if (_dataApi != null) return _dataApi;
 
-                switch (WebConfigUtils.DatabaseType)
+                if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
                 {
-                    case EDatabaseType.MySql:
-                        _dataApi = new Data.MySql();
-                        break;
-                    case EDatabaseType.SqlServer:
-                        _dataApi = new SqlServer();
-                        break;
-                    case EDatabaseType.PostgreSql:
-                        _dataApi = new PostgreSql();
-                        break;
-                    case EDatabaseType.Oracle:
-                        _dataApi = new Data.Oracle();
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    _dataApi = new Data.MySql();
                 }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+                {
+                    _dataApi = new SqlServer();
+                }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+                {
+                    _dataApi = new PostgreSql();
+                }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+                {
+                    _dataApi = new Data.Oracle();
+                }
+
                 return _dataApi;
             }
         }

@@ -7,7 +7,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Data
 {
@@ -29,7 +28,7 @@ namespace SiteServer.CMS.Data
             return SqlUtils.GetIDbConnection(WebConfigUtils.DatabaseType, connectionString);
         }
 
-        protected IDbConnection GetConnection(EDatabaseType databaseType, string connectionString)
+        protected IDbConnection GetConnection(DatabaseType databaseType, string connectionString)
         {
             return SqlUtils.GetIDbConnection(databaseType, connectionString);
         }

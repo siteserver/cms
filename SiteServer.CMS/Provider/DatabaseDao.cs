@@ -14,7 +14,6 @@ using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Provider
 {
@@ -22,11 +21,11 @@ namespace SiteServer.CMS.Provider
     {
         public virtual void DeleteDbLog()
         {
-            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
                 ExecuteSql("PURGE MASTER LOGS BEFORE DATE_SUB( NOW( ), INTERVAL 3 DAY)");
             }
-            else if (WebConfigUtils.DatabaseType == EDatabaseType.SqlServer)
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
                 var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
                 //检测数据库版本
@@ -450,7 +449,7 @@ namespace SiteServer.CMS.Provider
             //if (!string.IsNullOrEmpty(sortField) && addCustomSortInfo)
             //    SelectCommand += " ORDER BY " + SortField;
 
-            var cmdText = WebConfigUtils.DatabaseType == EDatabaseType.Oracle
+            var cmdText = WebConfigUtils.DatabaseType == DatabaseType.Oracle
                 ? $"SELECT COUNT(*) FROM ({sqlString})"
                 : $"SELECT COUNT(*) FROM ({sqlString}) AS T0";
             return GetIntResult(cmdText);
@@ -458,7 +457,7 @@ namespace SiteServer.CMS.Provider
 
         public string GetStlPageSqlString(string sqlString, string orderString, int totalCount, int itemsPerPage, int currentPageIndex)
         {
-            string retval;
+            var retval = string.Empty;
 
             var temp = sqlString.ToLower();
             var pos = temp.LastIndexOf("order by", StringComparison.Ordinal);
@@ -486,62 +485,61 @@ namespace SiteServer.CMS.Provider
             orderStringReverse = orderStringReverse.Replace(" ASC", " DESC");
             orderStringReverse = orderStringReverse.Replace(" DESC2", " ASC");
 
-//            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
-//            {
-//                return $@"
-//SELECT * FROM (
-//    SELECT * FROM (
-//        SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
-//    ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
-//) AS t2 {orderString}";
-//            }
-//            else
-//            {
-//                return $@"
-//SELECT * FROM (
-//    SELECT TOP {recsToRetrieve} * FROM (
-//        SELECT TOP {itemsPerPage * (currentPageIndex + 1)} * FROM ({sqlString}) AS t0 {orderString}
-//    ) AS t1 {orderStringReverse}
-//) AS t2 {orderString}";
-//            }
-
-            switch (WebConfigUtils.DatabaseType)
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $@"
+                retval = $@"
 SELECT * FROM (
     SELECT * FROM (
         SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
     ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
 ) AS t2 {orderString}";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $@"
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $@"
 SELECT * FROM (
     SELECT TOP {recsToRetrieve} * FROM (
         SELECT TOP {itemsPerPage * (currentPageIndex + 1)} * FROM ({sqlString}) AS t0 {orderString}
     ) AS t1 {orderStringReverse}
 ) AS t2 {orderString}";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $@"
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $@"
 SELECT * FROM (
     SELECT * FROM (
         SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
     ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
 ) AS t2 {orderString}";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $@"
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $@"
 SELECT * FROM (
     SELECT * FROM (
         SELECT * FROM ({sqlString}) WHERE ROWNUM <= {itemsPerPage * (currentPageIndex + 1)} {orderString}
     ) WHERE ROWNUM <= {recsToRetrieve} {orderStringReverse}
 ) {orderString}";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
+
+            //            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            //            {
+            //                return $@"
+            //SELECT * FROM (
+            //    SELECT * FROM (
+            //        SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
+            //    ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
+            //) AS t2 {orderString}";
+            //            }
+            //            else
+            //            {
+            //                return $@"
+            //SELECT * FROM (
+            //    SELECT TOP {recsToRetrieve} * FROM (
+            //        SELECT TOP {itemsPerPage * (currentPageIndex + 1)} * FROM ({sqlString}) AS t0 {orderString}
+            //    ) AS t1 {orderStringReverse}
+            //) AS t2 {orderString}";
+            //            }
 
             return retval;
         }
@@ -553,7 +551,7 @@ SELECT * FROM (
         //    DataProvider.TableDao.CreateAllAuxiliaryTableIfNotExists();
         //}
 
-        //public void Upgrade(EDatabaseType databaseType, StringBuilder errorBuilder)
+        //public void Upgrade(DatabaseType databaseType, StringBuilder errorBuilder)
         //{
         //    var filePathUpgrade = PathUtils.GetUpgradeSqlFilePath(databaseType, false);
         //    var filePathUpgradeTable = PathUtils.GetUpgradeSqlFilePath(databaseType, true);
@@ -579,7 +577,7 @@ SELECT * FROM (
         //    DataProvider.TableDao.CreateAllAuxiliaryTableIfNotExists();
         //}
 
-        public bool ConnectToServer(EDatabaseType databaseType, string connectionStringWithoutDatabaseName, out List<string> databaseNameList, out string errorMessage)
+        public bool ConnectToServer(DatabaseType databaseType, string connectionStringWithoutDatabaseName, out List<string> databaseNameList, out string errorMessage)
         {
             errorMessage = string.Empty;
             databaseNameList = new List<string>();
@@ -600,11 +598,11 @@ SELECT * FROM (
         {
             bool exists;
 
-            if (WebConfigUtils.DatabaseType == EDatabaseType.Oracle)
+            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
                 tableName = tableName.ToUpper();
             }
-            else if (WebConfigUtils.DatabaseType == EDatabaseType.MySql || WebConfigUtils.DatabaseType == EDatabaseType.PostgreSql)
+            else if (WebConfigUtils.DatabaseType == DatabaseType.MySql || WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
                 tableName = tableName.ToLower();
             }
@@ -612,7 +610,7 @@ SELECT * FROM (
             try
             {
                 // ANSI SQL way.  Works in PostgreSQL, MSSQL, MySQL.  
-                if (WebConfigUtils.DatabaseType != EDatabaseType.Oracle)
+                if (WebConfigUtils.DatabaseType != DatabaseType.Oracle)
                 {
                     exists = (int)ExecuteScalar($"select case when exists((select * from information_schema.tables where table_name = '{tableName}')) then 1 else 0 end") == 1;
                 }
@@ -662,11 +660,11 @@ SELECT * FROM (
                 }
 
                 //添加主键及索引
-                sqlBuilder.Append(WebConfigUtils.DatabaseType == EDatabaseType.MySql
+                sqlBuilder.Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
                     ? @"PRIMARY KEY (Id)"
                     : $@"CONSTRAINT PK_{tableName} PRIMARY KEY (Id)").AppendLine();
 
-                sqlBuilder.Append(WebConfigUtils.DatabaseType == EDatabaseType.MySql
+                sqlBuilder.Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
                     ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8"
                     : ")");
 
@@ -744,7 +742,7 @@ SELECT * FROM (
 
                 foreach (var tableColumn in primaryKeyColumns)
                 {
-                    sqlBuilder.Append(WebConfigUtils.DatabaseType == EDatabaseType.MySql
+                    sqlBuilder.Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
                         ? $@"PRIMARY KEY ({tableColumn.ColumnName}),"
                         : $@"CONSTRAINT PK_{tableName}_{tableColumn.ColumnName} PRIMARY KEY ({tableColumn.ColumnName}),");
                 }
@@ -753,7 +751,7 @@ SELECT * FROM (
                     sqlBuilder.Length--;
                 }
 
-                sqlBuilder.AppendLine().Append(WebConfigUtils.DatabaseType == EDatabaseType.MySql
+                sqlBuilder.AppendLine().Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
                     ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8"
                     : ")");
 
@@ -797,7 +795,7 @@ SELECT * FROM (
             }
         }
 
-        public List<string> GetDatabaseNameList(EDatabaseType databaseType, string connectionStringWithoutDatabaseName)
+        public List<string> GetDatabaseNameList(DatabaseType databaseType, string connectionStringWithoutDatabaseName)
         {
             if (string.IsNullOrEmpty(connectionStringWithoutDatabaseName))
             {
@@ -806,94 +804,85 @@ SELECT * FROM (
 
             var list = new List<string>();
 
-            switch (databaseType)
+            if (databaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
+                var connection = new MySqlConnection(connectionStringWithoutDatabaseName);
+                var command = new MySqlCommand("show databases", connection);
+
+                connection.Open();
+
+                var rdr = command.ExecuteReader();
+
+                while (rdr.Read())
                 {
-                    var connection = new MySqlConnection(connectionStringWithoutDatabaseName);
-                    var command = new MySqlCommand("show databases", connection);
-
-                    connection.Open();
-
-                    var rdr = command.ExecuteReader();
-
-                    while (rdr.Read())
+                    var dbName = rdr.GetString(0);
+                    if (dbName == null) continue;
+                    if (dbName != "information_schema" &&
+                        dbName != "mysql" &&
+                        dbName != "performance_schema" &&
+                        dbName != "sakila" &&
+                        dbName != "sys" &&
+                        dbName != "world")
                     {
-                        var dbName = rdr.GetString(0);
-                        if (dbName == null) continue;
-                        if (dbName != "information_schema" &&
-                            dbName != "mysql" &&
-                            dbName != "performance_schema" &&
-                            dbName != "sakila" &&
-                            dbName != "sys" &&
-                            dbName != "world")
-                        {
-                            list.Add(dbName);
-                        }
-                    }
-
-                    connection.Close();
-                }
-                    break;
-                case EDatabaseType.SqlServer:
-                {
-                    var connection = new SqlConnection(connectionStringWithoutDatabaseName);
-                    var command = new SqlCommand("select name from master..sysdatabases order by name asc", connection);
-
-                    connection.Open();
-
-                    connection.ChangeDatabase("master");
-
-                    var dr = command.ExecuteReader();
-
-                    while (dr.Read())
-                    {
-                        var dbName = dr["name"] as string;
-                        if (dbName == null) continue;
-                        if (dbName != "master" &&
-                            dbName != "msdb" &&
-                            dbName != "tempdb" &&
-                            dbName != "model")
-                        {
-                            list.Add(dbName);
-                        }
-                    }
-
-                    connection.Close();
-                }
-                    break;
-                case EDatabaseType.PostgreSql:
-                {
-                    var connection = new NpgsqlConnection(connectionStringWithoutDatabaseName);
-                    var command =
-                        new NpgsqlCommand(
-                            "select datname from pg_database where datistemplate = false order by datname asc",
-                            connection);
-
-                    connection.Open();
-
-                    var dr = command.ExecuteReader();
-
-                    while (dr.Read())
-                    {
-                        var dbName = dr["datname"] as string;
-                        if (dbName == null) continue;
-
                         list.Add(dbName);
                     }
+                }
 
-                    connection.Close();
-                }
-                    break;
-                case EDatabaseType.Oracle:
+                connection.Close();
+            }
+            else if (databaseType == DatabaseType.SqlServer)
+            {
+                var connection = new SqlConnection(connectionStringWithoutDatabaseName);
+                var command = new SqlCommand("select name from master..sysdatabases order by name asc", connection);
+
+                connection.Open();
+
+                connection.ChangeDatabase("master");
+
+                var dr = command.ExecuteReader();
+
+                while (dr.Read())
                 {
-                    var connection = new OracleConnection(connectionStringWithoutDatabaseName);
-                    connection.Open();
-                    connection.Close();
+                    var dbName = dr["name"] as string;
+                    if (dbName == null) continue;
+                    if (dbName != "master" &&
+                        dbName != "msdb" &&
+                        dbName != "tempdb" &&
+                        dbName != "model")
+                    {
+                        list.Add(dbName);
+                    }
                 }
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(databaseType), databaseType, null);
+
+                connection.Close();
+            }
+            else if (databaseType == DatabaseType.PostgreSql)
+            {
+                var connection = new NpgsqlConnection(connectionStringWithoutDatabaseName);
+                var command =
+                    new NpgsqlCommand(
+                        "select datname from pg_database where datistemplate = false order by datname asc",
+                        connection);
+
+                connection.Open();
+
+                var dr = command.ExecuteReader();
+
+                while (dr.Read())
+                {
+                    var dbName = dr["datname"] as string;
+                    if (dbName == null) continue;
+
+                    list.Add(dbName);
+                }
+
+                connection.Close();
+            }
+            else if (databaseType == DatabaseType.Oracle)
+            {
+                var connection = new OracleConnection(connectionStringWithoutDatabaseName);
+                connection.Open();
+                connection.Close();
             }
 
             return list;
@@ -924,7 +913,7 @@ SELECT * FROM (
 
         //public string GetTableId(string connectionString, string databaseName, string tableName)
         //{
-        //    if (WebConfigUtils.DatabaseType == EDatabaseType.MySql) return tableName;
+        //    if (WebConfigUtils.DatabaseType == DatabaseType.MySql) return tableName;
 
         //    if (string.IsNullOrEmpty(connectionString))
         //    {
@@ -954,7 +943,7 @@ SELECT * FROM (
 
         //public string GetTableName(string databaseName, string tableId)
         //{
-        //    if (WebConfigUtils.DatabaseType == EDatabaseType.MySql) return tableId;
+        //    if (WebConfigUtils.DatabaseType == DatabaseType.MySql) return tableId;
 
         //    var tableName = string.Empty;
         //    string cmd =
@@ -973,7 +962,7 @@ SELECT * FROM (
 
         //public string GetTableName(string connectionString, string databaseName, string tableId)
         //{
-        //    if (WebConfigUtils.DatabaseType == EDatabaseType.MySql) return tableId;
+        //    if (WebConfigUtils.DatabaseType == DatabaseType.MySql) return tableId;
 
         //    if (string.IsNullOrEmpty(connectionString))
         //    {
@@ -1021,24 +1010,23 @@ SELECT * FROM (
 
             var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, connectionString);
 
-            List<TableColumnInfo> list;
+            List<TableColumnInfo> list = null;
 
-            switch (WebConfigUtils.DatabaseType)
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    list = GetMySqlColumnsLowercase(connectionString, databaseName, tableName);
-                    break;
-                case EDatabaseType.SqlServer:
-                    list = GetSqlServerColumnsLowercase(connectionString, databaseName, tableName);
-                    break;
-                case EDatabaseType.PostgreSql:
-                    list = GetPostgreSqlColumnsLowercase(connectionString, databaseName, tableName);
-                    break;
-                case EDatabaseType.Oracle:
-                    list = GetOracleColumnsLowercase(connectionString, tableName);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                list = GetMySqlColumnsLowercase(connectionString, databaseName, tableName);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                list = GetSqlServerColumnsLowercase(connectionString, databaseName, tableName);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                list = GetPostgreSqlColumnsLowercase(connectionString, databaseName, tableName);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                list = GetOracleColumnsLowercase(connectionString, tableName);
             }
 
             return list;
@@ -1092,7 +1080,7 @@ SELECT * FROM (
                 while (rdr.Read())
                 {
                     var columnName = (rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0)).ToLower();
-                    var dataType = SqlUtils.ToDataType(EDatabaseType.Oracle, rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
+                    var dataType = SqlUtils.ToDataType(DatabaseType.Oracle, rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
                     var percision = rdr.IsDBNull(2) ? 0 : rdr.GetInt32(2);
                     var scale = rdr.IsDBNull(3) ? 0 : rdr.GetInt32(3);
                     var charLength = rdr.IsDBNull(4) ? 0 : rdr.GetInt32(4);
@@ -1152,7 +1140,7 @@ and au.constraint_type = 'P' and cu.table_name = '{tableName.ToUpper()}'";
                 while (rdr.Read())
                 {
                     var columnName = (rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0)).ToLower();
-                    var dataType = SqlUtils.ToDataType(EDatabaseType.PostgreSql, rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
+                    var dataType = SqlUtils.ToDataType(DatabaseType.PostgreSql, rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
                     var length = rdr.IsDBNull(2) ? 0 : rdr.GetInt32(2);
                     var columnDefault = rdr.IsDBNull(3) ? string.Empty : rdr.GetString(3);
 
@@ -1223,7 +1211,7 @@ and au.constraint_type = 'P' and cu.table_name = '{tableName.ToUpper()}'";
                     {
                         continue;
                     }
-                    var dataType = SqlUtils.ToDataType(EDatabaseType.SqlServer, rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
+                    var dataType = SqlUtils.ToDataType(DatabaseType.SqlServer, rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
                     var length = Convert.ToInt32(rdr.GetValue(2));
                     if (dataType == DataType.VarChar)
                     {
@@ -1283,7 +1271,7 @@ and au.constraint_type = 'P' and cu.table_name = '{tableName.ToUpper()}'";
                 while (rdr.Read())
                 {
                     var columnName = (rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0)).ToLower();
-                    var dataType = SqlUtils.ToDataType(EDatabaseType.MySql, rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
+                    var dataType = SqlUtils.ToDataType(DatabaseType.MySql, rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
                     var length = rdr.IsDBNull(2) || dataType == DataType.Text ? 0 : Convert.ToInt32(rdr.GetValue(2));
                     var isPrimaryKey = Convert.ToString(rdr.GetValue(3)) == "PRI";
 
@@ -1376,20 +1364,21 @@ and au.constraint_type = 'P' and cu.table_name = '{tableName.ToUpper()}'";
 
             var orderByStringOpposite = GetOrderByStringOpposite(orderByString);
 
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $@"
+                retval = $@"
 SELECT {columns} FROM (
     SELECT {columns} FROM (
         SELECT {columns} FROM {tableName} {whereString} {orderByString} LIMIT {topNum}
     ) AS tmp {orderByStringOpposite} LIMIT {totalNum}
 ) AS tmp {orderByString}
 ";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $@"
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $@"
 SELECT {columns}
 FROM (SELECT TOP {totalNum} {columns}
         FROM (SELECT TOP {topNum} {columns}
@@ -1397,27 +1386,26 @@ FROM (SELECT TOP {totalNum} {columns}
         {orderByStringOpposite}) tmp
 {orderByString}
 ";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $@"
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $@"
 SELECT {columns} FROM (
     SELECT {columns} FROM (
         SELECT {columns} FROM {tableName} {whereString} {orderByString} LIMIT {topNum}
     ) AS tmp {orderByStringOpposite} LIMIT {totalNum}
 ) AS tmp {orderByString}
 ";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $@"
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $@"
 SELECT {columns} FROM (
     SELECT {columns} FROM (
         SELECT {columns} FROM {tableName} {whereString} {orderByString} LIMIT {topNum}
     ) AS tmp {orderByStringOpposite} LIMIT {totalNum}
 ) AS tmp {orderByString}
 ";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
 
             return retval;
@@ -1434,7 +1422,7 @@ SELECT {columns} FROM (
             {
                 sqlString = SqlUtils.ToTopSqlString(queryString, orderByString, totalNum);
 
-                //sqlString = WebConfigUtils.DatabaseType == EDatabaseType.MySql ? $"SELECT * FROM ({queryString}) AS tmp {orderByString} LIMIT {totalNum}" : $"SELECT TOP {totalNum} * FROM ({queryString}) tmp {orderByString}";
+                //sqlString = WebConfigUtils.DatabaseType == DatabaseType.MySql ? $"SELECT * FROM ({queryString}) AS tmp {orderByString} LIMIT {totalNum}" : $"SELECT TOP {totalNum} * FROM ({queryString}) tmp {orderByString}";
             }
             else
             {
@@ -1493,19 +1481,20 @@ SELECT {columns} FROM (
 
             var orderByStringOpposite = GetOrderByStringOpposite(orderByString);
 
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $@"
+                retval = $@"
 SELECT * FROM (
     SELECT * FROM (
         SELECT * FROM ({queryString}) tmp {orderByString} LIMIT {topNum}
     ) AS tmp {orderByStringOpposite} LIMIT {totalNum}
 ) AS tmp {orderByString}";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $@"
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $@"
 SELECT *
 FROM (SELECT TOP {totalNum} *
         FROM (SELECT TOP {topNum} *
@@ -1513,17 +1502,19 @@ FROM (SELECT TOP {totalNum} *
         {orderByStringOpposite}) tmp
 {orderByString}
 ";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $@"
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $@"
 SELECT * FROM (
     SELECT * FROM (
         SELECT * FROM ({queryString}) tmp {orderByString} LIMIT {topNum}
     ) AS tmp {orderByStringOpposite} LIMIT {totalNum}
 ) AS tmp {orderByString}";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $@"
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $@"
 SELECT *
 FROM (SELECT TOP {totalNum} *
         FROM (SELECT TOP {topNum} *
@@ -1531,9 +1522,6 @@ FROM (SELECT TOP {totalNum} *
         {orderByStringOpposite}) tmp
 {orderByString}
 ";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
 
             return retval;
@@ -1568,27 +1556,27 @@ FROM (SELECT TOP {totalNum} *
         public List<string> GetDropColumnsSqlString(string tableName, string attributeName)
         {
             var sqlList = new List<string>();
-            switch (WebConfigUtils.DatabaseType)
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    sqlList.Add($"ALTER TABLE [{tableName}] DROP COLUMN [{attributeName}]");
-                    break;
-                case EDatabaseType.SqlServer:
-                    var defaultConstraintName = GetSqlServerDefaultConstraintName(tableName, attributeName);
-                    if (!string.IsNullOrEmpty(defaultConstraintName))
-                    {
-                        sqlList.Add($"ALTER TABLE [{tableName}] DROP CONSTRAINT [{defaultConstraintName}]");
-                    }
-                    sqlList.Add($"ALTER TABLE [{tableName}] DROP COLUMN [{attributeName}]");
-                    break;
-                case EDatabaseType.PostgreSql:
-                    sqlList.Add($"ALTER TABLE [{tableName}] DROP COLUMN [{attributeName}]");
-                    break;
-                case EDatabaseType.Oracle:
-                    sqlList.Add($"ALTER TABLE [{tableName}] DROP COLUMN [{attributeName}]");
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                sqlList.Add($"ALTER TABLE [{tableName}] DROP COLUMN [{attributeName}]");
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                var defaultConstraintName = GetSqlServerDefaultConstraintName(tableName, attributeName);
+                if (!string.IsNullOrEmpty(defaultConstraintName))
+                {
+                    sqlList.Add($"ALTER TABLE [{tableName}] DROP CONSTRAINT [{defaultConstraintName}]");
+                }
+                sqlList.Add($"ALTER TABLE [{tableName}] DROP COLUMN [{attributeName}]");
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                sqlList.Add($"ALTER TABLE [{tableName}] DROP COLUMN [{attributeName}]");
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                sqlList.Add($"ALTER TABLE [{tableName}] DROP COLUMN [{attributeName}]");
             }
 
             return sqlList;

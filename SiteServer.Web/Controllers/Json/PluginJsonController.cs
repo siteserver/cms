@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Controllers.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Model;
-using SiteServer.Plugin.Features;
 
 namespace SiteServer.API.Controllers.Json
 {
@@ -13,21 +11,19 @@ namespace SiteServer.API.Controllers.Json
     public class PluginJsonController : ApiController
     {
         [HttpGet, Route(PluginJsonApi.Route)]
-        public async Task<IHttpActionResult> Get(string pluginId)
+        public IHttpActionResult Get(string pluginId)
         {
             try
             {
                 var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var service = PluginManager.GetService(pluginId);
 
-                if (webApi?.JsonGet == null)
+                if (service?.JsonGet == null)
                 {
                     return NotFound();
                 }
 
-                var results = await Task.Run(() => webApi.JsonGet(context));
-
-                return Ok(results);
+                return Ok(service.JsonGet(context));
             }
             catch (Exception ex)
             {
@@ -42,14 +38,14 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var service = PluginManager.GetService(pluginId);
 
-                if (webApi?.JsonGetWithName == null)
+                if (service?.JsonGetWithName == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonGetWithName(context, name));
+                return Ok(service.JsonGetWithName(context, name));
             }
             catch (Exception ex)
             {
@@ -64,14 +60,14 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var service = PluginManager.GetService(pluginId);
 
-                if (webApi?.JsonGetWithNameAndId == null)
+                if (service?.JsonGetWithNameAndId == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonGetWithNameAndId(context, name, id));
+                return Ok(service.JsonGetWithNameAndId(context, name, id));
             }
             catch (Exception ex)
             {
@@ -86,14 +82,14 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var service = PluginManager.GetService(pluginId);
 
-                if (webApi?.JsonPost == null)
+                if (service?.JsonPost == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonPost(context));
+                return Ok(service.JsonPost(context));
             }
             catch (Exception ex)
             {
@@ -108,14 +104,14 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var service = PluginManager.GetService(pluginId);
 
-                if (webApi?.JsonPostWithName == null)
+                if (service?.JsonPostWithName == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonPostWithName(context, name));
+                return Ok(service.JsonPostWithName(context, name));
             }
             catch (Exception ex)
             {
@@ -130,14 +126,14 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var service = PluginManager.GetService(pluginId);
 
-                if (webApi?.JsonPostWithNameAndId == null)
+                if (service?.JsonPostWithNameAndId == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonPostWithNameAndId(context, name, id));
+                return Ok(service.JsonPostWithNameAndId(context, name, id));
             }
             catch (Exception ex)
             {
@@ -152,14 +148,14 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var service = PluginManager.GetService(pluginId);
 
-                if (webApi?.JsonPut == null)
+                if (service?.JsonPut == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonPut(context));
+                return Ok(service.JsonPut(context));
             }
             catch (Exception ex)
             {
@@ -174,14 +170,14 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var service = PluginManager.GetService(pluginId);
 
-                if (webApi?.JsonPutWithName == null)
+                if (service?.JsonPutWithName == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonPutWithName(context, name));
+                return Ok(service.JsonPutWithName(context, name));
             }
             catch (Exception ex)
             {
@@ -196,14 +192,14 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var service = PluginManager.GetService(pluginId);
 
-                if (webApi?.JsonPutWithNameAndId == null)
+                if (service?.JsonPutWithNameAndId == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonPutWithNameAndId(context, name, id));
+                return Ok(service.JsonPutWithNameAndId(context, name, id));
             }
             catch (Exception ex)
             {
@@ -218,14 +214,14 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var service = PluginManager.GetService(pluginId);
 
-                if (webApi?.JsonDelete == null)
+                if (service?.JsonDelete == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonDelete(context));
+                return Ok(service.JsonDelete(context));
             }
             catch (Exception ex)
             {
@@ -240,14 +236,14 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var service = PluginManager.GetService(pluginId);
 
-                if (webApi?.JsonDeleteWithName == null)
+                if (service?.JsonDeleteWithName == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonDeleteWithName(context, name));
+                return Ok(service.JsonDeleteWithName(context, name));
             }
             catch (Exception ex)
             {
@@ -262,86 +258,20 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var service = PluginManager.GetService(pluginId);
 
-                if (webApi?.JsonDeleteWithNameAndId == null)
+                if (service?.JsonDeleteWithNameAndId == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonDeleteWithNameAndId(context, name, id));
+                return Ok(service.JsonDeleteWithNameAndId(context, name, id));
             }
             catch (Exception ex)
             {
                 LogUtils.AddPluginErrorLog(pluginId, ex);
                 return BadRequest(ex.Message);
             }
-        }
-
-        [HttpPatch, Route(PluginJsonApi.Route)]
-        public IHttpActionResult Patch(string pluginId)
-        {
-            try
-            {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
-
-                if (webApi?.JsonPatch == null)
-                {
-                    return NotFound();
-                }
-
-                return Ok(webApi.JsonPatch(context));
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPatch, Route(PluginJsonApi.RouteName)]
-        public IHttpActionResult Patch(string pluginId, string name)
-        {
-            try
-            {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
-
-                if (webApi?.JsonPatchWithName == null)
-                {
-                    return NotFound();
-                }
-
-                return Ok(webApi.JsonPatchWithName(context, name));
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPatch, Route(PluginJsonApi.RouteNameAndId)]
-        public IHttpActionResult Patch(string pluginId, string name, string id)
-        {
-            try
-            {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
-
-                if (webApi?.JsonPatchWithNameAndId == null)
-                {
-                    return NotFound();
-                }
-
-                return Ok(webApi.JsonPatchWithNameAndId(context, name, id));
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
-                return BadRequest(ex.Message);
-            }
-        }
+        }        
     }
 }

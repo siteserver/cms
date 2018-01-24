@@ -5,11 +5,11 @@ using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
@@ -359,7 +359,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 htmlBuilder.Append("&nbsp;");
 
                 var nodeName = _nodeInfo.ChannelName;
-                if ((_pageInfo.TemplateInfo.TemplateType == ETemplateType.ChannelTemplate || _pageInfo.TemplateInfo.TemplateType == ETemplateType.ContentTemplate) && _pageInfo.PageNodeId == _nodeInfo.Id)
+                if ((_pageInfo.TemplateInfo.TemplateType == TemplateType.ChannelTemplate || _pageInfo.TemplateInfo.TemplateType == TemplateType.ContentTemplate) && _pageInfo.PageNodeId == _nodeInfo.Id)
                 {
                     nodeName = string.Format(_currentFormatString, nodeName);
                 }

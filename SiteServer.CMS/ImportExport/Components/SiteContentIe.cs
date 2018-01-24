@@ -9,8 +9,8 @@ using Atom.Core.Collections;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin.Model;
+using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.ImportExport.Components
@@ -323,12 +323,12 @@ namespace SiteServer.CMS.ImportExport.Components
             var channelTemplateName = AtomUtility.GetDcElementContent(additionalElements, ChannelTemplateName);
             if (!string.IsNullOrEmpty(channelTemplateName))
             {
-                nodeInfo.ChannelTemplateId = TemplateManager.GetTemplateIdByTemplateName(_siteInfo.Id, ETemplateType.ChannelTemplate, channelTemplateName);
+                nodeInfo.ChannelTemplateId = TemplateManager.GetTemplateIdByTemplateName(_siteInfo.Id, TemplateType.ChannelTemplate, channelTemplateName);
             }
             var contentTemplateName = AtomUtility.GetDcElementContent(additionalElements, ContentTemplateName);
             if (!string.IsNullOrEmpty(contentTemplateName))
             {
-                nodeInfo.ContentTemplateId = TemplateManager.GetTemplateIdByTemplateName(_siteInfo.Id, ETemplateType.ContentTemplate, contentTemplateName);
+                nodeInfo.ContentTemplateId = TemplateManager.GetTemplateIdByTemplateName(_siteInfo.Id, TemplateType.ContentTemplate, contentTemplateName);
             }
 
             nodeInfo.Keywords = AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.Keywords);

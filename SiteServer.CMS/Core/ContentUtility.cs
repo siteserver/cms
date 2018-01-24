@@ -350,20 +350,15 @@ namespace SiteServer.CMS.Core
                 }
             }
 
-            var pluginChannels = PluginManager.GetContentRelatedFeatures(channelInfo);
-            foreach (var pluginId in pluginChannels.Keys)
+            foreach (var service in PluginManager.Services)
             {
-                var pluginChannel = pluginChannels[pluginId];
-
-                if (pluginChannel.ContentAddCompleted == null) continue;
-
                 try
                 {
-                    pluginChannel.ContentAddCompleted(siteInfo.Id, channelInfo.Id, contentId);
+                    service.OnContentAddCompleted(new ContentEventArgs(siteInfo.Id, channelInfo.Id, contentId));
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddPluginErrorLog(pluginId, ex, "ContentAddCompleted");
+                    LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnContentAddCompleted));
                 }
             }
 
@@ -372,8 +367,8 @@ namespace SiteServer.CMS.Core
 
         public static void Translate(SiteInfo siteInfo, int nodeId, int contentId, string translateCollection, ETranslateContentType translateType, string administratorName)
         {
-            var translateArrayList = TranslateUtils.StringCollectionToStringList(translateCollection);
-            foreach (var translate in translateArrayList)
+            var translateList = TranslateUtils.StringCollectionToStringList(translateCollection);
+            foreach (var translate in translateList)
             {
                 if (string.IsNullOrEmpty(translate)) continue;
 
@@ -413,20 +408,15 @@ namespace SiteServer.CMS.Core
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
                 var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, contentInfo);
 
-                var pluginChannels = PluginManager.GetContentRelatedFeatures(channelInfo);
-                foreach (var pluginId in pluginChannels.Keys)
+                foreach (var service in PluginManager.Services)
                 {
-                    var pluginChannel = pluginChannels[pluginId];
-
-                    if (pluginChannel.ContentTranslateCompleted == null) continue;
-
                     try
                     {
-                        pluginChannel.ContentTranslateCompleted(siteInfo.Id, channelInfo.Id, contentId, targetSiteId, targetNodeId, theContentId);
+                        service.OnContentTranslateCompleted(new ContentTranslateEventArgs(siteInfo.Id, channelInfo.Id, contentId, targetSiteId, targetNodeId, theContentId));
                     }
                     catch (Exception ex)
                     {
-                        LogUtils.AddPluginErrorLog(pluginId, ex, "ContentTranslateCompleted");
+                        LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
                     }
                 }
 
@@ -451,32 +441,24 @@ namespace SiteServer.CMS.Core
                 DataProvider.ChannelDao.UpdateContentNum(siteInfo, nodeId, true);
                 DataProvider.ChannelDao.UpdateContentNum(targetSiteInfo, targetNodeId, true);
 
-                var pluginChannels = PluginManager.GetContentRelatedFeatures(channelInfo);
-                foreach (var pluginId in pluginChannels.Keys)
+                foreach (var service in PluginManager.Services)
                 {
-                    var pluginChannel = pluginChannels[pluginId];
-
-                    if (pluginChannel.ContentTranslateCompleted != null)
+                    try
                     {
-                        try
-                        {
-                            pluginChannel.ContentTranslateCompleted(siteInfo.Id, channelInfo.Id, contentId, targetSiteId, targetNodeId, newContentId);
-                        }
-                        catch (Exception ex)
-                        {
-                            LogUtils.AddPluginErrorLog(pluginId, ex, "ContentTranslateCompleted");
-                        }
+                        service.OnContentTranslateCompleted(new ContentTranslateEventArgs(siteInfo.Id, channelInfo.Id, contentId, targetSiteId, targetNodeId, newContentId));
                     }
-                    if (pluginChannel.ContentDeleteCompleted != null)
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            pluginChannel.ContentDeleteCompleted(siteInfo.Id, channelInfo.Id, contentId);
-                        }
-                        catch (Exception ex)
-                        {
-                            LogUtils.AddPluginErrorLog(pluginId, ex, "ContentDeleteCompleted");
-                        }
+                        LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
+                    }
+
+                    try
+                    {
+                        service.OnContentDeleteCompleted(new ContentEventArgs(siteInfo.Id, channelInfo.Id, contentId));
+                    }
+                    catch (Exception ex)
+                    {
+                        LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnContentDeleteCompleted));
                     }
                 }
 
@@ -510,20 +492,15 @@ namespace SiteServer.CMS.Core
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
                 var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, contentInfo);
 
-                var pluginChannels = PluginManager.GetContentRelatedFeatures(channelInfo);
-                foreach (var pluginId in pluginChannels.Keys)
+                foreach (var service in PluginManager.Services)
                 {
-                    var pluginChannel = pluginChannels[pluginId];
-
-                    if (pluginChannel.ContentTranslateCompleted == null) continue;
-
                     try
                     {
-                        pluginChannel.ContentTranslateCompleted(siteInfo.Id, channelInfo.Id, contentId, targetSiteId, targetNodeId, theContentId);
+                        service.OnContentTranslateCompleted(new ContentTranslateEventArgs(siteInfo.Id, channelInfo.Id, contentId, targetSiteId, targetNodeId, theContentId));
                     }
                     catch (Exception ex)
                     {
-                        LogUtils.AddPluginErrorLog(pluginId, ex, "ContentTranslateCompleted");
+                        LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
                     }
                 }
 

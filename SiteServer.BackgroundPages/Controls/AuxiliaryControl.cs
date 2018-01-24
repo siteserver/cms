@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
-using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
-using SiteServer.Plugin.Features;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -22,7 +20,7 @@ namespace SiteServer.BackgroundPages.Controls
 
         public List<TableStyleInfo> StyleInfoList { get; set; }
 
-        public Dictionary<string, IContentRelated> Plugins { get; set; }
+        public Dictionary<string, Dictionary<string, Func<int, int, IAttributes, string>>> Plugins { get; set; }
 
         protected override void Render(HtmlTextWriter output)
         {
@@ -33,15 +31,15 @@ namespace SiteServer.BackgroundPages.Controls
             var pluginFuncDictLowercase = new Dictionary<string, Func<int, int, IAttributes, string>>();
             foreach (var pluginId in Plugins.Keys)
             {
-                var plugin = Plugins[pluginId];
+                var dict = Plugins[pluginId];
 
-                if (plugin.ContentFormCustomized == null || plugin.ContentFormCustomized.Count == 0) continue;
+                if (dict == null || dict.Count == 0) continue;
 
-                foreach (var attributeName in plugin.ContentFormCustomized.Keys)
+                foreach (var attributeName in dict.Keys)
                 {
-                    if (!pluginFuncDictLowercase.ContainsKey(attributeName.ToLower()) && plugin.ContentFormCustomized[attributeName] != null)
+                    if (!pluginFuncDictLowercase.ContainsKey(attributeName.ToLower()) && dict[attributeName] != null)
                     {
-                        pluginFuncDictLowercase[attributeName.ToLower()] = plugin.ContentFormCustomized[attributeName];
+                        pluginFuncDictLowercase[attributeName.ToLower()] = dict[attributeName];
                     }
                 }
             }
@@ -63,18 +61,18 @@ namespace SiteServer.BackgroundPages.Controls
                         var formPluginId = string.Empty;
                         foreach (var pluginId in Plugins.Keys)
                         {
-                            var plugin = Plugins[pluginId];
+                            var dict = Plugins[pluginId];
 
-                            if (plugin.ContentFormCustomized == null || plugin.ContentFormCustomized.Count == 0) continue;
+                            if (dict == null || dict.Count == 0) continue;
 
-                            foreach (var attributeName in plugin.ContentFormCustomized.Keys)
+                            foreach (var attributeName in dict.Keys)
                             {
-                                if (plugin.ContentFormCustomized[attributeName] == null) continue;
+                                if (dict[attributeName] == null) continue;
                                 formPluginId = pluginId;
                                 break;
                             }
                         }
-                        LogUtils.AddPluginErrorLog(formPluginId, ex, "ContentFormCustomized");
+                        LogUtils.AddPluginErrorLog(formPluginId, ex, nameof(IService.AddCustomizedContentForm));
                     }
 
                     builder.Append(html);
@@ -86,7 +84,7 @@ namespace SiteServer.BackgroundPages.Controls
 
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
-                if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
+                if (styleInfo.InputType == InputType.TextEditor)
                 {
                     var commands = WebUtils.GetTextEditorCommands(SiteInfo, styleInfo.AttributeName);
                     builder.Append($@"

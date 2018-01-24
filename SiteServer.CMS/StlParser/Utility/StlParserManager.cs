@@ -3,7 +3,6 @@ using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.StlElement;
@@ -83,7 +82,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var templateInfo = new TemplateInfo
             {
                 Id = context.TemplateId,
-                TemplateType = ETemplateTypeUtils.GetEnumType(context.TemplateType)
+                TemplateType = context.TemplateType
             };
             var pageInfo = new PageInfo(context.ChannelId, context.ContentId, siteInfo, templateInfo);
             var contextInfo = new ContextInfo(pageInfo);

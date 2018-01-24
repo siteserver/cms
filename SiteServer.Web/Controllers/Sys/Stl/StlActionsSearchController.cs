@@ -6,13 +6,13 @@ using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin.Model;
 using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.StlEntity;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys.Stl
@@ -49,7 +49,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
                 var template = TranslateUtils.DecryptStringBySecretKey(context.GetPostString("template"));
                 var pageIndex = context.GetPostInt("page", 1) - 1;
 
-                var templateInfo = new TemplateInfo(0, siteId, string.Empty, ETemplateType.FileTemplate, string.Empty, string.Empty, string.Empty, ECharset.utf_8, false);
+                var templateInfo = new TemplateInfo(0, siteId, string.Empty, TemplateType.FileTemplate, string.Empty, string.Empty, string.Empty, ECharset.utf_8, false);
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 var pageInfo = new PageInfo(siteId, 0, siteInfo, templateInfo)
                 {

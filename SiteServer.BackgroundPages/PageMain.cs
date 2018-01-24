@@ -328,7 +328,7 @@ namespace SiteServer.BackgroundPages
             var builder = new StringBuilder();
             foreach (var tab in topMenuTabs)
             {
-                if (!TabManager.IsValid(tab, permissionList)) continue;
+                if (!ProductPermissionsManager.Current.IsConsoleAdministrator && !TabManager.IsValid(tab, permissionList)) continue;
 
                 var target = string.Empty;
                 if (!string.IsNullOrEmpty(tab.Target))
@@ -340,7 +340,7 @@ namespace SiteServer.BackgroundPages
                 var tabsBuilder = new StringBuilder();
                 foreach (var parent in tabs)
                 {
-                    if (!TabManager.IsValid(parent, permissionList)) continue;
+                    if (!ProductPermissionsManager.Current.IsConsoleAdministrator && !TabManager.IsValid(parent, permissionList)) continue;
 
                     var hasChildren = parent.Children != null && parent.Children.Length > 0;
 

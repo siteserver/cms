@@ -9,6 +9,7 @@ using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser
@@ -404,7 +405,7 @@ namespace SiteServer.CMS.StlParser
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var templateInfo = TemplateManager.GetTemplateInfo(siteId, templateId);
-            if (templateInfo == null || templateInfo.TemplateType != ETemplateType.FileTemplate)
+            if (templateInfo == null || templateInfo.TemplateType != TemplateType.FileTemplate)
             {
                 return;
             }
@@ -427,7 +428,7 @@ namespace SiteServer.CMS.StlParser
 
         //private string CreateIncludeFile(string virtualUrl, bool isCreateIfExists)
         //{
-        //    var templateInfo = new TemplateInfo(0, SiteId, string.Empty, ETemplateType.FileTemplate, string.Empty, string.Empty, string.Empty, ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset), false);
+        //    var templateInfo = new TemplateInfo(0, SiteId, string.Empty, TemplateType.FileTemplate, string.Empty, string.Empty, string.Empty, ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset), false);
         //    var pageInfo = new PageInfo(SiteId, 0, SiteInfo, templateInfo, null);
         //    var contextInfo = new ContextInfo(pageInfo);
 

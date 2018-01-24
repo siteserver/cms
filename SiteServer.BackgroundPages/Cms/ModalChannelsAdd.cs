@@ -6,8 +6,8 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -57,13 +57,13 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             DdlContentModelPluginId.Items.Add(new ListItem("<与父栏目相同>", string.Empty));
-            var contentTables = PluginManager.GetContentModelPlugins();
+            var contentTables = PluginContentManager.GetContentModelPlugins();
             foreach (var contentTable in contentTables)
             {
                 DdlContentModelPluginId.Items.Add(new ListItem(contentTable.Title, contentTable.Id));
             }
 
-            var plugins = PluginManager.GetAllContentRelatedPlugins(false);
+            var plugins = PluginContentManager.GetAllContentRelatedPlugins(false);
             if (plugins.Count > 0)
             {
                 foreach (var pluginMetadata in plugins)
@@ -76,8 +76,8 @@ namespace SiteServer.BackgroundPages.Cms
                 PhContentRelatedPluginIds.Visible = false;
             }
 
-            DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, ETemplateType.ChannelTemplate);
-            DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, ETemplateType.ContentTemplate);
+            DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ChannelTemplate);
+            DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ContentTemplate);
 
             DdlChannelTemplateId.DataBind();
             DdlChannelTemplateId.Items.Insert(0, new ListItem("<默认>", "0"));

@@ -38,7 +38,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string TypeChannelName = "ChannelName";			                            //栏目名称
         public const string TypeChannelIndex = "ChannelIndex";			                            //栏目索引
         public const string TypeTemplateName = "TemplateName";			                            //模板名称
-        public const string TypeTemplateType = "TemplateType";			                            //模板类型
+        public const string TypTemplateType = "TemplateType";			                            //模板类型
         public const string TypeTopLevel = "TopLevel";			                                    //栏目级别
         public const string TypeUpChannel = "UpChannel";			                                //上级栏目
         public const string TypeUpChannelOrSelf = "UpChannelOrSelf";			                    //当前栏目或上级栏目
@@ -58,7 +58,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {TypeChannelName, "栏目名称"},
             {TypeChannelIndex, "栏目索引"},
             {TypeTemplateName, "模板名称"},
-            {TypeTemplateType, "模板类型"},
+            {TypTemplateType, "模板类型"},
             {TypeTopLevel, "栏目级别"},
             {TypeUpChannel, "上级栏目"},
             {TypeUpChannelOrSelf, "当前栏目或上级栏目"},
@@ -154,9 +154,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 isSuccess = TestTypeValue(testOperate, testValue, pageInfo.TemplateInfo.TemplateName);
             }
-            else if (StringUtils.EqualsIgnoreCase(testType, TypeTemplateType))
+            else if (StringUtils.EqualsIgnoreCase(testType, TypTemplateType))
             {
-                isSuccess = TestTypeValue(testOperate, testValue, ETemplateTypeUtils.GetValue(pageInfo.TemplateInfo.TemplateType));
+                isSuccess = TestTypeValue(testOperate, testValue, TemplateTypeUtils.GetValue(pageInfo.TemplateInfo.TemplateType));
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeTopLevel))
             {

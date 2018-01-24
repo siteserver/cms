@@ -8,7 +8,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin.Features;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -39,10 +38,13 @@ namespace SiteServer.BackgroundPages.Core
             var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
 
             _iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
-            var contentTable = PluginManager.GetEnabledPluginMetadata<IContentModel>(nodeInfo.ContentModelPluginId);
-            if (contentTable != null)
+            if (!string.IsNullOrEmpty(nodeInfo.ContentModelPluginId))
             {
-                _iconFolderUrl = PluginManager.GetPluginIconUrl(contentTable);
+                var iconUrl = PluginManager.GetPluginIconUrl(nodeInfo.ContentModelPluginId);
+                if (!string.IsNullOrEmpty(iconUrl))
+                {
+                    _iconFolderUrl = iconUrl;
+                }
             }
 
             _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");

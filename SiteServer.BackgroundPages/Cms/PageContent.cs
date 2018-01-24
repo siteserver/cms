@@ -9,7 +9,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin.Features;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -31,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
         private List<TableStyleInfo> _styleInfoList;
         private StringCollection _attributesOfDisplay;
         private List<TableStyleInfo> _attributesOfDisplayStyleInfoList;
-        private Dictionary<string, IContentRelated> _pluginChannels;
+        private Dictionary<string, List<HyperLink>> _pluginLinks;
         private bool _isEdit;
         private readonly Dictionary<string, string> _nameValueCacheDict = new Dictionary<string, string>();
 
@@ -57,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplay(SiteId, nodeId));
             _attributesOfDisplayStyleInfoList = ContentUtility.GetColumnTableStyleInfoList(SiteInfo, _styleInfoList);
-            _pluginChannels = PluginManager.GetContentRelatedFeatures(_nodeInfo);
+            _pluginLinks = PluginContentManager.GetContentLinks(_nodeInfo);
             _isEdit = TextUtility.IsEdit(SiteInfo, nodeId, Body.AdminName);
 
             if (_nodeInfo.Additional.IsPreviewContents)
@@ -169,7 +168,7 @@ $(document).ready(function() {
             ltlStatus.Text =
                 $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{ModalCheckState.GetOpenWindowString(SiteId, contentInfo, PageUrl)}"">{CheckManager.GetCheckState(SiteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
 
-            ltlCommands.Text = TextUtility.GetCommandsHtml(SiteInfo, _pluginChannels, contentInfo, PageUrl, Body.AdminName, _isEdit);
+            ltlCommands.Text = TextUtility.GetCommandsHtml(SiteInfo, _pluginLinks, contentInfo, PageUrl, Body.AdminName, _isEdit);
 
             ltlSelect.Text = $@"<input type=""checkbox"" name=""ContentIDCollection"" value=""{contentInfo.Id}"" />";
         }

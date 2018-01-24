@@ -5,7 +5,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -66,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var url = PageProgressBar.GetDeleteAllPageUrl(SiteId, ETemplateType.FileTemplate);
+            var url = PageProgressBar.GetDeleteAllPageUrl(SiteId, TemplateType.FileTemplate);
             PageUtils.RedirectToLoadingPage(url);
         }
     }

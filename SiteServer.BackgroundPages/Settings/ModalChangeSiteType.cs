@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 using SiteServer.Utils.IO;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -79,7 +79,7 @@ namespace SiteServer.BackgroundPages.Settings
                 }
 
                 //主站下的单页模板
-                var fileTemplateInfoList = DataProvider.TemplateDao.GetTemplateInfoListByType(SiteId, ETemplateType.FileTemplate);
+                var fileTemplateInfoList = DataProvider.TemplateDao.GetTemplateInfoListByType(SiteId, TemplateType.FileTemplate);
                 foreach (var fileT in fileTemplateInfoList)
                 {
                     if (fileT.CreatedFileFullName.StartsWith("@/") || fileT.CreatedFileFullName.StartsWith("~/"))

@@ -7,7 +7,7 @@ using System.Collections.Specialized;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin.Features;
+using System.Web.UI.WebControls;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -162,7 +162,7 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetCommandsHtml(SiteInfo siteInfo, Dictionary<string, IContentRelated> pluginChannels, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
+        public static string GetCommandsHtml(SiteInfo siteInfo, Dictionary<string, List<HyperLink>> pluginLinks, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
         {
             var builder = new StringBuilder();
 
@@ -180,22 +180,25 @@ namespace SiteServer.BackgroundPages.Core
             //            .Comments})</span></a>");
             //}
 
-            foreach (var pluginId in pluginChannels.Keys)
+            if (pluginLinks != null)
             {
-                var pluginChannel = pluginChannels[pluginId];
-                if (pluginChannel?.ContentLinks != null && pluginChannel.ContentLinks.Count > 0)
+                foreach (var pluginId in pluginLinks.Keys)
                 {
-                    foreach (var link in pluginChannel.ContentLinks)
+                    var contentLinks = pluginLinks[pluginId];
+                    if (contentLinks != null && contentLinks.Count > 0)
                     {
-                        var originalUrl = link.NavigateUrl;
-                        link.NavigateUrl = PluginManager.GetMenuContentHref(pluginId, originalUrl, siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl);
+                        foreach (var link in contentLinks)
+                        {
+                            var originalUrl = link.NavigateUrl;
+                            link.NavigateUrl = PluginMenuManager.GetMenuContentHref(pluginId, originalUrl, siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl);
 
-                        builder.Append("&nbsp;&nbsp;").Append(ControlUtils.GetControlRenderHtml(link));
+                            builder.Append("&nbsp;&nbsp;").Append(ControlUtils.GetControlRenderHtml(link));
 
-                        link.NavigateUrl = originalUrl;
+                            link.NavigateUrl = originalUrl;
 
-                        //builder.Append(
-                        //    $@"<a style=""margin:0 5px"" href=""{href}"" {(string.IsNullOrEmpty(link.Target) ? string.Empty : "target='" + link.Target + "'")}>{link.Text}</a>");
+                            //builder.Append(
+                            //    $@"<a style=""margin:0 5px"" href=""{href}"" {(string.IsNullOrEmpty(link.Target) ? string.Empty : "target='" + link.Target + "'")}>{link.Text}</a>");
+                        }
                     }
                 }
             }

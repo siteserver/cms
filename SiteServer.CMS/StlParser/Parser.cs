@@ -4,11 +4,10 @@ using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser
@@ -21,6 +20,18 @@ namespace SiteServer.CMS.StlParser
 
         public static void Parse(SiteInfo siteInfo, PageInfo pageInfo, ContextInfo contextInfo, StringBuilder contentBuilder, string filePath, bool isDynamic)
         {
+            foreach (var service in PluginManager.Services)
+            {
+                try
+                {
+                    service.OnPreParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, filePath, contentBuilder));
+                }
+                catch (Exception ex)
+                {
+                    LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnPreParse));
+                }
+            }
+
             if (contentBuilder.Length > 0)
             {
                 StlParserManager.ParseTemplateContent(contentBuilder, pageInfo, contextInfo);
@@ -71,7 +82,7 @@ namespace SiteServer.CMS.StlParser
                     if (pageInfo.SiteInfo.Additional.IsCreateDoubleClick)
                     {
                         var fileTemplateId = 0;
-                        if (pageInfo.TemplateInfo.TemplateType == ETemplateType.FileTemplate)
+                        if (pageInfo.TemplateInfo.TemplateType == TemplateType.FileTemplate)
                         {
                             fileTemplateId = pageInfo.TemplateInfo.Id;
                         }
@@ -91,7 +102,7 @@ namespace SiteServer.CMS.StlParser
                 if (isShowPageInfo)
                 {
                     contentBuilder.Append($@"
-<!-- {pageInfo.TemplateInfo.RelatedFileName}({ETemplateTypeUtils.GetText(pageInfo.TemplateInfo.TemplateType)}) -->");
+<!-- {pageInfo.TemplateInfo.RelatedFileName}({TemplateType.GetText(pageInfo.TemplateInfo.TemplateType)}) -->");
                 }
 
                 var headScripts = StlParserManager.GetPageInfoHeadScript(pageInfo, contextInfo);
@@ -157,27 +168,18 @@ namespace SiteServer.CMS.StlParser
                     //StringUtils.InsertBeforeOrAppend(new string[] { "</body>", "</BODY>" }, contentBuilder, endScriptBuilder.ToString());
                     StringUtils.InsertAfterOrAppend(new[] { "</html>", "</html>" }, contentBuilder, endScriptBuilder.ToString());
                 }
+            }
 
-                var renders = PluginManager.GetRenders();
-                if (renders.Count <= 0) return;
-
-                var html = contentBuilder.ToString();
-                foreach (var pluginId in renders.Keys)
+            foreach (var service in PluginManager.Services)
+            {
+                try
                 {
-                    var render = renders[pluginId];
-                    try
-                    {
-                        var context = new PluginRenderContext(html, pageInfo.SiteId, pageInfo.PageNodeId, pageInfo.PageContentId);
-                        html = render(context);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogUtils.AddPluginErrorLog(pluginId, ex, "Render");
-                    }
+                    service.OnPostParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, filePath, contentBuilder));
                 }
-
-                contentBuilder.Clear();
-                contentBuilder.Append(html);
+                catch (Exception ex)
+                {
+                    LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnPreParse));
+                }
             }
         }
     }

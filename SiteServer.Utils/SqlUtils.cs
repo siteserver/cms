@@ -9,7 +9,6 @@ using Npgsql;
 using NpgsqlTypes;
 using Oracle.ManagedDataAccess.Client;
 using SiteServer.Plugin;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils
 {
@@ -17,80 +16,80 @@ namespace SiteServer.Utils
     {
         public const string Asterisk = "*";
 
-        public static string GetConnectionString(EDatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string database)
+        public static string GetConnectionString(DatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string database)
         {
-            string connectionString;
-            switch (databaseType)
+            var connectionString = string.Empty;
+
+            if (databaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    connectionString = $"Server={server};";
-                    if (!isDefaultPort && port > 0)
-                    {
-                        connectionString += $"Port={port};";
-                    }
-                    connectionString += $"Uid={userName};Pwd={password};";
-                    if (!string.IsNullOrEmpty(database))
-                    {
-                        connectionString += $"Database={database};";
-                    }
-                    break;
-                case EDatabaseType.SqlServer:
-                    connectionString = $"Server={server};";
-                    if (!isDefaultPort && port > 0)
-                    {
-                        connectionString += $"Port={port};";
-                    }
-                    connectionString += $"Uid={userName};Pwd={password};";
-                    if (!string.IsNullOrEmpty(database))
-                    {
-                        connectionString += $"Database={database};";
-                    }
-                    break;
-                case EDatabaseType.PostgreSql:
-                    connectionString = $"Host={server};";
-                    if (!isDefaultPort && port > 0)
-                    {
-                        connectionString += $"Port={port};";
-                    }
-                    connectionString += $"Username={userName};Password={password};";
-                    if (!string.IsNullOrEmpty(database))
-                    {
-                        connectionString += $"Database={database};";
-                    }
-                    break;
-                case EDatabaseType.Oracle:
-                    port = !isDefaultPort && port > 0 ? port: 1521;
-                    database = string.IsNullOrEmpty(database)
-                        ? string.Empty
-                        : $"(CONNECT_DATA=(SERVICE_NAME={database}))";
-                    connectionString = $"Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={server})(PORT={port})){database});User ID={userName};Password={password};";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(databaseType), databaseType, null);
+                connectionString = $"Server={server};";
+                if (!isDefaultPort && port > 0)
+                {
+                    connectionString += $"Port={port};";
+                }
+                connectionString += $"Uid={userName};Pwd={password};";
+                if (!string.IsNullOrEmpty(database))
+                {
+                    connectionString += $"Database={database};";
+                }
             }
+            else if (databaseType == DatabaseType.SqlServer)
+            {
+                connectionString = $"Server={server};";
+                if (!isDefaultPort && port > 0)
+                {
+                    connectionString += $"Port={port};";
+                }
+                connectionString += $"Uid={userName};Pwd={password};";
+                if (!string.IsNullOrEmpty(database))
+                {
+                    connectionString += $"Database={database};";
+                }
+            }
+            else if (databaseType == DatabaseType.PostgreSql)
+            {
+                connectionString = $"Host={server};";
+                if (!isDefaultPort && port > 0)
+                {
+                    connectionString += $"Port={port};";
+                }
+                connectionString += $"Username={userName};Password={password};";
+                if (!string.IsNullOrEmpty(database))
+                {
+                    connectionString += $"Database={database};";
+                }
+            }
+            else if (databaseType == DatabaseType.Oracle)
+            {
+                port = !isDefaultPort && port > 0 ? port : 1521;
+                database = string.IsNullOrEmpty(database)
+                    ? string.Empty
+                    : $"(CONNECT_DATA=(SERVICE_NAME={database}))";
+                connectionString = $"Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={server})(PORT={port})){database});User ID={userName};Password={password};";
+            }
+
             return connectionString;
         }
 
-        public static IDbConnection GetIDbConnection(EDatabaseType databaseType, string connectionString)
+        public static IDbConnection GetIDbConnection(DatabaseType databaseType, string connectionString)
         {
-            IDbConnection conn;
+            IDbConnection conn = null;
 
-            switch (databaseType)
+            if (databaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    conn = new MySqlConnection(connectionString);
-                    break;
-                case EDatabaseType.SqlServer:
-                    conn = new SqlConnection(connectionString);
-                    break;
-                case EDatabaseType.PostgreSql:
-                    conn = new NpgsqlConnection(connectionString);
-                    break;
-                case EDatabaseType.Oracle:
-                    conn = new OracleConnection(connectionString);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(databaseType), databaseType, null);
+                conn = new MySqlConnection(connectionString);
+            }
+            else if (databaseType == DatabaseType.SqlServer)
+            {
+                conn = new SqlConnection(connectionString);
+            }
+            else if (databaseType == DatabaseType.PostgreSql)
+            {
+                conn = new NpgsqlConnection(connectionString);
+            }
+            else if (databaseType == DatabaseType.Oracle)
+            {
+                conn = new OracleConnection(connectionString);
             }
 
             return conn;
@@ -98,24 +97,23 @@ namespace SiteServer.Utils
 
         public static IDbCommand GetIDbCommand()
         {
-            IDbCommand command;
+            IDbCommand command = null;
 
-            switch (WebConfigUtils.DatabaseType)
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    command = new MySqlCommand();
-                    break;
-                case EDatabaseType.SqlServer:
-                    command = new SqlCommand();
-                    break;
-                case EDatabaseType.PostgreSql:
-                    command = new NpgsqlCommand();
-                    break;
-                case EDatabaseType.Oracle:
-                    command = new OracleCommand();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                command = new MySqlCommand();
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                command = new SqlCommand();
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                command = new NpgsqlCommand();
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                command = new OracleCommand();
             }
 
             return command;
@@ -123,24 +121,23 @@ namespace SiteServer.Utils
 
         public static IDbDataAdapter GetIDbDataAdapter(string text, string connectionString)
         {
-            IDbDataAdapter adapter;
+            IDbDataAdapter adapter = null;
 
-            switch (WebConfigUtils.DatabaseType)
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    adapter = new MySqlDataAdapter(text, connectionString);
-                    break;
-                case EDatabaseType.SqlServer:
-                    adapter = new SqlDataAdapter(text, connectionString);
-                    break;
-                case EDatabaseType.PostgreSql:
-                    adapter = new NpgsqlDataAdapter(text, connectionString);
-                    break;
-                case EDatabaseType.Oracle:
-                    adapter = new OracleDataAdapter(text, connectionString);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                adapter = new MySqlDataAdapter(text, connectionString);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                adapter = new SqlDataAdapter(text, connectionString);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                adapter = new NpgsqlDataAdapter(text, connectionString);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                adapter = new OracleDataAdapter(text, connectionString);
             }
 
             return adapter;
@@ -148,24 +145,23 @@ namespace SiteServer.Utils
 
         public static IDbDataAdapter GetIDbDataAdapter()
         {
-            IDbDataAdapter adapter;
+            IDbDataAdapter adapter = null;
 
-            switch (WebConfigUtils.DatabaseType)
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    adapter = new MySqlDataAdapter();
-                    break;
-                case EDatabaseType.SqlServer:
-                    adapter = new SqlDataAdapter();
-                    break;
-                case EDatabaseType.PostgreSql:
-                    adapter = new NpgsqlDataAdapter();
-                    break;
-                case EDatabaseType.Oracle:
-                    adapter = new OracleDataAdapter();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                adapter = new MySqlDataAdapter();
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                adapter = new SqlDataAdapter();
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                adapter = new NpgsqlDataAdapter();
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                adapter = new OracleDataAdapter();
             }
 
             return adapter;
@@ -173,45 +169,43 @@ namespace SiteServer.Utils
 
         public static void FillDataAdapterWithDataTable(IDbDataAdapter adapter, DataTable table)
         {
-            switch (WebConfigUtils.DatabaseType)
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    ((MySqlDataAdapter)adapter).Fill(table);
-                    break;
-                case EDatabaseType.SqlServer:
-                    ((SqlDataAdapter)adapter).Fill(table);
-                    break;
-                case EDatabaseType.PostgreSql:
-                    ((NpgsqlDataAdapter)adapter).Fill(table);
-                    break;
-                case EDatabaseType.Oracle:
-                    ((OracleDataAdapter)adapter).Fill(table);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                ((MySqlDataAdapter)adapter).Fill(table);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                ((SqlDataAdapter)adapter).Fill(table);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                ((NpgsqlDataAdapter)adapter).Fill(table);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                ((OracleDataAdapter)adapter).Fill(table);
             }
         }
 
         public static IDbDataParameter GetIDbDataParameter(string parameterName, DataType dataType, int size)
         {
-            IDbDataParameter parameter;
+            IDbDataParameter parameter = null;
 
-            switch (WebConfigUtils.DatabaseType)
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    parameter = new MySqlParameter(parameterName, ToMySqlDbType(dataType), size);
-                    break;
-                case EDatabaseType.SqlServer:
-                    parameter = new SqlParameter(parameterName, ToSqlServerDbType(dataType), size);
-                    break;
-                case EDatabaseType.PostgreSql:
-                    parameter = new NpgsqlParameter(parameterName, ToNpgsqlDbType(dataType), size);
-                    break;
-                case EDatabaseType.Oracle:
-                    parameter = new OracleParameter(parameterName, ToOracleDbType(dataType), size);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                parameter = new MySqlParameter(parameterName, ToMySqlDbType(dataType), size);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                parameter = new SqlParameter(parameterName, ToSqlServerDbType(dataType), size);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                parameter = new NpgsqlParameter(parameterName, ToNpgsqlDbType(dataType), size);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                parameter = new OracleParameter(parameterName, ToOracleDbType(dataType), size);
             }
 
             return parameter;
@@ -219,24 +213,23 @@ namespace SiteServer.Utils
 
         public static IDbDataParameter GetIDbDataParameter(string parameterName, DataType dataType)
         {
-            IDbDataParameter parameter;
+            IDbDataParameter parameter = null;
 
-            switch (WebConfigUtils.DatabaseType)
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    parameter = new MySqlParameter(parameterName, ToMySqlDbType(dataType));
-                    break;
-                case EDatabaseType.SqlServer:
-                    parameter = new SqlParameter(parameterName, ToSqlServerDbType(dataType));
-                    break;
-                case EDatabaseType.PostgreSql:
-                    parameter = new NpgsqlParameter(parameterName, ToNpgsqlDbType(dataType));
-                    break;
-                case EDatabaseType.Oracle:
-                    parameter = new OracleParameter(parameterName, ToOracleDbType(dataType));
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                parameter = new MySqlParameter(parameterName, ToMySqlDbType(dataType));
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                parameter = new SqlParameter(parameterName, ToSqlServerDbType(dataType));
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                parameter = new NpgsqlParameter(parameterName, ToNpgsqlDbType(dataType));
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                parameter = new OracleParameter(parameterName, ToOracleDbType(dataType));
             }
 
             return parameter;
@@ -244,92 +237,95 @@ namespace SiteServer.Utils
 
         public static string GetInStr(string columnName, string inStr)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"INSTR({columnName}, '{inStr}') > 0";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"CHARINDEX('{inStr}', {columnName}) > 0";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"POSITION('{inStr}' IN {columnName}) > 0";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $"INSTR({columnName}, '{inStr}') > 0";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"INSTR({columnName}, '{inStr}') > 0";
             }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"CHARINDEX('{inStr}', {columnName}) > 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"POSITION('{inStr}' IN {columnName}) > 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"INSTR({columnName}, '{inStr}') > 0";
+            }
+
             return retval;
         }
 
         public static string GetInStrReverse(string inStr, string columnName)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"INSTR('{inStr}', {columnName}) > 0";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"CHARINDEX({columnName}, '{inStr}') > 0";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"POSITION({columnName} IN '{inStr}') > 0";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $"INSTR('{inStr}', {columnName}) > 0";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"INSTR('{inStr}', {columnName}) > 0";
             }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"CHARINDEX({columnName}, '{inStr}') > 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"POSITION({columnName} IN '{inStr}') > 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"INSTR('{inStr}', {columnName}) > 0";
+            }
+
             return retval;
         }
 
         public static string GetNotInStr(string columnName, string inStr)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"INSTR({columnName}, '{inStr}') = 0";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"CHARINDEX('{inStr}', {columnName}) = 0";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"POSITION('{inStr}' IN {columnName}) = 0";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $"INSTR({columnName}, '{inStr}') = 0";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"INSTR({columnName}, '{inStr}') = 0";
             }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"CHARINDEX('{inStr}', {columnName}) = 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"POSITION('{inStr}' IN {columnName}) = 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"INSTR({columnName}, '{inStr}') = 0";
+            }
+
             return retval;
         }
 
         public static string GetNotNullAndEmpty(string columnName)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"LENGTH(IFNULL({columnName},'')) > 0";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"DATALENGTH({columnName}) > 0";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"LENGTH(COALESCE({columnName}, '')) > 0";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $"LENGTH(COALESCE({columnName}, '')) > 0";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"LENGTH(IFNULL({columnName},'')) > 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"DATALENGTH({columnName}) > 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"LENGTH(COALESCE({columnName}, '')) > 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"LENGTH(COALESCE({columnName}, '')) > 0";
             }
 
             return retval;
@@ -337,23 +333,23 @@ namespace SiteServer.Utils
 
         public static string GetNullOrEmpty(string columnName)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"LENGTH(IFNULL({columnName},'')) = 0";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"DATALENGTH({columnName}) = 0";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"LENGTH(COALESCE({columnName}, '')) = 0";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $"LENGTH(COALESCE({columnName}, '')) = 0";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"LENGTH(IFNULL({columnName},'')) = 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"DATALENGTH({columnName}) = 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"LENGTH(COALESCE({columnName}, '')) = 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"LENGTH(COALESCE({columnName}, '')) = 0";
             }
 
             return retval;
@@ -364,23 +360,21 @@ namespace SiteServer.Utils
             string retval = $"SELECT {columns} FROM {tableName} {whereString} {orderString}";
             if (topN <= 0) return retval;
 
-            switch (WebConfigUtils.DatabaseType)
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"SELECT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"SELECT TOP {topN} {columns} FROM {tableName} {whereString} {orderString}";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"SELECT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
-                    break;
-                case EDatabaseType.Oracle:
-                    //retval = $@"SELECT {columns} FROM (SELECT {columns} FROM {tableName} {whereString} {orderString}) WHERE ROWNUM <= {topN} ORDER BY ROWNUM ASC";
-                    retval = $@"SELECT {columns} FROM {tableName} {whereString} {orderString} FETCH FIRST {topN} ROWS ONLY";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"SELECT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"SELECT TOP {topN} {columns} FROM {tableName} {whereString} {orderString}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"SELECT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $@"SELECT {columns} FROM {tableName} {whereString} {orderString} FETCH FIRST {topN} ROWS ONLY";
             }
 
             return retval;
@@ -391,23 +385,21 @@ namespace SiteServer.Utils
             string retval = $"SELECT * FROM ({sqlString}) {orderString}";
             if (topN <= 0) return retval;
 
-            switch (WebConfigUtils.DatabaseType)
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"SELECT * FROM ({sqlString}) {orderString} LIMIT {topN}";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"SELECT TOP {topN} * FROM ({sqlString}) {orderString}";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"SELECT * FROM ({sqlString}) {orderString} LIMIT {topN}";
-                    break;
-                case EDatabaseType.Oracle:
-                    //retval = $@"SELECT * FROM (SELECT * FROM ({sqlString}) {orderString}) WHERE ROWNUM <= {topN} ORDER BY ROWNUM ASC";
-                    retval = $@"SELECT * FROM ({sqlString}) {orderString} FETCH FIRST {topN} ROWS ONLY";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"SELECT * FROM ({sqlString}) {orderString} LIMIT {topN}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"SELECT TOP {topN} * FROM ({sqlString}) {orderString}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"SELECT * FROM ({sqlString}) {orderString} LIMIT {topN}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $@"SELECT * FROM ({sqlString}) {orderString} FETCH FIRST {topN} ROWS ONLY";
             }
 
             return retval;
@@ -415,7 +407,7 @@ namespace SiteServer.Utils
 
         public static string GetPageSqlString(string sqlString, string orderString, int itemsPerPage, int currentPageIndex, int pageCount, int recordsInLastPage)
         {
-            string retval;
+            var retval = string.Empty;
 
             var recsToRetrieve = itemsPerPage;
             if (currentPageIndex == pageCount - 1)
@@ -428,48 +420,41 @@ namespace SiteServer.Utils
             orderStringReverse = orderStringReverse.Replace(" ASC", " DESC");
             orderStringReverse = orderStringReverse.Replace(" DESC2", " ASC");
 
-            switch (WebConfigUtils.DatabaseType)
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $@"
+                retval = $@"
 SELECT * FROM (
     SELECT * FROM (
         SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
     ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
 ) AS t2 {orderString}";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $@"
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $@"
 SELECT * FROM (
     SELECT TOP {recsToRetrieve} * FROM (
         SELECT TOP {itemsPerPage * (currentPageIndex + 1)} * FROM ({sqlString}) AS t0 {orderString}
     ) AS t1 {orderStringReverse}
 ) AS t2 {orderString}";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $@"
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $@"
 SELECT * FROM (
     SELECT * FROM (
         SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
     ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
 ) AS t2 {orderString}";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $@"
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $@"
 SELECT * FROM (
     SELECT * FROM (
         SELECT * FROM ({sqlString}) {orderString} FETCH FIRST {itemsPerPage * (currentPageIndex + 1)} ROWS ONLY
     ) {orderStringReverse} FETCH FIRST {recsToRetrieve} ROWS ONLY
 ) {orderString}";
-                    //                    retval = $@"
-                    //SELECT * FROM (
-                    //    SELECT * FROM (
-                    //        SELECT * FROM ({sqlString}) WHERE ROWNUM <= {itemsPerPage * (currentPageIndex + 1)} AS t0 {orderString}
-                    //    ) WHERE ROWNUM <= {recsToRetrieve} AS t1 {orderStringReverse}
-                    //) AS t2 {orderString}";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
 
             return retval;
@@ -480,23 +465,21 @@ SELECT * FROM (
             var retval = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString}";
             if (topN <= 0) return retval;
 
-            switch (WebConfigUtils.DatabaseType)
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"SELECT DISTINCT TOP {topN} {columns} FROM {tableName} {whereString} {orderString}";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
-                    break;
-                case EDatabaseType.Oracle:
-                    //retval = $@"SELECT {columns} FROM (SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString}) WHERE ROWNUM <= {topN} ORDER BY ROWNUM ASC";
-                    retval = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString} FETCH FIRST {topN} ROWS ONLY";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"SELECT DISTINCT TOP {topN} {columns} FROM {tableName} {whereString} {orderString}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString} FETCH FIRST {topN} ROWS ONLY";
             }
 
             return retval;
@@ -505,7 +488,7 @@ SELECT * FROM (
         public static string ToInTopSqlString(string tableName, string columns, string whereString, string orderString, int topN)
         {
             var builder = new StringBuilder();
-            if (WebConfigUtils.DatabaseType != EDatabaseType.Oracle)
+            if (WebConfigUtils.DatabaseType != DatabaseType.Oracle)
             {
                 foreach (var column in TranslateUtils.StringCollectionToStringList(columns))
                 {
@@ -527,23 +510,23 @@ SELECT * FROM (
 
         public static string GetColumnSqlString(DataType dataType, string attributeName, int length)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = ToMySqlColumnString(dataType, attributeName, length);
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = ToSqlServerColumnString(dataType, attributeName, length);
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = ToPostgreColumnString(dataType, attributeName, length);
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = ToOracleColumnString(dataType, attributeName, length);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = ToMySqlColumnString(dataType, attributeName, length);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = ToSqlServerColumnString(dataType, attributeName, length);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = ToPostgreColumnString(dataType, attributeName, length);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = ToOracleColumnString(dataType, attributeName, length);
             }
 
             return retval;
@@ -551,23 +534,23 @@ SELECT * FROM (
 
         public static string GetAddColumnsSqlString(string tableName, string columnsSqlString)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"ALTER TABLE `{tableName}` ADD ({columnsSqlString})";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"ALTER TABLE [{tableName}] ADD {columnsSqlString}";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"ALTER TABLE {tableName} ADD {columnsSqlString}";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $"ALTER TABLE {tableName} ADD {columnsSqlString}";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"ALTER TABLE `{tableName}` ADD ({columnsSqlString})";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"ALTER TABLE [{tableName}] ADD {columnsSqlString}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"ALTER TABLE {tableName} ADD {columnsSqlString}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"ALTER TABLE {tableName} ADD {columnsSqlString}";
             }
 
             return retval;
@@ -575,173 +558,172 @@ SELECT * FROM (
 
         public static string GetDropTableSqlString(string tableName)
         {
-            string sqlString;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    sqlString = $"DROP TABLE `{tableName}`";
-                    break;
-                case EDatabaseType.SqlServer:
-                    sqlString = $"DROP TABLE [{tableName}]";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    sqlString = $"DROP TABLE {tableName}";
-                    break;
-                case EDatabaseType.Oracle:
-                    sqlString = $"DROP TABLE {tableName}";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"DROP TABLE `{tableName}`";
             }
-
-            return sqlString;
-        }
-
-        public static string GetAutoIncrementDataType()
-        {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                case EDatabaseType.MySql:
-                    retval = "INT AUTO_INCREMENT";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = "int IDENTITY (1, 1)";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = "SERIAL";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = "NUMBER GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1)";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"DROP TABLE [{tableName}]";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"DROP TABLE {tableName}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"DROP TABLE {tableName}";
             }
 
             return retval;
         }
 
-        public static DataType ToDataType(EDatabaseType databaseType, string dataTypeStr)
+        public static string GetAutoIncrementDataType()
+        {
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                retval = "INT AUTO_INCREMENT";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = "int IDENTITY (1, 1)";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = "SERIAL";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = "NUMBER GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1)";
+            }
+
+            return retval;
+        }
+
+        public static DataType ToDataType(DatabaseType databaseType, string dataTypeStr)
         {
             if (string.IsNullOrEmpty(dataTypeStr)) return DataType.VarChar;
 
             var dataType = DataType.VarChar;
 
-            switch (databaseType)
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    dataTypeStr = dataTypeStr.ToLower().Trim();
-                    switch (dataTypeStr)
-                    {
-                        case "bit":
-                            dataType = DataType.Boolean;
-                            break;
-                        case "datetime":
-                            dataType = DataType.DateTime;
-                            break;
-                        case "decimal":
-                            dataType = DataType.Decimal;
-                            break;
-                        case "int":
-                            dataType = DataType.Integer;
-                            break;
-                        case "longtext":
-                            dataType = DataType.Text;
-                            break;
-                        case "nvarchar":
-                            dataType = DataType.VarChar;
-                            break;
-                        case "text":
-                            dataType = DataType.Text;
-                            break;
-                        case "varchar":
-                            dataType = DataType.VarChar;
-                            break;
-                    }
-                    break;
-                case EDatabaseType.SqlServer:
-                    dataTypeStr = dataTypeStr.ToLower().Trim();
-                    switch (dataTypeStr)
-                    {
-                        case "bit":
-                            dataType = DataType.Boolean;
-                            break;
-                        case "datetime":
-                            dataType = DataType.DateTime;
-                            break;
-                        case "decimal":
-                            dataType = DataType.Decimal;
-                            break;
-                        case "int":
-                            dataType = DataType.Integer;
-                            break;
-                        case "ntext":
-                            dataType = DataType.Text;
-                            break;
-                        case "nvarchar":
-                            dataType = DataType.VarChar;
-                            break;
-                        case "text":
-                            dataType = DataType.Text;
-                            break;
-                        case "varchar":
-                            dataType = DataType.VarChar;
-                            break;
-                    }
-                    break;
-                case EDatabaseType.PostgreSql:
-                    dataTypeStr = dataTypeStr.ToLower().Trim();
-                    switch (dataTypeStr)
-                    {
-                        case "varchar":
-                            dataType = DataType.VarChar;
-                            break;
-                        case "bool":
-                            dataType = DataType.Boolean;
-                            break;
-                        case "timestamptz":
-                            dataType = DataType.DateTime;
-                            break;
-                        case "numeric":
-                            dataType = DataType.Decimal;
-                            break;
-                        case "int4":
-                            dataType = DataType.Integer;
-                            break;
-                        case "text":
-                            dataType = DataType.Text;
-                            break;
-                    }
-                    break;
-                case EDatabaseType.Oracle:
-                    dataTypeStr = dataTypeStr.ToUpper().Trim();
-                    if (dataTypeStr.StartsWith("TIMESTAMP("))
-                    {
+                dataTypeStr = dataTypeStr.ToLower().Trim();
+                switch (dataTypeStr)
+                {
+                    case "bit":
+                        dataType = DataType.Boolean;
+                        break;
+                    case "datetime":
                         dataType = DataType.DateTime;
-                    }
-                    else if (dataTypeStr == "NUMBER")
-                    {
+                        break;
+                    case "decimal":
+                        dataType = DataType.Decimal;
+                        break;
+                    case "int":
                         dataType = DataType.Integer;
-                    }
-                    else if (dataTypeStr == "NCLOB")
-                    {
+                        break;
+                    case "longtext":
                         dataType = DataType.Text;
-                    }
-                    else if (dataTypeStr == "NVARCHAR2")
-                    {
+                        break;
+                    case "nvarchar":
                         dataType = DataType.VarChar;
-                    }
-                    else if (dataTypeStr == "CLOB")
-                    {
+                        break;
+                    case "text":
                         dataType = DataType.Text;
-                    }
-                    else if (dataTypeStr == "VARCHAR2")
-                    {
+                        break;
+                    case "varchar":
                         dataType = DataType.VarChar;
-                    }
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(databaseType), databaseType, null);
+                        break;
+                }
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                dataTypeStr = dataTypeStr.ToLower().Trim();
+                switch (dataTypeStr)
+                {
+                    case "bit":
+                        dataType = DataType.Boolean;
+                        break;
+                    case "datetime":
+                        dataType = DataType.DateTime;
+                        break;
+                    case "decimal":
+                        dataType = DataType.Decimal;
+                        break;
+                    case "int":
+                        dataType = DataType.Integer;
+                        break;
+                    case "ntext":
+                        dataType = DataType.Text;
+                        break;
+                    case "nvarchar":
+                        dataType = DataType.VarChar;
+                        break;
+                    case "text":
+                        dataType = DataType.Text;
+                        break;
+                    case "varchar":
+                        dataType = DataType.VarChar;
+                        break;
+                }
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                dataTypeStr = dataTypeStr.ToLower().Trim();
+                switch (dataTypeStr)
+                {
+                    case "varchar":
+                        dataType = DataType.VarChar;
+                        break;
+                    case "bool":
+                        dataType = DataType.Boolean;
+                        break;
+                    case "timestamptz":
+                        dataType = DataType.DateTime;
+                        break;
+                    case "numeric":
+                        dataType = DataType.Decimal;
+                        break;
+                    case "int4":
+                        dataType = DataType.Integer;
+                        break;
+                    case "text":
+                        dataType = DataType.Text;
+                        break;
+                }
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                dataTypeStr = dataTypeStr.ToUpper().Trim();
+                if (dataTypeStr.StartsWith("TIMESTAMP("))
+                {
+                    dataType = DataType.DateTime;
+                }
+                else if (dataTypeStr == "NUMBER")
+                {
+                    dataType = DataType.Integer;
+                }
+                else if (dataTypeStr == "NCLOB")
+                {
+                    dataType = DataType.Text;
+                }
+                else if (dataTypeStr == "NVARCHAR2")
+                {
+                    dataType = DataType.VarChar;
+                }
+                else if (dataTypeStr == "CLOB")
+                {
+                    dataType = DataType.Text;
+                }
+                else if (dataTypeStr == "VARCHAR2")
+                {
+                    dataType = DataType.VarChar;
+                }
             }
 
             return dataType;
@@ -1009,23 +991,23 @@ SELECT * FROM (
 
         private static string GetDateDiffLessThan(string fieldName, string fieldValue, string unit)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"TIMESTAMPDIFF({unit}, {fieldName}, now()) < {fieldValue}";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"DATEDIFF({unit}, {fieldName}, getdate()) < {fieldValue}";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"EXTRACT(EPOCH FROM current_timestamp - {fieldName})/{GetSecondsByUnit(unit)} < {fieldValue}";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $"EXTRACT({unit} FROM CURRENT_TIMESTAMP - {fieldName}) < {fieldValue}";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"TIMESTAMPDIFF({unit}, {fieldName}, now()) < {fieldValue}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"DATEDIFF({unit}, {fieldName}, getdate()) < {fieldValue}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"EXTRACT(EPOCH FROM current_timestamp - {fieldName})/{GetSecondsByUnit(unit)} < {fieldValue}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"EXTRACT({unit} FROM CURRENT_TIMESTAMP - {fieldName}) < {fieldValue}";
             }
             
             return retval;
@@ -1058,23 +1040,23 @@ SELECT * FROM (
 
         private static string GetDateDiffGreatThan(string fieldName, string fieldValue, string unit)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"TIMESTAMPDIFF({unit}, {fieldName}, now()) > {fieldValue}";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"DATEDIFF({unit}, {fieldName}, getdate()) > {fieldValue}";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"EXTRACT(EPOCH FROM current_timestamp - {fieldName})/{GetSecondsByUnit(unit)} > {fieldValue}";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $"EXTRACT({unit} FROM CURRENT_TIMESTAMP - {fieldName}) > {fieldValue}";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"TIMESTAMPDIFF({unit}, {fieldName}, now()) > {fieldValue}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"DATEDIFF({unit}, {fieldName}, getdate()) > {fieldValue}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"EXTRACT(EPOCH FROM current_timestamp - {fieldName})/{GetSecondsByUnit(unit)} > {fieldValue}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"EXTRACT({unit} FROM CURRENT_TIMESTAMP - {fieldName}) > {fieldValue}";
             }
 
             return retval;
@@ -1082,23 +1064,23 @@ SELECT * FROM (
 
         public static string GetDatePartYear(string fieldName)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"DATE_FORMAT({fieldName}, '%Y')";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"DATEPART([YEAR], {fieldName})";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"date_part('year', {fieldName})";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $"EXTRACT(year from {fieldName})";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"DATE_FORMAT({fieldName}, '%Y')";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"DATEPART([YEAR], {fieldName})";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"date_part('year', {fieldName})";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"EXTRACT(year from {fieldName})";
             }
 
             return retval;
@@ -1106,47 +1088,47 @@ SELECT * FROM (
 
         public static string GetDatePartMonth(string fieldName)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"DATE_FORMAT({fieldName}, '%c')";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"DATEPART([MONTH], {fieldName})";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"date_part('month', {fieldName})";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $"EXTRACT(month from {fieldName})";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"DATE_FORMAT({fieldName}, '%c')";
             }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"DATEPART([MONTH], {fieldName})";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"date_part('month', {fieldName})";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"EXTRACT(month from {fieldName})";
+            }            
 
             return retval;
         }
 
         public static string GetDatePartDay(string fieldName)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"DATE_FORMAT({fieldName}, '%e')";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"DATEPART([DAY], {fieldName})";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"date_part('day', {fieldName})";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $"EXTRACT(day from {fieldName})";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"DATE_FORMAT({fieldName}, '%e')";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"DATEPART([DAY], {fieldName})";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"date_part('day', {fieldName})";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"EXTRACT(day from {fieldName})";
             }
 
             return retval;
@@ -1154,23 +1136,23 @@ SELECT * FROM (
 
         public static string GetDatePartHour(string fieldName)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"DATE_FORMAT({fieldName}, '%k')";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"DATEPART([HOUR], {fieldName})";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"date_part('hour', {fieldName})";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $"EXTRACT(hour from {fieldName})";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"DATE_FORMAT({fieldName}, '%k')";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"DATEPART([HOUR], {fieldName})";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"date_part('hour', {fieldName})";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"EXTRACT(hour from {fieldName})";
             }
 
             return retval;
@@ -1178,23 +1160,23 @@ SELECT * FROM (
 
         public static string GetDatePartDayOfYear(string fieldName)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"DATE_FORMAT({fieldName}, '%j')";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"DATEPART([DAYOFYEAR], {fieldName})";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"date_part('doy', {fieldName})";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $"TO_CHAR({fieldName}, 'DDD')";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"DATE_FORMAT({fieldName}, '%j')";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"DATEPART([DAYOFYEAR], {fieldName})";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"date_part('doy', {fieldName})";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"TO_CHAR({fieldName}, 'DDD')";
             }
 
             return retval;
@@ -1202,23 +1184,23 @@ SELECT * FROM (
 
         public static string GetComparableNow()
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = "now()";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = "getdate()";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = "current_timestamp";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = "sysdate";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = "now()";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = "getdate()";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = "current_timestamp";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = "sysdate";
             }
 
             return retval;
@@ -1226,23 +1208,23 @@ SELECT * FROM (
 
         public static string GetComparableDate(DateTime dateTime)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"'{dateTime:yyyy-MM-dd}'";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"'{dateTime:yyyy-MM-dd}'";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"'{dateTime:yyyy-MM-dd}'";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $"to_date('{dateTime:yyyy-MM-dd}', 'yyyy-mm-dd')";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"'{dateTime:yyyy-MM-dd}'";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"'{dateTime:yyyy-MM-dd}'";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"'{dateTime:yyyy-MM-dd}'";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"to_date('{dateTime:yyyy-MM-dd}', 'yyyy-mm-dd')";
             }
 
             return retval;
@@ -1250,23 +1232,23 @@ SELECT * FROM (
 
         public static string GetComparableDateTime(DateTime dateTime)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $"to_date('{dateTime:yyyy-MM-dd HH:mm:ss}', 'yyyy-mm-dd hh24:mi:ss')";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"to_date('{dateTime:yyyy-MM-dd HH:mm:ss}', 'yyyy-mm-dd hh24:mi:ss')";
             }
 
             return retval;
@@ -1274,23 +1256,23 @@ SELECT * FROM (
 
         public static string ToPlusSqlString(string fieldName, int plusNum = 1)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"{fieldName} = IFNULL({fieldName}, 0) + {plusNum}";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"{fieldName} = ISNULL({fieldName}, 0) + {plusNum}";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"{fieldName} = COALESCE({fieldName}, 0) + {plusNum}";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $"{fieldName} = COALESCE({fieldName}, 0) + {plusNum}";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"{fieldName} = IFNULL({fieldName}, 0) + {plusNum}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"{fieldName} = ISNULL({fieldName}, 0) + {plusNum}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"{fieldName} = COALESCE({fieldName}, 0) + {plusNum}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"{fieldName} = COALESCE({fieldName}, 0) + {plusNum}";
             }
 
             return retval;
@@ -1298,23 +1280,23 @@ SELECT * FROM (
 
         public static string ToMinusSqlString(string fieldName, int minusNum = 1)
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = $"{fieldName} = IFNULL({fieldName}, 0) - {minusNum}";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = $"{fieldName} = ISNULL({fieldName}, 0) - {minusNum}";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = $"{fieldName} = COALESCE({fieldName}, 0) - {minusNum}";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = $"{fieldName} = COALESCE({fieldName}, 0) - {minusNum}";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = $"{fieldName} = IFNULL({fieldName}, 0) - {minusNum}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"{fieldName} = ISNULL({fieldName}, 0) - {minusNum}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"{fieldName} = COALESCE({fieldName}, 0) - {minusNum}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"{fieldName} = COALESCE({fieldName}, 0) - {minusNum}";
             }
 
             return retval;
@@ -1322,23 +1304,23 @@ SELECT * FROM (
 
         public static string GetOrderByRandom()
         {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    retval = "ORDER BY RAND()";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = "ORDER BY NEWID() DESC";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = "ORDER BY random()";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = "ORDER BY dbms_random.value()";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                retval = "ORDER BY RAND()";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = "ORDER BY NEWID() DESC";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = "ORDER BY random()";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = "ORDER BY dbms_random.value()";
             }
 
             return retval;
@@ -1501,9 +1483,9 @@ SELECT * FROM (
             return o != null && TranslateUtils.ToBool(o.ToString());
         }
 
-        public static string GetDatabaseNameFormConnectionString(EDatabaseType databaseType, string connectionString)
+        public static string GetDatabaseNameFormConnectionString(DatabaseType databaseType, string connectionString)
         {
-            if (databaseType == EDatabaseType.Oracle)
+            if (databaseType == DatabaseType.Oracle)
             {
                 var index1 = connectionString.IndexOf("SERVICE_NAME=", StringComparison.Ordinal);
                 var index2 = connectionString.IndexOf(")));", StringComparison.Ordinal);
@@ -1512,7 +1494,7 @@ SELECT * FROM (
             return GetValueFromConnectionString(databaseType, connectionString, "Database");
         }
 
-        public static string GetValueFromConnectionString(EDatabaseType databaseType, string connectionString, string attribute)
+        public static string GetValueFromConnectionString(DatabaseType databaseType, string connectionString, string attribute)
         {
             var retval = string.Empty;
             if (!string.IsNullOrEmpty(connectionString) && !string.IsNullOrEmpty(attribute))

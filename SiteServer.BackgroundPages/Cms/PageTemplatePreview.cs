@@ -2,8 +2,8 @@
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
             VerifySitePermissions(AppManager.Permissions.WebSite.Template);
 
-            ETemplateTypeUtils.AddListItems(DdlTemplateType);
+            TemplateTypeUtils.AddListItems(DdlTemplateType);
             ChannelManager.AddListItems(DdlNodeId.Items, SiteInfo, false, true, Body.AdminName);
             if (Body.IsQueryExists("fromCache"))
             {
@@ -41,8 +41,8 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void DdlTemplateType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var templateType = ETemplateTypeUtils.GetEnumType(DdlTemplateType.SelectedValue);
-            if (templateType == ETemplateType.IndexPageTemplate || templateType == ETemplateType.IndexPageTemplate)
+            var templateType = TemplateTypeUtils.GetEnumType(DdlTemplateType.SelectedValue);
+            if (templateType == TemplateType.IndexPageTemplate || templateType == TemplateType.IndexPageTemplate)
             {
                 PhTemplateChannel.Visible = false;
             }
@@ -60,13 +60,13 @@ namespace SiteServer.BackgroundPages.Cms
                 return;
             }
 
-            var templateType = ETemplateTypeUtils.GetEnumType(DdlTemplateType.SelectedValue);
+            var templateType = TemplateTypeUtils.GetEnumType(DdlTemplateType.SelectedValue);
             var channelId = SiteId;
             var contentId = 0;
-            if (templateType == ETemplateType.ChannelTemplate || templateType == ETemplateType.ContentTemplate)
+            if (templateType == TemplateType.ChannelTemplate || templateType == TemplateType.ContentTemplate)
             {
                 channelId = TranslateUtils.ToInt(DdlNodeId.SelectedValue);
-                if (templateType == ETemplateType.ContentTemplate)
+                if (templateType == TemplateType.ContentTemplate)
                 {
                     var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
                     if (nodeInfo.ContentNum > 0)

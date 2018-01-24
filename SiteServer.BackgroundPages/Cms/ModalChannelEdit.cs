@@ -9,6 +9,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -184,11 +185,11 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 if (PhChannelTemplateId.Visible)
                 {
-                    DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, ETemplateType.ChannelTemplate);
+                    DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ChannelTemplate);
                 }
                 if (PhContentTemplateId.Visible)
                 {
-                    DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, ETemplateType.ContentTemplate);
+                    DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ContentTemplate);
                 }
 
                 DataBind();

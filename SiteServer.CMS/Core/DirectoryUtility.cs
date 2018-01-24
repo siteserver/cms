@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
@@ -233,7 +234,7 @@ namespace SiteServer.CMS.Core
             foreach (var templateId in templateIdList)
             {
                 var templateInfo = TemplateManager.GetTemplateInfo(siteInfo.Id, templateId);
-                if (templateInfo == null || templateInfo.TemplateType != ETemplateType.FileTemplate)
+                if (templateInfo == null || templateInfo.TemplateType != TemplateType.FileTemplate)
                 {
                     return;
                 }

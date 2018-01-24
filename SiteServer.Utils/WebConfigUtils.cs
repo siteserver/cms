@@ -1,5 +1,5 @@
 ﻿using System.Xml;
-using SiteServer.Utils.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.Utils
 {
@@ -11,7 +11,7 @@ namespace SiteServer.Utils
         public static string PhysicalApplicationPath { get; private set; }
 
         public static bool IsProtectData { get; private set; }
-        public static EDatabaseType DatabaseType { get; private set; }
+        public static DatabaseType DatabaseType { get; private set; }
         public static string ConnectionString { get; private set; }
 
         public static string AdminDirectory { get; private set; }
@@ -118,7 +118,7 @@ namespace SiteServer.Utils
             }
 
             IsProtectData = isProtectData;
-            DatabaseType = EDatabaseTypeUtils.GetEnumType(databaseType);
+            DatabaseType = DatabaseTypeUtils.GetEnumType(databaseType);
             ConnectionString = connectionString;
             if (string.IsNullOrEmpty(AdminDirectory))
             {
@@ -131,7 +131,7 @@ namespace SiteServer.Utils
             }
         }
 
-        public static void UpdateWebConfig(bool isProtectData, EDatabaseType databaseType, string connectionString, string adminDirectory, string secretKey)
+        public static void UpdateWebConfig(bool isProtectData, DatabaseType databaseType, string connectionString, string adminDirectory, string secretKey)
         {
             var configFilePath = PathUtils.MapPath("~/web.config");
 
@@ -162,7 +162,7 @@ namespace SiteServer.Utils
                                 var attrValue = setting.Attributes["value"];
                                 if (attrValue != null)
                                 {
-                                    attrValue.Value = EDatabaseTypeUtils.GetValue(databaseType);
+                                    attrValue.Value = databaseType.Value;
                                     if (isProtectData)
                                     {
                                         attrValue.Value = TranslateUtils.EncryptStringBySecretKey(attrValue.Value);

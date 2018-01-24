@@ -13,14 +13,14 @@ namespace SiteServer.CMS.StlParser.Utility
 {
     public class StlUtility
     {
-        public static string GetStlCurrentUrl(SiteInfo siteInfo, int channelId, int contentId, IContentInfo contentInfo, ETemplateType templateType, int templateId, bool isLocal)
+        public static string GetStlCurrentUrl(SiteInfo siteInfo, int channelId, int contentId, IContentInfo contentInfo, TemplateType templateType, int templateId, bool isLocal)
         {
             var currentUrl = string.Empty;
-            if (templateType == ETemplateType.IndexPageTemplate)
+            if (templateType == TemplateType.IndexPageTemplate)
             {
                 currentUrl = siteInfo.Additional.WebUrl;
             }
-            else if (templateType == ETemplateType.ContentTemplate)
+            else if (templateType == TemplateType.ContentTemplate)
             {
                 if (contentInfo == null)
                 {
@@ -32,11 +32,11 @@ namespace SiteServer.CMS.StlParser.Utility
                     currentUrl = PageUtility.GetContentUrl(siteInfo, contentInfo, isLocal);
                 }
             }
-            else if (templateType == ETemplateType.ChannelTemplate)
+            else if (templateType == TemplateType.ChannelTemplate)
             {
                 currentUrl = PageUtility.GetChannelUrl(siteInfo, ChannelManager.GetChannelInfo(siteInfo.Id, channelId), isLocal);
             }
-            else if (templateType == ETemplateType.FileTemplate)
+            else if (templateType == TemplateType.FileTemplate)
             {
                 currentUrl = PageUtility.GetFileUrl(siteInfo, templateId, isLocal);
             }

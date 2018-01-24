@@ -41,12 +41,10 @@ namespace SiteServer.CMS.Provider
 
             var sqlBuilder = new StringBuilder();
 
-            //添加默认字段
-            switch (WebConfigUtils.DatabaseType)
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                case EDatabaseType.MySql:
-                    sqlBuilder.Append($@"CREATE TABLE `{tableName}` (");
-                    sqlBuilder.Append($@"
+                sqlBuilder.Append($@"CREATE TABLE `{tableName}` (");
+                sqlBuilder.Append($@"
 `{nameof(ContentInfo.Id)}` INT AUTO_INCREMENT,
 `{nameof(ContentInfo.ChannelId)}` INT,
 `{nameof(ContentInfo.SiteId)}` INT,
@@ -75,10 +73,11 @@ namespace SiteServer.CMS.Provider
 `{nameof(ContentInfo.LinkUrl)}` VARCHAR(200),
 `{nameof(ContentInfo.AddDate)}` DATETIME,
 ");
-                    break;
-                case EDatabaseType.SqlServer:
-                    sqlBuilder.Append($@"CREATE TABLE {tableName} (");
-                    sqlBuilder.Append($@"
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                sqlBuilder.Append($@"CREATE TABLE {tableName} (");
+                sqlBuilder.Append($@"
 {nameof(ContentInfo.Id)} int IDENTITY (1, 1),
 {nameof(ContentInfo.ChannelId)} int NULL,
 {nameof(ContentInfo.SiteId)} int NULL,
@@ -107,10 +106,11 @@ namespace SiteServer.CMS.Provider
 {nameof(ContentInfo.LinkUrl)} nvarchar (200) NULL,
 {nameof(ContentInfo.AddDate)} datetime NULL,
 ");
-                    break;
-                case EDatabaseType.PostgreSql:
-                    sqlBuilder.Append($@"CREATE TABLE {tableName} (");
-                    sqlBuilder.Append($@"
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                sqlBuilder.Append($@"CREATE TABLE {tableName} (");
+                sqlBuilder.Append($@"
 {nameof(ContentInfo.Id)} SERIAL,
 {nameof(ContentInfo.ChannelId)} int4 NULL,
 {nameof(ContentInfo.SiteId)} int4 NULL,
@@ -139,10 +139,11 @@ namespace SiteServer.CMS.Provider
 {nameof(ContentInfo.LinkUrl)} varchar (200) NULL,
 {nameof(ContentInfo.AddDate)} timestamptz NULL,
 ");
-                    break;
-                case EDatabaseType.Oracle:
-                    sqlBuilder.Append($@"CREATE TABLE {tableName} (");
-                    sqlBuilder.Append($@"
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                sqlBuilder.Append($@"CREATE TABLE {tableName} (");
+                sqlBuilder.Append($@"
 {nameof(ContentInfo.Id)} NUMBER GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
 {nameof(ContentInfo.ChannelId)} number NULL,
 {nameof(ContentInfo.SiteId)} number NULL,
@@ -171,9 +172,6 @@ namespace SiteServer.CMS.Provider
 {nameof(ContentInfo.LinkUrl)} nvarchar2(200) NULL,
 {nameof(ContentInfo.AddDate)} timestamp(6) with time zone NULL,
 ");
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
 
             //添加后台定义字段
@@ -182,7 +180,7 @@ namespace SiteServer.CMS.Provider
                 sqlBuilder.Append(sqlString).Append(@",");
             }
 
-            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
                 sqlBuilder.Append($@"
 PRIMARY KEY ({nameof(ContentInfo.Id)})
@@ -1851,63 +1849,60 @@ group by tmp.userName";
             var sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order}";
             if (limit > 0 && offset > 0)
             {
-                switch (WebConfigUtils.DatabaseType)
+                if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
                 {
-                    case EDatabaseType.MySql:
-                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit} offset {offset}";
-                        break;
-                    case EDatabaseType.SqlServer:
-                        sqlString = $@"SELECT TOP {limit} * FROM {tableName} WHERE Id NOT IN (SELECT TOP {offset} Id FROM {tableName} {firstWhere} ORDER BY {order}) {secondWhere} ORDER BY {order}";
-                        break;
-                    case EDatabaseType.PostgreSql:
-                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit} offset {offset}";
-                        break;
-                    case EDatabaseType.Oracle:
-                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit} offset {offset}";
+                }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+                {
+                    sqlString = $@"SELECT TOP {limit} * FROM {tableName} WHERE Id NOT IN (SELECT TOP {offset} Id FROM {tableName} {firstWhere} ORDER BY {order}) {secondWhere} ORDER BY {order}";
+                }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+                {
+                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit} offset {offset}";
+                }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+                {
+                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
                 }
             }
             else if (limit > 0)
             {
-                switch (WebConfigUtils.DatabaseType)
+                if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
                 {
-                    case EDatabaseType.MySql:
-                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit}";
-                        break;
-                    case EDatabaseType.SqlServer:
-                        sqlString = $@"SELECT TOP {limit} * FROM {tableName} {firstWhere} ORDER BY {order}";
-                        break;
-                    case EDatabaseType.PostgreSql:
-                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit}";
-                        break;
-                    case EDatabaseType.Oracle:
-                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} FETCH FIRST {limit} ROWS ONLY";
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit}";
+                }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+                {
+                    sqlString = $@"SELECT TOP {limit} * FROM {tableName} {firstWhere} ORDER BY {order}";
+                }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+                {
+                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit}";
+                }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+                {
+                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} FETCH FIRST {limit} ROWS ONLY";
                 }
             }
             else if (offset > 0)
             {
-                switch (WebConfigUtils.DatabaseType)
+                if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
                 {
-                    case EDatabaseType.MySql:
-                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} offset {offset}";
-                        break;
-                    case EDatabaseType.SqlServer:
-                        sqlString =
+                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} offset {offset}";
+                }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+                {
+                    sqlString =
                             $@"SELECT * FROM {tableName} WHERE Id NOT IN (SELECT TOP {offset} Id FROM {tableName} {firstWhere} ORDER BY {order}) {secondWhere} ORDER BY {order}";
-                        break;
-                    case EDatabaseType.PostgreSql:
-                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} offset {offset}";
-                        break;
-                    case EDatabaseType.Oracle:
-                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} OFFSET {offset} ROWS";
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+                {
+                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} offset {offset}";
+                }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+                {
+                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} OFFSET {offset} ROWS";
                 }
             }
 

@@ -8,11 +8,11 @@ using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Preview;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin;
 
 namespace SiteServer.API.Controllers.Preview
 {
@@ -114,24 +114,26 @@ namespace SiteServer.API.Controllers.Preview
             if (siteInfo == null) return null;
 
             TemplateInfo templateInfo = null;
-            EContextType contextType = EContextType.Undefined;;
-            switch (visualInfo.TemplateType)
+            EContextType contextType = EContextType.Undefined;
+
+            if (visualInfo.TemplateType == TemplateType.IndexPageTemplate)
             {
-                case ETemplateType.IndexPageTemplate:
-                    templateInfo = TemplateManager.GetIndexPageTemplateInfo(visualInfo.SiteId);
-                    contextType = EContextType.Channel;
-                    break;
-                case ETemplateType.ChannelTemplate:
-                    templateInfo = TemplateManager.GetChannelTemplateInfo(visualInfo.SiteId, visualInfo.ChannelId);
-                    contextType = EContextType.Channel;
-                    break;
-                case ETemplateType.ContentTemplate:
-                    templateInfo = TemplateManager.GetContentTemplateInfo(visualInfo.SiteId, visualInfo.ChannelId);
-                    contextType = EContextType.Content;
-                    break;
-                case ETemplateType.FileTemplate:
-                    templateInfo = TemplateManager.GetFileTemplateInfo(visualInfo.SiteId, visualInfo.FileTemplateId);
-                    break;
+                templateInfo = TemplateManager.GetIndexPageTemplateInfo(visualInfo.SiteId);
+                contextType = EContextType.Channel;
+            }
+            else if (visualInfo.TemplateType == TemplateType.ChannelTemplate)
+            {
+                templateInfo = TemplateManager.GetChannelTemplateInfo(visualInfo.SiteId, visualInfo.ChannelId);
+                contextType = EContextType.Channel;
+            }
+            else if (visualInfo.TemplateType == TemplateType.ContentTemplate)
+            {
+                templateInfo = TemplateManager.GetContentTemplateInfo(visualInfo.SiteId, visualInfo.ChannelId);
+                contextType = EContextType.Content;
+            }
+            else if (visualInfo.TemplateType == TemplateType.ContentTemplate)
+            {
+                templateInfo = TemplateManager.GetFileTemplateInfo(visualInfo.SiteId, visualInfo.FileTemplateId);
             }
 
             var pageInfo = new PageInfo(visualInfo.ChannelId, visualInfo.ContentId, siteInfo, templateInfo)
@@ -146,13 +148,13 @@ namespace SiteServer.API.Controllers.Preview
             var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(siteInfo, templateInfo));
             //需要完善，考虑单页模板、内容正文、翻页及外部链接
 
-            if (visualInfo.TemplateType == ETemplateType.FileTemplate)           //单页
+            if (visualInfo.TemplateType == TemplateType.FileTemplate)           //单页
             {
                 var fileContentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(siteInfo, templateInfo));
                 Parser.Parse(siteInfo, pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
                 return Response(fileContentBuilder.ToString(), siteInfo);
             }
-            if (visualInfo.TemplateType == ETemplateType.IndexPageTemplate || visualInfo.TemplateType == ETemplateType.ChannelTemplate)        //栏目页面
+            if (visualInfo.TemplateType == TemplateType.IndexPageTemplate || visualInfo.TemplateType == TemplateType.ChannelTemplate)        //栏目页面
             {
                 var nodeInfo = ChannelManager.GetChannelInfo(visualInfo.SiteId, visualInfo.ChannelId);
                 if (nodeInfo == null) return null;
@@ -311,7 +313,7 @@ namespace SiteServer.API.Controllers.Preview
                 Parser.Parse(siteInfo, pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
                 return Response(contentBuilder.ToString(), siteInfo);
             }
-            if (visualInfo.TemplateType == ETemplateType.ContentTemplate)        //内容页面
+            if (visualInfo.TemplateType == TemplateType.ContentTemplate)        //内容页面
             {
                 if (contextInfo.ContentInfo == null) return null;
 

@@ -4,7 +4,7 @@ using Atom.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
@@ -39,28 +39,28 @@ namespace SiteServer.CMS.ImportExport.Components
             AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.Taxis, psInfo.Taxis.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.SettingsXml, psInfo.Additional.ToString());
 
-            var indexTemplateId = TemplateManager.GetDefaultTemplateId(psInfo.Id, ETemplateType.IndexPageTemplate);
+            var indexTemplateId = TemplateManager.GetDefaultTemplateId(psInfo.Id, TemplateType.IndexPageTemplate);
 			if (indexTemplateId != 0)
 			{
                 var indexTemplateName = TemplateManager.GetTemplateName(_siteId, indexTemplateId);
 				AtomUtility.AddDcElement(feed.AdditionalElements, DefaultIndexTemplateName, indexTemplateName);
 			}
 
-            var channelTemplateId = TemplateManager.GetDefaultTemplateId(psInfo.Id, ETemplateType.ChannelTemplate);
+            var channelTemplateId = TemplateManager.GetDefaultTemplateId(psInfo.Id, TemplateType.ChannelTemplate);
 			if (channelTemplateId != 0)
 			{
                 var channelTemplateName = TemplateManager.GetTemplateName(_siteId, channelTemplateId);
 				AtomUtility.AddDcElement(feed.AdditionalElements, DefaultChannelTemplateName, channelTemplateName);
 			}
 
-            var contentTemplateId = TemplateManager.GetDefaultTemplateId(psInfo.Id, ETemplateType.ContentTemplate);
+            var contentTemplateId = TemplateManager.GetDefaultTemplateId(psInfo.Id, TemplateType.ContentTemplate);
 			if (contentTemplateId != 0)
 			{
                 var contentTemplateName = TemplateManager.GetTemplateName(_siteId, contentTemplateId);
 				AtomUtility.AddDcElement(feed.AdditionalElements, DefaultContentTemplateName, contentTemplateName);
 			}
 
-            var fileTemplateId = TemplateManager.GetDefaultTemplateId(psInfo.Id, ETemplateType.FileTemplate);
+            var fileTemplateId = TemplateManager.GetDefaultTemplateId(psInfo.Id, TemplateType.FileTemplate);
 			if (fileTemplateId != 0)
 			{
                 var fileTemplateName = TemplateManager.GetTemplateName(psInfo.Id, fileTemplateId);
@@ -124,7 +124,7 @@ namespace SiteServer.CMS.ImportExport.Components
 			var indexTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultIndexTemplateName);
 			if (!string.IsNullOrEmpty(indexTemplateName))
 			{
-				var indexTemplateId = TemplateManager.GetTemplateIdByTemplateName(siteInfo.Id, ETemplateType.IndexPageTemplate, indexTemplateName);
+				var indexTemplateId = TemplateManager.GetTemplateIdByTemplateName(siteInfo.Id, TemplateType.IndexPageTemplate, indexTemplateName);
 				if (indexTemplateId != 0)
 				{
 					DataProvider.TemplateDao.SetDefault(siteInfo.Id, indexTemplateId);
@@ -134,7 +134,7 @@ namespace SiteServer.CMS.ImportExport.Components
 			var channelTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultChannelTemplateName);
 			if (!string.IsNullOrEmpty(channelTemplateName))
 			{
-                var channelTemplateId = TemplateManager.GetTemplateIdByTemplateName(siteInfo.Id, ETemplateType.ChannelTemplate, channelTemplateName);
+                var channelTemplateId = TemplateManager.GetTemplateIdByTemplateName(siteInfo.Id, TemplateType.ChannelTemplate, channelTemplateName);
 				if (channelTemplateId != 0)
 				{
 					DataProvider.TemplateDao.SetDefault(siteInfo.Id, channelTemplateId);
@@ -144,7 +144,7 @@ namespace SiteServer.CMS.ImportExport.Components
 			var contentTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultContentTemplateName);
 			if (!string.IsNullOrEmpty(contentTemplateName))
 			{
-                var contentTemplateId = TemplateManager.GetTemplateIdByTemplateName(siteInfo.Id, ETemplateType.ContentTemplate, contentTemplateName);
+                var contentTemplateId = TemplateManager.GetTemplateIdByTemplateName(siteInfo.Id, TemplateType.ContentTemplate, contentTemplateName);
 				if (contentTemplateId != 0)
 				{
 					DataProvider.TemplateDao.SetDefault(siteInfo.Id, contentTemplateId);
@@ -154,7 +154,7 @@ namespace SiteServer.CMS.ImportExport.Components
 			var fileTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultFileTemplateName);
 			if (!string.IsNullOrEmpty(fileTemplateName))
 			{
-                var fileTemplateId = TemplateManager.GetTemplateIdByTemplateName(siteInfo.Id, ETemplateType.FileTemplate, fileTemplateName);
+                var fileTemplateId = TemplateManager.GetTemplateIdByTemplateName(siteInfo.Id, TemplateType.FileTemplate, fileTemplateName);
 				if (fileTemplateId != 0)
 				{
 					DataProvider.TemplateDao.SetDefault(siteInfo.Id, fileTemplateId);

@@ -4,7 +4,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.ImportExport.Components
@@ -60,7 +60,7 @@ namespace SiteServer.CMS.ImportExport.Components
 			AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ nameof(TemplateInfo.Id), "TemplateID" }, templateInfo.Id.ToString());
 			AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(TemplateInfo.SiteId), "PublishmentSystemID" }, templateInfo.SiteId.ToString());
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.TemplateName), templateInfo.TemplateName);
-			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.TemplateType), ETemplateTypeUtils.GetValue(templateInfo.TemplateType));
+			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.TemplateType), TemplateTypeUtils.GetValue(templateInfo.TemplateType));
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.RelatedFileName), templateInfo.RelatedFileName);
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileFullName), templateInfo.CreatedFileFullName);
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileExtName), templateInfo.CreatedFileExtName);
@@ -89,7 +89,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     SiteId = _siteId,
 			        TemplateName = templateName,
 			        TemplateType =
-			            ETemplateTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.TemplateType))),
+			            TemplateTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.TemplateType))),
 			        RelatedFileName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.RelatedFileName)),
 			        CreatedFileFullName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileFullName)),
 			        CreatedFileExtName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileExtName)),
@@ -126,7 +126,7 @@ namespace SiteServer.CMS.ImportExport.Components
 			        templateId = DataProvider.TemplateDao.Insert(templateInfo, templateContent, administratorName);
 			    }
 
-			    if (templateInfo.TemplateType == ETemplateType.FileTemplate)
+			    if (templateInfo.TemplateType == TemplateType.FileTemplate)
 			    {
 			        CreateManager.CreateFile(_siteId, templateId);
 			    }

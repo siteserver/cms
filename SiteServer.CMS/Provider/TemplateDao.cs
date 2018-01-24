@@ -6,7 +6,6 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -119,7 +118,7 @@ namespace SiteServer.CMS.Provider
 			{
 				GetParameter(ParmSiteId, DataType.Integer, templateInfo.SiteId),
 				GetParameter(ParmTemplateName, DataType.VarChar, 50, templateInfo.TemplateName),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(templateInfo.TemplateType)),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(templateInfo.TemplateType)),
 				GetParameter(ParmRelatedFileName, DataType.VarChar, 50, templateInfo.RelatedFileName),
 				GetParameter(ParmCreatedFileFullName, DataType.VarChar, 50, templateInfo.CreatedFileFullName),
 				GetParameter(ParmCreatedFileExtName, DataType.VarChar, 50, templateInfo.CreatedFileExtName),
@@ -147,7 +146,7 @@ namespace SiteServer.CMS.Provider
             var updateParms = new IDataParameter[]
 			{
 				GetParameter(ParmTemplateName, DataType.VarChar, 50, templateInfo.TemplateName),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(templateInfo.TemplateType)),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(templateInfo.TemplateType)),
 				GetParameter(ParmRelatedFileName, DataType.VarChar, 50, templateInfo.RelatedFileName),
 				GetParameter(ParmCreatedFileFullName, DataType.VarChar, 50, templateInfo.CreatedFileFullName),
 				GetParameter(ParmCreatedFileExtName, DataType.VarChar, 50, templateInfo.CreatedFileExtName),
@@ -163,7 +162,7 @@ namespace SiteServer.CMS.Provider
             TemplateManager.RemoveCache(templateInfo.SiteId);
         }
 
-        private void SetAllTemplateDefaultToFalse(int siteId, ETemplateType templateType)
+        private void SetAllTemplateDefaultToFalse(int siteId, TemplateType templateType)
         {
             var sqlString = "UPDATE siteserver_Template SET IsDefault = @IsDefault WHERE SiteId = @SiteId AND TemplateType = @TemplateType";
 
@@ -171,7 +170,7 @@ namespace SiteServer.CMS.Provider
 			{
 				GetParameter(ParmIsDefault, DataType.VarChar, 18, false.ToString()),
 				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(templateType))
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(templateType))
 			};
 
             ExecuteNonQuery(sqlString, updateParms);
@@ -255,9 +254,9 @@ namespace SiteServer.CMS.Provider
             return importTemplateName;
         }
 
-        public Dictionary<ETemplateType, int> GetCountDictionary(int siteId)
+        public Dictionary<TemplateType, int> GetCountDictionary(int siteId)
         {
-            var dictionary = new Dictionary<ETemplateType, int>();
+            var dictionary = new Dictionary<TemplateType, int>();
 
             var parms = new IDataParameter[]
 			{
@@ -268,7 +267,7 @@ namespace SiteServer.CMS.Provider
             {
                 while (rdr.Read())
                 {
-                    var templateType = ETemplateTypeUtils.GetEnumType(GetString(rdr, 0));
+                    var templateType = TemplateTypeUtils.GetEnumType(GetString(rdr, 0));
                     var count = GetInt(rdr, 1);
 
                     dictionary.Add(templateType, count);
@@ -279,12 +278,12 @@ namespace SiteServer.CMS.Provider
             return dictionary;
         }
 
-        public IEnumerable GetDataSourceByType(int siteId, ETemplateType type)
+        public IEnumerable GetDataSourceByType(int siteId, TemplateType type)
         {
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(type))
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(type))
 			};
 
             var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllTemplateByType, parms);
@@ -318,18 +317,18 @@ namespace SiteServer.CMS.Provider
             }
             else
             {
-                return GetDataSourceByType(siteId, ETemplateTypeUtils.GetEnumType(templateTypeString));
+                return GetDataSourceByType(siteId, TemplateTypeUtils.GetEnumType(templateTypeString));
             }
         }
 
-        public List<int> GetIdListByType(int siteId, ETemplateType type)
+        public List<int> GetIdListByType(int siteId, TemplateType type)
         {
             var list = new List<int>();
 
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(type))
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(type))
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAllIdByType, parms))
@@ -344,14 +343,14 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public List<TemplateInfo> GetTemplateInfoListByType(int siteId, ETemplateType type)
+        public List<TemplateInfo> GetTemplateInfoListByType(int siteId, TemplateType type)
         {
             var list = new List<TemplateInfo>();
 
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(type))
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(type))
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAllTemplateByType, parms))
@@ -359,7 +358,7 @@ namespace SiteServer.CMS.Provider
                 while (rdr.Read())
                 {
                     var i = 0;
-                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), ETemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
+                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
                     list.Add(info);
                 }
                 rdr.Close();
@@ -372,14 +371,14 @@ namespace SiteServer.CMS.Provider
             var list = new List<TemplateInfo>();
 
             string sqlString =
-                $"SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = {siteId} AND TemplateType = '{ETemplateTypeUtils.GetValue(ETemplateType.FileTemplate)}' ORDER BY RelatedFileName";
+                $"SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = {siteId} AND TemplateType = '{TemplateTypeUtils.GetValue(TemplateType.FileTemplate)}' ORDER BY RelatedFileName";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
                     var i = 0;
-                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), ETemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
+                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
                     list.Add(info);
                 }
                 rdr.Close();
@@ -401,7 +400,7 @@ namespace SiteServer.CMS.Provider
                 while (rdr.Read())
                 {
                     var i = 0;
-                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), ETemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
+                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
                     list.Add(info);
                 }
                 rdr.Close();
@@ -409,14 +408,14 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public List<string> GetTemplateNameList(int siteId, ETemplateType templateType)
+        public List<string> GetTemplateNameList(int siteId, TemplateType templateType)
         {
             var list = new List<string>();
 
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(templateType))
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(templateType))
 			};
 
             using (var rdr = ExecuteReader(SqlSelectTemplateNames, parms))
@@ -431,14 +430,14 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public List<string> GetLowerRelatedFileNameList(int siteId, ETemplateType templateType)
+        public List<string> GetLowerRelatedFileNameList(int siteId, TemplateType templateType)
         {
             var list = new List<string>();
 
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(templateType))
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(templateType))
 			};
 
             using (var rdr = ExecuteReader(SqlSelectRelatedFileNameByTemplateType, parms))
@@ -460,13 +459,13 @@ namespace SiteServer.CMS.Provider
             var templateInfoList = new List<TemplateInfo>();
             var charset = ECharsetUtils.GetEnumType(siteInfo.Additional.Charset);
 
-            var templateInfo = new TemplateInfo(0, siteInfo.Id, "系统首页模板", ETemplateType.IndexPageTemplate, "T_系统首页模板.html", "@/index.html", ".html", charset, true);
+            var templateInfo = new TemplateInfo(0, siteInfo.Id, "系统首页模板", TemplateType.IndexPageTemplate, "T_系统首页模板.html", "@/index.html", ".html", charset, true);
             templateInfoList.Add(templateInfo);
 
-            templateInfo = new TemplateInfo(0, siteInfo.Id, "系统栏目模板", ETemplateType.ChannelTemplate, "T_系统栏目模板.html", "index.html", ".html", charset, true);
+            templateInfo = new TemplateInfo(0, siteInfo.Id, "系统栏目模板", TemplateType.ChannelTemplate, "T_系统栏目模板.html", "index.html", ".html", charset, true);
             templateInfoList.Add(templateInfo);
 
-            templateInfo = new TemplateInfo(0, siteInfo.Id, "系统内容模板", ETemplateType.ContentTemplate, "T_系统内容模板.html", "index.html", ".html", charset, true);
+            templateInfo = new TemplateInfo(0, siteInfo.Id, "系统内容模板", TemplateType.ContentTemplate, "T_系统内容模板.html", "index.html", ".html", charset, true);
             templateInfoList.Add(templateInfo);
 
             foreach (var theTemplateInfo in templateInfoList)
@@ -489,7 +488,7 @@ namespace SiteServer.CMS.Provider
                 while (rdr.Read())
                 {
                     var i = 0;
-                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), ETemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
+                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
                     dictionary.Add(info.Id, info);
                 }
                 rdr.Close();
@@ -499,13 +498,13 @@ namespace SiteServer.CMS.Provider
         }
 
 
-        public TemplateInfo GetTemplateByUrlType(int siteId, ETemplateType type, string createdFileFullName)
+        public TemplateInfo GetTemplateByUrlType(int siteId, TemplateType type, string createdFileFullName)
         {
             TemplateInfo info = null;
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(type)),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(type)),
 				GetParameter(ParmCreatedFileFullName, DataType.VarChar, 50, createdFileFullName)
 			};
 
@@ -514,20 +513,20 @@ namespace SiteServer.CMS.Provider
                 while (rdr.Read())
                 {
                     var i = 0;
-                    info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), ETemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
+                    info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
                 }
                 rdr.Close();
             }
             return info;
         }
 
-        public TemplateInfo GetTemplateById(int siteId, ETemplateType type, string tId)
+        public TemplateInfo GetTemplateById(int siteId, TemplateType type, string tId)
         {
             TemplateInfo info = null;
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(type)),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(type)),
 				GetParameter(ParmId, DataType.Integer, tId)
 			};
 
@@ -536,7 +535,7 @@ namespace SiteServer.CMS.Provider
                 if (rdr.Read())
                 {
                     var i = 0;
-                    info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), ETemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
+                    info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
                 }
                 rdr.Close();
             }

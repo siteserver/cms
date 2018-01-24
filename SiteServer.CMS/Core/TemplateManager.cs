@@ -2,7 +2,7 @@
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using System.Collections.Generic;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
@@ -54,7 +54,7 @@ namespace SiteServer.CMS.Core
             return templateName;
         }
 
-        public static TemplateInfo GetTemplateInfoByTemplateName(int siteId, ETemplateType templateType, string templateName)
+        public static TemplateInfo GetTemplateInfoByTemplateName(int siteId, TemplateType templateType, string templateName)
         {
             TemplateInfo info = null;
 
@@ -74,7 +74,7 @@ namespace SiteServer.CMS.Core
             return info;
         }
 
-        public static TemplateInfo GetDefaultTemplateInfo(int siteId, ETemplateType templateType)
+        public static TemplateInfo GetDefaultTemplateInfo(int siteId, TemplateType templateType)
         {
             TemplateInfo info = null;
 
@@ -94,7 +94,7 @@ namespace SiteServer.CMS.Core
             return info;
         }
 
-        public static int GetDefaultTemplateId(int siteId, ETemplateType templateType)
+        public static int GetDefaultTemplateId(int siteId, TemplateType templateType)
         {
             var id = 0;
 
@@ -114,7 +114,7 @@ namespace SiteServer.CMS.Core
             return id;
         }
 
-        public static int GetTemplateIdByTemplateName(int siteId, ETemplateType templateType, string templateName)
+        public static int GetTemplateIdByTemplateName(int siteId, TemplateType templateType, string templateName)
         {
             var id = 0;
 
@@ -143,7 +143,7 @@ namespace SiteServer.CMS.Core
 
             foreach (var templateInfo in templateInfoDictionary.Values)
             {
-                if (templateInfo.TemplateType == ETemplateType.FileTemplate)
+                if (templateInfo.TemplateType == TemplateType.FileTemplate)
                 {
                     list.Add(templateInfo.Id);
                 }
@@ -207,11 +207,11 @@ namespace SiteServer.CMS.Core
         public static string GetTemplateFilePath(SiteInfo siteInfo, TemplateInfo templateInfo)
         {
             string filePath;
-            if (templateInfo.TemplateType == ETemplateType.IndexPageTemplate)
+            if (templateInfo.TemplateType == TemplateType.IndexPageTemplate)
             {
                 filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, siteInfo.SiteDir, templateInfo.RelatedFileName);
             }
-            else if (templateInfo.TemplateType == ETemplateType.ContentTemplate)
+            else if (templateInfo.TemplateType == TemplateType.ContentTemplate)
             {
                 filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, siteInfo.SiteDir, DirectoryUtils.PublishmentSytem.Template, DirectoryUtils.PublishmentSytem.Content, templateInfo.RelatedFileName);
             }
@@ -224,14 +224,14 @@ namespace SiteServer.CMS.Core
 
 	    public static TemplateInfo GetIndexPageTemplateInfo(int siteId)
 	    {
-	        var templateId = GetDefaultTemplateId(siteId, ETemplateType.IndexPageTemplate);
+	        var templateId = GetDefaultTemplateId(siteId, TemplateType.IndexPageTemplate);
             TemplateInfo templateInfo = null;
             if (templateId != 0)
             {
                 templateInfo = GetTemplateInfo(siteId, templateId);
             }
 
-            return templateInfo ?? GetDefaultTemplateInfo(siteId, ETemplateType.IndexPageTemplate);
+            return templateInfo ?? GetDefaultTemplateInfo(siteId, TemplateType.IndexPageTemplate);
         }
 
         public static TemplateInfo GetChannelTemplateInfo(int siteId, int channelId)
@@ -239,7 +239,7 @@ namespace SiteServer.CMS.Core
             var templateId = 0;
             if (siteId == channelId)
             {
-                templateId = GetDefaultTemplateId(siteId, ETemplateType.IndexPageTemplate);
+                templateId = GetDefaultTemplateId(siteId, TemplateType.IndexPageTemplate);
             }
             else
             {
@@ -256,7 +256,7 @@ namespace SiteServer.CMS.Core
                 templateInfo = GetTemplateInfo(siteId, templateId);
             }
 
-            return templateInfo ?? GetDefaultTemplateInfo(siteId, ETemplateType.ChannelTemplate);
+            return templateInfo ?? GetDefaultTemplateInfo(siteId, TemplateType.ChannelTemplate);
         }
 
         public static TemplateInfo GetContentTemplateInfo(int siteId, int channelId)
@@ -274,7 +274,7 @@ namespace SiteServer.CMS.Core
                 templateInfo = GetTemplateInfo(siteId, templateId);
             }
 
-            return templateInfo ?? GetDefaultTemplateInfo(siteId, ETemplateType.ContentTemplate);
+            return templateInfo ?? GetDefaultTemplateInfo(siteId, TemplateType.ContentTemplate);
         }
 
         public static TemplateInfo GetFileTemplateInfo(int siteId, int fileTemplateId)
@@ -287,7 +287,7 @@ namespace SiteServer.CMS.Core
                 templateInfo = GetTemplateInfo(siteId, templateId);
             }
 
-            return templateInfo ?? GetDefaultTemplateInfo(siteId, ETemplateType.FileTemplate);
+            return templateInfo ?? GetDefaultTemplateInfo(siteId, TemplateType.FileTemplate);
         }
 
         public static void WriteContentToTemplateFile(SiteInfo siteInfo, TemplateInfo templateInfo, string content, string administratorName)
@@ -315,7 +315,7 @@ namespace SiteServer.CMS.Core
 
         public static int GetIndexTempalteId(int siteId)
         {
-            return GetDefaultTemplateId(siteId, ETemplateType.IndexPageTemplate);
+            return GetDefaultTemplateId(siteId, TemplateType.IndexPageTemplate);
         }
 
         public static int GetChannelTempalteId(int siteId, int nodeId)
@@ -330,7 +330,7 @@ namespace SiteServer.CMS.Core
 
             if (templateId == 0)
             {
-                templateId = GetDefaultTemplateId(siteId, ETemplateType.ChannelTemplate);
+                templateId = GetDefaultTemplateId(siteId, TemplateType.ChannelTemplate);
             }
 
             return templateId;
@@ -348,7 +348,7 @@ namespace SiteServer.CMS.Core
 
             if (templateId == 0)
             {
-                templateId = GetDefaultTemplateId(siteId, ETemplateType.ContentTemplate);
+                templateId = GetDefaultTemplateId(siteId, TemplateType.ContentTemplate);
             }
 
             return templateId;

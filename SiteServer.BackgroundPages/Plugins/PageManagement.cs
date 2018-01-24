@@ -193,7 +193,7 @@ namespace SiteServer.BackgroundPages.Plugins
             var ltlInitTime = (Literal)e.Item.FindControl("ltlInitTime");
             var ltlCmd = (Literal)e.Item.FindControl("ltlCmd");
 
-            ltlLogo.Text = $@"<img src=""{PluginManager.GetPluginIconUrl(pluginInfo.Metadata)}"" width=""48"" height=""48"" />";
+            ltlLogo.Text = $@"<img src=""{PluginManager.GetPluginIconUrl(pluginInfo.Service)}"" width=""48"" height=""48"" />";
             ltlPluginId.Text = $@"<a href=""{pluginInfo.Metadata.ProjectUrl}"" target=""_blank"">{pluginInfo.Id}</a>";
             ltlPluginName.Text = pluginInfo.Metadata.Title;
             ltlVersion.Text = pluginInfo.Metadata.Version;

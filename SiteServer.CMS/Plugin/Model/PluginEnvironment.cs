@@ -4,7 +4,7 @@ namespace SiteServer.CMS.Plugin.Model
 {
     public class PluginEnvironment: IEnvironment
     {
-        public PluginEnvironment(string databaseType, string connectionString, string adminDirectory, string physicalApplicationPath)
+        public PluginEnvironment(DatabaseType databaseType, string connectionString, string adminDirectory, string physicalApplicationPath)
         {
             DatabaseType = databaseType;
             ConnectionString = connectionString;
@@ -12,7 +12,7 @@ namespace SiteServer.CMS.Plugin.Model
             PhysicalApplicationPath = physicalApplicationPath;
         }
 
-        public string DatabaseType { get; }
+        public DatabaseType DatabaseType { get; }
 
         public string ConnectionString { get; }
 
