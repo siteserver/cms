@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AAB355C2-8DD2-43D3-880C-EB9B51A59971}</ProjectGuid>
+    <ProjectGuid>{6AA1713A-3B77-4B20-B8C7-FCB6DE556F64}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SiteServer.BackgroundPages</RootNamespace>
@@ -708,17 +708,17 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
-      <Project>{55efd315-e628-4293-9505-d1f919ade339}</Project>
+      <Project>{944127c3-915d-4f02-a534-64ec668c46ec}</Project>
       <Name>SiteServer.CMS</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj">
-      <Project>{f19a6f6d-d96a-415e-b1d0-f3ad6f6067a3}</Project>
+      <Project>{2176d8ba-5f57-4c56-8e21-a09011517ae2}</Project>
       <Name>SiteServer.Utils</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
