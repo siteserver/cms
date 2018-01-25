@@ -740,7 +740,6 @@ namespace Microsoft.Exchange.Data.Internal
     internal class TemporaryDataStorage : ReadableWritableDataStorage
     {
         private long totalLength = 0;
-        private long filePosition = 0;
         private Stream fileStream;
 
         public static int defaultBufferBlockSize = 8 * 1024;                            
@@ -821,7 +820,6 @@ namespace Microsoft.Exchange.Data.Internal
                 if (fileStream == null)
                 {
                     fileStream = TempFileStream.CreateInstance();
-                    filePosition = 0;
                 }
 
                 fileStream.Write(buffer, offset, count);

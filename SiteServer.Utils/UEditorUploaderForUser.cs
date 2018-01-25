@@ -78,7 +78,7 @@ namespace SiteServer.Utils
 
                 URL = PageUtils.GetRootUrlByPhysicalPath(localFilePath);
             }
-            catch (Exception e)
+            catch
             {
                 state = "未知错误";
                 URL = "";

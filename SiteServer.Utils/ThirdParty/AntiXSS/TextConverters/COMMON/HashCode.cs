@@ -33,24 +33,24 @@ namespace Microsoft.Exchange.Data.TextConverters
             var hash1 = 5381;
             var hash2 = hash1;
 
-            unsafe
-            {
-                fixed (char* src = obj)
-                {
-                    var s = src;
-                    var len = obj.Length;
+            //unsafe
+            //{
+            //    fixed (char* src = obj)
+            //    {
+            //        var s = src;
+            //        var len = obj.Length;
 
-                    while (len > 0)
-                    {
-                        hash1 = ((hash1 << 5) + hash1) ^ s[0];
-                        if (len < 2)
-                            break;
-                        hash2 = ((hash2 << 5) + hash2) ^ s[1];
-                        s += 2;
-                        len -= 2;
-                    }
-                }
-            }
+            //        while (len > 0)
+            //        {
+            //            hash1 = ((hash1 << 5) + hash1) ^ s[0];
+            //            if (len < 2)
+            //                break;
+            //            hash2 = ((hash2 << 5) + hash2) ^ s[1];
+            //            s += 2;
+            //            len -= 2;
+            //        }
+            //    }
+            //}
 
             return hash1 + (hash2 * 1566083941);
         }
@@ -62,24 +62,24 @@ namespace Microsoft.Exchange.Data.TextConverters
             var hash1 = 5381;
             var hash2 = hash1;
 
-            unsafe
-            {
-                fixed (char* src = obj.Buffer)
-                {
-                    var s = src + obj.Offset;
-                    var len = obj.Length;
+            //unsafe
+            //{
+            //    fixed (char* src = obj.Buffer)
+            //    {
+            //        var s = src + obj.Offset;
+            //        var len = obj.Length;
 
-                    while (len > 0)
-                    {
-                        hash1 = ((hash1 << 5) + hash1) ^ s[0];
-                        if (len == 1)
-                            break;
-                        hash2 = ((hash2 << 5) + hash2) ^ s[1];
-                        s += 2;
-                        len -= 2;
-                    }
-                }
-            }
+            //        while (len > 0)
+            //        {
+            //            hash1 = ((hash1 << 5) + hash1) ^ s[0];
+            //            if (len == 1)
+            //                break;
+            //            hash2 = ((hash2 << 5) + hash2) ^ s[1];
+            //            s += 2;
+            //            len -= 2;
+            //        }
+            //    }
+            //}
 
             return hash1 + (hash2 * 1566083941);
         }
@@ -89,24 +89,24 @@ namespace Microsoft.Exchange.Data.TextConverters
             var hash1 = 5381;
             var hash2 = hash1;
 
-            unsafe
-            {
-                fixed (char* src = obj)
-                {
-                    var s = src;
-                    var len = obj.Length;
+            //unsafe
+            //{
+            //    fixed (char* src = obj)
+            //    {
+            //        var s = src;
+            //        var len = obj.Length;
 
-                    while (len > 0)
-                    {
-                        hash1 = ((hash1 << 5) + hash1) ^ ParseSupport.ToLowerCase(s[0]);
-                        if (len == 1)
-                            break;
-                        hash2 = ((hash2 << 5) + hash2) ^ ParseSupport.ToLowerCase(s[1]);
-                        s += 2;
-                        len -= 2;
-                    }
-                }
-            }
+            //        while (len > 0)
+            //        {
+            //            hash1 = ((hash1 << 5) + hash1) ^ ParseSupport.ToLowerCase(s[0]);
+            //            if (len == 1)
+            //                break;
+            //            hash2 = ((hash2 << 5) + hash2) ^ ParseSupport.ToLowerCase(s[1]);
+            //            s += 2;
+            //            len -= 2;
+            //        }
+            //    }
+            //}
 
             return hash1 + (hash2 * 1566083941);
         }
@@ -118,24 +118,24 @@ namespace Microsoft.Exchange.Data.TextConverters
             var hash1 = 5381;
             var hash2 = hash1;
 
-            unsafe
-            {
-                fixed (char* src = obj.Buffer)
-                {
-                    var s = src + obj.Offset;
-                    var len = obj.Length;
+            //unsafe
+            //{
+            //    fixed (char* src = obj.Buffer)
+            //    {
+            //        var s = src + obj.Offset;
+            //        var len = obj.Length;
 
-                    while (len > 0)
-                    {
-                        hash1 = ((hash1 << 5) + hash1) ^ ParseSupport.ToLowerCase(s[0]);
-                        if (len == 1)
-                            break;
-                        hash2 = ((hash2 << 5) + hash2) ^ ParseSupport.ToLowerCase(s[1]);
-                        s += 2;
-                        len -= 2;
-                    }
-                }
-            }
+            //        while (len > 0)
+            //        {
+            //            hash1 = ((hash1 << 5) + hash1) ^ ParseSupport.ToLowerCase(s[0]);
+            //            if (len == 1)
+            //                break;
+            //            hash2 = ((hash2 << 5) + hash2) ^ ParseSupport.ToLowerCase(s[1]);
+            //            s += 2;
+            //            len -= 2;
+            //        }
+            //    }
+            //}
 
             return hash1 + (hash2 * 1566083941);
         }
@@ -148,23 +148,23 @@ namespace Microsoft.Exchange.Data.TextConverters
 
             CheckArgs(buffer, offset, length);
 
-            unsafe
-            {
-                fixed (char* src = buffer)
-                {
-                    var s = src + offset;
+            //unsafe
+            //{
+            //    fixed (char* src = buffer)
+            //    {
+            //        var s = src + offset;
 
-                    while (length > 0)
-                    {
-                        hash1 = ((hash1 << 5) + hash1) ^ s[0];
-                        if (length == 1)
-                            break;
-                        hash2 = ((hash2 << 5) + hash2) ^ s[1];
-                        s += 2;
-                        length -= 2;
-                    }
-                }
-            }
+            //        while (length > 0)
+            //        {
+            //            hash1 = ((hash1 << 5) + hash1) ^ s[0];
+            //            if (length == 1)
+            //                break;
+            //            hash2 = ((hash2 << 5) + hash2) ^ s[1];
+            //            s += 2;
+            //            length -= 2;
+            //        }
+            //    }
+            //}
 
             return hash1 + (hash2 * 1566083941);
         }
@@ -176,23 +176,23 @@ namespace Microsoft.Exchange.Data.TextConverters
 
             CheckArgs(buffer, offset, length);
 
-            unsafe
-            {
-                fixed (char* src = buffer)
-                {
-                    var s = src + offset;
+            //unsafe
+            //{
+            //    fixed (char* src = buffer)
+            //    {
+            //        var s = src + offset;
 
-                    while (length > 0)
-                    {
-                        hash1 = ((hash1 << 5) + hash1) ^ ParseSupport.ToLowerCase(s[0]);
-                        if (length == 1)
-                            break;
-                        hash2 = ((hash2 << 5) + hash2) ^ ParseSupport.ToLowerCase(s[1]);
-                        s += 2;
-                        length -= 2;
-                    }
-                }
-            }
+            //        while (length > 0)
+            //        {
+            //            hash1 = ((hash1 << 5) + hash1) ^ ParseSupport.ToLowerCase(s[0]);
+            //            if (length == 1)
+            //                break;
+            //            hash2 = ((hash2 << 5) + hash2) ^ ParseSupport.ToLowerCase(s[1]);
+            //            s += 2;
+            //            length -= 2;
+            //        }
+            //    }
+            //}
 
             return hash1 + (hash2 * 1566083941);
         }
@@ -203,51 +203,51 @@ namespace Microsoft.Exchange.Data.TextConverters
             hash1 = hash2 = 5381;
         }
 
-        public unsafe void Advance(char* s, int len)
-        {
-            if (0 != (offset & 1))
-            {
-                hash2 = ((hash2 << 5) + hash2) ^ s[0];
-                s++;
-                len--;
-                offset++;
-            }
+        //public unsafe void Advance(char* s, int len)
+        //{
+        //    if (0 != (offset & 1))
+        //    {
+        //        hash2 = ((hash2 << 5) + hash2) ^ s[0];
+        //        s++;
+        //        len--;
+        //        offset++;
+        //    }
 
-            offset += len;
+        //    offset += len;
 
-            while (len > 0)
-            {
-                hash1 = ((hash1 << 5) + hash1) ^ s[0];
-                if (len == 1)
-                    break;
-                hash2 = ((hash2 << 5) + hash2) ^ s[1];
-                s += 2;
-                len -= 2;
-            }
-        }
+        //    while (len > 0)
+        //    {
+        //        hash1 = ((hash1 << 5) + hash1) ^ s[0];
+        //        if (len == 1)
+        //            break;
+        //        hash2 = ((hash2 << 5) + hash2) ^ s[1];
+        //        s += 2;
+        //        len -= 2;
+        //    }
+        //}
 
-        public unsafe void AdvanceLowerCase(char* s, int len)
-        {
-            if (0 != (offset & 1))
-            {
-                hash2 = ((hash2 << 5) + hash2) ^ ParseSupport.ToLowerCase(s[0]);
-                s++;
-                len--;
-                offset++;
-            }
+        //public unsafe void AdvanceLowerCase(char* s, int len)
+        //{
+        //    if (0 != (offset & 1))
+        //    {
+        //        hash2 = ((hash2 << 5) + hash2) ^ ParseSupport.ToLowerCase(s[0]);
+        //        s++;
+        //        len--;
+        //        offset++;
+        //    }
 
-            offset += len;
+        //    offset += len;
 
-            while (len > 0)
-            {
-                hash1 = ((hash1 << 5) + hash1) ^ ParseSupport.ToLowerCase(s[0]);
-                if (len == 1)
-                    break;
-                hash2 = ((hash2 << 5) + hash2) ^ ParseSupport.ToLowerCase(s[1]);
-                s += 2;
-                len -= 2;
-            }
-        }
+        //    while (len > 0)
+        //    {
+        //        hash1 = ((hash1 << 5) + hash1) ^ ParseSupport.ToLowerCase(s[0]);
+        //        if (len == 1)
+        //            break;
+        //        hash2 = ((hash2 << 5) + hash2) ^ ParseSupport.ToLowerCase(s[1]);
+        //        s += 2;
+        //        len -= 2;
+        //    }
+        //}
 
         public void Advance(int ucs32)
         {
@@ -345,24 +345,24 @@ namespace Microsoft.Exchange.Data.TextConverters
 
         public void Advance(BufferString obj)
         {
-            unsafe
-            {
-                fixed (char* src = obj.Buffer)
-                {
-                    Advance(src + obj.Offset, obj.Length);
-                }
-            }
+            //unsafe
+            //{
+            //    fixed (char* src = obj.Buffer)
+            //    {
+            //        Advance(src + obj.Offset, obj.Length);
+            //    }
+            //}
         }
 
         public void AdvanceLowerCase(BufferString obj)
         {
-            unsafe
-            {
-                fixed (char* src = obj.Buffer)
-                {
-                    AdvanceLowerCase(src + obj.Offset, obj.Length);
-                }
-            }
+            //unsafe
+            //{
+            //    fixed (char* src = obj.Buffer)
+            //    {
+            //        AdvanceLowerCase(src + obj.Offset, obj.Length);
+            //    }
+            //}
         }
 #endif
 
@@ -370,26 +370,26 @@ namespace Microsoft.Exchange.Data.TextConverters
         {
             CheckArgs(buffer, offset, length);
 
-            unsafe
-            {
-                fixed (char* src = buffer)
-                {
-                    Advance(src + offset, length);
-                }
-            }
+            //unsafe
+            //{
+            //    fixed (char* src = buffer)
+            //    {
+            //        Advance(src + offset, length);
+            //    }
+            //}
         }
 
         public void AdvanceLowerCase(char[] buffer, int offset, int length)
         {
             CheckArgs(buffer, offset, length);
 
-            unsafe
-            {
-                fixed (char* src = buffer)
-                {
-                    AdvanceLowerCase(src + offset, length);
-                }
-            }
+            //unsafe
+            //{
+            //    fixed (char* src = buffer)
+            //    {
+            //        AdvanceLowerCase(src + offset, length);
+            //    }
+            //}
         }
 
         private static void CheckArgs(char[] buffer, int offset, int length)

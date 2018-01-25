@@ -230,7 +230,7 @@ namespace Atom.Core
 		/// <param name="message">The error message if the element is missing.</param>
 		protected internal void WriteElement(string localName, object input, bool required, string message)
 		{
-			if(input != DefaultValues.Uri)
+			if(input != null && (Uri)input != DefaultValues.Uri)
 			{
 				this.Buffer.AppendFormat("<{0}>", localName);
 				this.Buffer.Append(Convert.ToString(input));

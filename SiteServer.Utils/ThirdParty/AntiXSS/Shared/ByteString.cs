@@ -88,38 +88,26 @@ namespace Microsoft.Exchange.Data.Internal
 
         
         
-        public static int IndexOf(byte[] buffer, byte val, int offset, int count)
-        {
+//        public static int IndexOf(byte[] buffer, byte val, int offset, int count)
+//        {
             
             
 
-#if false 
+//#if false 
 
             
             
             
 
-            return Array.IndexOf<byte>(buffer, val, offset, count);
+//            return Array.IndexOf<byte>(buffer, val, offset, count);
 
-#else 
+//#else 
 
-            unsafe 
-            {
-                
-
-                
+//            unsafe 
+//            {
                 
 
                 
-                
-                
-                
-                
-                
-                
-                
-                
-
                 
 
                 
@@ -127,75 +115,87 @@ namespace Microsoft.Exchange.Data.Internal
                 
                 
                 
+                
+                
+                
+                
 
-                fixed (byte * pB = buffer)
-                {
-                    var p = pB + offset;
+                
+
+                
+                
+                
+                
+                
+
+//                fixed (byte * pB = buffer)
+//                {
+//                    var p = pB + offset;
 
                     
-                    while (((int)p & 3) != 0)
-                    {
-                        if (count == 0)
-                            return -1;
+//                    while (((int)p & 3) != 0)
+//                    {
+//                        if (count == 0)
+//                            return -1;
 
-                        if (*p == val)
-                            return (int) (p - pB);
+//                        if (*p == val)
+//                            return (int) (p - pB);
 
-                        count--;
-                        p++;
-                    }
+//                        count--;
+//                        p++;
+//                    }
 
-                    var mask = (uint)val + ((uint)val << 8);
-                    mask += (mask << 16);
+//                    var mask = (uint)val + ((uint)val << 8);
+//                    mask += (mask << 16);
 
-                    while (count >= 32)
-                    {
-                        offset = 0;
-                        var t1 = *(uint*)p ^ mask;
-                        if ((((t1 ^ 0xffffffff) ^ (0x7efefeff + t1)) & 0x81010100) == 0)
-                        {
+//                    while (count >= 32)
+//                    {
+//                        offset = 0;
+//                        var t1 = *(uint*)p ^ mask;
+//                        if ((((t1 ^ 0xffffffff) ^ (0x7efefeff + t1)) & 0x81010100) == 0)
+//                        {
                             
                             
                             
-                            offset += 4;
-                            t1 = *(uint*)(p + 4) ^ mask;
-                            if ((((t1 ^ 0xffffffff) ^ (0x7efefeff + t1)) & 0x81010100) == 0)
-                            {
-                                offset += 4;
-                                t1 = *(uint*)(p + 8) ^ mask;
-                                if ((((t1 ^ 0xffffffff) ^ (0x7efefeff + t1)) & 0x81010100) == 0)
-                                {
-                                    offset += 4;
-                                    t1 = *(uint*)(p + 12) ^ mask;
-                                    if ((((t1 ^ 0xffffffff) ^ (0x7efefeff + t1)) & 0x81010100) == 0)
-                                    {
-                                        offset += 4;
-                                        t1 = *(uint*)(p + 16) ^ mask;
-                                        if ((((t1 ^ 0xffffffff) ^ (0x7efefeff + t1)) & 0x81010100) == 0)
-                                        {
-                                            offset += 4;
-                                            t1 = *(uint*)(p + 20) ^ mask;
-                                            if ((((t1 ^ 0xffffffff) ^ (0x7efefeff + t1)) & 0x81010100) == 0)
-                                            {
-                                                offset += 4;
-                                                t1 = *(uint*)(p + 24) ^ mask;
-                                                if ((((t1 ^ 0xffffffff) ^ (0x7efefeff + t1)) & 0x81010100) == 0)
-                                                {
-                                                    offset += 4;
-                                                    t1 = *(uint*)(p + 28) ^ mask;
-                                                    if ((((t1 ^ 0xffffffff) ^ (0x7efefeff + t1)) & 0x81010100) == 0)
-                                                    {
-                                                        p += 32;
-                                                        count -= 32;
-                                                        continue;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+//                            offset += 4;
+//                            t1 = *(uint*)(p + 4) ^ mask;
+//                            if ((((t1 ^ 0xffffffff) ^ (0x7efefeff + t1)) & 0x81010100) == 0)
+//                            {
+//                                offset += 4;
+//                                t1 = *(uint*)(p + 8) ^ mask;
+//                                if ((((t1 ^ 0xffffffff) ^ (0x7efefeff + t1)) & 0x81010100) == 0)
+//                                {
+//                                    offset += 4;
+//                                    t1 = *(uint*)(p + 12) ^ mask;
+//                                    if ((((t1 ^ 0xffffffff) ^ (0x7efefeff + t1)) & 0x81010100) == 0)
+//                                    {
+//                                        offset += 4;
+//                                        t1 = *(uint*)(p + 16) ^ mask;
+//                                        if ((((t1 ^ 0xffffffff) ^ (0x7efefeff + t1)) & 0x81010100) == 0)
+//                                        {
+//                                            offset += 4;
+//                                            t1 = *(uint*)(p + 20) ^ mask;
+//                                            if ((((t1 ^ 0xffffffff) ^ (0x7efefeff + t1)) & 0x81010100) == 0)
+//                                            {
+//                                                offset += 4;
+//                                                t1 = *(uint*)(p + 24) ^ mask;
+//                                                if ((((t1 ^ 0xffffffff) ^ (0x7efefeff + t1)) & 0x81010100) == 0)
+//                                                {
+//                                                    offset += 4;
+//                                                    t1 = *(uint*)(p + 28) ^ mask;
+//                                                    if ((((t1 ^ 0xffffffff) ^ (0x7efefeff + t1)) & 0x81010100) == 0)
+//                                                    {
+//                                                        p += 32;
+//                                                        count -= 32;
+//                                                        continue;
+//                                                    }
+//                                                }
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
 
                         
 
@@ -206,38 +206,38 @@ namespace Microsoft.Exchange.Data.Internal
                         
                         
 
-                        p += offset;
+//                        p += offset;
 
-                        var foundIndex1 = (int) (p - pB);
-                        if (p[0] == val)
-                            return foundIndex1;
-                        else if (p[1] == val)
-                            return foundIndex1 + 1;
-                        else if (p[2] == val)
-                            return foundIndex1 + 2;
-                        else if (p[3] == val)
-                            return foundIndex1 + 3;
+//                        var foundIndex1 = (int) (p - pB);
+//                        if (p[0] == val)
+//                            return foundIndex1;
+//                        else if (p[1] == val)
+//                            return foundIndex1 + 1;
+//                        else if (p[2] == val)
+//                            return foundIndex1 + 2;
+//                        else if (p[3] == val)
+//                            return foundIndex1 + 3;
 
                         
-                        p += 4;
-                        count -= offset + 4;
-                    }
+//                        p += 4;
+//                        count -= offset + 4;
+//                    }
 
                     
-                    while (count != 0)
-                    {
-                        if (*p == val)
-                            return (int) (p - pB);
+//                    while (count != 0)
+//                    {
+//                        if (*p == val)
+//                            return (int) (p - pB);
 
-                        count--;
-                        p++;
-                    }
+//                        count--;
+//                        p++;
+//                    }
 
-                    return -1;
-                }
-            }
-#endif 
-        }
+//                    return -1;
+//                }
+//            }
+//#endif 
+//        }
 
         
         

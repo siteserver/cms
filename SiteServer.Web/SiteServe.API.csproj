@@ -23,7 +23,6 @@
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -48,34 +47,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="jQuery" version="3.3.1" />
-    <PackageReference Include="Microsoft.AspNet.Cors" version="5.2.3" />
-    <PackageReference Include="Microsoft.AspNet.SignalR" version="2.2.2" />
-    <PackageReference Include="Microsoft.AspNet.SignalR.Core" version="2.2.2" />
-    <PackageReference Include="Microsoft.AspNet.SignalR.JS" version="2.2.2" />
-    <PackageReference Include="Microsoft.AspNet.SignalR.SystemWeb" version="2.2.2" />
-    <PackageReference Include="Microsoft.AspNet.WebApi" version="5.2.3" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.Core" version="5.2.3" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.Cors" version="5.2.3" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.WebHost" version="5.2.3" />
-    <PackageReference Include="Microsoft.Owin" version="3.1.0" />
-    <PackageReference Include="Microsoft.Owin.Host.SystemWeb" version="3.1.0" />
-    <PackageReference Include="Microsoft.Owin.Security" version="3.1.0" />
-    <PackageReference Include="Microsoft.Web.Xdt">
-      <Version>2.1.1</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Win32.Primitives" version="4.3.0" />
-    <PackageReference Include="Newtonsoft.Json" version="10.0.3" />
-    <PackageReference Include="Owin" version="1.0" />
-    <PackageReference Include="SiteServer.Plugin" version="1.2.16-beta" />
-    <PackageReference Include="System.Security.Cryptography.Algorithms" version="4.3.1" />
-    <PackageReference Include="System.Security.Cryptography.Encoding" version="4.3.0" />
-    <PackageReference Include="System.Security.Cryptography.Primitives" version="4.3.0" />
-    <PackageReference Include="System.Security.Cryptography.X509Certificates" version="4.3.2" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Web" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Serialization" />
@@ -92,7 +67,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <None Include="packages.config" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
+    <None Include="Scripts\jquery-1.6.4-vsdoc.js" />
+    <Content Include="Scripts\jquery-1.6.4.js" />
+    <Content Include="Scripts\jquery-1.6.4.min.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.js" />

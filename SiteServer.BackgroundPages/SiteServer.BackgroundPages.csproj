@@ -30,8 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SiteServer.Plugin, Version=1.2.16.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.2.16-beta\lib\net461\SiteServer.Plugin.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -704,11 +708,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SiteServer.Plugin">
-      <Version>1.2.16-beta</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
       <Project>{55efd315-e628-4293-9505-d1f919ade339}</Project>
       <Name>SiteServer.CMS</Name>
@@ -717,6 +716,9 @@
       <Project>{f19a6f6d-d96a-415e-b1d0-f3ad6f6067a3}</Project>
       <Name>SiteServer.Utils</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

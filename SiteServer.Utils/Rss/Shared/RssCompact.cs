@@ -39,7 +39,6 @@ namespace SiteServer.Utils.Rss
 	class SecurityPermissionAttribute : Attribute
 	{
 		public SecurityPermissionAttribute(SecurityAction securityAction) {}
-		public bool Execution;
 	}
 	/// <summary>Enumerator does not exist on the .NET Compact Framework</summary>
 	enum SecurityAction { RequestMinimum }

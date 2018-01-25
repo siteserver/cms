@@ -1987,17 +1987,6 @@ namespace Microsoft.Exchange.Data.Globalization
 
             */
 
-            string charSetArg = null;
-            string aliasNameArg = null;
-            string defaultNameArg = null;
-            string cultureArg = null;
-            string windowsCharsetArg = null;
-            string mimeCharsetArg = null;
-            string webCharsetArg = null;
-            int codePage;
-            int lcid;
-            Charset charset1;
-            Culture culture1;
 
             if (defaultCultureName != null)
             {
@@ -2449,10 +2438,10 @@ namespace Microsoft.Exchange.Data.Globalization
             return encodingEncoding.GetByteCount(s);
         }       
 
-        public override unsafe int GetByteCount(char* chars, int count)
-        {
-            return encodingEncoding.GetByteCount(chars, count);
-        }
+        //public override unsafe int GetByteCount(char* chars, int count)
+        //{
+        //    return encodingEncoding.GetByteCount(chars, count);
+        //}
 
         public override int GetBytes(String s, int charIndex, int charCount, byte[] bytes, int byteIndex)
         {
@@ -2464,30 +2453,30 @@ namespace Microsoft.Exchange.Data.Globalization
             return encodingEncoding.GetBytes(chars, charIndex, charCount, bytes, byteIndex);
         }
 
-        public override unsafe int GetBytes(char* chars, int charCount, byte* bytes, int byteCount)
-        {
-            return encodingEncoding.GetBytes(chars, charCount, bytes, byteCount);
-        }                                              
+        //public override unsafe int GetBytes(char* chars, int charCount, byte* bytes, int byteCount)
+        //{
+        //    return encodingEncoding.GetBytes(chars, charCount, bytes, byteCount);
+        //}                                              
 
         public override int GetCharCount(byte[] bytes, int index, int count)
         {
             return decodingEncoding.GetCharCount(bytes, index, count);
         }
 
-        public override unsafe int GetCharCount(byte* bytes, int count)
-        {
-            return decodingEncoding.GetCharCount(bytes, count);
-        }        
+        //public override unsafe int GetCharCount(byte* bytes, int count)
+        //{
+        //    return decodingEncoding.GetCharCount(bytes, count);
+        //}        
 
         public override int GetChars(byte[] bytes, int byteIndex, int byteCount, char[] chars, int charIndex)
         {
             return decodingEncoding.GetChars(bytes, byteIndex, byteCount, chars, charIndex);
         }
 
-        public override unsafe int GetChars(byte* bytes, int byteCount, char* chars, int charCount)
-        {
-            return decodingEncoding.GetChars(bytes, byteCount, chars, charCount);
-        }
+        //public override unsafe int GetChars(byte* bytes, int byteCount, char* chars, int charCount)
+        //{
+        //    return decodingEncoding.GetChars(bytes, byteCount, chars, charCount);
+        //}
     
         public override String GetString(byte[] bytes, int index, int count)
         {
