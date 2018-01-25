@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Template);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
 
             LtlPageTitle.Text = string.IsNullOrEmpty(_fileName) ? "添加脚本文件" : "编辑脚本文件";
 

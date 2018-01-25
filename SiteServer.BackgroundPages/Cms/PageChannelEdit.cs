@@ -66,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (Body.GetQueryString("CanNotEdit") == null && Body.GetQueryString("UncheckedChannel") == null)
             {
-                if (!HasChannelPermissions(_nodeId, AppManager.Permissions.Channel.ChannelEdit))
+                if (!HasChannelPermissions(_nodeId, ConfigManager.Permissions.Channel.ChannelEdit))
                 {
                     PageUtils.RedirectToErrorPage("您没有修改栏目的权限！");
                     return;

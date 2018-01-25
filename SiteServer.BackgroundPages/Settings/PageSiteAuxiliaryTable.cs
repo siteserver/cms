@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
 
             RptContents.DataSource = DataProvider.TableDao.GetTableCollectionInfoList();
             RptContents.ItemDataBound += RptContents_ItemDataBound;

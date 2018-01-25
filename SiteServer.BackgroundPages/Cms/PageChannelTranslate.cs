@@ -62,7 +62,7 @@ namespace SiteServer.BackgroundPages.Cms
 			PageUtils.CheckRequestParameter("siteId");
             ReturnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
 
-            if (!HasChannelPermissions(SiteId, AppManager.Permissions.Channel.ContentDelete))
+            if (!HasChannelPermissions(SiteId, ConfigManager.Permissions.Channel.ContentDelete))
 			{
                 RblIsDeleteAfterTranslate.Visible = false;
 			}
@@ -156,7 +156,7 @@ namespace SiteServer.BackgroundPages.Cms
 		    var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
 		    bool isChecked;
 		    int checkedLevel;
-		    if (targetSiteInfo.Additional.CheckContentLevel == 0 || AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetNodeId, AppManager.Permissions.Channel.ContentAdd, AppManager.Permissions.Channel.ContentCheck))
+		    if (targetSiteInfo.Additional.CheckContentLevel == 0 || AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetNodeId, ConfigManager.Permissions.Channel.ContentAdd, ConfigManager.Permissions.Channel.ContentCheck))
 		    {
 		        isChecked = true;
 		        checkedLevel = 0;
@@ -166,19 +166,19 @@ namespace SiteServer.BackgroundPages.Cms
 		        var userCheckLevel = 0;
 		        var ownHighestLevel = false;
 
-		        if (AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetNodeId, AppManager.Permissions.Channel.ContentCheckLevel1))
+		        if (AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetNodeId, ConfigManager.Permissions.Channel.ContentCheckLevel1))
 		        {
 		            userCheckLevel = 1;
-		            if (AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetNodeId, AppManager.Permissions.Channel.ContentCheckLevel2))
+		            if (AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetNodeId, ConfigManager.Permissions.Channel.ContentCheckLevel2))
 		            {
 		                userCheckLevel = 2;
-		                if (AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetNodeId, AppManager.Permissions.Channel.ContentCheckLevel3))
+		                if (AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetNodeId, ConfigManager.Permissions.Channel.ContentCheckLevel3))
 		                {
 		                    userCheckLevel = 3;
-		                    if (AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetNodeId, AppManager.Permissions.Channel.ContentCheckLevel4))
+		                    if (AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetNodeId, ConfigManager.Permissions.Channel.ContentCheckLevel4))
 		                    {
 		                        userCheckLevel = 4;
-		                        if (AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetNodeId, AppManager.Permissions.Channel.ContentCheckLevel5))
+		                        if (AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetNodeId, ConfigManager.Permissions.Channel.ContentCheckLevel5))
 		                        {
 		                            userCheckLevel = 5;
 		                        }

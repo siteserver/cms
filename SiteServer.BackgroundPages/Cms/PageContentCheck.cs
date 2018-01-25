@@ -111,7 +111,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var owningChannelIdList = new List<int>();
                 foreach (var owningChannelId in ProductPermissionsManager.Current.OwningChannelIdList)
                 {
-                    if (AdminUtility.HasChannelPermissions(Body.AdminName, SiteId, owningChannelId, AppManager.Permissions.Channel.ContentCheck))
+                    if (AdminUtility.HasChannelPermissions(Body.AdminName, SiteId, owningChannelId, ConfigManager.Permissions.Channel.ContentCheck))
                     {
                         owningChannelIdList.Add(owningChannelId);
                     }
@@ -138,7 +138,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             LtlColumnsHead.Text = TextUtility.GetColumnsHeadHtml(_styleInfoList, _attributesOfDisplay, SiteInfo);
 
-            if (!HasChannelPermissions(SiteId, AppManager.Permissions.Channel.ContentDelete))
+            if (!HasChannelPermissions(SiteId, ConfigManager.Permissions.Channel.ContentDelete))
             {
                 BtnDelete.Visible = false;
             }

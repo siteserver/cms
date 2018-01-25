@@ -122,12 +122,12 @@ namespace SiteServer.BackgroundPages.Core
 
         public static bool IsEdit(SiteInfo siteInfo, int nodeId, string administratorName)
         {
-            return AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeId, AppManager.Permissions.Channel.ContentEdit);
+            return AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeId, ConfigManager.Permissions.Channel.ContentEdit);
         }
 
         //public static bool IsComment(SiteInfo siteInfo, int nodeId, string administratorName)
         //{
-        //    return siteInfo.Additional.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeId, AppManager.Permissions.Channel.CommentCheck, AppManager.Permissions.Channel.CommentDelete);
+        //    return siteInfo.Additional.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeId, ConfigManager.Permissions.Channel.CommentCheck, ConfigManager.Permissions.Channel.CommentDelete);
         //}
 
         public static string GetColumnsHeadHtml(List<TableStyleInfo> tableStyleInfoArrayList, StringCollection attributesOfDisplay, SiteInfo siteInfo)
@@ -242,7 +242,7 @@ namespace SiteServer.BackgroundPages.Core
 
         //    if (siteInfo.Additional.IsCommentable)
         //    {
-        //        if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, contentInfo.NodeId, AppManager.Permissions.Channel.CommentCheck, AppManager.Permissions.Channel.CommentDelete))
+        //        if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, contentInfo.NodeId, ConfigManager.Permissions.Channel.CommentCheck, ConfigManager.Permissions.Channel.CommentDelete))
         //        {
         //            //var urlComment = PageComment.GetRedirectUrl(siteInfo.SiteId, contentInfo.NodeId, contentInfo.Id, pageUrl);
         //            var urlComment = PageComments.GetRedirectUrl(siteInfo.Id, contentInfo.NodeId, contentInfo.Id, pageUrl);

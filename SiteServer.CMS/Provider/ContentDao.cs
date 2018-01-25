@@ -1950,7 +1950,7 @@ group by tmp.userName";
                     var isContentCheck = false;
                     foreach (var theChannelId in owningChannelIdList)
                     {
-                        if (AdminUtility.HasChannelPermissions(administratorName, siteId, theChannelId, AppManager.Permissions.Channel.ContentCheck))
+                        if (AdminUtility.HasChannelPermissions(administratorName, siteId, theChannelId, ConfigManager.Permissions.Channel.ContentCheck))
                         {
                             isContentCheck = true;
                         }

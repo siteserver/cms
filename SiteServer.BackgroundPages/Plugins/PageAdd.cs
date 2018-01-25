@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Plugins
@@ -19,7 +20,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
             if (Page.IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Plugins.Add);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Plugins.Add);
 
             BtnUpload.OnClientClick = ModalManualInstall.GetOpenWindowString();
         }

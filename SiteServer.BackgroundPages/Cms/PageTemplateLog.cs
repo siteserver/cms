@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Template);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
 
             BtnDelete.Attributes.Add("onclick",
                 PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(

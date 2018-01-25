@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
 
@@ -34,7 +35,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
             if (Page.IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Plugins.Add, AppManager.Permissions.Plugins.Management);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Plugins.Add, ConfigManager.Permissions.Plugins.Management);
 
             if (PluginManager.IsExists(_pluginId))
             {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 
@@ -20,7 +21,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Template);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
 
             var elementsDictionary = StlAll.StlElements.GetElementsNameDictionary();
             var attributesDictionary = StlAll.StlElements.ElementsAttributesDictionary;

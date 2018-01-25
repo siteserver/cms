@@ -24,7 +24,7 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
-            VerifySitePermissions(AppManager.Permissions.WebSite.Template);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
 
             TemplateTypeUtils.AddListItems(DdlTemplateType);
             ChannelManager.AddListItems(DdlNodeId.Items, SiteInfo, false, true, Body.AdminName);

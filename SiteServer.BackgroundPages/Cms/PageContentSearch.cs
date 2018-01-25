@@ -135,7 +135,7 @@ namespace SiteServer.BackgroundPages.Cms
                 showPopWinString = ModalSelectColumns.GetOpenWindowStringToContent(SiteId, _channelId, true);
                 BtnSelect.Attributes.Add("onclick", showPopWinString);
 
-                if (AdminUtility.HasChannelPermissions(Body.AdminName, SiteId, SiteId, AppManager.Permissions.Channel.ContentCheck))
+                if (AdminUtility.HasChannelPermissions(Body.AdminName, SiteId, SiteId, ConfigManager.Permissions.Channel.ContentCheck))
                 {
                     showPopWinString = ModalContentCheck.GetOpenWindowStringForMultiChannels(SiteId, PageUrl);
                     BtnCheck.Attributes.Add("onclick", showPopWinString);
@@ -148,8 +148,8 @@ namespace SiteServer.BackgroundPages.Cms
                 LtlColumnsHead.Text = TextUtility.GetColumnsHeadHtml(_styleInfoList, _attributesOfDisplay, SiteInfo);
             }
 
-            if (!HasChannelPermissions(_channelId, AppManager.Permissions.Channel.ContentAdd)) BtnAddContent.Visible = false;
-            if (!HasChannelPermissions(_channelId, AppManager.Permissions.Channel.ContentTranslate))
+            if (!HasChannelPermissions(_channelId, ConfigManager.Permissions.Channel.ContentAdd)) BtnAddContent.Visible = false;
+            if (!HasChannelPermissions(_channelId, ConfigManager.Permissions.Channel.ContentTranslate))
             {
                 BtnTranslate.Visible = false;
             }
@@ -158,7 +158,7 @@ namespace SiteServer.BackgroundPages.Cms
                 BtnTranslate.Attributes.Add("onclick", PageContentTranslate.GetRedirectClickStringForMultiChannels(SiteId, PageUrl));
             }
 
-            if (!HasChannelPermissions(_channelId, AppManager.Permissions.Channel.ContentDelete))
+            if (!HasChannelPermissions(_channelId, ConfigManager.Permissions.Channel.ContentDelete))
             {
                 BtnDelete.Visible = false;
             }

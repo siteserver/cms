@@ -32,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
 
             EBooleanUtils.AddListItems(DdlIsSaveImageInTextEditor, "保存", "不保存");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsSaveImageInTextEditor, SiteInfo.Additional.IsSaveImageInTextEditor.ToString());

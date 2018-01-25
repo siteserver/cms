@@ -41,7 +41,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Admin);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Admin);
 
             var permissioins = PermissionsManager.GetPermissions(Body.AdminName);
             RptContents.DataSource = permissioins.IsConsoleAdministrator

@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Create);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Create);
 
             var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListOfFile(SiteId);
 

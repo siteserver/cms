@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Template);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
 
             DirectoryUtils.CreateDirectoryIfNotExists(_directoryPath);
             var fileNames = DirectoryUtils.GetFileNames(_directoryPath);

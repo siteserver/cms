@@ -32,7 +32,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.User);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.User);
 
             EBooleanUtils.AddListItems(RblIsRegisterAllowed);
 

@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
 
             RptContents.DataSource = DataProvider.ContentGroupDao.GetContentGroupInfoList(SiteId);
             RptContents.ItemDataBound += RptContents_ItemDataBound;

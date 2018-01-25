@@ -35,7 +35,7 @@
 
     //        if (Page.IsPostBack) return;
 
-    //        VerifyAdministratorPermissions(AppManager.Permissions.Plugins.Management);
+    //        VerifyAdministratorPermissions(ConfigManager.Permissions.Plugins.Management);
 
     //        var metadata = PluginManager.GetMetadata(_pluginId);
     //        var isDefault = string.IsNullOrEmpty(metadata.DatabaseType) &&

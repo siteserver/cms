@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if(!IsPostBack)
             {
-                VerifySitePermissions(AppManager.Permissions.WebSite.ContentTrash);
+                VerifySitePermissions(ConfigManager.Permissions.WebSite.ContentTrash);
 
                 if (Body.IsQueryExists("IsDeleteAll"))
                 {
@@ -130,7 +130,7 @@ namespace SiteServer.BackgroundPages.Cms
                 SpContents.DataBind();
 			}
 
-            if (!HasChannelPermissions(_nodeId, AppManager.Permissions.Channel.ContentDelete))
+            if (!HasChannelPermissions(_nodeId, ConfigManager.Permissions.Channel.ContentDelete))
             {
                 BtnDelete.Visible = false;
                 BtnDeleteAll.Visible = false;
@@ -171,7 +171,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlChannel.Text = nodeNameNavigation;
             ltlDeleteDate.Text = DateUtils.GetDateAndTimeString(contentInfo.LastEditDate);
 
-            if (HasChannelPermissions(contentInfo.ChannelId, AppManager.Permissions.Channel.ContentEdit) || Body.AdminName == contentInfo.AddUserName)
+            if (HasChannelPermissions(contentInfo.ChannelId, ConfigManager.Permissions.Channel.ContentEdit) || Body.AdminName == contentInfo.AddUserName)
             {
                 var nodeInfo = ChannelManager.GetChannelInfo(SiteId, contentInfo.ChannelId);
                 ltlItemEditUrl.Text =

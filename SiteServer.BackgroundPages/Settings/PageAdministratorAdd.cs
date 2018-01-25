@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (Page.IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Admin);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Admin);
 
             LtlPageTitle.Text = string.IsNullOrEmpty(_userName) ? "添加管理员" : "编辑管理员";
 

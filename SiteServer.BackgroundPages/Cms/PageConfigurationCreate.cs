@@ -31,7 +31,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Create);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Create);
 
             EBooleanUtils.AddListItems(DdlIsCreateContentIfContentChanged, "生成", "不生成");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateContentIfContentChanged, SiteInfo.Additional.IsCreateContentIfContentChanged.ToString());

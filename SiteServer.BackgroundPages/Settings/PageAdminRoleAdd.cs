@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            PermissionsManager.VerifyAdministratorPermissions(Body.AdminName, AppManager.Permissions.Settings.Admin);
+            PermissionsManager.VerifyAdministratorPermissions(Body.AdminName, ConfigManager.Permissions.Settings.Admin);
 
             if (!string.IsNullOrEmpty(_theRoleName))
             {

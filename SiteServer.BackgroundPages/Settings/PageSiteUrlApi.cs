@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
 
             EBooleanUtils.AddListItems(RblIsSeparatedApi, "API独立部署", "API与CMS部署在一起");
             ControlUtils.SelectSingleItem(RblIsSeparatedApi, ConfigManager.SystemConfigInfo.IsSeparatedApi.ToString());

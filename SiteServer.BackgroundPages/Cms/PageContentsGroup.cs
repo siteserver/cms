@@ -64,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
             LtlContentGroupName.Text = "内容组：" + _contentGroupName;
             SpContents.DataBind();
         }
@@ -88,7 +88,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlItemStatus.Text = CheckManager.GetCheckState(SiteInfo, contentInfo.IsChecked,
                 contentInfo.CheckedLevel);
 
-            if (!HasChannelPermissions(contentInfo.ChannelId, AppManager.Permissions.Channel.ContentEdit) &&
+            if (!HasChannelPermissions(contentInfo.ChannelId, ConfigManager.Permissions.Channel.ContentEdit) &&
                 Body.AdminName != contentInfo.AddUserName) return;
 
             ltlItemEditUrl.Text =

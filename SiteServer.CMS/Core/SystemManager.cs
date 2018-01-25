@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -7,6 +8,21 @@ namespace SiteServer.CMS.Core
 {
     public class SystemManager
     {
+        static SystemManager()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var ssemblyName = assembly.GetName();
+            var assemblyVersion = ssemblyName.Version;
+            var version = assemblyVersion.ToString();
+            if (StringUtils.EndsWith(version, ".0"))
+            {
+                version = version.Substring(0, version.Length - 2);
+            }
+            Version = version;
+        }
+
+        public static string Version { get; }
+
         public static void Install(string adminName, string adminPassword)
         {
             InstallOrUpdate(adminName, adminPassword);
@@ -36,12 +52,12 @@ namespace SiteServer.CMS.Core
             var configInfo = DataProvider.ConfigDao.GetConfigInfo();
             if (configInfo == null)
             {
-                configInfo = new ConfigInfo(true, AppManager.Version, DateTime.Now, string.Empty);
+                configInfo = new ConfigInfo(true, Version, DateTime.Now, string.Empty);
                 DataProvider.ConfigDao.Insert(configInfo);
             }
             else
             {
-                configInfo.DatabaseVersion = AppManager.Version;
+                configInfo.DatabaseVersion = Version;
                 configInfo.IsInitialized = true;
                 configInfo.UpdateDate = DateTime.Now;
                 DataProvider.ConfigDao.Update(configInfo);
@@ -67,7 +83,7 @@ namespace SiteServer.CMS.Core
 
         public static bool IsNeedUpdate()
         {
-            return !StringUtils.EqualsIgnoreCase(AppManager.Version, DataProvider.ConfigDao.GetDatabaseVersion());
+            return !StringUtils.EqualsIgnoreCase(Version, DataProvider.ConfigDao.GetDatabaseVersion());
         }
 
         public static bool IsNeedInstall()

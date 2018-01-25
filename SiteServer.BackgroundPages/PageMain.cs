@@ -138,7 +138,7 @@ namespace SiteServer.BackgroundPages
 </a>
 ";
 
-                NtLeftManagement.TopId = AppManager.IdSite;
+                NtLeftManagement.TopId = ConfigManager.IdSite;
                 NtLeftManagement.SiteId = _siteInfo.Id;
                 NtLeftManagement.PermissionList = permissionList;
 

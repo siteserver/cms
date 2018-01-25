@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages
 
             CacheUtils.ClearAll();
 
-            LtlVersionInfo.Text = AppManager.GetFullVersion();
+            LtlVersionInfo.Text = SystemManager.Version;
             LtlGo.Text = $@"<a class=""btn btn-success m-l-5"" href=""{PageUtils.GetAdminDirectoryUrl(string.Empty)}"">进入后台</a>";
         }
 

@@ -1196,36 +1196,6 @@ namespace SiteServer.Utils
             return isDefault ? "<img src='../pic/icon/right.gif' border='0'/>" : "<img src='../pic/icon/wrong.gif' border='0'/>";
         }
 
-        public static string GetBreadCrumbHtml(string topMenuId, string pageUrl, string pageTitle, string itemTitle)
-        {
-            var builder = new StringBuilder();
-            builder.Append(@"<ul class=""breadcrumb"">");
-
-            var topTitle = AppManager.GetTopMenuName(topMenuId);
-
-            if (!string.IsNullOrEmpty(topTitle))
-            {
-                builder.Append($@"<li>{topTitle} <span class=""divider"">/</span></li>");
-            }
-
-            if (!string.IsNullOrEmpty(pageTitle))
-            {
-                if (!string.IsNullOrEmpty(itemTitle))
-                {
-                    builder.Append($@"<li>{pageTitle} <span class=""divider"">/</span></li>");
-                    builder.Append($@"<li class=""active"">{itemTitle.Replace(">", "/")}</li>");
-                }
-                else
-                {
-                    builder.Append($@"<li class=""active"">{pageTitle}</li>");
-                }
-            }
-
-            builder.Append("</ul>");
-
-            return builder.ToString();
-        }
-
         public static string ReplaceInvalidChar(string input)
         {
             var invalidChars = new List<char>();

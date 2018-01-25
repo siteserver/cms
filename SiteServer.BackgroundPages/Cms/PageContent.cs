@@ -67,7 +67,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }).BeginInvoke(null, null);
             }
 
-            if (!HasChannelPermissions(nodeId, AppManager.Permissions.Channel.ContentView, AppManager.Permissions.Channel.ContentAdd, AppManager.Permissions.Channel.ContentEdit, AppManager.Permissions.Channel.ContentDelete, AppManager.Permissions.Channel.ContentTranslate))
+            if (!HasChannelPermissions(nodeId, ConfigManager.Permissions.Channel.ContentView, ConfigManager.Permissions.Channel.ContentAdd, ConfigManager.Permissions.Channel.ContentEdit, ConfigManager.Permissions.Channel.ContentDelete, ConfigManager.Permissions.Channel.ContentTranslate))
             {
                 if (!Body.IsAdminLoggin)
                 {

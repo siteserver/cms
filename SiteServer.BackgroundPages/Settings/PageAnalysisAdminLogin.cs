@@ -113,7 +113,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Chart);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Chart);
 
             LtlPageTitle1.Text = $"管理员登录最近{_count}{EStatictisXTypeUtils.GetText(EStatictisXTypeUtils.GetEnumType(Body.GetQueryString("XType")))}分配图表（按日期统计）";
             LtlPageTitle2.Text = $"管理员登录最近{_count}{EStatictisXTypeUtils.GetText(EStatictisXTypeUtils.GetEnumType(Body.GetQueryString("XType")))}分配图表（按管理员统计）";

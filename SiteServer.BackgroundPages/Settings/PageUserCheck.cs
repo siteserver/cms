@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.User);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.User);
 
             SpContents.DataBind();
 

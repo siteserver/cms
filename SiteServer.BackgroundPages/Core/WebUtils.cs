@@ -139,7 +139,7 @@ namespace SiteServer.BackgroundPages.Core
         {
             var builder = new StringBuilder();
 
-            if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.ContentAdd) && nodeInfo.Additional.IsContentAddable)
+            if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ContentAdd) && nodeInfo.Additional.IsContentAddable)
             {
                 builder.Append($@"
 <a href=""{GetContentAddAddUrl(siteInfo.Id, nodeInfo, pageUrl)}"" class=""btn btn-primary"">
@@ -153,7 +153,7 @@ namespace SiteServer.BackgroundPages.Core
 </a>");
             }
 
-            if (nodeInfo.ContentNum > 0 && AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.ContentDelete))
+            if (nodeInfo.ContentNum > 0 && AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ContentDelete))
             {
                 builder.Append($@"
 <a href=""javascript:;"" class=""btn btn-primary"" onclick=""{PageContentDelete.GetRedirectClickStringForSingleChannel(siteInfo.Id, nodeInfo.Id, false, pageUrl)}"">
@@ -164,7 +164,7 @@ namespace SiteServer.BackgroundPages.Core
 
             if (nodeInfo.ContentNum > 0)
             {
-                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.ContentEdit))
+                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ContentEdit))
                 {
                     builder.Append($@"
 <a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalContentAttributes.GetOpenWindowString(siteInfo.Id, nodeInfo.Id)}"">
@@ -176,7 +176,7 @@ namespace SiteServer.BackgroundPages.Core
     内容组
 </a>");
                 }
-                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.ContentTranslate))
+                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ContentTranslate))
                 {
                     var redirectUrl = PageContentTranslate.GetRedirectUrl(siteInfo.Id, nodeInfo.Id, pageUrl);
                     var clickString = PageUtils.GetRedirectStringWithCheckBoxValue(redirectUrl, "ContentIDCollection", "ContentIDCollection", "请选择需要转移的内容！");
@@ -185,21 +185,21 @@ namespace SiteServer.BackgroundPages.Core
     转 移
 </a>");
                 }
-                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.ContentEdit))
+                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ContentEdit))
                 {
                     builder.Append($@"
 <a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalContentTaxis.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, pageUrl)}"">
     排 序
 </a>");
                 }
-                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.ContentCheck))
+                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ContentCheck))
                 {
                     builder.Append($@"
 <a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalContentCheck.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, pageUrl)}"">
     审 核
 </a>");
                 }
-                if (AdminUtility.HasSitePermissions(administratorName, siteInfo.Id, AppManager.Permissions.WebSite.Create) || AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.CreatePage))
+                if (AdminUtility.HasSitePermissions(administratorName, siteInfo.Id, ConfigManager.Permissions.WebSite.Create) || AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.CreatePage))
                 {
                     builder.Append($@"
 <a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateContentsOneByOne(siteInfo.Id, nodeInfo.Id)}"">
@@ -209,7 +209,7 @@ namespace SiteServer.BackgroundPages.Core
                 }
             }
 
-            if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.ChannelEdit))
+            if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ChannelEdit))
             {
                 builder.Append($@"
 <a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalSelectColumns.GetOpenWindowStringToContent(siteInfo.Id, nodeInfo.Id, true)}"">
@@ -234,7 +234,7 @@ namespace SiteServer.BackgroundPages.Core
         {
             var builder = new StringBuilder();
 
-            if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.ContentAdd) && nodeInfo.Additional.IsContentAddable)
+            if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ContentAdd) && nodeInfo.Additional.IsContentAddable)
             {
                 builder.Append($@"
 <a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentImport.GetOpenWindowString(siteInfo.Id, nodeInfo.Id)}"">
@@ -248,14 +248,14 @@ namespace SiteServer.BackgroundPages.Core
 <a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentExport.GetOpenWindowString(siteInfo.Id, nodeInfo.Id)}"">
     导 出
 </a>");
-                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.ContentOrder))
+                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ContentOrder))
                 {
                     builder.Append($@"
 <a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentTidyUp.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, pageUrl)}"">
     整 理
 </a>");
                 }
-                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.ContentArchive))
+                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ContentArchive))
                 {
                     builder.Append($@"
 <a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentArchive.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, pageUrl)}"">
@@ -279,7 +279,7 @@ namespace SiteServer.BackgroundPages.Core
             var iconUrl = SiteServerAssets.GetIconUrl(string.Empty);
             var builder = new StringBuilder();
             //添加栏目
-            if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.ChannelAdd) && nodeInfo.Additional.IsChannelAddable)
+            if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ChannelAdd) && nodeInfo.Additional.IsChannelAddable)
             {
                 builder.Append(
                     $@"<a href=""{PageChannelAdd.GetRedirectUrl(siteInfo.Id,
@@ -291,7 +291,7 @@ namespace SiteServer.BackgroundPages.Core
             if (nodeInfo.ChildrenCount > 0)
             {
                 //删除栏目
-                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.ChannelDelete))
+                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ChannelDelete))
                 {
                     builder.Append(
                         $@"<a href=""javascript:;"" onclick=""{PageUtils.GetRedirectStringWithCheckBoxValue(
@@ -299,7 +299,7 @@ namespace SiteServer.BackgroundPages.Core
                             "ChannelIDCollection", "ChannelIDCollection", "请选择需要删除的栏目！")}"">删除栏目</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
                 }
                 //清空内容
-                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.ContentDelete))
+                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ContentDelete))
                 {
                     builder.Append(
                         $@"<a href=""javascript:;"" onclick=""{PageUtils.GetRedirectStringWithCheckBoxValue(
@@ -307,7 +307,7 @@ namespace SiteServer.BackgroundPages.Core
                             "ChannelIDCollection", "ChannelIDCollection", "请选择需要删除内容的栏目！")}"">清空内容</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
                 }
 
-                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.ChannelAdd))
+                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ChannelAdd))
                 {
                     //导 入
                     if (nodeInfo.Additional.IsChannelAddable)
@@ -323,14 +323,14 @@ namespace SiteServer.BackgroundPages.Core
                 }
 
                 //设置栏目组
-                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.ChannelEdit))
+                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ChannelEdit))
                 {
                     builder.Append(
                         $@"<a href=""javascript:;"" onclick=""{ModalAddToGroup.GetOpenWindowStringToChannel(
                             siteInfo.Id)}"">设置栏目组</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
                 }
                 //转 移
-                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.ChannelTranslate))
+                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ChannelTranslate))
                 {
                     builder.Append(
                         $@"<a href=""javascript:;"" onclick=""{PageUtils.GetRedirectStringWithCheckBoxValue(
@@ -339,7 +339,7 @@ namespace SiteServer.BackgroundPages.Core
                 }
 
                 //生 成
-                if (AdminUtility.HasSitePermissions(administratorName, siteInfo.Id, AppManager.Permissions.WebSite.Create) || AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.CreatePage))
+                if (AdminUtility.HasSitePermissions(administratorName, siteInfo.Id, ConfigManager.Permissions.WebSite.Create) || AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.CreatePage))
                 {
                     builder.Append(
                         $@"<a href=""javascript:;"" onclick=""{ModalCreateChannels.GetOpenWindowString(
@@ -349,7 +349,7 @@ namespace SiteServer.BackgroundPages.Core
             else
             {
                 //导 入
-                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, AppManager.Permissions.Channel.ChannelAdd) && nodeInfo.Additional.IsChannelAddable)
+                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ChannelAdd) && nodeInfo.Additional.IsChannelAddable)
                 {
                     builder.Append(
                         $@"<a href=""javascript:;"" onclick=""{ModalChannelImport.GetOpenWindowString(

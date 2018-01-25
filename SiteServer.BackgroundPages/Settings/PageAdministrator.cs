@@ -126,7 +126,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Admin);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Admin);
 
             var theListItem = new ListItem("全部", string.Empty)
             {

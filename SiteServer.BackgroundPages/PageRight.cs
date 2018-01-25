@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages
         {
             if (IsForbidden) return;
 
-            LtlVersionInfo.Text = AppManager.GetFullVersion();
+            LtlVersionInfo.Text = SystemManager.Version;
 
             if (Body.AdministratorInfo.LastActivityDate != DateTime.MinValue)
             {

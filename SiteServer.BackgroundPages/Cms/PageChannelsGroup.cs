@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
 
             LtlChannelGroupName.Text = "栏目组：" + _nodeGroupName;
 
@@ -61,7 +61,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsOwningNodeId(nodeId))
             {
-                if (AdminUtility.HasChannelPermissions(Body.AdminName, nodeInfo.SiteId, nodeInfo.Id, AppManager.Permissions.Channel.ChannelEdit))
+                if (AdminUtility.HasChannelPermissions(Body.AdminName, nodeInfo.SiteId, nodeInfo.Id, ConfigManager.Permissions.Channel.ChannelEdit))
                 {
                     ltlItemChannelName.Text = $@"<a href=""javascript:;"" onclick=""{ModalChannelEdit.GetOpenWindowString(nodeInfo.SiteId, nodeInfo.Id, GetRedirectUrl(nodeInfo.SiteId, _nodeGroupName))}"">{ltlItemChannelName.Text}</a>";
                 }

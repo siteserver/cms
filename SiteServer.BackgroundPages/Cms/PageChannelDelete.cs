@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
             foreach (var nodeId in nodeIdList)
             {
                 if (nodeId == SiteId) continue;
-                if (!HasChannelPermissions(nodeId, AppManager.Permissions.Channel.ChannelDelete)) continue;
+                if (!HasChannelPermissions(nodeId, ConfigManager.Permissions.Channel.ChannelDelete)) continue;
 
                 var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
                 var displayName = nodeInfo.ChannelName;
@@ -89,7 +89,7 @@ namespace SiteServer.BackgroundPages.Cms
                 foreach (var nodeId in nodeIdList)
                 {
                     if (nodeId == SiteId) continue;
-                    if (HasChannelPermissions(nodeId, AppManager.Permissions.Channel.ChannelDelete))
+                    if (HasChannelPermissions(nodeId, ConfigManager.Permissions.Channel.ChannelDelete))
                     {
                         nodeIdArrayList.Add(nodeId);
                     }

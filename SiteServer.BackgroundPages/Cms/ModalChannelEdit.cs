@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                if (!HasChannelPermissions(_nodeId, AppManager.Permissions.Channel.ChannelEdit))
+                if (!HasChannelPermissions(_nodeId, ConfigManager.Permissions.Channel.ChannelEdit))
                 {
                     PageUtils.RedirectToErrorPage("您没有修改栏目的权限！");
                     return;

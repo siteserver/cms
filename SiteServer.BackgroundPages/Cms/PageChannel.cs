@@ -78,7 +78,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            PhAddChannel.Visible = HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.ChannelAdd);
+            PhAddChannel.Visible = HasChannelPermissionsIgnoreNodeId(ConfigManager.Permissions.Channel.ChannelAdd);
             if (PhAddChannel.Visible)
             {
                 BtnAddChannel1.Attributes.Add("onclick", ModalChannelsAdd.GetOpenWindowString(SiteId, SiteId, GetRedirectUrl(SiteId, SiteId)));
@@ -86,7 +86,7 @@ namespace SiteServer.BackgroundPages.Cms
                     $"location.href='{PageChannelAdd.GetRedirectUrl(SiteId, SiteId, GetRedirectUrl(SiteId, 0))}';return false;");
             }
 
-            PhChannelEdit.Visible = HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.ChannelEdit);
+            PhChannelEdit.Visible = HasChannelPermissionsIgnoreNodeId(ConfigManager.Permissions.Channel.ChannelEdit);
             if (PhChannelEdit.Visible)
             {
                 var showPopWinString = ModalAddToGroup.GetOpenWindowStringToChannel(SiteId);
@@ -95,7 +95,7 @@ namespace SiteServer.BackgroundPages.Cms
                 BtnSelectEditColumns.Attributes.Add("onclick", ModalSelectColumns.GetOpenWindowStringToChannel(SiteId, false));
             }
 
-            PhTranslate.Visible = HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.ChannelTranslate);
+            PhTranslate.Visible = HasChannelPermissionsIgnoreNodeId(ConfigManager.Permissions.Channel.ChannelTranslate);
             if (PhTranslate.Visible)
             {
                 BtnTranslate.Attributes.Add("onclick",
@@ -105,13 +105,13 @@ namespace SiteServer.BackgroundPages.Cms
                         "ChannelIDCollection", "请选择需要转移的栏目！"));
             }
 
-            PhDelete.Visible = HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.ChannelDelete);
+            PhDelete.Visible = HasChannelPermissionsIgnoreNodeId(ConfigManager.Permissions.Channel.ChannelDelete);
             if (PhDelete.Visible)
             {
                 BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValue(PageChannelDelete.GetRedirectUrl(SiteId, GetRedirectUrl(SiteId, SiteId)), "ChannelIDCollection", "ChannelIDCollection", "请选择需要删除的栏目！"));
             }
 
-            PhCreate.Visible = HasSitePermissions(AppManager.Permissions.WebSite.Create) || HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.CreatePage);
+            PhCreate.Visible = HasSitePermissions(ConfigManager.Permissions.WebSite.Create) || HasChannelPermissionsIgnoreNodeId(ConfigManager.Permissions.Channel.CreatePage);
             if (PhCreate.Visible)
             {
                 BtnCreate.Attributes.Add("onclick", ModalCreateChannels.GetOpenWindowString(SiteId));

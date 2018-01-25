@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Core
 
                 if (enabled)
                 {
-                    if (AdminUtility.HasChannelPermissions(administratorName, nodeInfo.SiteId, nodeInfo.Id, AppManager.Permissions.Channel.ChannelEdit))
+                    if (AdminUtility.HasChannelPermissions(administratorName, nodeInfo.SiteId, nodeInfo.Id, ConfigManager.Permissions.Channel.ChannelEdit))
                     {
                         var urlEdit = PageChannelEdit.GetRedirectUrl(nodeInfo.SiteId, nodeInfo.Id, PageChannel.GetRedirectUrl(nodeInfo.SiteId, nodeInfo.Id));
                         editUrl = $"<a href=\"{urlEdit}\">编辑</a>";

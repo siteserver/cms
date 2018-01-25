@@ -71,7 +71,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Chart);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Chart);
 
             DdlSiteId.Items.Add(new ListItem("<<全部站点>>", "0"));
             var siteIdList = SiteManager.GetSiteIdListOrderByLevel();

@@ -65,7 +65,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (Page.IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
 
             _sortedlist = SiteTemplateManager.Instance.GetSiteTemplateSortedList();
             var directoryList = new List<DirectoryInfo>();

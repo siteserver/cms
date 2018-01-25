@@ -111,7 +111,7 @@ var previewUrl = '{PreviewApi.GetContentUrl(SiteId, _nodeInfo.Id, contentId)}';
 </script>
 ";
 
-                if (HasChannelPermissions(_nodeInfo.Id, AppManager.Permissions.Channel.ContentTranslate))
+                if (HasChannelPermissions(_nodeInfo.Id, ConfigManager.Permissions.Channel.ContentTranslate))
                 {
                     PhTranslate.Visible = true;
                     BtnTranslate.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
@@ -142,7 +142,7 @@ var previewUrl = '{PreviewApi.GetContentUrl(SiteId, _nodeInfo.Id, contentId)}';
 
                 LtlTags.Text = ContentUtility.GetTagsHtml(AjaxCmsService.GetTagsUrl(SiteId));
 
-                if (HasChannelPermissions(_nodeInfo.Id, AppManager.Permissions.Channel.ContentCheck))
+                if (HasChannelPermissions(_nodeInfo.Id, ConfigManager.Permissions.Channel.ContentCheck))
                 {
                     PhStatus.Visible = true;
                     int checkedLevel;
@@ -516,7 +516,7 @@ var previewUrl = '{PreviewApi.GetContentUrl(SiteId, _nodeInfo.Id, contentId)}';
                     return false;
                 }
 
-                if (!HasChannelPermissions(_nodeInfo.Id, AppManager.Permissions.Channel.ContentAdd))
+                if (!HasChannelPermissions(_nodeInfo.Id, ConfigManager.Permissions.Channel.ContentAdd))
                 {
                     if (!Body.IsAdminLoggin)
                     {
@@ -530,7 +530,7 @@ var previewUrl = '{PreviewApi.GetContentUrl(SiteId, _nodeInfo.Id, contentId)}';
             }
             else
             {
-                if (!HasChannelPermissions(_nodeInfo.Id, AppManager.Permissions.Channel.ContentEdit))
+                if (!HasChannelPermissions(_nodeInfo.Id, ConfigManager.Permissions.Channel.ContentEdit))
                 {
                     if (!Body.IsAdminLoggin)
                     {

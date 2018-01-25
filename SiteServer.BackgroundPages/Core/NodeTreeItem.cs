@@ -115,7 +115,7 @@ namespace SiteServer.BackgroundPages.Core
                 }
                 else
                 {
-                    if (AdminUtility.HasChannelPermissions(_administratorName, _nodeInfo.SiteId, _nodeInfo.Id, AppManager.Permissions.Channel.ChannelEdit))
+                    if (AdminUtility.HasChannelPermissions(_administratorName, _nodeInfo.SiteId, _nodeInfo.Id, ConfigManager.Permissions.Channel.ChannelEdit))
                     {
                         var onClickUrl = ModalChannelEdit.GetOpenWindowString(_nodeInfo.SiteId, _nodeInfo.Id, returnUrl);
                         htmlBuilder.Append(

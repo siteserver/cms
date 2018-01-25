@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Admin);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Admin);
 
             ClientScriptRegisterClientScriptBlock("NodeTreeScript", AreaTreeItem.GetScript(EAreaLoadingType.Management, null));
 

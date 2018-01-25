@@ -29,17 +29,20 @@ namespace SiteServer.BackgroundPages.Controls
             var pageScripts = new NameValueCollection();
 
             var pluginFuncDictLowercase = new Dictionary<string, Func<int, int, IAttributes, string>>();
-            foreach (var pluginId in Plugins.Keys)
+            if (Plugins != null)
             {
-                var dict = Plugins[pluginId];
-
-                if (dict == null || dict.Count == 0) continue;
-
-                foreach (var attributeName in dict.Keys)
+                foreach (var pluginId in Plugins.Keys)
                 {
-                    if (!pluginFuncDictLowercase.ContainsKey(attributeName.ToLower()) && dict[attributeName] != null)
+                    var dict = Plugins[pluginId];
+
+                    if (dict == null || dict.Count == 0) continue;
+
+                    foreach (var attributeName in dict.Keys)
                     {
-                        pluginFuncDictLowercase[attributeName.ToLower()] = dict[attributeName];
+                        if (!pluginFuncDictLowercase.ContainsKey(attributeName.ToLower()) && dict[attributeName] != null)
+                        {
+                            pluginFuncDictLowercase[attributeName.ToLower()] = dict[attributeName];
+                        }
                     }
                 }
             }
@@ -59,17 +62,20 @@ namespace SiteServer.BackgroundPages.Controls
                     catch (Exception ex)
                     {
                         var formPluginId = string.Empty;
-                        foreach (var pluginId in Plugins.Keys)
+                        if (Plugins != null)
                         {
-                            var dict = Plugins[pluginId];
-
-                            if (dict == null || dict.Count == 0) continue;
-
-                            foreach (var attributeName in dict.Keys)
+                            foreach (var pluginId in Plugins.Keys)
                             {
-                                if (dict[attributeName] == null) continue;
-                                formPluginId = pluginId;
-                                break;
+                                var dict = Plugins[pluginId];
+
+                                if (dict == null || dict.Count == 0) continue;
+
+                                foreach (var attributeName in dict.Keys)
+                                {
+                                    if (dict[attributeName] == null) continue;
+                                    formPluginId = pluginId;
+                                    break;
+                                }
                             }
                         }
                         LogUtils.AddPluginErrorLog(formPluginId, ex, nameof(IService.AddCustomizedContentForm));

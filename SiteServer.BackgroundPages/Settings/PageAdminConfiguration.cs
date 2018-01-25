@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Admin);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Admin);
 
             TbLoginUserNameMinLength.Text = ConfigManager.SystemConfigInfo.AdminUserNameMinLength.ToString();
             TbLoginPasswordMinLength.Text = ConfigManager.SystemConfigInfo.AdminPasswordMinLength.ToString();

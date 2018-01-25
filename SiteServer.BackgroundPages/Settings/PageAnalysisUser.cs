@@ -100,7 +100,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Chart);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Chart);
             LtlPageTitle.Text = $"用户增加最近{_count}{EStatictisXTypeUtils.GetText(EStatictisXTypeUtils.GetEnumType(Body.GetQueryString("XType")))}分配图表";
 
             EStatictisXTypeUtils.AddListItems(DdlXType);

@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Create);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Create);
 
             var listitem = new ListItem("所有选中的栏目", "All");
             DdlScope.Items.Add(listitem);

@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteAdd);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.SiteAdd);
 
             DataProvider.TableDao.CreateAllTableCollectionInfoIfNotExists();
 

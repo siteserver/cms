@@ -70,7 +70,7 @@ namespace SiteServer.BackgroundPages
                 return;
             }
 
-            LtlVersionInfo.Text = AppManager.GetFullVersion();
+            LtlVersionInfo.Text = SystemManager.Version;
             SetSetp(1);
 
             DatabaseTypeUtils.AddListItems(DdlSqlDatabaseType);
@@ -104,7 +104,7 @@ namespace SiteServer.BackgroundPages
                 BtnStep2.Visible = true;
 
                 LtlDomain.Text = PageUtils.GetHost();
-                LtlVersion.Text = AppManager.GetFullVersion();
+                LtlVersion.Text = SystemManager.Version;
                 LtlNetVersion.Text = $"{Environment.Version.Major}.{Environment.Version.Minor}";
                 LtlPhysicalApplicationPath.Text = WebConfigUtils.PhysicalApplicationPath;
 

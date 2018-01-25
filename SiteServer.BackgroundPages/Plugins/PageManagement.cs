@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Model;
@@ -89,7 +90,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
             _type = Body.GetQueryInt("type");
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Plugins.Management);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Plugins.Management);
 
             var list = new List<PluginInfo>();
             int[] arr = {0, 0, 0, 0};
