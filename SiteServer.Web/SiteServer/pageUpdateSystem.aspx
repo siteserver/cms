@@ -67,8 +67,8 @@
               <p class="lead">
                 升级向导将在线检查并自动下载、安装 SiteServer CMS 产品最新版本。
               </p>
-              <hr class="my-4">
-              <p>
+              <hr class="my-4" style="display: none">
+              <p style="display: none">
                 如果不希望升级到最新版，可以选择指定版本进行升级，请点击
                 <asp:button id="BtnUpload" class="btn btn-success" Text="手动升级" runat="server"></asp:button>
               </p>
@@ -341,6 +341,16 @@
       function updateSystem() {
         $.ajax({
           url: "<%=UpdateSystemApiUrl%>" + version,
+          type: "GET",
+          success: function (data) {
+            updateDatabase();
+          }
+        });
+      }
+
+      function updateDatabase() {
+        $.ajax({
+          url: "<%=UpdateDatabaseApiUrl%>" + version,
           type: "GET",
           success: function (data) {
             $('#phStep4').hide();

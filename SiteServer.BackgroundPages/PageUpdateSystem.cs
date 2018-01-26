@@ -30,6 +30,8 @@ namespace SiteServer.BackgroundPages
 
         public string UpdateSystemApiUrl => ApiRouteUpdateSystem.GetUrl(PageUtility.InnerApiUrl, string.Empty);
 
+        public string UpdateDatabaseApiUrl => ApiRouteUpdateDatabase.GetUrl(PageUtility.InnerApiUrl);
+
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsPostBack) return;

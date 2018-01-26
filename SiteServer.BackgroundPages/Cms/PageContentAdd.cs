@@ -41,7 +41,6 @@ namespace SiteServer.BackgroundPages.Cms
         private ChannelInfo _nodeInfo;
         private List<TableStyleInfo> _styleInfoList;
         private string _tableName;
-        private Dictionary<string, Dictionary<string, Func<int, int, IAttributes, string>>> _plugins;
 
         protected override bool IsSinglePage => true;
 
@@ -81,7 +80,6 @@ namespace SiteServer.BackgroundPages.Cms
             _nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, channelId);
             _tableName = ChannelManager.GetTableName(SiteInfo, _nodeInfo);
-            _plugins = PluginContentManager.GetContentFormCustomized(_nodeInfo);
             ContentInfo contentInfo = null;
             _styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, relatedIdentities);
 
@@ -98,7 +96,6 @@ namespace SiteServer.BackgroundPages.Cms
             AcAttributes.SiteInfo = SiteInfo;
             AcAttributes.NodeId = _nodeInfo.Id;
             AcAttributes.StyleInfoList = _styleInfoList;
-            AcAttributes.Plugins = _plugins;
 
             if (!IsPostBack)
             {
@@ -292,12 +289,12 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
                     {
                         try
                         {
-                            service.OnContentFormSubmited(new ContentFormSubmitedEventArgs(SiteId, _nodeInfo.Id,
-                                contentInfo, Request.Form));
+                            service.OnContentFormSubmit(new ContentFormSubmitEventArgs(SiteId, _nodeInfo.Id,
+                                contentInfo, new ExtendedAttributes(Request.Form)));
                         }
                         catch (Exception ex)
                         {
-                            LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmited));
+                            LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
                         }
                     }
 
@@ -385,12 +382,12 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
                     {
                         try
                         {
-                            service.OnContentFormSubmited(new ContentFormSubmitedEventArgs(SiteId, _nodeInfo.Id,
-                                contentInfo, Request.Form));
+                            service.OnContentFormSubmit(new ContentFormSubmitEventArgs(SiteId, _nodeInfo.Id,
+                                contentInfo, new ExtendedAttributes(Request.Form)));
                         }
                         catch (Exception ex)
                         {
-                            LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmited));
+                            LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
                         }
                     }
 

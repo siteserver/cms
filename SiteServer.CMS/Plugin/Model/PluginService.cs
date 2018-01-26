@@ -42,13 +42,32 @@ namespace SiteServer.CMS.Plugin.Model
             ContentTranslateCompleted?.Invoke(this, e);
         }
 
-        public Dictionary<string, Func<int, int, IAttributes, string>> ContentFormCustomized { get; private set; }
+        //public Dictionary<string, Func<int, int, IAttributes, string>> ContentFormCustomized { get; private set; }
 
-        public event EventHandler<ContentFormSubmitedEventArgs> ContentFormSubmited;
+        //public IService AddCustomizedContentForm(string attributeName, Func<int, int, IAttributes, string> customized)
+        //{
+        //    if (ContentFormCustomized == null)
+        //    {
+        //        ContentFormCustomized = new Dictionary<string, Func<int, int, IAttributes, string>>();
+        //    }
 
-        public void OnContentFormSubmited(ContentFormSubmitedEventArgs e)
+        //    ContentFormCustomized[attributeName] = customized;
+
+        //    return this;
+        //}
+
+        public event EventHandler<ContentFormLoadEventArgs> ContentFormLoad;
+
+        public void OnContentFormLoad(ContentFormLoadEventArgs e)
         {
-            ContentFormSubmited?.Invoke(this, e);
+            ContentFormLoad?.Invoke(this, e);
+        }
+
+        public event EventHandler<ContentFormSubmitEventArgs> ContentFormSubmit;
+
+        public void OnContentFormSubmit(ContentFormSubmitEventArgs e)
+        {
+            ContentFormSubmit?.Invoke(this, e);
         }
 
         public Dictionary<string, Func<IParseContext, string>> StlElementsToParse { get; private set; }
@@ -125,18 +144,6 @@ namespace SiteServer.CMS.Plugin.Model
         public IService AddContentLinks(List<HyperLink> links)
         {
             ContentLinks = links;
-
-            return this;
-        }
-
-        public IService AddCustomizedContentForm(string attributeName, Func<int, int, IAttributes, string> customized)
-        {
-            if (ContentFormCustomized == null)
-            {
-                ContentFormCustomized = new Dictionary<string, Func<int, int, IAttributes, string>>();
-            }
-
-            ContentFormCustomized[attributeName] = customized;
 
             return this;
         }

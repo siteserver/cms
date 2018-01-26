@@ -6,6 +6,7 @@ using System.Web.UI;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Controls
@@ -20,71 +21,15 @@ namespace SiteServer.BackgroundPages.Controls
 
         public List<TableStyleInfo> StyleInfoList { get; set; }
 
-        public Dictionary<string, Dictionary<string, Func<int, int, IAttributes, string>>> Plugins { get; set; }
-
         protected override void Render(HtmlTextWriter output)
         {
             if (StyleInfoList == null || StyleInfoList.Count == 0 || Attributes == null) return;
 
             var pageScripts = new NameValueCollection();
 
-            var pluginFuncDictLowercase = new Dictionary<string, Func<int, int, IAttributes, string>>();
-            if (Plugins != null)
-            {
-                foreach (var pluginId in Plugins.Keys)
-                {
-                    var dict = Plugins[pluginId];
-
-                    if (dict == null || dict.Count == 0) continue;
-
-                    foreach (var attributeName in dict.Keys)
-                    {
-                        if (!pluginFuncDictLowercase.ContainsKey(attributeName.ToLower()) && dict[attributeName] != null)
-                        {
-                            pluginFuncDictLowercase[attributeName.ToLower()] = dict[attributeName];
-                        }
-                    }
-                }
-            }
-
             var builder = new StringBuilder();
             foreach (var styleInfo in StyleInfoList)
             {
-                if (pluginFuncDictLowercase.ContainsKey(styleInfo.AttributeName.ToLower()))
-                {
-                    var formFunc = pluginFuncDictLowercase[styleInfo.AttributeName.ToLower()];
-
-                    var html = string.Empty;
-                    try
-                    {
-                        html = formFunc(SiteInfo.Id, NodeId, Attributes);
-                    }
-                    catch (Exception ex)
-                    {
-                        var formPluginId = string.Empty;
-                        if (Plugins != null)
-                        {
-                            foreach (var pluginId in Plugins.Keys)
-                            {
-                                var dict = Plugins[pluginId];
-
-                                if (dict == null || dict.Count == 0) continue;
-
-                                foreach (var attributeName in dict.Keys)
-                                {
-                                    if (dict[attributeName] == null) continue;
-                                    formPluginId = pluginId;
-                                    break;
-                                }
-                            }
-                        }
-                        LogUtils.AddPluginErrorLog(formPluginId, ex, nameof(IService.AddCustomizedContentForm));
-                    }
-
-                    builder.Append(html);
-                    continue;
-                }
-
                 string extra;
                 var value = BackgroundInputTypeParser.Parse(SiteInfo, NodeId, styleInfo, Attributes, pageScripts, out extra);
 
@@ -109,7 +54,7 @@ namespace SiteServer.BackgroundPages.Controls
                 }
                 else
                 {
-                    builder.Append($@"
+                    var htmlBuilder = new StringBuilder($@"
 <div class=""form-group form-row"">
     <label class=""col-sm-1 col-form-label text-right"">{styleInfo.DisplayName}</label>
     <div class=""col-sm-6"">
@@ -119,6 +64,24 @@ namespace SiteServer.BackgroundPages.Controls
         {extra}
     </div>
 </div>");
+
+                    if (styleInfo.InputType == InputType.Customize)
+                    {
+                        var eventArgs = new ContentFormLoadEventArgs(SiteInfo.Id, NodeId, styleInfo.AttributeName, Attributes, htmlBuilder);
+                        foreach (var service in PluginManager.Services)
+                        {
+                            try
+                            {
+                                service.OnContentFormLoad(eventArgs);
+                            }
+                            catch (Exception ex)
+                            {
+                                LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(IService.ContentFormLoad));
+                            }
+                        }
+                    }
+
+                    builder.Append(htmlBuilder);
                 }
             }
 

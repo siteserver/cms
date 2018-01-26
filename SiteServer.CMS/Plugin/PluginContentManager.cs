@@ -42,10 +42,6 @@ namespace SiteServer.CMS.Plugin
                 {
                     list.Add(service.Metadata);
                 }
-                else if (service.ContentFormCustomized != null && service.ContentFormCustomized.Count > 0)
-                {
-                    list.Add(service.Metadata);
-                }
             }
 
             return list;
@@ -97,30 +93,30 @@ namespace SiteServer.CMS.Plugin
             return dict;
         }
 
-        public static Dictionary<string, Dictionary<string, Func<int, int, IAttributes, string>>> GetContentFormCustomized(ChannelInfo nodeInfo)
-        {
-            if (string.IsNullOrEmpty(nodeInfo.ContentRelatedPluginIds) &&
-                string.IsNullOrEmpty(nodeInfo.ContentModelPluginId))
-            {
-                return null;
-            }
+        //public static Dictionary<string, Dictionary<string, Func<int, int, IAttributes, string>>> GetContentFormCustomized(ChannelInfo nodeInfo)
+        //{
+        //    if (string.IsNullOrEmpty(nodeInfo.ContentRelatedPluginIds) &&
+        //        string.IsNullOrEmpty(nodeInfo.ContentModelPluginId))
+        //    {
+        //        return null;
+        //    }
 
-            var dict = new Dictionary<string, Dictionary<string, Func<int, int, IAttributes, string>>>();
+        //    var dict = new Dictionary<string, Dictionary<string, Func<int, int, IAttributes, string>>>();
 
-            var pluginIds = TranslateUtils.StringCollectionToStringList(nodeInfo.ContentRelatedPluginIds);
-            if (!string.IsNullOrEmpty(nodeInfo.ContentModelPluginId))
-            {
-                pluginIds.Add(nodeInfo.ContentModelPluginId);
-            }
+        //    var pluginIds = TranslateUtils.StringCollectionToStringList(nodeInfo.ContentRelatedPluginIds);
+        //    if (!string.IsNullOrEmpty(nodeInfo.ContentModelPluginId))
+        //    {
+        //        pluginIds.Add(nodeInfo.ContentModelPluginId);
+        //    }
 
-            foreach (var service in PluginManager.Services)
-            {
-                if (!pluginIds.Contains(service.PluginId) || service.ContentFormCustomized == null || service.ContentFormCustomized.Count == 0) continue;
+        //    foreach (var service in PluginManager.Services)
+        //    {
+        //        if (!pluginIds.Contains(service.PluginId) || service.ContentFormCustomized == null || service.ContentFormCustomized.Count == 0) continue;
 
-                dict[service.PluginId] = service.ContentFormCustomized;
-            }
+        //        dict[service.PluginId] = service.ContentFormCustomized;
+        //    }
 
-            return dict;
-        }
+        //    return dict;
+        //}
     }
 }
