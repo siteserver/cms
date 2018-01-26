@@ -184,6 +184,18 @@ namespace SiteServer.Utils
             return MapPath(Combine("~/" + DirectoryUtils.SiteFiles.DirectoryName, Combine(paths)));
         }
 
+        public static string GetBinDirectoryPath(string relatedPath)
+        {
+            relatedPath = RemoveParentPath(relatedPath);
+            return Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.Bin.DirectoryName, relatedPath);
+        }
+
+        public static string GetAdminDirectoryPath(string relatedPath)
+        {
+            relatedPath = RemoveParentPath(relatedPath);
+            return Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory, relatedPath);
+        }
+
         public static string PluginsPath => GetSiteFilesPath(DirectoryUtils.SiteFiles.Plugins);
 
         public static string GetPluginPath(string pluginId, params string[] paths)

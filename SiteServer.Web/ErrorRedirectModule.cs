@@ -25,14 +25,21 @@ namespace SiteServer.API
                 }
                 HttpContext.Current.Server.ClearError();
 
-                var logId = LogUtils.AddSystemErrorLog(ex, "Application Error");
-                if (logId > 0)
+                if (ex.HResult == -2147467259) // 文件名不存在
                 {
-                    PageUtils.RedirectToErrorPage(logId);
+                    PageUtils.RedirectToErrorPage(ex.Message);
                 }
                 else
                 {
-                    PageUtils.RedirectToErrorPage(ex.Message);
+                    var logId = LogUtils.AddSystemErrorLog(ex, "Application Error");
+                    if (logId > 0)
+                    {
+                        PageUtils.RedirectToErrorPage(logId);
+                    }
+                    else
+                    {
+                        PageUtils.RedirectToErrorPage(ex.Message);
+                    }
                 }
             }
             catch

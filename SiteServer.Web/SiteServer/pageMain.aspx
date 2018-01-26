@@ -176,16 +176,22 @@
           type: "GET",
           dataType: "json",
           success: function (data) {
-            if (data && data.version && data.version != '<%=CurrentVersion%>') {
-              $('#newVersion').show();
-              $('#newVersionLast').html(data.version);
-              $('#newVersionDate').html(data.published);
-              if (data.releaseNotes) {
-                $('#newVersionNotes').html(data.releaseNotes + '<br />');
-              }
-              $('#newVersionLink').attr('href', 'http://www.siteserver.cn/releasenotes/index.html?version=' +
-                data.version);
+            if (!data || !data.version) return;
+
+            var version = data.version;
+            if (version.indexOf('-') != -1) {
+              version = version.substring(0, version.indexOf('-'));
             }
+            if (version == '<%=CurrentVersion%>') return;
+
+            $('#newVersion').show();
+            $('#newVersionLast').html(data.version);
+            $('#newVersionDate').html(data.published);
+            if (data.releaseNotes) {
+              $('#newVersionNotes').html(data.releaseNotes + '<br />');
+            }
+            $('#newVersionLink').attr('href', 'http://www.siteserver.cn/releasenotes/index.html?version=' +
+              data.version);
           }
         });
       });

@@ -42,7 +42,6 @@ function build(beta) {
   min('./SiteServer.Web/SiteServer/**/*', './build/SiteServer');
   //SiteServer.Web/*
   min('./SiteServer.Web/安装向导.html', './build');
-  gulp.src('./SiteServer.Web/Global.asax').pipe(gulp.dest('./build'));
   gulp.src('./SiteServer.Web/robots.txt').pipe(gulp.dest('./build'));
   gulp.src('./SiteServer.Web/Web.Release.config').pipe(rename('Web.config')).pipe(gulp.dest('./build'));
 

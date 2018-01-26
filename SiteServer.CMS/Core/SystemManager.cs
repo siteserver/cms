@@ -112,18 +112,18 @@ namespace SiteServer.CMS.Core
             try
             {
                 var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{version}";
-                var directoryPath = PathUtils.GetPackagesPath(idWithVersion);
+                var packagePath = PathUtils.GetPackagesPath(idWithVersion);
 
                 string nuspecPath;
-                var metadata = GetSystemMetadataByDirectoryPath(directoryPath, out nuspecPath, out errorMessage);
+                var metadata = GetSystemMetadataByDirectoryPath(packagePath, out nuspecPath, out errorMessage);
                 if (metadata == null)
                 {
                     return false;
                 }
 
-                var applicationPath = WebConfigUtils.PhysicalApplicationPath;
-
-                DirectoryUtils.Copy(PathUtils.Combine(directoryPath, "content"), applicationPath, true);
+                DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), PathUtils.GetSiteFilesPath(string.Empty), true);
+                DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), PathUtils.GetAdminDirectoryPath(string.Empty), true);
+                DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), PathUtils.GetBinDirectoryPath(string.Empty), true);
             }
             catch (Exception ex)
             {

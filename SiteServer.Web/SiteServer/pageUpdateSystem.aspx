@@ -353,8 +353,7 @@
           url: "<%=UpdateDatabaseApiUrl%>" + version,
           type: "GET",
           success: function (data) {
-            $('#phStep4').hide();
-            $('#phStep5').show();
+            
           }
         });
       }

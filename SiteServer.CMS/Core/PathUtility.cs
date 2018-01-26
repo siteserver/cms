@@ -355,12 +355,6 @@ namespace SiteServer.CMS.Core
             return resolvedPath;
         }
 
-        public static string GetAdminDirectoryPath(string relatedPath)
-        {
-            relatedPath = PathUtils.RemoveParentPath(relatedPath);
-            return PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory, relatedPath);
-        }
-
         public static string MapPath(SiteInfo siteInfo, string virtualPath)
         {
             var resolvedPath = virtualPath;
