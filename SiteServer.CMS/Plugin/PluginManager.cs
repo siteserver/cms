@@ -7,12 +7,11 @@ using System.Reflection;
 using System.Threading;
 using SiteServer.Utils;
 using SiteServer.Utils.IO;
-using NuGet;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin.Apis;
-using SiteServer.CMS.Plugin.Core;
 using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
+using SiteServer.Utils.Packaging;
 
 namespace SiteServer.CMS.Plugin
 {
@@ -598,38 +597,12 @@ namespace SiteServer.CMS.Plugin
         //    return actions;
         //}
 
-        public static bool GetAndInstall(string pluginId, string version, out string errorMessage)
+        public static bool Install(string idWithVersion, out string errorMessage)
         {
             try
             {
-                //Connect to the official package repository
-                var repo = PackageRepositoryFactory.Default.CreateRepository("https://packages.nuget.org/api/v2");
+                var directoryPath = PathUtils.GetPackagesPath(idWithVersion);
 
-                //Initialize the package manager
-                var path = PathUtils.GetPackagesPath();
-                var packageManager = new PackageManager(repo, path);
-
-                //Download and unzip the package
-                packageManager.InstallPackage(pluginId, SemanticVersion.Parse(version), false, true);
-
-                var idWithVersion = $"{pluginId}.{version}";
-                var directoryPath = PathUtils.Combine(path, idWithVersion);
-
-                ZipUtils.UnpackFilesByExtension(PathUtils.Combine(directoryPath, idWithVersion + ".nupkg"), directoryPath, ".nuspec");
-                
-                return Install(directoryPath, out errorMessage);
-            }
-            catch (Exception ex)
-            {
-                errorMessage = ex.Message;
-                return false;
-            }
-        }
-
-        public static bool Install(string directoryPath, out string errorMessage)
-        {
-            try
-            {
                 string nuspecPath;
                 string dllDirectoryPath;
                 var metadata = GetPluginMetadataByDirectoryPath(directoryPath, out nuspecPath, out dllDirectoryPath, out errorMessage);
@@ -783,7 +756,7 @@ namespace SiteServer.CMS.Plugin
         //    return metadata;
         //}
 
-        private static PluginMetadata GetPluginMetadata(string directoryName, out string dllDirectoryPath, out string errorMessage)
+        private static PackageMetadata GetPluginMetadata(string directoryName, out string dllDirectoryPath, out string errorMessage)
         {
             dllDirectoryPath = string.Empty;
             var nuspecPath = PathUtils.GetPluginNuspecPath(directoryName);
@@ -799,10 +772,10 @@ namespace SiteServer.CMS.Plugin
                 return null;
             }
 
-            PluginMetadata metadata;
+            PackageMetadata metadata;
             try
             {
-                metadata = NuGetManager.GetPackageMetadata(nuspecPath);
+                metadata = PackageUtils.GetPackageMetadata(nuspecPath);
             }
             catch(Exception ex)
             {
@@ -820,7 +793,7 @@ namespace SiteServer.CMS.Plugin
             return metadata;
         }
 
-        public static PluginMetadata GetPluginMetadataByDirectoryPath(string directoryPath, out string nuspecPath, out string dllDirectoryPath, out string errorMessage)
+        public static PackageMetadata GetPluginMetadataByDirectoryPath(string directoryPath, out string nuspecPath, out string dllDirectoryPath, out string errorMessage)
         {
             nuspecPath = string.Empty;
             dllDirectoryPath = string.Empty;
@@ -840,10 +813,10 @@ namespace SiteServer.CMS.Plugin
                 return null;
             }
 
-            PluginMetadata metadata;
+            PackageMetadata metadata;
             try
             {
-                metadata = NuGetManager.GetPackageMetadata(nuspecPath);
+                metadata = PackageUtils.GetPackageMetadata(nuspecPath);
             }
             catch (Exception ex)
             {

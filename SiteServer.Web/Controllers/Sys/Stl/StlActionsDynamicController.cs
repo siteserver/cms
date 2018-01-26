@@ -11,7 +11,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
     [RoutePrefix("api")]
     public class StlActionsDynamicController : ApiController
     {
-        [HttpPost, Route(ActionsDynamic.Route)]
+        [HttpPost, Route(ApiRouteActionsDynamic.Route)]
         public IHttpActionResult Main()
         {
             try

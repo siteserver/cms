@@ -130,7 +130,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 }
 
                 string resultString =
-                    $"任务完成，备份地址：<br /><strong> {filePath} </strong>&nbsp;<a href='{ActionsDownload.GetUrl(PageUtility.InnerApiUrl, filePath)}'><img src='{SiteServerAssets.GetIconUrl("download.gif")}' />下载</a>。";
+                    $"任务完成，备份地址：<br /><strong> {filePath} </strong>&nbsp;<a href='{ApiRouteActionsDownload.GetUrl(PageUtility.InnerApiUrl, filePath)}'><img src='{SiteServerAssets.GetIconUrl("download.gif")}' />下载</a>。";
 
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(resultString, string.Empty, string.Empty);
             }

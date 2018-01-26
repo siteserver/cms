@@ -13,7 +13,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
     public class StlActionsDownloadController : ApiController
     {
         [HttpGet]
-        [Route(ActionsDownload.Route)]
+        [Route(ApiRouteActionsDownload.Route)]
         public void Main()
         {
             var isSuccess = false;

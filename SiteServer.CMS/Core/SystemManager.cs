@@ -1,8 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
+using SiteServer.Utils.Packaging;
 
 namespace SiteServer.CMS.Core
 {
@@ -23,18 +25,35 @@ namespace SiteServer.CMS.Core
 
         public static string Version { get; }
 
-        public static void Install(string adminName, string adminPassword)
+        public static void InstallDatabase(string adminName, string adminPassword)
         {
-            InstallOrUpdate(adminName, adminPassword);
+            CheckAndExecuteDatabase();
+
+            if (!string.IsNullOrEmpty(adminName) && !string.IsNullOrEmpty(adminPassword))
+            {
+                RoleManager.CreatePredefinedRolesIfNotExists();
+
+                var administratorInfo = new AdministratorInfo
+                {
+                    UserName = adminName,
+                    Password = adminPassword
+                };
+
+                string errorMessage;
+                AdminManager.CreateAdministrator(administratorInfo, out errorMessage);
+                DataProvider.AdministratorsInRolesDao.AddUserToRole(adminName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
+            }
         }
 
-        public static void Update()
+        public static void UpdateDatabase()
         {
-            InstallOrUpdate(string.Empty, string.Empty);
+            CheckAndExecuteDatabase();
         }
 
-        private static void InstallOrUpdate(string adminName, string adminPassword)
+        private static void CheckAndExecuteDatabase()
         {
+            CacheUtils.ClearAll();
+
             foreach (var provider in DataProvider.AllProviders)
             {
                 if (string.IsNullOrEmpty(provider.TableName) || provider.TableColumns == null || provider.TableColumns.Count <= 0) continue;
@@ -63,21 +82,6 @@ namespace SiteServer.CMS.Core
                 DataProvider.ConfigDao.Update(configInfo);
             }
 
-            if (!string.IsNullOrEmpty(adminName) && !string.IsNullOrEmpty(adminPassword))
-            {
-                RoleManager.CreatePredefinedRolesIfNotExists();
-
-                var administratorInfo = new AdministratorInfo
-                {
-                    UserName = adminName,
-                    Password = adminPassword
-                };
-
-                string errorMessage;
-                AdminManager.CreateAdministrator(administratorInfo, out errorMessage);
-                DataProvider.AdministratorsInRolesDao.AddUserToRole(adminName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
-            }
-
             DataProvider.TableDao.CreateAllTableCollectionInfoIfNotExists();
         }
 
@@ -101,6 +105,75 @@ namespace SiteServer.CMS.Core
             if (!IsNeedInstall()) return false;
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl("Installer"));
             return true;
+        }
+
+        public static bool UpdateSystem(string version, out string errorMessage)
+        {
+            try
+            {
+                var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{version}";
+                var directoryPath = PathUtils.GetPackagesPath(idWithVersion);
+
+                string nuspecPath;
+                var metadata = GetSystemMetadataByDirectoryPath(directoryPath, out nuspecPath, out errorMessage);
+                if (metadata == null)
+                {
+                    return false;
+                }
+
+                var applicationPath = WebConfigUtils.PhysicalApplicationPath;
+
+                DirectoryUtils.Copy(PathUtils.Combine(directoryPath, "content"), applicationPath, true);
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                return false;
+            }
+
+            return true;
+        }
+
+        public static PackageMetadata GetSystemMetadataByDirectoryPath(string directoryPath, out string nuspecPath, out string errorMessage)
+        {
+            nuspecPath = string.Empty;
+
+            foreach (var filePath in DirectoryUtils.GetFilePaths(directoryPath))
+            {
+                if (StringUtils.EqualsIgnoreCase(Path.GetExtension(filePath), ".nuspec"))
+                {
+                    nuspecPath = filePath;
+                    break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(nuspecPath))
+            {
+                errorMessage = "升级包配置文件不存在";
+                return null;
+            }
+
+            PackageMetadata metadata;
+            try
+            {
+                metadata = PackageUtils.GetPackageMetadata(nuspecPath);
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                return null;
+            }
+
+            var pluginId = metadata.Id;
+
+            if (string.IsNullOrEmpty(pluginId))
+            {
+                errorMessage = $"升级包配置文件 {nuspecPath} 不正确";
+                return null;
+            }
+
+            errorMessage = string.Empty;
+            return metadata;
         }
     }
 }

@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 var link = new HyperLink
                 {
-                    NavigateUrl = ActionsDownload.GetUrl(PageUtility.InnerApiUrl, filePath),
+                    NavigateUrl = ApiRouteActionsDownload.GetUrl(PageUtility.InnerApiUrl, filePath),
                     Text = "下载"
                 };
                 var successMessage = "成功导出文件！&nbsp;&nbsp;" + ControlUtils.GetControlRenderHtml(link);

@@ -19,7 +19,7 @@ namespace SiteServer.API.Controllers.Preview
     [RoutePrefix("api")]
     public class PreviewController : ApiController
     {
-        [HttpGet, Route(PreviewApi.Route)]
+        [HttpGet, Route(ApiRoutePreview.Route)]
         public HttpResponseMessage Get(int siteId)
         {
             try
@@ -38,7 +38,7 @@ namespace SiteServer.API.Controllers.Preview
             return Request.CreateResponse(HttpStatusCode.NotFound);
         }
 
-        [HttpGet, Route(PreviewApi.RouteChannel)]
+        [HttpGet, Route(ApiRoutePreview.RouteChannel)]
         public HttpResponseMessage GetChannel(int siteId, int channelId)
         {
             try
@@ -57,7 +57,7 @@ namespace SiteServer.API.Controllers.Preview
             return Request.CreateResponse(HttpStatusCode.NotFound);
         }
 
-        [HttpGet, Route(PreviewApi.RouteContent)]
+        [HttpGet, Route(ApiRoutePreview.RouteContent)]
         public HttpResponseMessage GetContent(int siteId, int channelId, int contentId)
         {
             try
@@ -77,7 +77,7 @@ namespace SiteServer.API.Controllers.Preview
             return Request.CreateResponse(HttpStatusCode.NotFound);
         }
 
-        [HttpGet, Route(PreviewApi.RouteFile)]
+        [HttpGet, Route(ApiRoutePreview.RouteFile)]
         public HttpResponseMessage GetFile(int siteId, int fileTemplateId)
         {
             try

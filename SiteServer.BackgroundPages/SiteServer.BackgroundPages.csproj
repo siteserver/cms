@@ -449,7 +449,13 @@
     <Compile Include="Core\VCManager.cs" />
     <Compile Include="Core\VirtualRecordCount.cs" />
     <Compile Include="Core\WebUtils.cs" />
-    <Compile Include="PageAutoUpdate.cs">
+    <Compile Include="PageUpdateDatabase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PageUpdateSystem.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PageUpdatePlugins.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageDefault.cs">
@@ -489,6 +495,9 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageValidateCode.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Settings\ModalManualUpdateSystem.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Plugins\ModalManualInstall.cs">
@@ -708,6 +717,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

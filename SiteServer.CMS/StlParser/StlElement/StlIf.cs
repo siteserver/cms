@@ -384,8 +384,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var pageUrl = StlUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
 
-            var ifApiUrl = ActionsIf.GetUrl(pageInfo.ApiUrl);
-            var ifApiParms = ActionsIf.GetParameters(pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, pageInfo.TemplateInfo.Id, ajaxDivId, pageUrl, testType, testValue, testOperate, successTemplateString, failureTemplateString);
+            var ifApiUrl = ApiRouteActionsIf.GetUrl(pageInfo.ApiUrl);
+            var ifApiParms = ApiRouteActionsIf.GetParameters(pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, pageInfo.TemplateInfo.Id, ajaxDivId, pageUrl, testType, testValue, testOperate, successTemplateString, failureTemplateString);
 
             var builder = new StringBuilder();
             builder.Append($@"<span id=""{ajaxDivId}""></span>");

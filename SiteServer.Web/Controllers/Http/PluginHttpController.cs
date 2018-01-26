@@ -12,7 +12,7 @@ namespace SiteServer.API.Controllers.Http
     [RoutePrefix("api")]
     public class PluginHttpController : ApiController
     {
-        [HttpGet, Route(PluginHttpApi.Route)]
+        [HttpGet, Route(ApiRoutePluginHttp.Route)]
         public HttpResponseMessage Get(string pluginId)
         {
             try
@@ -31,7 +31,7 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpGet, Route(PluginHttpApi.RouteName)]
+        [HttpGet, Route(ApiRoutePluginHttp.RouteName)]
         public HttpResponseMessage Get(string pluginId, string name)
         {
             try
@@ -50,7 +50,7 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpGet, Route(PluginHttpApi.RouteNameAndId)]
+        [HttpGet, Route(ApiRoutePluginHttp.RouteNameAndId)]
         public HttpResponseMessage Get(string pluginId, string name, string id)
         {
             try
@@ -69,7 +69,7 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpPost, Route(PluginHttpApi.Route)]
+        [HttpPost, Route(ApiRoutePluginHttp.Route)]
         public HttpResponseMessage Post(string pluginId)
         {
             try
@@ -88,7 +88,7 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpPost, Route(PluginHttpApi.RouteName)]
+        [HttpPost, Route(ApiRoutePluginHttp.RouteName)]
         public HttpResponseMessage Post(string pluginId, string name)
         {
             try
@@ -107,7 +107,7 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpPost, Route(PluginHttpApi.RouteNameAndId)]
+        [HttpPost, Route(ApiRoutePluginHttp.RouteNameAndId)]
         public HttpResponseMessage Post(string pluginId, string name, string id)
         {
             try
@@ -126,7 +126,7 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpPut, Route(PluginHttpApi.Route)]
+        [HttpPut, Route(ApiRoutePluginHttp.Route)]
         public HttpResponseMessage Put(string pluginId)
         {
             try
@@ -145,7 +145,7 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpPut, Route(PluginHttpApi.RouteName)]
+        [HttpPut, Route(ApiRoutePluginHttp.RouteName)]
         public HttpResponseMessage Put(string pluginId, string name)
         {
             try
@@ -164,7 +164,7 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpPut, Route(PluginHttpApi.RouteNameAndId)]
+        [HttpPut, Route(ApiRoutePluginHttp.RouteNameAndId)]
         public HttpResponseMessage Put(string pluginId, string name, string id)
         {
             try
@@ -183,7 +183,7 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpDelete, Route(PluginHttpApi.Route)]
+        [HttpDelete, Route(ApiRoutePluginHttp.Route)]
         public HttpResponseMessage Delete(string pluginId)
         {
             try
@@ -202,7 +202,7 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpDelete, Route(PluginHttpApi.RouteName)]
+        [HttpDelete, Route(ApiRoutePluginHttp.RouteName)]
         public HttpResponseMessage Delete(string pluginId, string name)
         {
             try
@@ -221,7 +221,7 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpDelete, Route(PluginHttpApi.RouteNameAndId)]
+        [HttpDelete, Route(ApiRoutePluginHttp.RouteNameAndId)]
         public HttpResponseMessage Delete(string pluginId, string name, string id)
         {
             try

@@ -9,13 +9,13 @@ namespace SiteServer.API.Controllers.Sys.Editors
     [RoutePrefix("api")]
     public class UEditorController : ApiController
     {
-        [HttpGet, Route(UEditor.Route)]
+        [HttpGet, Route(ApiRouteUEditor.Route)]
         public void GetMain(int siteId)
         {
             Main(siteId);
         }
 
-        [HttpPost, Route(UEditor.Route)]
+        [HttpPost, Route(ApiRouteUEditor.Route)]
         public void PostMain(int siteId)
         {
             Main(siteId);

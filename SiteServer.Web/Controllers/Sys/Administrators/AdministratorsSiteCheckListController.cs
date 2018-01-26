@@ -10,7 +10,7 @@ namespace SiteServer.API.Controllers.Sys.Administrators
     [RoutePrefix("api")]
     public class AdministratorsSiteCheckListController : ApiController
     {
-        [HttpGet, Route(SiteCheckList.Route)]
+        [HttpGet, Route(ApiRouteSiteCheckList.Route)]
         public IHttpActionResult Main(string userName)
         {
             var context = new RequestContext();

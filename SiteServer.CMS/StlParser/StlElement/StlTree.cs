@@ -842,7 +842,7 @@ function stltree_displayChildren(img){
     }
 }
 ";
-                var loadingUrl = ActionsLoadingChannels.GetUrl(pageInfo.ApiUrl);
+                var loadingUrl = ApiRouteActionsLoadingChannels.GetUrl(pageInfo.ApiUrl);
                 var formatString = TranslateUtils.EncryptStringBySecretKey(currentFormatString);
 
                 script += $@"

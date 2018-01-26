@@ -274,7 +274,7 @@ $('#Title').keyup(function (e) {
             value = ETextEditorTypeUtils.TranslateToHtml(value);
             value = StringUtils.HtmlEncode(value);
 
-            var controllerUrl = UEditor.GetUrl(PageUtility.OuterApiUrl, siteInfo.Id);
+            var controllerUrl = ApiRouteUEditor.GetUrl(PageUtility.OuterApiUrl, siteInfo.Id);
             var editorUrl = SiteFilesAssets.GetUrl(PageUtility.OuterApiUrl, "ueditor");
 
             if (pageScripts["uEditor"] == null)
@@ -419,7 +419,7 @@ function getRelatedField_{fieldInfo.Id}(level){{
     var obj = $('#c_' + attributeName + '_' + (level - 1));
     var itemID = $('option:selected', obj).attr('itemID');
     if (itemID){{
-        var url = '{ActionsRelatedField.GetUrl(PageUtility.InnerApiUrl, siteInfo.Id,
+        var url = '{ApiRouteActionsRelatedField.GetUrl(PageUtility.InnerApiUrl, siteInfo.Id,
                 styleInfo.Additional.RelatedFieldId, 0)}' + itemID;
         var values = '{values}';
         var value = (values) ? values.split(',')[level - 1] : '';

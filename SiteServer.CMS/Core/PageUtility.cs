@@ -134,7 +134,7 @@ namespace SiteServer.CMS.Core
             var createdFileFullName = TemplateManager.GetCreatedFileFullName(siteInfo.Id, indexTemplateId);
 
             return isLocal
-                ? PreviewApi.GetSiteUrl(siteInfo.Id)
+                ? ApiRoutePreview.GetSiteUrl(siteInfo.Id)
                 : ParseNavigationUrl(siteInfo, createdFileFullName, false);
         }
 
@@ -143,7 +143,7 @@ namespace SiteServer.CMS.Core
             var createdFileFullName = TemplateManager.GetCreatedFileFullName(siteInfo.Id, fileTemplateId);
 
             return isLocal
-                ? PreviewApi.GetFileUrl(siteInfo.Id, fileTemplateId)
+                ? ApiRoutePreview.GetFileUrl(siteInfo.Id, fileTemplateId)
                 : ParseNavigationUrl(siteInfo, createdFileFullName, false);
         }
 
@@ -169,7 +169,7 @@ namespace SiteServer.CMS.Core
 
             if (isLocal)
             {
-                return PreviewApi.GetContentUrl(siteInfo.Id, contentInfoCurrent.ChannelId,
+                return ApiRoutePreview.GetContentUrl(siteInfo.Id, contentInfoCurrent.ChannelId,
                     contentInfoCurrent.Id);
             }
 
@@ -226,7 +226,7 @@ namespace SiteServer.CMS.Core
         {
             if (isLocal)
             {
-                return PreviewApi.GetContentUrl(siteInfo.Id, nodeId, contentId);
+                return ApiRoutePreview.GetContentUrl(siteInfo.Id, nodeId, contentId);
             }
 
             var tableNameCurrent = ChannelManager.GetTableName(siteInfo, nodeId);
@@ -306,7 +306,7 @@ namespace SiteServer.CMS.Core
         {
             if (isLocal)
             {
-                return PreviewApi.GetChannelUrl(siteInfo.Id, nodeInfo.Id);
+                return ApiRoutePreview.GetChannelUrl(siteInfo.Id, nodeInfo.Id);
             }
             var url = string.Empty;
             if (nodeInfo != null)

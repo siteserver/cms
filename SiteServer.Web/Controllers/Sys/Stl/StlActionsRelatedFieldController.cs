@@ -11,7 +11,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
     [RoutePrefix("api")]
     public class StlActionsRelatedFieldController : ApiController
     {
-        [HttpPost, Route(ActionsRelatedField.Route)]
+        [HttpPost, Route(ApiRouteActionsRelatedField.Route)]
         public void Main(int siteId)
         {
             var context = new RequestContext();

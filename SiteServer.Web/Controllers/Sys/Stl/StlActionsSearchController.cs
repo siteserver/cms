@@ -20,7 +20,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
     [RoutePrefix("api")]
     public class StlActionsSearchController : ApiController
     {
-        [HttpPost, Route(ActionsSearch.Route)]
+        [HttpPost, Route(ApiRouteActionsSearch.Route)]
         public IHttpActionResult Main()
         {
             try
@@ -67,7 +67,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
                     var stlPageContentsElementReplaceString = stlElement;
 
                     bool isDefaultCondition;
-                    var whereString = DataProvider.ContentDao.GetWhereStringByStlSearch(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, siteId, ActionsSearch.ExlcudeAttributeNames, form, out isDefaultCondition);
+                    var whereString = DataProvider.ContentDao.GetWhereStringByStlSearch(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, siteId, ApiRouteActionsSearch.ExlcudeAttributeNames, form, out isDefaultCondition);
 
                     //没搜索条件时不显示搜索结果
                     if (isDefaultCondition && !isDefaultDisplay)

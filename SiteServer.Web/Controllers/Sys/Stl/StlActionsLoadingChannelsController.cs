@@ -11,7 +11,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
     [RoutePrefix("api")]
     public class StlActionsLoadingChannelsController : ApiController
     {
-        [HttpPost, Route(ActionsLoadingChannels.Route)]
+        [HttpPost, Route(ApiRouteActionsLoadingChannels.Route)]
         public void Main()
         {
             var builder = new StringBuilder();

@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                     var link = new HyperLink();
                     var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                    link.NavigateUrl = ActionsDownload.GetUrl(PageUtility.InnerApiUrl, filePath);
+                    link.NavigateUrl = ApiRouteActionsDownload.GetUrl(PageUtility.InnerApiUrl, filePath);
                     link.Text = "下载";
                     var successMessage = "成功导出文件！&nbsp;&nbsp;" + ControlUtils.GetControlRenderHtml(link);
                     SuccessMessage(successMessage);

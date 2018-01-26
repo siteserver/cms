@@ -352,7 +352,7 @@ Disallow: /SiteFiles/");
             {
                 //var errorBuilder = new StringBuilder();
                 //DataProvider.DatabaseDao.Install(errorBuilder);
-                SystemManager.Install(TbAdminName.Text, TbAdminPassword.Text);
+                SystemManager.InstallDatabase(TbAdminName.Text, TbAdminPassword.Text);
                 
                 return true;
             }

@@ -94,7 +94,10 @@ namespace SiteServer.Utils
 
         private static void InnerInsert(string key, object obj, string filePath, TimeSpan timeSpan)
         {
-            if (!string.IsNullOrEmpty(key) && obj != null)
+            if (string.IsNullOrEmpty(key)) return;
+
+            Cache.Remove(key);
+            if (obj != null)
             {
                 Cache.Insert(key, obj, string.IsNullOrEmpty(filePath) ? null : new CacheDependency(filePath), Cache.NoAbsoluteExpiration, timeSpan, CacheItemPriority.Normal, null);
             }

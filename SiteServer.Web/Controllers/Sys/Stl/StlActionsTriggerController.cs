@@ -14,7 +14,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
     public class StlActionsTriggerController : ApiController
     {
         [HttpGet]
-        [Route(ActionsTrigger.Route)]
+        [Route(ApiRouteActionsTrigger.Route)]
         public async void Main()
         {
             var context = new RequestContext();

@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils.Enumerations;
+using SiteServer.Utils.Packaging;
 
 namespace SiteServer.BackgroundPages.Plugins
 {
@@ -67,7 +68,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 ZipUtils.UnpackFiles(localFilePath, directoryPath);
 
                 string errorMessage;
-                if (!PluginManager.Install(directoryPath, out errorMessage))
+                if (!PluginManager.Install(idAndVersion, out errorMessage))
                 {
                     FailMessage($"手动安装插件失败：{errorMessage}");
                     return;
@@ -80,7 +81,14 @@ namespace SiteServer.BackgroundPages.Plugins
             else
             {
                 string errorMessage;
-                if (!PluginManager.GetAndInstall(TbPluginId.Text, TbVersion.Text, out errorMessage))
+                if (!PackageUtils.InstallPackage(TbPluginId.Text, TbVersion.Text, true, out errorMessage))
+                {
+                    FailMessage($"手动安装插件失败：{errorMessage}");
+                    return;
+                }
+
+                var idWithVersion = $"{TbPluginId.Text}.{TbVersion.Text}";
+                if (!PluginManager.Install(idWithVersion, out errorMessage))
                 {
                     FailMessage($"手动安装插件失败：{errorMessage}");
                     return;

@@ -163,8 +163,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Jquery);
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
-            var apiUrl = ActionsSearch.GetUrl(pageInfo.ApiUrl);
-            var apiParameters = ActionsSearch.GetParameters(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, isDefaultDisplay, pageInfo.SiteId, ajaxDivId, yes);
+            var apiUrl = ApiRouteActionsSearch.GetUrl(pageInfo.ApiUrl);
+            var apiParameters = ApiRouteActionsSearch.GetParameters(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, isDefaultDisplay, pageInfo.SiteId, ajaxDivId, yes);
 
             var builder = new StringBuilder();
             builder.Append($@"

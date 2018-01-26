@@ -12,7 +12,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
     [RoutePrefix("api")]
     public class StlActionsUploadController : ApiController
     {
-        [HttpPost, Route(ActionsUpload.Route)]
+        [HttpPost, Route(ApiRouteActionsUpload.Route)]
         public IHttpActionResult Main(int siteId)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
@@ -25,11 +25,11 @@ namespace SiteServer.API.Controllers.Sys.Stl
             var url = string.Empty;
             var value = string.Empty;
 
-            if (type == ActionsUpload.TypeResume)
+            if (type == ApiRouteActionsUpload.TypeResume)
             {
                 success = UploadResumeImage(siteInfo, out message, out url, out value);
             }
-            else if (type == ActionsUpload.TypeGovPublicApply)
+            else if (type == ApiRouteActionsUpload.TypeGovPublicApply)
             {
                 success = UploadGovPublicApply(siteInfo, out message, out url, out value);
             }

@@ -72,7 +72,7 @@ namespace SiteServer.CMS.StlParser
                 if (pageInfo.PageContentId > 0 && pageInfo.SiteInfo.Additional.IsCountHits && !pageInfo.IsPageScriptsExists(PageInfo.Const.JsAdStlCountHits))
                 {
                     pageInfo.AddPageEndScriptsIfNotExists(PageInfo.Const.JsAdStlCountHits, $@"
-<script src=""{ActionsAddContentHits.GetUrl(pageInfo.ApiUrl, pageInfo.SiteId, pageInfo.PageNodeId, pageInfo.PageContentId)}"" type=""text/javascript""></script>");
+<script src=""{ApiRouteActionsAddContentHits.GetUrl(pageInfo.ApiUrl, pageInfo.SiteId, pageInfo.PageNodeId, pageInfo.PageContentId)}"" type=""text/javascript""></script>");
                 }
 
                 var isShowPageInfo = pageInfo.SiteInfo.Additional.IsCreateShowPageInfo;
@@ -88,7 +88,7 @@ namespace SiteServer.CMS.StlParser
                         }
 
                         var apiUrl = pageInfo.ApiUrl;
-                        var ajaxUrl = ActionsTrigger.GetUrl(apiUrl, pageInfo.SiteId, contextInfo.ChannelId,
+                        var ajaxUrl = ApiRouteActionsTrigger.GetUrl(apiUrl, pageInfo.SiteId, contextInfo.ChannelId,
                             contextInfo.ContentId, fileTemplateId, true);
                         pageInfo.AddPageEndScriptsIfNotExists("CreateDoubleClick", $@"
 <script type=""text/javascript"" language=""javascript"">document.ondblclick=function(x){{location.href = '{ajaxUrl}&returnUrl=' + encodeURIComponent(location.search);}}</script>");

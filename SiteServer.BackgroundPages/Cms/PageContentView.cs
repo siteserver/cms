@@ -118,7 +118,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             BtnSubmit.Attributes.Add("onclick", ModalContentCheck.GetOpenWindowString(SiteInfo.Id, _nodeId, _contentId, _returnUrl));
-            HlPreview.NavigateUrl = PreviewApi.GetContentUrl(SiteId, _contentInfo.ChannelId, _contentInfo.Id);
+            HlPreview.NavigateUrl = ApiRoutePreview.GetContentUrl(SiteId, _contentInfo.ChannelId, _contentInfo.Id);
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)

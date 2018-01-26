@@ -85,7 +85,7 @@
   <script type="text/javascript">
     $(function () {
       $.ajax({
-        url: "<%=ApiUrl%>",
+        url: "<%=SiteCheckListApiUrl%>",
         type: "GET",
         dataType: "json",
         success: function (data) {

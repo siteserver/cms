@@ -13,6 +13,8 @@ using SiteServer.CMS.Controllers.Preview;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
+using SiteServer.Utils.Packaging;
+using ApiRouteVersion = SiteServer.CMS.Controllers.Sys.Packages.ApiRouteVersion;
 
 namespace SiteServer.BackgroundPages
 {
@@ -30,6 +32,12 @@ namespace SiteServer.BackgroundPages
         private AdministratorWithPermissions _permissions;
 
         protected override bool IsSinglePage => true;
+
+        public string VersionApiUrl => ApiRouteVersion.GetUrl(PageUtility.InnerApiUrl, PackageUtils.PackageIdSsCms);
+
+        public string CurrentVersion => SystemManager.Version;
+
+        public string UpdateSystemUrl => PageUpdateSystem.GetRedirectUrl();
 
         public static string GetRedirectUrl()
         {
@@ -294,7 +302,7 @@ namespace SiteServer.BackgroundPages
             builder.Append(
                     $@"<li><a href=""{PageUtility.GetSiteUrl(_siteInfo, false)}"" target=""_blank"">访问站点</a></li>");
             builder.Append(
-                    $@"<li><a href=""{PreviewApi.GetSiteUrl(_siteInfo.Id)}"" target=""_blank"">预览站点</a></li>");
+                    $@"<li><a href=""{ApiRoutePreview.GetSiteUrl(_siteInfo.Id)}"" target=""_blank"">预览站点</a></li>");
 
             return $@"<li class=""has-submenu"">
               <a href=""javascript:;""><i class=""ion-link""></i>站点链接</a>

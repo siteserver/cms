@@ -107,7 +107,7 @@ namespace SiteServer.BackgroundPages.Cms
                 LtlPageTitle.Text = pageTitle;
                 LtlPageTitle.Text += $@"
 <script language=""javascript"" type=""text/javascript"">
-var previewUrl = '{PreviewApi.GetContentUrl(SiteId, _nodeInfo.Id, contentId)}';
+var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId)}';
 </script>
 ";
 

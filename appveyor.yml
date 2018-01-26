@@ -98,7 +98,7 @@
 
   after_build:
     - gulp preview
-    - nuget pack build/SiteServer.Update.nuspec
+    - nuget pack build/SS.CMS.nuspec
     - gulp zip
 
   artifacts:

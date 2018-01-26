@@ -9,7 +9,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
     public class StlActionsAddCountHitsController : ApiController
     {
         [HttpGet]
-        [Route(ActionsAddContentHits.Route)]
+        [Route(ApiRouteActionsAddContentHits.Route)]
         public void Main(int siteId, int channelId, int contentId)
         {
             try

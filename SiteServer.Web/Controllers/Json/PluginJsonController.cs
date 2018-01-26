@@ -10,7 +10,7 @@ namespace SiteServer.API.Controllers.Json
     [RoutePrefix("api")]
     public class PluginJsonController : ApiController
     {
-        [HttpGet, Route(PluginJsonApi.Route)]
+        [HttpGet, Route(ApiRoutePluginJson.Route)]
         public IHttpActionResult Get(string pluginId)
         {
             try
@@ -32,7 +32,7 @@ namespace SiteServer.API.Controllers.Json
             }
         }
 
-        [HttpGet, Route(PluginJsonApi.RouteName)]
+        [HttpGet, Route(ApiRoutePluginJson.RouteName)]
         public IHttpActionResult Get(string pluginId, string name)
         {
             try
@@ -54,7 +54,7 @@ namespace SiteServer.API.Controllers.Json
             }
         }
 
-        [HttpGet, Route(PluginJsonApi.RouteNameAndId)]
+        [HttpGet, Route(ApiRoutePluginJson.RouteNameAndId)]
         public IHttpActionResult Get(string pluginId, string name, string id)
         {
             try
@@ -76,7 +76,7 @@ namespace SiteServer.API.Controllers.Json
             }
         }
 
-        [HttpPost, Route(PluginJsonApi.Route)]
+        [HttpPost, Route(ApiRoutePluginJson.Route)]
         public IHttpActionResult Post(string pluginId)
         {
             try
@@ -98,7 +98,7 @@ namespace SiteServer.API.Controllers.Json
             }
         }
 
-        [HttpPost, Route(PluginJsonApi.RouteName)]
+        [HttpPost, Route(ApiRoutePluginJson.RouteName)]
         public IHttpActionResult Post(string pluginId, string name)
         {
             try
@@ -120,7 +120,7 @@ namespace SiteServer.API.Controllers.Json
             }
         }
 
-        [HttpPost, Route(PluginJsonApi.RouteNameAndId)]
+        [HttpPost, Route(ApiRoutePluginJson.RouteNameAndId)]
         public IHttpActionResult Post(string pluginId, string name, string id)
         {
             try
@@ -142,7 +142,7 @@ namespace SiteServer.API.Controllers.Json
             }
         }
 
-        [HttpPut, Route(PluginJsonApi.Route)]
+        [HttpPut, Route(ApiRoutePluginJson.Route)]
         public IHttpActionResult Put(string pluginId)
         {
             try
@@ -164,7 +164,7 @@ namespace SiteServer.API.Controllers.Json
             }
         }
 
-        [HttpPut, Route(PluginJsonApi.RouteName)]
+        [HttpPut, Route(ApiRoutePluginJson.RouteName)]
         public IHttpActionResult Put(string pluginId, string name)
         {
             try
@@ -186,7 +186,7 @@ namespace SiteServer.API.Controllers.Json
             }
         }
 
-        [HttpPut, Route(PluginJsonApi.RouteNameAndId)]
+        [HttpPut, Route(ApiRoutePluginJson.RouteNameAndId)]
         public IHttpActionResult Put(string pluginId, string name, string id)
         {
             try
@@ -208,7 +208,7 @@ namespace SiteServer.API.Controllers.Json
             }
         }
 
-        [HttpDelete, Route(PluginJsonApi.Route)]
+        [HttpDelete, Route(ApiRoutePluginJson.Route)]
         public IHttpActionResult Delete(string pluginId)
         {
             try
@@ -230,7 +230,7 @@ namespace SiteServer.API.Controllers.Json
             }
         }
 
-        [HttpDelete, Route(PluginJsonApi.RouteName)]
+        [HttpDelete, Route(ApiRoutePluginJson.RouteName)]
         public IHttpActionResult Delete(string pluginId, string name)
         {
             try
@@ -252,7 +252,7 @@ namespace SiteServer.API.Controllers.Json
             }
         }
 
-        [HttpDelete, Route(PluginJsonApi.RouteNameAndId)]
+        [HttpDelete, Route(ApiRoutePluginJson.RouteNameAndId)]
         public IHttpActionResult Delete(string pluginId, string name, string id)
         {
             try

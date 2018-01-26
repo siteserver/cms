@@ -322,13 +322,13 @@ namespace SiteServer.CMS.Core
             {
                 if (isStlEntity)
                 {
-                    retval = ActionsDownload.GetUrl(PageUtility.OuterApiUrl, siteInfo.Id, nodeId, contentId, fileUrl);
+                    retval = ApiRouteActionsDownload.GetUrl(PageUtility.OuterApiUrl, siteInfo.Id, nodeId, contentId, fileUrl);
                 }
                 else
                 {
                     var stlAnchor = new HtmlAnchor();
                     ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                    stlAnchor.HRef = ActionsDownload.GetUrl(PageUtility.OuterApiUrl, siteInfo.Id, nodeId, contentId, fileUrl);
+                    stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(PageUtility.OuterApiUrl, siteInfo.Id, nodeId, contentId, fileUrl);
                     stlAnchor.InnerHtml = string.IsNullOrEmpty(innerXml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerXml;
 
                     retval = ControlUtils.GetControlRenderHtml(stlAnchor);
@@ -346,13 +346,13 @@ namespace SiteServer.CMS.Core
                 {
                     if (isStlEntity)
                     {
-                        retval = ActionsDownload.GetUrl(PageUtility.OuterApiUrl, siteInfo.Id, fileUrl);
+                        retval = ApiRouteActionsDownload.GetUrl(PageUtility.OuterApiUrl, siteInfo.Id, fileUrl);
                     }
                     else
                     {
                         var stlAnchor = new HtmlAnchor();
                         ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                        stlAnchor.HRef = ActionsDownload.GetUrl(PageUtility.OuterApiUrl, siteInfo.Id, fileUrl);
+                        stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(PageUtility.OuterApiUrl, siteInfo.Id, fileUrl);
                         stlAnchor.InnerHtml = string.IsNullOrEmpty(innerXml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerXml;
 
                         retval = ControlUtils.GetControlRenderHtml(stlAnchor);

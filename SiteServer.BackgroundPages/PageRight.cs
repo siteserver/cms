@@ -12,7 +12,7 @@ namespace SiteServer.BackgroundPages
         public Literal LtlUpdateDate;
         public Literal LtlLastLoginDate;
 
-        public string ApiUrl => SiteCheckList.GetUrl(PageUtility.InnerApiUrl, Body.AdminName);
+        public string SiteCheckListApiUrl => ApiRouteSiteCheckList.GetUrl(PageUtility.InnerApiUrl, Body.AdminName);
 
         public void Page_Load(object sender, EventArgs e)
         {

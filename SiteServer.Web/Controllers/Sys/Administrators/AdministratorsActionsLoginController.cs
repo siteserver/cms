@@ -9,7 +9,7 @@ namespace SiteServer.API.Controllers.Sys.Administrators
     [RoutePrefix("api")]
     public class AdministratorsActionsLoginController : ApiController
     {
-        [HttpPost, Route(ActionsLogin.Route)]
+        [HttpPost, Route(ApiRouteActionsLogin.Route)]
         public IHttpActionResult Main()
         {
             try

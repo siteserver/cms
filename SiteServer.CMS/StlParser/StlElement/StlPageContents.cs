@@ -282,8 +282,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             _pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Jquery);
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(_pageInfo.UniqueId);
-            var apiUrl = ActionsPageContents.GetUrl(_pageInfo.ApiUrl);
-            var apiParameters = ActionsPageContents.GetParameters(_pageInfo.SiteId, _pageInfo.PageNodeId, _pageInfo.TemplateInfo.Id, totalNum, pageCount, currentPageIndex, _stlPageContentsElement);
+            var apiUrl = ApiRouteActionsPageContents.GetUrl(_pageInfo.ApiUrl);
+            var apiParameters = ApiRouteActionsPageContents.GetParameters(_pageInfo.SiteId, _pageInfo.PageNodeId, _pageInfo.TemplateInfo.Id, totalNum, pageCount, currentPageIndex, _stlPageContentsElement);
 
             var builder = new StringBuilder();
             builder.Append($@"<div id=""{ajaxDivId}"">");

@@ -11,7 +11,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
     [RoutePrefix("api")]
     public class StlActionsIfController : ApiController
     {
-        [HttpPost, Route(ActionsIf.Route)]
+        [HttpPost, Route(ApiRouteActionsIf.Route)]
         public IHttpActionResult Main()
         {
             try

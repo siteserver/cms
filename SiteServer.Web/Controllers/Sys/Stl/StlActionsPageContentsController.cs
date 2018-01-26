@@ -12,7 +12,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
     [RoutePrefix("api")]
     public class StlActionsPageContentsController : ApiController
     {
-        [HttpPost, Route(ActionsPageContents.Route)]
+        [HttpPost, Route(ApiRouteActionsPageContents.Route)]
         public IHttpActionResult Main()
         {
             try

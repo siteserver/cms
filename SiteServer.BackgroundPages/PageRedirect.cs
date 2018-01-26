@@ -122,7 +122,7 @@ namespace SiteServer.BackgroundPages
             {
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 var url = siteInfo.Additional.IsSeparatedWeb
-                    ? PreviewApi.GetSiteUrl(siteId)
+                    ? ApiRoutePreview.GetSiteUrl(siteId)
                     : siteInfo.Additional.WebUrl;
                 PageUtils.Redirect(url);
             }

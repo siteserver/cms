@@ -30,9 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
-    </Reference>
     <Reference Include="MySql.Data, Version=6.10.6.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.6.10.6\lib\net452\MySql.Data.dll</HintPath>
     </Reference>
@@ -41,24 +38,6 @@
     </Reference>
     <Reference Include="Npgsql, Version=3.2.6.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
       <HintPath>..\packages\Npgsql.3.2.6\lib\net451\Npgsql.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Common, Version=4.5.0.4, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\NuGet.Common.4.5.0\lib\net45\NuGet.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Core, Version=2.14.0.832, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\NuGet.Core.2.14.0\lib\net40-Client\NuGet.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Frameworks, Version=4.5.0.4, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\NuGet.Frameworks.4.5.0\lib\net45\NuGet.Frameworks.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Packaging, Version=4.5.0.4, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\NuGet.Packaging.4.5.0\lib\net45\NuGet.Packaging.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Packaging.Core, Version=4.5.0.4, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\NuGet.Packaging.Core.4.5.0\lib\net45\NuGet.Packaging.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Versioning, Version=4.5.0.4, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\NuGet.Versioning.4.5.0\lib\net45\NuGet.Versioning.dll</HintPath>
     </Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.1.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
@@ -94,34 +73,34 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\Http\PluginHttpApi.cs" />
-    <Compile Include="Controllers\Json\PluginJsonApi.cs" />
-    <Compile Include="Controllers\Preview\PreviewApi.cs" />
-    <Compile Include="Controllers\Sys\Administrators\ActionsLogin.cs" />
-    <Compile Include="Controllers\Sys\Administrators\SiteCheckList.cs" />
-    <Compile Include="Controllers\Sys\Editors\ActionsUploadAvatar.cs" />
-    <Compile Include="Controllers\Sys\Editors\ActionsUploadAvatarResize.cs" />
-    <Compile Include="Controllers\Sys\Editors\ActionsUploadSiteFiles.cs" />
-    <Compile Include="Controllers\Sys\Editors\UEditor.cs" />
-    <Compile Include="Controllers\Sys\Integration\Pay.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsAddContentHits.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsDownload.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsDynamic.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsGovInteractApplyAdd.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsGovInteractQueryAdd.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsGovPublicApplyAdd.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsGovPublicQueryAdd.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsIf.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsInputAdd.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsLoadingChannels.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsPageContents.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsRelatedField.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsResumeAdd.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsSearch.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsTrigger.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsUpload.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsVote.cs" />
-    <Compile Include="Controllers\Sys\Stl\ActionsVoteAdd.cs" />
+    <Compile Include="Controllers\Http\ApiRoutePluginHttp.cs" />
+    <Compile Include="Controllers\Json\ApiRoutePluginJson.cs" />
+    <Compile Include="Controllers\Preview\ApiRoutePreview.cs" />
+    <Compile Include="Controllers\Sys\Administrators\ApiRouteActionsLogin.cs" />
+    <Compile Include="Controllers\Sys\Administrators\ApiRouteSiteCheckList.cs" />
+    <Compile Include="Controllers\Sys\Packages\ApiRouteUpdateSystem.cs" />
+    <Compile Include="Controllers\Sys\Packages\ApiRouteUpdateDatabase.cs" />
+    <Compile Include="Controllers\Sys\Packages\ApiRouteDownload.cs" />
+    <Compile Include="Controllers\Sys\Packages\ApiRouteVersion.cs" />
+    <Compile Include="Controllers\Sys\Editors\ApiRouteUEditor.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsAddContentHits.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsDownload.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsDynamic.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsGovInteractApplyAdd.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsGovInteractQueryAdd.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsGovPublicApplyAdd.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsGovPublicQueryAdd.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsIf.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsInputAdd.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsLoadingChannels.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsPageContents.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsRelatedField.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsResumeAdd.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsSearch.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsTrigger.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsUpload.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsVote.cs" />
+    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsVoteAdd.cs" />
     <Compile Include="Core\AdminManager.cs" />
     <Compile Include="Core\ArchiveManager.cs" />
     <Compile Include="Core\AreaManager.cs" />
@@ -272,13 +251,9 @@
     <Compile Include="Plugin\Apis\ParseApi.cs" />
     <Compile Include="Plugin\Apis\SiteApi.cs" />
     <Compile Include="Plugin\Apis\UserApi.cs" />
-    <Compile Include="Plugin\Core\NuGetManager.cs" />
-    <Compile Include="Plugin\Core\PackageMetadataStrings.cs" />
-    <Compile Include="Plugin\Core\PluginTableUtils.cs" />
     <Compile Include="Plugin\Model\PluginContext.cs" />
     <Compile Include="Plugin\Model\PluginEnvironment.cs" />
     <Compile Include="Plugin\Model\PluginInfo.cs" />
-    <Compile Include="Plugin\Model\PluginMetadata.cs" />
     <Compile Include="Plugin\Model\PluginParseContext.cs" />
     <Compile Include="Plugin\Model\PluginService.cs" />
     <Compile Include="Plugin\Model\RequestBody.cs" />

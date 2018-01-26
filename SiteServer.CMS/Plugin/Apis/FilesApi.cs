@@ -64,12 +64,12 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string GetApiJsonUrl(string name = "", string id = "")
         {
-            return Controllers.Json.PluginJsonApi.GetUrl(PageUtility.OuterApiUrl, _metadata.Id, name, id);
+            return Controllers.Json.ApiRoutePluginJson.GetUrl(PageUtility.OuterApiUrl, _metadata.Id, name, id);
         }
 
         public string GetApiHttpUrl(string name = "", string id = "")
         {
-            return Controllers.Http.PluginHttpApi.GetUrl(PageUtility.OuterApiUrl, _metadata.Id, name, id);
+            return Controllers.Http.ApiRoutePluginHttp.GetUrl(PageUtility.OuterApiUrl, _metadata.Id, name, id);
         }
 
         public string GetSiteUrl(int siteId)

@@ -30,7 +30,7 @@ function build(beta) {
   console.log('build SiteServer CMS started, version: ' + version);
 
   //nuspec
-  gulp.src('./SiteServer.Update.nuspec').pipe(replace('$version$', version)).pipe(gulp.dest('./build'));
+  gulp.src('./SS.CMS.nuspec').pipe(replace('$version$', version)).pipe(gulp.dest('./build'));
 
   //bin
   gulp.src(['./SiteServer.Web/bin/*.dll']).pipe(gulp.dest('./build/bin'));
@@ -58,7 +58,7 @@ gulp.task('preview', function () {
 });
 
 gulp.task('zip', function () {
-  gulp.src(['./build/**/*', '!./build/SiteServer.Update.nuspec']).pipe(zip('siteserver_install.zip')).pipe(gulp.dest('./'));
+  gulp.src(['./build/**/*', '!./build/SS.CMS.nuspec']).pipe(zip('siteserver_install.zip')).pipe(gulp.dest('./'));
 });
 
 // 编译 Release

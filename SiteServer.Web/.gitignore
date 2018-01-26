@@ -3,8 +3,6 @@ obj/
 SiteFiles/BackupFiles/
 SiteFiles/Plugins/
 SiteFiles/packages/
-SiteFiles/dev/
-SiteFiles/zzs/
 SiteFiles/SiteTemplates/
 SiteFiles/TemporaryFiles/
 SiteFiles/UserFiles/test/
@@ -37,4 +35,3 @@ test26/
 test27/
 test28/
 test29/
-tmwcn/

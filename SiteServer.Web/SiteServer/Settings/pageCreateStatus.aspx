@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8">
     <!--#include file="../inc/head.html"-->
-    <script type="text/javascript" src="../assets/signalR/jquery.signalR-2.2.1.min.js"></script>
+    <script type="text/javascript" src="../assets/signalR/jquery.signalR-2.2.2.min.js"></script>
     <script src="/signalr/hubs"></script>
     <script language="javascript" src="../inc/script.js"></script>
     <script type="text/javascript">

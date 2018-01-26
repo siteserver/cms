@@ -4,6 +4,7 @@ using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
+using SiteServer.Utils.Packaging;
 
 namespace SiteServer.BackgroundPages.Plugins
 {
@@ -47,16 +48,22 @@ namespace SiteServer.BackgroundPages.Plugins
         public void BtnInstall_Click(object sender, EventArgs e)
         {
             string errorMessage;
-            var isSuccess = PluginManager.GetAndInstall(_pluginId, _version, out errorMessage);
-            if (isSuccess)
-            {
-                PhSuccess.Visible = true;
-            }
-            else
+
+            if (!PackageUtils.InstallPackage(_pluginId, _version, true, out errorMessage))
             {
                 PhFailure.Visible = true;
                 LtlErrorMessage.Text = errorMessage;
+                return;
             }
+
+            if (!PluginManager.Install($"{_pluginId}.{_version}", out errorMessage))
+            {
+                PhFailure.Visible = true;
+                LtlErrorMessage.Text = errorMessage;
+                return;
+            }
+
+            PhSuccess.Visible = true;
         }
 
         public void Return_Click(object sender, EventArgs e)
