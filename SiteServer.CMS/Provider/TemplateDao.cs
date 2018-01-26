@@ -118,7 +118,7 @@ namespace SiteServer.CMS.Provider
 			{
 				GetParameter(ParmSiteId, DataType.Integer, templateInfo.SiteId),
 				GetParameter(ParmTemplateName, DataType.VarChar, 50, templateInfo.TemplateName),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(templateInfo.TemplateType)),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, templateInfo.TemplateType.Value),
 				GetParameter(ParmRelatedFileName, DataType.VarChar, 50, templateInfo.RelatedFileName),
 				GetParameter(ParmCreatedFileFullName, DataType.VarChar, 50, templateInfo.CreatedFileFullName),
 				GetParameter(ParmCreatedFileExtName, DataType.VarChar, 50, templateInfo.CreatedFileExtName),
@@ -146,7 +146,7 @@ namespace SiteServer.CMS.Provider
             var updateParms = new IDataParameter[]
 			{
 				GetParameter(ParmTemplateName, DataType.VarChar, 50, templateInfo.TemplateName),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(templateInfo.TemplateType)),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, templateInfo.TemplateType.Value),
 				GetParameter(ParmRelatedFileName, DataType.VarChar, 50, templateInfo.RelatedFileName),
 				GetParameter(ParmCreatedFileFullName, DataType.VarChar, 50, templateInfo.CreatedFileFullName),
 				GetParameter(ParmCreatedFileExtName, DataType.VarChar, 50, templateInfo.CreatedFileExtName),
@@ -170,7 +170,7 @@ namespace SiteServer.CMS.Provider
 			{
 				GetParameter(ParmIsDefault, DataType.VarChar, 18, false.ToString()),
 				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(templateType))
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, templateType.Value)
 			};
 
             ExecuteNonQuery(sqlString, updateParms);
@@ -283,7 +283,7 @@ namespace SiteServer.CMS.Provider
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(type))
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, type.Value)
 			};
 
             var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllTemplateByType, parms);
@@ -328,7 +328,7 @@ namespace SiteServer.CMS.Provider
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(type))
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, type.Value)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAllIdByType, parms))
@@ -350,7 +350,7 @@ namespace SiteServer.CMS.Provider
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(type))
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, type.Value)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAllTemplateByType, parms))
@@ -371,7 +371,7 @@ namespace SiteServer.CMS.Provider
             var list = new List<TemplateInfo>();
 
             string sqlString =
-                $"SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = {siteId} AND TemplateType = '{TemplateTypeUtils.GetValue(TemplateType.FileTemplate)}' ORDER BY RelatedFileName";
+                $"SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = {siteId} AND TemplateType = '{TemplateType.FileTemplate.Value}' ORDER BY RelatedFileName";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -415,7 +415,7 @@ namespace SiteServer.CMS.Provider
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(templateType))
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, templateType.Value)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectTemplateNames, parms))
@@ -437,7 +437,7 @@ namespace SiteServer.CMS.Provider
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(templateType))
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, templateType.Value)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectRelatedFileNameByTemplateType, parms))
@@ -504,7 +504,7 @@ namespace SiteServer.CMS.Provider
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(type)),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, type.Value),
 				GetParameter(ParmCreatedFileFullName, DataType.VarChar, 50, createdFileFullName)
 			};
 
@@ -526,7 +526,7 @@ namespace SiteServer.CMS.Provider
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, TemplateTypeUtils.GetValue(type)),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, type.Value),
 				GetParameter(ParmId, DataType.Integer, tId)
 			};
 

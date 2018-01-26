@@ -43,36 +43,36 @@ namespace SiteServer.CMS.Model
         public UserInfo(object dataItem)
         {
             if (dataItem == null) return;
-            Id = SqlUtils.EvalInt(dataItem, "Id");
-            UserName = SqlUtils.EvalString(dataItem, "UserName");
-            Password = SqlUtils.EvalString(dataItem, "Password");
-            PasswordFormat = SqlUtils.EvalString(dataItem, "PasswordFormat");
-            PasswordSalt = SqlUtils.EvalString(dataItem, "PasswordSalt");
-            CreateDate = SqlUtils.EvalDateTime(dataItem, "CreateDate");
-            LastResetPasswordDate = SqlUtils.EvalDateTime(dataItem, "LastResetPasswordDate");
-            LastActivityDate = SqlUtils.EvalDateTime(dataItem, "LastActivityDate");
-            CountOfLogin = SqlUtils.EvalInt(dataItem, "CountOfLogin");
-            CountOfFailedLogin = SqlUtils.EvalInt(dataItem, "CountOfFailedLogin");
-            CountOfWriting = SqlUtils.EvalInt(dataItem, "CountOfWriting");
-            IsChecked = SqlUtils.EvalBool(dataItem, "IsChecked");
-            IsLockedOut = SqlUtils.EvalBool(dataItem, "IsLockedOut");
-            DisplayName = SqlUtils.EvalString(dataItem, "DisplayName");
-            Email = SqlUtils.EvalString(dataItem, "Email");
-            Mobile = SqlUtils.EvalString(dataItem, "Mobile");
-            AvatarUrl = SqlUtils.EvalString(dataItem, "AvatarUrl");
-            Organization = SqlUtils.EvalString(dataItem, "Organization");
-            Department = SqlUtils.EvalString(dataItem, "Department");
-            Position = SqlUtils.EvalString(dataItem, "Position");
-            Gender = SqlUtils.EvalString(dataItem, "Gender");
-            Birthday = SqlUtils.EvalString(dataItem, "Birthday");
-            Education = SqlUtils.EvalString(dataItem, "Education");
-            Graduation = SqlUtils.EvalString(dataItem, "Graduation");
-            Address = SqlUtils.EvalString(dataItem, "Address");
-            WeiXin = SqlUtils.EvalString(dataItem, "WeiXin");
-            Qq = SqlUtils.EvalString(dataItem, "QQ");
-            WeiBo = SqlUtils.EvalString(dataItem, "WeiBo");
-            Interests = SqlUtils.EvalString(dataItem, "Interests");
-            Signature = SqlUtils.EvalString(dataItem, "Signature");
+            Id = SqlUtils.EvalInt(dataItem, nameof(Id));
+            UserName = SqlUtils.EvalString(dataItem, nameof(UserName));
+            Password = SqlUtils.EvalString(dataItem, nameof(Password));
+            PasswordFormat = SqlUtils.EvalString(dataItem, nameof(PasswordFormat));
+            PasswordSalt = SqlUtils.EvalString(dataItem, nameof(PasswordSalt));
+            CreateDate = SqlUtils.EvalDateTime(dataItem, nameof(CreateDate));
+            LastResetPasswordDate = SqlUtils.EvalDateTime(dataItem, nameof(LastResetPasswordDate));
+            LastActivityDate = SqlUtils.EvalDateTime(dataItem, nameof(LastActivityDate));
+            CountOfLogin = SqlUtils.EvalInt(dataItem, nameof(CountOfLogin));
+            CountOfFailedLogin = SqlUtils.EvalInt(dataItem, nameof(CountOfFailedLogin));
+            CountOfWriting = SqlUtils.EvalInt(dataItem, nameof(CountOfWriting));
+            IsChecked = SqlUtils.EvalBool(dataItem, nameof(IsChecked));
+            IsLockedOut = SqlUtils.EvalBool(dataItem, nameof(IsLockedOut));
+            DisplayName = SqlUtils.EvalString(dataItem, nameof(DisplayName));
+            Email = SqlUtils.EvalString(dataItem, nameof(Email));
+            Mobile = SqlUtils.EvalString(dataItem, nameof(Mobile));
+            AvatarUrl = SqlUtils.EvalString(dataItem, nameof(AvatarUrl));
+            Organization = SqlUtils.EvalString(dataItem, nameof(Organization));
+            Department = SqlUtils.EvalString(dataItem, nameof(Department));
+            Position = SqlUtils.EvalString(dataItem, nameof(Position));
+            Gender = SqlUtils.EvalString(dataItem, nameof(Gender));
+            Birthday = SqlUtils.EvalString(dataItem, nameof(Birthday));
+            Education = SqlUtils.EvalString(dataItem, nameof(Education));
+            Graduation = SqlUtils.EvalString(dataItem, nameof(Graduation));
+            Address = SqlUtils.EvalString(dataItem, nameof(Address));
+            WeiXin = SqlUtils.EvalString(dataItem, nameof(WeiXin));
+            Qq = SqlUtils.EvalString(dataItem, nameof(Qq));
+            WeiBo = SqlUtils.EvalString(dataItem, nameof(WeiBo));
+            Interests = SqlUtils.EvalString(dataItem, nameof(Interests));
+            Signature = SqlUtils.EvalString(dataItem, nameof(Signature));
         }
 
         public int Id { get; set; }

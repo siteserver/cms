@@ -1,15 +1,11 @@
-﻿using System.Web.UI.WebControls;
+﻿using System;
+using System.Web.UI.WebControls;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
 	public class TemplateTypeUtils
 	{
-		public static string GetValue(TemplateType type)
-		{
-		    return type.Value;
-		}
-
 		public static TemplateType GetEnumType(string typeStr)
 		{
 			var retval = TemplateType.IndexPageTemplate;
@@ -36,7 +32,7 @@ namespace SiteServer.CMS.Core
 		public static bool Equals(TemplateType type, string typeStr)
 		{
 			if (string.IsNullOrEmpty(typeStr)) return false;
-			if (string.Equals(GetValue(type).ToLower(), typeStr.ToLower()))
+			if (string.Equals(type.Value.ToLower(), typeStr.ToLower()))
 			{
 				return true;
 			}
@@ -50,7 +46,7 @@ namespace SiteServer.CMS.Core
 
 		public static ListItem GetListItem(TemplateType type, bool selected)
 		{
-			var item = new ListItem(TemplateType.GetText(type), GetValue(type));
+			var item = new ListItem(GetText(type), type.Value);
 			if (selected)
 			{
 				item.Selected = true;
@@ -69,5 +65,26 @@ namespace SiteServer.CMS.Core
 			}
 		}
 
-	}
+        public static string GetText(TemplateType templateType)
+        {
+            if (templateType == TemplateType.IndexPageTemplate)
+            {
+                return "首页模板";
+            }
+            if (templateType == TemplateType.ChannelTemplate)
+            {
+                return "栏目模板";
+            }
+            if (templateType == TemplateType.ContentTemplate)
+            {
+                return "内容模板";
+            }
+            if (templateType == TemplateType.FileTemplate)
+            {
+                return "单页模板";
+            }
+
+            throw new Exception();
+        }
+    }
 }

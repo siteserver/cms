@@ -102,7 +102,7 @@ namespace SiteServer.CMS.StlParser
                 if (isShowPageInfo)
                 {
                     contentBuilder.Append($@"
-<!-- {pageInfo.TemplateInfo.RelatedFileName}({TemplateType.GetText(pageInfo.TemplateInfo.TemplateType)}) -->");
+<!-- {pageInfo.TemplateInfo.RelatedFileName}({TemplateTypeUtils.GetText(pageInfo.TemplateInfo.TemplateType)}) -->");
                 }
 
                 var headScripts = StlParserManager.GetPageInfoHeadScript(pageInfo, contextInfo);

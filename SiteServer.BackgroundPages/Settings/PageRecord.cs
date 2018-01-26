@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = 100;
 
-            SpContents.SelectCommand = string.IsNullOrEmpty(Request.QueryString["Keyword"]) ? DataProvider.RecordDao.GetSelectCommend() : DataProvider.RecordDao.GetSelectCommend(Request.QueryString["Keyword"], Request.QueryString["DateFrom"], Request.QueryString["DateTo"]);
+            SpContents.SelectCommand = string.IsNullOrEmpty(Request.QueryString["Keyword"]) ? DataProvider.RecordDao.GetSqlString() : DataProvider.RecordDao.GetSqlString(Request.QueryString["Keyword"], Request.QueryString["DateFrom"], Request.QueryString["DateTo"]);
 
             SpContents.SortField = "Id";
             SpContents.SortMode = SortMode.DESC;

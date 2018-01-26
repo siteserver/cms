@@ -224,19 +224,19 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var userName = SqlUtils.EvalString(e.Item.DataItem, "UserName");
-            var displayName = SqlUtils.EvalString(e.Item.DataItem, "DisplayName");
-            var mobile = SqlUtils.EvalString(e.Item.DataItem, "Mobile");
-            var departmentId = SqlUtils.EvalInt(e.Item.DataItem, "DepartmentID");
-            var areaId = SqlUtils.EvalInt(e.Item.DataItem, "AreaID");
+            var userName = SqlUtils.EvalString(e.Item.DataItem, nameof(AdministratorInfo.UserName));
+            var displayName = SqlUtils.EvalString(e.Item.DataItem, nameof(AdministratorInfo.DisplayName));
+            var mobile = SqlUtils.EvalString(e.Item.DataItem, nameof(AdministratorInfo.Mobile));
+            var departmentId = SqlUtils.EvalInt(e.Item.DataItem, nameof(AdministratorInfo.DepartmentId));
+            var areaId = SqlUtils.EvalInt(e.Item.DataItem, nameof(AdministratorInfo.AreaId));
             if (string.IsNullOrEmpty(displayName))
             {
                 displayName = userName;
             }
-            var countOfFailedLogin = SqlUtils.EvalInt(e.Item.DataItem, "CountOfFailedLogin");
-            var countOfLogin = SqlUtils.EvalInt(e.Item.DataItem, "CountOfLogin");
-            var isLockedOut = SqlUtils.EvalBool(e.Item.DataItem, "IsLockedOut");
-            var lastActivityDate = SqlUtils.EvalDateTime(e.Item.DataItem, "LastActivityDate");
+            var countOfFailedLogin = SqlUtils.EvalInt(e.Item.DataItem, nameof(AdministratorInfo.CountOfFailedLogin));
+            var countOfLogin = SqlUtils.EvalInt(e.Item.DataItem, nameof(AdministratorInfo.CountOfLogin));
+            var isLockedOut = SqlUtils.EvalBool(e.Item.DataItem, nameof(AdministratorInfo.IsLockedOut));
+            var lastActivityDate = SqlUtils.EvalDateTime(e.Item.DataItem, nameof(AdministratorInfo.LastActivityDate));
 
             var ltlUserName = (Literal)e.Item.FindControl("ltlUserName");
             var ltlDisplayName = (Literal)e.Item.FindControl("ltlDisplayName");

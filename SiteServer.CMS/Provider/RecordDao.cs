@@ -85,16 +85,16 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString);
         }
 
-        public string GetSelectCommend()
+        public string GetSqlString()
         {
             return $"SELECT Id, Text, Summary, Source, AddDate FROM {TableName}";
         }
 
-        public string GetSelectCommend(string keyword, string dateFrom, string dateTo)
+        public string GetSqlString(string keyword, string dateFrom, string dateTo)
         {
             if (string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(dateFrom) && string.IsNullOrEmpty(dateTo))
             {
-                return GetSelectCommend();
+                return GetSqlString();
             }
 
             var whereString = new StringBuilder("WHERE ");

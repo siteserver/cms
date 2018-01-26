@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
@@ -48,19 +47,19 @@ namespace SiteServer.CMS.Provider
         private const string ParmAlternative = "@Alternative";
         private const string ParmGrade = "@Grade";
 
-        private const string SqlUpdate = "UPDATE siteserver_Keyword SET Keyword=@Keyword,Alternative=@Alternative,Grade=@Grade WHERE Id=@Id";
+        private const string SqlUpdate = "UPDATE siteserver_Keyword SET Keyword=@Keyword, Alternative=@Alternative, Grade=@Grade WHERE Id=@Id";
 
         private const string SqlDelete = "DELETE FROM siteserver_Keyword WHERE Id=@Id";
 
-        private const string SqlSelect = "SELECT Id,Keyword,Alternative,Grade FROM siteserver_Keyword WHERE Id=@Id";
+        private const string SqlSelect = "SELECT Id, Keyword, Alternative, Grade FROM siteserver_Keyword WHERE Id=@Id";
 
-        private const string SqlSelectAll = "SELECT Id,Keyword,Alternative,Grade FROM siteserver_Keyword";
+        private const string SqlSelectAll = "SELECT Id, Keyword, Alternative, Grade FROM siteserver_Keyword";
 
-        private const string SqlSelectKeyword = "SELECT Id,Keyword,Alternative,Grade FROM siteserver_Keyword WHERE Keyword = @Keyword";
+        private const string SqlSelectKeyword = "SELECT Id, Keyword, Alternative, Grade FROM siteserver_Keyword WHERE Keyword = @Keyword";
 
         public void Insert(KeywordInfo keywordInfo)
         {
-            var sqlString = "INSERT INTO siteserver_Keyword(Keyword,Alternative,Grade) VALUES(@Keyword,@Alternative,@Grade)";
+            var sqlString = "INSERT INTO siteserver_Keyword(Keyword, Alternative, Grade) VALUES(@Keyword, @Alternative, @Grade)";
 
             var parms = new IDataParameter[]
             {
@@ -111,20 +110,19 @@ namespace SiteServer.CMS.Provider
             return keywordInfo;
         }
 
-        public void Delete(int Id)
+        public void Delete(int id)
         {
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmId, DataType.Integer, Id)
+                GetParameter(ParmId, DataType.Integer, id)
             };
             ExecuteNonQuery(SqlDelete, parms);
         }
 
-        public void Delete(ArrayList idArrayList)
+        public void Delete(List<int> idList)
         {
             string sqlString =
-                $@"DELETE FROM siteserver_Keyword WHERE Id IN ({TranslateUtils.ObjectCollectionToString(
-                    idArrayList)})";
+                $@"DELETE FROM siteserver_Keyword WHERE Id IN ({TranslateUtils.ObjectCollectionToString(idList)})";
             ExecuteNonQuery(sqlString);
         }
 
@@ -174,7 +172,7 @@ namespace SiteServer.CMS.Provider
 
             var list = new List<KeywordInfo>();
             string sqlSelectKeywords =
-                $"SELECT Id,Keyword,Alternative,Grade FROM siteserver_Keyword WHERE Keyword in ({TranslateUtils.ToSqlInStringWithQuote(keywords)})";
+                $"SELECT Id, Keyword, Alternative, Grade FROM siteserver_Keyword WHERE Keyword IN ({TranslateUtils.ToSqlInStringWithQuote(keywords)})";
             using (var rdr = ExecuteReader(sqlSelectKeywords))
             {
                 while (rdr.Read())

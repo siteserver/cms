@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -26,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             return PageUtils.GetCmsUrl(siteId, nameof(PageTemplate), new NameValueCollection
             {
-                {"templateType", TemplateTypeUtils.GetValue(templateType)}
+                {"templateType", templateType.Value}
             });
         }
 
@@ -60,7 +61,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         DataProvider.TemplateDao.Delete(SiteId, templateId);
                         Body.AddSiteLog(SiteId,
-                            $"删除{TemplateType.GetText(templateInfo.TemplateType)}",
+                            $"删除{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
                             $"模板名称:{templateInfo.TemplateName}");
                     }
                     SuccessDeleteMessage();
@@ -81,7 +82,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         DataProvider.TemplateDao.SetDefault(SiteId, templateId);
                         Body.AddSiteLog(SiteId,
-                            $"设置默认{TemplateType.GetText(templateInfo.TemplateType)}",
+                            $"设置默认{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
                             $"模板名称:{templateInfo.TemplateName}");
                     }
                     SuccessMessage();
@@ -105,7 +106,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var templateType = TemplateTypeUtils.GetEnumType(_templateType);
                 LtlCommands.Text = $@"
-<input type=""button"" class=""btn btn-success"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(SiteId, 0, templateType)}';"" value=""添加{TemplateType.GetText(templateType)}"" />
+<input type=""button"" class=""btn btn-success"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(SiteId, 0, templateType)}';"" value=""添加{TemplateTypeUtils.GetText(templateType)}"" />
 ";
             }
 
@@ -136,12 +137,12 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var templateId = SqlUtils.EvalInt(e.Item.DataItem, "TemplateID");
-            var templateType = TemplateTypeUtils.GetEnumType(SqlUtils.EvalString(e.Item.DataItem, "TemplateType"));
-            var templateName = SqlUtils.EvalString(e.Item.DataItem, "TemplateName");
-            var relatedFileName = SqlUtils.EvalString(e.Item.DataItem, "RelatedFileName");
-            var createdFileFullName = SqlUtils.EvalString(e.Item.DataItem, "CreatedFileFullName");
-            var isDefault = TranslateUtils.ToBool(SqlUtils.EvalString(e.Item.DataItem, "IsDefault"));
+            var templateId = SqlUtils.EvalInt(e.Item.DataItem, nameof(TemplateInfo.Id));
+            var templateType = TemplateTypeUtils.GetEnumType(SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.TemplateType)));
+            var templateName = SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.TemplateName));
+            var relatedFileName = SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.RelatedFileName));
+            var createdFileFullName = SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.CreatedFileFullName));
+            var isDefault = TranslateUtils.ToBool(SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.IsDefault)));
 
             var ltlTemplateName = (Literal)e.Item.FindControl("ltlTemplateName");
             var ltlRelatedFileName = (Literal)e.Item.FindControl("ltlRelatedFileName");
@@ -166,7 +167,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             ltlUseCount.Text = DataProvider.ChannelDao.GetTemplateUseCount(SiteId, templateId, templateType, isDefault).ToString();
 
-            ltlTemplateType.Text = TemplateType.GetText(templateType);
+            ltlTemplateType.Text = TemplateTypeUtils.GetText(templateType);
 
             if (templateType != TemplateType.FileTemplate)
             {

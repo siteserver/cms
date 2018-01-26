@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -37,7 +38,7 @@ namespace SiteServer.BackgroundPages.Settings
                     Body.GetQueryString("UserName"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"),
                     Body.GetQueryString("DateTo"));
 
-            SpContents.SortField = "ID";
+            SpContents.SortField = nameof(SiteLogInfo.Id);
             SpContents.SortMode = SortMode.DESC;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
@@ -128,7 +129,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (SiteId == 0)
             {
-                var siteInfo = SiteManager.GetSiteInfo(SqlUtils.EvalInt(e.Item.DataItem, "SiteId"));
+                var siteInfo = SiteManager.GetSiteInfo(SqlUtils.EvalInt(e.Item.DataItem, nameof(SiteLogInfo.SiteId)));
                 var siteName = string.Empty;
                 if (siteInfo != null)
                 {
@@ -137,11 +138,11 @@ namespace SiteServer.BackgroundPages.Settings
                 }
                 ltlSite.Text = $@"<td align=""text-center text-nowrap"">{siteName}</td>";
             }
-            ltlUserName.Text = SqlUtils.EvalString(e.Item.DataItem, "UserName");
-            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, "AddDate"));
-            ltlIpAddress.Text = SqlUtils.EvalString(e.Item.DataItem, "IPAddress");
-            ltlAction.Text = SqlUtils.EvalString(e.Item.DataItem, "Action");
-            ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, "Summary");
+            ltlUserName.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(SiteLogInfo.UserName));
+            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, nameof(SiteLogInfo.AddDate)));
+            ltlIpAddress.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(SiteLogInfo.IpAddress));
+            ltlAction.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(SiteLogInfo.Action));
+            ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(SiteLogInfo.Summary));
         }
 
         public void Search_OnClick(object sender, EventArgs e)

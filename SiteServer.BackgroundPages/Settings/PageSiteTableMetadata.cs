@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -243,10 +244,10 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var tableMetadataId = SqlUtils.EvalInt(e.Item.DataItem, "TableMetadataID");
-            var attributeName = SqlUtils.EvalString(e.Item.DataItem, "AttributeName");
-            var dataType = SqlUtils.EvalString(e.Item.DataItem, "DataType");
-            var isSystem = SqlUtils.EvalString(e.Item.DataItem, "IsSystem");
+            var tableMetadataId = SqlUtils.EvalInt(e.Item.DataItem, nameof(TableMetadataInfo.Id));
+            var attributeName = SqlUtils.EvalString(e.Item.DataItem, nameof(TableMetadataInfo.AttributeName));
+            var dataType = SqlUtils.EvalString(e.Item.DataItem, nameof(TableMetadataInfo.DataType));
+            var isSystem = SqlUtils.EvalString(e.Item.DataItem, nameof(TableMetadataInfo.IsSystem));
 
             var ltlAttributeName = (Literal)e.Item.FindControl("ltlAttributeName");
             var ltlDataType = (Literal)e.Item.FindControl("ltlDataType");

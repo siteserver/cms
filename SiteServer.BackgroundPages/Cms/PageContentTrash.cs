@@ -56,12 +56,12 @@ namespace SiteServer.BackgroundPages.Cms
             if (string.IsNullOrEmpty(Body.GetQueryString("NodeID")))
             {
                 SpContents.ItemsPerPage = TranslateUtils.ToInt(DdlPageNum.SelectedValue) == 0 ? SiteInfo.Additional.PageSize : TranslateUtils.ToInt(DdlPageNum.SelectedValue);
-                SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableName, SiteId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningChannelIdList, DdlSearchType.SelectedValue, TbKeyword.Text, TbDateFrom.Text, TbDateTo.Text, true, ETriState.All, false, true);
+                SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(tableName, SiteId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningChannelIdList, DdlSearchType.SelectedValue, TbKeyword.Text, TbDateFrom.Text, TbDateTo.Text, true, ETriState.All, false, true);
             }
             else
             {
                 SpContents.ItemsPerPage = Body.GetQueryInt("PageNum") == 0 ? SiteInfo.Additional.PageSize : Body.GetQueryInt("PageNum");
-                SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableName, SiteId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningChannelIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true, ETriState.All, false, true);
+                SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(tableName, SiteId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningChannelIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true, ETriState.All, false, true);
             }
             SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc);
             RptContents.ItemDataBound += RptContents_ItemDataBound;

@@ -6,7 +6,6 @@ using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -156,7 +155,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypTemplateType))
             {
-                isSuccess = TestTypeValue(testOperate, testValue, TemplateTypeUtils.GetValue(pageInfo.TemplateInfo.TemplateType));
+                isSuccess = TestTypeValue(testOperate, testValue, pageInfo.TemplateInfo.TemplateType.Value);
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeTopLevel))
             {

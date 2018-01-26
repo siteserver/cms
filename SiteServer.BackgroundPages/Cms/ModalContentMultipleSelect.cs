@@ -62,11 +62,11 @@ namespace SiteServer.BackgroundPages.Cms
 
             SpContents.ControlToPaginate = RptContents;
             SpContents.SelectCommand = string.IsNullOrEmpty(Body.GetQueryString("NodeID"))
-                ? DataProvider.ContentDao.GetSelectCommend(_tableName, SiteId,
+                ? DataProvider.ContentDao.GetSqlString(_tableName, SiteId,
                     _nodeInfo.Id, permissions.IsSystemAdministrator,
                     ProductPermissionsManager.Current.OwningChannelIdList, DdlSearchType.SelectedValue, TbKeyword.Text,
                     TbDateFrom.Text, TbDateTo.Text, true, ETriState.True, !CbIsDuplicate.Checked, false)
-                : DataProvider.ContentDao.GetSelectCommend(_tableName, SiteId,
+                : DataProvider.ContentDao.GetSqlString(_tableName, SiteId,
                     _nodeInfo.Id, permissions.IsSystemAdministrator,
                     ProductPermissionsManager.Current.OwningChannelIdList, Body.GetQueryString("SearchType"),
                     Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true,

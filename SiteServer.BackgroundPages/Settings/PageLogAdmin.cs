@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -30,7 +31,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             SpContents.SelectCommand = !Body.IsQueryExists("Keyword") ? DataProvider.LogDao.GetSelectCommend() : DataProvider.LogDao.GetSelectCommend(Body.GetQueryString("UserName"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"));
 
-            SpContents.SortField = "ID";
+            SpContents.SortField = nameof(LogInfo.Id);
             SpContents.SortMode = SortMode.DESC;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
@@ -118,11 +119,11 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlAction = (Literal)e.Item.FindControl("ltlAction");
             var ltlSummary = (Literal)e.Item.FindControl("ltlSummary");
 
-            ltlUserName.Text = SqlUtils.EvalString(e.Item.DataItem, "UserName");
-            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, "AddDate"));
-            ltlIpAddress.Text = SqlUtils.EvalString(e.Item.DataItem, "IPAddress");
-            ltlAction.Text = SqlUtils.EvalString(e.Item.DataItem, "Action");
-            ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, "Summary");
+            ltlUserName.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(LogInfo.UserName));
+            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, nameof(LogInfo.AddDate)));
+            ltlIpAddress.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(LogInfo.IpAddress));
+            ltlAction.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(LogInfo.Action));
+            ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(LogInfo.Summary));
         }
 
         public void Search_OnClick(object sender, EventArgs e)

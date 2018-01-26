@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -49,7 +50,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             SpContents.SelectCommand = DataProvider.TemplateLogDao.GetSelectCommend(SiteId, _templateId);
 
-            SpContents.SortField = "ID";
+            SpContents.SortField = nameof(TemplateLogInfo.Id);
             SpContents.SortMode = SortMode.DESC;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
@@ -78,12 +79,12 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlContentLength = (Literal)e.Item.FindControl("ltlContentLength");
             var ltlView = (Literal)e.Item.FindControl("ltlView");
 
-            var logId = SqlUtils.EvalInt(e.Item.DataItem, "ID");
+            var logId = SqlUtils.EvalInt(e.Item.DataItem, nameof(TemplateLogInfo.Id));
 
             ltlIndex.Text = Convert.ToString(e.Item.ItemIndex + 1);
-            ltlAddUserName.Text = SqlUtils.EvalString(e.Item.DataItem, "AddUserName");
-            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, "AddDate"));
-            ltlContentLength.Text = SqlUtils.EvalInt(e.Item.DataItem, "ContentLength").ToString();
+            ltlAddUserName.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateLogInfo.AddUserName));
+            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, nameof(TemplateLogInfo.AddDate)));
+            ltlContentLength.Text = SqlUtils.EvalInt(e.Item.DataItem, nameof(TemplateLogInfo.ContentLength)).ToString();
             ltlView.Text =
                 $@"<a href=""javascript:;"" onclick=""{ModalTemplateView.GetOpenWindowString(SiteId,
                     logId)}"">查看</a>";

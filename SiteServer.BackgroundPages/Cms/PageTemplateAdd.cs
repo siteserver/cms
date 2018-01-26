@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
             return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateAdd), new NameValueCollection
             {
                 {"TemplateID", templateId.ToString()},
-                {"TemplateType", TemplateTypeUtils.GetValue(templateType)}
+                {"TemplateType", templateType.Value}
             });
         }
 
@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
 
-            LtlTemplateType.Text = TemplateType.GetText(_templateType);
+            LtlTemplateType.Text = TemplateTypeUtils.GetText(_templateType);
 
             LtlPageTitle.Text = Body.GetQueryInt("TemplateID") > 0 ? "编辑模板" : "添加模板";
 
@@ -140,7 +140,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, ECharsetUtils.GetValue(templateInfo.Charset));
 
                 ControlUtils.SelectSingleItem(DdlCreatedFileExtName, GetTemplateFileExtension(templateInfo));
-                HihTemplateType.Value = TemplateTypeUtils.GetValue(templateInfo.TemplateType);
+                HihTemplateType.Value = templateInfo.TemplateType.Value;
             }
             else
             {
@@ -237,7 +237,7 @@ namespace SiteServer.BackgroundPages.Cms
 		        CreatePages(templateInfo);
 
 		        Body.AddSiteLog(SiteId,
-		            $"修改{TemplateType.GetText(templateInfo.TemplateType)}",
+		            $"修改{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
 		            $"模板名称:{templateInfo.TemplateName}");
 
 		        SuccessMessage("模板修改成功！");
@@ -272,7 +272,7 @@ namespace SiteServer.BackgroundPages.Cms
 		        templateInfo.Id = DataProvider.TemplateDao.Insert(templateInfo, TbContent.Text, Body.AdminName);
 		        CreatePages(templateInfo);
 		        Body.AddSiteLog(SiteId,
-		            $"添加{TemplateType.GetText(templateInfo.TemplateType)}",
+		            $"添加{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
 		            $"模板名称:{templateInfo.TemplateName}");
 		        SuccessMessage("模板添加成功！");
 		        AddWaitAndRedirectScript(PageTemplate.GetRedirectUrl(SiteId));

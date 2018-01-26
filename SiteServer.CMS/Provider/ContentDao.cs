@@ -1092,7 +1092,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             return list;
         }
 
-        public string GetSelectCommend(string tableName, int channelId, ETriState checkedState, string userNameOnly)
+        public string GetSqlString(string tableName, int channelId, ETriState checkedState, string userNameOnly)
         {
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
 
@@ -1324,7 +1324,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             return DataProvider.DatabaseDao.GetIntResult(sqlString) + 1;
         }
 
-        public string GetSelectCommendOfAdminExcludeRecycle(string tableName, int siteId, DateTime begin, DateTime end)
+        public string GetSqlStringOfAdminExcludeRecycle(string tableName, int siteId, DateTime begin, DateTime end)
         {
             string sqlString = $@"select userName,SUM(addCount) as addCount, SUM(updateCount) as updateCount from( 
 SELECT AddUserName as userName, Count(AddUserName) as addCount, 0 as updateCount FROM {tableName} 
@@ -1450,7 +1450,7 @@ group by tmp.userName";
 
         public DataSet GetDataSetOfAdminExcludeRecycle(string tableName, int siteId, DateTime begin, DateTime end)
         {
-            var sqlString = GetSelectCommendOfAdminExcludeRecycle(tableName, siteId, begin, end);
+            var sqlString = GetSqlStringOfAdminExcludeRecycle(tableName, siteId, begin, end);
 
             return ExecuteDataset(sqlString);
         }
@@ -1706,7 +1706,7 @@ group by tmp.userName";
             return whereBuilder.ToString();
         }
 
-        public string GetSelectCommend(string tableName, int siteId, int channelId, bool isSystemAdministrator, List<int> owningChannelIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isNoDup, bool isTrashContent)
+        public string GetSqlString(string tableName, int siteId, int channelId, bool isSystemAdministrator, List<int> owningChannelIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isNoDup, bool isTrashContent)
         {
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             var channelIdList = DataProvider.ChannelDao.GetIdListByScopeType(channelInfo.Id, channelInfo.ChildrenCount,
@@ -1728,10 +1728,10 @@ group by tmp.userName";
                 }
             }
 
-            return GetSelectCommendByCondition(tableName, siteId, list, searchType, keyword, dateFrom, dateTo, checkedState, isNoDup, isTrashContent);
+            return GetSqlStringByCondition(tableName, siteId, list, searchType, keyword, dateFrom, dateTo, checkedState, isNoDup, isTrashContent);
         }
 
-        public string GetSelectCommend(string tableName, int siteId, int channelId, bool isSystemAdministrator, List<int> owningChannelIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isNoDup, bool isTrashContent, bool isWritingOnly, string userNameOnly)
+        public string GetSqlString(string tableName, int siteId, int channelId, bool isSystemAdministrator, List<int> owningChannelIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isNoDup, bool isTrashContent, bool isWritingOnly, string userNameOnly)
         {
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             var channelIdList = DataProvider.ChannelDao.GetIdListByScopeType(channelInfo.Id, channelInfo.ChildrenCount, isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, channelInfo.ContentModelPluginId);
@@ -1752,10 +1752,10 @@ group by tmp.userName";
                 }
             }
 
-            return GetSelectCommendByCondition(tableName, siteId, list, searchType, keyword, dateFrom, dateTo, checkedState, isNoDup, isTrashContent, isWritingOnly, userNameOnly);
+            return GetSqlStringByCondition(tableName, siteId, list, searchType, keyword, dateFrom, dateTo, checkedState, isNoDup, isTrashContent, isWritingOnly, userNameOnly);
         }
 
-        public string GetSelectCommendByContentGroup(string tableName, string contentGroupName, int siteId)
+        public string GetSqlStringByContentGroup(string tableName, string contentGroupName, int siteId)
         {
             contentGroupName = PageUtils.FilterSql(contentGroupName);
             string sqlString =
@@ -2204,7 +2204,7 @@ group by tmp.userName";
             return whereBuilder.ToString();
         }
 
-        public string GetSelectCommendByDownloads(string tableName, int siteId)
+        public string GetSqlStringByDownloads(string tableName, int siteId)
         {
             var whereString = new StringBuilder();
             whereString.Append(
@@ -2220,12 +2220,12 @@ group by tmp.userName";
             return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        private string GetSelectCommendByCondition(string tableName, int siteId, List<int> channelIdList, string searchType, string keyword, string dateFrom, string dateTo, ETriState checkedState, bool isNoDup, bool isTrashContent)
+        private string GetSqlStringByCondition(string tableName, int siteId, List<int> channelIdList, string searchType, string keyword, string dateFrom, string dateTo, ETriState checkedState, bool isNoDup, bool isTrashContent)
         {
-            return GetSelectCommendByCondition(tableName, siteId, channelIdList, searchType, keyword, dateFrom, dateTo, checkedState, isNoDup, isTrashContent, false, string.Empty);
+            return GetSqlStringByCondition(tableName, siteId, channelIdList, searchType, keyword, dateFrom, dateTo, checkedState, isNoDup, isTrashContent, false, string.Empty);
         }
 
-        private string GetSelectCommendByCondition(string tableName, int siteId, List<int> channelIdList, string searchType, string keyword, string dateFrom, string dateTo, ETriState checkedState, bool isNoDup, bool isTrashContent, bool isWritingOnly, string userNameOnly)
+        private string GetSqlStringByCondition(string tableName, int siteId, List<int> channelIdList, string searchType, string keyword, string dateFrom, string dateTo, ETriState checkedState, bool isNoDup, bool isTrashContent, bool isWritingOnly, string userNameOnly)
         {
             if (channelIdList == null || channelIdList.Count == 0)
             {
@@ -2630,7 +2630,7 @@ group by tmp.userName";
         //    return referenceId;
         //}
 
-        //private string GetSelectCommendByWhere(string tableName, int siteId, List<int> channelIdList, string where, ETriState checkedState)
+        //private string GetSqlStringByWhere(string tableName, int siteId, List<int> channelIdList, string where, ETriState checkedState)
         //{
         //    if (channelIdList == null || channelIdList.Count == 0)
         //    {
@@ -2660,7 +2660,7 @@ group by tmp.userName";
         //    return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         //}
 
-        //private string GetSelectCommend(string tableName, int channelId, ETriState checkedState)
+        //private string GetSqlString(string tableName, int channelId, ETriState checkedState)
         //{
         //    var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
 
@@ -2681,7 +2681,7 @@ group by tmp.userName";
         //    return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString(), orderByString);
         //}
 
-        //private string GetSelectCommend(string tableName, List<int> channelIdList, ETriState checkedState)
+        //private string GetSqlString(string tableName, List<int> channelIdList, ETriState checkedState)
         //{
         //    var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
 
@@ -2902,11 +2902,11 @@ group by tmp.userName";
         //    return 0;
         //}
 
-        //public string GetSelectCommend(string tableName, int siteId, int channelId, bool isSystemAdministrator, List<int> owningChannelIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState)
+        //public string GetSqlString(string tableName, int siteId, int channelId, bool isSystemAdministrator, List<int> owningChannelIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState)
         //{
-        //    return GetSelectCommend(tableName, siteId, channelId, isSystemAdministrator, owningChannelIdList, searchType, keyword, dateFrom, dateTo, isSearchChildren, checkedState, false, false);
+        //    return GetSqlString(tableName, siteId, channelId, isSystemAdministrator, owningChannelIdList, searchType, keyword, dateFrom, dateTo, isSearchChildren, checkedState, false, false);
         //}
-        //public string GetWritingSelectCommend(string writingUserName, string tableName, int siteId, List<int> channelIdList, string searchType, string keyword, string dateFrom, string dateTo)
+        //public string GetWritingSqlString(string writingUserName, string tableName, int siteId, List<int> channelIdList, string searchType, string keyword, string dateFrom, string dateTo)
         //{
         //    if (channelIdList == null || channelIdList.Count == 0)
         //    {

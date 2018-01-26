@@ -23,6 +23,8 @@ namespace SiteServer.BackgroundPages
                     var pair = DataProvider.ErrorLogDao.GetMessageAndStacktrace(logId);
                     message = pair.Key;
                     stackTrace = pair.Value;
+
+                    LtlStackTrace.Text = $@"<script>Rollbar.error(""{StringUtils.ToJsString(message)}"", {{version: ""{StringUtils.ToJsString(SystemManager.Version)}"", preview: ""{WebConfigUtils.IsUpdatePreviewVersion}"", stackTrace: ""{StringUtils.ToJsString(stackTrace)}""}});</script>";
                 }
                 if (string.IsNullOrEmpty(message))
                 {
@@ -39,7 +41,7 @@ namespace SiteServer.BackgroundPages
             LtlMessage.Text = message;
             if (!string.IsNullOrEmpty(stackTrace))
             {
-                LtlStackTrace.Text = $@"<!-- 
+                LtlStackTrace.Text += $@"<!-- 
 {stackTrace}
 -->";
             }

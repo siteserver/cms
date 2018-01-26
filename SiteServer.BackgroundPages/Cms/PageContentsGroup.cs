@@ -6,6 +6,7 @@ using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -58,8 +59,8 @@ namespace SiteServer.BackgroundPages.Cms
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommendByContentGroup(_tableName, _contentGroupName, siteId);
-            SpContents.SortField = "AddDate";
+            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlStringByContentGroup(_tableName, _contentGroupName, siteId);
+            SpContents.SortField = ContentAttribute.AddDate;
             SpContents.SortMode = SortMode.DESC;
 
             if (IsPostBack) return;

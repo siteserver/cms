@@ -60,7 +60,7 @@ namespace SiteServer.CMS.ImportExport.Components
 			AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ nameof(TemplateInfo.Id), "TemplateID" }, templateInfo.Id.ToString());
 			AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(TemplateInfo.SiteId), "PublishmentSystemID" }, templateInfo.SiteId.ToString());
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.TemplateName), templateInfo.TemplateName);
-			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.TemplateType), TemplateTypeUtils.GetValue(templateInfo.TemplateType));
+			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.TemplateType), templateInfo.TemplateType.Value);
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.RelatedFileName), templateInfo.RelatedFileName);
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileFullName), templateInfo.CreatedFileFullName);
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileExtName), templateInfo.CreatedFileExtName);

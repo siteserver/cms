@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Settings
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
 
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommendByDownloads(SiteInfo.TableName, SiteId);
+            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlStringByDownloads(SiteInfo.TableName, SiteId);
 
             SpContents.SortField = ContentDao.SortFieldName;
             SpContents.SortMode = SortMode.DESC;

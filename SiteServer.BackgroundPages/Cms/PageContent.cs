@@ -92,11 +92,11 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     nodeId
                 };
-                SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(_tableName, SiteId, nodeId, permissions.IsSystemAdministrator, owningNodeIdList, Body.GetQueryString("searchType"), Body.GetQueryString("keyword"), Body.GetQueryString("dateFrom"), string.Empty, false, ETriState.All, false, false, false, administratorName);
+                SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(_tableName, SiteId, nodeId, permissions.IsSystemAdministrator, owningNodeIdList, Body.GetQueryString("searchType"), Body.GetQueryString("keyword"), Body.GetQueryString("dateFrom"), string.Empty, false, ETriState.All, false, false, false, administratorName);
             }
             else
             {
-                SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(_tableName, nodeId, ETriState.All, administratorName);
+                SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(_tableName, nodeId, ETriState.All, administratorName);
             }
 
             //spContents.SortField = DataProvider.ContentDao.GetSortFieldName();

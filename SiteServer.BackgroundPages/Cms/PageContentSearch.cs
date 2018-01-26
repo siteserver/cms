@@ -87,7 +87,7 @@ namespace SiteServer.BackgroundPages.Cms
             var keyword = Body.IsQueryExists("keyword") ? Body.GetQueryString("keyword") : string.Empty;
 
             SpContents.ControlToPaginate = RptContents;
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableName, SiteId, _channelId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningChannelIdList, searchType, keyword, dateFrom, dateTo, true, stateType, !isDuplicate, false, _isWritingOnly, administratorName);
+            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(tableName, SiteId, _channelId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningChannelIdList, searchType, keyword, dateFrom, dateTo, true, stateType, !isDuplicate, false, _isWritingOnly, administratorName);
             SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
             SpContents.SortField = ContentAttribute.Id;
             SpContents.SortMode = SortMode.DESC;

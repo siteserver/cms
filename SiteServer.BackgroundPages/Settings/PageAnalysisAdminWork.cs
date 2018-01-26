@@ -116,7 +116,7 @@ yArrayUpdate.push('{yValueUpdate}');";
             SpContents.SortField = "UserName";
             SpContents.SortMode = SortMode.DESC;
 
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommendOfAdminExcludeRecycle(SiteInfo.TableName, SiteId, _begin, _end);
+            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlStringOfAdminExcludeRecycle(SiteInfo.TableName, SiteId, _begin, _end);
 
             SpContents.DataBind();
         }
