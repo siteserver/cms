@@ -78,10 +78,10 @@
     <Compile Include="Controllers\Preview\ApiRoutePreview.cs" />
     <Compile Include="Controllers\Sys\Administrators\ApiRouteActionsLogin.cs" />
     <Compile Include="Controllers\Sys\Administrators\ApiRouteSiteCheckList.cs" />
-    <Compile Include="Controllers\Sys\Packages\ApiRouteUpdateSystem.cs" />
-    <Compile Include="Controllers\Sys\Packages\ApiRouteUpdateDatabase.cs" />
-    <Compile Include="Controllers\Sys\Packages\ApiRouteDownload.cs" />
-    <Compile Include="Controllers\Sys\Packages\ApiRouteVersion.cs" />
+    <Compile Include="Controllers\Sys\Packaging\ApiRouteUpdateSystem.cs" />
+    <Compile Include="Controllers\Sys\Packaging\ApiRouteUpdateDatabase.cs" />
+    <Compile Include="Controllers\Sys\Packaging\ApiRouteDownload.cs" />
+    <Compile Include="Controllers\Sys\Packaging\ApiRouteVersion.cs" />
     <Compile Include="Controllers\Sys\Editors\ApiRouteUEditor.cs" />
     <Compile Include="Controllers\Sys\Stl\ApiRouteActionsAddContentHits.cs" />
     <Compile Include="Controllers\Sys\Stl\ApiRouteActionsDownload.cs" />

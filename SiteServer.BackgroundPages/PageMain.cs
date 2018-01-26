@@ -14,7 +14,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.Utils.Packaging;
-using ApiRouteVersion = SiteServer.CMS.Controllers.Sys.Packages.ApiRouteVersion;
+using ApiRouteVersion = SiteServer.CMS.Controllers.Sys.Packaging.ApiRouteVersion;
 
 namespace SiteServer.BackgroundPages
 {

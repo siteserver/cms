@@ -1,5 +1,5 @@
 ﻿using System;
-using SiteServer.CMS.Controllers.Sys.Packages;
+using SiteServer.CMS.Controllers.Sys.Packaging;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 

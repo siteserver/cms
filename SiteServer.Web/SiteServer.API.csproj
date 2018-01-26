@@ -126,10 +126,10 @@
     <Compile Include="Controllers\Preview\PreviewController.cs" />
     <Compile Include="Controllers\Sys\Administrators\AdministratorsActionsLoginController.cs" />
     <Compile Include="Controllers\Sys\Administrators\AdministratorsSiteCheckListController.cs" />
-    <Compile Include="Controllers\Sys\Packages\PackagesUpdateSystemController.cs" />
-    <Compile Include="Controllers\Sys\Packages\PackagesUpdateDatabaseController.cs" />
-    <Compile Include="Controllers\Sys\Packages\PackagesDownloadController.cs" />
-    <Compile Include="Controllers\Sys\Packages\PackagesVersionController.cs" />
+    <Compile Include="Controllers\Sys\Packaging\PackagingUpdateSystemController.cs" />
+    <Compile Include="Controllers\Sys\Packaging\PackagingUpdateDatabaseController.cs" />
+    <Compile Include="Controllers\Sys\Packaging\PackagingDownloadController.cs" />
+    <Compile Include="Controllers\Sys\Packaging\PackagingVersionController.cs" />
     <Compile Include="Controllers\Sys\Editors\UEditorController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsAddContentHitsController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsDownloadController.cs" />
