@@ -38,14 +38,14 @@ namespace SiteServer.BackgroundPages.Cms
             return GetOpenWindowString(siteId, isSiteSelect, "translateNodeAdd");
         }
 
-        public string GetRedirectUrl(string targetSiteId, string targetNodeId)
+        public string GetRedirectUrl(int targetSiteId, string targetChannelId)
         {
-            return PageUtils.GetCmsUrl(SiteId, nameof(ModalChannelMultipleSelect), new NameValueCollection
+            return PageUtils.GetCmsUrl(targetSiteId, nameof(ModalChannelMultipleSelect), new NameValueCollection
             {
                 {"isSiteSelect", _isSiteSelect.ToString()},
                 {"jsMethod", _jsMethod},
-                {"targetSiteId", targetSiteId},
-                {"targetNodeID", targetNodeId}
+                {"targetSiteId", targetSiteId.ToString()},
+                {"targetChannelId", targetChannelId}
             });
         }
 
@@ -62,89 +62,88 @@ namespace SiteServer.BackgroundPages.Cms
                 _targetSiteId = SiteId;
             }
 
-            if (!IsPostBack)
+            if (IsPostBack) return;
+
+            PhSiteId.Visible = _isSiteSelect;
+
+            var siteIdList = ProductPermissionsManager.Current.SiteIdList;
+
+            var mySystemInfoArrayList = new ArrayList();
+            var parentWithChildren = new Hashtable();
+            foreach (var siteId in siteIdList)
             {
-                PhSiteId.Visible = _isSiteSelect;
-
-                var siteIdList = ProductPermissionsManager.Current.SiteIdList;
-
-                var mySystemInfoArrayList = new ArrayList();
-                var parentWithChildren = new Hashtable();
-                foreach (var siteId in siteIdList)
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                if (siteInfo.ParentId == 0)
                 {
-                    var siteInfo = SiteManager.GetSiteInfo(siteId);
-                    if (siteInfo.ParentId == 0)
-                    {
-                        mySystemInfoArrayList.Add(siteInfo);
-                    }
-                    else
-                    {
-                        var children = new ArrayList();
-                        if (parentWithChildren.Contains(siteInfo.ParentId))
-                        {
-                            children = (ArrayList)parentWithChildren[siteInfo.ParentId];
-                        }
-                        children.Add(siteInfo);
-                        parentWithChildren[siteInfo.ParentId] = children;
-                    }
-                }
-                foreach (SiteInfo siteInfo in mySystemInfoArrayList)
-                {
-                    AddSite(DdlSiteId, siteInfo, parentWithChildren, 0);
-                }
-                ControlUtils.SelectSingleItem(DdlSiteId, _targetSiteId.ToString());
-
-                var targetNodeId = Body.GetQueryInt("TargetNodeID");
-                if (targetNodeId > 0)
-                {
-                    var siteName = SiteManager.GetSiteInfo(_targetSiteId).SiteName;
-                    var nodeNames = ChannelManager.GetChannelNameNavigation(_targetSiteId, targetNodeId);
-                    if (_targetSiteId != SiteId)
-                    {
-                        nodeNames = siteName + "：" + nodeNames;
-                    }
-                    string value = $"{_targetSiteId}_{targetNodeId}";
-                    if (!_isSiteSelect)
-                    {
-                        value = targetNodeId.ToString();
-                    }
-                    string scripts = $"window.parent.{_jsMethod}('{nodeNames}', '{value}');";
-                    LayerUtils.CloseWithoutRefresh(Page, scripts);
+                    mySystemInfoArrayList.Add(siteInfo);
                 }
                 else
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(_targetSiteId, _targetSiteId);
-                    var linkUrl = GetRedirectUrl(_targetSiteId.ToString(), _targetSiteId.ToString());
-                    LtlChannelName.Text = $"<a href='{linkUrl}'>{nodeInfo.ChannelName}</a>";
-
-                    var additional = new NameValueCollection
+                    var children = new ArrayList();
+                    if (parentWithChildren.Contains(siteInfo.ParentId))
                     {
-                        ["linkUrl"] = GetRedirectUrl(_targetSiteId.ToString(), string.Empty)
-                    };
-                    ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteManager.GetSiteInfo(_targetSiteId), ELoadingType.ChannelSelect, additional));
-
-                    RptChannel.DataSource = DataProvider.ChannelDao.GetIdListByParentId(_targetSiteId, _targetSiteId);
-                    RptChannel.ItemDataBound += RptChannel_ItemDataBound;
-                    RptChannel.DataBind();
+                        children = (ArrayList)parentWithChildren[siteInfo.ParentId];
+                    }
+                    children.Add(siteInfo);
+                    parentWithChildren[siteInfo.ParentId] = children;
                 }
+            }
+            foreach (SiteInfo siteInfo in mySystemInfoArrayList)
+            {
+                AddSite(DdlSiteId, siteInfo, parentWithChildren, 0);
+            }
+            ControlUtils.SelectSingleItem(DdlSiteId, _targetSiteId.ToString());
+
+            var targetChannelId = Body.GetQueryInt("TargetChannelId");
+            if (targetChannelId > 0)
+            {
+                var siteName = SiteManager.GetSiteInfo(_targetSiteId).SiteName;
+                var nodeNames = ChannelManager.GetChannelNameNavigation(_targetSiteId, targetChannelId);
+                if (_targetSiteId != SiteId)
+                {
+                    nodeNames = siteName + "：" + nodeNames;
+                }
+                string value = $"{_targetSiteId}_{targetChannelId}";
+                if (!_isSiteSelect)
+                {
+                    value = targetChannelId.ToString();
+                }
+                string scripts = $"window.parent.{_jsMethod}('{nodeNames}', '{value}');";
+                LayerUtils.CloseWithoutRefresh(Page, scripts);
+            }
+            else
+            {
+                var nodeInfo = ChannelManager.GetChannelInfo(_targetSiteId, _targetSiteId);
+                var linkUrl = GetRedirectUrl(_targetSiteId, _targetSiteId.ToString());
+                LtlChannelName.Text = $"<a href='{linkUrl}'>{nodeInfo.ChannelName}</a>";
+
+                var additional = new NameValueCollection
+                {
+                    ["linkUrl"] = GetRedirectUrl(_targetSiteId, string.Empty)
+                };
+                ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteManager.GetSiteInfo(_targetSiteId), ELoadingType.ChannelSelect, additional));
+
+                RptChannel.DataSource = DataProvider.ChannelDao.GetIdListByParentId(_targetSiteId, _targetSiteId);
+                RptChannel.ItemDataBound += RptChannel_ItemDataBound;
+                RptChannel.DataBind();
             }
         }
 
         private void RptChannel_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            var nodeId = (int)e.Item.DataItem;
-            var enabled = IsOwningNodeId(nodeId);
+            var channelId = (int)e.Item.DataItem;
+            var enabled = IsOwningChannelId(channelId);
             if (!enabled)
             {
-                if (!IsHasChildOwningNodeId(nodeId)) e.Item.Visible = false;
+                if (!IsHasChildOwningChannelId(channelId)) e.Item.Visible = false;
             }
-            var nodeInfo = ChannelManager.GetChannelInfo(_targetSiteId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(_targetSiteId, channelId);
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
             var additional = new NameValueCollection
             {
-                ["linkUrl"] = GetRedirectUrl(_targetSiteId.ToString(), string.Empty)
+                ["linkUrl"] = GetRedirectUrl(_targetSiteId, string.Empty)
             };
 
             ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ChannelSelect, additional, Body.AdminName);
@@ -152,7 +151,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void DdlSiteId_OnSelectedIndexChanged(object sender, EventArgs e)
         {
-            var redirectUrl = GetRedirectUrl(DdlSiteId.SelectedValue, string.Empty);
+            var redirectUrl = GetRedirectUrl(TranslateUtils.ToInt(DdlSiteId.SelectedValue), string.Empty);
             PageUtils.Redirect(redirectUrl);
         }
 

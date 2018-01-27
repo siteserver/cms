@@ -50,23 +50,23 @@ namespace SiteServer.BackgroundPages.Cms
 
         public Button BtnSubmit;
 
-        private int _nodeId;
+        private int _channelId;
         private string _returnUrl;
 
-        public static string GetOpenWindowString(int siteId, int nodeId, string returnUrl)
+        public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
         {
             return LayerUtils.GetOpenScript("快速修改栏目", PageUtils.GetCmsUrl(siteId, nameof(ModalChannelEdit), new NameValueCollection
             {
-                {"NodeID", nodeId.ToString()},
+                {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             }));
         }
 
-        public static string GetRedirectUrl(int siteId, int nodeId, string returnUrl)
+        public static string GetRedirectUrl(int siteId, int channelId, string returnUrl)
         {
             return PageUtils.GetCmsUrl(siteId, nameof(ModalChannelEdit), new NameValueCollection
             {
-                {"NodeID", nodeId.ToString()},
+                {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
         }
@@ -75,22 +75,22 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "NodeID", "ReturnUrl");
-            _nodeId = Body.GetQueryInt("NodeID");
+            PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
+            _channelId = Body.GetQueryInt("channelId");
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
 
             CacAttributes.SiteInfo = SiteInfo;
-            CacAttributes.NodeId = _nodeId;
+            CacAttributes.ChannelId = _channelId;
 
             if (!IsPostBack)
             {
-                if (!HasChannelPermissions(_nodeId, ConfigManager.Permissions.Channel.ChannelEdit))
+                if (!HasChannelPermissions(_channelId, ConfigManager.Permissions.Channel.ChannelEdit))
                 {
                     PageUtils.RedirectToErrorPage("您没有修改栏目的权限！");
                     return;
                 }
 
-                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _nodeId);
+                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
                 if (nodeInfo == null) return;
 
                 if (nodeInfo.ParentId == 0)
@@ -275,7 +275,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _nodeId);
+                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
 
                 if (PhNodeIndexName.Visible)
                 {
@@ -316,7 +316,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 var extendedAttributes = new ExtendedAttributes();
-                var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _nodeId);
+                var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName,
                     relatedIdentities);
                 BackgroundInputTypeParser.SaveAttributes(extendedAttributes, SiteInfo, styleInfoList, Request.Form, null);
@@ -390,7 +390,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 DataProvider.ChannelDao.Update(nodeInfo);
 
-                Body.AddSiteLog(SiteId, _nodeId, 0, "修改栏目", $"栏目:{nodeInfo.ChannelName}");
+                Body.AddSiteLog(SiteId, _channelId, 0, "修改栏目", $"栏目:{nodeInfo.ChannelName}");
 
                 isChanged = true;
             }
@@ -402,7 +402,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (isChanged)
             {
-                CreateManager.CreateChannel(SiteId, _nodeId);
+                CreateManager.CreateChannel(SiteId, _channelId);
 
                 if (string.IsNullOrEmpty(_returnUrl))
                 {

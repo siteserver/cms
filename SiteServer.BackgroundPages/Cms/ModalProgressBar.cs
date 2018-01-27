@@ -15,14 +15,14 @@ namespace SiteServer.BackgroundPages.Cms
 
         public Literal LtlScripts;
 
-        public static string GetOpenWindowStringWithCreateContentsOneByOne(int siteId, int nodeId)
+        public static string GetOpenWindowStringWithCreateContentsOneByOne(int siteId, int channelId)
         {
             return LayerUtils.GetOpenScriptWithCheckBoxValue("生成内容页",
                 PageUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
                 {
-                    {"NodeID", nodeId.ToString()},
+                    {"channelId", channelId.ToString()},
                     {"CreateContentsOneByOne", true.ToString()}
-                }), "ContentIDCollection", "请选择需要生成的内容！", 500, 360);
+                }), "contentIdCollection", "请选择需要生成的内容！", 500, 360);
         }
 
         public static string GetOpenWindowStringWithCreateByTemplate(int siteId, int templateId)
@@ -47,14 +47,14 @@ namespace SiteServer.BackgroundPages.Cms
             });
         }
 
-        public static string GetRedirectUrlStringWithCreateContentsOneByOne(int siteId, int nodeId,
+        public static string GetRedirectUrlStringWithCreateContentsOneByOne(int siteId, int channelId,
             string contentIdCollection)
         {
             return PageUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
             {
-                {"NodeID", nodeId.ToString()},
+                {"channelId", channelId.ToString()},
                 {"CreateContentsOneByOne", true.ToString()},
-                {"ContentIDCollection", contentIdCollection}
+                {"contentIdCollection", contentIdCollection}
             });
         }
 
@@ -130,12 +130,12 @@ namespace SiteServer.BackgroundPages.Cms
 
                 PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将栏目放入生成队列"));
             }
-            else if (Body.IsQueryExists("CreateContentsOneByOne") && Body.IsQueryExists("NodeID") &&
-                     Body.IsQueryExists("ContentIDCollection"))
+            else if (Body.IsQueryExists("CreateContentsOneByOne") && Body.IsQueryExists("channelId") &&
+                     Body.IsQueryExists("contentIdCollection"))
             {
-                foreach (var contentId in TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection")))
+                foreach (var contentId in TranslateUtils.StringCollectionToIntList(Body.GetQueryString("contentIdCollection")))
                 {
-                    CreateManager.CreateContent(SiteId, Body.GetQueryInt("NodeID"),
+                    CreateManager.CreateContent(SiteId, Body.GetQueryInt("channelId"),
                         contentId);
                 }
 
@@ -149,10 +149,10 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else if (Body.IsQueryExists("CreateByIDsCollection") && Body.IsQueryExists("IDsCollection"))
             {
-                foreach (var nodeIdContentId in
+                foreach (var channelIdContentId in
                     TranslateUtils.StringCollectionToStringCollection(Body.GetQueryString("IDsCollection")))
                 {
-                    var pair = nodeIdContentId.Split('_');
+                    var pair = channelIdContentId.Split('_');
                     CreateManager.CreateContent(SiteId, TranslateUtils.ToInt(pair[0]),
                         TranslateUtils.ToInt(pair[1]));
                 }

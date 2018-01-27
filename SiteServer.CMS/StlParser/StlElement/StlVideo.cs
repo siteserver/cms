@@ -224,8 +224,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (string.IsNullOrEmpty(imageUrl))
             {
-                var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
-                channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
+                var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
+                channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
                 var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
                 imageUrl = channel.ImageUrl;
             }

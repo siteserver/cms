@@ -19,24 +19,24 @@ namespace SiteServer.API.Controllers.Sys.Stl
             try
             {
                 var form = HttpContext.Current.Request.Form;
-                var siteId = TranslateUtils.ToInt(form["siteID"]);
-                var parentId = TranslateUtils.ToInt(form["parentID"]);
+                var siteId = TranslateUtils.ToInt(form["siteId"]);
+                var parentId = TranslateUtils.ToInt(form["parentId"]);
                 var target = form["target"];
                 var isShowTreeLine = TranslateUtils.ToBool(form["isShowTreeLine"]);
                 var isShowContentNum = TranslateUtils.ToBool(form["isShowContentNum"]);
                 var currentFormatString = form["currentFormatString"];
-                var topNodeId = TranslateUtils.ToInt(form["topNodeID"]);
+                var topChannelId = TranslateUtils.ToInt(form["topChannelId"]);
                 var topParentsCount = TranslateUtils.ToInt(form["topParentsCount"]);
-                var currentNodeId = TranslateUtils.ToInt(form["currentNodeID"]);
+                var currentChannelId = TranslateUtils.ToInt(form["currentChannelId"]);
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                var nodeIdList = DataProvider.ChannelDao.GetIdListByParentId(siteId, parentId);
+                var channelIdList = DataProvider.ChannelDao.GetIdListByParentId(siteId, parentId);
 
-                foreach (var nodeId in nodeIdList)
+                foreach (var channelId in channelIdList)
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(siteId, nodeId);
+                    var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
-                    builder.Append(StlTree.GetChannelRowHtml(siteInfo, nodeInfo, target, isShowTreeLine, isShowContentNum, TranslateUtils.DecryptStringBySecretKey(currentFormatString), topNodeId, topParentsCount, currentNodeId, false));
+                    builder.Append(StlTree.GetChannelRowHtml(siteInfo, nodeInfo, target, isShowTreeLine, isShowContentNum, TranslateUtils.DecryptStringBySecretKey(currentFormatString), topChannelId, topParentsCount, currentChannelId, false));
                 }
             }
             catch

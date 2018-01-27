@@ -396,23 +396,23 @@ namespace SiteServer.BackgroundPages.Ajax
 
             var eLoadingType = ELoadingTypeUtils.GetEnumType(loadingType);
 
-            var nodeIdList = DataProvider.ChannelDao.GetIdListByParentId(siteId, parentId);
+            var channelIdList = DataProvider.ChannelDao.GetIdListByParentId(siteId, parentId);
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
 
             var nameValueCollection = TranslateUtils.ToNameValueCollection(TranslateUtils.DecryptStringBySecretKey(additional));
 
-            foreach (var nodeId in nodeIdList)
+            foreach (var channelId in channelIdList)
             {
-                var enabled = AdminUtility.IsOwningNodeId(context.AdminName, nodeId);
+                var enabled = AdminUtility.IsOwningChannelId(context.AdminName, channelId);
                 if (!enabled)
                 {
-                    if (!AdminUtility.IsHasChildOwningNodeId(context.AdminName, nodeId))
+                    if (!AdminUtility.IsHasChildOwningChannelId(context.AdminName, channelId))
                     {
                         continue;
                     }
                 }
-                var nodeInfo = ChannelManager.GetChannelInfo(siteId, nodeId);
+                var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
                 list.Add(ChannelLoading.GetChannelRowHtml(siteInfo, nodeInfo, enabled, eLoadingType, nameValueCollection, context.AdminName));
             }

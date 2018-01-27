@@ -40,7 +40,7 @@ namespace SiteServer.CMS.Core.Office
             return createBuilder.ToString();
         }
 
-        public ArrayList GetInsertSqlStringArrayList(string nodeName, int siteId, int nodeId, string tableName, List<TableStyleInfo> styleInfoList, List<string> displayAttributes, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out bool isExport)
+        public ArrayList GetInsertSqlStringArrayList(string nodeName, int siteId, int channelId, string tableName, List<TableStyleInfo> styleInfoList, List<string> displayAttributes, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out bool isExport)
         {
             var insertSqlArrayList = new ArrayList();
 
@@ -60,7 +60,7 @@ namespace SiteServer.CMS.Core.Office
 
             if (contentIdList == null || contentIdList.Count == 0)
             {
-                contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, nodeId, isPeriods, dateFrom, dateTo, checkedState);
+                contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId, isPeriods, dateFrom, dateTo, checkedState);
             }
 
             isExport = contentIdList.Count > 0;

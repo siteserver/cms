@@ -219,9 +219,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var orderByString = isChannel ? StlDataUtility.GetChannelOrderByString(pageInfo.SiteId, order, ETaxisType.OrderByTaxis) : StlDataUtility.GetContentOrderByString(pageInfo.SiteId, order, ETaxisType.OrderByTaxisDesc);
 
-            var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
+            var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
-            channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
+            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
 
             var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
 
@@ -257,13 +257,13 @@ selObj.selectedIndex=0;
 
             if (isChannel)
             {
-                var nodeIdList = StlDataUtility.GetNodeIdList(pageInfo.SiteId, channel.Id, orderByString, scopeType, groupChannel, groupChannelNot, false, false, totalNum, where);
+                var channelIdList = StlDataUtility.GetChannelIdList(pageInfo.SiteId, channel.Id, orderByString, scopeType, groupChannel, groupChannelNot, false, false, totalNum, where);
 
-                if (nodeIdList != null && nodeIdList.Count > 0)
+                if (channelIdList != null && channelIdList.Count > 0)
                 {
-                    foreach (var nodeIdInSelect in nodeIdList)
+                    foreach (var channelIdInSelect in channelIdList)
                     {
-                        var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, nodeIdInSelect);
+                        var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelIdInSelect);
 
                         if (nodeInfo != null)
                         {

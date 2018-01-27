@@ -17,19 +17,19 @@ namespace SiteServer.CMS.Core
             return relatedIdentities;
         }
 
-        public static List<int> GetChannelRelatedIdentities(int siteId, int nodeId)
+        public static List<int> GetChannelRelatedIdentities(int siteId, int channelId)
         {
             var arraylist = new List<int>();
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, nodeId);
-            if (nodeInfo != null)
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            if (channelInfo != null)
             {
-                var nodeIdCollection = "0," + nodeInfo.Id;
-                if (nodeInfo.ParentsCount > 0)
+                var channelIdCollection = "0," + channelInfo.Id;
+                if (channelInfo.ParentsCount > 0)
                 {
-                    nodeIdCollection = "0," + nodeInfo.ParentsPath + "," + nodeInfo.Id;
+                    channelIdCollection = "0," + channelInfo.ParentsPath + "," + channelInfo.Id;
                 }
 
-                arraylist = TranslateUtils.StringCollectionToIntList(nodeIdCollection);
+                arraylist = TranslateUtils.StringCollectionToIntList(channelIdCollection);
                 arraylist.Reverse();
             }
             else
@@ -39,11 +39,11 @@ namespace SiteServer.CMS.Core
             return arraylist;
         }
 
-        public static List<TableStyleInfo> GetTableStyleInfoList(SiteInfo siteInfo, int nodeId)
+        public static List<TableStyleInfo> GetTableStyleInfoList(SiteInfo siteInfo, int channelId)
         {
-            List<int> relatedIdentities = GetChannelRelatedIdentities(siteInfo.Id, nodeId);
+            List<int> relatedIdentities = GetChannelRelatedIdentities(siteInfo.Id, channelId);
 
-            var tableName = ChannelManager.GetTableName(siteInfo, nodeId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
             return TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
         }

@@ -143,7 +143,7 @@ namespace SiteServer.CMS.ImportExport
             }
         }
 
-        public static void ImportTableStyleByZipFile(string tableName, int nodeId, string zipFilePath)
+        public static void ImportTableStyleByZipFile(string tableName, int channelId, string zipFilePath)
         {
             var styleDirectoryPath = PathUtils.GetTemporaryFilesPath("TableStyle");
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
@@ -151,7 +151,7 @@ namespace SiteServer.CMS.ImportExport
 
             ZipUtils.UnpackFiles(zipFilePath, styleDirectoryPath);
 
-            TableStyleIe.SingleImportTableStyle(tableName, styleDirectoryPath, nodeId);
+            TableStyleIe.SingleImportTableStyle(tableName, styleDirectoryPath, channelId);
         }
 
         public void ImportConfiguration(string configurationFilePath)
@@ -224,8 +224,8 @@ namespace SiteServer.CMS.ImportExport
                     };
                 }
 
-                var insertNodeId = siteContentIe.ImportChannelsAndContents(filePath, true, isOverride, (int)levelHashtable[level]);
-                levelHashtable[level + 1] = insertNodeId;
+                var insertChannelId = siteContentIe.ImportChannelsAndContents(filePath, true, isOverride, (int)levelHashtable[level]);
+                levelHashtable[level + 1] = insertChannelId;
             }
         }
 
@@ -272,9 +272,9 @@ namespace SiteServer.CMS.ImportExport
             DataProvider.ChannelDao.UpdateContentNum(_siteInfo);
         }
 
-        public void ImportContentsByAccessFile(int nodeId, string excelFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
+        public void ImportContentsByAccessFile(int channelId, string excelFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
-            var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, channelId);
             var contentInfoList = AccessObject.GetContentsByAccessFile(excelFilePath, _siteInfo, nodeInfo);
 
             if (importStart > 1 || importCount > 0)
@@ -341,9 +341,9 @@ namespace SiteServer.CMS.ImportExport
             }
         }
 
-        public void ImportContentsByCsvFile(int nodeId, string csvFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
+        public void ImportContentsByCsvFile(int channelId, string csvFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
-            var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, channelId);
             var contentInfoList = ExcelObject.GetContentsByCsvFile(csvFilePath, _siteInfo, nodeInfo);
             contentInfoList.Reverse();
 
@@ -406,11 +406,11 @@ namespace SiteServer.CMS.ImportExport
                 {
                     contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _siteInfo, contentInfo);
                 }
-                //this.FSO.AddContentToWaitingCreate(contentInfo.NodeID, contentID);
+                //this.FSO.AddContentToWaitingCreate(contentInfo.ChannelId, contentID);
             }
         }
 
-        public void ImportContentsByTxtZipFile(int nodeId, string zipFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
+        public void ImportContentsByTxtZipFile(int channelId, string zipFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
             var directoryPath = PathUtils.GetTemporaryFilesPath("contents");
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
@@ -418,7 +418,7 @@ namespace SiteServer.CMS.ImportExport
 
             ZipUtils.UnpackFiles(zipFilePath, directoryPath);
 
-            var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, channelId);
 
             var contentInfoList = TxtObject.GetContentListByTxtFile(directoryPath, _siteInfo, nodeInfo);
 
@@ -485,7 +485,7 @@ namespace SiteServer.CMS.ImportExport
                     contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _siteInfo, contentInfo);
                 }
 
-                //this.FSO.AddContentToWaitingCreate(contentInfo.NodeID, contentID);
+                //this.FSO.AddContentToWaitingCreate(contentInfo.ChannelId, contentID);
             }
         }
 

@@ -21,14 +21,14 @@ namespace SiteServer.API.Controllers.Sys.Stl
 
                 var siteId = context.GetPostInt("siteId");
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                var pageNodeId = context.GetPostInt("pageNodeId");
+                var pageChannelId = context.GetPostInt("pageChannelId");
                 var templateId = context.GetPostInt("templateId");
                 var totalNum = context.GetPostInt("totalNum");
                 var pageCount = context.GetPostInt("pageCount");
                 var currentPageIndex = context.GetPostInt("currentPageIndex");
                 var stlPageContentsElement = TranslateUtils.DecryptStringBySecretKey(context.GetPostString("stlPageContentsElement"));
 
-                var nodeInfo = ChannelManager.GetChannelInfo(siteId, pageNodeId);
+                var nodeInfo = ChannelManager.GetChannelInfo(siteId, pageChannelId);
                 var templateInfo = TemplateManager.GetTemplateInfo(siteId, templateId);
                 var pageInfo = new PageInfo(nodeInfo.Id, 0, siteInfo, templateInfo)
                 {

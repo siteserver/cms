@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class PageChannelAdd : BasePageCms
     {
-        public DropDownList DdlParentNodeId;
+        public DropDownList DdlParentChannelId;
         public TextBox TbNodeName;
         public TextBox TbNodeIndexName;
         public DropDownList DdlContentModelPluginId;
@@ -47,13 +47,13 @@ namespace SiteServer.BackgroundPages.Cms
         public Button BtnSelectImage;
         public Button BtnUploadImage;
 
-        private int _nodeId;
+        private int _channelId;
 
-        public static string GetRedirectUrl(int siteId, int nodeId, string returnUrl)
+        public static string GetRedirectUrl(int siteId, int channelId, string returnUrl)
         {
             return PageUtils.GetCmsUrl(siteId, nameof(PageChannelAdd), new NameValueCollection
             {
-                {"NodeID", nodeId.ToString() },
+                {"channelId", channelId.ToString() },
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl) }
             });
         }
@@ -62,16 +62,16 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "NodeID", "ReturnUrl");
-            _nodeId = Body.GetQueryInt("NodeID");
+            PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
+            _channelId = Body.GetQueryInt("channelId");
             ReturnUrl = StringUtils.ValueFromUrl(PageUtils.FilterSqlAndXss(Body.GetQueryString("ReturnUrl")));
-            //if (!base.HasChannelPermissions(this.nodeID, AppManager.CMS.Permission.Channel.ChannelAdd))
+            //if (!base.HasChannelPermissions(this.channelId, AppManager.CMS.Permission.Channel.ChannelAdd))
             //{
             //    PageUtils.RedirectToErrorPage("您没有添加栏目的权限！");
             //    return;
             //}
 
-            var parentNodeInfo = ChannelManager.GetChannelInfo(SiteId, _nodeId);
+            var parentNodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
             if (parentNodeInfo.Additional.IsChannelAddable == false)
             {
                 PageUtils.RedirectToErrorPage("此栏目不能添加子栏目！");
@@ -79,12 +79,12 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             CacAttributes.SiteInfo = SiteInfo;
-            CacAttributes.NodeId = _nodeId;
+            CacAttributes.ChannelId = _channelId;
 
             if (!IsPostBack)
             {
-                ChannelManager.AddListItems(DdlParentNodeId.Items, SiteInfo, true, true, Body.AdminName);
-                ControlUtils.SelectSingleItem(DdlParentNodeId, _nodeId.ToString());
+                ChannelManager.AddListItems(DdlParentChannelId.Items, SiteInfo, true, true, Body.AdminName);
+                ControlUtils.SelectSingleItem(DdlParentChannelId, _channelId.ToString());
 
                 DdlContentModelPluginId.Items.Add(new ListItem("<默认>", string.Empty));
                 var contentTables = PluginContentManager.GetContentModelPlugins();
@@ -111,10 +111,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                 TbImageUrl.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", SiteInfo.Additional.WebUrl));
 
-                var showPopWinString = ModalFilePathRule.GetOpenWindowString(SiteId, _nodeId, true, TbChannelFilePathRule.ClientID);
+                var showPopWinString = ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, true, TbChannelFilePathRule.ClientID);
                 BtnCreateChannelRule.Attributes.Add("onclick", showPopWinString);
 
-                showPopWinString = ModalFilePathRule.GetOpenWindowString(SiteId, _nodeId, false, TbContentFilePathRule.ClientID);
+                showPopWinString = ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, false, TbContentFilePathRule.ClientID);
                 BtnCreateContentRule.Attributes.Add("onclick", showPopWinString);
 
                 showPopWinString = ModalSelectImage.GetOpenWindowString(SiteInfo, TbImageUrl.ClientID);
@@ -147,14 +147,14 @@ namespace SiteServer.BackgroundPages.Cms
             }
         }
 
-        public void DdlParentNodeId_SelectedIndexChanged(object sender, EventArgs e)
+        public void DdlParentChannelId_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var theNodeId = TranslateUtils.ToInt(DdlParentNodeId.SelectedValue);
-            if (theNodeId == 0)
+            var theChannelId = TranslateUtils.ToInt(DdlParentChannelId.SelectedValue);
+            if (theChannelId == 0)
             {
-                theNodeId = _nodeId;
+                theChannelId = _channelId;
             }
-            PageUtils.Redirect(GetRedirectUrl(SiteId, theNodeId, Body.GetQueryString("ReturnUrl")));
+            PageUtils.Redirect(GetRedirectUrl(SiteId, theChannelId, Body.GetQueryString("ReturnUrl")));
         }
 
         public string PreviewImageSrc
@@ -184,13 +184,13 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            int insertNodeId;
+            int insertChannelId;
             try
             {
-                var nodeId = Body.GetQueryInt("NodeID");
+                var channelId = Body.GetQueryInt("ChannelId");
                 var nodeInfo = new ChannelInfo
                 {
-                    ParentId = nodeId,
+                    ParentId = channelId,
                     ContentModelPluginId = DdlContentModelPluginId.SelectedValue,
                     ContentRelatedPluginIds =
                         ControlUtils.GetSelectedListControlValueCollection(CblContentRelatedPluginIds)
@@ -256,7 +256,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 var extendedAttributes = new ExtendedAttributes();
-                var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _nodeId);
+                var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName, relatedIdentities);
                 BackgroundInputTypeParser.SaveAttributes(extendedAttributes, SiteInfo, styleInfoList, Request.Form, null);
                 var attributes = extendedAttributes.ToNameValueCollection();
@@ -297,7 +297,7 @@ namespace SiteServer.BackgroundPages.Cms
                 nodeInfo.ContentTemplateId = DdlContentTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlContentTemplateId.SelectedValue) : 0;
 
                 nodeInfo.AddDate = DateTime.Now;
-                insertNodeId = DataProvider.ChannelDao.Insert(nodeInfo);
+                insertChannelId = DataProvider.ChannelDao.Insert(nodeInfo);
                 //栏目选择投票样式后，内容
             }
             catch (Exception ex)
@@ -307,7 +307,7 @@ namespace SiteServer.BackgroundPages.Cms
                 return;
             }
 
-            CreateManager.CreateChannel(SiteId, insertNodeId);
+            CreateManager.CreateChannel(SiteId, insertChannelId);
 
             Body.AddSiteLog(SiteId, "添加栏目", $"栏目:{TbNodeName.Text}");
 

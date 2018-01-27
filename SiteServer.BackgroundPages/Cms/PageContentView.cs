@@ -28,18 +28,18 @@ namespace SiteServer.BackgroundPages.Cms
         public Button BtnSubmit;
         public HyperLink HlPreview;
 
-        private int _nodeId;
+        private int _channelId;
         private string _tableName;
         private List<int> _relatedIdentities;
         private int _contentId;
         private string _returnUrl;
         private ContentInfo _contentInfo;
 
-        public static string GetContentViewUrl(int siteId, int nodeId, int contentId, string returnUrl)
+        public static string GetContentViewUrl(int siteId, int channelId, int contentId, string returnUrl)
         {
             return PageUtils.GetCmsUrl(siteId, nameof(PageContentView), new NameValueCollection
             {
-                {"NodeID", nodeId.ToString()},
+                {"channelId", channelId.ToString()},
                 {"ID", contentId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
@@ -49,15 +49,15 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "NodeID", "ID", "ReturnUrl");
+            PageUtils.CheckRequestParameter("siteId", "channelId", "ID", "ReturnUrl");
 
-            _nodeId = Body.GetQueryInt("NodeID");
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _nodeId);
-            _tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
+            _channelId = Body.GetQueryInt("channelId");
+            var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+            _tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
             _contentId = Body.GetQueryInt("ID");
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
 
-            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _nodeId);
+            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
 
             _contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, _contentId);
 
@@ -77,7 +77,7 @@ namespace SiteServer.BackgroundPages.Cms
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
-            LtlNodeName.Text = ChannelManager.GetChannelName(SiteId, _nodeId);
+            LtlNodeName.Text = ChannelManager.GetChannelName(SiteId, _channelId);
 
             LtlTags.Text = _contentInfo.Tags;
             if (string.IsNullOrEmpty(LtlTags.Text))
@@ -117,7 +117,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            BtnSubmit.Attributes.Add("onclick", ModalContentCheck.GetOpenWindowString(SiteInfo.Id, _nodeId, _contentId, _returnUrl));
+            BtnSubmit.Attributes.Add("onclick", ModalContentCheck.GetOpenWindowString(SiteInfo.Id, _channelId, _contentId, _returnUrl));
             HlPreview.NavigateUrl = ApiRoutePreview.GetContentUrl(SiteId, _contentInfo.ChannelId, _contentInfo.Id);
         }
 

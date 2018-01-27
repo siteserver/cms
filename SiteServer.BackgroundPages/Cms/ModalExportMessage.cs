@@ -25,15 +25,15 @@ namespace SiteServer.BackgroundPages.Cms
 
         private string _exportType;
 
-        public static string GetRedirectUrlStringToExportContent(int siteId, int nodeId,
+        public static string GetRedirectUrlStringToExportContent(int siteId, int channelId,
             string exportType, string contentIdCollection, string displayAttributes, bool isPeriods,
             string startDate, string endDate, ETriState checkedState)
         {
             return PageUtils.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
                     {
-                        {"NodeID", nodeId.ToString()},
+                        {"channelId", channelId.ToString()},
                         {"ExportType", exportType},
-                        {"ContentIDCollection", contentIdCollection},
+                        {"contentIdCollection", contentIdCollection},
                         {"DisplayAttributes", displayAttributes},
                         {"isPeriods", isPeriods.ToString()},
                         {"startDate", startDate},
@@ -100,40 +100,40 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     else if (_exportType == ExportTypeContentZip)
                     {
-                        var nodeId = Body.GetQueryInt("NodeID");
-                        var contentIdCollection = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection"));
+                        var channelId = Body.GetQueryInt("channelId");
+                        var contentIdCollection = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("contentIdCollection"));
                         var isPeriods = Body.GetQueryBool("isPeriods");
                         var startDate = Body.GetQueryString("startDate");
                         var endDate = Body.GetQueryString("endDate");
                         var checkedState = ETriStateUtils.GetEnumType(Body.GetQueryString("checkedState"));
-                        isExport = ExportContentZip(nodeId, contentIdCollection, isPeriods, startDate, endDate, checkedState, out fileName);
+                        isExport = ExportContentZip(channelId, contentIdCollection, isPeriods, startDate, endDate, checkedState, out fileName);
                     }
                     else if (_exportType == ExportTypeContentAccess)
                     {
-                        var nodeId = Body.GetQueryInt("NodeID");
-                        var contentIdCollection = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection"));
+                        var channelId = Body.GetQueryInt("channelId");
+                        var contentIdCollection = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("contentIdCollection"));
                         var displayAttributes = TranslateUtils.StringCollectionToStringList(Body.GetQueryString("DisplayAttributes"));
                         var isPeriods = Body.GetQueryBool("isPeriods");
                         var startDate = Body.GetQueryString("startDate");
                         var endDate = Body.GetQueryString("endDate");
                         var checkedState = ETriStateUtils.GetEnumType(Body.GetQueryString("checkedState"));
-                        isExport = ExportContentAccess(nodeId, contentIdCollection, displayAttributes, isPeriods, startDate, endDate, checkedState, out fileName);
+                        isExport = ExportContentAccess(channelId, contentIdCollection, displayAttributes, isPeriods, startDate, endDate, checkedState, out fileName);
                     }
                     else if (_exportType == ExportTypeContentExcel)
                     {
-                        var nodeId = Body.GetQueryInt("NodeID");
-                        var contentIdCollection = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection"));
+                        var channelId = Body.GetQueryInt("channelId");
+                        var contentIdCollection = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("contentIdCollection"));
                         var displayAttributes = TranslateUtils.StringCollectionToStringList(Body.GetQueryString("DisplayAttributes"));
                         var isPeriods = Body.GetQueryBool("isPeriods");
                         var startDate = Body.GetQueryString("startDate");
                         var endDate = Body.GetQueryString("endDate");
                         var checkedState = ETriStateUtils.GetEnumType(Body.GetQueryString("checkedState"));
-                        ExportContentExcel(nodeId, contentIdCollection, displayAttributes, isPeriods, startDate, endDate, checkedState, out fileName);
+                        ExportContentExcel(channelId, contentIdCollection, displayAttributes, isPeriods, startDate, endDate, checkedState, out fileName);
                     }
                     else if (_exportType == ExportTypeChannel)
                     {
-                        var nodeIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
-                        fileName = ExportChannel(nodeIdList);
+                        var channelIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
+                        fileName = ExportChannel(channelIdList);
                     }
                     else if (_exportType == ExportTypeSingleTableStyle)
                     {
@@ -170,36 +170,36 @@ namespace SiteServer.BackgroundPages.Cms
             return exportObject.ExportRelatedField(relatedFieldId);
         }
 
-        private bool ExportContentZip(int nodeId, List<int> contentIdArrayList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out string fileName)
+        private bool ExportContentZip(int channelId, List<int> contentIdArrayList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out string fileName)
         {
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             fileName = $"{nodeInfo.ChannelName}.zip";
             var filePath = PathUtils.GetTemporaryFilesPath(fileName);
             var exportObject = new ExportObject(SiteId);
-            return exportObject.ExportContents(filePath, nodeId, contentIdArrayList, isPeriods, dateFrom, dateTo, checkedState);
+            return exportObject.ExportContents(filePath, channelId, contentIdArrayList, isPeriods, dateFrom, dateTo, checkedState);
         }
 
-        private bool ExportContentAccess(int nodeId, List<int> contentIdArrayList, List<string> displayAttributes, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out string fileName)
+        private bool ExportContentAccess(int channelId, List<int> contentIdArrayList, List<string> displayAttributes, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out string fileName)
         {
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             fileName = $"{nodeInfo.ChannelName}.mdb";
             var filePath = PathUtils.GetTemporaryFilesPath(fileName);
             return AccessObject.CreateAccessFileForContents(filePath, SiteInfo, nodeInfo, contentIdArrayList, displayAttributes, isPeriods, dateFrom, dateTo, checkedState);
         }
 
-        private void ExportContentExcel(int nodeId, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out string fileName)
+        private void ExportContentExcel(int channelId, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out string fileName)
         {
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 
             fileName = $"{nodeInfo.ChannelName}.csv";
             var filePath = PathUtils.GetTemporaryFilesPath(fileName);
             ExcelObject.CreateExcelFileForContents(filePath, SiteInfo, nodeInfo, contentIdList, displayAttributes, isPeriods, dateFrom, dateTo, checkedState);
         }
 
-        private string ExportChannel(List<int> nodeIdList)
+        private string ExportChannel(List<int> channelIdList)
         {
             var exportObject = new ExportObject(SiteId);
-            return exportObject.ExportChannels(nodeIdList);
+            return exportObject.ExportChannels(channelIdList);
         }
 
         private string ExportSingleTableStyle(string tableName, int relatedIdentity)

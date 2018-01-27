@@ -25,14 +25,14 @@ namespace SiteServer.BackgroundPages.Controls
             builder.Append(scripts);
             if (Page.Request.QueryString["SiteId"] != null)
             {
-                var nodeIdList = DataProvider.ChannelDao.GetIdListByParentId(_siteInfo.Id, 0);
-                foreach (var nodeId in nodeIdList)
+                var channelIdList = DataProvider.ChannelDao.GetIdListByParentId(_siteInfo.Id, 0);
+                foreach (var channelId in channelIdList)
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, nodeId);
-                    var enabled = AdminUtility.IsOwningNodeId(context.AdminName, nodeInfo.Id);
+                    var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, channelId);
+                    var enabled = AdminUtility.IsOwningChannelId(context.AdminName, nodeInfo.Id);
                     if (!enabled)
                     {
-                        if (!AdminUtility.IsHasChildOwningNodeId(context.AdminName, nodeInfo.Id)) continue;
+                        if (!AdminUtility.IsHasChildOwningChannelId(context.AdminName, nodeInfo.Id)) continue;
                     }
 
                     builder.Append(ChannelLoading.GetChannelRowHtml(_siteInfo, nodeInfo, enabled, ELoadingType.ContentTree, null, context.AdminName));

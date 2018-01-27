@@ -120,14 +120,14 @@ namespace SiteServer.BackgroundPages.Core
             return value;
         }
 
-        public static bool IsEdit(SiteInfo siteInfo, int nodeId, string administratorName)
+        public static bool IsEdit(SiteInfo siteInfo, int channelId, string administratorName)
         {
-            return AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeId, ConfigManager.Permissions.Channel.ContentEdit);
+            return AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.ContentEdit);
         }
 
-        //public static bool IsComment(SiteInfo siteInfo, int nodeId, string administratorName)
+        //public static bool IsComment(SiteInfo siteInfo, int channelId, string administratorName)
         //{
-        //    return siteInfo.Additional.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeId, ConfigManager.Permissions.Channel.CommentCheck, ConfigManager.Permissions.Channel.CommentDelete);
+        //    return siteInfo.Additional.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.CommentCheck, ConfigManager.Permissions.Channel.CommentDelete);
         //}
 
         public static string GetColumnsHeadHtml(List<TableStyleInfo> tableStyleInfoArrayList, StringCollection attributesOfDisplay, SiteInfo siteInfo)
@@ -173,8 +173,8 @@ namespace SiteServer.BackgroundPages.Core
 
             //if (isComment)
             //{
-            //    //var urlComment = PageComment.GetRedirectUrl(siteInfo.SiteId, contentInfo.NodeId, contentInfo.Id, pageUrl);
-            //    var urlComment = PageComments.GetRedirectUrl(siteInfo.Id, contentInfo.NodeId, contentInfo.Id, pageUrl);
+            //    //var urlComment = PageComment.GetRedirectUrl(siteInfo.SiteId, contentInfo.ChannelId, contentInfo.Id, pageUrl);
+            //    var urlComment = PageComments.GetRedirectUrl(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl);
             //    builder.Append(
             //        $@"<a style=""margin:0 5px"" href=""{urlComment}"">评论<span style=""color:gray"">({contentInfo
             //            .Comments})</span></a>");
@@ -218,7 +218,7 @@ namespace SiteServer.BackgroundPages.Core
         //            foreach (var link in pluginChannel.ContentLinks)
         //            {
         //                var href = PluginUtils.GetMenuContentHref(pluginId, link.Href,
-        //                    siteInfo.Id, contentInfo.NodeId, contentInfo.Id, pageUrl);
+        //                    siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl);
         //                builder.Append(
         //                    $@"<td class=""center"" width=""80""><a href=""{href}"" {(string.IsNullOrEmpty(link.Target) ? string.Empty : "target='" + link.Target + "'")}>{link.Text}</a></td>");
         //            }
@@ -227,7 +227,7 @@ namespace SiteServer.BackgroundPages.Core
 
         //    //if (modelType == EContentModelType.Photo)
         //    //{
-        //    //    var contentPhotoUploadUrl = PageContentPhotoUpload.GetRedirectUrl(siteInfo.Id, contentInfo.NodeId, contentInfo.Id, pageUrl);
+        //    //    var contentPhotoUploadUrl = PageContentPhotoUpload.GetRedirectUrl(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl);
         //    //    builder.Append(
         //    //        $@"<td class=""center"" width=""50""><a href=""{contentPhotoUploadUrl}"">图片</a><span style=""color:gray"">({contentInfo
         //    //            .Photos})</span></td>");
@@ -242,10 +242,10 @@ namespace SiteServer.BackgroundPages.Core
 
         //    if (siteInfo.Additional.IsCommentable)
         //    {
-        //        if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, contentInfo.NodeId, ConfigManager.Permissions.Channel.CommentCheck, ConfigManager.Permissions.Channel.CommentDelete))
+        //        if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, contentInfo.ChannelId, ConfigManager.Permissions.Channel.CommentCheck, ConfigManager.Permissions.Channel.CommentDelete))
         //        {
-        //            //var urlComment = PageComment.GetRedirectUrl(siteInfo.SiteId, contentInfo.NodeId, contentInfo.Id, pageUrl);
-        //            var urlComment = PageComments.GetRedirectUrl(siteInfo.Id, contentInfo.NodeId, contentInfo.Id, pageUrl);
+        //            //var urlComment = PageComment.GetRedirectUrl(siteInfo.SiteId, contentInfo.ChannelId, contentInfo.Id, pageUrl);
+        //            var urlComment = PageComments.GetRedirectUrl(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl);
         //            builder.Append(
         //                $@"<td class=""center"" width=""50""><a href=""{urlComment}"">评论</a><span style=""color:gray"">({contentInfo
         //                    .Comments})</span></td>");

@@ -303,14 +303,14 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void UpdateChannelTemplateId(int siteId, int nodeId, int channelTemplateId)
+        public static void UpdateChannelTemplateId(int siteId, int channelId, int channelTemplateId)
         {
-            DataProvider.ChannelDao.UpdateChannelTemplateId(nodeId, channelTemplateId);
+            DataProvider.ChannelDao.UpdateChannelTemplateId(channelId, channelTemplateId);
         }
 
-        public static void UpdateContentTemplateId(int siteId, int nodeId, int contentTemplateId)
+        public static void UpdateContentTemplateId(int siteId, int channelId, int contentTemplateId)
         {
-            DataProvider.ChannelDao.UpdateContentTemplateId(nodeId, contentTemplateId);
+            DataProvider.ChannelDao.UpdateContentTemplateId(channelId, contentTemplateId);
         }
 
         public static int GetIndexTempalteId(int siteId)
@@ -318,11 +318,11 @@ namespace SiteServer.CMS.Core
             return GetDefaultTemplateId(siteId, TemplateType.IndexPageTemplate);
         }
 
-        public static int GetChannelTempalteId(int siteId, int nodeId)
+        public static int GetChannelTempalteId(int siteId, int channelId)
         {
             var templateId = 0;
 
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             if (nodeInfo != null)
             {
                 templateId = nodeInfo.ChannelTemplateId;
@@ -336,11 +336,11 @@ namespace SiteServer.CMS.Core
             return templateId;
         }
 
-        public static int GetContentTempalteId(int siteId, int nodeId)
+        public static int GetContentTempalteId(int siteId, int channelId)
         {
             var templateId = 0;
 
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             if (nodeInfo != null)
             {
                 templateId = nodeInfo.ContentTemplateId;

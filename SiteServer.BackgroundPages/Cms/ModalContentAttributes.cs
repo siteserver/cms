@@ -18,35 +18,35 @@ namespace SiteServer.BackgroundPages.Cms
         protected HtmlInputHidden HihType;
         protected TextBox TbHits;
 
-        private int _nodeId;
+        private int _channelId;
         private string _tableName;
         private List<int> _idArrayList;
 
-        public static string GetOpenWindowString(int siteId, int nodeId)
+        public static string GetOpenWindowString(int siteId, int channelId)
         {
             return LayerUtils.GetOpenScriptWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(siteId, nameof(ModalContentAttributes), new NameValueCollection
             {
-                {"nodeID", nodeId.ToString()}
-            }), "ContentIDCollection", "请选择需要设置属性的内容！", 450, 350);
+                {"channelId", channelId.ToString()}
+            }), "contentIdCollection", "请选择需要设置属性的内容！", 450, 350);
         }
 
-        public static string GetOpenWindowStringWithCheckBoxValue(int siteId, int nodeId)
+        public static string GetOpenWindowStringWithCheckBoxValue(int siteId, int channelId)
         {
             return LayerUtils.GetOpenScriptWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(siteId, nameof(ModalContentAttributes), new NameValueCollection
             {
-                {"nodeID", nodeId.ToString()}
-            }), "ContentIDCollection", "请选择需要设置属性的内容！", 450, 350);
+                {"channelId", channelId.ToString()}
+            }), "contentIdCollection", "请选择需要设置属性的内容！", 450, 350);
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "NodeID");
+            PageUtils.CheckRequestParameter("siteId", "channelId");
 
-            _nodeId = Body.GetQueryInt("NodeID");
-            _tableName = ChannelManager.GetTableName(SiteInfo, _nodeId);
-            _idArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection"));
+            _channelId = Body.GetQueryInt("channelId");
+            _tableName = ChannelManager.GetTableName(SiteInfo, _channelId);
+            _idArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("contentIdCollection"));
 		}
 
         public override void Submit_OnClick(object sender, EventArgs e)

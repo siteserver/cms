@@ -40,10 +40,10 @@
             <div class="form-group form-row">
               <label class="col-sm-2 col-form-label">投稿到</label>
               <div class="col-sm-4">
-                <asp:ListBox ID="LbNodeId" SelectionMode="Multiple" Height="320" class="form-control" runat="server"></asp:ListBox>
+                <asp:ListBox ID="LbChannelId" SelectionMode="Multiple" Height="320" class="form-control" runat="server"></asp:ListBox>
               </div>
               <div class="col-sm-6">
-                <asp:RequiredFieldValidator ControlToValidate="LbNodeId" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+                <asp:RequiredFieldValidator ControlToValidate="LbChannelId" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
                 />
               </div>
             </div>

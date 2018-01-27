@@ -101,11 +101,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var taxis = nodeInfo.Taxis;
                     var isNextChannel = !StringUtils.EqualsIgnoreCase(type, TypePreviousChannel);
-                    //var siblingNodeId = DataProvider.ChannelDao.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
-                    var siblingNodeId = Node.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
-                    if (siblingNodeId != 0)
+                    //var siblingChannelId = DataProvider.ChannelDao.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
+                    var siblingChannelId = Node.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
+                    if (siblingChannelId != 0)
                     {
-                        var siblingNodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, siblingNodeId);
+                        var siblingNodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, siblingChannelId);
                         var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, siblingNodeInfo, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
@@ -115,7 +115,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                         if (string.IsNullOrEmpty(contextInfo.InnerXml))
                         {
-                            stlAnchor.InnerHtml = ChannelManager.GetChannelName(pageInfo.SiteId, siblingNodeId);
+                            stlAnchor.InnerHtml = ChannelManager.GetChannelName(pageInfo.SiteId, siblingChannelId);
                             if (wordNum > 0)
                             {
                                 stlAnchor.InnerHtml = StringUtils.MaxLengthText(stlAnchor.InnerHtml, wordNum);
@@ -123,7 +123,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         else
                         {
-                            contextInfo.ChannelId = siblingNodeId;
+                            contextInfo.ChannelId = siblingChannelId;
                             var innerBuilder = new StringBuilder(contextInfo.InnerXml);
                             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
                             stlAnchor.InnerHtml = innerBuilder.ToString();
@@ -197,13 +197,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var taxis = nodeInfo.Taxis;
                     var isNextChannel = !StringUtils.EqualsIgnoreCase(type, TypePreviousChannel);
-                    //var siblingNodeId = DataProvider.ChannelDao.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
-                    var siblingNodeId = Node.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
-                    if (siblingNodeId != 0)
+                    //var siblingChannelId = DataProvider.ChannelDao.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
+                    var siblingChannelId = Node.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
+                    if (siblingChannelId != 0)
                     {
                         isSuccess = true;
                         theContextInfo.ContextType = EContextType.Channel;
-                        theContextInfo.ChannelId = siblingNodeId;
+                        theContextInfo.ChannelId = siblingChannelId;
                     }
                 }
                 else if (type.ToLower().Equals(TypePreviousContent.ToLower()) || type.ToLower().Equals(TypeNextContent.ToLower()))

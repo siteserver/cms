@@ -205,11 +205,11 @@ namespace SiteServer.CMS.StlParser.Utility
         {
             var stlEntity = string.Empty;
             var labelList = TranslateUtils.StringCollectionToStringList(insertedLabelCollection);
-            foreach (var labelWithDisplayModeEnNameAndNodeId in labelList)
+            foreach (var labelWithDisplayModeEnNameAndChannelId in labelList)
             {
-                if (labelWithDisplayModeEnNameAndNodeId.StartsWith(stlEntityName.Substring(0, stlEntityName.Length - 1)))
+                if (labelWithDisplayModeEnNameAndChannelId.StartsWith(stlEntityName.Substring(0, stlEntityName.Length - 1)))
                 {
-                    stlEntity = labelWithDisplayModeEnNameAndNodeId;
+                    stlEntity = labelWithDisplayModeEnNameAndChannelId;
                     break;
                 }
             }
@@ -219,12 +219,12 @@ namespace SiteServer.CMS.StlParser.Utility
         public static string GetStlElement(string stlElementName, List<string> labelList)
         {
             var stlElement = string.Empty;
-            foreach (var labelWithDisplayModeEnNameAndNodeId in labelList)
+            foreach (var labelWithDisplayModeEnNameAndChannelId in labelList)
             {
-                if (labelWithDisplayModeEnNameAndNodeId.ToLower().StartsWith($"<{stlElementName.ToLower()} ") || labelWithDisplayModeEnNameAndNodeId.ToLower().StartsWith(
+                if (labelWithDisplayModeEnNameAndChannelId.ToLower().StartsWith($"<{stlElementName.ToLower()} ") || labelWithDisplayModeEnNameAndChannelId.ToLower().StartsWith(
                         $"<{stlElementName.ToLower()}>"))
                 {
-                    stlElement = labelWithDisplayModeEnNameAndNodeId;
+                    stlElement = labelWithDisplayModeEnNameAndChannelId;
                     break;
                 }
             }

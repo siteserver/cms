@@ -19,8 +19,8 @@
             <div class="col-4">
 
               <div class="form-row">
-                <label for="LbNodeId">栏目列表</label>
-                <asp:ListBox ID="LbNodeId" class="form-control" SelectionMode="Multiple" Rows="25" runat="server"></asp:ListBox>
+                <label for="LbChannelId">栏目列表</label>
+                <asp:ListBox ID="LbChannelId" class="form-control" SelectionMode="Multiple" Rows="25" runat="server"></asp:ListBox>
               </div>
             </div>
             <div class="col-1 text-center" style="padding-top: 200px;">

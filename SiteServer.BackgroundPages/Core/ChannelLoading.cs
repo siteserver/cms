@@ -44,14 +44,14 @@ namespace SiteServer.BackgroundPages.Core
                         var urlSubtract = PageUtils.GetCmsUrl(nodeInfo.SiteId, nameof(PageChannel), new NameValueCollection
                         {
                             {"Subtract", true.ToString()},
-                            {"NodeID", nodeInfo.Id.ToString()}
+                            {"channelId", nodeInfo.Id.ToString()}
                         });
                         upLink =
                             $@"<a href=""{urlSubtract}""><img src=""../Pic/icon/up.gif"" border=""0"" alt=""上升"" /></a>";
                         var urlAdd = PageUtils.GetCmsUrl(nodeInfo.SiteId, nameof(PageChannel), new NameValueCollection
                         {
                             {"Add", true.ToString()},
-                            {"NodeID", nodeInfo.Id.ToString()}
+                            {"channelId", nodeInfo.Id.ToString()}
                         });
                         downLink =
                             $@"<a href=""{urlAdd}""><img src=""../Pic/icon/down.gif"" border=""0"" alt=""下降"" /></a>";
@@ -125,10 +125,10 @@ namespace SiteServer.BackgroundPages.Core
                 if (nodeInfo.Additional.ToNameValueCollection().Count > 0)
                 {
                     var nodeNameBuilder = new StringBuilder();
-                    var nodeIdList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.CreateChannelIDsIfContentChanged);
-                    foreach (var theNodeId in nodeIdList)
+                    var channelIdList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.CreateChannelIDsIfContentChanged);
+                    foreach (var theChannelId in channelIdList)
                     {
-                        var theNodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, theNodeId);
+                        var theNodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, theChannelId);
                         if (theNodeInfo != null)
                         {
                             nodeNameBuilder.Append(theNodeInfo.ChannelName).Append(",");
@@ -186,21 +186,21 @@ namespace SiteServer.BackgroundPages.Core
             return NodeTreeItem.GetScript(siteInfo, loadingType, additional);
         }
 
-        public static string GetScriptOnLoad(int siteId, int currentNodeId)
+        public static string GetScriptOnLoad(int siteId, int currentChannelId)
         {
-            if (currentNodeId == 0 || currentNodeId == siteId) return string.Empty;
+            if (currentChannelId == 0 || currentChannelId == siteId) return string.Empty;
 
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, currentNodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(siteId, currentChannelId);
             if (nodeInfo == null) return string.Empty;
 
             string path;
             if (nodeInfo.ParentId == siteId)
             {
-                path = currentNodeId.ToString();
+                path = currentChannelId.ToString();
             }
             else
             {
-                path = nodeInfo.ParentsPath.Substring(nodeInfo.ParentsPath.IndexOf(",", StringComparison.Ordinal) + 1) + "," + currentNodeId;
+                path = nodeInfo.ParentsPath.Substring(nodeInfo.ParentsPath.IndexOf(",", StringComparison.Ordinal) + 1) + "," + currentChannelId;
             }
             return NodeTreeItem.GetScriptOnLoad(path);
         }

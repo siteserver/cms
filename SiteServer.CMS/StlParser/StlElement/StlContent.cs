@@ -183,11 +183,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0 && contentInfo.GetString(ContentAttribute.TranslateContentType) == ETranslateContentType.Reference.ToString())
                 {
-                    var targetNodeId = contentInfo.SourceId;
-                    //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetNodeId);
-                    var targetSiteId = Node.GetSiteId(targetNodeId);
+                    var targetChannelId = contentInfo.SourceId;
+                    //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
+                    var targetSiteId = Node.GetSiteId(targetChannelId);
                     var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
-                    var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetNodeId);
+                    var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
                     var tableName = ChannelManager.GetTableName(targetSiteInfo, targetNodeInfo);
                     //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);

@@ -34,7 +34,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return PageUtility.GetSiteUrlByPhysicalPath(siteInfo, physicalPath, isLocal);
         }
 
-        public static string GetUrlInContentPage(string type, SiteInfo siteInfo, int nodeId, int contentId, int index, int currentPageIndex, int pageCount, bool isLocal)
+        public static string GetUrlInContentPage(string type, SiteInfo siteInfo, int channelId, int contentId, int index, int currentPageIndex, int pageCount, bool isLocal)
         {
             var pageIndex = 0;
             if (type.ToLower().Equals(StlPageItem.TypeFirstPage.ToLower()))//首页
@@ -58,7 +58,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 pageIndex = index - 1;
             }
 
-            var physicalPath = PathUtility.GetContentPageFilePath(siteInfo, nodeId, contentId, pageIndex);
+            var physicalPath = PathUtility.GetContentPageFilePath(siteInfo, channelId, contentId, pageIndex);
             return PageUtility.GetSiteUrlByPhysicalPath(siteInfo, physicalPath, isLocal);
         }
 
@@ -94,7 +94,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return clickString;
         }
 
-        public static string GetJsMethodInDynamicPage(string type, SiteInfo siteInfo, int nodeId, int contentId, string pageUrl, int index, int currentPageIndex, int pageCount, bool isPageRefresh, string ajaxDivId, bool isLocal)
+        public static string GetJsMethodInDynamicPage(string type, SiteInfo siteInfo, int channelId, int contentId, string pageUrl, int index, int currentPageIndex, int pageCount, bool isPageRefresh, string ajaxDivId, bool isLocal)
         {
             var jsMethod = string.Empty;
             var pageIndex = 0;
@@ -177,7 +177,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 }
                 else
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, nodeId);
+                    var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
                     var redirectUrl = contentId > 0 ? PathUtility.GetContentPageFilePath(siteInfo, nodeInfo.Id, contentId, pageIndex) : PathUtility.GetChannelPageFilePath(siteInfo, nodeInfo.Id, pageIndex);
                     redirectUrl = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, redirectUrl, isLocal);
                     jsMethod = $"window.location.href='{redirectUrl}';";

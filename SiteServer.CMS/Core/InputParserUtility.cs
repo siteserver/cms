@@ -315,20 +315,20 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static string GetFileHtmlWithCount(SiteInfo siteInfo, int nodeId, int contentId, string fileUrl, Dictionary<string, string> attributes, string innerXml, bool isStlEntity)
+        public static string GetFileHtmlWithCount(SiteInfo siteInfo, int channelId, int contentId, string fileUrl, Dictionary<string, string> attributes, string innerXml, bool isStlEntity)
         {
             var retval = string.Empty;
             if (!string.IsNullOrEmpty(fileUrl))
             {
                 if (isStlEntity)
                 {
-                    retval = ApiRouteActionsDownload.GetUrl(PageUtility.OuterApiUrl, siteInfo.Id, nodeId, contentId, fileUrl);
+                    retval = ApiRouteActionsDownload.GetUrl(PageUtility.OuterApiUrl, siteInfo.Id, channelId, contentId, fileUrl);
                 }
                 else
                 {
                     var stlAnchor = new HtmlAnchor();
                     ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                    stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(PageUtility.OuterApiUrl, siteInfo.Id, nodeId, contentId, fileUrl);
+                    stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(PageUtility.OuterApiUrl, siteInfo.Id, channelId, contentId, fileUrl);
                     stlAnchor.InnerHtml = string.IsNullOrEmpty(innerXml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerXml;
 
                     retval = ControlUtils.GetControlRenderHtml(stlAnchor);

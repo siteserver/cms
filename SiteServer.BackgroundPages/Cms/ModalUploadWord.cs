@@ -22,15 +22,15 @@ namespace SiteServer.BackgroundPages.Cms
         public CheckBox CbIsClearImages;
         public DropDownList DdlContentLevel;
 
-        private ChannelInfo _nodeInfo;
+        private ChannelInfo _channelInfo;
         private string _returnUrl;
 
-        public static string GetOpenWindowString(int siteId, int nodeId, string returnUrl)
+        public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
         {
             return LayerUtils.GetOpenScript("批量导入Word文件",
                 PageUtils.GetCmsUrl(siteId, nameof(ModalUploadWord), new NameValueCollection
                 {
-                    {"nodeID", nodeId.ToString()},
+                    {"channelId", channelId.ToString()},
                     {"returnUrl", returnUrl}
                 }), 600, 400);
         }
@@ -45,15 +45,15 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
-            var nodeId = int.Parse(Body.GetQueryString("NodeID"));
-            _nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
+            var channelId = int.Parse(Body.GetQueryString("channelId"));
+            _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             _returnUrl = Body.GetQueryString("ReturnUrl");
 
             if (IsPostBack) return;
 
             int checkedLevel;
             var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, SiteInfo, SiteId, out checkedLevel);
-            CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, _nodeInfo.Id, null, isChecked, checkedLevel);
+            CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, _channelInfo.Id, null, isChecked, checkedLevel);
             ControlUtils.SelectSingleItem(DdlContentLevel, CheckManager.LevelInt.CaoGao.ToString());
         }
 
@@ -65,15 +65,15 @@ namespace SiteServer.BackgroundPages.Cms
             if (fileCount == 1)
             {
                 var fileName = Request.Form["fileName_1"];
-                var redirectUrl = WebUtils.GetContentAddUploadWordUrl(SiteId, _nodeInfo, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue), fileName, _returnUrl);
+                var redirectUrl = WebUtils.GetContentAddUploadWordUrl(SiteId, _channelInfo, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue), fileName, _returnUrl);
                 LayerUtils.CloseAndRedirect(Page, redirectUrl);
 
                 return;
             }
             if (fileCount > 1)
             {
-                var tableName = ChannelManager.GetTableName(SiteInfo, _nodeInfo);
-                var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _nodeInfo.Id);
+                var tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
+                var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelInfo.Id);
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
 
                 for (var index = 1; index <= fileCount; index++)
@@ -89,7 +89,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                             BackgroundInputTypeParser.SaveAttributes(contentInfo, SiteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributesLowercase);
 
-                            contentInfo.ChannelId = _nodeInfo.Id;
+                            contentInfo.ChannelId = _channelInfo.Id;
                             contentInfo.SiteId = SiteId;
                             contentInfo.AddUserName = Body.AdminName;
                             contentInfo.AddDate = DateTime.Now;
@@ -103,7 +103,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                             if (contentInfo.IsChecked)
                             {
-                                CreateManager.CreateContentAndTrigger(SiteId, _nodeInfo.Id, contentInfo.Id);
+                                CreateManager.CreateContentAndTrigger(SiteId, _channelInfo.Id, contentInfo.Id);
                             }
                         }
                     }

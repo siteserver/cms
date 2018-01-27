@@ -33,7 +33,7 @@
           <div class="form-group form-row">
             <label class="col-2 col-form-label text-right">选择可跨站转发的栏目</label>
             <div class="col-5">
-              <asp:ListBox ID="LbNodeId" class="form-control" SelectionMode="Multiple" Rows="12" runat="server"></asp:ListBox>
+              <asp:ListBox ID="LbChannelId" class="form-control" SelectionMode="Multiple" Rows="12" runat="server"></asp:ListBox>
             </div>
             <div class="col-5"></div>
           </div>

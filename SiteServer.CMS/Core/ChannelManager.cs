@@ -81,11 +81,11 @@ namespace SiteServer.CMS.Core
             Node.ClearCache();
         }
 
-        public static ChannelInfo GetChannelInfo(int siteId, int nodeId)
+        public static ChannelInfo GetChannelInfo(int siteId, int channelId)
         {
             ChannelInfo nodeInfo = null;
             var dict = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
-            dict?.TryGetValue(nodeId, out nodeInfo);
+            dict?.TryGetValue(channelId, out nodeInfo);
             return nodeInfo;
         }
 
@@ -98,33 +98,33 @@ namespace SiteServer.CMS.Core
         public static List<int> GetChannelIdList(int siteId)
         {
             var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
-            return dic.Keys.Where(nodeId => nodeId > 0).ToList();
+            return dic.Keys.Where(channelId => channelId > 0).ToList();
         }
 
-        public static bool IsExists(int siteId, int nodeId)
+        public static bool IsExists(int siteId, int channelId)
         {
-            var nodeInfo = GetChannelInfo(siteId, nodeId);
+            var nodeInfo = GetChannelInfo(siteId, channelId);
             return nodeInfo != null;
         }
 
-        public static bool IsExists(int nodeId)
+        public static bool IsExists(int channelId)
         {
             var list = SiteManager.GetSiteIdList();
             foreach (var siteId in list)
             {
-                var nodeInfo = GetChannelInfo(siteId, nodeId);
+                var nodeInfo = GetChannelInfo(siteId, channelId);
                 if (nodeInfo != null) return true;
             }
 
             return false;
         }
 
-        public static int GetChannelIdByParentsCount(int siteId, int nodeId, int parentsCount)
+        public static int GetChannelIdByParentsCount(int siteId, int channelId, int parentsCount)
         {
             if (parentsCount == 0) return siteId;
-            if (nodeId == 0 || nodeId == siteId) return siteId;
+            if (channelId == 0 || channelId == siteId) return siteId;
 
-            var nodeInfo = GetChannelInfo(siteId, nodeId);
+            var nodeInfo = GetChannelInfo(siteId, channelId);
             if (nodeInfo != null)
             {
                 return nodeInfo.ParentsCount == parentsCount ? nodeInfo.Id : GetChannelIdByParentsCount(siteId, nodeInfo.ParentId, parentsCount);
@@ -132,9 +132,9 @@ namespace SiteServer.CMS.Core
             return siteId;
         }
 
-        public static string GetTableName(SiteInfo siteInfo, int nodeId)
+        public static string GetTableName(SiteInfo siteInfo, int channelId)
         {
-            return GetTableName(siteInfo, GetChannelInfo(siteInfo.Id, nodeId));
+            return GetTableName(siteInfo, GetChannelInfo(siteInfo.Id, channelId));
         }
 
         public static string GetTableName(SiteInfo siteInfo, ChannelInfo nodeInfo)
@@ -157,9 +157,9 @@ namespace SiteServer.CMS.Core
             return tableName;
         }
 
-        //public static ETableStyle GetTableStyle(SiteInfo siteInfo, int nodeId)
+        //public static ETableStyle GetTableStyle(SiteInfo siteInfo, int channelId)
         //{
-        //    return GetTableStyle(siteInfo, GetChannelInfo(siteInfo.Id, nodeId));
+        //    return GetTableStyle(siteInfo, GetChannelInfo(siteInfo.Id, channelId));
         //}
 
         //public static ETableStyle GetTableStyle(SiteInfo siteInfo, NodeInfo nodeInfo)
@@ -215,10 +215,10 @@ namespace SiteServer.CMS.Core
             return imageHtml;
         }
 
-        public static DateTime GetAddDate(int siteId, int nodeId)
+        public static DateTime GetAddDate(int siteId, int channelId)
         {
             var retval = DateTime.MinValue;
-            var nodeInfo = GetChannelInfo(siteId, nodeId);
+            var nodeInfo = GetChannelInfo(siteId, channelId);
             if (nodeInfo != null)
             {
                 retval = nodeInfo.AddDate;
@@ -226,10 +226,10 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static int GetParentId(int siteId, int nodeId)
+        public static int GetParentId(int siteId, int channelId)
         {
             var retval = 0;
-            var nodeInfo = GetChannelInfo(siteId, nodeId);
+            var nodeInfo = GetChannelInfo(siteId, channelId);
             if (nodeInfo != null)
             {
                 retval = nodeInfo.ParentId;
@@ -237,10 +237,10 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static string GetParentsPath(int siteId, int nodeId)
+        public static string GetParentsPath(int siteId, int channelId)
         {
             var retval = string.Empty;
-            var nodeInfo = GetChannelInfo(siteId, nodeId);
+            var nodeInfo = GetChannelInfo(siteId, channelId);
             if (nodeInfo != null)
             {
                 retval = nodeInfo.ParentsPath;
@@ -248,16 +248,16 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static int GetTopLevel(int siteId, int nodeId)
+        public static int GetTopLevel(int siteId, int channelId)
         {
-            var parentsPath = GetParentsPath(siteId, nodeId);
+            var parentsPath = GetParentsPath(siteId, channelId);
             return string.IsNullOrEmpty(parentsPath) ? 0 : parentsPath.Split(',').Length;
         }
 
-        public static string GetChannelName(int siteId, int nodeId)
+        public static string GetChannelName(int siteId, int channelId)
         {
             var retval = string.Empty;
-            var nodeInfo = GetChannelInfo(siteId, nodeId);
+            var nodeInfo = GetChannelInfo(siteId, channelId);
             if (nodeInfo != null)
             {
                 retval = nodeInfo.ChannelName;
@@ -265,29 +265,29 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static string GetChannelNameNavigation(int siteId, int nodeId)
+        public static string GetChannelNameNavigation(int siteId, int channelId)
         {
             var nodeNameList = new List<string>();
 
-            if (nodeId == 0) nodeId = siteId;
+            if (channelId == 0) channelId = siteId;
 
-            if (nodeId == siteId)
+            if (channelId == siteId)
             {
                 var nodeInfo = GetChannelInfo(siteId, siteId);
                 return nodeInfo.ChannelName;
             }
-            var parentsPath = GetParentsPath(siteId, nodeId);
-            var nodeIdList = new List<int>();
+            var parentsPath = GetParentsPath(siteId, channelId);
+            var channelIdList = new List<int>();
             if (!string.IsNullOrEmpty(parentsPath))
             {
-                nodeIdList = TranslateUtils.StringCollectionToIntList(parentsPath);
+                channelIdList = TranslateUtils.StringCollectionToIntList(parentsPath);
             }
-            nodeIdList.Add(nodeId);
-            nodeIdList.Remove(siteId);
+            channelIdList.Add(channelId);
+            channelIdList.Remove(siteId);
 
-            foreach (var theNodeId in nodeIdList)
+            foreach (var theChannelId in channelIdList)
             {
-                var nodeInfo = GetChannelInfo(siteId, theNodeId);
+                var nodeInfo = GetChannelInfo(siteId, theChannelId);
                 if (nodeInfo != null)
                 {
                     nodeNameList.Add(nodeInfo.ChannelName);
@@ -302,18 +302,18 @@ namespace SiteServer.CMS.Core
             var list = DataProvider.ChannelDao.GetIdListBySiteId(siteInfo.Id);
             var nodeCount = list.Count;
             var isLastNodeArray = new bool[nodeCount];
-            foreach (var nodeId in list)
+            foreach (var channelId in list)
             {
                 var enabled = true;
                 if (isSeeOwning)
                 {
-                    enabled = AdminUtility.IsOwningNodeId(administratorName, nodeId);
+                    enabled = AdminUtility.IsOwningChannelId(administratorName, channelId);
                     if (!enabled)
                     {
-                        if (!AdminUtility.IsHasChildOwningNodeId(administratorName, nodeId)) continue;
+                        if (!AdminUtility.IsHasChildOwningChannelId(administratorName, channelId)) continue;
                     }
                 }
-                var nodeInfo = GetChannelInfo(siteInfo.Id, nodeId);
+                var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
 
                 var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
                 if (!enabled)
@@ -329,18 +329,18 @@ namespace SiteServer.CMS.Core
             var list = DataProvider.ChannelDao.GetIdListBySiteId(siteInfo.Id);
             var nodeCount = list.Count;
             var isLastNodeArray = new bool[nodeCount];
-            foreach (var nodeId in list)
+            foreach (var channelId in list)
             {
                 var enabled = true;
                 if (isSeeOwning)
                 {
-                    enabled = AdminUtility.IsOwningNodeId(administratorName, nodeId);
+                    enabled = AdminUtility.IsOwningChannelId(administratorName, channelId);
                     if (!enabled)
                     {
-                        if (!AdminUtility.IsHasChildOwningNodeId(administratorName, nodeId)) continue;
+                        if (!AdminUtility.IsHasChildOwningChannelId(administratorName, channelId)) continue;
                     }
                 }
-                var nodeInfo = GetChannelInfo(siteInfo.Id, nodeId);
+                var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
 
                 var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
                 if (!enabled)
@@ -360,15 +360,15 @@ namespace SiteServer.CMS.Core
             var list = DataProvider.ChannelDao.GetIdListBySiteId(siteInfo.Id);
             var nodeCount = list.Count;
             var isLastNodeArray = new bool[nodeCount];
-            foreach (var nodeId in list)
+            foreach (var channelId in list)
             {
                 var enabled = true;
                 if (isSeeOwning)
                 {
-                    enabled = AdminUtility.IsOwningNodeId(administratorName, nodeId);
+                    enabled = AdminUtility.IsOwningChannelId(administratorName, channelId);
                 }
 
-                var nodeInfo = GetChannelInfo(siteInfo.Id, nodeId);
+                var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
                 if (enabled)
                 {
                     if (nodeInfo.Additional.IsContentAddable == false) enabled = false;
@@ -394,15 +394,15 @@ namespace SiteServer.CMS.Core
             var list = DataProvider.ChannelDao.GetIdListBySiteId(siteInfo.Id);
             var nodeCount = list.Count;
             var isLastNodeArray = new bool[nodeCount];
-            foreach (var nodeId in list)
+            foreach (var channelId in list)
             {
                 var enabled = true;
                 if (isSeeOwning)
                 {
-                    enabled = AdminUtility.IsOwningNodeId(administratorName, nodeId);
+                    enabled = AdminUtility.IsOwningChannelId(administratorName, channelId);
                 }
 
-                var nodeInfo = GetChannelInfo(siteInfo.Id, nodeId);
+                var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
 
                 if (!enabled)
                 {
@@ -444,11 +444,11 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static string GetContentAttributesOfDisplay(int siteId, int nodeId)
+        public static string GetContentAttributesOfDisplay(int siteId, int channelId)
         {
-            var nodeInfo = GetChannelInfo(siteId, nodeId);
+            var nodeInfo = GetChannelInfo(siteId, channelId);
             if (nodeInfo == null) return string.Empty;
-            if (siteId != nodeId && string.IsNullOrEmpty(nodeInfo.Additional.ContentAttributesOfDisplay))
+            if (siteId != channelId && string.IsNullOrEmpty(nodeInfo.Additional.ContentAttributesOfDisplay))
             {
                 return GetContentAttributesOfDisplay(siteId, nodeInfo.ParentId);
             }

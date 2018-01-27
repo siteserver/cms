@@ -12,9 +12,16 @@
       <form class="m-l-15 m-r-15" runat="server">
 
         <div class="card-box">
-          <ul class="nav nav-pills">
-            <asp:Literal id="LtlNav" runat="server" />
-          </ul>
+          <div class="row">
+            <div class="col-8">
+              <ul class="nav nav-pills">
+                <asp:Literal id="LtlNav" runat="server" />
+              </ul>
+            </div>
+            <div class="col-4">
+              <asp:Button onClick="BtnReload_Click" class="btn btn-primary float-right btn-md" Text="重新加载所有插件" runat="server" />
+            </div>
+          </div>
         </div>
 
         <ctrl:alerts runat="server" />

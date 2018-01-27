@@ -16,10 +16,10 @@ namespace SiteServer.CMS.StlParser.Cache
             StlCacheUtils.ClearCache(nameof(Node));
         }
 
-        public static int GetSiteId(int nodeId)
+        public static int GetSiteId(int channelId)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Node), nameof(GetSiteId),
-                    nodeId.ToString());
+                    channelId.ToString());
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
 
@@ -28,7 +28,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetIntCache(cacheKey);
                 if (retval == -1)
                 {
-                    retval = DataProvider.ChannelDao.GetSiteId(nodeId);
+                    retval = DataProvider.ChannelDao.GetSiteId(channelId);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -36,10 +36,10 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static int GetSequence(int siteId, int nodeId)
+        public static int GetSequence(int siteId, int channelId)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Node), nameof(GetSequence),
-                siteId.ToString(), nodeId.ToString());
+                siteId.ToString(), channelId.ToString());
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
 
@@ -48,7 +48,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetIntCache(cacheKey);
                 if (retval == -1)
                 {
-                    retval = DataProvider.ChannelDao.GetSequence(siteId, nodeId);
+                    retval = DataProvider.ChannelDao.GetSequence(siteId, channelId);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -56,10 +56,10 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static List<int> GetIdListByScopeType(int nodeId, int childrenCount, EScopeType scope, string group, string groupNot)
+        public static List<int> GetIdListByScopeType(int channelId, int childrenCount, EScopeType scope, string group, string groupNot)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Node), nameof(GetIdListByScopeType),
-                       nodeId.ToString(), childrenCount.ToString(), EScopeTypeUtils.GetValue(scope), group, groupNot);
+                       channelId.ToString(), childrenCount.ToString(), EScopeTypeUtils.GetValue(scope), group, groupNot);
             var retval = StlCacheUtils.GetCache<List<int>>(cacheKey);
             if (retval != null) return retval;
 
@@ -68,7 +68,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<List<int>>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.ChannelDao.GetIdListByScopeType(nodeId, childrenCount, scope, group, groupNot, string.Empty);
+                    retval = DataProvider.ChannelDao.GetIdListByScopeType(channelId, childrenCount, scope, group, groupNot, string.Empty);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -96,10 +96,10 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static DataSet GetStlDataSet(List<int> nodeIdList, int startNum, int totalNum, string whereString, string orderByString)
+        public static DataSet GetStlDataSet(List<int> channelIdList, int startNum, int totalNum, string whereString, string orderByString)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Node), nameof(GetStlDataSet),
-                       TranslateUtils.ObjectCollectionToString(nodeIdList), startNum.ToString(), totalNum.ToString(), whereString, orderByString);
+                       TranslateUtils.ObjectCollectionToString(channelIdList), startNum.ToString(), totalNum.ToString(), whereString, orderByString);
             var retval = StlCacheUtils.GetCache<DataSet>(cacheKey);
             if (retval != null) return retval;
 
@@ -108,7 +108,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<DataSet>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.ChannelDao.GetStlDataSet(nodeIdList, startNum, totalNum, whereString, orderByString);
+                    retval = DataProvider.ChannelDao.GetStlDataSet(channelIdList, startNum, totalNum, whereString, orderByString);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -220,10 +220,10 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static List<int> GetIdListByTotalNum(List<int> nodeIdList, int totalNum, string orderByString, string whereString)
+        public static List<int> GetIdListByTotalNum(List<int> channelIdList, int totalNum, string orderByString, string whereString)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Node), nameof(GetIdListByTotalNum),
-                       TranslateUtils.ObjectCollectionToString(nodeIdList), totalNum.ToString(), orderByString, whereString);
+                       TranslateUtils.ObjectCollectionToString(channelIdList), totalNum.ToString(), orderByString, whereString);
             var retval = StlCacheUtils.GetCache<List<int>>(cacheKey);
             if (retval != null) return retval;
 
@@ -232,7 +232,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<List<int>>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.ChannelDao.GetIdListByTotalNum(nodeIdList, totalNum, orderByString, whereString);
+                    retval = DataProvider.ChannelDao.GetIdListByTotalNum(channelIdList, totalNum, orderByString, whereString);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -240,10 +240,10 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static ChannelInfo GetChannelInfoByLastAddDate(int nodeId)
+        public static ChannelInfo GetChannelInfoByLastAddDate(int channelId)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Node), nameof(GetChannelInfoByLastAddDate),
-                    nodeId.ToString());
+                    channelId.ToString());
             var retval = StlCacheUtils.GetCache<ChannelInfo>(cacheKey);
             if (retval != null) return retval;
 
@@ -252,7 +252,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<ChannelInfo>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.ChannelDao.GetChannelInfoByLastAddDate(nodeId);
+                    retval = DataProvider.ChannelDao.GetChannelInfoByLastAddDate(channelId);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -260,10 +260,10 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static ChannelInfo GetChannelInfoByTaxis(int nodeId)
+        public static ChannelInfo GetChannelInfoByTaxis(int channelId)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Node), nameof(GetChannelInfoByTaxis),
-                    nodeId.ToString());
+                    channelId.ToString());
             var retval = StlCacheUtils.GetCache<ChannelInfo>(cacheKey);
             if (retval != null) return retval;
 
@@ -272,7 +272,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<ChannelInfo>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.ChannelDao.GetChannelInfoByTaxis(nodeId);
+                    retval = DataProvider.ChannelDao.GetChannelInfoByTaxis(channelId);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }

@@ -21,7 +21,7 @@
           <div class="form-group form-row">
             <label class="col-sm-2 col-form-label text-right">父栏目</label>
             <div class="col-sm-4">
-              <asp:DropDownList ID="DdlParentNodeId" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="DdlParentNodeId_SelectedIndexChanged"
+              <asp:DropDownList ID="DdlParentChannelId" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="DdlParentChannelId_SelectedIndexChanged"
                 runat="server"></asp:DropDownList>
             </div>
             <div class="col-sm-6"></div>

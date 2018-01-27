@@ -47,33 +47,33 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public List<int> GetChannelIdList(int siteId, string adminName)
         {
-            var nodeIdList = new List<int>();
-            if (string.IsNullOrEmpty(adminName)) return nodeIdList;
+            var channelIdList = new List<int>();
+            if (string.IsNullOrEmpty(adminName)) return channelIdList;
 
             if (AdminManager.HasChannelPermissionIsConsoleAdministrator(adminName) || AdminManager.HasChannelPermissionIsSystemAdministrator(adminName))//如果是超级管理员或站点管理员
             {
-                nodeIdList = DataProvider.ChannelDao.GetIdListBySiteId(siteId);
+                channelIdList = DataProvider.ChannelDao.GetIdListBySiteId(siteId);
             }
             else
             {
                 var ps = new ProductAdministratorWithPermissions(adminName);
-                ICollection nodeIdCollection = ps.ChannelPermissionDict.Keys;
-                foreach (int nodeId in nodeIdCollection)
+                ICollection channelIdCollection = ps.ChannelPermissionDict.Keys;
+                foreach (int channelId in channelIdCollection)
                 {
-                    var allNodeIdList = DataProvider.ChannelDao.GetIdListForDescendant(nodeId);
-                    allNodeIdList.Insert(0, nodeId);
+                    var allChannelIdList = DataProvider.ChannelDao.GetIdListForDescendant(channelId);
+                    allChannelIdList.Insert(0, channelId);
 
-                    foreach (var ownNodeId in allNodeIdList)
+                    foreach (var ownChannelId in allChannelIdList)
                     {
-                        var nodeInfo = ChannelManager.GetChannelInfo(siteId, ownNodeId);
+                        var nodeInfo = ChannelManager.GetChannelInfo(siteId, ownChannelId);
                         if (nodeInfo != null)
                         {
-                            nodeIdList.Add(nodeInfo.Id);
+                            channelIdList.Add(nodeInfo.Id);
                         }
                     }
                 }
             }
-            return nodeIdList;
+            return channelIdList;
         }
     }
 }

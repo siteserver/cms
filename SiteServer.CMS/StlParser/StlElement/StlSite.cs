@@ -80,7 +80,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             if (siteInfo == null) return string.Empty;
 
             var preSiteInfo = pageInfo.SiteInfo;
-            var prePageNodeId = pageInfo.PageNodeId;
+            var prePageChannelId = pageInfo.PageChannelId;
             var prePageContentId = pageInfo.PageContentId;
 
             pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, contextInfo);
@@ -89,7 +89,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
             var parsedContent = innerBuilder.ToString();
 
-            pageInfo.ChangeSite(preSiteInfo, prePageNodeId, prePageContentId, contextInfo);
+            pageInfo.ChangeSite(preSiteInfo, prePageChannelId, prePageContentId, contextInfo);
 
             return parsedContent;
         }

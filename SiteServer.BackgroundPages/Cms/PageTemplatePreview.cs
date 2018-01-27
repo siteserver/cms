@@ -11,7 +11,7 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public DropDownList DdlTemplateType;
         public PlaceHolder PhTemplateChannel;
-        public DropDownList DdlNodeId;
+        public DropDownList DdlChannelId;
         public TextBox TbCode;
         public Literal LtlPreview;
         public TextBox TbTemplate;
@@ -27,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
             VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
 
             TemplateTypeUtils.AddListItems(DdlTemplateType);
-            ChannelManager.AddListItems(DdlNodeId.Items, SiteInfo, false, true, Body.AdminName);
+            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, Body.AdminName);
             if (Body.IsQueryExists("fromCache"))
             {
                 TbTemplate.Text = TranslateUtils.DecryptStringBySecretKey(CacheUtils.Get<string>("SiteServer.BackgroundPages.Cms.PageTemplatePreview"));
@@ -65,7 +65,7 @@ namespace SiteServer.BackgroundPages.Cms
             var contentId = 0;
             if (templateType == TemplateType.ChannelTemplate || templateType == TemplateType.ContentTemplate)
             {
-                channelId = TranslateUtils.ToInt(DdlNodeId.SelectedValue);
+                channelId = TranslateUtils.ToInt(DdlChannelId.SelectedValue);
                 if (templateType == TemplateType.ContentTemplate)
                 {
                     var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);

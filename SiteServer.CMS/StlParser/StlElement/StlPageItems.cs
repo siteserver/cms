@@ -22,7 +22,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         };
 
         //对“翻页项容器”（stl:pageItems）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
-        public static string Parse(string stlElement, PageInfo pageInfo, int nodeId, int contentId, int currentPageIndex, int pageCount, int totalNum, EContextType contextType)
+        public static string Parse(string stlElement, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum, EContextType contextType)
         {
             pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Jquery);
             string parsedContent;
@@ -65,7 +65,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     isXmlContent = false;
                 }
 
-                parsedContent = StlPageElementParser.ParseStlPageItems(stlElement, pageInfo, nodeId, contentId, currentPageIndex, pageCount, totalNum, isXmlContent, contextType);
+                parsedContent = StlPageElementParser.ParseStlPageItems(stlElement, pageInfo, channelId, contentId, currentPageIndex, pageCount, totalNum, isXmlContent, contextType);
             }
             catch (Exception ex)
             {
@@ -75,7 +75,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             return parsedContent;
         }
 
-        public static string ParseInSearchPage(string stlElement, PageInfo pageInfo, string ajaxDivId, int nodeId, int currentPageIndex, int pageCount, int totalNum)
+        public static string ParseInSearchPage(string stlElement, PageInfo pageInfo, string ajaxDivId, int channelId, int currentPageIndex, int pageCount, int totalNum)
         {
             string parsedContent;
             try
@@ -103,7 +103,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //isXmlContent = false;
                 }
 
-                parsedContent = StlPageElementParser.ParseStlPageItemsInSearchPage(stlElement, pageInfo, ajaxDivId, nodeId, currentPageIndex, pageCount, totalNum);
+                parsedContent = StlPageElementParser.ParseStlPageItemsInSearchPage(stlElement, pageInfo, ajaxDivId, channelId, currentPageIndex, pageCount, totalNum);
             }
             catch (Exception ex)
             {
@@ -113,7 +113,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             return parsedContent;
         }
 
-        public static string ParseInDynamicPage(string stlElement, PageInfo pageInfo, string pageUrl, int nodeId, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static string ParseInDynamicPage(string stlElement, PageInfo pageInfo, string pageUrl, int channelId, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
             string parsedContent;
             try
@@ -138,7 +138,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     stlElement = stlElement.Substring(index, length);
                 }
 
-                parsedContent = StlPageElementParser.ParseStlPageItemsInDynamicPage(stlElement, pageInfo, pageUrl, nodeId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+                parsedContent = StlPageElementParser.ParseStlPageItemsInDynamicPage(stlElement, pageInfo, pageUrl, channelId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
             }
             catch (Exception ex)
             {

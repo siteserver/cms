@@ -79,7 +79,7 @@ namespace SiteServer.CMS.StlParser.Utility
                         var pageHtml = pageContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, false);
                         contentBuilder.Replace(stlPageContentsElementReplaceString, pageHtml);
 
-                        StlParserManager.ReplacePageElementsInDynamicPage(contentBuilder, pageInfo, stlElementList, pageUrl, pageInfo.PageNodeId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+                        StlParserManager.ReplacePageElementsInDynamicPage(contentBuilder, pageInfo, stlElementList, pageUrl, pageInfo.PageChannelId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
 
                         break;
                     }
@@ -103,7 +103,7 @@ namespace SiteServer.CMS.StlParser.Utility
                         var pageHtml = pageChannelsElementParser.Parse(currentPageIndex, pageCount);
                         contentBuilder.Replace(stlPageChannelsElementReplaceString, pageHtml);
 
-                        StlParserManager.ReplacePageElementsInDynamicPage(contentBuilder, pageInfo, stlElementList, pageUrl, pageInfo.PageNodeId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+                        StlParserManager.ReplacePageElementsInDynamicPage(contentBuilder, pageInfo, stlElementList, pageUrl, pageInfo.PageChannelId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
 
                         break;
                     }
@@ -127,7 +127,7 @@ namespace SiteServer.CMS.StlParser.Utility
                         var pageHtml = pageSqlContentsElementParser.Parse(currentPageIndex, pageCount);
                         contentBuilder.Replace(stlPageSqlContentsElementReplaceString, pageHtml);
 
-                        StlParserManager.ReplacePageElementsInDynamicPage(contentBuilder, pageInfo, stlElementList, pageUrl, pageInfo.PageNodeId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+                        StlParserManager.ReplacePageElementsInDynamicPage(contentBuilder, pageInfo, stlElementList, pageUrl, pageInfo.PageChannelId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
 
                         break;
                     }
@@ -138,13 +138,13 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 var pageCount = TranslateUtils.ToInt(queryString["pageCount"]);
                 var totalNum = TranslateUtils.ToInt(queryString["totalNum"]);
-                var pageContentsAjaxDivId = queryString["pageContentsAjaxDivID"];
+                var pageContentsAjaxDivId = queryString["pageContentsAjaxDivId"];
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
                     if (currentPageIndex == pageIndex)
                     {
-                        StlParserManager.ReplacePageElementsInDynamicPage(contentBuilder, pageInfo, stlElementList, pageUrl, pageInfo.PageNodeId, currentPageIndex, pageCount, totalNum, isPageRefresh, pageContentsAjaxDivId);
+                        StlParserManager.ReplacePageElementsInDynamicPage(contentBuilder, pageInfo, stlElementList, pageUrl, pageInfo.PageChannelId, currentPageIndex, pageCount, totalNum, isPageRefresh, pageContentsAjaxDivId);
 
                         break;
                     }

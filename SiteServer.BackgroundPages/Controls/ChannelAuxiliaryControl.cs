@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Controls
 
         public SiteInfo SiteInfo { get; set; }
 
-        public int NodeId { get; set; }
+        public int ChannelId { get; set; }
 
         public string AdditionalAttributes { get; set; }
 
@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Controls
 		{
             if (Attributes == null) return;
 
-            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteInfo.Id, NodeId);
+            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteInfo.Id, ChannelId);
             var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName, relatedIdentities);
 
 		    if (styleInfoList == null) return;
@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Controls
 		    foreach (var styleInfo in styleInfoList)
 		    {
 		        string extra;
-		        var value = BackgroundInputTypeParser.Parse(SiteInfo, NodeId, styleInfo, Attributes, pageScripts, out extra);
+		        var value = BackgroundInputTypeParser.Parse(SiteInfo, ChannelId, styleInfo, Attributes, pageScripts, out extra);
 
 		        if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 

@@ -6,11 +6,7 @@ using System.Data;
 using System.Web.UI.WebControls;
 using System.Drawing;
 using System.Collections.Generic;
-using System.Runtime.Serialization.Json;
-using System.IO;
 using System.Linq;
-using System.Web.Script.Serialization;
-using System.Text.RegularExpressions;
 using SiteServer.Utils.Auth;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -1067,90 +1063,6 @@ namespace SiteServer.Utils
         }
 
         #endregion
-
-        [Obsolete("use JsonSerialize")]
-        public static string ObjectToJson(object obj)
-        {
-            var retval = string.Empty;
-            try
-            {
-                var serializer = new DataContractJsonSerializer(obj.GetType());
-                var stream = new MemoryStream();
-                serializer.WriteObject(stream, obj);
-                var dataBytes = new byte[stream.Length];
-                stream.Position = 0;
-                stream.Read(dataBytes, 0, (int)stream.Length);
-                retval = Encoding.UTF8.GetString(dataBytes);
-            }
-            catch
-            {
-                // ignored
-            }
-            return retval;
-        }
-
-        [Obsolete("use JsonDeserialize")]
-        public static object JsonToObject(string jsonString, object obj)
-        {
-            object retval = null;
-            try
-            {
-                var serializer = new DataContractJsonSerializer(obj.GetType());
-                var mStream = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
-                retval = serializer.ReadObject(mStream);
-            }
-            catch
-            {
-                // ignored
-            }
-            return retval;
-        }
-
-
-        [Obsolete("use JsonDeserialize")]
-        public static T JsonToObject<T>(string jsonString)
-        {
-            var js = new JavaScriptSerializer();
-            try
-            {
-                jsonString = Regex.Replace(jsonString, @"\\/Date\((-?\d+)\)\\/", match =>
-                {
-                    var dt = new DateTime(1970, 1, 1);
-                    dt = dt.AddMilliseconds(long.Parse(match.Groups[1].Value));
-                    dt = dt.ToLocalTime();
-                    return dt.ToString("yyyy-MM-dd HH:mm:ss");
-                });
-                return js.Deserialize<T>(jsonString);
-            }
-            catch
-            {
-                return default(T);
-            }
-        }
-
-        [Obsolete("use JsonSerialize")]
-        public static string ObjectToJson<T>(T obj)
-        {
-            var js = new JavaScriptSerializer();
-            try
-            {
-                var jsonString = js.Serialize(obj);
-
-                jsonString = Regex.Replace(jsonString, @"\\/Date\((-?\d+)\)\\/", match =>
-                {
-                    var dt = new DateTime(1970, 1, 1);
-                    dt = dt.AddMilliseconds(long.Parse(match.Groups[1].Value));
-                    dt = dt.ToLocalTime();
-                    return dt.ToString("yyyy-MM-dd HH:mm:ss");
-                });
-
-                return jsonString;
-            }
-            catch
-            {
-                return string.Empty;
-            }
-        }
 
         public static string JsonSerialize(object obj)
         {

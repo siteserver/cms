@@ -138,14 +138,14 @@ namespace SiteServer.CMS.Core.Create
             if (siteId <= 0 || channelId <= 0) return;
 
             var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var nodeIdList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.CreateChannelIDsIfContentChanged);
-            if (nodeInfo.Additional.IsCreateChannelIfContentChanged && !nodeIdList.Contains(channelId))
+            var channelIdList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.CreateChannelIDsIfContentChanged);
+            if (nodeInfo.Additional.IsCreateChannelIfContentChanged && !channelIdList.Contains(channelId))
             {
-                nodeIdList.Add(channelId);
+                channelIdList.Add(channelId);
             }
-            foreach (var theNodeId in nodeIdList)
+            foreach (var theChannelId in channelIdList)
             {
-                CreateChannel(siteId, theNodeId);
+                CreateChannel(siteId, theChannelId);
             }
         }
     }

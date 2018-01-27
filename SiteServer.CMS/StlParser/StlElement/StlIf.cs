@@ -172,7 +172,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeSelfChannel))
             {
-                isSuccess = pageInfo.PageNodeId == contextInfo.ChannelId;
+                isSuccess = pageInfo.PageChannelId == contextInfo.ChannelId;
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeGroupChannel))
             {
@@ -460,7 +460,7 @@ function {functionName}(pageNum)
                 {
                     //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                     var parentId = Node.GetIdByIndexName(pageInfo.SiteId, channelIndex);
-                    if (ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageNodeId))
+                    if (ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId))
                     {
                         isIn = true;
                         break;
@@ -479,7 +479,7 @@ function {functionName}(pageNum)
                 {
                     //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                     var parentId = Node.GetIdByIndexName(pageInfo.SiteId, channelIndex);
-                    if (ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageNodeId))
+                    if (ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId))
                     {
                         isIn = true;
                         break;
@@ -494,7 +494,7 @@ function {functionName}(pageNum)
             {
                 if (string.IsNullOrEmpty(testValue))
                 {
-                    if (ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, contextInfo.ChannelId, pageInfo.PageNodeId))
+                    if (ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, contextInfo.ChannelId, pageInfo.PageChannelId))
                     {
                         isSuccess = true;
                     }
@@ -506,7 +506,7 @@ function {functionName}(pageNum)
                     {
                         //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                         var parentId = Node.GetIdByIndexName(pageInfo.SiteId, channelIndex);
-                        if (ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageNodeId))
+                        if (ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId))
                         {
                             isSuccess = true;
                             break;
@@ -529,8 +529,8 @@ function {functionName}(pageNum)
                 {
                     //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                     var parentId = Node.GetIdByIndexName(pageInfo.SiteId, channelIndex);
-                    if (parentId != pageInfo.PageNodeId &&
-                        ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageNodeId))
+                    if (parentId != pageInfo.PageChannelId &&
+                        ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId))
                     {
                         isIn = true;
                         break;
@@ -545,8 +545,8 @@ function {functionName}(pageNum)
             {
                 if (string.IsNullOrEmpty(testValue))
                 {
-                    if (contextInfo.ChannelId != pageInfo.PageNodeId &&
-                        ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, contextInfo.ChannelId, pageInfo.PageNodeId))
+                    if (contextInfo.ChannelId != pageInfo.PageChannelId &&
+                        ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, contextInfo.ChannelId, pageInfo.PageChannelId))
                     {
                         isSuccess = true;
                     }
@@ -558,8 +558,8 @@ function {functionName}(pageNum)
                     {
                         //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                         var parentId = Node.GetIdByIndexName(pageInfo.SiteId, channelIndex);
-                        if (parentId != pageInfo.PageNodeId &&
-                            ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageNodeId))
+                        if (parentId != pageInfo.PageChannelId &&
+                            ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId))
                         {
                             isSuccess = true;
                             break;
@@ -765,7 +765,7 @@ function {functionName}(pageNum)
             }
             else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.CountOfImageContents, testTypeStr))
             {
-                //var count = DataProvider.BackgroundContentDao.GetCountCheckedImage(pageInfo.SiteId, channel.NodeId);
+                //var count = DataProvider.BackgroundContentDao.GetCountCheckedImage(pageInfo.SiteId, channel.ChannelId);
                 var count = Content.GetCountCheckedImage(pageInfo.SiteId, channel.Id);
                 theValue = count.ToString();
             }

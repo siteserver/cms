@@ -270,7 +270,7 @@ namespace SiteServer.CMS.Core
 	        public const string Fail1 = "终审退稿";
 	    }
 
-	    public static void LoadContentLevelToEdit(ListControl listControl, SiteInfo siteInfo, int nodeId, ContentInfo contentInfo, bool isChecked, int checkedLevel)
+	    public static void LoadContentLevelToEdit(ListControl listControl, SiteInfo siteInfo, int channelId, ContentInfo contentInfo, bool isChecked, int checkedLevel)
 	    {
 	        var checkContentLevel = siteInfo.Additional.CheckContentLevel;
 	        if (isChecked)
@@ -283,7 +283,7 @@ namespace SiteServer.CMS.Core
 	        var isCheckable = false;
 	        if (contentInfo != null)
 	        {
-	            isCheckable = IsCheckable(siteInfo, nodeId, contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
+	            isCheckable = IsCheckable(siteInfo, channelId, contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
 	            if (isCheckable)
 	            {
 	                listItem = new ListItem(Level.NotChange, LevelInt.NotChange.ToString());
@@ -998,7 +998,7 @@ namespace SiteServer.CMS.Core
 	        return $"<span style='color:red'>{retval}</span>";
 	    }
 
-	    public static bool IsCheckable(SiteInfo siteInfo, int nodeId, bool contentIsChecked, int contentCheckLevel, bool isChecked, int checkedLevel)
+	    public static bool IsCheckable(SiteInfo siteInfo, int channelId, bool contentIsChecked, int contentCheckLevel, bool isChecked, int checkedLevel)
 	    {
 	        if (isChecked || checkedLevel >= 5)
 	        {
@@ -1048,7 +1048,7 @@ namespace SiteServer.CMS.Core
 	        return false;
 	    }
 
-	    public static KeyValuePair<bool, int> GetUserCheckLevel(string administratorName, SiteInfo siteInfo, int nodeId)
+	    public static KeyValuePair<bool, int> GetUserCheckLevel(string administratorName, SiteInfo siteInfo, int channelId)
         {
             var permissions = PermissionsManager.GetPermissions(administratorName);
             if (permissions.IsSystemAdministrator)
@@ -1060,18 +1060,18 @@ namespace SiteServer.CMS.Core
             var checkedLevel = 0;
             if (siteInfo.Additional.IsCheckContentLevel == false)
             {
-                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeId, ConfigManager.Permissions.Channel.ContentCheck))
+                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.ContentCheck))
                 {
                     isChecked = true;
                 }
             }
             else
             {
-                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeId, ConfigManager.Permissions.Channel.ContentCheckLevel5))
+                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.ContentCheckLevel5))
                 {
                     isChecked = true;
                 }
-                else if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeId, ConfigManager.Permissions.Channel.ContentCheckLevel4))
+                else if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.ContentCheckLevel4))
                 {
                     if (siteInfo.Additional.CheckContentLevel <= 4)
                     {
@@ -1082,7 +1082,7 @@ namespace SiteServer.CMS.Core
                         checkedLevel = 4;
                     }
                 }
-                else if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeId, ConfigManager.Permissions.Channel.ContentCheckLevel3))
+                else if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.ContentCheckLevel3))
                 {
                     if (siteInfo.Additional.CheckContentLevel <= 3)
                     {
@@ -1093,7 +1093,7 @@ namespace SiteServer.CMS.Core
                         checkedLevel = 3;
                     }
                 }
-                else if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeId, ConfigManager.Permissions.Channel.ContentCheckLevel2))
+                else if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.ContentCheckLevel2))
                 {
                     if (siteInfo.Additional.CheckContentLevel <= 2)
                     {
@@ -1104,7 +1104,7 @@ namespace SiteServer.CMS.Core
                         checkedLevel = 2;
                     }
                 }
-                else if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeId, ConfigManager.Permissions.Channel.ContentCheckLevel1))
+                else if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.ContentCheckLevel1))
                 {
                     if (siteInfo.Additional.CheckContentLevel <= 1)
                     {
@@ -1123,11 +1123,11 @@ namespace SiteServer.CMS.Core
             return new KeyValuePair<bool, int>(isChecked, checkedLevel);
         }
 
-        public static bool GetUserCheckLevel(string administratorName, SiteInfo siteInfo, int nodeId, out int userCheckedLevel)
+        public static bool GetUserCheckLevel(string administratorName, SiteInfo siteInfo, int channelId, out int userCheckedLevel)
         {
             var checkContentLevel = siteInfo.Additional.CheckContentLevel;
 
-            var pair = GetUserCheckLevel(administratorName, siteInfo, nodeId);
+            var pair = GetUserCheckLevel(administratorName, siteInfo, channelId);
             var isChecked = pair.Key;
             var checkedLevel = pair.Value;
             if (isChecked)

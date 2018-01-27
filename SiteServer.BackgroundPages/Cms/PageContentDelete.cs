@@ -32,16 +32,16 @@ namespace SiteServer.BackgroundPages.Cms
                 }), "IDsCollection", "IDsCollection", "请选择需要删除的内容！");
         }
 
-        public static string GetRedirectClickStringForSingleChannel(int siteId, int nodeId,
+        public static string GetRedirectClickStringForSingleChannel(int siteId, int channelId,
             bool isDeleteFromTrash, string returnUrl)
         {
             return PageUtils.GetRedirectStringWithCheckBoxValue(PageUtils.GetCmsUrl(siteId, nameof(PageContentDelete),
                 new NameValueCollection
                 {
-                    {"NodeID", nodeId.ToString()},
+                    {"channelId", channelId.ToString()},
                     {"IsDeleteFromTrash", isDeleteFromTrash.ToString()},
                     {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
-                }), "ContentIDCollection", "ContentIDCollection", "请选择需要删除的内容！");
+                }), "contentIdCollection", "contentIdCollection", "请选择需要删除的内容！");
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -53,13 +53,13 @@ namespace SiteServer.BackgroundPages.Cms
             _isDeleteFromTrash = Body.GetQueryBool("IsDeleteFromTrash");
             _idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
 
-            //if (this.nodeID > 0)
+            //if (this.channelId > 0)
             //{
-            //    this.nodeInfo = NodeManager.GetChannelInfo(base.SiteId, this.nodeID);
+            //    this.nodeInfo = NodeManager.GetChannelInfo(base.SiteId, this.channelId);
             //}
             //else
             //{
-            //    this.nodeInfo = NodeManager.GetChannelInfo(base.SiteId, -this.nodeID);
+            //    this.nodeInfo = NodeManager.GetChannelInfo(base.SiteId, -this.channelId);
             //}
             //if (this.nodeInfo != null)
             //{
@@ -69,7 +69,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             //if (this.contentID == 0)
             //{
-            //    if (!base.HasChannelPermissions(Math.Abs(this.nodeID), AppManager.CMS.Permission.Channel.ContentDelete))
+            //    if (!base.HasChannelPermissions(Math.Abs(this.channelId), AppManager.CMS.Permission.Channel.ContentDelete))
             //    {
             //        PageUtils.RedirectToErrorPage("您没有删除此栏目内容的权限！");
             //        return;
@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             //    if (contentInfo == null || !string.Equals(Body.AdminName, contentInfo.AddUserName))
             //    {
-            //        if (!base.HasChannelPermissions(Math.Abs(this.nodeID), AppManager.CMS.Permission.Channel.ContentDelete))
+            //        if (!base.HasChannelPermissions(Math.Abs(this.channelId), AppManager.CMS.Permission.Channel.ContentDelete))
             //        {
             //            PageUtils.RedirectToErrorPage("您没有删除此栏目内容的权限！");
             //            return;
@@ -92,10 +92,10 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             var builder = new StringBuilder();
-            foreach (var nodeId in _idsDictionary.Keys)
+            foreach (var channelId in _idsDictionary.Keys)
             {
-                var tableName = ChannelManager.GetTableName(SiteInfo, nodeId);
-                var contentIdList = _idsDictionary[nodeId];
+                var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                var contentIdList = _idsDictionary[channelId];
                 foreach (var contentId in contentIdList)
                 {
                     var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
@@ -126,16 +126,16 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                foreach (var nodeId in _idsDictionary.Keys)
+                foreach (var channelId in _idsDictionary.Keys)
                 {
-                    var tableName = ChannelManager.GetTableName(SiteInfo, nodeId);
-                    var contentIdList = _idsDictionary[nodeId];
+                    var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                    var contentIdList = _idsDictionary[channelId];
 
                     if (!_isDeleteFromTrash)
                     {
                         if (bool.Parse(RblRetainFiles.SelectedValue) == false)
                         {
-                            DirectoryUtility.DeleteContents(SiteInfo, nodeId, contentIdList);
+                            DirectoryUtility.DeleteContents(SiteInfo, channelId, contentIdList);
                             SuccessMessage("成功删除内容以及生成页面！");
                         }
                         else
@@ -147,13 +147,13 @@ namespace SiteServer.BackgroundPages.Cms
                         {
                             var contentId = contentIdList[0];
                             var contentTitle = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
-                            Body.AddSiteLog(SiteId, nodeId, contentId, "删除内容",
-                                $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, nodeId)},内容标题:{contentTitle}");
+                            Body.AddSiteLog(SiteId, channelId, contentId, "删除内容",
+                                $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, channelId)},内容标题:{contentTitle}");
                         }
                         else
                         {
                             Body.AddSiteLog(SiteId, "批量删除内容",
-                                $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, nodeId)},内容条数:{contentIdList.Count}");
+                                $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, channelId)},内容条数:{contentIdList.Count}");
                         }
 
                         DataProvider.ContentDao.TrashContents(SiteId, tableName, contentIdList);
@@ -170,12 +170,12 @@ namespace SiteServer.BackgroundPages.Cms
                             }
                         }
 
-                        CreateManager.CreateContentTrigger(SiteId, nodeId);
+                        CreateManager.CreateContentTrigger(SiteId, channelId);
                     }
                     else
                     {
                         SuccessMessage("成功从回收站清空内容！");
-                        DataProvider.ContentDao.DeleteContents(SiteId, tableName, contentIdList, nodeId);
+                        DataProvider.ContentDao.DeleteContents(SiteId, tableName, contentIdList, channelId);
 
                         Body.AddSiteLog(SiteId, "从回收站清空内容", $"内容条数:{contentIdList.Count}");
                     }

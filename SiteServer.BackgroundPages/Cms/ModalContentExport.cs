@@ -18,21 +18,21 @@ namespace SiteServer.BackgroundPages.Cms
         public CheckBoxList CblDisplayAttributes;
         public DropDownList DdlIsChecked;
 
-        private int _nodeId;
+        private int _channelId;
 
-        public static string GetOpenWindowString(int siteId, int nodeId)
+        public static string GetOpenWindowString(int siteId, int channelId)
         {
             return LayerUtils.GetOpenScriptWithCheckBoxValue("导出内容",
                 PageUtils.GetCmsUrl(siteId, nameof(ModalContentExport), new NameValueCollection
                 {
-                    {"NodeID", nodeId.ToString()}
-                }), "ContentIDCollection", string.Empty);
+                    {"channelId", channelId.ToString()}
+                }), "contentIdCollection", string.Empty);
         }
 
         private void LoadDisplayAttributeCheckBoxList()
         {
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _nodeId);
-            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
             var tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
             var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
             styleInfoList = ContentUtility.GetAllTableStyleInfoList(SiteInfo, styleInfoList);
@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _nodeId = Body.GetQueryInt("NodeID", SiteId);
+            _channelId = Body.GetQueryInt("channelId", SiteId);
             if (IsPostBack) return;
 
             LoadDisplayAttributeCheckBoxList();
@@ -125,7 +125,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
             var checkedState = ETriStateUtils.GetEnumType(DdlPeriods.SelectedValue);
-            var redirectUrl = ModalExportMessage.GetRedirectUrlStringToExportContent(SiteId, _nodeId, DdlExportType.SelectedValue, Body.GetQueryString("ContentIDCollection"), displayAttributes, isPeriods, startDate, endDate, checkedState);
+            var redirectUrl = ModalExportMessage.GetRedirectUrlStringToExportContent(SiteId, _channelId, DdlExportType.SelectedValue, Body.GetQueryString("contentIdCollection"), displayAttributes, isPeriods, startDate, endDate, checkedState);
             PageUtils.Redirect(redirectUrl);
 		}
 	}

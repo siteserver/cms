@@ -11,18 +11,18 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalChannelImport : BasePageCms
     {
-        protected DropDownList DdlParentNodeId;
+        protected DropDownList DdlParentChannelId;
 		public HtmlInputFile HifFile;
 		public DropDownList DdlIsOverride;
 
         private bool[] _isLastNodeArray;
 
-        public static string GetOpenWindowString(int siteId, int nodeId)
+        public static string GetOpenWindowString(int siteId, int channelId)
         {
             return LayerUtils.GetOpenScript("导入栏目",
                 PageUtils.GetCmsUrl(siteId, nameof(ModalChannelImport), new NameValueCollection
                 {
-                    {"NodeID", nodeId.ToString()}
+                    {"channelId", channelId.ToString()}
                 }), 600, 300);
         }
 
@@ -32,39 +32,39 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            var nodeId = Body.GetQueryInt("NodeID", SiteId);
-            var nodeIdList = DataProvider.ChannelDao.GetIdListBySiteId(SiteId);
-            var nodeCount = nodeIdList.Count;
+            var channelId = Body.GetQueryInt("channelId", SiteId);
+            var channelIdList = DataProvider.ChannelDao.GetIdListBySiteId(SiteId);
+            var nodeCount = channelIdList.Count;
             _isLastNodeArray = new bool[nodeCount];
-            foreach (var theNodeId in nodeIdList)
+            foreach (var theChannelId in channelIdList)
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, theNodeId);
-                var itemNodeId = nodeInfo.Id;
+                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, theChannelId);
+                var itemChannelId = nodeInfo.Id;
                 var nodeName = nodeInfo.ChannelName;
                 var parentsCount = nodeInfo.ParentsCount;
                 var isLastNode = nodeInfo.IsLastNode;
-                var value = IsOwningNodeId(itemNodeId) ? itemNodeId.ToString() : string.Empty;
+                var value = IsOwningChannelId(itemChannelId) ? itemChannelId.ToString() : string.Empty;
                 value = (nodeInfo.Additional.IsChannelAddable) ? value : string.Empty;
                 if (!string.IsNullOrEmpty(value))
                 {
-                    if (!HasChannelPermissions(theNodeId, ConfigManager.Permissions.Channel.ChannelAdd))
+                    if (!HasChannelPermissions(theChannelId, ConfigManager.Permissions.Channel.ChannelAdd))
                     {
                         value = string.Empty;
                     }
                 }
-                var listitem = new ListItem(GetTitle(itemNodeId, nodeName, parentsCount, isLastNode), value);
-                if (itemNodeId == nodeId)
+                var listitem = new ListItem(GetTitle(itemChannelId, nodeName, parentsCount, isLastNode), value);
+                if (itemChannelId == channelId)
                 {
                     listitem.Selected = true;
                 }
-                DdlParentNodeId.Items.Add(listitem);
+                DdlParentChannelId.Items.Add(listitem);
             }
         }
 
-        public string GetTitle(int nodeId, string nodeName, int parentsCount, bool isLastNode)
+        public string GetTitle(int channelId, string nodeName, int parentsCount, bool isLastNode)
         {
             var str = "";
-            if (nodeId == SiteId)
+            if (channelId == SiteId)
             {
                 isLastNode = true;
             }
@@ -103,7 +103,7 @@ namespace SiteServer.BackgroundPages.Cms
                     HifFile.PostedFile.SaveAs(localFilePath);
 
 					var importObject = new ImportObject(SiteId);
-                    importObject.ImportChannelsAndContentsByZipFile(TranslateUtils.ToInt(DdlParentNodeId.SelectedValue), localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue));
+                    importObject.ImportChannelsAndContentsByZipFile(TranslateUtils.ToInt(DdlParentChannelId.SelectedValue), localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue));
 
                     Body.AddSiteLog(SiteId, "导入栏目");
 

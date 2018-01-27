@@ -7,9 +7,9 @@
       <meta charset="utf-8">
       <!--#include file="../inc/head.html"-->
       <script language="javascript">
-        function selectChannel(nodeNames, nodeID) {
+        function selectChannel(nodeNames, channelId) {
           $('#nodeNames').html(nodeNames);
-          $('#nodeID').val(nodeID);
+          $('#channelId').val(channelId);
         }
       </script>
     </head>

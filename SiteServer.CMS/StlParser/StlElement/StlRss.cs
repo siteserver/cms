@@ -177,7 +177,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var scopeType = !string.IsNullOrEmpty(scopeTypeString) ? EScopeTypeUtils.GetEnumType(scopeTypeString) : EScopeType.All;
 
-            var channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, contextInfo.ChannelId, channelIndex, channelName);
+            var channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, contextInfo.ChannelId, channelIndex, channelName);
 
             var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
             if (string.IsNullOrEmpty(channel.Title))

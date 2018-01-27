@@ -11,7 +11,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class PageCreateContent : BasePageCms
     {
-        public ListBox LbNodeIdList;
+        public ListBox LbChannelIdList;
         public DropDownList DdlScope;
         public Button BtnDeleteAll;
 
@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
             listitem = new ListItem("2小时内更新的内容", "2Hour");
             DdlScope.Items.Add(listitem);
 
-            ChannelManager.AddListItems(LbNodeIdList.Items, SiteInfo, false, true, Body.AdminName);
+            ChannelManager.AddListItems(LbChannelIdList.Items, SiteInfo, false, true, Body.AdminName);
             BtnDeleteAll.Attributes.Add("onclick", "return confirm(\"此操作将删除所有已生成的内容页面，确定吗？\");");
         }
 
@@ -43,59 +43,59 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var nodeIdList = new List<int>();
-            var selectedNodeIdArrayList = ControlUtils.GetSelectedListControlValueArrayList(LbNodeIdList);
+            var channelIdList = new List<int>();
+            var selectedChannelIdArrayList = ControlUtils.GetSelectedListControlValueArrayList(LbChannelIdList);
 
             var tableName = SiteInfo.TableName;
 
             if (DdlScope.SelectedValue == "Month")
             {
                 var lastEditList = DataProvider.ContentDao.GetChannelIdListCheckedByLastEditDateHour(tableName, SiteId, 720);
-                foreach (var nodeId in lastEditList)
+                foreach (var channelId in lastEditList)
                 {
-                    if (selectedNodeIdArrayList.Contains(nodeId.ToString()))
+                    if (selectedChannelIdArrayList.Contains(channelId.ToString()))
                     {
-                        nodeIdList.Add(nodeId);
+                        channelIdList.Add(channelId);
                     }
                 }
             }
             else if (DdlScope.SelectedValue == "Day")
             {
                 var lastEditList = DataProvider.ContentDao.GetChannelIdListCheckedByLastEditDateHour(tableName, SiteId, 24);
-                foreach (var nodeId in lastEditList)
+                foreach (var channelId in lastEditList)
                 {
-                    if (selectedNodeIdArrayList.Contains(nodeId.ToString()))
+                    if (selectedChannelIdArrayList.Contains(channelId.ToString()))
                     {
-                        nodeIdList.Add(nodeId);
+                        channelIdList.Add(channelId);
                     }
                 }
             }
             else if (DdlScope.SelectedValue == "2Hour")
             {
                 var lastEditList = DataProvider.ContentDao.GetChannelIdListCheckedByLastEditDateHour(tableName, SiteId, 2);
-                foreach (var nodeId in lastEditList)
+                foreach (var channelId in lastEditList)
                 {
-                    if (selectedNodeIdArrayList.Contains(nodeId.ToString()))
+                    if (selectedChannelIdArrayList.Contains(channelId.ToString()))
                     {
-                        nodeIdList.Add(nodeId);
+                        channelIdList.Add(channelId);
                     }
                 }
             }
             else
             {
-                nodeIdList = TranslateUtils.StringCollectionToIntList(TranslateUtils.ObjectCollectionToString(selectedNodeIdArrayList));
+                channelIdList = TranslateUtils.StringCollectionToIntList(TranslateUtils.ObjectCollectionToString(selectedChannelIdArrayList));
             }
 
 
-            if (nodeIdList.Count == 0)
+            if (channelIdList.Count == 0)
             {
                 FailMessage("请首先选中希望生成内容页面的栏目！");
                 return;
             }
 
-            foreach (var nodeId in nodeIdList)
+            foreach (var channelId in channelIdList)
             {
-                CreateManager.CreateAllContent(SiteId, nodeId);
+                CreateManager.CreateAllContent(SiteId, channelId);
             }
 
             PageCreateStatus.Redirect(SiteId);

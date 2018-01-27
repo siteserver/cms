@@ -841,23 +841,13 @@ namespace SiteServer.Utils
         public static string GetCmsUrl(int siteId, string className, NameValueCollection queryString)
         {
             queryString = queryString ?? new NameValueCollection();
-            queryString["siteId"] = siteId.ToString();
-            return AddQueryString(GetAdminDirectoryUrl(Combine("cms", className.ToLower() + ".aspx")), queryString);
+            queryString.Remove("siteId");
+            return AddQueryString(GetAdminDirectoryUrl($"cms/{className.ToLower()}.aspx?siteId={siteId}"), queryString);
         }
 
         public static string GetAjaxUrl(string className, NameValueCollection queryString)
         {
             return AddQueryString(GetAdminDirectoryUrl(Combine("ajax", className.ToLower() + ".aspx")), queryString);
-        }
-
-        public static string GetWcmUrl(string className, NameValueCollection queryString)
-        {
-            return AddQueryString(GetAdminDirectoryUrl(Combine("wcm", className.ToLower() + ".aspx")), queryString);
-        }
-
-        public static string GetWeiXinUrl(string className, NameValueCollection queryString)
-        {
-            return AddQueryString(GetAdminDirectoryUrl(Combine("weixin", className.ToLower() + ".aspx")), queryString);
         }
 
         public static string GetUserFilesUrl(string userName, string relatedUrl)

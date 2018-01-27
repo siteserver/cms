@@ -99,7 +99,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     attributeName = attributeName.Substring(attributeName.IndexOf(".", StringComparison.Ordinal) + 1);
                 }
 
-                var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, StlDataUtility.GetNodeIdByLevel(pageInfo.SiteId, channelId, upLevel, topLevel));
+                var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, channelId, upLevel, topLevel));
 
                 if (StringUtils.EqualsIgnoreCase(ChannelId, attributeName))//栏目ID
                 {
@@ -156,7 +156,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else
                 {
-                    //var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Channel, DataProvider.ChannelDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, nodeInfo.NodeId));
+                    //var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Channel, DataProvider.ChannelDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, nodeInfo.ChannelId));
                     //parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, ",", pageInfo.SiteInfo, ETableStyle.Channel, styleInfo, string.Empty, null, string.Empty, true);
 
                     var formCollection = nodeInfo.Additional.ToNameValueCollection();

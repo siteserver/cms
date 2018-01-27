@@ -8,8 +8,8 @@
       <!--#include file="../inc/head.html"-->
       <script type="text/javascript" language="javascript">
         function selectAll(isChecked) {
-          for (var i = 0; i < document.getElementById('<%=LbNodeIdList.ClientID%>').options.length; i++) {
-            document.getElementById('<%=LbNodeIdList.ClientID%>').options[i].selected = isChecked;
+          for (var i = 0; i < document.getElementById('<%=LbChannelIdList.ClientID%>').options.length; i++) {
+            document.getElementById('<%=LbChannelIdList.ClientID%>').options[i].selected = isChecked;
           }
         }
       </script>
@@ -30,7 +30,7 @@
           <div class="form-group form-row">
             <label class="col-sm-2 col-form-label">生成选定的内容</label>
             <div class="col-sm-4">
-              <asp:ListBox ID="LbNodeIdList" SelectionMode="Multiple" Rows="19" class="form-control" runat="server"></asp:ListBox>
+              <asp:ListBox ID="LbChannelIdList" SelectionMode="Multiple" Rows="19" class="form-control" runat="server"></asp:ListBox>
             </div>
             <div class="col-sm-6">
 

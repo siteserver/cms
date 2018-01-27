@@ -99,13 +99,13 @@ namespace SiteServer.BackgroundPages
                     }
                 }
 
-                ICollection nodeIdCollection = ProductPermissionsManager.Current.ChannelPermissionDict.Keys;
-                foreach (int nodeId in nodeIdCollection)
+                ICollection channelIdCollection = ProductPermissionsManager.Current.ChannelPermissionDict.Keys;
+                foreach (int channelId in channelIdCollection)
                 {
-                    if (ChannelManager.IsAncestorOrSelf(_siteInfo.Id, _siteInfo.Id, nodeId))
+                    if (ChannelManager.IsAncestorOrSelf(_siteInfo.Id, _siteInfo.Id, channelId))
                     {
                         showSite = true;
-                        var list = ProductPermissionsManager.Current.ChannelPermissionDict[nodeId];
+                        var list = ProductPermissionsManager.Current.ChannelPermissionDict[channelId];
                         permissionList.AddRange(list);
                     }
                 }
@@ -229,11 +229,11 @@ namespace SiteServer.BackgroundPages
             }
             else
             {
-                ICollection nodeIdCollection = ProductPermissionsManager.Current.ChannelPermissionDict.Keys;
+                ICollection channelIdCollection = ProductPermissionsManager.Current.ChannelPermissionDict.Keys;
                 ICollection siteIdCollection = ProductPermissionsManager.Current.WebsitePermissionDict.Keys;
                 foreach (var siteId in siteIdList)
                 {
-                    var showSite = IsShowSite(siteId, siteIdCollection, nodeIdCollection);
+                    var showSite = IsShowSite(siteId, siteIdCollection, channelIdCollection);
                     if (showSite)
                     {
                         AddToMySystemInfoList(mySystemInfoList, parentWithChildren, siteId);
@@ -393,7 +393,7 @@ namespace SiteServer.BackgroundPages
             return builder.ToString();
         }
 
-        private static bool IsShowSite(int siteId, ICollection siteIdCollection, ICollection nodeIdCollection)
+        private static bool IsShowSite(int siteId, ICollection siteIdCollection, ICollection channelIdCollection)
         {
             foreach (int psId in siteIdCollection)
             {
@@ -402,9 +402,9 @@ namespace SiteServer.BackgroundPages
                     return true;
                 }
             }
-            foreach (int nodeId in nodeIdCollection)
+            foreach (int channelId in channelIdCollection)
             {
-                if (ChannelManager.IsAncestorOrSelf(siteId, siteId, nodeId))
+                if (ChannelManager.IsAncestorOrSelf(siteId, siteId, channelId))
                 {
                     return true;
                 }

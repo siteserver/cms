@@ -50,7 +50,7 @@ namespace SiteServer.Utils.Packaging
 
             if (Version == "$version$")
             {
-                Version = "0.0.0-debug";
+                Version = PackageUtils.VersionDev;
             }
 
             if (Version.IndexOf('.') < 0)

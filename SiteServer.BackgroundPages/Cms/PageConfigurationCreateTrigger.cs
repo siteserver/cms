@@ -12,13 +12,13 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public Repeater RptContents;
 
-        private int _currentNodeId;
+        private int _currentChannelId;
 
-        public static string GetRedirectUrl(int siteId, int nodeId)
+        public static string GetRedirectUrl(int siteId, int channelId)
         {
             return PageUtils.GetCmsUrl(siteId, nameof(PageConfigurationCreateTrigger), new NameValueCollection
             {
-                {"CurrentNodeID", nodeId.ToString()}
+                {"CurrentChannelId", channelId.ToString()}
             });
         }
 
@@ -34,10 +34,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                 ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, ELoadingType.ConfigurationCreateDetails, null));
 
-                if (Body.IsQueryExists("CurrentNodeID"))
+                if (Body.IsQueryExists("CurrentChannelId"))
                 {
-                    _currentNodeId = Body.GetQueryInt("CurrentNodeID");
-                    var onLoadScript = ChannelLoading.GetScriptOnLoad(SiteId, _currentNodeId);
+                    _currentChannelId = Body.GetQueryInt("CurrentChannelId");
+                    var onLoadScript = ChannelLoading.GetScriptOnLoad(SiteId, _currentChannelId);
                     if (!string.IsNullOrEmpty(onLoadScript))
                     {
                         ClientScriptRegisterClientScriptBlock("NodeTreeScriptOnLoad", onLoadScript);
@@ -57,14 +57,14 @@ namespace SiteServer.BackgroundPages.Cms
 
         void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            var nodeId = (int)e.Item.DataItem;
-            var enabled = IsOwningNodeId(nodeId);
+            var channelId = (int)e.Item.DataItem;
+            var enabled = IsOwningChannelId(channelId);
             if (!enabled)
             {
-                if (!IsHasChildOwningNodeId(nodeId)) e.Item.Visible = false;
+                if (!IsHasChildOwningChannelId(channelId)) e.Item.Visible = false;
             }
 
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             var ltlHtml = e.Item.FindControl("ltlHtml") as Literal;
             if (ltlHtml != null)
             {

@@ -12,15 +12,15 @@ namespace SiteServer.BackgroundPages.Cms
         public Literal LtlRules;
         public TextBox TbRule;
 
-        private int _nodeId;
+        private int _channelId;
         private bool _isChannel;
         private string _textBoxClientId = string.Empty;
 
-        public static string GetOpenWindowString(int siteId, int nodeId, bool isChannel, string textBoxclientId)
+        public static string GetOpenWindowString(int siteId, int channelId, bool isChannel, string textBoxclientId)
         {
             return LayerUtils.GetOpenScriptWithTextBoxValue(isChannel ? "栏目页文件名规则" : "内容页文件名规则", PageUtils.GetCmsUrl(siteId, nameof(ModalFilePathRule), new NameValueCollection
             {
-                {"NodeID", nodeId.ToString()},
+                {"channelId", channelId.ToString()},
                 {"IsChannel", isChannel.ToString()},
                 {"TextBoxClientID", textBoxclientId}
             }), textBoxclientId);
@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _nodeId = Body.GetQueryInt("NodeID");
+            _channelId = Body.GetQueryInt("channelId");
             _isChannel = Body.GetQueryBool("IsChannel");
             _textBoxClientId = Body.GetQueryString("TextBoxClientID");
 
@@ -53,8 +53,8 @@ namespace SiteServer.BackgroundPages.Cms
             var mod = 0;
             var count = 0;
             var entitiesDictionary = _isChannel
-                ? PathUtility.ChannelFilePathRules.GetDictionary(SiteInfo, _nodeId)
-                : PathUtility.ContentFilePathRules.GetDictionary(SiteInfo, _nodeId);
+                ? PathUtility.ChannelFilePathRules.GetDictionary(SiteInfo, _channelId)
+                : PathUtility.ContentFilePathRules.GetDictionary(SiteInfo, _channelId);
             
             foreach (string label in entitiesDictionary.Keys)
             {

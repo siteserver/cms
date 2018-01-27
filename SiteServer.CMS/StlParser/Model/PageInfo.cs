@@ -27,7 +27,7 @@ namespace SiteServer.CMS.StlParser.Model
 
         public int SiteId { get; private set; }
 
-        public int PageNodeId { get; private set; }
+        public int PageChannelId { get; private set; }
 
         public int PageContentId { get; private set; }
 
@@ -63,11 +63,11 @@ namespace SiteServer.CMS.StlParser.Model
 
         public ICollection PageBeforeBodyScriptKeys => _pageBeforeBodyScripts.Keys;
 
-        public PageInfo(int pageNodeId, int pageContentId, SiteInfo siteInfo, TemplateInfo templateInfo)
+        public PageInfo(int pageChannelId, int pageContentId, SiteInfo siteInfo, TemplateInfo templateInfo)
         {
             TemplateInfo = templateInfo;
             SiteId = siteInfo.Id;
-            PageNodeId = pageNodeId;
+            PageChannelId = pageChannelId;
             PageContentId = pageContentId;
             IsLocal = false;
             _pageAfterBodyScripts = new SortedDictionary<string, string>();
@@ -87,15 +87,15 @@ namespace SiteServer.CMS.StlParser.Model
             EachItems = new Stack(5);
         }
 
-        public void ChangeSite(SiteInfo siteInfo, int pageNodeId, int pageContentId, ContextInfo contextInfo)
+        public void ChangeSite(SiteInfo siteInfo, int pageChannelId, int pageContentId, ContextInfo contextInfo)
         {
             SiteId = siteInfo.Id;
             SiteInfo = siteInfo;
-            PageNodeId = pageNodeId;
+            PageChannelId = pageChannelId;
             PageContentId = pageContentId;
 
             contextInfo.SiteInfo = siteInfo;
-            contextInfo.ChannelId = pageNodeId;
+            contextInfo.ChannelId = pageChannelId;
             contextInfo.ContentId = pageContentId;
         }
 

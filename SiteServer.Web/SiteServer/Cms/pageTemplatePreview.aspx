@@ -46,7 +46,7 @@
                 <asp:PlaceHolder id="PhTemplateChannel" runat="server" visible="false">
                   <div class="form-group m-l-10">
                     <label class="col-form-label m-r-10">栏目</label>
-                    <asp:DropDownList id="DdlNodeId" runat="server" class="form-control"></asp:DropDownList>
+                    <asp:DropDownList id="DdlChannelId" runat="server" class="form-control"></asp:DropDownList>
                   </div>
 
                 </asp:PlaceHolder>

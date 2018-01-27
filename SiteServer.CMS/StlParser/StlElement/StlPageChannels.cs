@@ -68,9 +68,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             DisplayInfo = ListInfo.GetListInfoByXmlNode(pageInfo, _contextInfo, EContextType.Channel);
 
-            var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.SiteId, _contextInfo.ChannelId, DisplayInfo.UpLevel, DisplayInfo.TopLevel);
+            var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, _contextInfo.ChannelId, DisplayInfo.UpLevel, DisplayInfo.TopLevel);
 
-            channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, DisplayInfo.ChannelIndex, DisplayInfo.ChannelName);
+            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, DisplayInfo.ChannelIndex, DisplayInfo.ChannelName);
 
             var isTotal = TranslateUtils.ToBool(DisplayInfo.Others.Get(AttributeIsTotal));
 

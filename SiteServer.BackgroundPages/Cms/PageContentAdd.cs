@@ -94,7 +94,7 @@ namespace SiteServer.BackgroundPages.Cms
             LtlTitleHtml.Text = ContentUtility.GetTitleHtml(titleFormat, AjaxCmsService.GetTitlesUrl(SiteId, _nodeInfo.Id));
 
             AcAttributes.SiteInfo = SiteInfo;
-            AcAttributes.NodeId = _nodeInfo.Id;
+            AcAttributes.ChannelId = _nodeInfo.Id;
             AcAttributes.StyleInfoList = _styleInfoList;
 
             if (!IsPostBack)
@@ -414,7 +414,7 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
 
                     //        contentInfo.Id = targetContentId;
                     //        contentInfo.SiteId = targetContentInfo.SiteId;
-                    //        contentInfo.NodeId = targetContentInfo.NodeId;
+                    //        contentInfo.ChannelId = targetContentInfo.ChannelId;
                     //        contentInfo.SourceId = targetContentInfo.SourceId;
                     //        contentInfo.ReferenceId = targetContentInfo.ReferenceId;
                     //        contentInfo.Taxis = targetContentInfo.Taxis;

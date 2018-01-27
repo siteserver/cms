@@ -92,7 +92,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
                         var pageHtml = stlPageContents.Parse(totalNum, currentPageIndex, pageCount, false);
                         var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlPageContentsElementReplaceString, pageHtml));
 
-                        StlParserManager.ReplacePageElementsInSearchPage(pagedBuilder, pageInfo, stlLabelList, ajaxDivId, pageInfo.PageNodeId, currentPageIndex, pageCount, totalNum);
+                        StlParserManager.ReplacePageElementsInSearchPage(pagedBuilder, pageInfo, stlLabelList, ajaxDivId, pageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
 
                         if (isHighlight && !string.IsNullOrEmpty(word))
                         {

@@ -28,15 +28,15 @@ namespace SiteServer.BackgroundPages.Cms
         public PlaceHolder PhCreate;
         public Button BtnCreate;
 
-        private int _currentNodeId;
+        private int _currentChannelId;
 
-        public static string GetRedirectUrl(int siteId, int currentNodeId)
+        public static string GetRedirectUrl(int siteId, int currentChannelId)
         {
-            if (currentNodeId > 0 && currentNodeId != siteId)
+            if (currentChannelId > 0 && currentChannelId != siteId)
             {
                 return PageUtils.GetCmsUrl(siteId, nameof(PageChannel), new NameValueCollection
                 {
-                    {"CurrentNodeID", currentNodeId.ToString()}
+                    {"CurrentChannelId", currentChannelId.ToString()}
                 });
             }
             return PageUtils.GetCmsUrl(siteId, nameof(PageChannel), null);
@@ -48,18 +48,18 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId");
 
-            if (Body.IsQueryExists("NodeID") && (Body.IsQueryExists("Subtract") || Body.IsQueryExists("Add")))
+            if (Body.IsQueryExists("channelId") && (Body.IsQueryExists("Subtract") || Body.IsQueryExists("Add")))
             {
-                var nodeId = Body.GetQueryInt("NodeID");
-                if (SiteId != nodeId)
+                var channelId = Body.GetQueryInt("channelId");
+                if (SiteId != channelId)
                 {
                     var isSubtract = Body.IsQueryExists("Subtract");
-                    DataProvider.ChannelDao.UpdateTaxis(SiteId, nodeId, isSubtract);
+                    DataProvider.ChannelDao.UpdateTaxis(SiteId, channelId, isSubtract);
 
-                    Body.AddSiteLog(SiteId, nodeId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"),
-                        $"栏目:{ChannelManager.GetChannelName(SiteId, nodeId)}");
+                    Body.AddSiteLog(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"),
+                        $"栏目:{ChannelManager.GetChannelName(SiteId, channelId)}");
 
-                    PageUtils.Redirect(GetRedirectUrl(SiteId, nodeId));
+                    PageUtils.Redirect(GetRedirectUrl(SiteId, channelId));
                     return;
                 }
             }
@@ -68,17 +68,17 @@ namespace SiteServer.BackgroundPages.Cms
 
             ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, ELoadingType.Channel, null));
 
-            if (Body.IsQueryExists("CurrentNodeID"))
+            if (Body.IsQueryExists("CurrentChannelId"))
             {
-                _currentNodeId = Body.GetQueryInt("CurrentNodeID");
-                var onLoadScript = ChannelLoading.GetScriptOnLoad(SiteId, _currentNodeId);
+                _currentChannelId = Body.GetQueryInt("CurrentChannelId");
+                var onLoadScript = ChannelLoading.GetScriptOnLoad(SiteId, _currentChannelId);
                 if (!string.IsNullOrEmpty(onLoadScript))
                 {
                     ClientScriptRegisterClientScriptBlock("NodeTreeScriptOnLoad", onLoadScript);
                 }
             }
 
-            PhAddChannel.Visible = HasChannelPermissionsIgnoreNodeId(ConfigManager.Permissions.Channel.ChannelAdd);
+            PhAddChannel.Visible = HasChannelPermissionsIgnoreChannelId(ConfigManager.Permissions.Channel.ChannelAdd);
             if (PhAddChannel.Visible)
             {
                 BtnAddChannel1.Attributes.Add("onclick", ModalChannelsAdd.GetOpenWindowString(SiteId, SiteId, GetRedirectUrl(SiteId, SiteId)));
@@ -86,7 +86,7 @@ namespace SiteServer.BackgroundPages.Cms
                     $"location.href='{PageChannelAdd.GetRedirectUrl(SiteId, SiteId, GetRedirectUrl(SiteId, 0))}';return false;");
             }
 
-            PhChannelEdit.Visible = HasChannelPermissionsIgnoreNodeId(ConfigManager.Permissions.Channel.ChannelEdit);
+            PhChannelEdit.Visible = HasChannelPermissionsIgnoreChannelId(ConfigManager.Permissions.Channel.ChannelEdit);
             if (PhChannelEdit.Visible)
             {
                 var showPopWinString = ModalAddToGroup.GetOpenWindowStringToChannel(SiteId);
@@ -95,23 +95,23 @@ namespace SiteServer.BackgroundPages.Cms
                 BtnSelectEditColumns.Attributes.Add("onclick", ModalSelectColumns.GetOpenWindowStringToChannel(SiteId, false));
             }
 
-            PhTranslate.Visible = HasChannelPermissionsIgnoreNodeId(ConfigManager.Permissions.Channel.ChannelTranslate);
+            PhTranslate.Visible = HasChannelPermissionsIgnoreChannelId(ConfigManager.Permissions.Channel.ChannelTranslate);
             if (PhTranslate.Visible)
             {
                 BtnTranslate.Attributes.Add("onclick",
                     PageUtils.GetRedirectStringWithCheckBoxValue(
                         PageChannelTranslate.GetRedirectUrl(SiteId,
-                            GetRedirectUrl(SiteId, _currentNodeId)), "ChannelIDCollection",
+                            GetRedirectUrl(SiteId, _currentChannelId)), "ChannelIDCollection",
                         "ChannelIDCollection", "请选择需要转移的栏目！"));
             }
 
-            PhDelete.Visible = HasChannelPermissionsIgnoreNodeId(ConfigManager.Permissions.Channel.ChannelDelete);
+            PhDelete.Visible = HasChannelPermissionsIgnoreChannelId(ConfigManager.Permissions.Channel.ChannelDelete);
             if (PhDelete.Visible)
             {
                 BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValue(PageChannelDelete.GetRedirectUrl(SiteId, GetRedirectUrl(SiteId, SiteId)), "ChannelIDCollection", "ChannelIDCollection", "请选择需要删除的栏目！"));
             }
 
-            PhCreate.Visible = HasSitePermissions(ConfigManager.Permissions.WebSite.Create) || HasChannelPermissionsIgnoreNodeId(ConfigManager.Permissions.Channel.CreatePage);
+            PhCreate.Visible = HasSitePermissions(ConfigManager.Permissions.WebSite.Create) || HasChannelPermissionsIgnoreChannelId(ConfigManager.Permissions.Channel.CreatePage);
             if (PhCreate.Visible)
             {
                 BtnCreate.Attributes.Add("onclick", ModalCreateChannels.GetOpenWindowString(SiteId));
@@ -131,13 +131,13 @@ namespace SiteServer.BackgroundPages.Cms
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            var nodeId = (int)e.Item.DataItem;
-            var enabled = IsOwningNodeId(nodeId);
+            var channelId = (int)e.Item.DataItem;
+            var enabled = IsOwningChannelId(channelId);
             if (!enabled)
             {
-                if (!IsHasChildOwningNodeId(nodeId)) e.Item.Visible = false;
+                if (!IsHasChildOwningChannelId(channelId)) e.Item.Visible = false;
             }
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 

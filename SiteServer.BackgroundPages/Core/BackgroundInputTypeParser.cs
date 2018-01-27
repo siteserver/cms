@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Core
         public const string Current = "{Current}";
         public const string Value = "{Value}";
 
-        public static string Parse(SiteInfo siteInfo, int nodeId, TableStyleInfo styleInfo, IAttributes attributes, NameValueCollection pageScripts, out string extraHtml)
+        public static string Parse(SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, IAttributes attributes, NameValueCollection pageScripts, out string extraHtml)
         {
             var retval = string.Empty;
             var extraBuilder = new StringBuilder();
@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Core
 
             if (inputType == InputType.Text)
             {
-                retval = ParseText(attributes, siteInfo, nodeId, styleInfo, extraBuilder);
+                retval = ParseText(attributes, siteInfo, channelId, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.TextArea)
             {
@@ -78,15 +78,15 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (inputType == InputType.Image)
             {
-                retval = ParseImage(attributes, siteInfo, nodeId, styleInfo, extraBuilder);
+                retval = ParseImage(attributes, siteInfo, channelId, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.Video)
             {
-                retval = ParseVideo(attributes, siteInfo, nodeId, styleInfo, extraBuilder);
+                retval = ParseVideo(attributes, siteInfo, channelId, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.File)
             {
-                retval = ParseFile(attributes, siteInfo, nodeId, styleInfo, extraBuilder);
+                retval = ParseFile(attributes, siteInfo, channelId, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.Customize)
             {
@@ -102,7 +102,7 @@ namespace SiteServer.BackgroundPages.Core
             return retval;
         }
 
-        public static string ParseText(IAttributes attributes, SiteInfo siteInfo, int nodeId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        public static string ParseText(IAttributes attributes, SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
 
@@ -194,7 +194,7 @@ $('#{styleInfo.AttributeName}_colorContainer').hide();
 ");
             }
 
-            if (nodeId > 0 && styleInfo.AttributeName == ContentAttribute.Title)
+            if (channelId > 0 && styleInfo.AttributeName == ContentAttribute.Title)
             {
                 extraBuilder.Append(@"
 <script type=""text/javascript"">
@@ -234,7 +234,7 @@ $('#Title').keyup(function (e) {
 })});
 </script>
 <div id=""titleTips"" class=""inputTips""></div>");
-                extraBuilder.Replace("[url]", AjaxCmsService.GetTitlesUrl(siteInfo.Id, nodeId));
+                extraBuilder.Replace("[url]", AjaxCmsService.GetTitlesUrl(siteInfo.Id, channelId));
             }
 
             var value = StringUtils.HtmlDecode(attributes.GetString(styleInfo.AttributeName));
@@ -625,11 +625,11 @@ $(document).ready(function(){{
             return $@"<input id=""{styleInfo.AttributeName}"" name=""{styleInfo.AttributeName}"" type=""text"" class=""form-control"" value=""{value}"" onfocus=""{SiteServerAssets.DatePicker.OnFocus}"" style=""width: 180px"" />";
         }
 
-        private static string ParseImage(IAttributes attributes, SiteInfo siteInfo, int nodeId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseImage(IAttributes attributes, SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             var btnAddHtml = string.Empty;
 
-            if (nodeId > 0)
+            if (channelId > 0)
             {
                 btnAddHtml = $@"
     <button class=""btn"" onclick=""add_{styleInfo.AttributeName}('',true)"">
@@ -716,12 +716,12 @@ function add_{attributeName}(val,foucs){{
             return $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""form-control"" value=""{attributes.GetString(attributeName)}"" />";
         }
 
-        private static string ParseVideo(IAttributes attributes, SiteInfo siteInfo, int nodeId, TableStyleInfo styleInfo, StringBuilder extraBulder)
+        private static string ParseVideo(IAttributes attributes, SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, StringBuilder extraBulder)
         {
             var attributeName = styleInfo.AttributeName;
 
             var btnAddHtml = string.Empty;
-            if (nodeId > 0)
+            if (channelId > 0)
             {
                 btnAddHtml = $@"
     <button class=""btn"" onclick=""add_{attributeName}('',true)"">
@@ -798,7 +798,7 @@ function add_{attributeName}(val,foucs){{
             return $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""form-control"" value=""{attributes.GetString(attributeName)}"" />";
         }
 
-        private static string ParseFile(IAttributes attributes, SiteInfo siteInfo, int nodeId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseFile(IAttributes attributes, SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             var attributeName = styleInfo.AttributeName;
             var value = attributes.GetString(attributeName);
@@ -814,7 +814,7 @@ function add_{attributeName}(val,foucs){{
             }
 
             var btnAddHtml = string.Empty;
-            if (nodeId > 0)
+            if (channelId > 0)
             {
                 btnAddHtml = $@"
 <button class=""btn"" onclick=""add_{attributeName}('',true)"">

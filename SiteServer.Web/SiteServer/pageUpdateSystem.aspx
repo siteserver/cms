@@ -350,10 +350,11 @@
 
       function updateDatabase() {
         $.ajax({
-          url: "<%=UpdateDatabaseApiUrl%>" + version,
+          url: "<%=UpdateDatabaseApiUrl%>",
           type: "GET",
           success: function (data) {
-            
+            $('#phStep4').hide();
+            $('#phStep5').show();
           }
         });
       }

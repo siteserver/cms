@@ -100,11 +100,11 @@ namespace SiteServer.BackgroundPages.Cms
 
             var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
             var tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
-            var nodeIdList = DataProvider.ChannelDao.GetIdListByScopeType(nodeInfo.Id, nodeInfo.ChildrenCount, EScopeType.All, string.Empty, string.Empty, nodeInfo.ContentModelPluginId);
+            var channelIdList = DataProvider.ChannelDao.GetIdListByScopeType(nodeInfo.Id, nodeInfo.ChildrenCount, EScopeType.All, string.Empty, string.Empty, nodeInfo.ContentModelPluginId);
             var list = new List<int>();
             if (permissions.IsSystemAdministrator)
             {
-                list = nodeIdList;
+                list = channelIdList;
             }
             else
             {
@@ -116,7 +116,7 @@ namespace SiteServer.BackgroundPages.Cms
                         owningChannelIdList.Add(owningChannelId);
                     }
                 }
-                foreach (var theChannelId in nodeIdList)
+                foreach (var theChannelId in channelIdList)
                 {
                     if (owningChannelIdList.Contains(theChannelId))
                     {

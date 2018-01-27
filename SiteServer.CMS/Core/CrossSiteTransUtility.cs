@@ -78,11 +78,11 @@ namespace SiteServer.CMS.Core
             return isAutomatic;
         }
 
-        public static void LoadSiteIdDropDownList(DropDownList siteIdDropDownList, SiteInfo siteInfo, int nodeId)
+        public static void LoadSiteIdDropDownList(DropDownList siteIdDropDownList, SiteInfo siteInfo, int channelId)
         {
             siteIdDropDownList.Items.Clear();
 
-            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, nodeId);
+            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
             if (channelInfo.Additional.TransType == ECrossSiteTransType.SelfSite || channelInfo.Additional.TransType == ECrossSiteTransType.SpecifiedSite || channelInfo.Additional.TransType == ECrossSiteTransType.ParentSite)
             {
                 int theSiteId;
@@ -142,22 +142,22 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void LoadNodeIdListBox(ListBox nodeIdListBox, SiteInfo siteInfo, int psId, ChannelInfo channelInfo, string administratorName)
+        public static void LoadChannelIdListBox(ListBox channelIdListBox, SiteInfo siteInfo, int psId, ChannelInfo channelInfo, string administratorName)
         {
-            nodeIdListBox.Items.Clear();
+            channelIdListBox.Items.Clear();
 
             var isUseNodeNames = channelInfo.Additional.TransType == ECrossSiteTransType.AllParentSite || channelInfo.Additional.TransType == ECrossSiteTransType.AllSite;
 
             if (!isUseNodeNames)
             {
-                var nodeIdList = TranslateUtils.StringCollectionToIntList(channelInfo.Additional.TransChannelIds);
-                foreach (var theNodeId in nodeIdList)
+                var channelIdList = TranslateUtils.StringCollectionToIntList(channelInfo.Additional.TransChannelIds);
+                foreach (var theChannelId in channelIdList)
                 {
-                    var theNodeInfo = ChannelManager.GetChannelInfo(psId, theNodeId);
+                    var theNodeInfo = ChannelManager.GetChannelInfo(psId, theChannelId);
                     if (theNodeInfo != null)
                     {
                         var listitem = new ListItem(theNodeInfo.ChannelName, theNodeInfo.Id.ToString());
-                        nodeIdListBox.Items.Add(listitem);
+                        channelIdListBox.Items.Add(listitem);
                     }
                 }
             }
@@ -166,16 +166,16 @@ namespace SiteServer.CMS.Core
                 if (!string.IsNullOrEmpty(channelInfo.Additional.TransChannelNames))
                 {
                     var nodeNameArrayList = TranslateUtils.StringCollectionToStringList(channelInfo.Additional.TransChannelNames);
-                    var nodeIdList = ChannelManager.GetChannelIdList(psId);
+                    var channelIdList = ChannelManager.GetChannelIdList(psId);
                     foreach (var nodeName in nodeNameArrayList)
                     {
-                        foreach (var theNodeId in nodeIdList)
+                        foreach (var theChannelId in channelIdList)
                         {
-                            var theNodeInfo = ChannelManager.GetChannelInfo(psId, theNodeId);
+                            var theNodeInfo = ChannelManager.GetChannelInfo(psId, theChannelId);
                             if (theNodeInfo.ChannelName == nodeName)
                             {
                                 var listitem = new ListItem(theNodeInfo.ChannelName, theNodeInfo.Id.ToString());
-                                nodeIdListBox.Items.Add(listitem);
+                                channelIdListBox.Items.Add(listitem);
                                 break;
                             }
                         }
@@ -183,7 +183,7 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    ChannelManager.AddListItemsForAddContent(nodeIdListBox.Items, SiteManager.GetSiteInfo(psId), false, administratorName);
+                    ChannelManager.AddListItemsForAddContent(channelIdListBox.Items, SiteManager.GetSiteInfo(psId), false, administratorName);
                 }
             }
         }
@@ -227,10 +227,10 @@ namespace SiteServer.CMS.Core
                     if (siteInfo != null && !string.IsNullOrEmpty(channelInfo.Additional.TransChannelIds))
                     {
                         var nodeNameBuilder = new StringBuilder();
-                        var nodeIdArrayList = TranslateUtils.StringCollectionToIntList(channelInfo.Additional.TransChannelIds);
-                        foreach (int nodeId in nodeIdArrayList)
+                        var channelIdArrayList = TranslateUtils.StringCollectionToIntList(channelInfo.Additional.TransChannelIds);
+                        foreach (int channelId in channelIdArrayList)
                         {
-                            var theNodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, nodeId);
+                            var theNodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
                             if (theNodeInfo != null)
                             {
                                 nodeNameBuilder.Append(theNodeInfo.ChannelName).Append(",");
@@ -247,16 +247,16 @@ namespace SiteServer.CMS.Core
             return results;
         }
 
-        public static void TransContentInfo(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, SiteInfo targetSiteInfo, int targetNodeId)
+        public static void TransContentInfo(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, SiteInfo targetSiteInfo, int targetChannelId)
         {
-            var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetNodeId);
+            var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelId);
 
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
             var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
             FileUtility.MoveFileByContentInfo(siteInfo, targetSiteInfo, contentInfo);
             contentInfo.SiteId = targetSiteInfo.Id;
             contentInfo.SourceId = channelInfo.Id;
-            contentInfo.ChannelId = targetNodeId;
+            contentInfo.ChannelId = targetChannelId;
             contentInfo.IsChecked = targetSiteInfo.Additional.IsCrossSiteTransChecked;
             contentInfo.CheckedLevel = 0;
 
@@ -270,7 +270,7 @@ namespace SiteServer.CMS.Core
             {
                 contentInfo.SiteId = targetSiteInfo.Id;
                 contentInfo.SourceId = channelInfo.Id;
-                contentInfo.ChannelId = targetNodeId;
+                contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
             }
@@ -279,7 +279,7 @@ namespace SiteServer.CMS.Core
             {
                 contentInfo.SiteId = targetSiteInfo.Id;
                 contentInfo.SourceId = channelInfo.Id;
-                contentInfo.ChannelId = targetNodeId;
+                contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
             }

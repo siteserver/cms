@@ -128,11 +128,11 @@ namespace SiteServer.BackgroundPages.Settings
             var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
 
             htmlBuilder.Append("<span id='ChannelSelectControl'>");
-            var nodeIdList = DataProvider.ChannelDao.GetIdListBySiteId(SiteId);
-            var isLastNodeArray = new bool[nodeIdList.Count];
-            foreach (var nodeId in nodeIdList)
+            var channelIdList = DataProvider.ChannelDao.GetIdListBySiteId(SiteId);
+            var isLastNodeArray = new bool[channelIdList.Count];
+            foreach (var channelId in channelIdList)
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
+                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
                 htmlBuilder.Append(GetTitle(nodeInfo, treeDirectoryUrl, isLastNodeArray));
                 htmlBuilder.Append("<br/>");
             }
@@ -174,8 +174,8 @@ namespace SiteServer.BackgroundPages.Settings
 
             itemBuilder.Append($@"
 <span class=""checkbox checkbox-primary"" style=""padding-left: 0px;"">
-    <input type=""checkbox"" id=""NodeIDCollection_{nodeInfo.Id}"" name=""NodeIDCollection"" value=""{nodeInfo.Id}""/>
-    <label for=""NodeIDCollection_{nodeInfo.Id}""> {nodeInfo.ChannelName} &nbsp;<span style=""font-size:8pt;font-family:arial"" class=""gray"">({nodeInfo.ContentNum})</span></label>
+    <input type=""checkbox"" id=""ChannelIdCollection_{nodeInfo.Id}"" name=""ChannelIdCollection"" value=""{nodeInfo.Id}""/>
+    <label for=""ChannelIdCollection_{nodeInfo.Id}""> {nodeInfo.ChannelName} &nbsp;<span style=""font-size:8pt;font-family:arial"" class=""gray"">({nodeInfo.ContentNum})</span></label>
 </span>
 ");
 
@@ -254,8 +254,8 @@ namespace SiteServer.BackgroundPages.Settings
                 var isSaveContents = TranslateUtils.ToBool(RblIsSaveContents.SelectedValue);
                 var isSaveAllChannels = TranslateUtils.ToBool(RblIsSaveAllChannels.SelectedValue);
 
-                var nodeIdList = TranslateUtils.StringCollectionToIntList(Request.Form["NodeIDCollection"]);
-                _exportObject.ExportSiteContent(siteContentDirectoryPath, isSaveContents, isSaveAllChannels, nodeIdList);
+                var channelIdList = TranslateUtils.StringCollectionToIntList(Request.Form["ChannelIdCollection"]);
+                _exportObject.ExportSiteContent(siteContentDirectoryPath, isSaveContents, isSaveAllChannels, channelIdList);
 
                 errorMessage = "";
                 return true;

@@ -16,7 +16,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalContentMultipleSelect : BasePageCms
     {
-        public DropDownList DdlNodeId;
+        public DropDownList DdlChannelId;
         public CheckBox CbIsDuplicate;
         public DropDownList DdlSearchType;
         public TextBox TbKeyword;
@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
         public Repeater RptContents;
         public SqlPager SpContents;
 
-        private ChannelInfo _nodeInfo;
+        private ChannelInfo _channelInfo;
         private string _tableName;
         private List<int> _relatedIdentities;
         private List<TableStyleInfo> _tableStyleInfoList;
@@ -50,24 +50,24 @@ namespace SiteServer.BackgroundPages.Cms
             _jsMethod = Body.GetQueryString("jsMethod");
 
             PageUtils.CheckRequestParameter("siteId");
-            var nodeId = Body.GetQueryInt("NodeID");
-            if (nodeId == 0)
+            var channelId = Body.GetQueryInt("channelId");
+            if (channelId == 0)
             {
-                nodeId = SiteId;
+                channelId = SiteId;
             }
-            _nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
-            _tableName = ChannelManager.GetTableName(SiteInfo, _nodeInfo);
-            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _nodeInfo.Id);
+            _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+            _tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
+            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelInfo.Id);
             _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);
 
             SpContents.ControlToPaginate = RptContents;
-            SpContents.SelectCommand = string.IsNullOrEmpty(Body.GetQueryString("NodeID"))
+            SpContents.SelectCommand = string.IsNullOrEmpty(Body.GetQueryString("channelId"))
                 ? DataProvider.ContentDao.GetSqlString(_tableName, SiteId,
-                    _nodeInfo.Id, permissions.IsSystemAdministrator,
+                    _channelInfo.Id, permissions.IsSystemAdministrator,
                     ProductPermissionsManager.Current.OwningChannelIdList, DdlSearchType.SelectedValue, TbKeyword.Text,
                     TbDateFrom.Text, TbDateTo.Text, true, ETriState.True, !CbIsDuplicate.Checked, false)
                 : DataProvider.ContentDao.GetSqlString(_tableName, SiteId,
-                    _nodeInfo.Id, permissions.IsSystemAdministrator,
+                    _channelInfo.Id, permissions.IsSystemAdministrator,
                     ProductPermissionsManager.Current.OwningChannelIdList, Body.GetQueryString("SearchType"),
                     Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true,
                     ETriState.True, !Body.GetQueryBool("IsDuplicate"), true);
@@ -79,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            ChannelManager.AddListItems(DdlNodeId.Items, SiteInfo, false, true, Body.AdminName);
+            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, Body.AdminName);
 
             if (_tableStyleInfoList != null)
             {
@@ -95,11 +95,11 @@ namespace SiteServer.BackgroundPages.Cms
             DdlSearchType.Items.Add(new ListItem("添加者", ContentAttribute.AddUserName));
             DdlSearchType.Items.Add(new ListItem("最后修改者", ContentAttribute.LastEditUserName));
 
-            if (Body.IsQueryExists("NodeID"))
+            if (Body.IsQueryExists("channelId"))
             {
-                if (SiteId != _nodeInfo.Id)
+                if (SiteId != _channelInfo.Id)
                 {
-                    ControlUtils.SelectSingleItem(DdlNodeId, _nodeInfo.Id.ToString());
+                    ControlUtils.SelectSingleItem(DdlChannelId, _channelInfo.Id.ToString());
                 }
                 CbIsDuplicate.Checked = Body.GetQueryBool("IsDuplicate");
                 ControlUtils.SelectSingleItem(DdlSearchType, Body.GetQueryString("SearchType"));
@@ -138,7 +138,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void AddContent_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _nodeInfo, PageUrl));
+            PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo, PageUrl));
         }
 
         public void Search_OnClick(object sender, EventArgs e)
@@ -177,7 +177,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     _pageUrl = PageUtils.GetCmsUrl(SiteId, nameof(ModalContentMultipleSelect), new NameValueCollection
                     {
-                        {"NodeID", DdlNodeId.SelectedValue},
+                        {"channelId", DdlChannelId.SelectedValue},
                         {"IsDuplicate", CbIsDuplicate.Checked.ToString()},
                         {"SearchType", DdlSearchType.SelectedValue},
                         {"Keyword", TbKeyword.Text},

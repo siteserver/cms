@@ -103,7 +103,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return $"<!-- {TranslateUtils.EncryptStringBySecretKey(stlElement)} -->";
         }
 
-        public static void ReplacePageElementsInContentPage(StringBuilder parsedBuilder, PageInfo pageInfo, List<string> labelList, int nodeId, int contentId, int currentPageIndex, int pageCount)
+        public static void ReplacePageElementsInContentPage(StringBuilder parsedBuilder, PageInfo pageInfo, List<string> labelList, int channelId, int contentId, int currentPageIndex, int pageCount)
         {
             //替换分页模板
             foreach (var labelString in labelList)
@@ -111,19 +111,19 @@ namespace SiteServer.CMS.StlParser.Utility
                 if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItems.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = StlPageElementParser.ParseStlPageInContentPage(stlElement, pageInfo, nodeId, contentId, currentPageIndex, pageCount);
+                    var pageHtml = StlPageElementParser.ParseStlPageInContentPage(stlElement, pageInfo, channelId, contentId, currentPageIndex, pageCount);
                     parsedBuilder.Replace(StlEncrypt(stlElement), pageHtml);
                 }
                 else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = StlPageElementParser.ParseStlPageItemInContentPage(stlElement, pageInfo, nodeId, contentId, currentPageIndex, pageCount, pageCount);
+                    var pageHtml = StlPageElementParser.ParseStlPageItemInContentPage(stlElement, pageInfo, channelId, contentId, currentPageIndex, pageCount, pageCount);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
             }
         }
 
-        public static void ReplacePageElementsInChannelPage(StringBuilder parsedBuilder, PageInfo pageInfo, List<string> labelList, int nodeId, int currentPageIndex, int pageCount, int totalNum)
+        public static void ReplacePageElementsInChannelPage(StringBuilder parsedBuilder, PageInfo pageInfo, List<string> labelList, int channelId, int currentPageIndex, int pageCount, int totalNum)
         {
             //替换分页模板
             foreach (var labelString in labelList)
@@ -131,19 +131,19 @@ namespace SiteServer.CMS.StlParser.Utility
                 if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItems.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = StlPageElementParser.ParseStlPageInChannelPage(stlElement, pageInfo, nodeId, currentPageIndex, pageCount, totalNum);
+                    var pageHtml = StlPageElementParser.ParseStlPageInChannelPage(stlElement, pageInfo, channelId, currentPageIndex, pageCount, totalNum);
                     parsedBuilder.Replace(StlEncrypt(stlElement), pageHtml);
                 }
                 else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = StlPageElementParser.ParseStlPageItemInChannelPage(stlElement, pageInfo, nodeId, currentPageIndex, pageCount, totalNum);
+                    var pageHtml = StlPageElementParser.ParseStlPageItemInChannelPage(stlElement, pageInfo, channelId, currentPageIndex, pageCount, totalNum);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
             }
         }
 
-        public static void ReplacePageElementsInSearchPage(StringBuilder parsedBuilder, PageInfo pageInfo, List<string> labelList, string ajaxDivId, int nodeId, int currentPageIndex, int pageCount, int totalNum)
+        public static void ReplacePageElementsInSearchPage(StringBuilder parsedBuilder, PageInfo pageInfo, List<string> labelList, string ajaxDivId, int channelId, int currentPageIndex, int pageCount, int totalNum)
         {
             //替换分页模板
             foreach (var labelString in labelList)
@@ -151,19 +151,19 @@ namespace SiteServer.CMS.StlParser.Utility
                 if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItems.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = StlPageElementParser.ParseStlPageInSearchPage(stlElement, pageInfo, ajaxDivId, nodeId, currentPageIndex, pageCount, totalNum);
+                    var pageHtml = StlPageElementParser.ParseStlPageInSearchPage(stlElement, pageInfo, ajaxDivId, channelId, currentPageIndex, pageCount, totalNum);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
                 else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = StlPageElementParser.ParseStlPageItemInSearchPage(stlElement, pageInfo, ajaxDivId, nodeId, currentPageIndex, pageCount, totalNum);
+                    var pageHtml = StlPageElementParser.ParseStlPageItemInSearchPage(stlElement, pageInfo, ajaxDivId, channelId, currentPageIndex, pageCount, totalNum);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
             }
         }
 
-        public static void ReplacePageElementsInDynamicPage(StringBuilder parsedBuilder, PageInfo pageInfo, List<string> labelList, string pageUrl, int nodeId, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static void ReplacePageElementsInDynamicPage(StringBuilder parsedBuilder, PageInfo pageInfo, List<string> labelList, string pageUrl, int channelId, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
             //替换分页模板
             foreach (var labelString in labelList)
@@ -171,13 +171,13 @@ namespace SiteServer.CMS.StlParser.Utility
                 if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItems.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = StlPageElementParser.ParseStlPageInDynamicPage(stlElement, pageInfo, pageUrl, nodeId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+                    var pageHtml = StlPageElementParser.ParseStlPageInDynamicPage(stlElement, pageInfo, pageUrl, channelId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
                 else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = StlPageElementParser.ParseStlPageItemInDynamicPage(stlElement, pageInfo, pageUrl, nodeId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+                    var pageHtml = StlPageElementParser.ParseStlPageItemInDynamicPage(stlElement, pageInfo, pageUrl, channelId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
             }
@@ -188,7 +188,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var builder = new StringBuilder();
 
             builder.Append(
-                $@"<script>var $pageInfo = {{siteID : {pageInfo.SiteId}, channelID : {pageInfo.PageNodeId}, contentID : {pageInfo.PageContentId}, siteUrl : ""{pageInfo.SiteInfo.Additional.WebUrl.TrimEnd('/')}"", currentUrl : ""{StlUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal)}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{pageInfo.ApiUrl.TrimEnd('/')}""}};</script>");
+                $@"<script>var $pageInfo = {{siteId : {pageInfo.SiteId}, channelId : {pageInfo.PageChannelId}, contentId : {pageInfo.PageContentId}, siteUrl : ""{pageInfo.SiteInfo.Additional.WebUrl.TrimEnd('/')}"", currentUrl : ""{StlUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal)}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{pageInfo.ApiUrl.TrimEnd('/')}""}};</script>");
 
             foreach (string key in pageInfo.PageHeadScriptKeys)
             {

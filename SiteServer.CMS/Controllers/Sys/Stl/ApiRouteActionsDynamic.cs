@@ -11,11 +11,11 @@ namespace SiteServer.CMS.Controllers.Sys.Stl
             return PageUtils.Combine(apiUrl, Route);
         }
 
-        public static string GetParameters(int siteId, int pageNodeId, int pageContentId, int pageTemplateId, string pageUrl, string ajaxDivId, bool isPageRefresh, string templateContent)
+        public static string GetParameters(int siteId, int pageChannelId, int pageContentId, int pageTemplateId, string pageUrl, string ajaxDivId, bool isPageRefresh, string templateContent)
         {
             return $@"{{
     siteId: {siteId},
-    pageNodeId: {pageNodeId},
+    pageChannelId: {pageChannelId},
     pageContentId: {pageContentId},
     pageTemplateId: {pageTemplateId},
     isPageRefresh: {isPageRefresh.ToString().ToLower()},

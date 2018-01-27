@@ -15,13 +15,13 @@ namespace SiteServer.BackgroundPages.Cms
         private string _tableName;
         private string _returnUrl;
 
-        public static string GetOpenWindowString(int siteId, int nodeId, string returnUrl)
+        public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
         {
             return LayerUtils.GetOpenScriptWithCheckBoxValue("整理排序", PageUtils.GetCmsUrl(siteId, nameof(ModalContentTidyUp), new NameValueCollection
             {
-                {"NodeID", nodeId.ToString()},
+                {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
-            }), "ContentIDCollection", "", 460, 320);
+            }), "contentIdCollection", "", 460, 320);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -44,11 +44,11 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var nodeId = Body.GetQueryInt("NodeID");
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
-            _tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
+            var channelId = Body.GetQueryInt("channelId");
+            var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+            _tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
 
-            DataProvider.ContentDao.TidyUp(_tableName, nodeId, DdlAttributeName.SelectedValue, TranslateUtils.ToBool(DdlIsDesc.SelectedValue));
+            DataProvider.ContentDao.TidyUp(_tableName, channelId, DdlAttributeName.SelectedValue, TranslateUtils.ToBool(DdlIsDesc.SelectedValue));
 
             LayerUtils.CloseAndRedirect(Page, _returnUrl);
         }

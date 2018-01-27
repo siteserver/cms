@@ -104,24 +104,23 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (string.IsNullOrEmpty(type) || StringUtils.EqualsIgnoreCase(type, TypeContents))
             {
-                var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
-                channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
+                var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
+                channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
 
                 var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
 
-                //var nodeIdList = DataProvider.ChannelDao.GetIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, scope, string.Empty, string.Empty);
-                var nodeIdList = Node.GetIdListByScopeType(nodeInfo.Id, nodeInfo.ChildrenCount, scope, string.Empty, string.Empty);
-                foreach (var nodeId in nodeIdList)
+                //var channelIdList = DataProvider.ChannelDao.GetIdListByScopeType(nodeInfo.ChannelId, nodeInfo.ChildrenCount, scope, string.Empty, string.Empty);
+                var channelIdList = Node.GetIdListByScopeType(nodeInfo.Id, nodeInfo.ChildrenCount, scope, string.Empty, string.Empty);
+                foreach (var theChannelId in channelIdList)
                 {
-                    var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, nodeId);
-                    //count += DataProvider.ContentDao.GetCountOfContentAdd(tableName, pageInfo.SiteId, nodeId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty);
-                    count += Content.GetCountOfContentAdd(tableName, pageInfo.SiteId, nodeId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty);
+                    var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, theChannelId);
+                    count += Content.GetCountOfContentAdd(tableName, pageInfo.SiteId, theChannelId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeChannels))
             {
-                var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
-                channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
+                var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
+                channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
 
                 var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
                 count = nodeInfo.ChildrenCount;

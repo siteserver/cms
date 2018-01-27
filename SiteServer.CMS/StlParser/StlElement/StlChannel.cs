@@ -180,9 +180,9 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var parsedContent = string.Empty;
 
-            var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
+            var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
-            channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
+            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
             var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
 
             if (!string.IsNullOrEmpty(formatString))

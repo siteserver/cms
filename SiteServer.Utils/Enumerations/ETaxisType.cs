@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
+using SiteServer.Plugin;
 
 namespace SiteServer.Utils.Enumerations
 {
@@ -8,8 +9,8 @@ namespace SiteServer.Utils.Enumerations
 	{
 		OrderById,				    //内容ID（升序）
 		OrderByIdDesc,			    //内容ID（降序）
-		OrderByNodeId,				//栏目ID（升序）
-		OrderByNodeIdDesc,			//栏目ID（降序）
+		OrderByChannelId,				//栏目ID（升序）
+		OrderByChannelIdDesc,			//栏目ID（降序）
 		OrderByAddDate,			    //添加时间（升序）
 		OrderByAddDateDesc,		    //添加时间（降序）
 		OrderByLastEditDate,	    //更新时间（升序）
@@ -23,71 +24,71 @@ namespace SiteServer.Utils.Enumerations
         OrderByRandom               //随机排序
 	}
 
-
 	public class ETaxisTypeUtils
 	{
 		public static string GetValue(ETaxisType type)
 		{
 		    if (type == ETaxisType.OrderById)
 			{
-				return "OrderByID";
+				return nameof(ETaxisType.OrderById);
 			}
 		    if (type == ETaxisType.OrderByIdDesc)
 		    {
-		        return "OrderByIDDesc";
+		        return nameof(ETaxisType.OrderByIdDesc);
 		    }
-		    if (type == ETaxisType.OrderByNodeId)
+		    if (type == ETaxisType.OrderByChannelId)
 		    {
-		        return "OrderByNodeId";
-		    }
-		    if (type == ETaxisType.OrderByNodeIdDesc)
+		        return nameof(ETaxisType.OrderByChannelId);
+            }
+		    if (type == ETaxisType.OrderByChannelIdDesc)
 		    {
-		        return "OrderByNodeIdDesc";
-		    }
+		        return nameof(ETaxisType.OrderByChannelIdDesc);
+            }
 		    if (type == ETaxisType.OrderByAddDate)
 		    {
-		        return "OrderByAddDate";
-		    }
+		        return nameof(ETaxisType.OrderByAddDate);
+            }
 		    if (type == ETaxisType.OrderByAddDateDesc)
 		    {
-		        return "OrderByAddDateDesc";
-		    }
+		        return nameof(ETaxisType.OrderByAddDateDesc);
+            }
 		    if (type == ETaxisType.OrderByLastEditDate)
 		    {
-		        return "OrderByLastEditDate";
-		    }
+		        return nameof(ETaxisType.OrderByLastEditDate);
+            }
 		    if (type == ETaxisType.OrderByLastEditDateDesc)
 		    {
-		        return "OrderByLastEditDateDesc";
-		    }
+		        return nameof(ETaxisType.OrderByLastEditDateDesc);
+            }
 		    if (type == ETaxisType.OrderByTaxis)
 		    {
-		        return "OrderByTaxis";
-		    }
+		        return nameof(ETaxisType.OrderByTaxis);
+            }
 		    if (type == ETaxisType.OrderByTaxisDesc)
 		    {
-		        return "OrderByTaxisDesc";
-		    }
+		        return nameof(ETaxisType.OrderByTaxisDesc);
+            }
 		    if (type == ETaxisType.OrderByHits)
 		    {
-		        return "OrderByHits";
-		    }
+		        return nameof(ETaxisType.OrderByHits);
+            }
 		    if (type == ETaxisType.OrderByHitsByDay)
 		    {
-		        return "OrderByHitsByDay";
-		    }
+		        return nameof(ETaxisType.OrderByHitsByDay);
+            }
 		    if (type == ETaxisType.OrderByHitsByWeek)
 		    {
-		        return "OrderByHitsByWeek";
-		    }
+		        return nameof(ETaxisType.OrderByHitsByWeek);
+            }
 		    if (type == ETaxisType.OrderByHitsByMonth)
 		    {
-		        return "OrderByHitsByMonth";
-		    }
+		        return nameof(ETaxisType.OrderByHitsByMonth);
+            }
 		    if (type == ETaxisType.OrderByRandom)
 		    {
-		        return "OrderByRandom";
-		    }
+		        return nameof(ETaxisType.OrderByRandom);
+            }
+
 		    throw new Exception();
 		}
 
@@ -110,43 +111,43 @@ namespace SiteServer.Utils.Enumerations
             var retval = string.Empty;
             if (taxisType == ETaxisType.OrderById)
             {
-                retval = "ORDER BY NodeId ASC";
+                retval = $"ORDER BY {nameof(IChannelInfo.Id)} ASC";
             }
             else if (taxisType == ETaxisType.OrderByIdDesc)
             {
-                retval = "ORDER BY NodeId DESC";
+                retval = $"ORDER BY {nameof(IChannelInfo.Id)} DESC";
             }
-            else if (taxisType == ETaxisType.OrderByNodeId)
+            else if (taxisType == ETaxisType.OrderByChannelId)
             {
-                retval = "ORDER BY NodeId ASC";
+                retval = $"ORDER BY {nameof(IChannelInfo.Id)} ASC";
             }
-            else if (taxisType == ETaxisType.OrderByNodeIdDesc)
+            else if (taxisType == ETaxisType.OrderByChannelIdDesc)
             {
-                retval = "ORDER BY NodeId DESC";
+                retval = $"ORDER BY {nameof(IChannelInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByAddDate)
             {
-                retval = "ORDER BY AddDate ASC";
+                retval = $"ORDER BY {nameof(IChannelInfo.AddDate)} ASC";
             }
             else if (taxisType == ETaxisType.OrderByAddDateDesc)
             {
-                retval = "ORDER BY AddDate DESC";
+                retval = $"ORDER BY {nameof(IChannelInfo.AddDate)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByLastEditDate)
             {
-                retval = "ORDER BY AddDate ASC";
+                retval = $"ORDER BY {nameof(IChannelInfo.AddDate)} ASC";
             }
             else if (taxisType == ETaxisType.OrderByLastEditDateDesc)
             {
-                retval = "ORDER BY AddDate DESC";
+                retval = $"ORDER BY {nameof(IChannelInfo.AddDate)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByTaxis)
             {
-                retval = "ORDER BY Taxis ASC";
+                retval = $"ORDER BY {nameof(IChannelInfo.Taxis)} ASC";
             }
             else if (taxisType == ETaxisType.OrderByTaxisDesc)
             {
-                retval = "ORDER BY Taxis DESC";
+                retval = $"ORDER BY {nameof(IChannelInfo.Taxis)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByHits)
             {
@@ -154,11 +155,11 @@ namespace SiteServer.Utils.Enumerations
                 {
                     orderedContentIdList.Reverse();
                     retval =
-                        $"ORDER BY CHARINDEX(CONVERT(VARCHAR,NodeId), '{TranslateUtils.ObjectCollectionToString(orderedContentIdList)}') DESC, Taxis ASC";
+                        $"ORDER BY CHARINDEX(CONVERT(VARCHAR, {nameof(IChannelInfo.Id)}), '{TranslateUtils.ObjectCollectionToString(orderedContentIdList)}') DESC, {nameof(IChannelInfo.Taxis)} ASC";
                 }
                 else
                 {
-                    retval = "ORDER BY Taxis ASC";
+                    retval = $"ORDER BY {nameof(IChannelInfo.Taxis)} ASC";
                 }
             }
             else if (taxisType == ETaxisType.OrderByRandom)
@@ -189,59 +190,59 @@ namespace SiteServer.Utils.Enumerations
 
             if (taxisType == ETaxisType.OrderById)
             {
-                retval = "ORDER BY IsTop DESC, ID ASC";
+                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.Id)} ASC";
             }
             else if (taxisType == ETaxisType.OrderByIdDesc)
             {
-                retval = "ORDER BY IsTop DESC, ID DESC";
+                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.Id)} DESC";
             }
-            else if (taxisType == ETaxisType.OrderByNodeId)
+            else if (taxisType == ETaxisType.OrderByChannelId)
             {
-                retval = "ORDER BY IsTop DESC, NodeId ASC, ID DESC";
+                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.ChannelId)} ASC, {nameof(IContentInfo.Id)} DESC";
             }
-            else if (taxisType == ETaxisType.OrderByNodeIdDesc)
+            else if (taxisType == ETaxisType.OrderByChannelIdDesc)
             {
-                retval = "ORDER BY IsTop DESC, NodeId DESC, ID DESC";
+                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.ChannelId)} DESC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByAddDate)
             {
-                retval = "ORDER BY IsTop DESC, AddDate ASC, ID DESC";
+                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.AddDate)} ASC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByAddDateDesc)
             {
-                retval = "ORDER BY IsTop DESC, AddDate DESC, ID DESC";
+                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.AddDate)} DESC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByLastEditDate)
             {
-                retval = "ORDER BY IsTop DESC, LastEditDate ASC, ID DESC";
+                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.LastEditDate)} ASC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByLastEditDateDesc)
             {
-                retval = "ORDER BY IsTop DESC, LastEditDate DESC, ID DESC";
+                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.LastEditDate)} DESC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByTaxis)
             {
-                retval = "ORDER BY IsTop DESC, Taxis ASC, ID DESC";
+                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.Taxis)} ASC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByTaxisDesc)
             {
-                retval = "ORDER BY IsTop DESC, Taxis DESC, ID DESC";
+                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.Taxis)} DESC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByHits)
             {
-                retval = "ORDER BY Hits DESC, ID DESC";
+                retval = $"ORDER BY {nameof(IContentInfo.Hits)} DESC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByHitsByDay)
             {
-                retval = "ORDER BY HitsByDay DESC, ID DESC";
+                retval = $"ORDER BY {nameof(IContentInfo.HitsByDay)} DESC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByHitsByWeek)
             {
-                retval = "ORDER BY HitsByWeek DESC, ID DESC";
+                retval = $"ORDER BY {nameof(IContentInfo.HitsByWeek)} DESC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByHitsByMonth)
             {
-                retval = "ORDER BY HitsByMonth DESC, ID DESC";
+                retval = $"ORDER BY {nameof(IContentInfo.HitsByMonth)} DESC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByRandom)
             {
@@ -261,11 +262,11 @@ namespace SiteServer.Utils.Enumerations
 		    {
 		        return "内容ID（降序）";
 		    }
-		    if (type == ETaxisType.OrderByNodeId)
+		    if (type == ETaxisType.OrderByChannelId)
 		    {
 		        return "栏目ID（升序）";
 		    }
-		    if (type == ETaxisType.OrderByNodeIdDesc)
+		    if (type == ETaxisType.OrderByChannelIdDesc)
 		    {
 		        return "栏目ID（降序）";
 		    }
@@ -324,13 +325,13 @@ namespace SiteServer.Utils.Enumerations
 			{
 				retval = ETaxisType.OrderByIdDesc;
 			}
-			else if (Equals(ETaxisType.OrderByNodeId, typeStr))
+			else if (Equals(ETaxisType.OrderByChannelId, typeStr))
 			{
-				retval = ETaxisType.OrderByNodeId;
+				retval = ETaxisType.OrderByChannelId;
 			}
-			else if (Equals(ETaxisType.OrderByNodeIdDesc, typeStr))
+			else if (Equals(ETaxisType.OrderByChannelIdDesc, typeStr))
 			{
-				retval = ETaxisType.OrderByNodeIdDesc;
+				retval = ETaxisType.OrderByChannelIdDesc;
 			}
 			else if (Equals(ETaxisType.OrderByAddDate, typeStr))
 			{
@@ -407,8 +408,8 @@ namespace SiteServer.Utils.Enumerations
 
 		    listControl.Items.Add(GetListItem(ETaxisType.OrderById, false));
 		    listControl.Items.Add(GetListItem(ETaxisType.OrderByIdDesc, false));
-		    listControl.Items.Add(GetListItem(ETaxisType.OrderByNodeId, false));
-		    listControl.Items.Add(GetListItem(ETaxisType.OrderByNodeIdDesc, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByChannelId, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByChannelIdDesc, false));
 		    listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDate, false));
 		    listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDateDesc, false));
 		    listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDate, false));

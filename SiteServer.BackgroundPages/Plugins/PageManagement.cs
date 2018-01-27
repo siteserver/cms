@@ -12,6 +12,7 @@ namespace SiteServer.BackgroundPages.Plugins
     public class PageManagement : BasePage
     {
         public Literal LtlNav;
+        public Button BtnReload;
         public PlaceHolder PhRunnable;
         public Repeater RptRunnable;
         public PlaceHolder PhNotRunnable;
@@ -177,6 +178,14 @@ namespace SiteServer.BackgroundPages.Plugins
                 RptRunnable.ItemDataBound += RptRunnable_ItemDataBound;
                 RptRunnable.DataBind();
             }
+        }
+
+        public void BtnReload_Click(object sender, EventArgs e)
+        {
+            PluginManager.ClearCache();
+            SuccessMessage("插件重新加载成功");
+
+            AddWaitAndScript($"window.top.location.href = '{PageMain.GetRedirectUrl()}';");
         }
 
         private void RptRunnable_ItemDataBound(object sender, RepeaterItemEventArgs e)

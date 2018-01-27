@@ -26,21 +26,21 @@ namespace SiteServer.BackgroundPages.Cms
 
         private string _returnUrl;
 
-        public static string GetOpenWindowString(int siteId, int nodeId, string returnUrl)
+        public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
         {
             return LayerUtils.GetOpenScript("添加栏目",
                 PageUtils.GetCmsUrl(siteId, nameof(ModalChannelsAdd), new NameValueCollection
                 {
-                    {"NodeID", nodeId.ToString()},
+                    {"channelId", channelId.ToString()},
                     {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
                 }));
         }
 
-        public static string GetRedirectUrl(int siteId, int nodeId, string returnUrl)
+        public static string GetRedirectUrl(int siteId, int channelId, string returnUrl)
         {
             return PageUtils.GetCmsUrl(siteId, nameof(ModalChannelsAdd), new NameValueCollection
             {
-                {"NodeID", nodeId.ToString()},
+                {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
         }
@@ -49,9 +49,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "NodeID", "ReturnUrl");
+            PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
 
-            var nodeId = Body.GetQueryInt("NodeID");
+            var channelId = Body.GetQueryInt("channelId");
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
 
             if (IsPostBack) return;
@@ -88,16 +88,16 @@ namespace SiteServer.BackgroundPages.Cms
 
             HlSelectChannel.Attributes.Add("onclick", ModalChannelSelect.GetOpenWindowString(SiteId));
             LtlSelectChannelScript.Text =
-                $@"<script>selectChannel('{ChannelManager.GetChannelNameNavigation(SiteId, nodeId)}', '{nodeId}');</script>";
+                $@"<script>selectChannel('{ChannelManager.GetChannelNameNavigation(SiteId, channelId)}', '{channelId}');</script>";
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             bool isChanged;
-            var parentNodeId = TranslateUtils.ToInt(Request.Form["nodeID"]);
-            if (parentNodeId == 0)
+            var parentChannelId = TranslateUtils.ToInt(Request.Form["channelId"]);
+            if (parentChannelId == 0)
             {
-                parentNodeId = SiteId;
+                parentChannelId = SiteId;
             }
 
             try
@@ -108,7 +108,7 @@ namespace SiteServer.BackgroundPages.Cms
                     return;
                 }
 
-                var insertedNodeIdHashtable = new Hashtable {[1] = parentNodeId}; //key为栏目的级别，1为第一级栏目
+                var insertedChannelIdHashtable = new Hashtable {[1] = parentChannelId}; //key为栏目的级别，1为第一级栏目
 
                 var nodeNameArray = TbNodeNames.Text.Split('\n');
                 List<string> nodeIndexNameList = null;
@@ -122,7 +122,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var nodeIndex = string.Empty;
                     count++;
 
-                    if (!string.IsNullOrEmpty(nodeName) && insertedNodeIdHashtable.Contains(count))
+                    if (!string.IsNullOrEmpty(nodeName) && insertedChannelIdHashtable.Contains(count))
                     {
                         if (CbIsNameToIndex.Checked)
                         {
@@ -156,7 +156,7 @@ namespace SiteServer.BackgroundPages.Cms
                             }
                         }
 
-                        var parentId = (int)insertedNodeIdHashtable[count];
+                        var parentId = (int)insertedChannelIdHashtable[count];
                         var contentModelPluginId = DdlContentModelPluginId.SelectedValue;
                         if (string.IsNullOrEmpty(contentModelPluginId))
                         {
@@ -167,14 +167,14 @@ namespace SiteServer.BackgroundPages.Cms
                         var channelTemplateId = TranslateUtils.ToInt(DdlChannelTemplateId.SelectedValue);
                         var contentTemplateId = TranslateUtils.ToInt(DdlContentTemplateId.SelectedValue);
 
-                        var insertedNodeId = DataProvider.ChannelDao.Insert(SiteId, parentId, nodeName, nodeIndex, contentModelPluginId, ControlUtils.GetSelectedListControlValueCollection(CblContentRelatedPluginIds), channelTemplateId, contentTemplateId);
-                        insertedNodeIdHashtable[count + 1] = insertedNodeId;
+                        var insertedChannelId = DataProvider.ChannelDao.Insert(SiteId, parentId, nodeName, nodeIndex, contentModelPluginId, ControlUtils.GetSelectedListControlValueCollection(CblContentRelatedPluginIds), channelTemplateId, contentTemplateId);
+                        insertedChannelIdHashtable[count + 1] = insertedChannelId;
 
-                        CreateManager.CreateChannel(SiteId, insertedNodeId);
+                        CreateManager.CreateChannel(SiteId, insertedChannelId);
                     }
                 }
 
-                Body.AddSiteLog(SiteId, parentNodeId, 0, "快速添加栏目", $"父栏目:{ChannelManager.GetChannelName(SiteId, parentNodeId)},栏目:{TbNodeNames.Text.Replace('\n', ',')}");
+                Body.AddSiteLog(SiteId, parentChannelId, 0, "快速添加栏目", $"父栏目:{ChannelManager.GetChannelName(SiteId, parentChannelId)},栏目:{TbNodeNames.Text.Replace('\n', ',')}");
 
                 isChanged = true;
             }

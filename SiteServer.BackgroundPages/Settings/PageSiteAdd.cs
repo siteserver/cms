@@ -135,14 +135,14 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (SiteTemplateManager.Instance.IsSiteTemplateExists)
             {
-                RblSource.Items.Add(new ListItem("创建空站点（不使用模板）", ETriStateUtils.GetValue(ETriState.True)));
-                RblSource.Items.Add(new ListItem("使用站点模板创建站点", ETriStateUtils.GetValue(ETriState.False)));
-                RblSource.Items.Add(new ListItem("使用在线模板创建站点", ETriStateUtils.GetValue(ETriState.All)));
+                RblSource.Items.Add(new ListItem("创建空站点（不使用站点模板）", ETriStateUtils.GetValue(ETriState.True)));
+                RblSource.Items.Add(new ListItem("使用本地站点模板创建站点", ETriStateUtils.GetValue(ETriState.False)));
+                RblSource.Items.Add(new ListItem("使用在线站点模板创建站点", ETriStateUtils.GetValue(ETriState.All)));
             }
             else
             {
-                RblSource.Items.Add(new ListItem("创建空站点（不使用模板）", ETriStateUtils.GetValue(ETriState.True)));
-                RblSource.Items.Add(new ListItem("使用站点模板创建站点", ETriStateUtils.GetValue(ETriState.False)));
+                RblSource.Items.Add(new ListItem("创建空站点（不使用站点模板）", ETriStateUtils.GetValue(ETriState.True)));
+                RblSource.Items.Add(new ListItem("使用在线站点模板创建站点", ETriStateUtils.GetValue(ETriState.All)));
             }
             ControlUtils.SelectSingleItem(RblSource, ETriStateUtils.GetValue(ETriState.True));
 
@@ -218,7 +218,7 @@ namespace SiteServer.BackgroundPages.Settings
                 }
                 else
                 {
-                    LtlSource.Text = "创建空站点（不使用模板）";
+                    LtlSource.Text = "创建空站点（不使用站点模板）";
 
                     ShowSubmit();
                 }
@@ -236,7 +236,7 @@ namespace SiteServer.BackgroundPages.Settings
                     return;
                 }
 
-                LtlSource.Text = $"使用站点模板创建站点（{siteTemplateDir}）";
+                LtlSource.Text = $"使用本地站点模板创建站点（{siteTemplateDir}）";
 
                 ShowSubmit();
             }
@@ -248,12 +248,12 @@ namespace SiteServer.BackgroundPages.Settings
 
                 if (string.IsNullOrEmpty(onlineTemplateName))
                 {
-                    FailMessage("请选择需要使用的在线模板");
+                    FailMessage("请选择需要使用的在线站点模板");
                     ShowOnlineTemplates();
                     return;
                 }
 
-                LtlSource.Text = $@"使用在线模板创建站点（<a href=""{OnlineTemplateManager.GetTemplateUrl(onlineTemplateName)}"" target=""_blank"">{onlineTemplateName}</a>）";
+                LtlSource.Text = $@"使用在线站点模板创建站点（<a href=""{OnlineTemplateManager.GetTemplateUrl(onlineTemplateName)}"" target=""_blank"">{onlineTemplateName}</a>）";
 
                 ShowSubmit();
             }

@@ -3,6 +3,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Administrators;
 using SiteServer.CMS.Core;
+using SiteServer.Utils.Packaging;
 
 namespace SiteServer.BackgroundPages
 {
@@ -18,7 +19,7 @@ namespace SiteServer.BackgroundPages
         {
             if (IsForbidden) return;
 
-            LtlVersionInfo.Text = SystemManager.Version;
+            LtlVersionInfo.Text = SystemManager.Version == PackageUtils.VersionDev ? "dev" : SystemManager.Version;
 
             if (Body.AdministratorInfo.LastActivityDate != DateTime.MinValue)
             {

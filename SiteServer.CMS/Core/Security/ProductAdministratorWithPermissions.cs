@@ -8,7 +8,7 @@ namespace SiteServer.CMS.Core.Security
 	{
 		private Dictionary<int, List<string>> _websitePermissionDict;
 		private Dictionary<int, List<string>> _channelPermissionDict;
-        private List<string> _channelPermissionListIgnoreNodeId;
+        private List<string> _channelPermissionListIgnoreChannelId;
         private List<int> _siteIdList;
         private List<int> _owningChannelIdList;
 
@@ -115,37 +115,37 @@ namespace SiteServer.CMS.Core.Security
 			}
 		}
 
-        public List<string> ChannelPermissionListIgnoreNodeId
+        public List<string> ChannelPermissionListIgnoreChannelId
         {
             get
             {
-                if (_channelPermissionListIgnoreNodeId == null)
+                if (_channelPermissionListIgnoreChannelId == null)
                 {
                     if (!string.IsNullOrEmpty(UserName) && !string.Equals(UserName, AdminManager.AnonymousUserName))
                     {
                         if (CacheUtils.Get(_channelPermissionListIgnoreChannelIdKey) != null)
                         {
-                            _channelPermissionListIgnoreNodeId = CacheUtils.Get(_channelPermissionListIgnoreChannelIdKey) as List<string>;
+                            _channelPermissionListIgnoreChannelId = CacheUtils.Get(_channelPermissionListIgnoreChannelIdKey) as List<string>;
                         }
                         else
                         {
                             if (EPredefinedRoleUtils.IsSystemAdministrator(Roles))
                             {
-                                _channelPermissionListIgnoreNodeId = new List<string>();
+                                _channelPermissionListIgnoreChannelId = new List<string>();
                                 foreach (var permission in PermissionConfigManager.Instance.ChannelPermissions)
                                 {
-                                    _channelPermissionListIgnoreNodeId.Add(permission.Name);
+                                    _channelPermissionListIgnoreChannelId.Add(permission.Name);
                                 }
                             }
                             else
                             {
-                                _channelPermissionListIgnoreNodeId = DataProvider.SitePermissionsDao.GetChannelPermissionListIgnoreChannelId(Roles);
+                                _channelPermissionListIgnoreChannelId = DataProvider.SitePermissionsDao.GetChannelPermissionListIgnoreChannelId(Roles);
                             }
-                            CacheUtils.InsertMinutes(_channelPermissionListIgnoreChannelIdKey, _channelPermissionListIgnoreNodeId, 30);
+                            CacheUtils.InsertMinutes(_channelPermissionListIgnoreChannelIdKey, _channelPermissionListIgnoreChannelId, 30);
                         }
                     }
                 }
-                return _channelPermissionListIgnoreNodeId ?? (_channelPermissionListIgnoreNodeId = new List<string>());
+                return _channelPermissionListIgnoreChannelId ?? (_channelPermissionListIgnoreChannelId = new List<string>());
             }
         }
 
@@ -263,10 +263,10 @@ namespace SiteServer.CMS.Core.Security
 
                             if (!permissions.IsSystemAdministrator)
                             {
-                                foreach (var nodeId in ProductPermissionsManager.Current.ChannelPermissionDict.Keys)
+                                foreach (var channelId in ProductPermissionsManager.Current.ChannelPermissionDict.Keys)
                                 {
-                                    _owningChannelIdList.Add(nodeId);
-                                    _owningChannelIdList.AddRange(DataProvider.ChannelDao.GetIdListForDescendant(nodeId));
+                                    _owningChannelIdList.Add(channelId);
+                                    _owningChannelIdList.AddRange(DataProvider.ChannelDao.GetIdListForDescendant(channelId));
                                 }
                             }
 
@@ -282,7 +282,7 @@ namespace SiteServer.CMS.Core.Security
         {
             _websitePermissionDict = null;
             _channelPermissionDict = null;
-            _channelPermissionListIgnoreNodeId = null;
+            _channelPermissionListIgnoreChannelId = null;
             _siteIdList = null;
             _owningChannelIdList = null;
 

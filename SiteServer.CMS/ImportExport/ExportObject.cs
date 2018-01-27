@@ -193,39 +193,39 @@ namespace SiteServer.CMS.ImportExport
         /// <summary>
         /// 导出网站内容至默认的临时文件地址
         /// </summary>
-        public void ExportSiteContent(string siteContentDirectoryPath, bool isSaveContents, bool isSaveAllChannels, List<int> nodeIdArrayList)
+        public void ExportSiteContent(string siteContentDirectoryPath, bool isSaveContents, bool isSaveAllChannels, List<int> channelIdArrayList)
         {
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            var allNodeIdList = DataProvider.ChannelDao.GetIdListBySiteId(_siteInfo.Id);
+            var allChannelIdList = DataProvider.ChannelDao.GetIdListBySiteId(_siteInfo.Id);
 
-            var includeNodeIdArrayList = new ArrayList();
-            foreach (int nodeId in nodeIdArrayList)
+            var includeChannelIdArrayList = new ArrayList();
+            foreach (int channelId in channelIdArrayList)
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, nodeId);
+                var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, channelId);
                 var parentIdArrayList = TranslateUtils.StringCollectionToIntList(nodeInfo.ParentsPath);
                 foreach (int parentId in parentIdArrayList)
                 {
-                    if (!includeNodeIdArrayList.Contains(parentId))
+                    if (!includeChannelIdArrayList.Contains(parentId))
                     {
-                        includeNodeIdArrayList.Add(parentId);
+                        includeChannelIdArrayList.Add(parentId);
                     }
                 }
-                if (!includeNodeIdArrayList.Contains(nodeId))
+                if (!includeChannelIdArrayList.Contains(channelId))
                 {
-                    includeNodeIdArrayList.Add(nodeId);
+                    includeChannelIdArrayList.Add(channelId);
                 }
             }
 
             var siteContentIe = new SiteContentIe(_siteInfo, siteContentDirectoryPath);
-            foreach (int nodeId in allNodeIdList)
+            foreach (int channelId in allChannelIdList)
             {
                 if (!isSaveAllChannels)
                 {
-                    if (!includeNodeIdArrayList.Contains(nodeId)) continue;
+                    if (!includeChannelIdArrayList.Contains(channelId)) continue;
                 }
-                siteContentIe.Export(_siteInfo.Id, nodeId, isSaveContents);
+                siteContentIe.Export(_siteInfo.Id, channelId, isSaveContents);
             }
         }
 
@@ -244,13 +244,13 @@ namespace SiteServer.CMS.ImportExport
         }
 
 
-        public string ExportChannels(List<int> nodeIdList)
+        public string ExportChannels(List<int> channelIdList)
         {
             var filePath = PathUtils.GetTemporaryFilesPath(EBackupTypeUtils.GetValue(EBackupType.ChannelsAndContents) + ".zip");
-            return ExportChannels(nodeIdList, filePath);
+            return ExportChannels(channelIdList, filePath);
         }
 
-        public string ExportChannels(List<int> nodeIdList, string filePath)
+        public string ExportChannels(List<int> channelIdList, string filePath)
         {
             var siteContentDirectoryPath = PathUtils.Combine(DirectoryUtils.GetDirectoryPath(filePath), PathUtils.GetFileNameWithoutExtension(filePath));
 
@@ -258,20 +258,20 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
             var siteContentIe = new SiteContentIe(_siteInfo, siteContentDirectoryPath);
-            var allNodeIdList = new List<int>();
-            foreach (int nodeId in nodeIdList)
+            var allChannelIdList = new List<int>();
+            foreach (int channelId in channelIdList)
             {
-                if (!allNodeIdList.Contains(nodeId))
+                if (!allChannelIdList.Contains(channelId))
                 {
-                    allNodeIdList.Add(nodeId);
-                    var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, nodeId);
-                    var childNodeIdList = DataProvider.ChannelDao.GetIdListByScopeType(nodeInfo.Id, EScopeType.Descendant, string.Empty, string.Empty);
-                    allNodeIdList.AddRange(childNodeIdList);
+                    allChannelIdList.Add(channelId);
+                    var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, channelId);
+                    var childChannelIdList = DataProvider.ChannelDao.GetIdListByScopeType(nodeInfo.Id, EScopeType.Descendant, string.Empty, string.Empty);
+                    allChannelIdList.AddRange(childChannelIdList);
                 }
             }
-            foreach (int nodeId in allNodeIdList)
+            foreach (int channelId in allChannelIdList)
             {
-                siteContentIe.Export(_siteInfo.Id, nodeId, true);
+                siteContentIe.Export(_siteInfo.Id, channelId, true);
             } 
              
             var imageUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _siteInfo.Additional.ImageUploadDirectoryName);
@@ -305,7 +305,7 @@ namespace SiteServer.CMS.ImportExport
             return PathUtils.GetFileName(filePath);
         }
 
-        public bool ExportContents(string filePath, int nodeId, List<int> contentIdArrayList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
+        public bool ExportContents(string filePath, int channelId, List<int> contentIdArrayList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
         {
             var siteContentDirectoryPath = PathUtils.Combine(DirectoryUtils.GetDirectoryPath(filePath), PathUtils.GetFileNameWithoutExtension(filePath));
 
@@ -314,7 +314,7 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
             var siteContentIe = new SiteContentIe(_siteInfo, siteContentDirectoryPath);
-            var isExport = siteContentIe.ExportContents(_siteInfo, nodeId, contentIdArrayList, isPeriods, dateFrom, dateTo, checkedState);
+            var isExport = siteContentIe.ExportContents(_siteInfo, channelId, contentIdArrayList, isPeriods, dateFrom, dateTo, checkedState);
             if (isExport)
             {
                 ZipUtils.PackFiles(filePath, siteContentDirectoryPath);

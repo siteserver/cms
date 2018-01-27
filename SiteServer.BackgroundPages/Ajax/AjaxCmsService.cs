@@ -24,13 +24,13 @@ namespace SiteServer.BackgroundPages.Ajax
             });
         }
 
-        public static string GetTitlesUrl(int siteId, int nodeId)
+        public static string GetTitlesUrl(int siteId, int channelId)
         {
             return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
             {
                 {"type", TypeGetTitles},
-                {"siteID", siteId.ToString()},
-                {"nodeID", nodeId.ToString()}
+                {"siteId", siteId.ToString()},
+                {"channelId", channelId.ToString()}
             });
         }
 
@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
             {
                 {"type", TypeGetWordSpliter},
-                {"siteID", siteId.ToString()}
+                {"siteId", siteId.ToString()}
             });
         }
 
@@ -48,7 +48,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
             {
                 {"type", TypeGetDetection},
-                {"siteID", siteId.ToString()}
+                {"siteId", siteId.ToString()}
             });
         }
 
@@ -57,7 +57,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
             {
                 {"type", TypeGetDetectionReplace},
-                {"siteID", siteId.ToString()}
+                {"siteId", siteId.ToString()}
             });
         }
 
@@ -66,7 +66,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
             {
                 {"type", TypeGetTags},
-                {"siteID", siteId.ToString()}
+                {"siteId", siteId.ToString()}
             });
         }
 
@@ -77,15 +77,10 @@ namespace SiteServer.BackgroundPages.Ajax
 
             if (type == TypeGetTitles)
             {
-                var siteId = TranslateUtils.ToInt(Request["siteID"]);
-                var channelId = TranslateUtils.ToInt(Request["channelID"]);
-                var nodeId = TranslateUtils.ToInt(Request["nodeID"]);
-                if (channelId > 0)
-                {
-                    nodeId = channelId;
-                }
+                var siteId = TranslateUtils.ToInt(Request["siteId"]);
+                var channelId = TranslateUtils.ToInt(Request["channelId"]);
                 var title = Request["title"];
-                var titles = GetTitles(siteId, nodeId, title);
+                var titles = GetTitles(siteId, channelId, title);
 
                 Page.Response.Write(titles);
                 Page.Response.End();
@@ -94,7 +89,7 @@ namespace SiteServer.BackgroundPages.Ajax
             }
             if (type == TypeGetWordSpliter)
             {
-                var siteId = TranslateUtils.ToInt(Request["siteID"]);
+                var siteId = TranslateUtils.ToInt(Request["siteId"]);
                 var contents = Request.Form["content"];
                 var tags = WordSpliter.GetKeywords(contents, siteId, 10);
 
@@ -106,7 +101,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
             if (type == TypeGetTags)
             {
-                var siteId = TranslateUtils.ToInt(Request["siteID"]);
+                var siteId = TranslateUtils.ToInt(Request["siteId"]);
                 var tag = Request["tag"];
                 var tags = GetTags(siteId, tag);
 
@@ -147,13 +142,13 @@ namespace SiteServer.BackgroundPages.Ajax
             Page.Response.End();
         }
 
-        public string GetTitles(int siteId, int nodeId, string title)
+        public string GetTitles(int siteId, int channelId, string title)
         {
             var retval = new StringBuilder();
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var tableName = ChannelManager.GetTableName(siteInfo, nodeId);
-            var titleList = DataProvider.ContentDao.GetValueListByStartString(tableName, nodeId, ContentAttribute.Title, title, 10);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+            var titleList = DataProvider.ContentDao.GetValueListByStartString(tableName, channelId, ContentAttribute.Title, title, 10);
             if (titleList.Count > 0)
             {
                 foreach (var value in titleList)

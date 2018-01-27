@@ -22,7 +22,7 @@
         <div class="form-group form-row">
           <label class="col-3 col-form-label text-right">选择内容变动时需要生成的栏目</label>
           <div class="col-9">
-            <asp:ListBox ID="LbNodeId" class="form-control" SelectionMode="Multiple" Rows="13" runat="server"></asp:ListBox>
+            <asp:ListBox ID="LbChannel" class="form-control" SelectionMode="Multiple" Rows="13" runat="server"></asp:ListBox>
           </div>
         </div>
 

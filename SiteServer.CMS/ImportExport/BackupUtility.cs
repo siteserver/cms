@@ -24,8 +24,8 @@ namespace SiteServer.CMS.ImportExport
         {
             var exportObject = new ExportObject(siteId);
 
-            var nodeIdList = DataProvider.ChannelDao.GetIdListByParentId(siteId, siteId);
-            exportObject.ExportChannels(nodeIdList, filePath);  
+            var channelIdList = DataProvider.ChannelDao.GetIdListByParentId(siteId, siteId);
+            exportObject.ExportChannels(channelIdList, filePath);  
         }
 
         public static void BackupFiles(int siteId, string filePath)
@@ -84,10 +84,10 @@ namespace SiteServer.CMS.ImportExport
 
             if (isDeleteChannels)
             {
-                var nodeIdList = DataProvider.ChannelDao.GetIdListByParentId(siteId, siteId);
-                foreach (var nodeId in nodeIdList)
+                var channelIdList = DataProvider.ChannelDao.GetIdListByParentId(siteId, siteId);
+                foreach (var channelId in channelIdList)
                 {
-                    DataProvider.ChannelDao.Delete(siteId, nodeId);
+                    DataProvider.ChannelDao.Delete(siteId, channelId);
                 }
             }
             if (isDeleteTemplates)

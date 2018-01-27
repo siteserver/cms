@@ -86,10 +86,6 @@
     <Compile Include="Controllers\Sys\Stl\ApiRouteActionsAddContentHits.cs" />
     <Compile Include="Controllers\Sys\Stl\ApiRouteActionsDownload.cs" />
     <Compile Include="Controllers\Sys\Stl\ApiRouteActionsDynamic.cs" />
-    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsGovInteractApplyAdd.cs" />
-    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsGovInteractQueryAdd.cs" />
-    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsGovPublicApplyAdd.cs" />
-    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsGovPublicQueryAdd.cs" />
     <Compile Include="Controllers\Sys\Stl\ApiRouteActionsIf.cs" />
     <Compile Include="Controllers\Sys\Stl\ApiRouteActionsInputAdd.cs" />
     <Compile Include="Controllers\Sys\Stl\ApiRouteActionsLoadingChannels.cs" />
@@ -99,8 +95,6 @@
     <Compile Include="Controllers\Sys\Stl\ApiRouteActionsSearch.cs" />
     <Compile Include="Controllers\Sys\Stl\ApiRouteActionsTrigger.cs" />
     <Compile Include="Controllers\Sys\Stl\ApiRouteActionsUpload.cs" />
-    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsVote.cs" />
-    <Compile Include="Controllers\Sys\Stl\ApiRouteActionsVoteAdd.cs" />
     <Compile Include="Core\AdminManager.cs" />
     <Compile Include="Core\ArchiveManager.cs" />
     <Compile Include="Core\AreaManager.cs" />
@@ -260,6 +254,7 @@
     <Compile Include="Plugin\PluginContentManager.cs" />
     <Compile Include="Plugin\PluginContentTableManager.cs" />
     <Compile Include="Plugin\PluginDatabaseTableManager.cs" />
+    <Compile Include="Plugin\PluginDebugger.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Plugin\PluginMenuManager.cs" />
     <Compile Include="Plugin\PluginStlParserManager.cs" />

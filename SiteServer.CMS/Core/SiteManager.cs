@@ -393,9 +393,9 @@ namespace SiteServer.CMS.Core
                     {
                         if (!siteIdList.Contains(itemForPsid))
                         {
-                            var nodeIdCollection = DataProvider.SitePermissionsDao.GetAllPermissionList(roles, itemForPsid, true);
+                            var channelIdCollection = DataProvider.SitePermissionsDao.GetAllPermissionList(roles, itemForPsid, true);
                             var siteInfo = GetSiteInfo(itemForPsid);
-                            if (nodeIdCollection.Count > 0)
+                            if (channelIdCollection.Count > 0)
                             {
                                 siteInfoList.Add(siteInfo);
                                 siteIdList.Add(itemForPsid);

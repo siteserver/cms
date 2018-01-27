@@ -165,11 +165,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (contentInfo != null && contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0)
                         {
-                            var targetNodeId = contentInfo.SourceId;
-                            //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetNodeId);
-                            var targetSiteId = Node.GetSiteId(targetNodeId);
+                            var targetChannelId = contentInfo.SourceId;
+                            //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
+                            var targetSiteId = Node.GetSiteId(targetChannelId);
                             var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
-                            var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetNodeId);
+                            var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
                             var tableName = ChannelManager.GetTableName(targetSiteInfo, targetNodeInfo);
                             //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
@@ -215,9 +215,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (contextType == EContextType.Channel)//获取栏目图片
                 {
-                    var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
+                    var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
-                    channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
+                    channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
 
                     var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
 

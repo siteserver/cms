@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Cms
         public Repeater RptContents;
         public Button BtnCheck;
 
-        private int _nodeId;
+        private int _channelId;
         private string _tableName;
         private int _contentId;
         private string _returnUrl;
@@ -25,9 +25,9 @@ namespace SiteServer.BackgroundPages.Cms
             return LayerUtils.GetOpenScript("审核状态",
                 PageUtils.GetCmsUrl(siteId, nameof(ModalCheckState), new NameValueCollection
                 {
-                    {"NodeID", contentInfo.ChannelId.ToString()},
-                    {"ContentID", contentInfo.Id.ToString()},
-                    {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
+                    {"channelId", contentInfo.ChannelId.ToString()},
+                    {"contentID", contentInfo.Id.ToString()},
+                    {"returnUrl", StringUtils.ValueToUrl(returnUrl)}
                 }), 560, 500);
         }
 
@@ -35,18 +35,18 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "NodeID", "ContentID", "ReturnUrl");
+            PageUtils.CheckRequestParameter("siteId", "channelId", "contentID", "returnUrl");
 
-            _nodeId = Body.GetQueryInt("NodeID");
-            _tableName = ChannelManager.GetTableName(SiteInfo, _nodeId);
-            _contentId = Body.GetQueryInt("ContentID");
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
+            _channelId = Body.GetQueryInt("channelId");
+            _tableName = ChannelManager.GetTableName(SiteInfo, _channelId);
+            _contentId = Body.GetQueryInt("contentID");
+            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("returnUrl"));
 
             var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, _contentId);
 
             int checkedLevel;
             var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, SiteInfo, SiteId, out checkedLevel);
-            BtnCheck.Visible = CheckManager.IsCheckable(SiteInfo, _nodeId, contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
+            BtnCheck.Visible = CheckManager.IsCheckable(SiteInfo, _channelId, contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
 
             LtlTitle.Text = contentInfo.Title;
             LtlState.Text = CheckManager.GetCheckState(SiteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);
@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var redirectUrl = ModalContentCheck.GetRedirectUrl(SiteId, _nodeId, _contentId, _returnUrl);
+            var redirectUrl = ModalContentCheck.GetRedirectUrl(SiteId, _channelId, _contentId, _returnUrl);
             PageUtils.Redirect(redirectUrl);
         }
 

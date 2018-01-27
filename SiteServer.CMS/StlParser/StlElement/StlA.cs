@@ -182,8 +182,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (contextInfo.ContextType == EContextType.Channel)//获取栏目Url
                 {
-                    contextInfo.ChannelId = StlDataUtility.GetNodeIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
-                    contextInfo.ChannelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, contextInfo.ChannelId, channelIndex, channelName);
+                    contextInfo.ChannelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
+                    contextInfo.ChannelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, contextInfo.ChannelId, channelIndex, channelName);
                     var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
 
                     url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, channel, pageInfo.IsLocal);

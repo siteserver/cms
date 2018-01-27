@@ -13,10 +13,10 @@ namespace SiteServer.BackgroundPages.Cms
         public RadioButtonList RblOperation;
         public PlaceHolder PhSiteId;
         public DropDownList DdlSiteId;
-        public ListBox LbNodeId;
+        public ListBox LbChannelId;
         public PlaceHolder PhSubmit;
 
-        private ChannelInfo _nodeInfo;
+        private ChannelInfo _channelInfo;
         private int _contentId;
         private string _returnUrl;
 
@@ -27,11 +27,11 @@ namespace SiteServer.BackgroundPages.Cms
             Contribute
         }
 
-        public static string GetRedirectUrl(int siteId, int nodeId, int contentId, string returnUrl)
+        public static string GetRedirectUrl(int siteId, int channelId, int contentId, string returnUrl)
         {
             return PageUtils.GetCmsUrl(siteId, nameof(PageContentAddAfter), new NameValueCollection
             {
-                {"NodeID", nodeId.ToString()},
+                {"channelId", channelId.ToString()},
                 {"ContentID", contentId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
@@ -41,22 +41,22 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-			PageUtils.CheckRequestParameter("siteId", "NodeID", "ContentID", "ReturnUrl");
-			var nodeId = Body.GetQueryInt("NodeID");
+			PageUtils.CheckRequestParameter("siteId", "channelId", "ContentID", "ReturnUrl");
+			var channelId = Body.GetQueryInt("channelId");
             _contentId = Body.GetQueryInt("ContentID");
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
 
-            _nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
+            _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 
             if (IsPostBack) return;
 
             RblOperation.Items.Add(new ListItem("继续添加内容", EContentAddAfter.ContinueAdd.ToString()));
             RblOperation.Items.Add(new ListItem("返回管理界面", EContentAddAfter.ManageContents.ToString()));
 
-            var isCrossSiteTrans = CrossSiteTransUtility.IsCrossSiteTrans(SiteInfo, _nodeInfo);
-            var isAutomatic = CrossSiteTransUtility.IsAutomatic(_nodeInfo);
+            var isCrossSiteTrans = CrossSiteTransUtility.IsCrossSiteTrans(SiteInfo, _channelInfo);
+            var isAutomatic = CrossSiteTransUtility.IsAutomatic(_channelInfo);
 
-            var isTranslated = ContentUtility.AfterContentAdded(SiteInfo, _nodeInfo, _contentId, isCrossSiteTrans, isAutomatic);
+            var isTranslated = ContentUtility.AfterContentAdded(SiteInfo, _channelInfo, _contentId, isCrossSiteTrans, isAutomatic);
             if (isCrossSiteTrans && !isAutomatic)
             {
                 RblOperation.Items.Add(new ListItem("转发到其他站点", EContentAddAfter.Contribute.ToString()));
@@ -72,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
             var after = (EContentAddAfter)TranslateUtils.ToEnum(typeof(EContentAddAfter), RblOperation.SelectedValue, EContentAddAfter.ContinueAdd);
             if (after == EContentAddAfter.ContinueAdd)
             {
-                PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _nodeInfo, Body.GetQueryString("ReturnUrl")));
+                PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo, Body.GetQueryString("ReturnUrl")));
             }
             else if (after == EContentAddAfter.ManageContents)
             {
@@ -80,7 +80,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else if (after == EContentAddAfter.Contribute)
             {
-                CrossSiteTransUtility.LoadSiteIdDropDownList(DdlSiteId, SiteInfo, _nodeInfo.Id);
+                CrossSiteTransUtility.LoadSiteIdDropDownList(DdlSiteId, SiteInfo, _channelInfo.Id);
 
                 if (DdlSiteId.Items.Count > 0)
                 {
@@ -93,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
         public void DdlSiteId_SelectedIndexChanged(object sender, EventArgs e)
         {
             var psId = int.Parse(DdlSiteId.SelectedValue);
-            CrossSiteTransUtility.LoadNodeIdListBox(LbNodeId, SiteInfo, psId, _nodeInfo, Body.AdminName);
+            CrossSiteTransUtility.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, _channelInfo, Body.AdminName);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -104,17 +104,17 @@ namespace SiteServer.BackgroundPages.Cms
             var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
             try
             {
-                foreach (ListItem listItem in LbNodeId.Items)
+                foreach (ListItem listItem in LbChannelId.Items)
                 {
                     if (!listItem.Selected) continue;
-                    var targetNodeId = TranslateUtils.ToInt(listItem.Value);
-                    if (targetNodeId != 0)
+                    var targetChannelId = TranslateUtils.ToInt(listItem.Value);
+                    if (targetChannelId != 0)
                     {
-                        CrossSiteTransUtility.TransContentInfo(SiteInfo, _nodeInfo, _contentId, targetSiteInfo, targetNodeId);
+                        CrossSiteTransUtility.TransContentInfo(SiteInfo, _channelInfo, _contentId, targetSiteInfo, targetChannelId);
                     }
                 }
 
-                Body.AddSiteLog(SiteId, _nodeInfo.Id, _contentId, "内容跨站转发", $"转发到站点:{targetSiteInfo.SiteName}");
+                Body.AddSiteLog(SiteId, _channelInfo.Id, _contentId, "内容跨站转发", $"转发到站点:{targetSiteInfo.SiteName}");
 
                 SuccessMessage("内容跨站转发成功，请选择后续操作。");
                 RblOperation.Items.Clear();

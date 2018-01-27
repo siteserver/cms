@@ -35,7 +35,7 @@
             <div class="form-inline">
               <div class="form-group">
                 <label class="col-form-label m-r-10">栏目</label>
-                <asp:DropDownList ID="DdlNodeId" class="form-control m-r-10" OnSelectedIndexChanged="Redirect" AutoPostBack="true" runat="server"></asp:DropDownList>
+                <asp:DropDownList ID="DdlChannelId" class="form-control m-r-10" OnSelectedIndexChanged="Redirect" AutoPostBack="true" runat="server"></asp:DropDownList>
                 <small class="form-text text-muted">
                   下级栏目的字段默认继承上级栏目的字段，设置字段时请先选择合适的栏目
                 </small>

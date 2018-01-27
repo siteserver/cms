@@ -7,14 +7,14 @@ namespace SiteServer.BackgroundPages
 {
     public class BasePageCms : BasePage
 	{
-        public bool HasChannelPermissions(int nodeId, params string[] channelPermissionArray)
+        public bool HasChannelPermissions(int channelId, params string[] channelPermissionArray)
         {
-            return AdminUtility.HasChannelPermissions(Body.AdminName, SiteId, nodeId, channelPermissionArray);
+            return AdminUtility.HasChannelPermissions(Body.AdminName, SiteId, channelId, channelPermissionArray);
         }
 
-        public bool HasChannelPermissionsIgnoreNodeId(params string[] channelPermissionArray)
+        public bool HasChannelPermissionsIgnoreChannelId(params string[] channelPermissionArray)
         {
-            return AdminUtility.HasChannelPermissionsIgnoreNodeId(Body.AdminName, channelPermissionArray);
+            return AdminUtility.HasChannelPermissionsIgnoreChannelId(Body.AdminName, channelPermissionArray);
         }
 
         public bool HasSitePermissions(params string[] websitePermissionArray)
@@ -22,14 +22,14 @@ namespace SiteServer.BackgroundPages
             return AdminUtility.HasSitePermissions(Body.AdminName, SiteId, websitePermissionArray);
         }
 
-        public bool IsOwningNodeId(int nodeId)
+        public bool IsOwningChannelId(int channelId)
         {
-            return AdminUtility.IsOwningNodeId(Body.AdminName, nodeId);
+            return AdminUtility.IsOwningChannelId(Body.AdminName, channelId);
         }
 
-        public bool IsHasChildOwningNodeId(int nodeId)
+        public bool IsHasChildOwningChannelId(int channelId)
         {
-            return AdminUtility.IsHasChildOwningNodeId(Body.AdminName, nodeId);
+            return AdminUtility.IsHasChildOwningChannelId(Body.AdminName, channelId);
         }
 
         private int _siteId = -1;

@@ -19,10 +19,10 @@ namespace SiteServer.API.Controllers.Sys.Stl
                 var context = new RequestContext();
 
                 var siteId = context.GetPostInt("siteId");
-                var pageNodeId = context.GetPostInt("pageNodeId");
-                if (pageNodeId == 0)
+                var pageChannelId = context.GetPostInt("pageChannelId");
+                if (pageChannelId == 0)
                 {
-                    pageNodeId = siteId;
+                    pageChannelId = siteId;
                 }
                 var pageContentId = context.GetPostInt("pageContentId");
                 var pageTemplateId = context.GetPostInt("pageTemplateId");
@@ -33,7 +33,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
                 var channelId = context.GetPostInt("channelId");
                 if (channelId == 0)
                 {
-                    channelId = pageNodeId;
+                    channelId = pageChannelId;
                 }
                 var contentId = context.GetPostInt("contentId");
                 if (contentId == 0)
@@ -49,7 +49,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
                 }
 
                 var queryString = PageUtils.GetQueryStringFilterXss(PageUtils.UrlDecode(HttpContext.Current.Request.RawUrl));
-                queryString.Remove("siteID");
+                queryString.Remove("siteId");
 
                 return Ok(new
                 {

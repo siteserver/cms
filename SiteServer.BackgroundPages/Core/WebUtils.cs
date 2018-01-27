@@ -94,10 +94,10 @@ namespace SiteServer.BackgroundPages.Core
             return url + image;
         }
 
-        public static string GetChannelListBoxTitle(int siteId, int nodeId, string nodeName, int parentsCount, bool isLastNode, bool[] isLastNodeArray)
+        public static string GetChannelListBoxTitle(int siteId, int channelId, string nodeName, int parentsCount, bool isLastNode, bool[] isLastNodeArray)
         {
             var str = string.Empty;
-            if (nodeId == siteId)
+            if (channelId == siteId)
             {
                 isLastNode = true;
             }
@@ -179,7 +179,7 @@ namespace SiteServer.BackgroundPages.Core
                 if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ContentTranslate))
                 {
                     var redirectUrl = PageContentTranslate.GetRedirectUrl(siteInfo.Id, nodeInfo.Id, pageUrl);
-                    var clickString = PageUtils.GetRedirectStringWithCheckBoxValue(redirectUrl, "ContentIDCollection", "ContentIDCollection", "请选择需要转移的内容！");
+                    var clickString = PageUtils.GetRedirectStringWithCheckBoxValue(redirectUrl, "contentIdCollection", "contentIdCollection", "请选择需要转移的内容！");
                     builder.Append($@"
 <a href=""javascript:;"" class=""btn btn-primary"" onclick=""{clickString}"">
     转 移
@@ -359,7 +359,7 @@ namespace SiteServer.BackgroundPages.Core
             if (siteInfo.Id != nodeInfo.Id)
             {
                 builder.Append(
-                    $@"<a href=""{$"{currentFileName}?SiteId={siteInfo.Id}&NodeID={nodeInfo.ParentId}"}""><img style=""MARGIN-RIGHT: 3px"" src=""{iconUrl}/upfolder.gif"" align=""absMiddle"" />向 上</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
+                    $@"<a href=""{$"{currentFileName}?siteId={siteInfo.Id}&channelId={nodeInfo.ParentId}"}""><img style=""MARGIN-RIGHT: 3px"" src=""{iconUrl}/upfolder.gif"" align=""absMiddle"" />向 上</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
             }
             if (builder.Length > 0)
             {

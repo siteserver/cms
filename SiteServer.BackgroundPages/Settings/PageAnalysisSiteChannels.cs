@@ -109,16 +109,16 @@ yArrayUpdate.push('{yValueUpdate}');";
 
         public void BindGrid()
         {
-            var nodeIdList = DataProvider.ChannelDao.GetIdListByParentId(SiteId, 0);
-            foreach (var nodeId in nodeIdList)
+            var channelIdList = DataProvider.ChannelDao.GetIdListByParentId(SiteId, 0);
+            foreach (var channelId in channelIdList)
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
-                var tableName = ChannelManager.GetTableName(SiteInfo, nodeId);
+                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
 
-                SetXHashtable(nodeId, nodeInfo.ChannelName);
+                SetXHashtable(channelId, nodeInfo.ChannelName);
 
-                SetYHashtable(nodeId, DataProvider.ContentDao.GetCountOfContentAdd(tableName, SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeNew);
-                SetYHashtable(nodeId, DataProvider.ContentDao.GetCountOfContentUpdate(tableName, SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeUpdate);
+                SetYHashtable(channelId, DataProvider.ContentDao.GetCountOfContentAdd(tableName, SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeNew);
+                SetYHashtable(channelId, DataProvider.ContentDao.GetCountOfContentUpdate(tableName, SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeUpdate);
             }
 
             RptChannels.DataSource = DataProvider.ChannelDao.GetIdListByParentId(SiteId, 0);
@@ -130,13 +130,13 @@ yArrayUpdate.push('{yValueUpdate}');";
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var nodeId = (int)e.Item.DataItem;
-            var enabled = IsOwningNodeId(nodeId);
+            var channelId = (int)e.Item.DataItem;
+            var enabled = IsOwningChannelId(channelId);
             if (!enabled)
             {
-                if (!IsHasChildOwningNodeId(nodeId)) e.Item.Visible = false;
+                if (!IsHasChildOwningChannelId(channelId)) e.Item.Visible = false;
             }
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 
             var ltlRow = (Literal)e.Item.FindControl("ltlRow");
 

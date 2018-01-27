@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Http;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin.Model;
 using SiteServer.Utils;
 using SiteServer.Utils.Packaging;
@@ -27,6 +28,11 @@ namespace SiteServer.API.Controllers.Sys.Packaging
                 return Unauthorized();
             }
 
+            if (SystemManager.Version == PackageUtils.VersionDev)
+            {
+                return Ok();
+            }
+
             var cacheKeyVersionAndNotes = GetCacheKey(packageId, WebConfigUtils.IsUpdatePreviewVersion, CacheKeyVersionAndNotes);
 
             var versionAndNotes = CacheUtils.Get<VersionAndNotes>(cacheKeyVersionAndNotes);
@@ -43,7 +49,7 @@ namespace SiteServer.API.Controllers.Sys.Packaging
                         Published = published,
                         ReleaseNotes = releaseNotes
                     };
-                    CacheUtils.InsertHours(cacheKeyVersionAndNotes, versionAndNotes, 24);
+                    CacheUtils.InsertHours(cacheKeyVersionAndNotes, versionAndNotes, 8);
                 }
             }
 

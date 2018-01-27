@@ -38,7 +38,7 @@ namespace SiteServer.CMS.StlParser.Utility
             contextInfo.ContentInfo = contentInfo;
 
             var preSiteInfo = pageInfo.SiteInfo;
-            var prePageNodeId = pageInfo.PageNodeId;
+            var prePageChannelId = pageInfo.PageChannelId;
             var prePageContentId = pageInfo.PageContentId;
             if (contentInfo.SiteId != pageInfo.SiteId)
             {
@@ -82,7 +82,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
             if (contentInfo.SiteId != pageInfo.SiteId)
             {
-                pageInfo.ChangeSite(preSiteInfo, prePageNodeId, prePageContentId, contextInfoRef);
+                pageInfo.ChangeSite(preSiteInfo, prePageChannelId, prePageContentId, contextInfoRef);
             }
 
             return innerBuilder.ToString();
@@ -181,22 +181,22 @@ namespace SiteServer.CMS.StlParser.Utility
         {
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
 
-            var nodeId = itemContainer.ChannelItem.ChannelId;
+            var channelId = itemContainer.ChannelItem.ChannelId;
 
             var contextInfo = contextInfoRef.Clone();
             contextInfo.ContextType = contextType;
             contextInfo.ItemContainer = itemContainer;
             contextInfo.ContainerClientId = containerClientId;
-            contextInfo.ChannelId = nodeId;
+            contextInfo.ChannelId = channelId;
 
-            var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
             if (selectedItems != null && selectedItems.Count > 0)
             {
                 foreach (var itemType in selectedItems.Keys)
                 {
                     if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedCurrent))//当前栏目
                     {
-                        if (nodeId == pageInfo.PageNodeId)
+                        if (channelId == pageInfo.PageChannelId)
                         {
                             templateString = selectedItems.Get(itemType);
                             break;
@@ -215,8 +215,8 @@ namespace SiteServer.CMS.StlParser.Utility
                         var upLevel = StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedUp) ? 1 : TranslateUtils.ToInt(itemType.Substring(2));
                         if (upLevel > 0)
                         {
-                            var theNodeId = StlDataUtility.GetNodeIdByLevel(pageInfo.SiteId, pageInfo.PageNodeId, upLevel, -1);
-                            if (nodeId == theNodeId)
+                            var theChannelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, pageInfo.PageChannelId, upLevel, -1);
+                            if (channelId == theChannelId)
                             {
                                 templateString = selectedItems.Get(itemType);
                                 break;
@@ -228,8 +228,8 @@ namespace SiteServer.CMS.StlParser.Utility
                         var topLevel = StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedTop) ? 1 : TranslateUtils.ToInt(itemType.Substring(3));
                         if (topLevel >= 0)
                         {
-                            var theNodeId = StlDataUtility.GetNodeIdByLevel(pageInfo.SiteId, pageInfo.PageNodeId, 0, topLevel);
-                            if (nodeId == theNodeId)
+                            var theChannelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, pageInfo.PageChannelId, 0, topLevel);
+                            if (channelId == theChannelId)
                             {
                                 templateString = selectedItems.Get(itemType);
                                 break;
@@ -328,7 +328,7 @@ namespace SiteServer.CMS.StlParser.Utility
             contextInfo.ContextType = contextType;
 
             var preSiteInfo = pageInfo.SiteInfo;
-            var prePageNodeId = pageInfo.PageNodeId;
+            var prePageChannelId = pageInfo.PageChannelId;
             var prePageContentId = pageInfo.PageContentId;
             pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, contextInfo);
 
@@ -337,7 +337,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
             DbItemContainer.PopSiteItems(pageInfo);
 
-            pageInfo.ChangeSite(preSiteInfo, prePageNodeId, prePageContentId, contextInfo);
+            pageInfo.ChangeSite(preSiteInfo, prePageChannelId, prePageContentId, contextInfo);
 
             return innerBuilder.ToString();
         }

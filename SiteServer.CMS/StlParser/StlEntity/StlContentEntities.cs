@@ -64,11 +64,11 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 {
                     if (contextInfo.ContentInfo != null && contextInfo.ContentInfo.ReferenceId > 0 && contextInfo.ContentInfo.SourceId > 0 && contextInfo.ContentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
                     {
-                        var targetNodeId = contextInfo.ContentInfo.SourceId;
-                        //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetNodeId);
-                        var targetSiteId = Node.GetSiteId(targetNodeId);
+                        var targetChannelId = contextInfo.ContentInfo.SourceId;
+                        //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
+                        var targetSiteId = Node.GetSiteId(targetChannelId);
                         var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
-                        var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetNodeId);
+                        var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
                         var tableName = ChannelManager.GetTableName(targetSiteInfo, targetNodeInfo);
                         //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contextInfo.ContentInfo.ReferenceId);
@@ -300,10 +300,10 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     }
                     else
                     {
-                        int contentNodeId;
+                        int contentChannelId;
                         if (contextInfo.ContentInfo != null)
                         {
-                            contentNodeId = contextInfo.ContentInfo.ChannelId;
+                            contentChannelId = contextInfo.ContentInfo.ChannelId;
                             if (contextInfo.ContentInfo.ContainsKey(attributeName))
                             {
                                 parsedContent = contextInfo.ContentInfo.GetString(attributeName);
@@ -312,16 +312,16 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         else
                         {
                             var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
-                            //contentNodeId = DataProvider.ContentDao.GetNodeId(tableName, contextInfo.ContentId);
-                            contentNodeId = Cache.Content.GetChannelId(tableName, contextInfo.ContentId);
-                            tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, ChannelManager.GetChannelInfo(pageInfo.SiteId, contentNodeId));
+                            //contentChannelId = DataProvider.ContentDao.GetChannelId(tableName, contextInfo.ContentId);
+                            contentChannelId = Cache.Content.GetChannelId(tableName, contextInfo.ContentId);
+                            tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, ChannelManager.GetChannelInfo(pageInfo.SiteId, contentChannelId));
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, attributeName);
                             parsedContent = Cache.Content.GetValue(tableName, contextInfo.ContentId, attributeName);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, contentNodeId);
+                            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, contentChannelId);
                             var styleInfo = TableStyleManager.GetTableStyleInfo(pageInfo.SiteInfo.TableName, attributeName, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式

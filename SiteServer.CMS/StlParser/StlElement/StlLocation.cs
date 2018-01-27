@@ -87,10 +87,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     nodePath = nodePath + "," + contextInfo.ChannelId;
                 }
-                var nodeIdArrayList = TranslateUtils.StringCollectionToStringList(nodePath);
-                foreach (var nodeIdStr in nodeIdArrayList)
+                var channelIdArrayList = TranslateUtils.StringCollectionToStringList(nodePath);
+                foreach (var channelIdStr in channelIdArrayList)
                 {
-                    var currentId = int.Parse(nodeIdStr);
+                    var currentId = int.Parse(channelIdStr);
                     var currentNodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, currentId);
                     if (currentId == pageInfo.SiteId)
                     {

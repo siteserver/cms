@@ -13,7 +13,7 @@ namespace SiteServer.CMS.StlParser.Model
         public ContextInfo(PageInfo pageInfo)
         {
             SiteInfo = pageInfo.SiteInfo;
-            ChannelId = pageInfo.PageNodeId;
+            ChannelId = pageInfo.PageChannelId;
             ContentId = pageInfo.PageContentId;
         }
 

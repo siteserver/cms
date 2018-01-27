@@ -24,7 +24,7 @@ namespace SiteServer.CMS.StlParser
             {
                 try
                 {
-                    service.OnPreParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, filePath, contentBuilder));
+                    service.OnPreParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, filePath, contentBuilder));
                 }
                 catch (Exception ex)
                 {
@@ -72,7 +72,7 @@ namespace SiteServer.CMS.StlParser
                 if (pageInfo.PageContentId > 0 && pageInfo.SiteInfo.Additional.IsCountHits && !pageInfo.IsPageScriptsExists(PageInfo.Const.JsAdStlCountHits))
                 {
                     pageInfo.AddPageEndScriptsIfNotExists(PageInfo.Const.JsAdStlCountHits, $@"
-<script src=""{ApiRouteActionsAddContentHits.GetUrl(pageInfo.ApiUrl, pageInfo.SiteId, pageInfo.PageNodeId, pageInfo.PageContentId)}"" type=""text/javascript""></script>");
+<script src=""{ApiRouteActionsAddContentHits.GetUrl(pageInfo.ApiUrl, pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.PageContentId)}"" type=""text/javascript""></script>");
                 }
 
                 var isShowPageInfo = pageInfo.SiteInfo.Additional.IsCreateShowPageInfo;
@@ -174,7 +174,7 @@ namespace SiteServer.CMS.StlParser
             {
                 try
                 {
-                    service.OnPostParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, filePath, contentBuilder));
+                    service.OnPostParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, filePath, contentBuilder));
                 }
                 catch (Exception ex)
                 {

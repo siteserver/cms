@@ -43,11 +43,11 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 {
                     var taxis = nodeInfo.Taxis;
                     var isNextChannel = !StringUtils.EqualsIgnoreCase(attributeName, PreviousChannel);
-                    //var siblingNodeId = DataProvider.ChannelDao.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
-                    var siblingNodeId = Node.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
-                    if (siblingNodeId != 0)
+                    //var siblingChannelId = DataProvider.ChannelDao.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
+                    var siblingChannelId = Node.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
+                    if (siblingChannelId != 0)
                     {
-                        var siblingNodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, siblingNodeId);
+                        var siblingNodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, siblingChannelId);
                         parsedContent = PageUtility.GetChannelUrl(pageInfo.SiteInfo, siblingNodeInfo, pageInfo.IsLocal);
                     }
                 }

@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Controls
 
         public SiteInfo SiteInfo { get; set; }
 
-        public int NodeId { get; set; }
+        public int ChannelId { get; set; }
 
         public List<TableStyleInfo> StyleInfoList { get; set; }
 
@@ -31,7 +31,7 @@ namespace SiteServer.BackgroundPages.Controls
             foreach (var styleInfo in StyleInfoList)
             {
                 string extra;
-                var value = BackgroundInputTypeParser.Parse(SiteInfo, NodeId, styleInfo, Attributes, pageScripts, out extra);
+                var value = BackgroundInputTypeParser.Parse(SiteInfo, ChannelId, styleInfo, Attributes, pageScripts, out extra);
 
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
@@ -67,7 +67,7 @@ namespace SiteServer.BackgroundPages.Controls
 
                     if (styleInfo.InputType == InputType.Customize)
                     {
-                        var eventArgs = new ContentFormLoadEventArgs(SiteInfo.Id, NodeId, styleInfo.AttributeName, Attributes, htmlBuilder);
+                        var eventArgs = new ContentFormLoadEventArgs(SiteInfo.Id, ChannelId, styleInfo.AttributeName, Attributes, htmlBuilder);
                         foreach (var service in PluginManager.Services)
                         {
                             try

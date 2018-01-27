@@ -15,20 +15,20 @@ namespace SiteServer.BackgroundPages.Cms
         public DropDownList DdlTransType;
         public PlaceHolder PhSite;
         public DropDownList DdlSiteId;
-        public ListBox LbNodeId;
+        public ListBox LbChannelId;
         public PlaceHolder PhNodeNames;
         public TextBox TbNodeNames;
         public PlaceHolder PhIsAutomatic;
         public DropDownList DdlIsAutomatic;
         public DropDownList DdlTranslateDoneType;
 
-        private ChannelInfo _nodeInfo;
+        private ChannelInfo _channelInfo;
 
-        public static string GetOpenWindowString(int siteId, int nodeId)
+        public static string GetOpenWindowString(int siteId, int channelId)
         {
             return LayerUtils.GetOpenScript("跨站转发设置", PageUtils.GetCmsUrl(siteId, nameof(ModalCrossSiteTransEdit), new NameValueCollection
             {
-                {"NodeID", nodeId.ToString()}
+                {"channelId", channelId.ToString()}
             }));
         }
 
@@ -36,29 +36,29 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "NodeID");
-            var nodeId = int.Parse(Body.GetQueryString("NodeID"));
-            _nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
+            PageUtils.CheckRequestParameter("siteId", "channelId");
+            var channelId = int.Parse(Body.GetQueryString("channelId"));
+            _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 
             if (IsPostBack) return;
 
             ECrossSiteTransTypeUtils.AddAllListItems(DdlTransType, SiteInfo.ParentId > 0);
 
-            ControlUtils.SelectSingleItem(DdlTransType, ECrossSiteTransTypeUtils.GetValue(_nodeInfo.Additional.TransType));
+            ControlUtils.SelectSingleItem(DdlTransType, ECrossSiteTransTypeUtils.GetValue(_channelInfo.Additional.TransType));
 
             DdlTransType_OnSelectedIndexChanged(null, EventArgs.Empty);
-            ControlUtils.SelectSingleItem(DdlSiteId, _nodeInfo.Additional.TransSiteId.ToString());
+            ControlUtils.SelectSingleItem(DdlSiteId, _channelInfo.Additional.TransSiteId.ToString());
 
 
             DdlSiteId_OnSelectedIndexChanged(null, EventArgs.Empty);
-            ControlUtils.SelectMultiItems(LbNodeId, TranslateUtils.StringCollectionToStringList(_nodeInfo.Additional.TransChannelIds));
-            TbNodeNames.Text = _nodeInfo.Additional.TransChannelNames;
+            ControlUtils.SelectMultiItems(LbChannelId, TranslateUtils.StringCollectionToStringList(_channelInfo.Additional.TransChannelIds));
+            TbNodeNames.Text = _channelInfo.Additional.TransChannelNames;
 
             EBooleanUtils.AddListItems(DdlIsAutomatic, "自动", "提示");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsAutomatic, _nodeInfo.Additional.TransIsAutomatic.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsAutomatic, _channelInfo.Additional.TransIsAutomatic.ToString());
 
             ETranslateContentTypeUtils.AddListItems(DdlTranslateDoneType, false);
-            ControlUtils.SelectSingleItem(DdlTranslateDoneType, ETranslateContentTypeUtils.GetValue(_nodeInfo.Additional.TransDoneType));
+            ControlUtils.SelectSingleItem(DdlTranslateDoneType, ETranslateContentTypeUtils.GetValue(_channelInfo.Additional.TransDoneType));
         }
 
         protected void DdlTransType_OnSelectedIndexChanged(object sender, EventArgs e)
@@ -145,10 +145,10 @@ namespace SiteServer.BackgroundPages.Cms
 
         protected void DdlSiteId_OnSelectedIndexChanged(object sender, EventArgs e)
         {
-            LbNodeId.Items.Clear();
+            LbChannelId.Items.Clear();
             if (PhSite.Visible && DdlSiteId.Items.Count > 0)
             {
-                ChannelManager.AddListItemsForAddContent(LbNodeId.Items, SiteManager.GetSiteInfo(int.Parse(DdlSiteId.SelectedValue)), false, Body.AdminName);
+                ChannelManager.AddListItemsForAddContent(LbChannelId.Items, SiteManager.GetSiteInfo(int.Parse(DdlSiteId.SelectedValue)), false, Body.AdminName);
             }
         }
 
@@ -158,17 +158,17 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                _nodeInfo.Additional.TransType = ECrossSiteTransTypeUtils.GetEnumType(DdlTransType.SelectedValue);
-                _nodeInfo.Additional.TransSiteId = _nodeInfo.Additional.TransType == ECrossSiteTransType.SpecifiedSite ? TranslateUtils.ToInt(DdlSiteId.SelectedValue) : 0;
-                _nodeInfo.Additional.TransChannelIds = ControlUtils.GetSelectedListControlValueCollection(LbNodeId);
-                _nodeInfo.Additional.TransChannelNames = TbNodeNames.Text;
+                _channelInfo.Additional.TransType = ECrossSiteTransTypeUtils.GetEnumType(DdlTransType.SelectedValue);
+                _channelInfo.Additional.TransSiteId = _channelInfo.Additional.TransType == ECrossSiteTransType.SpecifiedSite ? TranslateUtils.ToInt(DdlSiteId.SelectedValue) : 0;
+                _channelInfo.Additional.TransChannelIds = ControlUtils.GetSelectedListControlValueCollection(LbChannelId);
+                _channelInfo.Additional.TransChannelNames = TbNodeNames.Text;
 
-                _nodeInfo.Additional.TransIsAutomatic = TranslateUtils.ToBool(DdlIsAutomatic.SelectedValue);
+                _channelInfo.Additional.TransIsAutomatic = TranslateUtils.ToBool(DdlIsAutomatic.SelectedValue);
 
                 var translateDoneType = ETranslateContentTypeUtils.GetEnumType(DdlTranslateDoneType.SelectedValue);
-                _nodeInfo.Additional.TransDoneType = translateDoneType;
+                _channelInfo.Additional.TransDoneType = translateDoneType;
 
-                DataProvider.ChannelDao.Update(_nodeInfo);
+                DataProvider.ChannelDao.Update(_channelInfo);
 
                 Body.AddSiteLog(SiteId, "修改跨站转发设置");
 
@@ -181,7 +181,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (isSuccess)
             {
-                LayerUtils.CloseAndRedirect(Page, PageConfigurationCrossSiteTrans.GetRedirectUrl(SiteId, _nodeInfo.Id));
+                LayerUtils.CloseAndRedirect(Page, PageConfigurationCrossSiteTrans.GetRedirectUrl(SiteId, _channelInfo.Id));
             }
         }
     }

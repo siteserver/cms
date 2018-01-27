@@ -42,8 +42,8 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var nodeId = (int)e.Item.DataItem;
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, nodeId);
+            var channelId = (int)e.Item.DataItem;
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 
             if (nodeInfo == null)
             {
@@ -55,11 +55,11 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlItemChannelIndex = (Literal)e.Item.FindControl("ltlItemChannelIndex");
             var ltlItemAddDate = (Literal)e.Item.FindControl("ltlItemAddDate");
 
-            ltlItemChannelName.Text = ChannelManager.GetChannelNameNavigation(SiteId, nodeId);
+            ltlItemChannelName.Text = ChannelManager.GetChannelNameNavigation(SiteId, channelId);
             ltlItemChannelIndex.Text = nodeInfo.IndexName;
             ltlItemAddDate.Text = DateUtils.GetDateString(nodeInfo.AddDate);
 
-            if (IsOwningNodeId(nodeId))
+            if (IsOwningChannelId(channelId))
             {
                 if (AdminUtility.HasChannelPermissions(Body.AdminName, nodeInfo.SiteId, nodeInfo.Id, ConfigManager.Permissions.Channel.ChannelEdit))
                 {

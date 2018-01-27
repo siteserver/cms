@@ -25,8 +25,6 @@ namespace SiteServer.CMS.Plugin
             private static readonly object LockObject = new object();
             private const string CacheKey = "SiteServer.CMS.Plugin.PluginCache";
             private static readonly FileWatcherClass FileWatcher;
-            
-            private static FileSystemWatcher _watcher;
 
             static PluginManagerCache()
             {
@@ -66,17 +64,9 @@ namespace SiteServer.CMS.Plugin
                         }
                     }
 
-                    _watcher = new FileSystemWatcher
-                    {
-                        Path = pluginsPath,
-                        NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
-                        IncludeSubdirectories = true
-                    };
-                    _watcher.Created += Watcher_EventHandler;
-                    _watcher.Changed += Watcher_EventHandler;
-                    _watcher.Deleted += Watcher_EventHandlerDelete;
-                    _watcher.Renamed += Watcher_EventHandler;
-                    _watcher.EnableRaisingEvents = true;
+#if DEBUG
+                    PluginDebugger.Instance.Run();
+#endif
                 }
                 catch (Exception ex)
                 {
@@ -180,68 +170,6 @@ namespace SiteServer.CMS.Plugin
                 PluginDatabaseTableManager.SyncTable(service);
 
                 return new PluginInfo(context, service, plugin, s.ElapsedMilliseconds);
-            }
-
-            private static void Watcher_EventHandler(object sender, FileSystemEventArgs e)
-            {
-                var fullPath = e.FullPath.ToLower();
-                if (!fullPath.EndsWith(".nuspec") && !fullPath.EndsWith(".dll")) return;
-
-                try
-                {
-                    _watcher.EnableRaisingEvents = false;
-                    OnConfigOrDllChanged(e.FullPath);
-                }
-                finally
-                {
-                    _watcher.EnableRaisingEvents = true;
-                }
-            }
-
-            private static void Watcher_EventHandlerDelete(object sender, FileSystemEventArgs e)
-            {
-                if (!PathUtils.IsDirectoryPath(e.FullPath)) return;
-
-                try
-                {
-                    _watcher.EnableRaisingEvents = false;
-                    OnDirectoryDeleted(e.FullPath);
-                }
-                finally
-                {
-                    _watcher.EnableRaisingEvents = true;
-                }
-            }
-
-            private static void OnConfigOrDllChanged(string fullPath)
-            {
-                var directoryName = PathUtils.GetDirectoryName(fullPath);
-
-                if (string.IsNullOrEmpty(directoryName)) return;
-
-                var plugin = PluginInfoListRunnable.FirstOrDefault(pluginInfo => StringUtils.EqualsIgnoreCase(directoryName, pluginInfo.Id));
-                if (plugin != null)
-                {
-                    Clear();
-                }
-            }
-
-            private static void OnDirectoryDeleted(string fullPath)
-            {
-                var directoryName = PathUtils.GetDirectoryName(fullPath);
-
-                var isPlugin = false;
-                foreach (var pluginInfo in PluginInfoListRunnable)
-                {
-                    if (!StringUtils.EqualsIgnoreCase(directoryName, pluginInfo.Id)) continue;
-                    isPlugin = true;
-                    break;
-                }
-
-                if (isPlugin)
-                {
-                    Clear();
-                }
             }
 
             public static void Clear()

@@ -76,9 +76,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 ListInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.Content);
             }
 
-            var channelId = StlDataUtility.GetNodeIdByLevel(_pageInfo.SiteId, _contextInfo.ChannelId, ListInfo.UpLevel, ListInfo.TopLevel);
+            var channelId = StlDataUtility.GetChannelIdByLevel(_pageInfo.SiteId, _contextInfo.ChannelId, ListInfo.UpLevel, ListInfo.TopLevel);
 
-            channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(_pageInfo.SiteId, channelId, ListInfo.ChannelIndex, ListInfo.ChannelName);
+            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(_pageInfo.SiteId, channelId, ListInfo.ChannelIndex, ListInfo.ChannelName);
 
             SqlString = StlDataUtility.GetStlPageContentsSqlString(_pageInfo.SiteInfo, channelId, ListInfo.GroupContent, ListInfo.GroupContentNot, ListInfo.Tags, ListInfo.IsImageExists, ListInfo.IsImage, ListInfo.IsVideoExists, ListInfo.IsVideo, ListInfo.IsFileExists, ListInfo.IsFile, ListInfo.IsNoDup, ListInfo.StartNum, ListInfo.TotalNum, ListInfo.OrderByString, ListInfo.IsTopExists, ListInfo.IsTop, ListInfo.IsRecommendExists, ListInfo.IsRecommend, ListInfo.IsHotExists, ListInfo.IsHot, ListInfo.IsColorExists, ListInfo.IsColor, ListInfo.Where, ListInfo.Scope, ListInfo.GroupChannel, ListInfo.GroupChannelNot);
         }
@@ -283,7 +283,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(_pageInfo.UniqueId);
             var apiUrl = ApiRouteActionsPageContents.GetUrl(_pageInfo.ApiUrl);
-            var apiParameters = ApiRouteActionsPageContents.GetParameters(_pageInfo.SiteId, _pageInfo.PageNodeId, _pageInfo.TemplateInfo.Id, totalNum, pageCount, currentPageIndex, _stlPageContentsElement);
+            var apiParameters = ApiRouteActionsPageContents.GetParameters(_pageInfo.SiteId, _pageInfo.PageChannelId, _pageInfo.TemplateInfo.Id, totalNum, pageCount, currentPageIndex, _stlPageContentsElement);
 
             var builder = new StringBuilder();
             builder.Append($@"<div id=""{ajaxDivId}"">");

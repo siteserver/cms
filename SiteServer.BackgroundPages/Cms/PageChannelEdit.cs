@@ -44,13 +44,13 @@ namespace SiteServer.BackgroundPages.Cms
         public Button BtnUploadImage;
         public Button BtnSubmit;
 
-        private int _nodeId;
+        private int _channelId;
 
-        public static string GetRedirectUrl(int siteId, int nodeId, string returnUrl)
+        public static string GetRedirectUrl(int siteId, int channelId, string returnUrl)
         {
             return PageUtils.GetCmsUrl(siteId, nameof(PageChannelEdit), new NameValueCollection
             {
-                {"NodeID", nodeId.ToString()},
+                {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
         }
@@ -59,14 +59,14 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "NodeID", "ReturnUrl");
+            PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
 
-            _nodeId = Body.GetQueryInt("NodeID");
+            _channelId = Body.GetQueryInt("channelId");
             ReturnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
 
             if (Body.GetQueryString("CanNotEdit") == null && Body.GetQueryString("UncheckedChannel") == null)
             {
-                if (!HasChannelPermissions(_nodeId, ConfigManager.Permissions.Channel.ChannelEdit))
+                if (!HasChannelPermissions(_channelId, ConfigManager.Permissions.Channel.ChannelEdit))
                 {
                     PageUtils.RedirectToErrorPage("您没有修改栏目的权限！");
                     return;
@@ -77,11 +77,11 @@ namespace SiteServer.BackgroundPages.Cms
                 BtnSubmit.Visible = false;
             }
 
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
             if (nodeInfo == null) return;
 
             CacAttributes.SiteInfo = SiteInfo;
-            CacAttributes.NodeId = _nodeId;
+            CacAttributes.ChannelId = _channelId;
 
             if (!IsPostBack)
             {
@@ -115,10 +115,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                 TbImageUrl.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", SiteInfo.Additional.WebUrl));
 
-                var showPopWinString = ModalFilePathRule.GetOpenWindowString(SiteId, _nodeId, true, TbChannelFilePathRule.ClientID);
+                var showPopWinString = ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, true, TbChannelFilePathRule.ClientID);
                 BtnCreateChannelRule.Attributes.Add("onclick", showPopWinString);
 
-                showPopWinString = ModalFilePathRule.GetOpenWindowString(SiteId, _nodeId, false, TbContentFilePathRule.ClientID);
+                showPopWinString = ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, false, TbContentFilePathRule.ClientID);
                 BtnCreateContentRule.Attributes.Add("onclick", showPopWinString);
 
                 showPopWinString = ModalSelectImage.GetOpenWindowString(SiteInfo, TbImageUrl.ClientID);
@@ -184,7 +184,7 @@ namespace SiteServer.BackgroundPages.Cms
             ChannelInfo nodeInfo;
             try
             {
-                nodeInfo = ChannelManager.GetChannelInfo(SiteId, _nodeId);
+                nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
                 if (!nodeInfo.IndexName.Equals(TbNodeIndexName.Text) && TbNodeIndexName.Text.Length != 0)
                 {
                     var nodeIndexNameList = DataProvider.ChannelDao.GetIndexNameList(SiteId);
@@ -256,7 +256,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 var extendedAttributes = new ExtendedAttributes();
-                var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _nodeId);
+                var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName, relatedIdentities);
                 BackgroundInputTypeParser.SaveAttributes(extendedAttributes, SiteInfo, styleInfoList, Request.Form, null);
                 var attributes = extendedAttributes.ToNameValueCollection();

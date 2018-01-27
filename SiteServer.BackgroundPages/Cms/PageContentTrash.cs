@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
 		public Button BtnDelete;
         public Button BtnDeleteAll;
 
-		private int _nodeId;
+		private int _channelId;
         private List<int> _relatedIdentities;
         private List<TableStyleInfo> _tableStyleInfoList;
         private readonly Hashtable _nodeNameNavigations = new Hashtable();
@@ -42,26 +42,26 @@ namespace SiteServer.BackgroundPages.Cms
             var permissions = PermissionsManager.GetPermissions(Body.AdminName);
 
             PageUtils.CheckRequestParameter("siteId");
-            _nodeId = Body.GetQueryInt("NodeID");
-            if (_nodeId == 0)
+            _channelId = Body.GetQueryInt("channelId");
+            if (_channelId == 0)
             {
-                _nodeId = SiteId;
+                _channelId = SiteId;
             }
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _nodeId);
-            var tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
-            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _nodeId);
+            var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+            var tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
+            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
             _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, _relatedIdentities);
 
             SpContents.ControlToPaginate = RptContents;
-            if (string.IsNullOrEmpty(Body.GetQueryString("NodeID")))
+            if (string.IsNullOrEmpty(Body.GetQueryString("channelId")))
             {
                 SpContents.ItemsPerPage = TranslateUtils.ToInt(DdlPageNum.SelectedValue) == 0 ? SiteInfo.Additional.PageSize : TranslateUtils.ToInt(DdlPageNum.SelectedValue);
-                SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(tableName, SiteId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningChannelIdList, DdlSearchType.SelectedValue, TbKeyword.Text, TbDateFrom.Text, TbDateTo.Text, true, ETriState.All, false, true);
+                SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(tableName, SiteId, _channelId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningChannelIdList, DdlSearchType.SelectedValue, TbKeyword.Text, TbDateFrom.Text, TbDateTo.Text, true, ETriState.All, false, true);
             }
             else
             {
                 SpContents.ItemsPerPage = Body.GetQueryInt("PageNum") == 0 ? SiteInfo.Additional.PageSize : Body.GetQueryInt("PageNum");
-                SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(tableName, SiteId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningChannelIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true, ETriState.All, false, true);
+                SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(tableName, SiteId, _channelId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningChannelIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true, ETriState.All, false, true);
             }
             SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
@@ -81,10 +81,10 @@ namespace SiteServer.BackgroundPages.Cms
                 if (Body.IsQueryExists("IsRestore"))
                 {
                     var idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
-                    foreach (var nodeId in idsDictionary.Keys)
+                    foreach (var channelId in idsDictionary.Keys)
                     {
-                        var contentIdArrayList = idsDictionary[nodeId];
-                        DataProvider.ContentDao.TrashContents(SiteId, ChannelManager.GetTableName(SiteInfo, nodeId), contentIdArrayList);
+                        var contentIdArrayList = idsDictionary[channelId];
+                        DataProvider.ContentDao.TrashContents(SiteId, ChannelManager.GetTableName(SiteInfo, channelId), contentIdArrayList);
                     }
                     Body.AddSiteLog(SiteId, "从回收站还原内容");
                     SuccessMessage("成功还原内容!");
@@ -114,11 +114,11 @@ namespace SiteServer.BackgroundPages.Cms
                 DdlSearchType.Items.Add(new ListItem("添加者", ContentAttribute.AddUserName));
                 DdlSearchType.Items.Add(new ListItem("最后修改者", ContentAttribute.LastEditUserName));
 
-                if (Body.IsQueryExists("NodeID"))
+                if (Body.IsQueryExists("channelId"))
                 {
-                    if (SiteId != _nodeId)
+                    if (SiteId != _channelId)
                     {
-                        ControlUtils.SelectSingleItem(DdlChannelId, _nodeId.ToString());
+                        ControlUtils.SelectSingleItem(DdlChannelId, _channelId.ToString());
                     }
                     ControlUtils.SelectSingleItem(DdlPageNum, Body.GetQueryString("PageNum"));
                     ControlUtils.SelectSingleItem(DdlSearchType, Body.GetQueryString("SearchType"));
@@ -130,7 +130,7 @@ namespace SiteServer.BackgroundPages.Cms
                 SpContents.DataBind();
 			}
 
-            if (!HasChannelPermissions(_nodeId, ConfigManager.Permissions.Channel.ContentDelete))
+            if (!HasChannelPermissions(_channelId, ConfigManager.Permissions.Channel.ContentDelete))
             {
                 BtnDelete.Visible = false;
                 BtnDeleteAll.Visible = false;
@@ -173,9 +173,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (HasChannelPermissions(contentInfo.ChannelId, ConfigManager.Permissions.Channel.ContentEdit) || Body.AdminName == contentInfo.AddUserName)
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, contentInfo.ChannelId);
+                var channelInfo = ChannelManager.GetChannelInfo(SiteId, contentInfo.ChannelId);
                 ltlItemEditUrl.Text =
-                    $"<a href=\"{WebUtils.GetContentAddEditUrl(SiteId, nodeInfo, contentInfo.Id, PageUrl)}\">修改</a>";
+                    $"<a href=\"{WebUtils.GetContentAddEditUrl(SiteId, channelInfo, contentInfo.Id, PageUrl)}\">修改</a>";
             }
 
             ltlSelect.Text =
@@ -184,8 +184,8 @@ namespace SiteServer.BackgroundPages.Cms
 
 		public void AddContent_OnClick(object sender, EventArgs e)
 		{
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _nodeId);
-            PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, nodeInfo, PageUrl));
+            var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+            PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, channelInfo, PageUrl));
 		}
 
         public void Search_OnClick(object sender, EventArgs e)
@@ -202,7 +202,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     _pageUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageContentTrash), new NameValueCollection
                     {
-                        {"NodeID", DdlChannelId.SelectedValue},
+                        {"channelId", DdlChannelId.SelectedValue},
                         {"PageNum", DdlPageNum.SelectedValue},
                         {"SearchType", DdlSearchType.SelectedValue},
                         {"Keyword", TbKeyword.Text},

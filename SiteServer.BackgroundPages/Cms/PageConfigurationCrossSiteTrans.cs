@@ -13,13 +13,13 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public RadioButtonList RblIsCrossSiteTransChecked;
 
-        private int _currentNodeId;
+        private int _currentChannelId;
 
-        public static string GetRedirectUrl(int siteId, int currentNodeId)
+        public static string GetRedirectUrl(int siteId, int currentChannelId)
         {
             return PageUtils.GetCmsUrl(siteId, nameof(PageConfigurationCrossSiteTrans), new NameValueCollection
             {
-                {"CurrentNodeID", currentNodeId.ToString()}
+                {"CurrentChannelId", currentChannelId.ToString()}
             });
         }
 
@@ -35,10 +35,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, ELoadingType.ConfigurationCrossSiteTrans, null));
 
-            if (Body.IsQueryExists("CurrentNodeID"))
+            if (Body.IsQueryExists("CurrentChannelId"))
             {
-                _currentNodeId = Body.GetQueryInt("CurrentNodeID");
-                var onLoadScript = ChannelLoading.GetScriptOnLoad(SiteId, _currentNodeId);
+                _currentChannelId = Body.GetQueryInt("CurrentChannelId");
+                var onLoadScript = ChannelLoading.GetScriptOnLoad(SiteId, _currentChannelId);
                 if (!string.IsNullOrEmpty(onLoadScript))
                 {
                     ClientScriptRegisterClientScriptBlock("NodeTreeScriptOnLoad", onLoadScript);
