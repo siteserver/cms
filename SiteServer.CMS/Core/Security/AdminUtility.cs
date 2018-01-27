@@ -1,6 +1,5 @@
 using SiteServer.Utils;
 using System.Collections.Generic;
-using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.CMS.Core.Security
 {
@@ -37,7 +36,7 @@ namespace SiteServer.CMS.Core.Security
             {
                 return;
             }
-            var request = new RequestContext();
+            var request = new Request();
             request.AdminLogout();
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
         }
@@ -96,7 +95,7 @@ namespace SiteServer.CMS.Core.Security
             {
                 return;
             }
-            var request = new RequestContext();
+            var request = new Request();
             request.AdminLogout();
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
         }

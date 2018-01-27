@@ -9,7 +9,6 @@ using Atom.Core.Collections;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -213,7 +212,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     {
                         ChannelId= nodeInfo.Id,
                         SiteId = _siteInfo.Id,
-                        AddUserName = RequestContext.CurrentAdministratorName,
+                        AddUserName = Request.CurrentAdministratorName,
                         AddDate = TranslateUtils.ToDateTime(addDate)
                     };
                     contentInfo.LastEditUserName = contentInfo.AddUserName;

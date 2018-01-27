@@ -5,7 +5,6 @@ using System.Web.Http;
 using SiteServer.CMS.Controllers.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.API.Controllers.Http
 {
@@ -17,12 +16,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 return service?.HttpGet == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : service.HttpGet.Invoke(context);
+                    : service.HttpGet.Invoke(request);
             }
             catch (Exception ex)
             {
@@ -36,12 +35,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 return service?.HttpGetWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : service.HttpGetWithName.Invoke(context, name);
+                    : service.HttpGetWithName.Invoke(request, name);
             }
             catch (Exception ex)
             {
@@ -55,12 +54,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 return service?.HttpGetWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : service.HttpGetWithNameAndId.Invoke(context, name, id);
+                    : service.HttpGetWithNameAndId.Invoke(request, name, id);
             }
             catch (Exception ex)
             {
@@ -74,12 +73,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 return service?.HttpPost == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : service.HttpPost.Invoke(context);
+                    : service.HttpPost.Invoke(request);
             }
             catch (Exception ex)
             {
@@ -93,12 +92,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 return service?.HttpPostWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : service.HttpPostWithName.Invoke(context, name);
+                    : service.HttpPostWithName.Invoke(request, name);
             }
             catch (Exception ex)
             {
@@ -112,12 +111,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 return service?.HttpPostWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : service.HttpPostWithNameAndId.Invoke(context, name, id);
+                    : service.HttpPostWithNameAndId.Invoke(request, name, id);
             }
             catch (Exception ex)
             {
@@ -131,12 +130,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 return service?.HttpPut == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : service.HttpPut.Invoke(context);
+                    : service.HttpPut.Invoke(request);
             }
             catch (Exception ex)
             {
@@ -150,12 +149,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 return service?.HttpPutWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : service.HttpPutWithName.Invoke(context, name);
+                    : service.HttpPutWithName.Invoke(request, name);
             }
             catch (Exception ex)
             {
@@ -169,12 +168,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 return service?.HttpPutWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : service.HttpPutWithNameAndId.Invoke(context, name, id);
+                    : service.HttpPutWithNameAndId.Invoke(request, name, id);
             }
             catch (Exception ex)
             {
@@ -188,12 +187,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 return service?.HttpDelete == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : service.HttpDelete.Invoke(context);
+                    : service.HttpDelete.Invoke(request);
             }
             catch (Exception ex)
             {
@@ -207,12 +206,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 return service?.HttpDeleteWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : service.HttpDeleteWithName.Invoke(context, name);
+                    : service.HttpDeleteWithName.Invoke(request, name);
             }
             catch (Exception ex)
             {
@@ -226,12 +225,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 return service?.HttpDeleteWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : service.HttpDeleteWithNameAndId.Invoke(context, name, id);
+                    : service.HttpDeleteWithNameAndId.Invoke(request, name, id);
             }
             catch (Exception ex)
             {

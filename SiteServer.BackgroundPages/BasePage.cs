@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Web.UI;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core.Security;
-using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.BackgroundPages
 {
@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages
 
         protected bool IsForbidden { get; private set; }
 
-        public RequestContext Body { get; private set; }
+        public Request Body { get; private set; }
 
         private void SetMessage(MessageUtils.Message.EMessageType messageType, Exception ex, string message)
         {
@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages
         {
             base.OnInit(e);
 
-            Body = new RequestContext();
+            Body = new Request();
 
             if (!IsAccessable && !Body.IsAdminLoggin) // 如果页面不能直接访问且又没有登录则直接跳登录页
             {

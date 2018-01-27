@@ -41,13 +41,13 @@ namespace SiteServer.BackgroundPages.Cms
         {
             var list = new List<string>();
 
-            var TemplateType = TemplateTypeUtils.GetEnumType(templateType);
+            var theTemplateType = TemplateTypeUtils.GetEnumType(templateType);
 
-            var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListByType(siteId, TemplateType);
+            var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListByType(siteId, theTemplateType);
 
             foreach (var templateInfo in templateInfoList)
             {
-                var templateAddUrl = PageTemplateAdd.GetRedirectUrl(siteId, templateInfo.Id, TemplateType);
+                var templateAddUrl = PageTemplateAdd.GetRedirectUrl(siteId, templateInfo.Id, theTemplateType);
                 list.Add($@"
 <tr treeitemlevel=""3"">
 	<td align=""left"" nowrap="""">

@@ -165,12 +165,12 @@
               </asp:RadioButtonList>
             </div>
 
-            <asp:PlaceHolder ID="PhIsNotHeadquarters" runat="server">
+            <asp:PlaceHolder ID="PhIsNotRoot" runat="server">
               <div class="form-group">
                 <label class="col-form-label">
                   上级站点
                 </label>
-                <asp:DropDownList ID="DdlParentSiteId" cssClass="form-control" runat="server"></asp:DropDownList>
+                <asp:DropDownList ID="DdlParentId" cssClass="form-control" runat="server"></asp:DropDownList>
               </div>
               <div class="form-group">
                 <label class="col-form-label">
@@ -210,12 +210,12 @@
               </div>
             </asp:PlaceHolder>
 
-            <asp:PlaceHolder id="PhIsUserSiteTemplateAuxiliaryTables" runat="server">
+            <asp:PlaceHolder id="PhIsSiteTemplateTable" runat="server">
               <div class="form-group">
                 <label class="col-form-label">
                   站点表结构设置
                 </label>
-                <asp:RadioButtonList ID="RblIsUserSiteTemplateAuxiliaryTables" class="radio radio-primary" AutoPostBack="true" OnSelectedIndexChanged="RblIsUserSiteTemplateAuxiliaryTables_SelectedIndexChanged"
+                <asp:RadioButtonList ID="RblIsSiteTemplateTable" class="radio radio-primary" AutoPostBack="true" OnSelectedIndexChanged="RblIsSiteTemplateTable_SelectedIndexChanged"
                   RepeatDirection="Horizontal" runat="server">
                   <asp:ListItem Text="使用站点模板中的辅助表" Value="True"></asp:ListItem>
                   <asp:ListItem Text="使用指定的辅助表" Value="False" Selected="true"></asp:ListItem>
@@ -223,14 +223,14 @@
               </div>
             </asp:PlaceHolder>
 
-            <asp:PlaceHolder ID="PhAuxiliaryTable" runat="server" Visible="false">
+            <asp:PlaceHolder ID="PhTableName" runat="server" Visible="false">
               <div class="form-group">
                 <label class="col-form-label">
                   内容辅助表
-                  <asp:RequiredFieldValidator ControlToValidate="DdlAuxiliaryTableForContent" ErrorMessage="辅助表不能为空！" foreColor="red" Display="Dynamic"
+                  <asp:RequiredFieldValidator ControlToValidate="DdlTableName" ErrorMessage="辅助表不能为空！" foreColor="red" Display="Dynamic"
                     runat="server" />
                 </label>
-                <asp:DropDownList ID="DdlAuxiliaryTableForContent" class="form-control" runat="server"></asp:DropDownList>
+                <asp:DropDownList ID="DdlTableName" class="form-control" runat="server"></asp:DropDownList>
               </div>
             </asp:PlaceHolder>
 

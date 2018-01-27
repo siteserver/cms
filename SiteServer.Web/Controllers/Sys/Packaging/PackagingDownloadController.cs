@@ -1,6 +1,6 @@
 ﻿using System.Web.Http;
 using SiteServer.CMS.Controllers.Sys.Packaging;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Core;
 using SiteServer.Utils.Packaging;
 
 namespace SiteServer.API.Controllers.Sys.Packaging
@@ -11,9 +11,9 @@ namespace SiteServer.API.Controllers.Sys.Packaging
         [HttpGet, Route(ApiRouteDownload.Route)]
         public IHttpActionResult Main(string packageId, string version)
         {
-            var context = new RequestContext();
+            var request = new Request();
 
-            if (!context.IsAdminLoggin)
+            if (!request.IsAdminLoggin)
             {
                 return Unauthorized();
             }

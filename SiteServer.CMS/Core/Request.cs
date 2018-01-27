@@ -2,25 +2,24 @@
 using System.Collections.Specialized;
 using System.IO;
 using System.Web;
-using SiteServer.Utils;
-using SiteServer.Utils.Auth;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
+using SiteServer.Utils;
+using SiteServer.Utils.Auth;
 
-namespace SiteServer.CMS.Plugin.Model
+namespace SiteServer.CMS.Core
 {
-    public class RequestContext : IRequestContext
+    public class Request : IRequest
     {
         private const string UserAccessToken = "ss_user_access_token";
         private const string AdministratorAccessToken = "ss_administrator_access_token";
         private const int AccessTokenExpireDays = 7;
 
-        public RequestContext()
+        public Request()
         {
             var request = HttpContext.Current.Request;
 
@@ -42,7 +41,7 @@ namespace SiteServer.CMS.Plugin.Model
             }
         }
 
-        public HttpRequest Request => HttpContext.Current.Request;
+        public HttpRequest HttpRequest => HttpContext.Current.Request;
 
         public string UserName { get; private set; }
 

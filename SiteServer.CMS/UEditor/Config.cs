@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.UEditor
 {
@@ -13,7 +13,7 @@ namespace SiteServer.CMS.UEditor
         private static bool noCache = true;
         private static JObject BuildItems()
         {
-            if (string.IsNullOrEmpty(RequestContext.CurrentAdministratorName)) return new JObject();
+            if (string.IsNullOrEmpty(Request.CurrentAdministratorName)) return new JObject();
 
                 var json = @"/* 前后端通信相关的配置,注释只允许使用多行方式 */
 {

@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Cms
             return LayerUtils.GetOpenScript("上传图片", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadImageSingle), new NameValueCollection
             {
                 {"TextBoxClientID", textBoxClientId}
-            }), 480, 220);
+            }), 520, 220);
         }
 
         public static string GetOpenWindowStringToTextBox(int siteId, string textBoxClientId, bool isNeedWaterMark)
@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 {"TextBoxClientID", textBoxClientId},
                 {"IsNeedWaterMark", isNeedWaterMark.ToString()}
-            }), 480, 220);
+            }), 520, 220);
         }
 
         public static string GetOpenWindowStringToList(int siteId, string currentRootPath)
@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
             return LayerUtils.GetOpenScript("上传图片", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadImageSingle), new NameValueCollection
             {
                 {"CurrentRootPath", currentRootPath}
-            }), 480, 220);
+            }), 520, 220);
         }
 
         public void Page_Load(object sender, EventArgs e)

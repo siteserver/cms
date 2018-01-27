@@ -1,6 +1,5 @@
 ﻿using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
-using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Apis
@@ -23,7 +22,7 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             get
             {
-                var request = new RequestContext();
+                var request = new Request();
                 return request.AdminName;
             }
         }
@@ -32,26 +31,26 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             get
             {
-                var request = new RequestContext();
+                var request = new Request();
                 return PermissionsManager.HasAdministratorPermissions(request.AdminName, _metadata.Id);
             }
         }
 
         public bool IsSiteAuthorized(int siteId)
         {
-            var request = new RequestContext();
+            var request = new Request();
             return PermissionsManager.HasAdministratorPermissions(request.AdminName, _metadata.Id + siteId);
         }
 
         public bool HasSitePermissions(int siteId, params string[] sitePermissions)
         {
-            var request = new RequestContext();
+            var request = new Request();
             return AdminUtility.HasSitePermissions(request.AdminName, siteId, sitePermissions);
         }
 
         public bool HasChannelPermissions(int siteId, int channelId, params string[] channelPermissions)
         {
-            var request = new RequestContext();
+            var request = new Request();
             return AdminUtility.HasChannelPermissions(request.AdminName, siteId, channelId, channelPermissions);
         }
     }

@@ -3,7 +3,6 @@ using System.Web.Http;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Controllers.Sys.Administrators;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.API.Controllers.Sys.Administrators
 {
@@ -13,15 +12,15 @@ namespace SiteServer.API.Controllers.Sys.Administrators
         [HttpGet, Route(ApiRouteSiteCheckList.Route)]
         public IHttpActionResult Main(string userName)
         {
-            var context = new RequestContext();
+            var request = new Request();
 
-            if (!context.IsAdminLoggin)
+            if (!request.IsAdminLoggin)
             {
                 return Unauthorized();
             }
 
             var list = new List<object>();
-            var unCheckedList = CheckManager.GetUserCountListUnChecked(context.AdminName);
+            var unCheckedList = CheckManager.GetUserCountListUnChecked(request.AdminName);
             if (unCheckedList.Count <= 0) return Ok(list);
 
             var dict = new Dictionary<int, int>();

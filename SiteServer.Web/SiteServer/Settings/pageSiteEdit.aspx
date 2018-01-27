@@ -71,19 +71,19 @@
             </div>
           </asp:PlaceHolder>
 
-          <asp:PlaceHolder id="PhParentSiteId" runat="server">
+          <asp:PlaceHolder id="PhParentId" runat="server">
             <div class="form-group">
               <label class="col-form-label">上级站点</label>
-              <asp:DropDownList ID="DdlParentSiteId" class="form-control" runat="server"></asp:DropDownList>
+              <asp:DropDownList ID="DdlParentId" class="form-control" runat="server"></asp:DropDownList>
             </div>
           </asp:PlaceHolder>
 
           <div class="form-group">
             <label class="col-form-label">内容辅助表
-              <asp:RequiredFieldValidator ControlToValidate="DdlAuxiliaryTableForContent" ErrorMessage="辅助表不能为空！" foreColor="red" Display="Dynamic"
+              <asp:RequiredFieldValidator ControlToValidate="DdlTableName" ErrorMessage="辅助表不能为空！" foreColor="red" Display="Dynamic"
                 runat="server" />
             </label>
-            <asp:DropDownList ID="DdlAuxiliaryTableForContent" class="form-control" runat="server"> </asp:DropDownList>
+            <asp:DropDownList ID="DdlTableName" class="form-control" runat="server"> </asp:DropDownList>
           </div>
 
           <div class="form-group">

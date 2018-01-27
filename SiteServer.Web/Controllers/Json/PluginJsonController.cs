@@ -3,7 +3,6 @@ using System.Web.Http;
 using SiteServer.CMS.Controllers.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.API.Controllers.Json
 {
@@ -15,7 +14,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 if (service?.JsonGet == null)
@@ -23,7 +22,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(service.JsonGet(context));
+                return Ok(service.JsonGet(request));
             }
             catch (Exception ex)
             {
@@ -37,7 +36,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 if (service?.JsonGetWithName == null)
@@ -45,7 +44,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(service.JsonGetWithName(context, name));
+                return Ok(service.JsonGetWithName(request, name));
             }
             catch (Exception ex)
             {
@@ -59,7 +58,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 if (service?.JsonGetWithNameAndId == null)
@@ -67,7 +66,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(service.JsonGetWithNameAndId(context, name, id));
+                return Ok(service.JsonGetWithNameAndId(request, name, id));
             }
             catch (Exception ex)
             {
@@ -81,7 +80,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 if (service?.JsonPost == null)
@@ -89,7 +88,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(service.JsonPost(context));
+                return Ok(service.JsonPost(request));
             }
             catch (Exception ex)
             {
@@ -103,7 +102,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 if (service?.JsonPostWithName == null)
@@ -111,7 +110,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(service.JsonPostWithName(context, name));
+                return Ok(service.JsonPostWithName(request, name));
             }
             catch (Exception ex)
             {
@@ -125,7 +124,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 if (service?.JsonPostWithNameAndId == null)
@@ -133,7 +132,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(service.JsonPostWithNameAndId(context, name, id));
+                return Ok(service.JsonPostWithNameAndId(request, name, id));
             }
             catch (Exception ex)
             {
@@ -147,7 +146,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 if (service?.JsonPut == null)
@@ -155,7 +154,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(service.JsonPut(context));
+                return Ok(service.JsonPut(request));
             }
             catch (Exception ex)
             {
@@ -169,7 +168,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 if (service?.JsonPutWithName == null)
@@ -177,7 +176,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(service.JsonPutWithName(context, name));
+                return Ok(service.JsonPutWithName(request, name));
             }
             catch (Exception ex)
             {
@@ -191,7 +190,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 if (service?.JsonPutWithNameAndId == null)
@@ -199,7 +198,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(service.JsonPutWithNameAndId(context, name, id));
+                return Ok(service.JsonPutWithNameAndId(request, name, id));
             }
             catch (Exception ex)
             {
@@ -213,7 +212,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 if (service?.JsonDelete == null)
@@ -221,7 +220,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(service.JsonDelete(context));
+                return Ok(service.JsonDelete(request));
             }
             catch (Exception ex)
             {
@@ -235,7 +234,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 if (service?.JsonDeleteWithName == null)
@@ -243,7 +242,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(service.JsonDeleteWithName(context, name));
+                return Ok(service.JsonDeleteWithName(request, name));
             }
             catch (Exception ex)
             {
@@ -257,7 +256,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
                 if (service?.JsonDeleteWithNameAndId == null)
@@ -265,7 +264,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(service.JsonDeleteWithNameAndId(context, name, id));
+                return Ok(service.JsonDeleteWithNameAndId(request, name, id));
             }
             catch (Exception ex)
             {

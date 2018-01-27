@@ -43,8 +43,8 @@
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=1.2.19.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.2.19-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.2.20.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.2.20-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -250,7 +250,7 @@
     <Compile Include="Plugin\Model\PluginInfo.cs" />
     <Compile Include="Plugin\Model\PluginParseContext.cs" />
     <Compile Include="Plugin\Model\PluginService.cs" />
-    <Compile Include="Plugin\Model\RequestBody.cs" />
+    <Compile Include="Core\Request.cs" />
     <Compile Include="Plugin\PluginContentManager.cs" />
     <Compile Include="Plugin\PluginContentTableManager.cs" />
     <Compile Include="Plugin\PluginDatabaseTableManager.cs" />

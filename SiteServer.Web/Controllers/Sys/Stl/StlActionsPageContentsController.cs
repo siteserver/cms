@@ -3,7 +3,6 @@ using System.Web.Http;
 using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 
@@ -17,22 +16,22 @@ namespace SiteServer.API.Controllers.Sys.Stl
         {
             try
             {
-                var context = new RequestContext();
+                var request = new Request();
 
-                var siteId = context.GetPostInt("siteId");
+                var siteId = request.GetPostInt("siteId");
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                var pageChannelId = context.GetPostInt("pageChannelId");
-                var templateId = context.GetPostInt("templateId");
-                var totalNum = context.GetPostInt("totalNum");
-                var pageCount = context.GetPostInt("pageCount");
-                var currentPageIndex = context.GetPostInt("currentPageIndex");
-                var stlPageContentsElement = TranslateUtils.DecryptStringBySecretKey(context.GetPostString("stlPageContentsElement"));
+                var pageChannelId = request.GetPostInt("pageChannelId");
+                var templateId = request.GetPostInt("templateId");
+                var totalNum = request.GetPostInt("totalNum");
+                var pageCount = request.GetPostInt("pageCount");
+                var currentPageIndex = request.GetPostInt("currentPageIndex");
+                var stlPageContentsElement = TranslateUtils.DecryptStringBySecretKey(request.GetPostString("stlPageContentsElement"));
 
                 var nodeInfo = ChannelManager.GetChannelInfo(siteId, pageChannelId);
                 var templateInfo = TemplateManager.GetTemplateInfo(siteId, templateId);
                 var pageInfo = new PageInfo(nodeInfo.Id, 0, siteInfo, templateInfo)
                 {
-                    UserInfo = context.UserInfo
+                    UserInfo = request.UserInfo
                 };
                 var contextInfo = new ContextInfo(pageInfo);
 

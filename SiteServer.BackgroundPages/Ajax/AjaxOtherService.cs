@@ -125,8 +125,8 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request["type"];
             var retval = new NameValueCollection();
             string retString = null;
-            var context = new RequestContext();
-            if (!context.IsAdminLoggin) return;
+            var request = new Request();
+            if (!request.IsAdminLoggin) return;
 
             if (type == TypeGetCountArray)
             {
@@ -158,7 +158,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 var parentId = TranslateUtils.ToInt(Request["parentID"]);
                 var loadingType = Request["loadingType"];
                 var additional = Request["additional"];
-                retString = GetLoadingChannels(siteId, parentId, loadingType, additional, context);
+                retString = GetLoadingChannels(siteId, parentId, loadingType, additional, request);
             }
             else if (type == TypePluginDownload)
             {
@@ -390,7 +390,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
-        public string GetLoadingChannels(int siteId, int parentId, string loadingType, string additional, RequestContext context)
+        public string GetLoadingChannels(int siteId, int parentId, string loadingType, string additional, Request request)
         {
             var list = new List<string>();
 
@@ -404,17 +404,17 @@ namespace SiteServer.BackgroundPages.Ajax
 
             foreach (var channelId in channelIdList)
             {
-                var enabled = AdminUtility.IsOwningChannelId(context.AdminName, channelId);
+                var enabled = AdminUtility.IsOwningChannelId(request.AdminName, channelId);
                 if (!enabled)
                 {
-                    if (!AdminUtility.IsHasChildOwningChannelId(context.AdminName, channelId))
+                    if (!AdminUtility.IsHasChildOwningChannelId(request.AdminName, channelId))
                     {
                         continue;
                     }
                 }
                 var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
-                list.Add(ChannelLoading.GetChannelRowHtml(siteInfo, nodeInfo, enabled, eLoadingType, nameValueCollection, context.AdminName));
+                list.Add(ChannelLoading.GetChannelRowHtml(siteInfo, nodeInfo, enabled, eLoadingType, nameValueCollection, request.AdminName));
             }
 
             //arraylist.Reverse();

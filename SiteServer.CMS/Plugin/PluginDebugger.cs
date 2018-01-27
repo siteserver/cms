@@ -34,27 +34,19 @@ namespace SiteServer.CMS.Plugin
 
         private void Watcher_EventHandler(object sender, FileSystemEventArgs e)
         {
-            var fullPath = e.FullPath.ToLower();
-            if (!fullPath.EndsWith(".nuspec") && !fullPath.EndsWith(".dll")) return;
+            var fileName = PathUtils.GetFileNameWithoutExtension(e.FullPath);
+            if (!PluginManager.IsExists(fileName)) return;
+            if (!e.FullPath.EndsWith(".nuspec") && !e.FullPath.EndsWith(".dll")) return;
 
             try
             {
                 _watcher.EnableRaisingEvents = false;
-                OnConfigOrDllChanged(e.FullPath);
+                PluginManager.ClearCache();
             }
             finally
             {
                 _watcher.EnableRaisingEvents = true;
             }
-        }
-
-        private static void OnConfigOrDllChanged(string fullPath)
-        {
-            var directoryName = PathUtils.GetDirectoryName(fullPath);
-
-            if (string.IsNullOrEmpty(directoryName)) return;
-
-            PluginManager.ClearCache();
         }
     }
 }

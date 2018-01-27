@@ -5,7 +5,6 @@ using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin.Model;
 using SiteServer.CMS.StlParser;
 
 namespace SiteServer.API.Controllers.Sys.Stl
@@ -17,21 +16,21 @@ namespace SiteServer.API.Controllers.Sys.Stl
         [Route(ApiRouteActionsTrigger.Route)]
         public async void Main()
         {
-            var context = new RequestContext();
+            var request = new Request();
 
-            var siteId = context.GetQueryInt("siteId");
+            var siteId = request.GetQueryInt("siteId");
             var siteInfo = SiteManager.GetSiteInfo(siteId);
 
             try
             {
-                var channelId = context.GetQueryInt("channelId");
+                var channelId = request.GetQueryInt("channelId");
                 if (channelId == 0)
                 {
                     channelId = siteId;
                 }
-                var contentId = context.GetQueryInt("contentId");
-                var fileTemplateId = context.GetQueryInt("fileTemplateId");
-                var isRedirect = TranslateUtils.ToBool(context.GetQueryString("isRedirect"));
+                var contentId = request.GetQueryInt("contentId");
+                var fileTemplateId = request.GetQueryInt("fileTemplateId");
+                var isRedirect = TranslateUtils.ToBool(request.GetQueryString("isRedirect"));
 
                 var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
@@ -77,7 +76,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
                     if (!string.IsNullOrEmpty(redirectUrl))
                     {
                         var parameters = new NameValueCollection();
-                        var returnUrl = context.GetQueryString("returnUrl");
+                        var returnUrl = request.GetQueryString("returnUrl");
                         if (!string.IsNullOrEmpty(returnUrl))
                         {
                             if (returnUrl.StartsWith("?"))

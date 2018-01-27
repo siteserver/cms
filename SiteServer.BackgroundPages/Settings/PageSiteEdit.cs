@@ -85,6 +85,8 @@ namespace SiteServer.BackgroundPages.Settings
             var tableList = DataProvider.TableDao.GetTableCollectionInfoListCreatedInDb();
             foreach (var tableInfo in tableList)
             {
+                if (tableInfo.DisplayName.StartsWith("插件内容表：")) continue;
+                
                 var li = new ListItem($"{tableInfo.DisplayName}({tableInfo.TableName})", tableInfo.TableName);
                 DdlTableName.Items.Add(li);
             }

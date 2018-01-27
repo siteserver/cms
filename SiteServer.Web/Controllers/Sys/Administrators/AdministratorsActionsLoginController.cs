@@ -2,7 +2,6 @@
 using System.Web.Http;
 using SiteServer.CMS.Controllers.Sys.Administrators;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.API.Controllers.Sys.Administrators
 {
@@ -14,9 +13,9 @@ namespace SiteServer.API.Controllers.Sys.Administrators
         {
             try
             {
-                var context = new RequestContext();
-                var account = context.GetPostString("account");
-                var password = context.GetPostString("password");
+                var request = new Request();
+                var account = request.GetPostString("account");
+                var password = request.GetPostString("password");
                 if (string.IsNullOrEmpty(account) || string.IsNullOrEmpty(password))
                 {
                     return Unauthorized();
@@ -32,7 +31,7 @@ namespace SiteServer.API.Controllers.Sys.Administrators
                 }
 
                 DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLogin(userName);
-                context.AdminLogin(userName);
+                request.AdminLogin(userName);
 
                 return Ok(new
                 {

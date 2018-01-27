@@ -11,9 +11,9 @@ namespace SiteServer.API.Controllers.Sys.Packaging
         [HttpGet, Route(ApiRouteUpdateSystem.Route)]
         public IHttpActionResult Main(string version)
         {
-            var context = new RequestContext();
+            var request = new Request();
 
-            if (!context.IsAdminLoggin)
+            if (!request.IsAdminLoggin)
             {
                 return Unauthorized();
             }

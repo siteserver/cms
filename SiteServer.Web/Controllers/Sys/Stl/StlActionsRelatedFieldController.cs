@@ -4,7 +4,6 @@ using System.Web.Http;
 using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.API.Controllers.Sys.Stl
 {
@@ -14,11 +13,11 @@ namespace SiteServer.API.Controllers.Sys.Stl
         [HttpPost, Route(ApiRouteActionsRelatedField.Route)]
         public void Main(int siteId)
         {
-            var context = new RequestContext();
+            var request = new Request();
 
-            var callback = context.GetQueryString("callback");
-            var relatedFieldId = context.GetQueryInt("relatedFieldId");
-            var parentId = context.GetQueryInt("parentId");
+            var callback = request.GetQueryString("callback");
+            var relatedFieldId = request.GetQueryInt("relatedFieldId");
+            var parentId = request.GetQueryInt("parentId");
             var jsonString = GetRelatedField(relatedFieldId, parentId);
             var call = callback + "(" + jsonString + ")";
 

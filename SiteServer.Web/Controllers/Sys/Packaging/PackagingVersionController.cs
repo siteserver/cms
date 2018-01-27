@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web.Http;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin.Model;
 using SiteServer.Utils;
 using SiteServer.Utils.Packaging;
 using ApiRouteVersion = SiteServer.CMS.Controllers.Sys.Packaging.ApiRouteVersion;
@@ -21,17 +20,16 @@ namespace SiteServer.API.Controllers.Sys.Packaging
         [HttpGet, Route(ApiRouteVersion.Route)]
         public IHttpActionResult Main(string packageId)
         {
-            var context = new RequestContext();
+            var request = new Request();
 
-            if (!context.IsAdminLoggin)
+            if (!request.IsAdminLoggin)
             {
                 return Unauthorized();
             }
 
-            if (SystemManager.Version == PackageUtils.VersionDev)
-            {
-                return Ok();
-            }
+#if DEBUG
+            return Ok();
+#endif
 
             var cacheKeyVersionAndNotes = GetCacheKey(packageId, WebConfigUtils.IsUpdatePreviewVersion, CacheKeyVersionAndNotes);
 
