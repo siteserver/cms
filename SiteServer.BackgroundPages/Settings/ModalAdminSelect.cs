@@ -51,8 +51,8 @@ namespace SiteServer.BackgroundPages.Settings
                     if (_departmentId > 0)
                     {
                         LtlDepartment.Text = DepartmentManager.GetDepartmentName(_departmentId);
-                        RptUser.DataSource = DataProvider.AdministratorDao.GetUserNameArrayList(_departmentId, false);
-                        RptUser.ItemDataBound += rptUser_ItemDataBound;
+                        RptUser.DataSource = DataProvider.AdministratorDao.GetUserNameList(_departmentId, false);
+                        RptUser.ItemDataBound += RptUser_ItemDataBound;
                         RptUser.DataBind();
                     }
                 }
@@ -85,7 +85,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
         }
 
-        private void rptUser_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        private void RptUser_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
             var userName = (string)e.Item.DataItem;
 

@@ -78,15 +78,18 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString, parms);
         }
 
-        public void SetIsDisabledAndTaxis(PluginInfo pluginInfo)
+        public void SetIsDisabledAndTaxis(string pluginId, out bool isDisabled, out int taxis)
         {
+            isDisabled = false;
+            taxis = 0;
+
             var exists = false;
 
             var sqlString = "SELECT Id FROM siteserver_Plugin WHERE PluginId = @PluginId";
 
             var parameters = new IDataParameter[]
             {
-                GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginInfo.Id)
+                GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginId)
             };
 
             using (var rdr = ExecuteReader(sqlString, parameters))
@@ -104,7 +107,7 @@ namespace SiteServer.CMS.Provider
 
                 parameters = new IDataParameter[]
                 {
-                    GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginInfo.Id),
+                    GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginId),
                     GetParameter(nameof(PluginInfo.IsDisabled), DataType.VarChar, 18, false.ToString()),
                     GetParameter(nameof(PluginInfo.Taxis), DataType.Integer, 0)
                 };
@@ -116,15 +119,15 @@ namespace SiteServer.CMS.Provider
 
             parameters = new IDataParameter[]
             {
-                GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginInfo.Id)
+                GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginId)
             };
 
             using (var rdr = ExecuteReader(sqlString, parameters))
             {
                 if (rdr.Read() && !rdr.IsDBNull(0))
                 {
-                    pluginInfo.IsDisabled = TranslateUtils.ToBool(rdr.GetString(0));
-                    pluginInfo.Taxis = rdr.GetInt32(1);
+                    isDisabled = TranslateUtils.ToBool(rdr.GetString(0));
+                    taxis = rdr.GetInt32(1);
                 }
                 rdr.Close();
             }

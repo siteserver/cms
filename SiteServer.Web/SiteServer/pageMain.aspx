@@ -40,7 +40,7 @@
                     </a>
                     <div id="newVersionCard" class="card bg-warning text-dark" style="width: 18rem; z-index: 11; position: absolute; display: none">
                       <div class="card-body" style="padding-bottom: 0;">
-                        <h5 class="card-title">发现新版本</h5>
+                        <h5 class="card-title">发现系统新版本</h5>
                         <p class="card-text">
                           当前版本：
                           <%=CurrentVersion%>
@@ -185,6 +185,10 @@
             if (version == '<%=CurrentVersion%>') return;
 
             $('#newVersion').show();
+            $('#newVersionCard').show();
+            // setTimeout(function () {
+            //   $('#newVersionCard').fadeOut();
+            // }, 5000);
             $('#newVersionLast').html(data.version);
             $('#newVersionDate').html(data.published);
             if (data.releaseNotes) {

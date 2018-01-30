@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Web.UI.WebControls;
 using SiteServer.Plugin;
 using Menu = SiteServer.Plugin.Menu;
@@ -56,7 +55,7 @@ namespace SiteServer.CMS.Plugin.Model
         //    return this;
         //}
 
-        public event EventHandler<ContentFormLoadEventArgs> ContentFormLoad;
+        public event ContentFormLoadEventHandler ContentFormLoad;
 
         public void OnContentFormLoad(ContentFormLoadEventArgs e)
         {
@@ -71,37 +70,38 @@ namespace SiteServer.CMS.Plugin.Model
         }
 
         public Dictionary<string, Func<IParseContext, string>> StlElementsToParse { get; private set; }
-        public Func<IRequest, object> JsonGet { get; private set; }
-        public Func<IRequest, string, object> JsonGetWithName { get; private set; }
-        public Func<IRequest, string, string, object> JsonGetWithNameAndId { get; private set; }
 
-        public Func<IRequest, object> JsonPost { get; private set; }
-        public Func<IRequest, string, object> JsonPostWithName { get; private set; }
-        public Func<IRequest, string, string, object> JsonPostWithNameAndId { get; private set; }
+        //public Func<IRequest, object> JsonGet { get; private set; }
+        //public Func<IRequest, string, object> JsonGetWithName { get; private set; }
+        //public Func<IRequest, string, string, object> JsonGetWithNameAndId { get; private set; }
 
-        public Func<IRequest, object> JsonPut { get; private set; }
-        public Func<IRequest, string, object> JsonPutWithName { get; private set; }
-        public Func<IRequest, string, string, object> JsonPutWithNameAndId { get; private set; }
+        //public Func<IRequest, object> JsonPost { get; private set; }
+        //public Func<IRequest, string, object> JsonPostWithName { get; private set; }
+        //public Func<IRequest, string, string, object> JsonPostWithNameAndId { get; private set; }
 
-        public Func<IRequest, object> JsonDelete { get; private set; }
-        public Func<IRequest, string, object> JsonDeleteWithName { get; private set; }
-        public Func<IRequest, string, string, object> JsonDeleteWithNameAndId { get; private set; }
+        //public Func<IRequest, object> JsonPut { get; private set; }
+        //public Func<IRequest, string, object> JsonPutWithName { get; private set; }
+        //public Func<IRequest, string, string, object> JsonPutWithNameAndId { get; private set; }
 
-        public Func<IRequest, HttpResponseMessage> HttpGet { get; private set; }
-        public Func<IRequest, string, HttpResponseMessage> HttpGetWithName { get; private set; }
-        public Func<IRequest, string, string, HttpResponseMessage> HttpGetWithNameAndId { get; private set; }
+        //public Func<IRequest, object> JsonDelete { get; private set; }
+        //public Func<IRequest, string, object> JsonDeleteWithName { get; private set; }
+        //public Func<IRequest, string, string, object> JsonDeleteWithNameAndId { get; private set; }
 
-        public Func<IRequest, HttpResponseMessage> HttpPost { get; private set; }
-        public Func<IRequest, string, HttpResponseMessage> HttpPostWithName { get; private set; }
-        public Func<IRequest, string, string, HttpResponseMessage> HttpPostWithNameAndId { get; private set; }
+        //public Func<IRequest, HttpResponseMessage> HttpGet { get; private set; }
+        //public Func<IRequest, string, HttpResponseMessage> HttpGetWithName { get; private set; }
+        //public Func<IRequest, string, string, HttpResponseMessage> HttpGetWithNameAndId { get; private set; }
 
-        public Func<IRequest, HttpResponseMessage> HttpPut { get; private set; }
-        public Func<IRequest, string, HttpResponseMessage> HttpPutWithName { get; private set; }
-        public Func<IRequest, string, string, HttpResponseMessage> HttpPutWithNameAndId { get; private set; }
+        //public Func<IRequest, HttpResponseMessage> HttpPost { get; private set; }
+        //public Func<IRequest, string, HttpResponseMessage> HttpPostWithName { get; private set; }
+        //public Func<IRequest, string, string, HttpResponseMessage> HttpPostWithNameAndId { get; private set; }
 
-        public Func<IRequest, HttpResponseMessage> HttpDelete { get; private set; }
-        public Func<IRequest, string, HttpResponseMessage> HttpDeleteWithName { get; private set; }
-        public Func<IRequest, string, string, HttpResponseMessage> HttpDeleteWithNameAndId { get; private set; }
+        //public Func<IRequest, HttpResponseMessage> HttpPut { get; private set; }
+        //public Func<IRequest, string, HttpResponseMessage> HttpPutWithName { get; private set; }
+        //public Func<IRequest, string, string, HttpResponseMessage> HttpPutWithNameAndId { get; private set; }
+
+        //public Func<IRequest, HttpResponseMessage> HttpDelete { get; private set; }
+        //public Func<IRequest, string, HttpResponseMessage> HttpDeleteWithName { get; private set; }
+        //public Func<IRequest, string, string, HttpResponseMessage> HttpDeleteWithNameAndId { get; private set; }
 
         public PluginService(IMetadata metadata)
         {
@@ -160,185 +160,210 @@ namespace SiteServer.CMS.Plugin.Model
             return this;
         }
 
-        public IService AddJsonGet(Func<IRequest, object> jsonGet)
-        {
-            JsonGet = jsonGet;
+        public event ApiEventHandler ApiGet;
+        public event ApiEventHandler ApiPost;
+        public event ApiEventHandler ApiPut;
+        public event ApiEventHandler ApiDelete;
 
-            return this;
+        public object OnApiGet(ApiEventArgs e)
+        {
+            return ApiGet?.Invoke(this, e);
         }
 
-        public IService AddJsonGet(Func<IRequest, string, object> jsonGetWithName)
+        public object OnApiPost(ApiEventArgs e)
         {
-            JsonGetWithName = jsonGetWithName;
-
-            return this;
+            return ApiPost?.Invoke(this, e);
         }
 
-        public IService AddJsonGet(Func<IRequest, string, string, object> jsonGetWithNameAndId)
+        public object OnApiPut(ApiEventArgs e)
         {
-            JsonGetWithNameAndId = jsonGetWithNameAndId;
-
-            return this;
+            return ApiPut?.Invoke(this, e);
         }
 
-        public IService AddJsonPost(Func<IRequest, object> jsonPost)
+        public object OnApiDelete(ApiEventArgs e)
         {
-            JsonPost = jsonPost;
-
-            return this;
+            return ApiDelete?.Invoke(this, e);
         }
 
-        public IService AddJsonPost(Func<IRequest, string, object> jsonPostWithName)
-        {
-            JsonPostWithName = jsonPostWithName;
+        //public IService AddJsonGet(Func<IRequest, object> jsonGet)
+        //{
+        //    JsonGet = jsonGet;
 
-            return this;
+        //    return this;
+        //}
+
+        //public IService AddJsonGet(Func<IRequest, string, object> jsonGetWithName)
+        //{
+        //    JsonGetWithName = jsonGetWithName;
+
+        //    return this;
+        //}
+
+        //public IService AddJsonGet(Func<IRequest, string, string, object> jsonGetWithNameAndId)
+        //{
+        //    JsonGetWithNameAndId = jsonGetWithNameAndId;
+
+        //    return this;
+        //}
+
+        //public IService AddJsonPost(Func<IRequest, object> jsonPost)
+        //{
+        //    JsonPost = jsonPost;
+
+        //    return this;
+        //}
+
+        //public IService AddJsonPost(Func<IRequest, string, object> jsonPostWithName)
+        //{
+        //    JsonPostWithName = jsonPostWithName;
+
+        //    return this;
+        //}
+
+        //public IService AddJsonPost(Func<IRequest, string, string, object> jsonPostWithNameAndId)
+        //{
+        //    JsonPostWithNameAndId = jsonPostWithNameAndId;
+
+        //    return this;
+        //}
+
+        //public IService AddJsonPut(Func<IRequest, object> jsonPut)
+        //{
+        //    JsonPut = jsonPut;
+
+        //    return this;
+        //}
+
+        //public IService AddJsonPut(Func<IRequest, string, object> jsonPutWithName)
+        //{
+        //    JsonPutWithName = jsonPutWithName;
+
+        //    return this;
+        //}
+
+        //public IService AddJsonPut(Func<IRequest, string, string, object> jsonPutWithNameAndId)
+        //{
+        //    JsonPutWithNameAndId = jsonPutWithNameAndId;
+
+        //    return this;
+        //}
+
+        //public IService AddJsonDelete(Func<IRequest, object> jsonDelete)
+        //{
+        //    JsonDelete = jsonDelete;
+
+        //    return this;
+        //}
+
+        //public IService AddJsonDelete(Func<IRequest, string, object> jsonDeleteWithName)
+        //{
+        //    JsonDeleteWithName = jsonDeleteWithName;
+
+        //    return this;
+        //}
+
+        //public IService AddJsonDelete(Func<IRequest, string, string, object> jsonDeleteWithNameAndId)
+        //{
+        //    JsonDeleteWithNameAndId = jsonDeleteWithNameAndId;
+
+        //    return this;
+        //}
+
+        //public IService AddHttpGet(Func<IRequest, HttpResponseMessage> httpGet)
+        //{
+        //    HttpGet = httpGet;
+
+        //    return this;
+        //}
+
+        //public IService AddHttpGet(Func<IRequest, string, HttpResponseMessage> httpGetWithName)
+        //{
+        //    HttpGetWithName = httpGetWithName;
+
+        //    return this;
+        //}
+
+        //public IService AddHttpGet(Func<IRequest, string, string, HttpResponseMessage> httpGetWithNameAndId)
+        //{
+        //    HttpGetWithNameAndId = httpGetWithNameAndId;
+
+        //    return this;
+        //}
+
+        //public IService AddHttpPost(Func<IRequest, HttpResponseMessage> httpPost)
+        //{
+        //    HttpPost = httpPost;
+
+        //    return this;
+        //}
+
+        //public IService AddHttpPost(Func<IRequest, string, HttpResponseMessage> httpPostWithName)
+        //{
+        //    HttpPostWithName = httpPostWithName;
+
+        //    return this;
+        //}
+
+        //public IService AddHttpPost(Func<IRequest, string, string, HttpResponseMessage> httpPostWithNameAndId)
+        //{
+        //    HttpPostWithNameAndId = httpPostWithNameAndId;
+
+        //    return this;
+        //}
+
+        //public IService AddHttpPut(Func<IRequest, HttpResponseMessage> httpPut)
+        //{
+        //    HttpPut = httpPut;
+
+        //    return this;
+        //}
+
+        //public IService AddHttpPut(Func<IRequest, string, HttpResponseMessage> httpPutWithName)
+        //{
+        //    HttpPutWithName = httpPutWithName;
+
+        //    return this;
+        //}
+
+        //public IService AddHttpPut(Func<IRequest, string, string, HttpResponseMessage> httpPutWithNameAndId)
+        //{
+        //    HttpPutWithNameAndId = httpPutWithNameAndId;
+
+        //    return this;
+        //}
+
+        //public IService AddHttpDelete(Func<IRequest, HttpResponseMessage> httpDelete)
+        //{
+        //    HttpDelete = httpDelete;
+
+        //    return this;
+        //}
+
+        //public IService AddHttpDelete(Func<IRequest, string, HttpResponseMessage> httpDeleteWithName)
+        //{
+        //    HttpDeleteWithName = httpDeleteWithName;
+
+        //    return this;
+        //}
+
+        //public IService AddHttpDelete(Func<IRequest, string, string, HttpResponseMessage> httpDeleteWithNameAndId)
+        //{
+        //    HttpDeleteWithNameAndId = httpDeleteWithNameAndId;
+
+        //    return this;
+        //}
+
+        public event EventHandler<ParseEventArgs> BeforeStlParse;
+        public event EventHandler<ParseEventArgs> AfterStlParse;
+
+        public void OnBeforeStlParse(ParseEventArgs e)
+        {
+            BeforeStlParse?.Invoke(this, e);
         }
 
-        public IService AddJsonPost(Func<IRequest, string, string, object> jsonPostWithNameAndId)
+        public void OnAfterStlParse(ParseEventArgs e)
         {
-            JsonPostWithNameAndId = jsonPostWithNameAndId;
-
-            return this;
-        }
-
-        public IService AddJsonPut(Func<IRequest, object> jsonPut)
-        {
-            JsonPut = jsonPut;
-
-            return this;
-        }
-
-        public IService AddJsonPut(Func<IRequest, string, object> jsonPutWithName)
-        {
-            JsonPutWithName = jsonPutWithName;
-
-            return this;
-        }
-
-        public IService AddJsonPut(Func<IRequest, string, string, object> jsonPutWithNameAndId)
-        {
-            JsonPutWithNameAndId = jsonPutWithNameAndId;
-
-            return this;
-        }
-
-        public IService AddJsonDelete(Func<IRequest, object> jsonDelete)
-        {
-            JsonDelete = jsonDelete;
-
-            return this;
-        }
-
-        public IService AddJsonDelete(Func<IRequest, string, object> jsonDeleteWithName)
-        {
-            JsonDeleteWithName = jsonDeleteWithName;
-
-            return this;
-        }
-
-        public IService AddJsonDelete(Func<IRequest, string, string, object> jsonDeleteWithNameAndId)
-        {
-            JsonDeleteWithNameAndId = jsonDeleteWithNameAndId;
-
-            return this;
-        }
-
-        public IService AddHttpGet(Func<IRequest, HttpResponseMessage> httpGet)
-        {
-            HttpGet = httpGet;
-
-            return this;
-        }
-
-        public IService AddHttpGet(Func<IRequest, string, HttpResponseMessage> httpGetWithName)
-        {
-            HttpGetWithName = httpGetWithName;
-
-            return this;
-        }
-
-        public IService AddHttpGet(Func<IRequest, string, string, HttpResponseMessage> httpGetWithNameAndId)
-        {
-            HttpGetWithNameAndId = httpGetWithNameAndId;
-
-            return this;
-        }
-
-        public IService AddHttpPost(Func<IRequest, HttpResponseMessage> httpPost)
-        {
-            HttpPost = httpPost;
-
-            return this;
-        }
-
-        public IService AddHttpPost(Func<IRequest, string, HttpResponseMessage> httpPostWithName)
-        {
-            HttpPostWithName = httpPostWithName;
-
-            return this;
-        }
-
-        public IService AddHttpPost(Func<IRequest, string, string, HttpResponseMessage> httpPostWithNameAndId)
-        {
-            HttpPostWithNameAndId = httpPostWithNameAndId;
-
-            return this;
-        }
-
-        public IService AddHttpPut(Func<IRequest, HttpResponseMessage> httpPut)
-        {
-            HttpPut = httpPut;
-
-            return this;
-        }
-
-        public IService AddHttpPut(Func<IRequest, string, HttpResponseMessage> httpPutWithName)
-        {
-            HttpPutWithName = httpPutWithName;
-
-            return this;
-        }
-
-        public IService AddHttpPut(Func<IRequest, string, string, HttpResponseMessage> httpPutWithNameAndId)
-        {
-            HttpPutWithNameAndId = httpPutWithNameAndId;
-
-            return this;
-        }
-
-        public IService AddHttpDelete(Func<IRequest, HttpResponseMessage> httpDelete)
-        {
-            HttpDelete = httpDelete;
-
-            return this;
-        }
-
-        public IService AddHttpDelete(Func<IRequest, string, HttpResponseMessage> httpDeleteWithName)
-        {
-            HttpDeleteWithName = httpDeleteWithName;
-
-            return this;
-        }
-
-        public IService AddHttpDelete(Func<IRequest, string, string, HttpResponseMessage> httpDeleteWithNameAndId)
-        {
-            HttpDeleteWithNameAndId = httpDeleteWithNameAndId;
-
-            return this;
-        }
-
-        public event EventHandler<ParseEventArgs> PreParse;
-        public event EventHandler<ParseEventArgs> PostParse;
-
-        public void OnPreParse(ParseEventArgs e)
-        {
-            PreParse?.Invoke(this, e);
-        }
-
-        public void OnPostParse(ParseEventArgs e)
-        {
-            PostParse?.Invoke(this, e);
+            AfterStlParse?.Invoke(this, e);
         }
     }
 }

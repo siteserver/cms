@@ -2,12 +2,8 @@
 
 namespace SiteServer.CMS.Plugin.Model
 {
-    public class PluginContext: IContext
+    public class PluginApiCollection: IApiCollection
     {
-        public IEnvironment Environment { get; set; }
-
-        public IMetadata Metadata { get; set; }
-
         public IAdminApi AdminApi { get; set; }
 
         public IConfigApi ConfigApi { get; set; }
@@ -21,6 +17,8 @@ namespace SiteServer.CMS.Plugin.Model
         public IChannelApi ChannelApi { get; set; }
 
         public IParseApi ParseApi { get; set; }
+
+        public IPluginApi PluginApi { get; set; }
 
         public ISiteApi SiteApi { get; set; }
 

@@ -7,12 +7,10 @@ namespace SiteServer.CMS.Plugin.Apis
 {
     public class FilesApi : IFilesApi
     {
-        private readonly IMetadata _metadata;
+        private FilesApi() { }
 
-        public FilesApi(IMetadata metadata)
-        {
-            _metadata = metadata;
-        }
+        private static FilesApi _instance;
+        public static FilesApi Instance => _instance ?? (_instance = new FilesApi());
 
         public void MoveFiles(int sourceSiteId, int targetSiteId, List<string> relatedUrls)
         {
@@ -48,28 +46,6 @@ namespace SiteServer.CMS.Plugin.Apis
         public string GetTemporaryFilesPath(string relatedPath)
         {
             return PathUtils.GetTemporaryFilesPath(relatedPath);
-        }
-
-        public string GetPluginPath(string relatedPath)
-        {
-            var path = PathUtils.Combine(PathUtils.GetPluginPath(_metadata.Id), relatedPath);
-            DirectoryUtils.CreateDirectoryIfNotExists(path);
-            return path;
-        }
-
-        public string GetPluginUrl(string relatedUrl = "")
-        {
-            return PageUtility.GetSiteFilesUrl(PageUtility.OuterApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
-        }
-
-        public string GetApiJsonUrl(string name = "", string id = "")
-        {
-            return Controllers.Json.ApiRoutePluginJson.GetUrl(PageUtility.OuterApiUrl, _metadata.Id, name, id);
-        }
-
-        public string GetApiHttpUrl(string name = "", string id = "")
-        {
-            return Controllers.Http.ApiRoutePluginHttp.GetUrl(PageUtility.OuterApiUrl, _metadata.Id, name, id);
         }
 
         public string GetSiteUrl(int siteId)

@@ -1,10 +1,12 @@
-﻿using System.Xml;
+﻿using System.Text;
+using System.Xml;
 using SiteServer.Plugin;
 
 namespace SiteServer.Utils
 {
     public class WebConfigUtils
     {
+        public const string WebConfigFileName = "Web.config";
         /// <summary>
         /// 获取当前正在执行的服务器应用程序的根目录的物理文件系统路径。
         /// </summary>
@@ -17,8 +19,9 @@ namespace SiteServer.Utils
         public static string AdminDirectory { get; private set; }
         public static string SecretKey { get; private set; }
 
-        public static bool IsDebugRecord { get; private set; }
-        public static bool IsUpdatePreviewVersion { get; private set; }
+        public static bool AllowNightlyBuild { get; private set; }
+        public static bool AllowPrereleaseVersions { get; private set; }
+        public static bool AllowDebugRecord { get; private set; }
 
         public static void Load(string physicalApplicationPath)
         {
@@ -31,7 +34,7 @@ namespace SiteServer.Utils
             {
                 var doc = new XmlDocument();
 
-                var configFile = PathUtils.Combine(PhysicalApplicationPath, "web.config");
+                var configFile = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
 
                 doc.Load(configFile);
 
@@ -85,20 +88,29 @@ namespace SiteServer.Utils
                                         SecretKey = attrValue.Value;
                                     }
                                 }
-                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(IsDebugRecord)))
+                                
+                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, "VersionSettings:" + nameof(AllowNightlyBuild)))
                                 {
                                     var attrValue = setting.Attributes["value"];
                                     if (attrValue != null)
                                     {
-                                        IsDebugRecord = TranslateUtils.ToBool(attrValue.Value);
+                                        AllowNightlyBuild = TranslateUtils.ToBool(attrValue.Value);
                                     }
                                 }
-                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(IsUpdatePreviewVersion)))
+                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, "VersionSettings:" + nameof(AllowPrereleaseVersions)))
                                 {
                                     var attrValue = setting.Attributes["value"];
                                     if (attrValue != null)
                                     {
-                                        IsUpdatePreviewVersion = TranslateUtils.ToBool(attrValue.Value);
+                                        AllowPrereleaseVersions = TranslateUtils.ToBool(attrValue.Value);
+                                    }
+                                }
+                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, "VersionSettings:" + nameof(AllowDebugRecord)))
+                                {
+                                    var attrValue = setting.Attributes["value"];
+                                    if (attrValue != null)
+                                    {
+                                        AllowDebugRecord = TranslateUtils.ToBool(attrValue.Value);
                                     }
                                 }
                             }
@@ -131,12 +143,29 @@ namespace SiteServer.Utils
             }
         }
 
-        public static void UpdateWebConfig(bool isProtectData, DatabaseType databaseType, string connectionString, string adminDirectory, string secretKey)
+        public static void ResetWebConfig()
         {
-            var configFilePath = PathUtils.MapPath("~/web.config");
+            var configPath = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
+            ResetWebConfig(configPath);
+        }
 
+        public static void ResetWebConfig(string configPath)
+        {
+            var content = FileUtils.ReadText(configPath, Encoding.UTF8);
+            FileUtils.WriteText(configPath, Encoding.UTF8, content);
+        }
+
+        public static void UpdateWebConfig(bool isProtectData, DatabaseType databaseType, string connectionString,
+            string adminDirectory, string secretKey)
+        {
+            var configPath = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
+            UpdateWebConfig(configPath, isProtectData, databaseType, connectionString, adminDirectory, secretKey);
+        }
+
+        public static void UpdateWebConfig(string configPath, bool isProtectData, DatabaseType databaseType, string connectionString, string adminDirectory, string secretKey)
+        {
             var doc = new XmlDocument();
-            doc.Load(configFilePath);
+            doc.Load(configPath);
             var dirty = false;
             var appSettings = doc.SelectSingleNode("configuration/appSettings");
             if (appSettings != null)
@@ -208,7 +237,7 @@ namespace SiteServer.Utils
 
             if (dirty)
             {
-                var writer = new XmlTextWriter(configFilePath, System.Text.Encoding.UTF8)
+                var writer = new XmlTextWriter(configPath, Encoding.UTF8)
                 {
                     Formatting = Formatting.Indented
                 };
@@ -229,7 +258,7 @@ namespace SiteServer.Utils
             {
                 var doc = new XmlDocument();
 
-                var configFile = PathUtils.Combine(PhysicalApplicationPath, "web.config");
+                var configFile = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
 
                 doc.Load(configFile);
 

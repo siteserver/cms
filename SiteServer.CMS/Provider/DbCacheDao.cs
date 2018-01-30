@@ -16,10 +16,16 @@ namespace SiteServer.CMS.Provider
         {
             new TableColumnInfo
             {
+                ColumnName = "Id",
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
                 ColumnName = "CacheKey",
                 DataType = DataType.VarChar,
-                Length = 200,
-                IsPrimaryKey = true
+                Length = 200
             },
             new TableColumnInfo
             {

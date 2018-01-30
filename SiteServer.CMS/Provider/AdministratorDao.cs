@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Security.Cryptography;
@@ -22,10 +21,16 @@ namespace SiteServer.CMS.Provider
         {
             new TableColumnInfo
             {
+                ColumnName = nameof(AdministratorInfo.Id),
+                DataType = DataType.Integer,
+                IsPrimaryKey = true,
+                IsIdentity = true
+            },
+            new TableColumnInfo
+            {
                 ColumnName = nameof(AdministratorInfo.UserName),
                 DataType = DataType.VarChar,
-                Length = 255,
-                IsPrimaryKey = true
+                Length = 255
             },
             new TableColumnInfo
             {
@@ -119,13 +124,13 @@ namespace SiteServer.CMS.Provider
         };
 
         private const string SqlSelectUser =
-            "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator WHERE UserName = @UserName";
+            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator WHERE UserName = @UserName";
 
         private const string SqlSelectUserByEmail =
-            "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator WHERE Email = @Email";
+            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator WHERE Email = @Email";
 
         private const string SqlSelectUserByMobile =
-            "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator WHERE Mobile = @Mobile";
+            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator WHERE Mobile = @Mobile";
 
         private const string SqlSelectUsername = "SELECT UserName FROM siteserver_Administrator WHERE UserName = @UserName";
 
@@ -409,7 +414,7 @@ namespace SiteServer.CMS.Provider
                 if (rdr.Read())
                 {
                     var i = 0;
-                    info = new AdministratorInfo(GetString(rdr, i++), GetString(rdr, i++),
+                    info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         EPasswordFormatUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++),
                         GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
                         GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
@@ -436,7 +441,7 @@ namespace SiteServer.CMS.Provider
                 if (rdr.Read())
                 {
                     var i = 0;
-                    info = new AdministratorInfo(GetString(rdr, i++), GetString(rdr, i++),
+                    info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         EPasswordFormatUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++),
                         GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
                         GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
@@ -494,11 +499,11 @@ namespace SiteServer.CMS.Provider
         public string GetSelectCommand(bool isConsoleAdministrator, string creatorUserName)
         {
             var sqlString =
-                    "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator";
+                    "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator";
             if (!isConsoleAdministrator)
             {
                 sqlString =
-                    $"SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator WHERE CreatorUserName = '{PageUtils.FilterSql(creatorUserName)}'";
+                    $"SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator WHERE CreatorUserName = '{PageUtils.FilterSql(creatorUserName)}'";
             }
 
             return sqlString;
@@ -570,7 +575,7 @@ namespace SiteServer.CMS.Provider
             }
 
             var sqlString =
-                "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator " +
+                "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator " +
                 whereString;
 
             return sqlString;
@@ -780,9 +785,9 @@ namespace SiteServer.CMS.Provider
             return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public ArrayList GetUserNameArrayListByCreatorUserName(string creatorUserName)
+        public List<string> GetUserNameListByCreatorUserName(string creatorUserName)
         {
-            var arraylist = new ArrayList();
+            var list = new List<string>();
             if (creatorUserName != null)
             {
                 const string sqlString =
@@ -797,33 +802,33 @@ namespace SiteServer.CMS.Provider
                 {
                     while (rdr.Read())
                     {
-                        arraylist.Add(GetString(rdr, 0));
+                        list.Add(GetString(rdr, 0));
                     }
                     rdr.Close();
                 }
             }
-            return arraylist;
+            return list;
         }
 
-        public ArrayList GetUserNameArrayList()
+        public List<string> GetUserNameList()
         {
-            var arraylist = new ArrayList();
+            var list = new List<string>();
             const string sqlSelect = "SELECT UserName FROM siteserver_Administrator";
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
-                    arraylist.Add(GetString(rdr, 0));
+                    list.Add(GetString(rdr, 0));
                 }
                 rdr.Close();
             }
-            return arraylist;
+            return list;
         }
 
-        public ArrayList GetUserNameArrayList(List<int> departmentIdList)
+        public List<string> GetUserNameList(List<int> departmentIdList)
         {
-            var arraylist = new ArrayList();
+            var list = new List<string>();
             string sqlSelect =
                 $"SELECT UserName FROM siteserver_Administrator WHERE DepartmentId IN ({TranslateUtils.ToSqlInStringWithoutQuote(departmentIdList)}) ORDER BY DepartmentId";
 
@@ -831,16 +836,16 @@ namespace SiteServer.CMS.Provider
             {
                 while (rdr.Read())
                 {
-                    arraylist.Add(GetString(rdr, 0));
+                    list.Add(GetString(rdr, 0));
                 }
                 rdr.Close();
             }
-            return arraylist;
+            return list;
         }
 
-        public ArrayList GetUserNameArrayList(int departmentId, bool isAll)
+        public List<string> GetUserNameList(int departmentId, bool isAll)
         {
-            var arraylist = new ArrayList();
+            var list = new List<string>();
             string sqlSelect = $"SELECT UserName FROM siteserver_Administrator WHERE DepartmentId = {departmentId}";
             if (isAll)
             {
@@ -854,11 +859,11 @@ namespace SiteServer.CMS.Provider
             {
                 while (rdr.Read())
                 {
-                    arraylist.Add(GetString(rdr, 0));
+                    list.Add(GetString(rdr, 0));
                 }
                 rdr.Close();
             }
-            return arraylist;
+            return list;
         }
 
         public List<string> GetUserNameList(string searchWord, int dayOfCreation, int dayOfLastActivity, bool isChecked)

@@ -455,12 +455,12 @@ namespace SiteServer.CMS.StlParser
 
             try
             {
-                await FileUtils.WriteTextAsync(filePath, charset, contentBuilder.ToString());
+                await FileUtils.WriteTextAsync(filePath, ECharsetUtils.GetEncoding(charset), contentBuilder.ToString());
             }
             catch
             {
                 FileUtils.RemoveReadOnlyAndHiddenIfExists(filePath);
-                await FileUtils.WriteTextAsync(filePath, charset, contentBuilder.ToString());
+                await FileUtils.WriteTextAsync(filePath, ECharsetUtils.GetEncoding(charset), contentBuilder.ToString());
             }
         }
     }

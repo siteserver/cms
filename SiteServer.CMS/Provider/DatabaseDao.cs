@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
@@ -386,14 +385,14 @@ namespace SiteServer.CMS.Provider
             return string.IsNullOrEmpty(sqlString) ? null : ExecuteReader(connectionString, sqlString);
         }
 
-        public IEnumerable GetDataSource(string sqlString)
+        public IDataReader GetDataSource(string sqlString)
         {
             if (string.IsNullOrEmpty(sqlString)) return null;
-            var enumerable = (IEnumerable)ExecuteReader(sqlString);
+            var enumerable = ExecuteReader(sqlString);
             return enumerable;
         }
 
-        public IEnumerable GetDataSource(string connectionString, string sqlString)
+        public IDataReader GetDataSource(string connectionString, string sqlString)
         {
             if (string.IsNullOrEmpty(connectionString))
             {
@@ -401,7 +400,7 @@ namespace SiteServer.CMS.Provider
             }
 
             if (string.IsNullOrEmpty(sqlString)) return null;
-            var enumerable = (IEnumerable)ExecuteReader(connectionString, sqlString);
+            var enumerable = ExecuteReader(connectionString, sqlString);
             return enumerable;
         }
 
@@ -888,7 +887,7 @@ SELECT * FROM (
             return list;
         }
 
-        public IDictionary GetTablesAndViewsDictionary(string connectionString, string databaseName)
+        public Dictionary<string, int> GetTablesAndViewsDictionary(string connectionString, string databaseName)
         {
             if (string.IsNullOrEmpty(connectionString))
             {
@@ -898,17 +897,23 @@ SELECT * FROM (
             string sqlString =
                 $"select name, id from [{databaseName}].dbo.sysobjects where type in ('U','V') and category<>2 Order By Name";
 
-            var sortedlist = new SortedList();
+            var dict = new Dictionary<string, int>();
 
             using (var rdr = ExecuteReader(connectionString, sqlString))
             {
                 while (rdr.Read())
                 {
-                    sortedlist.Add(GetString(rdr, 0), GetInt(rdr, 1));
+                    var name = GetString(rdr, 0);
+                    var id = GetInt(rdr, 1);
+                    if (!string.IsNullOrEmpty(name))
+                    {
+                        dict[name] = id;
+                    }
                 }
                 rdr.Close();
             }
-            return sortedlist;
+
+            return dict;
         }
 
         //public string GetTableId(string connectionString, string databaseName, string tableName)

@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Plugins
             else
             {
                 string errorMessage;
-                if (!PackageUtils.InstallPackage(TbPluginId.Text, TbVersion.Text, true, out errorMessage))
+                if (!PackageUtils.InstallPackage(TbPluginId.Text, TbVersion.Text, out errorMessage))
                 {
                     FailMessage($"手动安装插件失败：{errorMessage}");
                     return;

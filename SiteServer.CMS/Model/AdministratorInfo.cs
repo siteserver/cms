@@ -10,6 +10,7 @@ namespace SiteServer.CMS.Model
 
         public AdministratorInfo()
         {
+            Id = 0;
             UserName = string.Empty;
             Password = string.Empty;
             PasswordFormat = EPasswordFormat.Encrypted;
@@ -29,8 +30,9 @@ namespace SiteServer.CMS.Model
             Mobile = string.Empty;
         }
 
-        public AdministratorInfo(string userName, string password, EPasswordFormat passwordFormat, string passwordSalt, DateTime creationDate, DateTime lastActivityDate, int countOfLogin, int countOfFailedLogin, string creatorUserName, bool isLockedOut, string siteIdCollection, int siteId, int departmentId, int areaId, string displayName, string email, string mobile)
+        public AdministratorInfo(int id, string userName, string password, EPasswordFormat passwordFormat, string passwordSalt, DateTime creationDate, DateTime lastActivityDate, int countOfLogin, int countOfFailedLogin, string creatorUserName, bool isLockedOut, string siteIdCollection, int siteId, int departmentId, int areaId, string displayName, string email, string mobile)
         {
+            Id = id;
             UserName = userName;
             Password = password;
             PasswordFormat = passwordFormat;
@@ -49,6 +51,8 @@ namespace SiteServer.CMS.Model
             Email = email;
             Mobile = mobile;
         }
+
+        public int Id { get; set; }
 
         public string UserName { get; set; }
 

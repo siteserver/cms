@@ -12,9 +12,9 @@ namespace SiteServer.API.Controllers.Sys.Packaging
     {
         private const string CacheKeyVersionAndNotes = nameof(CacheKeyVersionAndNotes);
 
-        public static string GetCacheKey(string packageId, bool isPreviewVersion, string cackeKey)
+        public static string GetCacheKey(string packageId, bool allowNightlyBuild, string cackeKey)
         {
-            return $"{packageId}-{isPreviewVersion}-{cackeKey}";
+            return $"{packageId}-{allowNightlyBuild}-{cackeKey}";
         }
 
         [HttpGet, Route(ApiRouteVersion.Route)]
@@ -31,7 +31,7 @@ namespace SiteServer.API.Controllers.Sys.Packaging
             return Ok();
 #endif
 
-            var cacheKeyVersionAndNotes = GetCacheKey(packageId, WebConfigUtils.IsUpdatePreviewVersion, CacheKeyVersionAndNotes);
+            var cacheKeyVersionAndNotes = GetCacheKey(packageId, WebConfigUtils.AllowNightlyBuild, CacheKeyVersionAndNotes);
 
             var versionAndNotes = CacheUtils.Get<VersionAndNotes>(cacheKeyVersionAndNotes);
             if (versionAndNotes == null)

@@ -9,6 +9,10 @@ namespace SiteServer.BackgroundPages.Plugins
     {
         public Button BtnUpload;
 
+        public string AllowNightlyBuild => WebConfigUtils.AllowNightlyBuild.ToString().ToLower();
+
+        public string AllowPrereleaseVersions => WebConfigUtils.AllowPrereleaseVersions.ToString().ToLower();
+
         public static string GetRedirectUrl()
         {
             return PageUtils.GetPluginsUrl(nameof(PageAdd), null);

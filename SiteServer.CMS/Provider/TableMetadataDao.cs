@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
@@ -283,14 +282,14 @@ namespace SiteServer.CMS.Provider
             return id;
         }
 
-        public IEnumerable GetDataSource(string tableName)
+        public IDataReader GetDataSource(string tableName)
         {
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableName)
 			};
 
-            var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllTableMetadataByEnname, parms);
+            var enumerable = ExecuteReader(SqlSelectAllTableMetadataByEnname, parms);
             return enumerable;
         }
 

@@ -14,10 +14,16 @@ namespace SiteServer.CMS.Provider
         {
             new TableColumnInfo
             {
+                ColumnName = "Id",
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
                 ColumnName = "RoleName",
                 DataType = DataType.VarChar,
-                Length = 255,
-                IsPrimaryKey = true
+                Length = 255
             },
             new TableColumnInfo
             {

@@ -368,7 +368,7 @@ namespace SiteServer.CMS.Provider
                     {
                         if (generalPermissionList != null && generalPermissionList.Count > 0)
                         {
-                            var permissionsInRolesInfo = new PermissionsInRolesInfo(roleName, TranslateUtils.ObjectCollectionToString(generalPermissionList));
+                            var permissionsInRolesInfo = new PermissionsInRolesInfo(0, roleName, TranslateUtils.ObjectCollectionToString(generalPermissionList));
                             DataProvider.PermissionsInRolesDao.InsertWithTrans(permissionsInRolesInfo, trans);
                         }
 

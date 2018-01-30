@@ -18,6 +18,10 @@ namespace SiteServer.BackgroundPages.Plugins
         private string _pluginId;
         private string _version;
 
+        public string AllowNightlyBuild => WebConfigUtils.AllowNightlyBuild.ToString().ToLower();
+
+        public string AllowPrereleaseVersions => WebConfigUtils.AllowPrereleaseVersions.ToString().ToLower();
+
         public static string GetRedirectUrl(string pluginId, string version)
         {
             return PageUtils.GetPluginsUrl(nameof(PageView), new NameValueCollection
@@ -49,7 +53,7 @@ namespace SiteServer.BackgroundPages.Plugins
         {
             string errorMessage;
 
-            if (!PackageUtils.InstallPackage(_pluginId, _version, true, out errorMessage))
+            if (!PackageUtils.InstallPackage(_pluginId, _version, out errorMessage))
             {
                 PhFailure.Visible = true;
                 LtlErrorMessage.Text = errorMessage;

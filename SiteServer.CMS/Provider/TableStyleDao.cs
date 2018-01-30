@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using SiteServer.CMS.Core;
@@ -246,7 +245,7 @@ namespace SiteServer.CMS.Provider
             TableStyleManager.IsChanged = true;
         }
 
-        public List<TableStyleInfo> GetTableStyleInfoList(ArrayList relatedIdentities, string tableName)
+        public List<TableStyleInfo> GetTableStyleInfoList(List<int> relatedIdentities, string tableName)
         {
             var list = new List<TableStyleInfo>();
 

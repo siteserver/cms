@@ -1,5 +1,5 @@
 var cloudUtils = {
-    Api: function(apiUrl) {
+    Api: function() {
         this.getQueryStringByName = function(name) {
             var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
             if (!result || result.length < 1) {
@@ -8,7 +8,8 @@ var cloudUtils = {
             return decodeURIComponent(result[1]);
         };
 
-        this.apiUrl = apiUrl || 'http://cloud.siteserver.cn/api';
+        this.apiUrl = 'http://cloud.siteserver.cn/api/v1';
+        // this.apiUrl = 'http://localhost:5000/api/v1';
 
         this._getURL = function(url, data, method) {
             url += ((/\?/).test(url) ? '&' : '?');

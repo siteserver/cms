@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
@@ -155,11 +154,11 @@ namespace SiteServer.CMS.Provider
 			return exists;
 		}
 
-		public IEnumerable GetDataSource(int siteId)
+		public IDataReader GetDataSource(int siteId)
 		{
             string sqlString =
                 $"SELECT GroupName, SiteId, Taxis, Description FROM siteserver_ChannelGroup WHERE SiteId = {siteId} ORDER BY Taxis DESC, GroupName";
-			var enumerable = (IEnumerable)ExecuteReader(sqlString);
+			var enumerable = ExecuteReader(sqlString);
 			return enumerable;
 		}
 

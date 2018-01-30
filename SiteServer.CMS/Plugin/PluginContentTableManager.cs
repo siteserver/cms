@@ -74,8 +74,9 @@ namespace SiteServer.CMS.Plugin
                     0, true));
             }
 
-            DataProvider.TableDao.Insert(new TableInfo(tableName,
-                $"插件内容表：{metadata.Title}", 0, false, false, false, string.Empty), metadataInfoList);
+            DataProvider.TableDao.Insert(
+                new TableInfo(0, tableName, $"插件内容表：{metadata.Title}", 0, false, false, false, string.Empty),
+                metadataInfoList);
         }
 
         private static void ContentTableUpdateMetadatas(string tableName, List<TableColumn> tableColumns)

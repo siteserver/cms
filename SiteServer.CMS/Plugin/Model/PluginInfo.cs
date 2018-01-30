@@ -11,31 +11,30 @@ namespace SiteServer.CMS.Plugin.Model
             ErrorMessage = errorMessage;
         }
 
-        public PluginInfo(PluginContext context, PluginService service, IPlugin plugin, long initTime)
+        public PluginInfo(PluginService service, PluginBase plugin, long initTime)
         {
-            Context = context;
-            Service = service;
+            Id = plugin.Id;
             Plugin = plugin;
-            Metadata = Context.Metadata;
-            Id = Metadata.Id;
+            Service = service;
             InitTime = initTime;
 
-            DataProvider.PluginDao.SetIsDisabledAndTaxis(this);
+            bool isDisabled;
+            int taxis;
+            DataProvider.PluginDao.SetIsDisabledAndTaxis(Id, out isDisabled, out taxis);
+
+            IsDisabled = isDisabled;
+            Taxis = taxis;
         }
 
         public string Id { get; }
 
-        public string ErrorMessage { get; }
-
-        public PluginContext Context { get; }
-
-        public IPlugin Plugin { get; }
+        public PluginBase Plugin { get; }
 
         public PluginService Service { get; }
 
-        public IMetadata Metadata { get; }
-
         public long InitTime { get; }
+
+        public string ErrorMessage { get; }
 
         public bool IsDisabled { get; set; }
 

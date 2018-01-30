@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using SiteServer.Utils;
@@ -365,9 +364,9 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public IEnumerable GetStlDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString, string since)
+        public IDataReader GetStlDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString, string since)
         {
-            IEnumerable ie = null;
+            IDataReader ie = null;
 
             var sqlWhereString = string.Empty;
 
@@ -408,7 +407,7 @@ namespace SiteServer.CMS.Provider
 
                 var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
 
-                ie = (IEnumerable)ExecuteReader(sqlSelect);
+                ie = ExecuteReader(sqlSelect);
             }
 
             return ie;

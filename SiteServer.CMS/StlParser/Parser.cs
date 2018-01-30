@@ -24,11 +24,11 @@ namespace SiteServer.CMS.StlParser
             {
                 try
                 {
-                    service.OnPreParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, filePath, contentBuilder));
+                    service.OnBeforeStlParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, filePath, contentBuilder));
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnPreParse));
+                    LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnBeforeStlParse));
                 }
             }
 
@@ -174,11 +174,11 @@ namespace SiteServer.CMS.StlParser
             {
                 try
                 {
-                    service.OnPostParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, filePath, contentBuilder));
+                    service.OnAfterStlParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, filePath, contentBuilder));
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnPreParse));
+                    LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnAfterStlParse));
                 }
             }
         }

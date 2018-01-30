@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
@@ -1768,7 +1767,7 @@ ORDER BY Taxis";
 
         public string SqlColumns => $"{ChannelAttribute.Id}, {ChannelAttribute.AddDate}, {ChannelAttribute.Taxis}";
 
-        public IEnumerable GetStlDataSource(List<int> channelIdList, int startNum, int totalNum, string whereString, string orderByString)
+        public IDataReader GetStlDataSource(List<int> channelIdList, int startNum, int totalNum, string whereString, string orderByString)
         {
             if (channelIdList == null || channelIdList.Count == 0)
             {
@@ -1780,7 +1779,7 @@ ORDER BY Taxis";
 
             var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
 
-            return (IEnumerable)ExecuteReader(sqlSelect);
+            return ExecuteReader(sqlSelect);
         }
 
         public DataSet GetStlDataSourceBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)

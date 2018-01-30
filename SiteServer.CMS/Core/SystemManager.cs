@@ -121,9 +121,20 @@ namespace SiteServer.CMS.Core
                     return false;
                 }
 
+                var packageWebConfigPath = PathUtils.Combine(packagePath, WebConfigUtils.WebConfigFileName);
+                if (!FileUtils.IsFileExists(packageWebConfigPath))
+                {
+                    errorMessage = "升级包配置文件不存在";
+                    return false;
+                }
+
+                WebConfigUtils.UpdateWebConfig(packageWebConfigPath, WebConfigUtils.IsProtectData, WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.SecretKey);
+
                 DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), PathUtils.GetSiteFilesPath(string.Empty), true);
                 DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), PathUtils.GetAdminDirectoryPath(string.Empty), true);
                 DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), PathUtils.GetBinDirectoryPath(string.Empty), true);
+                FileUtils.CopyFile(packageWebConfigPath,
+                    PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.WebConfigFileName), true);
             }
             catch (Exception ex)
             {

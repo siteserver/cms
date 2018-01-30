@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Web.Http;
 using SiteServer.CMS.Plugin;
 
@@ -24,6 +27,29 @@ namespace SiteServer.API.Controllers
                 DateTime = DateTime.Now,
                 Plugins = pluginIds
             });
+        }
+
+        [HttpGet, Route("test/any")]
+        public HttpResponseMessage GetAny()
+        {
+            //return Content(HttpStatusCode.Created, new
+            //{
+            //    IsOk = true
+            //});
+
+            //var content = ;
+
+            var response = Request.CreateResponse(HttpStatusCode.NotFound);
+
+            response.Content = new StringContent("yes, yes", Encoding.UTF8);
+
+            return response;
+        }
+
+        [HttpGet, Route("test/string")]
+        public IHttpActionResult GetString()
+        {
+            return Ok("Hello");
         }
 
         //private readonly HttpClient _httpClient = new HttpClient();

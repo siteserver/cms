@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using SiteServer.CMS.Core;
@@ -18,10 +17,16 @@ namespace SiteServer.CMS.Provider
         {
             new TableColumnInfo
             {
+                ColumnName = nameof(TableInfo.Id),
+                DataType = DataType.Integer,
+                IsPrimaryKey = true,
+                IsIdentity = true
+            },
+            new TableColumnInfo
+            {
                 ColumnName = nameof(TableInfo.TableName),
                 DataType = DataType.VarChar,
-                Length = 50,
-                IsPrimaryKey = true
+                Length = 50
             },
             new TableColumnInfo
             {
@@ -59,9 +64,9 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlSelectTable = "SELECT TableName, DisplayName, AttributeNum, IsCreatedInDB, IsChangedAfterCreatedInDB, IsDefault, Description FROM siteserver_Table WHERE TableName = @TableName";
+        private const string SqlSelectTable = "SELECT Id, TableName, DisplayName, AttributeNum, IsCreatedInDB, IsChangedAfterCreatedInDB, IsDefault, Description FROM siteserver_Table WHERE TableName = @TableName";
         private const string SqlSelectDisplayName = "SELECT DisplayName FROM siteserver_Table WHERE TableName = @TableName";
-        private const string SqlSelectAllTableCreatedInDb = "SELECT TableName, DisplayName, AttributeNum, IsCreatedInDB, IsChangedAfterCreatedInDB, IsDefault, Description FROM siteserver_Table WHERE IsCreatedInDB = @IsCreatedInDB ORDER BY IsCreatedInDB DESC, TableName";
+        private const string SqlSelectAllTableCreatedInDb = "SELECT Id, TableName, DisplayName, AttributeNum, IsCreatedInDB, IsChangedAfterCreatedInDB, IsDefault, Description FROM siteserver_Table WHERE IsCreatedInDB = @IsCreatedInDB ORDER BY IsCreatedInDB DESC, TableName";
 		private const string SqlSelectTableCount = "SELECT COUNT(*) FROM siteserver_Table";
 		private const string SqlSelectTableName = "SELECT TableName FROM siteserver_Table";
 
@@ -467,7 +472,7 @@ namespace SiteServer.CMS.Provider
 				if (rdr.Read())
 				{
 				    var i = 0;
-                    info = new TableInfo(GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetBool(rdr, i++), GetBool(rdr, i++), GetString(rdr, i));
+                    info = new TableInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetBool(rdr, i++), GetBool(rdr, i++), GetString(rdr, i));
 				}
 				rdr.Close();
 			}
@@ -496,14 +501,14 @@ namespace SiteServer.CMS.Provider
             return displayName;
         }
 
-		public IEnumerable GetDataSourceCreatedInDb()
+		public IDataReader GetDataSourceCreatedInDb()
 		{
 			var parms = new IDataParameter[]
 			{
 				GetParameter(ParmIsCreatedInDb, DataType.VarChar, 18, true.ToString())
 			};
 
-			var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllTableCreatedInDb, parms);
+			var enumerable = ExecuteReader(SqlSelectAllTableCreatedInDb, parms);
 			return enumerable;
 		}
 
@@ -535,14 +540,14 @@ namespace SiteServer.CMS.Provider
             var list = new List<TableInfo>();
 
             string sqlString =
-                $"SELECT TableName, DisplayName, AttributeNum, IsCreatedInDB, IsChangedAfterCreatedInDB, IsDefault, Description FROM siteserver_Table WHERE IsCreatedInDB = '{true}' ORDER BY IsCreatedInDB DESC, TableName";
+                $"SELECT Id, TableName, DisplayName, AttributeNum, IsCreatedInDB, IsChangedAfterCreatedInDB, IsDefault, Description FROM siteserver_Table WHERE IsCreatedInDB = '{true}' ORDER BY IsCreatedInDB DESC, TableName";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
                     var i = 0;
-                    var info = new TableInfo(GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetBool(rdr, i++), GetBool(rdr, i++), GetString(rdr, i));
+                    var info = new TableInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetBool(rdr, i++), GetBool(rdr, i++), GetString(rdr, i));
                     list.Add(info);
                 }
                 rdr.Close();
@@ -555,14 +560,14 @@ namespace SiteServer.CMS.Provider
         {
             var list = new List<TableInfo>();
 
-            const string sqlString = "SELECT TableName, DisplayName, AttributeNum, IsCreatedInDB, IsChangedAfterCreatedInDB, IsDefault, Description FROM siteserver_Table ORDER BY IsCreatedInDB DESC, TableName";
+            const string sqlString = "SELECT Id, TableName, DisplayName, AttributeNum, IsCreatedInDB, IsChangedAfterCreatedInDB, IsDefault, Description FROM siteserver_Table ORDER BY IsCreatedInDB DESC, TableName";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
                     var i = 0;
-                    var info = new TableInfo(GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetBool(rdr, i++), GetBool(rdr, i++), GetString(rdr, i));
+                    var info = new TableInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetBool(rdr, i++), GetBool(rdr, i++), GetString(rdr, i));
                     list.Add(info);
                 }
                 rdr.Close();
@@ -669,7 +674,7 @@ namespace SiteServer.CMS.Provider
                 var tableName = DefaultTableName;
                 if (!IsExists(tableName))
                 {
-                    var tableInfo = new TableInfo(tableName, "后台内容表", 0, false, false, true, string.Empty);
+                    var tableInfo = new TableInfo(0, tableName, "后台内容表", 0, false, false, true, string.Empty);
                     var metadataInfoList = DataProvider.TableMetadataDao.GetDefaultTableMetadataInfoList(tableName);
                     Insert(tableInfo, metadataInfoList);
                 }

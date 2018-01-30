@@ -133,7 +133,7 @@ namespace SiteServer.CMS.Provider
         public bool IsRecord()
         {
 #if (DEBUG)
-            return WebConfigUtils.IsDebugRecord;
+            return WebConfigUtils.AllowDebugRecord;
 #else
             return false;
 #endif

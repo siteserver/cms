@@ -102,12 +102,11 @@ namespace SiteServer.CMS.Plugin
                         CopyDllsToBin(metadata.Id, dllDirectoryPath);
                         
                         //var assembly = Assembly.Load(File.ReadAllBytes(PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "Bin", PathUtils.GetFileName(metadata.ExecuteFilePath))));
-                        var assembly = Assembly.Load(metadata.Id);
+                        var assembly = Assembly.Load(metadata.Id);  // load the dll from bin directory
 
-                        var type = assembly.GetTypes().First(o => o.IsClass && !o.IsAbstract && o.GetInterfaces().Contains(typeof(IPlugin)));
-                        var plugin = (IPlugin)Activator.CreateInstance(type);
+                        var type = assembly.GetTypes().First(o => o.IsClass && !o.IsAbstract && o.IsSubclassOf(typeof(PluginBase)));
 
-                        return ActiveAndAdd(metadata, plugin);
+                        return ActiveAndAdd(metadata, type);
                     }
                 }
                 catch (Exception ex)
@@ -142,34 +141,38 @@ namespace SiteServer.CMS.Plugin
                 }
             }
 
-            private static PluginInfo ActiveAndAdd(IMetadata metadata, IPlugin plugin)
+            // TODO: 增加SINGLETON约束
+            private static PluginInfo ActiveAndAdd(IMetadata metadata, Type type)
             {
-                if (metadata == null || plugin == null) return null;
+                if (metadata == null || type == null) return null;
 
                 var s = Stopwatch.StartNew();
 
-                var context = new PluginContext
+                //var plugin = (IPlugin)Activator.CreateInstance(type);
+
+                var plugin = (PluginBase)Activator.CreateInstance(type);
+                plugin.Initialize(metadata, Environment, new PluginApiCollection
                 {
-                    Environment = Environment,
-                    Metadata = metadata,
                     AdminApi = new AdminApi(metadata),
                     ConfigApi = new ConfigApi(metadata),
                     ContentApi = ContentApi.Instance,
                     DataApi = DataProvider.DataApi,
-                    FilesApi = new FilesApi(metadata),
+                    FilesApi = FilesApi.Instance,
                     ChannelApi = ChannelApi.Instance,
                     ParseApi = ParseApi.Instance,
+                    PluginApi = new PluginApi(metadata),
                     SiteApi = SiteApi.Instance,
                     UserApi = UserApi.Instance
-                };
+                });
+
                 var service = new PluginService(metadata);
 
-                plugin.Startup(context, service);
+                plugin.Startup(service);
 
                 PluginContentTableManager.SyncContentTable(service);
                 PluginDatabaseTableManager.SyncTable(service);
 
-                return new PluginInfo(context, service, plugin, s.ElapsedMilliseconds);
+                return new PluginInfo(service, plugin, s.ElapsedMilliseconds);
             }
 
             public static void Clear()
@@ -210,7 +213,7 @@ namespace SiteServer.CMS.Plugin
             PluginInfo pluginInfo;
             if (dict.TryGetValue(pluginId, out pluginInfo))
             {
-                return pluginInfo.Metadata;
+                return pluginInfo.Plugin;
             }
             return null;
         }
@@ -229,7 +232,7 @@ namespace SiteServer.CMS.Plugin
             get
             {
                 var dict = PluginManagerCache.GetPluginSortedList();
-                return dict.Values.Where(pluginInfo => pluginInfo?.Context != null && pluginInfo.Metadata != null && pluginInfo.Plugin != null).ToList();
+                return dict.Values.Where(pluginInfo => pluginInfo.Plugin != null).ToList();
             }
         }
 
@@ -238,7 +241,7 @@ namespace SiteServer.CMS.Plugin
             get
             {
                 var dict = PluginManagerCache.GetPluginSortedList();
-                return dict.Values.Where(pluginInfo => pluginInfo?.Context == null || pluginInfo.Metadata == null || pluginInfo.Plugin == null).ToList();
+                return dict.Values.Where(pluginInfo => pluginInfo.Plugin == null).ToList();
             }
         }
 
@@ -251,13 +254,13 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        public static List<PluginInfo> GetEnabledPluginInfoList<T>() where T : IPlugin
+        public static List<PluginInfo> GetEnabledPluginInfoList<T>() where T : PluginBase
         {
             var dict = PluginManagerCache.GetPluginSortedList();
             return
                     dict.Values.Where(
                             pluginInfo =>
-                                pluginInfo?.Metadata != null && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
+                                pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
                                 pluginInfo.Plugin is T
                         )
                         .ToList();
@@ -271,7 +274,7 @@ namespace SiteServer.CMS.Plugin
 
                 return dict.Values.Where(
                             pluginInfo =>
-                                pluginInfo?.Metadata != null && pluginInfo.Plugin != null && !pluginInfo.IsDisabled
+                                pluginInfo.Plugin != null && !pluginInfo.IsDisabled
                         ).Select(pluginInfo => pluginInfo.Service).ToList();
             }
         }
@@ -290,7 +293,7 @@ namespace SiteServer.CMS.Plugin
             return null;
         }
 
-        public static PluginInfo GetEnabledPluginInfo<T>(string pluginId) where T : IPlugin
+        public static PluginInfo GetEnabledPluginInfo<T>(string pluginId) where T : PluginBase
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
@@ -298,7 +301,7 @@ namespace SiteServer.CMS.Plugin
 
             PluginInfo pluginInfo;
             var isGet = dict.TryGetValue(pluginId, out pluginInfo);
-            if (isGet && pluginInfo?.Metadata != null && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
+            if (isGet && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
                 pluginInfo.Plugin is T)
             {
                 return pluginInfo;
@@ -312,24 +315,24 @@ namespace SiteServer.CMS.Plugin
 
             return dict.Values.Where(
                             pluginInfo =>
-                                pluginInfo?.Metadata != null && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
+                                pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
                                 (pluginInfo.Plugin is T1 || pluginInfo.Plugin is T2)
                         )
                         .ToList();
         }
 
-        public static List<IMetadata> GetEnabledPluginMetadatas<T>() where T : IPlugin
+        public static List<PluginBase> GetEnabledPluginMetadatas<T>() where T : PluginBase
         {
             var dict = PluginManagerCache.GetPluginSortedList();
 
             return dict.Values.Where(
                         pluginInfo =>
-                            pluginInfo?.Metadata != null && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
+                            pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
                             pluginInfo.Plugin is T
-                    ).Select(pluginInfo => pluginInfo.Metadata).ToList();
+                    ).Select(pluginInfo => pluginInfo.Plugin).ToList();
         }
 
-        public static IMetadata GetEnabledPluginMetadata<T>(string pluginId) where T : IPlugin
+        public static IMetadata GetEnabledPluginMetadata<T>(string pluginId) where T : PluginBase
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
@@ -337,15 +340,15 @@ namespace SiteServer.CMS.Plugin
 
             PluginInfo pluginInfo;
             var isGet = dict.TryGetValue(pluginId, out pluginInfo);
-            if (isGet && pluginInfo?.Metadata != null && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
+            if (isGet && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
                 pluginInfo.Plugin is T)
             {
-                return pluginInfo.Metadata;
+                return pluginInfo.Plugin;
             }
             return null;
         }
 
-        public static T GetEnabledFeature<T>(string pluginId) where T : IPlugin
+        public static T GetEnabledFeature<T>(string pluginId) where T : PluginBase
         {
             if (string.IsNullOrEmpty(pluginId)) return default(T);
 
@@ -353,7 +356,7 @@ namespace SiteServer.CMS.Plugin
 
             PluginInfo pluginInfo;
             var isGet = dict.TryGetValue(pluginId, out pluginInfo);
-            if (isGet && pluginInfo?.Metadata != null && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
+            if (isGet && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
                 pluginInfo.Plugin is T)
             {
                 return (T)pluginInfo.Plugin;
@@ -361,13 +364,13 @@ namespace SiteServer.CMS.Plugin
             return default(T);
         }
 
-        public static List<T> GetEnabledFeatures<T>() where T : IPlugin
+        public static List<T> GetEnabledFeatures<T>() where T : PluginBase
         {
             var dict = PluginManagerCache.GetPluginSortedList();
 
             var pluginInfos = dict.Values.Where(
                         pluginInfo =>
-                            pluginInfo?.Metadata != null && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
+                            pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
                             pluginInfo.Plugin is T
                     )
                     .ToList();

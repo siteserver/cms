@@ -43,8 +43,8 @@
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=1.2.20.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.2.20-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.2.28.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.2.28-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -73,8 +73,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\Http\ApiRoutePluginHttp.cs" />
-    <Compile Include="Controllers\Json\ApiRoutePluginJson.cs" />
+    <Compile Include="Controllers\ApiRoutePlugin.cs" />
     <Compile Include="Controllers\Preview\ApiRoutePreview.cs" />
     <Compile Include="Controllers\Sys\Administrators\ApiRouteActionsLogin.cs" />
     <Compile Include="Controllers\Sys\Administrators\ApiRouteSiteCheckList.cs" />
@@ -242,10 +241,11 @@
     <Compile Include="Plugin\Apis\ConfigApi.cs" />
     <Compile Include="Plugin\Apis\ContentApi.cs" />
     <Compile Include="Plugin\Apis\FilesApi.cs" />
+    <Compile Include="Plugin\Apis\PluginApi.cs" />
     <Compile Include="Plugin\Apis\ParseApi.cs" />
     <Compile Include="Plugin\Apis\SiteApi.cs" />
     <Compile Include="Plugin\Apis\UserApi.cs" />
-    <Compile Include="Plugin\Model\PluginContext.cs" />
+    <Compile Include="Plugin\Model\PluginApiCollection.cs" />
     <Compile Include="Plugin\Model\PluginEnvironment.cs" />
     <Compile Include="Plugin\Model\PluginInfo.cs" />
     <Compile Include="Plugin\Model\PluginParseContext.cs" />

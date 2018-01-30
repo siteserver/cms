@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using SiteServer.CMS.Core;
@@ -17,10 +16,16 @@ namespace SiteServer.CMS.Provider
         {
             new TableColumnInfo
             {
+                ColumnName = nameof(PermissionsInRolesInfo.Id),
+                DataType = DataType.Integer,
+                IsPrimaryKey = true,
+                IsIdentity = true
+            },
+            new TableColumnInfo
+            {
                 ColumnName = nameof(PermissionsInRolesInfo.RoleName),
                 DataType = DataType.VarChar,
-                Length = 255,
-                IsPrimaryKey = true
+                Length = 255
             },
             new TableColumnInfo
             {
@@ -29,7 +34,7 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlSelect = "SELECT RoleName, GeneralPermissions FROM siteserver_PermissionsInRoles WHERE RoleName = @RoleName";
+        private const string SqlSelect = "SELECT Id, RoleName, GeneralPermissions FROM siteserver_PermissionsInRoles WHERE RoleName = @RoleName";
 
 		private const string SqlInsert = "INSERT INTO siteserver_PermissionsInRoles (RoleName, GeneralPermissions) VALUES (@RoleName, @GeneralPermissions)";
 		private const string SqlDelete = "DELETE FROM siteserver_PermissionsInRoles WHERE RoleName = @RoleName";
@@ -37,7 +42,7 @@ namespace SiteServer.CMS.Provider
 		private const string ParmRoleRoleName = "@RoleName";
 		private const string ParmGeneralPermissions = "@GeneralPermissions";
 
-        public void InsertRoleAndPermissions(string roleName, string creatorUserName, string description, ArrayList generalPermissionArrayList)
+        public void InsertRoleAndPermissions(string roleName, string creatorUserName, string description, List<string> generalPermissionList)
         {
             using (var conn = GetConnection())
             {
@@ -46,9 +51,9 @@ namespace SiteServer.CMS.Provider
                 {
                     try
                     {
-                        if (generalPermissionArrayList != null && generalPermissionArrayList.Count > 0)
+                        if (generalPermissionList != null && generalPermissionList.Count > 0)
                         {
-                            var permissionsInRolesInfo = new PermissionsInRolesInfo(roleName, TranslateUtils.ObjectCollectionToString(generalPermissionArrayList));
+                            var permissionsInRolesInfo = new PermissionsInRolesInfo(0, roleName, TranslateUtils.ObjectCollectionToString(generalPermissionList));
                             DataProvider.PermissionsInRolesDao.InsertWithTrans(permissionsInRolesInfo, trans);
                         }
 
@@ -108,7 +113,7 @@ namespace SiteServer.CMS.Provider
                         DataProvider.PermissionsInRolesDao.DeleteWithTrans(roleName, trans);
                         if (generalPermissionList != null && generalPermissionList.Count > 0)
                         {
-                            var permissionsInRolesInfo = new PermissionsInRolesInfo(roleName, TranslateUtils.ObjectCollectionToString(generalPermissionList));
+                            var permissionsInRolesInfo = new PermissionsInRolesInfo(0, roleName, TranslateUtils.ObjectCollectionToString(generalPermissionList));
                             DataProvider.PermissionsInRolesDao.InsertWithTrans(permissionsInRolesInfo, trans);
                         }
 
@@ -138,7 +143,7 @@ namespace SiteServer.CMS.Provider
 				if (rdr.Read())
 				{
 				    var i = 0;
-                    info = new PermissionsInRolesInfo(GetString(rdr, i++), GetString(rdr, i)); 					
+                    info = new PermissionsInRolesInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i)); 					
 				}
 				rdr.Close();
 			}

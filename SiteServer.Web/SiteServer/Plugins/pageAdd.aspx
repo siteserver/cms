@@ -11,12 +11,12 @@
     <body>
       <form id="main" class="m-l-15 m-r-15" runat="server">
 
-        <div class="text-center" style="margin-top: 100px" v-bind:style="{ display: recentlyPlugins ? 'none' : '' }">
+        <div class="text-center" style="margin-top: 100px" v-bind:style="{ display: precentlyPackages ? 'none' : '' }">
           <img class="mt-3" src="../assets/layer/skin/default/xubox_loading0.gif" />
           <p class="lead mt-3 text-nowrap">载入中，请稍后...</p>
         </div>
 
-        <div v-bind:style="{ display: recentlyPlugins ? '' : 'none' }" style="display: none">
+        <div v-bind:style="{ display: precentlyPackages ? '' : 'none' }" style="display: none">
           <div class="card-box">
 
             <div class="row">
@@ -38,28 +38,28 @@
           </div>
 
           <div class="card-box">
-            <div v-bind:style="{ display: searchPlugins ? '' : 'none' }">
+            <div v-bind:style="{ display: searchPackages ? '' : 'none' }">
               <div class="page-title-box">
                 <h4 class="page-title">搜索结果</h4>
               </div>
 
-              <p class="lead m-t-0" v-bind:style="{ display: searchPlugins && searchPlugins.length === 0 ? '' : 'none' }">
+              <p class="lead m-t-0" v-bind:style="{ display: searchPackages && searchPackages.length === 0 ? '' : 'none' }">
                 0 个插件，建议更换搜索词
               </p>
 
               <div class="row">
-                <div class="col-6 col-lg-4" v-for="plugin in searchPlugins">
+                <div class="col-6 col-lg-4" v-for="package in searchPackages">
                   <div class="card-box widget-user">
-                    <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name + '&version=' + plugin.version">
-                      <img v-bind:src="'http://download.siteserver.cn/plugins/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive"
-                        alt="user">
+                    <a v-bind:href="'pageView.aspx?pluginId=' + package.id + '&version=' + package.version">
+                      <img v-bind:src="package.iconUrl" class="img-responsive">
                       <div class="wid-u-info">
                         <h5 class="m-t-0 m-b-5">
-                          {{ plugin.displayName }}
-                          <code>{{ plugin.publisher + '-' + plugin.name }}</code>
+                          {{ package.title }}
+                          <br />
+                          <code>{{ package.id }}</code>
                         </h5>
-                        <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
-                        <span title="插件安装量">
+                        <p class="text-muted m-b-5 font-13" v-bind:title="package.description">{{ package.description }}</p>
+                        <!-- <span title="插件安装量">
                           <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i>
                           <small style="font-size: 14px;">33K </small>
                         </span>
@@ -70,7 +70,7 @@
                           <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
                           <i class="ion-ios-star-half" style="color: #ffb900;font-size: 18px"></i>
                           <i class="ion-ios-star-outline" style="color: #ffb900;font-size: 18px"></i>
-                        </span>
+                        </span> -->
                       </div>
                     </a>
                   </div>
@@ -78,25 +78,25 @@
               </div>
             </div>
 
-            <div v-bind:style="{ display: featuredPlugins && !searchPlugins ? '' : 'none' }">
+            <div v-bind:style="{ display: featuredPackages && !searchPackages ? '' : 'none' }">
               <div class="page-title-box">
-                <a href="#" class="float-right">更多</a>
+                <!-- <a href="#" class="float-right">更多</a> -->
                 <h4 class="page-title">精选</h4>
               </div>
 
               <div class="row">
-                <div class="col-6 col-lg-4" v-for="plugin in featuredPlugins">
+                <div class="col-6 col-lg-4" v-for="package in featuredPackages">
                   <div class="card-box widget-user">
-                    <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name + '&version=' + plugin.version">
-                      <img v-bind:src="'http://download.siteserver.cn/plugins/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive"
-                        alt="user">
+                    <a v-bind:href="'pageView.aspx?pluginId=' + package.id + '&version=' + package.version">
+                      <img v-bind:src="package.iconUrl" class="img-responsive">
                       <div class="wid-u-info">
                         <h5 class="m-t-0 m-b-5">
-                          {{ plugin.displayName }}
-                          <code>{{ plugin.publisher + '-' + plugin.name }}</code>
+                          {{ package.title }}
+                          <br />
+                          <code>{{ package.id }}</code>
                         </h5>
-                        <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
-                        <span title="插件安装量">
+                        <p class="text-muted m-b-5 font-13" v-bind:title="package.description">{{ package.description }}</p>
+                        <!-- <span title="插件安装量">
                           <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i>
                           <small style="font-size: 14px;">33K </small>
                         </span>
@@ -107,7 +107,7 @@
                           <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
                           <i class="ion-ios-star-half" style="color: #ffb900;font-size: 18px"></i>
                           <i class="ion-ios-star-outline" style="color: #ffb900;font-size: 18px"></i>
-                        </span>
+                        </span> -->
                       </div>
                     </a>
                   </div>
@@ -115,25 +115,25 @@
               </div>
             </div>
 
-            <div v-bind:style="{ display: popularPlugins && !searchPlugins ? '' : 'none' }">
+            <div v-bind:style="{ display: popularPackages && !searchPackages ? '' : 'none' }">
               <div class="page-title-box">
-                <a href="#" class="float-right">更多</a>
+                <!-- <a href="#" class="float-right">更多</a> -->
                 <h4 class="page-title">热门</h4>
               </div>
 
               <div class="row">
-                <div class="col-6 col-lg-4" v-for="plugin in popularPlugins">
+                <div class="col-6 col-lg-4" v-for="package in popularPackages">
                   <div class="card-box widget-user">
-                    <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name + '&version=' + plugin.version">
-                      <img v-bind:src="'http://download.siteserver.cn/plugins/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive"
-                        alt="user">
+                    <a v-bind:href="'pageView.aspx?pluginId=' + package.id + '&version=' + package.version">
+                      <img v-bind:src="package.iconUrl" class="img-responsive">
                       <div class="wid-u-info">
                         <h5 class="m-t-0 m-b-5">
-                          {{ plugin.displayName }}
-                          <code>{{ plugin.publisher + '-' + plugin.name }}</code>
+                          {{ package.title }}
+                          <br />
+                          <code>{{ package.id }}</code>
                         </h5>
-                        <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
-                        <span title="插件安装量">
+                        <p class="text-muted m-b-5 font-13" v-bind:title="package.description">{{ package.description }}</p>
+                        <!-- <span title="插件安装量">
                           <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i>
                           <small style="font-size: 14px;">33K </small>
                         </span>
@@ -144,7 +144,7 @@
                           <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
                           <i class="ion-ios-star-half" style="color: #ffb900;font-size: 18px"></i>
                           <i class="ion-ios-star-outline" style="color: #ffb900;font-size: 18px"></i>
-                        </span>
+                        </span> -->
                       </div>
                     </a>
                   </div>
@@ -152,25 +152,25 @@
               </div>
             </div>
 
-            <div v-bind:style="{ display: recentlyPlugins && !searchPlugins ? '' : 'none' }">
+            <div v-bind:style="{ display: precentlyPackages && !searchPackages ? '' : 'none' }">
               <div class="page-title-box">
-                <a href="#" class="float-right">更多</a>
+                <!-- <a href="#" class="float-right">更多</a> -->
                 <h4 class="page-title">新增</h4>
               </div>
 
               <div class="row">
-                <div class="col-6 col-lg-4" v-for="plugin in recentlyPlugins">
+                <div class="col-6 col-lg-4" v-for="package in precentlyPackages">
                   <div class="card-box widget-user">
-                    <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name + '&version=' + plugin.version">
-                      <img v-bind:src="'http://download.siteserver.cn/plugins/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive"
-                        alt="user">
+                    <a v-bind:href="'pageView.aspx?pluginId=' + package.id + '&version=' + package.version">
+                      <img v-bind:src="package.iconUrl" class="img-responsive">
                       <div class="wid-u-info">
                         <h5 class="m-t-0 m-b-5">
-                          {{ plugin.displayName }}
-                          <code>{{ plugin.publisher + '-' + plugin.name }}</code>
+                          {{ package.title }}
+                          <br />
+                          <code>{{ package.id }}</code>
                         </h5>
-                        <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
-                        <span title="插件安装量">
+                        <p class="text-muted m-b-5 font-13" v-bind:title="package.description">{{ package.description }}</p>
+                        <!-- <span title="插件安装量">
                           <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i>
                           <small style="font-size: 14px;">33K </small>
                         </span>
@@ -181,7 +181,7 @@
                           <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
                           <i class="ion-ios-star-half" style="color: #ffb900;font-size: 18px"></i>
                           <i class="ion-ios-star-outline" style="color: #ffb900;font-size: 18px"></i>
-                        </span>
+                        </span> -->
                       </div>
                     </a>
                   </div>
@@ -199,41 +199,46 @@
     <script src="../assets/vue/vue.min.js"></script>
     <script src="../assets/cloudUtils.js"></script>
     <script>
-      // var api = new cloudUtils.Api('http://localhost:5000/api');
-      var api = new cloudUtils.Api('http://cloud.siteserver.cn/api');
+      var api = new cloudUtils.Api();
+
+      var allowNightlyBuild = <%=AllowNightlyBuild%>;
+      var allowPrereleaseVersions = <%=AllowPrereleaseVersions%>;
 
       var data = {
         searching: false,
         word: null,
-        featuredPlugins: null,
-        popularPlugins: null,
-        recentlyPlugins: null,
-        searchPlugins: null,
+        featuredPackages: null,
+        popularPackages: null,
+        precentlyPackages: null,
+        searchPackages: null,
       };
 
       api.get({
-        name: 'featured'
+        allowNightlyBuild: allowNightlyBuild,
+        allowPrereleaseVersions: allowPrereleaseVersions
       }, function (err, res) {
         if (!err && res && res.length > 0) {
-          data.featuredPlugins = res
+          data.featuredPackages = res
         }
-      }, 'plugins');
+      }, 'packages/list/featured');
 
       api.get({
-        name: 'popular'
+        allowNightlyBuild: allowNightlyBuild,
+        allowPrereleaseVersions: allowPrereleaseVersions
       }, function (err, res) {
         if (!err && res && res.length > 0) {
-          data.popularPlugins = res
+          data.popularPackages = res
         }
-      }, 'plugins');
+      }, 'packages/list/popular');
 
       api.get({
-        name: 'recently'
+        allowNightlyBuild: allowNightlyBuild,
+        allowPrereleaseVersions: allowPrereleaseVersions
       }, function (err, res) {
         if (!err && res && res.length > 0) {
-          data.recentlyPlugins = res
+          data.precentlyPackages = res
         }
-      }, 'plugins');
+      }, 'packages/list/recently');
 
       new Vue({
         el: '#main',
@@ -242,13 +247,16 @@
           search: function (event) {
             if (this.word) {
               this.searching = true;
-              api.get(null, function (err, res) {
+              api.get({
+                allowNightlyBuild: allowNightlyBuild,
+                allowPrereleaseVersions: allowPrereleaseVersions
+              }, function (err, res) {
                 data.searching = false;
-                data.searchPlugins = res;
-              }, 'plugins/search/' + this.word);
+                data.searchPackages = res;
+              }, 'packages/search/' + this.word);
             } else {
               this.searching = false;
-              data.searchPlugins = null;
+              data.searchPackages = null;
             }
           }
         }

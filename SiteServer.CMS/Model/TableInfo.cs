@@ -3,7 +3,8 @@ namespace SiteServer.CMS.Model
     public class TableInfo
     {
 	    public TableInfo()
-		{
+	    {
+	        Id = 0;
             TableName = string.Empty;
 			DisplayName = string.Empty;
 			AttributeNum = 0;
@@ -13,8 +14,9 @@ namespace SiteServer.CMS.Model
 			Description = string.Empty;
 		}
 
-        public TableInfo(string tableName, string displayName, int attributeNum, bool isCreatedInDb, bool isChangedAfterCreatedInDb, bool isDefault, string description) 
-		{
+        public TableInfo(int id, string tableName, string displayName, int attributeNum, bool isCreatedInDb, bool isChangedAfterCreatedInDb, bool isDefault, string description)
+        {
+            Id = id;
             TableName = tableName;
 			DisplayName = displayName;
 			AttributeNum = attributeNum;
@@ -24,7 +26,9 @@ namespace SiteServer.CMS.Model
 			Description = description;
 		}
 
-		public string TableName { get; set; }
+        public int Id { get; set; }
+
+        public string TableName { get; set; }
 
 	    public string DisplayName { get; set; }
 

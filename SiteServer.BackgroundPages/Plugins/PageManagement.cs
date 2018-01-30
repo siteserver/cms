@@ -97,7 +97,7 @@ namespace SiteServer.BackgroundPages.Plugins
             int[] arr = {0, 0, 0, 0};
             foreach (var pluginInfo in PluginManager.AllPluginInfoList)
             {
-                if (pluginInfo.Context == null || pluginInfo.Plugin == null || pluginInfo.Metadata == null)
+                if (pluginInfo.Plugin == null)
                 {
                     arr[3]++;
                     if (_type == 3)
@@ -183,7 +183,7 @@ namespace SiteServer.BackgroundPages.Plugins
         public void BtnReload_Click(object sender, EventArgs e)
         {
             PluginManager.ClearCache();
-            SuccessMessage("插件重新加载成功");
+            SuccessMessage("插件重新加载成功，系统将重载页面，请稍后...");
 
             AddWaitAndScript($"window.top.location.href = '{PageMain.GetRedirectUrl()}';");
         }
@@ -204,15 +204,15 @@ namespace SiteServer.BackgroundPages.Plugins
             var ltlCmd = (Literal)e.Item.FindControl("ltlCmd");
 
             ltlLogo.Text = $@"<img src=""{PluginManager.GetPluginIconUrl(pluginInfo.Service)}"" width=""48"" height=""48"" />";
-            ltlPluginId.Text = $@"<a href=""{pluginInfo.Metadata.ProjectUrl}"" target=""_blank"">{pluginInfo.Id}</a>";
-            ltlPluginName.Text = pluginInfo.Metadata.Title;
-            ltlVersion.Text = pluginInfo.Metadata.Version;
-            if (pluginInfo.Metadata.Owners != null)
+            ltlPluginId.Text = $@"<a href=""{pluginInfo.Plugin.ProjectUrl}"" target=""_blank"">{pluginInfo.Id}</a>";
+            ltlPluginName.Text = pluginInfo.Plugin.Title;
+            ltlVersion.Text = pluginInfo.Plugin.Version;
+            if (pluginInfo.Plugin.Owners != null)
             {
-                ltlOwners.Text = string.Join("&nbsp;", pluginInfo.Metadata.Owners);
+                ltlOwners.Text = string.Join("&nbsp;", pluginInfo.Plugin.Owners);
             }
             
-            ltlDescription.Text = pluginInfo.Metadata.Description;
+            ltlDescription.Text = pluginInfo.Plugin.Description;
 
             if (pluginInfo.InitTime > 1000)
             {
@@ -243,7 +243,7 @@ namespace SiteServer.BackgroundPages.Plugins
 {ableText}
 </a>
 &nbsp;&nbsp;
-<a href=""javascript:;"" onClick=""{AlertUtils.ConfirmDelete("删除插件", $"此操作将会删除“{pluginInfo.Metadata.Id}”插件，确认吗？", deleteUrl)}"">删除插件</a>";
+<a href=""javascript:;"" onClick=""{AlertUtils.ConfirmDelete("删除插件", $"此操作将会删除“{pluginInfo.Id}”插件，确认吗？", deleteUrl)}"">删除插件</a>";
         }
 
         private void RptNotRunnable_ItemDataBound(object sender, RepeaterItemEventArgs e)

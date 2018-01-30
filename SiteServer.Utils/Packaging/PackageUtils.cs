@@ -27,7 +27,7 @@ namespace SiteServer.Utils.Packaging
             try
             {
                 var repo =
-                    PackageRepositoryFactory.Default.CreateRepository(WebConfigUtils.IsUpdatePreviewVersion
+                    PackageRepositoryFactory.Default.CreateRepository(WebConfigUtils.AllowNightlyBuild
                         ? MyGetPackageSource
                         : NuGetPackageSource);
 
@@ -47,7 +47,7 @@ namespace SiteServer.Utils.Packaging
             return false;
         }
 
-        public static bool InstallPackage(string packageId, string version, bool isOverride, out string errorMessage)
+        public static bool InstallPackage(string packageId, string version, out string errorMessage)
         {
             errorMessage = string.Empty;
 
@@ -59,17 +59,13 @@ namespace SiteServer.Utils.Packaging
 
                 if (DirectoryUtils.IsDirectoryExists(directoryPath))
                 {
-                    if (isOverride)
-                    {
-                        DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
-                    }
-                    else
+                    if (FileUtils.IsFileExists(PathUtils.Combine(directoryPath, $"{idWithVersion}.nupkg")) && FileUtils.IsFileExists(PathUtils.Combine(directoryPath, $"{packageId}.nuspec")))
                     {
                         return true;
                     }
                 }
 
-                var repo = PackageRepositoryFactory.Default.CreateRepository(WebConfigUtils.IsUpdatePreviewVersion
+                var repo = PackageRepositoryFactory.Default.CreateRepository(WebConfigUtils.AllowNightlyBuild
                     ? MyGetPackageSource
                     : NuGetPackageSource);
 
@@ -77,7 +73,7 @@ namespace SiteServer.Utils.Packaging
 
                 //Download and unzip the package
                 packageManager.InstallPackage(packageId, SemanticVersion.Parse(version), false,
-                    WebConfigUtils.IsUpdatePreviewVersion);
+                    WebConfigUtils.AllowPrereleaseVersions);
 
                 ZipUtils.UnpackFilesByExtension(PathUtils.Combine(directoryPath, idWithVersion + ".nupkg"),
                     directoryPath, ".nuspec");

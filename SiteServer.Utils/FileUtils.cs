@@ -26,11 +26,11 @@ namespace SiteServer.Utils
             return text;
         }
 
-        public static async Task WriteTextAsync(string filePath, ECharset charset, string content)
+        public static async Task WriteTextAsync(string filePath, Encoding encoding, string content)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
-            byte[] encodedText = ECharsetUtils.GetEncoding(charset).GetBytes(content);
+            byte[] encodedText = encoding.GetBytes(content);
 
             using (FileStream sourceStream = new FileStream(filePath,
                 FileMode.Create, FileAccess.ReadWrite, FileShare.None, bufferSize: 4096, useAsync: true))
@@ -40,11 +40,16 @@ namespace SiteServer.Utils
         }
 
         public static void WriteText(string filePath, ECharset charset, string content)
-		{
-			DirectoryUtils.CreateDirectoryIfNotExists(filePath);
+        {
+            WriteText(filePath, ECharsetUtils.GetEncoding(charset), content);
+        }
+
+        public static void WriteText(string filePath, Encoding encoding, string content)
+        {
+            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
             var file = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite);
-            using (var writer = new StreamWriter(file, ECharsetUtils.GetEncoding(charset)))
+            using (var writer = new StreamWriter(file, encoding))
             {
                 writer.Write(content);
                 writer.Flush();
@@ -53,11 +58,11 @@ namespace SiteServer.Utils
                 file.Close();
             }
 
-   //         var sw = new StreamWriter(filePath, false, ECharsetUtils.GetEncoding(charset));
-			//sw.Write(content);
-			//sw.Flush();
-			//sw.Close();
-		}
+            //         var sw = new StreamWriter(filePath, false, ECharsetUtils.GetEncoding(charset));
+            //sw.Write(content);
+            //sw.Flush();
+            //sw.Close();
+        }
 
         public static void AppendText(string filePath, ECharset charset, string content)
         {

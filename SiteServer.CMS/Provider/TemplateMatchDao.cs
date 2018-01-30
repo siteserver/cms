@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using SiteServer.CMS.Data;
@@ -158,9 +157,9 @@ namespace SiteServer.CMS.Provider
             return isExists;
         }
 
-        public Hashtable GetChannelTemplateIdHashtable(int siteId)
+        public Dictionary<int, int> GetChannelTemplateIdDict(int siteId)
         {
-            var hashtable = new Hashtable();
+            var dict = new Dictionary<int, int>();
 
             string sqlString =
                 $"SELECT ChannelId, ChannelTemplateId FROM siteserver_TemplateMatch WHERE SiteId = {siteId}";
@@ -169,17 +168,17 @@ namespace SiteServer.CMS.Provider
             {
                 while (rdr.Read())
                 {
-                    hashtable.Add(GetInt(rdr, 0), GetInt(rdr, 1));
+                    dict[GetInt(rdr, 0)] = GetInt(rdr, 1);
                 }
                 rdr.Close();
             }
 
-            return hashtable;
+            return dict;
         }
 
-        public Hashtable GetContentTemplateIdHashtable(int siteId)
+        public Dictionary<int, int> GetContentTemplateIdDict(int siteId)
         {
-            var hashtable = new Hashtable();
+            var dict = new Dictionary<int, int>();
 
             string sqlString =
                 $"SELECT ChannelId, ContentTemplateId FROM siteserver_TemplateMatch WHERE SiteId = {siteId}";
@@ -188,12 +187,12 @@ namespace SiteServer.CMS.Provider
             {
                 while (rdr.Read())
                 {
-                    hashtable.Add(GetInt(rdr, 0), GetInt(rdr, 1));
+                    dict[GetInt(rdr, 0)] = GetInt(rdr, 1);
                 }
                 rdr.Close();
             }
 
-            return hashtable;
+            return dict;
         }
 
         public int GetChannelTemplateId(int channelId)

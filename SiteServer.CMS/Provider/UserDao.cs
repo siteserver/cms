@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Security.Cryptography;
@@ -1196,7 +1195,7 @@ namespace SiteServer.CMS.Provider
             return "Id";
         }
 
-        public IEnumerable GetStlDataSource(int startNum, int totalNum, string orderByString, string whereString)
+        public IDataReader GetStlDataSource(int startNum, int totalNum, string orderByString, string whereString)
         {
             string sqlWhereString = $"WHERE IsChecked = '{true}' {whereString}";
             if (string.IsNullOrEmpty(orderByString))
@@ -1204,17 +1203,17 @@ namespace SiteServer.CMS.Provider
                 orderByString = "ORDER BY Id DESC";
             }
 
-            IEnumerable enumerable;
+            IDataReader enumerable;
 
             if (startNum <= 1)
             {
                 var sqlString = DataProvider.DatabaseDao.GetSelectSqlString(TableName, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
-                enumerable = (IEnumerable)ExecuteReader(sqlString);
+                enumerable = ExecuteReader(sqlString);
             }
             else
             {
                 var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
-                enumerable = (IEnumerable)ExecuteReader(sqlSelect);
+                enumerable = ExecuteReader(sqlSelect);
             }
 
             return enumerable;

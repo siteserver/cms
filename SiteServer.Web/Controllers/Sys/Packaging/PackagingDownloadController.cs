@@ -19,7 +19,7 @@ namespace SiteServer.API.Controllers.Sys.Packaging
             }
 
             string errorMessage;
-            var isSuccess = PackageUtils.InstallPackage(packageId, version, true, out errorMessage);
+            var isSuccess = PackageUtils.InstallPackage(packageId, version, out errorMessage);
 
             return Ok(new
             {

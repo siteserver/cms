@@ -422,7 +422,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return dataSet;
         }
 
-        public static IEnumerable GetSqlContentsDataSource(string connectionString, string queryString, int startNum, int totalNum, string orderByString)
+        public static IDataReader GetSqlContentsDataSource(string connectionString, string queryString, int startNum, int totalNum, string orderByString)
         {
             var sqlString = TableStructure.GetSelectSqlStringByQueryString(connectionString, queryString, startNum, totalNum, orderByString);
             return DataProvider.DatabaseDao.GetDataSource(connectionString, sqlString);
@@ -434,7 +434,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return DataProvider.DatabaseDao.GetDataSet(connectionString, sqlString);
         }
 
-        public static IEnumerable GetSitesDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString, string since)
+        public static IDataReader GetSitesDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString, string since)
         {
             return DataProvider.SiteDao.GetStlDataSource(siteName, siteDir, startNum, totalNum, whereString, scopeType, orderByString, since);
         }

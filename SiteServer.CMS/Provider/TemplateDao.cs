@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using SiteServer.Utils;
@@ -278,7 +277,7 @@ namespace SiteServer.CMS.Provider
             return dictionary;
         }
 
-        public IEnumerable GetDataSourceByType(int siteId, TemplateType type)
+        public IDataReader GetDataSourceByType(int siteId, TemplateType type)
         {
             var parms = new IDataParameter[]
 			{
@@ -286,11 +285,11 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmTemplateType, DataType.VarChar, 50, type.Value)
 			};
 
-            var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllTemplateByType, parms);
+            var enumerable = ExecuteReader(SqlSelectAllTemplateByType, parms);
             return enumerable;
         }
 
-        public IEnumerable GetDataSource(int siteId, string searchText, string templateTypeString)
+        public IDataReader GetDataSource(int siteId, string searchText, string templateTypeString)
         {
             if (string.IsNullOrEmpty(searchText) && string.IsNullOrEmpty(templateTypeString))
             {
@@ -299,10 +298,10 @@ namespace SiteServer.CMS.Provider
 					GetParameter(ParmSiteId, DataType.Integer, siteId)
 				};
 
-                var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllTemplateBySiteId, parms);
+                var enumerable = ExecuteReader(SqlSelectAllTemplateBySiteId, parms);
                 return enumerable;
             }
-            else if (!string.IsNullOrEmpty(searchText))
+            if (!string.IsNullOrEmpty(searchText))
             {
                 var whereString = (string.IsNullOrEmpty(templateTypeString)) ? string.Empty :
                     $"AND TemplateType = '{templateTypeString}' ";
@@ -312,13 +311,11 @@ namespace SiteServer.CMS.Provider
                 string sqlString =
                     $"SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = {siteId} {whereString} ORDER BY TemplateType, RelatedFileName";
 
-                var enumerable = (IEnumerable)ExecuteReader(sqlString);
+                var enumerable = ExecuteReader(sqlString);
                 return enumerable;
             }
-            else
-            {
-                return GetDataSourceByType(siteId, TemplateTypeUtils.GetEnumType(templateTypeString));
-            }
+
+            return GetDataSourceByType(siteId, TemplateTypeUtils.GetEnumType(templateTypeString));
         }
 
         public List<int> GetIdListByType(int siteId, TemplateType type)
