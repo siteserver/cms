@@ -5,6 +5,8 @@
   <head>
     <meta charset="utf-8">
     <!--#include file="../inc/head.html"-->
+    <link href="../assets/showLoading/css/showLoading.css" rel="stylesheet" />
+    <script type="text/javascript" src="../assets/showLoading/js/jquery.showLoading.js"></script>
   </head>
 
   <body>
@@ -17,91 +19,96 @@
 
       <div v-bind:style="{ display: package.id ? '' : 'none' }" style="display: none">
 
-        <asp:PlaceHolder id="PhFailure" visible="false" runat="server">
-          <div class="panel panel-border panel-danger">
-            <div class="panel-heading">
-              <h3 class="panel-title">插件安装失败</h3>
-            </div>
-            <div class="panel-body">
-              <p>
-                <asp:Literal id="LtlErrorMessage" runat="server" />
+        <div class="card-box widget-icon">
+          <div>
+            <img v-bind:src="package.iconUrl" style="height: 100px; width: 100px;" class="img-responsive float-left">
+            <div class="wid-icon-info" style="margin-left: 120px;">
+              <p class="text-muted m-b-5 font-13">
+                {{ package.id }}.{{ package.version }}
               </p>
-            </div>
-          </div>
-        </asp:PlaceHolder>
-
-        <asp:PlaceHolder id="PhSuccess" visible="false" runat="server">
-          <div class="panel panel-border panel-primary">
-            <div class="panel-heading">
-              <h3 class="panel-title">插件安装成功</h3>
-            </div>
-            <div class="panel-body">
-              <p>恭喜，插件安装成功</p>
-            </div>
-          </div>
-        </asp:PlaceHolder>
-
-        <div class="card-box">
-          <div class="widget-user" style="min-height: auto">
-            <img v-bind:src="package.iconUrl" style="height: 110px; width: 110px;" class="img-responsive">
-            <div class="wid-u-info m-b-5">
-              <h4 class="m-t-0 m-b-10">
-                {{ package.title }}
-              </h4>
-
-              <p class="lead m-b-5 font-13">
-                <span>插件Id：
-                  <span class="badge badge-primary">{{ package.id }}</span>
-                </span>
-                <span>作者：
-                  <span class="badge badge-primary">{{ package.authors ? package.authors.join(',') : '' }}</span>
-                </span>
-                <span style="margin: 0 5px"></span>
-                <span>版本号：
-                  <span class="badge badge-primary">{{ package.version }}</span>
-                </span>
-                <span style="margin: 0 5px"></span>
-                <span>上架日期：
-                  <span class="badge badge-primary">{{ package.published }}</span>
-                </span>
-                <span style="margin: 0 5px"></span>
-              </p>
-
-              <p class="lead m-b-5 font-13" v-bind:style="{ display: package.tags ? '' : 'none' }" style="display: none">标签： {{ package.tags }}</p>
-
+              <h4 class="m-t-0 m-b-5 counter">{{ package.title }}</h4>
+              <hr />
               <p class="lead">
                 {{ package.description }}
               </p>
 
-              <!-- <span>
-                安装量：
-                <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i>
-                <small style="font-size: 14px;">33K </small>
-              </span>
-              <span style="margin: 0 5px"></span>
-              <span>
-                综合评分：
-                <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                <i class="ion-ios-star-half" style="color: #ffb900;font-size: 18px"></i>
-                <i class="ion-ios-star-outline" style="color: #ffb900;font-size: 18px"></i>
-              </span> -->
+              <div class="alert alert-warning" v-bind:style="{ display: installed && installedVersion != package.version ? '' : 'none' }">
+                系统检测到插件新版本，当前版本：{{ installedVersion }}，新版本：{{ package.version }}
+                <input v-on:click="location.href='pageView.aspx?update=true';return false;" type="button" value="立即升级" class="btn btn-primary">
+              </div>
+
+              <div>
+                <input v-on:click="location.href='pageView.aspx?install=true&pluginId=' + package.id + '&version=' + package.version;return false;"
+                  type="button" value="安装插件" class="btn btn-primary" v-bind:style="{ display: !installed ? '' : 'none' }">
+                <input type="button" disabled="disabled" value="插件已安装" class="btn m-l-5" v-bind:style="{ display: installed && installedVersion == package.version ? '' : 'none' }">
+
+                <a class="btn btn-success m-l-5" v-bind:style="{ display: package.projectUrl ? '' : 'none' }" target="_blank" v-bind:href="package.projectUrl">插件主页</a>
+                <asp:Button class="btn m-l-5" onClick="Return_Click" Text="返 回" runat="server" />
+              </div>
             </div>
+          </div>
+        </div>
 
-            <hr />
+        <!-- <div class="card-box">
+          <div v-html="package.readme" class="readme m-b-10"></div>
+        </div> -->
 
-            <div>
-              <asp:Button cssClass="btn btn-primary" onClick="BtnInstall_Click" id="BtnInstall" Text="安装插件" runat="server" />
-              <a class="btn btn-success m-l-5" v-bind:style="{ display: package.projectUrl ? '' : 'none' }" target="_blank" v-bind:href="package.projectUrl">插件主页</a>
-              <asp:Button class="btn m-l-5" onClick="Return_Click" Text="返 回" runat="server" />
-            </div>
-
+        <div class="card-box">
+          <div class="page-title-box">
+            <h4 class="page-title">插件详情</h4>
           </div>
 
-          <!-- <hr />
+          <p class="text-muted font-13 m-b-25">
 
-          <div v-html="package.readme" class="readme m-b-10"></div> -->
+          </p>
+          <table class="table m-0">
+            <tbody>
+              <tr>
+                <th scope="row">发行说明</th>
+                <td>{{ package.releaseNotes }}</td>
+              </tr>
+              <tr>
+                <th scope="row">更新日期</th>
+                <td>{{ package.published }}</td>
+              </tr>
+              <tr>
+                <th scope="row">插件Id</th>
+                <td>{{ package.id }}</td>
+              </tr>
+              <tr>
+                <th scope="row">版本号</th>
+                <td>{{ package.version }}</td>
+              </tr>
+              <tr>
+                <th scope="row">作者</th>
+                <td>{{ package.authors ? package.authors.join(',') : '' }}</td>
+              </tr>
+              <tr>
+                <th scope="row">标签</th>
+                <td>{{ package.tags }}</td>
+              </tr>
+              <tr>
+                <th scope="row">插件项目链接</th>
+                <td>
+                  <a v-bind:style="{ display: package.projectUrl ? '' : 'none' }" target="_blank" v-bind:href="package.projectUrl">
+                    {{ package.projectUrl }}
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">插件许可链接</th>
+                <td>
+                  <a v-bind:style="{ display: package.licenseUrl ? '' : 'none' }" target="_blank" v-bind:href="package.licenseUrl">
+                    {{ package.licenseUrl }}
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">版权</th>
+                <td>{{ package.copyright }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
       </div>
@@ -111,15 +118,17 @@
   </html>
 
   <script src="../assets/vue/vue.min.js"></script>
-  <script src="../assets/cloudUtils.js"></script>
+  <script src="../assets/apiUtils.js"></script>
   <script>
-    var api = new cloudUtils.Api();
+    var api = new apiUtils.Api();
     var pluginId = api.getQueryStringByName('pluginId');
 
     var allowNightlyBuild = <%=AllowNightlyBuild%>;
     var allowPrereleaseVersions = <%=AllowPrereleaseVersions%>;
 
     var data = {
+      installed: <%=Installed%>,
+      installedVersion: '<%=InstalledVersion%>',
       package: {}
     };
 
@@ -138,3 +147,14 @@
     });
   </script>
   <!--#include file="../inc/foot.html"-->
+  <script>
+    var validate = window.Page_ClientValidate;
+    $(function () {
+      $('.btn-primary').click(function () {
+        if (!validate || validate()) {
+          $('#main').showLoading();
+        }
+        return true;
+      });
+    });
+  </script>

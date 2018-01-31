@@ -14,7 +14,7 @@ namespace SiteServer.BackgroundPages
             return PageUtils.GetSiteServerUrl(nameof(PageUpdateDatabase), null);
         }
 
-        public string UpdateDatabaseApiUrl => ApiRouteUpdateDatabase.GetUrl(PageUtility.InnerApiUrl);
+        public string UpdateDatabaseApiUrl => ApiRouteSyncDatabase.GetUrl(PageUtility.InnerApiUrl);
 
         public string AdminUrl => PageUtils.GetAdminDirectoryUrl(string.Empty);
 

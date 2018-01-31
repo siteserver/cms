@@ -64,7 +64,7 @@ if (window.top.location.href.toLowerCase().indexOf(""main.aspx"") == -1){{
 
             if (!string.IsNullOrEmpty(_scripts))
             {
-                writer.Write(@"<script type=""text/javascript"">{0}</script>", _scripts);
+                writer.Write($@"<script type=""text/javascript"">{_scripts}</script>");
             }
         }
 
@@ -79,7 +79,15 @@ if (window.top.location.href.toLowerCase().indexOf(""main.aspx"") == -1){{
 setTimeout(function() {{
     location.href = '{redirectUrl}';
 }}, 1500);
-$('.operation-area').hide();
+";
+        }
+
+        public void AddWaitAndReloadMainPage()
+        {
+            _scripts += @"
+setTimeout(function() {{
+    window.top.location.reload();
+}}, 1500);
 ";
         }
 
@@ -89,7 +97,6 @@ $('.operation-area').hide();
 setTimeout(function() {{
     {scripts}
 }}, 1500);
-$('.operation-area').hide();
 ";
         }
 
@@ -223,31 +230,6 @@ $('.operation-area').hide();
         {
             return
                 $"showImage({objString}, '{imageClientId}', '{PageUtils.ApplicationPath}', '{siteUrl}')";
-        }
-
-        public string SwalError(string title, string message)
-        {
-            var script = $@"swal({{
-  title: '{title}',
-  text: '{StringUtils.ReplaceNewline(message, string.Empty)}',
-  icon: 'error',
-  button: '关 闭',
-}});";
-            ClientScript.RegisterClientScriptBlock(GetType(), nameof(SwalError), script, true);
-
-            return script;
-        }
-
-        public string SwalDom(string title, string elementId)
-        {
-            var script = $@"swal({{
-  title: '{title}',
-  content: $('#{elementId}')[0],
-  button: '关 闭',
-}});";
-            ClientScript.RegisterClientScriptBlock(GetType(), nameof(SwalDom), script, true);
-
-            return script;
         }
     }
 }

@@ -5,9 +5,9 @@ using SiteServer.CMS.Core;
 namespace SiteServer.API.Controllers.Sys.Packaging
 {
     [RoutePrefix("api")]
-    public class PackagesUpdateDatabaseController : ApiController
+    public class PackagesSyncDatabaseController : ApiController
     {
-        [HttpGet, Route(ApiRouteUpdateDatabase.Route)]
+        [HttpPost, Route(ApiRouteSyncDatabase.Route)]
         public IHttpActionResult Main()
         {
             var request = new Request();
@@ -17,7 +17,7 @@ namespace SiteServer.API.Controllers.Sys.Packaging
                 return Unauthorized();
             }
 
-            SystemManager.UpdateDatabase();
+            SystemManager.SyncDatabase();
 
             return Ok();
         }

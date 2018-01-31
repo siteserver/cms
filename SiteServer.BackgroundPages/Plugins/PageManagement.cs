@@ -44,47 +44,28 @@ namespace SiteServer.BackgroundPages.Plugins
             {
                 var pluginId = Body.GetQueryString("pluginId");
 
-                try
-                {
-                    PluginManager.Delete(pluginId);
-                    Body.AddAdminLog("删除插件");
-                    PageUtils.Redirect(PageMain.GetRedirectUrl());
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    FailDeleteMessage(ex);
-                }
+                PluginManager.Delete(pluginId);
+                Body.AddAdminLog("删除插件", $"插件:{pluginId}");
+
+                AddScript(AlertUtils.Success("插件删除成功", "插件删除成功，系统需要重载页面", "重新载入", "window.top.location.reload();"));
             }
-            else if (Body.IsQueryExists("enable"))
+            if (Body.IsQueryExists("enable"))
             {
                 var pluginId = Body.GetQueryString("pluginId");
 
-                try
-                {
-                    PluginManager.UpdateDisabled(pluginId, false);
-                    Body.AddAdminLog("启用插件", $"插件:{pluginId}");
-                    SuccessMessage("成功启用插件");
-                }
-                catch (Exception ex)
-                {
-                    FailDeleteMessage(ex);
-                }
+                PluginManager.UpdateDisabled(pluginId, false);
+                Body.AddAdminLog("启用插件", $"插件:{pluginId}");
+
+                AddScript(AlertUtils.Success("插件启用成功", "插件启用成功，系统需要重载页面", "重新载入", "window.top.location.reload();"));
             }
             else if (Body.IsQueryExists("disable"))
             {
                 var pluginId = Body.GetQueryString("pluginId");
 
-                try
-                {
-                    PluginManager.UpdateDisabled(pluginId, true);
-                    Body.AddAdminLog("禁用插件", $"插件:{pluginId}");
-                    SuccessMessage("成功禁用插件");
-                }
-                catch (Exception ex)
-                {
-                    FailDeleteMessage(ex);
-                }
+                PluginManager.UpdateDisabled(pluginId, true);
+                Body.AddAdminLog("禁用插件", $"插件:{pluginId}");
+
+                AddScript(AlertUtils.Success("插件禁用成功", "插件禁用成功，系统需要重载页面", "重新载入", "window.top.location.reload();"));
             }
 
             if (Page.IsPostBack) return;
@@ -183,9 +164,8 @@ namespace SiteServer.BackgroundPages.Plugins
         public void BtnReload_Click(object sender, EventArgs e)
         {
             PluginManager.ClearCache();
-            SuccessMessage("插件重新加载成功，系统将重载页面，请稍后...");
 
-            AddWaitAndScript($"window.top.location.href = '{PageMain.GetRedirectUrl()}';");
+            AddScript(AlertUtils.Success("插件重新加载成功", "插件重新加载成功，系统需要重载页面", "重新载入", "window.top.location.reload();"));
         }
 
         private void RptRunnable_ItemDataBound(object sender, RepeaterItemEventArgs e)
@@ -204,7 +184,7 @@ namespace SiteServer.BackgroundPages.Plugins
             var ltlCmd = (Literal)e.Item.FindControl("ltlCmd");
 
             ltlLogo.Text = $@"<img src=""{PluginManager.GetPluginIconUrl(pluginInfo.Service)}"" width=""48"" height=""48"" />";
-            ltlPluginId.Text = $@"<a href=""{pluginInfo.Plugin.ProjectUrl}"" target=""_blank"">{pluginInfo.Id}</a>";
+            ltlPluginId.Text = $@"<a href=""{PageView.GetRedirectUrl(pluginInfo.Id, GetRedirectUrl())}"">{pluginInfo.Id}</a>";
             ltlPluginName.Text = pluginInfo.Plugin.Title;
             ltlVersion.Text = pluginInfo.Plugin.Version;
             if (pluginInfo.Plugin.Owners != null)

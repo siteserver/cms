@@ -455,7 +455,7 @@
     <Compile Include="PageUpdateSystem.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="PageUpdatePlugins.cs">
+    <Compile Include="Plugins\PageUpdate.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageDefault.cs">

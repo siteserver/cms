@@ -63,7 +63,6 @@
             </ul>
 
             <div class="jumbotron">
-              <h4 class="display-5">欢迎来到SiteServer CMS 升级向导！</h4>
               <p class="lead">
                 升级向导将在线检查并自动下载、安装 SiteServer CMS 产品最新版本。
               </p>
@@ -114,7 +113,7 @@
                   <img src="./pic/animated_loading.gif" />
                   <br />
                   <br />
-                  <p class="lead">正在检查更新...</p>
+                  <p class="lead">正在检查系统更新，请稍后...</p>
                 </div>
 
                 <div id="phStep2_currentVersion" class="jumbotron" style="display: none">
@@ -327,8 +326,12 @@
 
       function downloadPackage() {
         $.ajax({
-          url: "<%=DownloadApiUrl%>" + version,
-          type: "GET",
+          url: "<%=DownloadApiUrl%>",
+          type: "POST",
+          data: {
+            pluginId: '<%=PackageId%>',
+            version: version
+          },
           success: function (data) {
             $('#phStep3').hide();
             $('#phStep4').show();
@@ -340,18 +343,22 @@
 
       function updateSystem() {
         $.ajax({
-          url: "<%=UpdateSystemApiUrl%>" + version,
-          type: "GET",
+          url: "<%=UpdateApiUrl%>",
+          type: "POST",
+          data: {
+            pluginId: '<%=PackageId%>',
+            version: version
+          },
           success: function (data) {
-            updateDatabase();
+            syncDatabase();
           }
         });
       }
 
-      function updateDatabase() {
+      function syncDatabase() {
         $.ajax({
-          url: "<%=UpdateDatabaseApiUrl%>",
-          type: "GET",
+          url: "<%=SyncDatabaseApiUrl%>",
+          type: "POST",
           success: function (data) {
             $('#phStep4').hide();
             $('#phStep5').show();

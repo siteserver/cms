@@ -126,8 +126,8 @@
     <Compile Include="Controllers\Preview\PreviewController.cs" />
     <Compile Include="Controllers\Sys\Administrators\AdministratorsActionsLoginController.cs" />
     <Compile Include="Controllers\Sys\Administrators\AdministratorsSiteCheckListController.cs" />
-    <Compile Include="Controllers\Sys\Packaging\PackagingUpdateSystemController.cs" />
-    <Compile Include="Controllers\Sys\Packaging\PackagingUpdateDatabaseController.cs" />
+    <Compile Include="Controllers\Sys\Packaging\PackagingUpdateController.cs" />
+    <Compile Include="Controllers\Sys\Packaging\PackagingSyncDatabaseController.cs" />
     <Compile Include="Controllers\Sys\Packaging\PackagingDownloadController.cs" />
     <Compile Include="Controllers\Sys\Packaging\PackagingVersionController.cs" />
     <Compile Include="Controllers\Sys\Editors\UEditorController.cs" />

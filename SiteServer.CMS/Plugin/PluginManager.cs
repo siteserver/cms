@@ -8,10 +8,10 @@ using System.Threading;
 using SiteServer.Utils;
 using SiteServer.Utils.IO;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin.Apis;
 using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
-using SiteServer.Utils.Packaging;
 
 namespace SiteServer.CMS.Plugin
 {
@@ -83,7 +83,7 @@ namespace SiteServer.CMS.Plugin
                 try
                 {
                     string dllDirectoryPath;
-                    var metadata = GetPluginMetadata(directoryName, out dllDirectoryPath, out errorMessage);
+                    var metadata = PackageUtils.GetPackageMetadataFromPlugins(directoryName, out dllDirectoryPath, out errorMessage);
                     if (metadata != null)
                     {
                         //foreach (var filePath in DirectoryUtils.GetFilePaths(DirectoryUtils.GetDirectoryPath(metadata.ExecuteFilePath)))
@@ -289,6 +289,42 @@ namespace SiteServer.CMS.Plugin
             if (dict.TryGetValue(pluginId, out pluginInfo))
             {
                 return pluginInfo;
+            }
+            return null;
+        }
+
+        public static Dictionary<string, string> GetPluginIdAndVersionDict()
+        {
+            var dict = PluginManagerCache.GetPluginSortedList();
+
+            var retval = new Dictionary<string, string>();
+
+            foreach (var pluginId in dict.Keys)
+            {
+                var pluginInfo = dict[pluginId];
+                if (pluginInfo.Plugin != null)
+                {
+                    retval[pluginId] = pluginInfo.Plugin.Version;
+                }
+                else
+                {
+                    retval[pluginId] = string.Empty;
+                }
+            }
+
+            return retval;
+        }
+
+        public static PluginBase GetPlugin(string pluginId)
+        {
+            if (string.IsNullOrEmpty(pluginId)) return null;
+
+            var dict = PluginManagerCache.GetPluginSortedList();
+
+            PluginInfo pluginInfo;
+            if (dict.TryGetValue(pluginId, out pluginInfo))
+            {
+                return pluginInfo.Plugin;
             }
             return null;
         }
@@ -528,45 +564,7 @@ namespace SiteServer.CMS.Plugin
         //    return actions;
         //}
 
-        public static bool Install(string idWithVersion, out string errorMessage)
-        {
-            try
-            {
-                var directoryPath = PathUtils.GetPackagesPath(idWithVersion);
-
-                string nuspecPath;
-                string dllDirectoryPath;
-                var metadata = GetPluginMetadataByDirectoryPath(directoryPath, out nuspecPath, out dllDirectoryPath, out errorMessage);
-                if (metadata == null)
-                {
-                    return false;
-                }
-
-                if (IsExists(metadata.Id))
-                {
-                    errorMessage = $"插件 {metadata.Id} 已存在";
-                    return false;
-                }
-
-                var pluginPath = PathUtils.GetPluginPath(metadata.Id);
-                DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);
-
-                DirectoryUtils.Copy(PathUtils.Combine(directoryPath, "content"), pluginPath, true);
-                DirectoryUtils.Copy(dllDirectoryPath, PathUtils.Combine(pluginPath, "Bin"), true);
-
-                var configFilelPath = PathUtils.Combine(pluginPath, $"{metadata.Id}.nuspec");
-                FileUtils.CopyFile(nuspecPath, configFilelPath, true);
-
-                ClearCache();
-            }
-            catch (Exception ex)
-            {
-                errorMessage = ex.Message;
-                return false;
-            }
-
-            return true;
-        }
+        
 
         //public static bool Install(string pluginId, string version, out string errorMessage)
         //{
@@ -623,6 +621,7 @@ namespace SiteServer.CMS.Plugin
             {
                 pluginInfo.IsDisabled = isDisabled;
                 DataProvider.PluginDao.UpdateIsDisabled(pluginId, isDisabled);
+                ClearCache();
             }
         }
 
@@ -633,6 +632,7 @@ namespace SiteServer.CMS.Plugin
             {
                 pluginInfo.Taxis = taxis;
                 DataProvider.PluginDao.UpdateTaxis(pluginId, taxis);
+                ClearCache();
             }
         }
 
@@ -687,106 +687,42 @@ namespace SiteServer.CMS.Plugin
         //    return metadata;
         //}
 
-        private static PackageMetadata GetPluginMetadata(string directoryName, out string dllDirectoryPath, out string errorMessage)
-        {
-            dllDirectoryPath = string.Empty;
-            var nuspecPath = PathUtils.GetPluginNuspecPath(directoryName);
-            if (!File.Exists(nuspecPath))
-            {
-                errorMessage = $"插件配置文件 {directoryName}.nuspec 不存在";
-                return null;
-            }
-            dllDirectoryPath = PathUtils.GetPluginDllDirectoryPath(directoryName);
-            if (string.IsNullOrEmpty(dllDirectoryPath))
-            {
-                errorMessage = $"插件可执行文件 {directoryName}.dll 不存在";
-                return null;
-            }
+        //private static PackageMetadata GetPluginMetadata(string directoryName, out string dllDirectoryPath, out string errorMessage)
+        //{
+        //    dllDirectoryPath = string.Empty;
+        //    var nuspecPath = PathUtils.GetPluginNuspecPath(directoryName);
+        //    if (!File.Exists(nuspecPath))
+        //    {
+        //        errorMessage = $"插件配置文件 {directoryName}.nuspec 不存在";
+        //        return null;
+        //    }
+        //    dllDirectoryPath = PathUtils.GetPluginDllDirectoryPath(directoryName);
+        //    if (string.IsNullOrEmpty(dllDirectoryPath))
+        //    {
+        //        errorMessage = $"插件可执行文件 {directoryName}.dll 不存在";
+        //        return null;
+        //    }
 
-            PackageMetadata metadata;
-            try
-            {
-                metadata = PackageUtils.GetPackageMetadata(nuspecPath);
-            }
-            catch(Exception ex)
-            {
-                errorMessage = ex.Message;
-                return null;
-            }
+        //    PackageMetadata metadata;
+        //    try
+        //    {
+        //        metadata = PackageUtils.GetPackageMetadata(nuspecPath);
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        errorMessage = ex.Message;
+        //        return null;
+        //    }
 
-            if (string.IsNullOrEmpty(metadata.Id))
-            {
-                errorMessage = "插件配置文件不正确";
-                return null;
-            }
+        //    if (string.IsNullOrEmpty(metadata.Id))
+        //    {
+        //        errorMessage = "插件配置文件不正确";
+        //        return null;
+        //    }
 
-            errorMessage = string.Empty;
-            return metadata;
-        }
-
-        public static PackageMetadata GetPluginMetadataByDirectoryPath(string directoryPath, out string nuspecPath, out string dllDirectoryPath, out string errorMessage)
-        {
-            nuspecPath = string.Empty;
-            dllDirectoryPath = string.Empty;
-
-            foreach (var filePath in DirectoryUtils.GetFilePaths(directoryPath))
-            {
-                if (StringUtils.EqualsIgnoreCase(Path.GetExtension(filePath), ".nuspec"))
-                {
-                    nuspecPath = filePath;
-                    break;
-                }
-            }
-
-            if (string.IsNullOrEmpty(nuspecPath))
-            {
-                errorMessage = "插件配置文件不存在";
-                return null;
-            }
-
-            PackageMetadata metadata;
-            try
-            {
-                metadata = PackageUtils.GetPackageMetadata(nuspecPath);
-            }
-            catch (Exception ex)
-            {
-                errorMessage = ex.Message;
-                return null;
-            }
-
-            var pluginId = metadata.Id;
-
-            if (string.IsNullOrEmpty(pluginId))
-            {
-                errorMessage = $"插件配置文件 {nuspecPath} 不正确";
-                return null;
-            }
-
-            //https://docs.microsoft.com/en-us/nuget/schema/target-frameworks#supported-frameworks
-
-            foreach (var directoryName in DirectoryUtils.GetDirectoryNames(PathUtils.Combine(directoryPath, "lib")))
-            {
-                if (StringUtils.StartsWithIgnoreCase(directoryName, "net45") || StringUtils.StartsWithIgnoreCase(directoryName, "net451") || StringUtils.StartsWithIgnoreCase(directoryName, "net452") || StringUtils.StartsWithIgnoreCase(directoryName, "net46") || StringUtils.StartsWithIgnoreCase(directoryName, "net461") || StringUtils.StartsWithIgnoreCase(directoryName, "net462"))
-                {
-                    dllDirectoryPath = PathUtils.Combine(directoryPath, "lib", directoryName);
-                    break;
-                }
-            }
-            if (string.IsNullOrEmpty(dllDirectoryPath))
-            {
-                dllDirectoryPath = PathUtils.Combine(directoryPath, "lib");
-            }
-
-            if (!FileUtils.IsFileExists(PathUtils.Combine(dllDirectoryPath, pluginId + ".dll")))
-            {
-                errorMessage = $"插件可执行文件 {pluginId}.dll 不存在";
-                return null;
-            }
-
-            errorMessage = string.Empty;
-            return metadata;
-        }
+        //    errorMessage = string.Empty;
+        //    return metadata;
+        //}
 
         public static string GetPluginIconUrl(string pluginId)
         {

@@ -4,13 +4,17 @@ namespace SiteServer.CMS.Controllers.Sys.Packaging
 {
     public class ApiRouteVersion
     {
-        public const string Route = "sys/packaging/version/{packageId}";
+        public const string RouteCms = "sys/packaging/version/cms";
+        public const string RoutePlugins = "sys/packaging/version/plugins";
 
-        public static string GetUrl(string apiUrl, string packageId)
+        public static string GetCmsUrl(string apiUrl)
         {
-            apiUrl = PageUtils.Combine(apiUrl, Route);
-            apiUrl = apiUrl.Replace("{packageId}", packageId);
-            return apiUrl;
+            return PageUtils.Combine(apiUrl, RouteCms);
+        }
+
+        public static string GetPluginsUrl(string apiUrl)
+        {
+            return PageUtils.Combine(apiUrl, RoutePlugins);
         }
     }
 }

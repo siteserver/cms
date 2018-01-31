@@ -1,5 +1,5 @@
-var cloudUtils = {
-    Api: function() {
+var apiUtils = {
+    Api: function(apiUrl) {
         this.getQueryStringByName = function(name) {
             var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
             if (!result || result.length < 1) {
@@ -8,7 +8,7 @@ var cloudUtils = {
             return decodeURIComponent(result[1]);
         };
 
-        this.apiUrl = 'http://cloud.siteserver.cn/api/v1';
+        this.apiUrl = apiUrl || 'http://cloud.siteserver.cn/api/v1';
         // this.apiUrl = 'http://localhost:5000/api/v1';
 
         this._getURL = function(url, data, method) {
@@ -35,12 +35,12 @@ var cloudUtils = {
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState === 4) {
                         if (xhr.status < 400) {
-                            cb(null, cloudUtils.parse(xhr.responseText), xhr.status);
+                            cb(null, apiUtils.parse(xhr.responseText), xhr.status);
                         } else {
-                            var err = cloudUtils.parse(xhr.responseText);
+                            var err = apiUtils.parse(xhr.responseText);
                             cb({
                                 status: xhr.status,
-                                message: err.message || cloudUtils.errorCode(xhr.status)
+                                message: err.message || apiUtils.errorCode(xhr.status)
                             }, null, xhr.status);
                         }
                     }

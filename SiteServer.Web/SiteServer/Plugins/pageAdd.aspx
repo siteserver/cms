@@ -50,7 +50,7 @@
               <div class="row">
                 <div class="col-6 col-lg-4" v-for="package in searchPackages">
                   <div class="card-box widget-user">
-                    <a v-bind:href="'pageView.aspx?pluginId=' + package.id + '&version=' + package.version">
+                    <a v-bind:href="'pageView.aspx?pluginId=' + package.id">
                       <img v-bind:src="package.iconUrl" class="img-responsive">
                       <div class="wid-u-info">
                         <h5 class="m-t-0 m-b-5">
@@ -87,7 +87,7 @@
               <div class="row">
                 <div class="col-6 col-lg-4" v-for="package in featuredPackages">
                   <div class="card-box widget-user">
-                    <a v-bind:href="'pageView.aspx?pluginId=' + package.id + '&version=' + package.version">
+                    <a v-bind:href="'pageView.aspx?pluginId=' + package.id">
                       <img v-bind:src="package.iconUrl" class="img-responsive">
                       <div class="wid-u-info">
                         <h5 class="m-t-0 m-b-5">
@@ -124,7 +124,7 @@
               <div class="row">
                 <div class="col-6 col-lg-4" v-for="package in popularPackages">
                   <div class="card-box widget-user">
-                    <a v-bind:href="'pageView.aspx?pluginId=' + package.id + '&version=' + package.version">
+                    <a v-bind:href="'pageView.aspx?pluginId=' + package.id">
                       <img v-bind:src="package.iconUrl" class="img-responsive">
                       <div class="wid-u-info">
                         <h5 class="m-t-0 m-b-5">
@@ -161,7 +161,7 @@
               <div class="row">
                 <div class="col-6 col-lg-4" v-for="package in precentlyPackages">
                   <div class="card-box widget-user">
-                    <a v-bind:href="'pageView.aspx?pluginId=' + package.id + '&version=' + package.version">
+                    <a v-bind:href="'pageView.aspx?pluginId=' + package.id">
                       <img v-bind:src="package.iconUrl" class="img-responsive">
                       <div class="wid-u-info">
                         <h5 class="m-t-0 m-b-5">
@@ -197,9 +197,9 @@
     </html>
 
     <script src="../assets/vue/vue.min.js"></script>
-    <script src="../assets/cloudUtils.js"></script>
+    <script src="../assets/apiUtils.js"></script>
     <script>
-      var api = new cloudUtils.Api();
+      var api = new apiUtils.Api();
 
       var allowNightlyBuild = <%=AllowNightlyBuild%>;
       var allowPrereleaseVersions = <%=AllowPrereleaseVersions%>;

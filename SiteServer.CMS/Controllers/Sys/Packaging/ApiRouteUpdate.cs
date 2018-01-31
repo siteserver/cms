@@ -2,9 +2,9 @@
 
 namespace SiteServer.CMS.Controllers.Sys.Packaging
 {
-    public class ApiRouteDownload
+    public class ApiRouteUpdate
     {
-        public const string Route = "sys/packaging/download";
+        public const string Route = "sys/packaging/update";
 
         public static string GetUrl(string apiUrl)
         {

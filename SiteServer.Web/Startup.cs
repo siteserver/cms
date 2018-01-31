@@ -21,26 +21,26 @@ namespace SiteServer.API
         {
             app.MapSignalR();
 
-            var configuration = GlobalConfiguration.Configuration;
+            var config = GlobalConfiguration.Configuration;
 
             var corsAttr = new EnableCorsAttribute("*", "*", "*")
             {
                 SupportsCredentials = true
             };
-            configuration.EnableCors(corsAttr);
-            configuration.MapHttpAttributeRoutes();
+            config.EnableCors(corsAttr);
+            config.MapHttpAttributeRoutes();
 
-            configuration.Routes.MapHttpRoute(
+            config.Routes.MapHttpRoute(
                 "DefaultApi",
                 "api/{controller}/{id}",
                 new { id = RouteParameter.Optional }
             );
 
-            //configuration.Routes.Add("name", new HttpRoute());
+            //config.Routes.Add("name", new HttpRoute());
 
             RouteTable.Routes.Ignore(""); //Allow index.html to load
 
-            var jsonFormatter = configuration.Formatters.JsonFormatter;
+            var jsonFormatter = config.Formatters.JsonFormatter;
             var settings = new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -53,7 +53,7 @@ namespace SiteServer.API
             jsonFormatter.SerializerSettings = settings;
             jsonFormatter.Indent = true;
 
-            configuration.EnsureInitialized();
+            config.EnsureInitialized();
 
             WebConfigUtils.Load(HostingEnvironment.ApplicationPhysicalPath);
             var c = PluginManager.PluginInfoListRunnable;

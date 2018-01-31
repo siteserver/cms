@@ -4,7 +4,7 @@ using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Controllers.Sys.Packaging;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.Utils.Packaging;
+using SiteServer.CMS.Packaging;
 using ApiRouteVersion = SiteServer.CMS.Controllers.Sys.Packaging.ApiRouteVersion;
 
 namespace SiteServer.BackgroundPages
@@ -24,13 +24,15 @@ namespace SiteServer.BackgroundPages
 
         public string AdminUrl => PageUtils.GetAdminDirectoryUrl(string.Empty);
 
-        public string VersionApiUrl => ApiRouteVersion.GetUrl(PageUtility.InnerApiUrl, PackageUtils.PackageIdSsCms);
+        public string VersionApiUrl => ApiRouteVersion.GetCmsUrl(PageUtility.InnerApiUrl);
 
-        public string DownloadApiUrl => ApiRouteDownload.GetUrl(PageUtility.InnerApiUrl, PackageUtils.PackageIdSsCms, string.Empty);
+        public string DownloadApiUrl => ApiRouteDownload.GetUrl(PageUtility.InnerApiUrl);
 
-        public string UpdateSystemApiUrl => ApiRouteUpdateSystem.GetUrl(PageUtility.InnerApiUrl, string.Empty);
+        public string PackageId => PackageUtils.PackageIdSsCms;
 
-        public string UpdateDatabaseApiUrl => ApiRouteUpdateDatabase.GetUrl(PageUtility.InnerApiUrl);
+        public string UpdateApiUrl => ApiRouteUpdate.GetUrl(PageUtility.InnerApiUrl);
+
+        public string SyncDatabaseApiUrl => ApiRouteSyncDatabase.GetUrl(PageUtility.InnerApiUrl);
 
         public void Page_Load(object sender, EventArgs e)
         {

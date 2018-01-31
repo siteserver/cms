@@ -5,7 +5,7 @@ using NuGet.Packaging;
 using NuGet.Versioning;
 using SiteServer.Plugin;
 
-namespace SiteServer.Utils.Packaging
+namespace SiteServer.CMS.Packaging
 {
     public class PackageMetadata : IMetadata
     {

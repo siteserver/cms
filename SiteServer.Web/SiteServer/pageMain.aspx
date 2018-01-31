@@ -36,11 +36,11 @@
                 <ul class="nav navbar-nav navbar-right float-right">
                   <li id="newVersion" class="dropdown hidden-xs" style="display: none">
                     <a href="javascript:;" onclick="$('#newVersionCard').toggle();">
-                      <i class="ion-android-download text-warning"></i>
+                      <i class="ion-email-unread text-warning"></i>
                     </a>
-                    <div id="newVersionCard" class="card bg-warning text-dark" style="width: 18rem; z-index: 11; position: absolute; display: none">
+                    <div id="newVersionCard" class="card bg-light text-dark" style="width: 19rem; z-index: 11; position: absolute; display: none">
                       <div class="card-body" style="padding-bottom: 0;">
-                        <h5 class="card-title">发现系统新版本</h5>
+                        <h5 class="card-title text-success">发现 SiteServer CMS 新版本</h5>
                         <p class="card-text">
                           当前版本：
                           <%=CurrentVersion%>
@@ -185,7 +185,6 @@
             if (version == '<%=CurrentVersion%>') return;
 
             $('#newVersion').show();
-            $('#newVersionCard').show();
             // setTimeout(function () {
             //   $('#newVersionCard').fadeOut();
             // }, 5000);

@@ -1,4 +1,4 @@
-﻿namespace SiteServer.Utils.Packaging
+﻿namespace SiteServer.CMS.Packaging
 {
     public static class PackageMetadataStrings
     {
