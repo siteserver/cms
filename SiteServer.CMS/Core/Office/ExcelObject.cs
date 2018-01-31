@@ -1,83 +1,16 @@
-﻿using System.Collections;
-using BaiRong.Core;
+﻿using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Table;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.Office
 {
     public class ExcelObject
     {
-        //public static void CreateExcelFileForInputContents(string filePath, PublishmentSystemInfo publishmentSystemInfo,
-        //    InputInfo inputInfo)
-        //{
-        //    DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
-        //    FileUtils.DeleteFileIfExists(filePath);
-
-        //    var head = new List<string>();
-        //    var rows = new List<List<string>>();
-
-        //    var relatedidentityes = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent,
-        //        publishmentSystemInfo.PublishmentSystemId, inputInfo.InputId);
-        //    var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent,
-        //        DataProvider.InputContentDao.TableName, relatedidentityes);
-
-        //    if (tableStyleInfoList.Count == 0)
-        //    {
-        //        throw new Exception("表单无字段，无法导出");
-        //    }
-
-        //    foreach (var tableStyleInfo in tableStyleInfoList)
-        //    {
-        //        head.Add(tableStyleInfo.DisplayName);
-        //    }
-
-        //    if (inputInfo.IsReply)
-        //    {
-        //        head.Add("回复");
-        //    }
-        //    head.Add("添加时间");
-
-        //    var contentIdList = DataProvider.InputContentDao.GetContentIdListWithChecked(inputInfo.InputId);
-        //    foreach (var contentId in contentIdList)
-        //    {
-        //        var contentInfo = DataProvider.InputContentDao.GetContentInfo(contentId);
-        //        if (contentInfo != null)
-        //        {
-        //            var row = new List<string>();
-
-        //            foreach (var tableStyleInfo in tableStyleInfoList)
-        //            {
-        //                var value = contentInfo.GetString(tableStyleInfo.AttributeName);
-
-        //                if (!string.IsNullOrEmpty(value))
-        //                {
-        //                    value = InputParserUtility.GetContentByTableStyle(value, publishmentSystemInfo,
-        //                        ETableStyle.InputContent, tableStyleInfo);
-        //                }
-
-        //                row.Add(StringUtils.StripTags(value));
-        //            }
-
-        //            if (inputInfo.IsReply)
-        //            {
-        //                row.Add(StringUtils.StripTags(contentInfo.Reply));
-        //            }
-        //            row.Add(DateUtils.GetDateAndTimeString(contentInfo.AddDate));
-
-        //            rows.Add(row);
-        //        }
-        //    }
-
-        //    CsvUtils.Export(filePath, head, rows);
-        //}
-
-        public static void CreateExcelFileForContents(string filePath, PublishmentSystemInfo publishmentSystemInfo,
-            NodeInfo nodeInfo, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
+        public static void CreateExcelFileForContents(string filePath, SiteInfo siteInfo,
+            ChannelInfo nodeInfo, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
             string endDate, ETriState checkedState)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
@@ -87,10 +20,10 @@ namespace SiteServer.CMS.Core.Office
             var rows = new List<List<string>>();
 
             var relatedidentityes =
-                RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId);
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+                RelatedIdentities.GetChannelRelatedIdentities(siteInfo.Id, nodeInfo.Id);
+            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
             var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedidentityes);
-            tableStyleInfoList = ContentUtility.GetAllTableStyleInfoList(publishmentSystemInfo, tableStyleInfoList);
+            tableStyleInfoList = ContentUtility.GetAllTableStyleInfoList(siteInfo, tableStyleInfoList);
 
             foreach (var tableStyleInfo in tableStyleInfoList)
             {
@@ -102,7 +35,7 @@ namespace SiteServer.CMS.Core.Office
 
             if (contentIdList == null || contentIdList.Count == 0)
             {
-                contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, nodeInfo.NodeId, isPeriods,
+                contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, nodeInfo.Id, isPeriods,
                     startDate, endDate, checkedState);
             }
 
@@ -129,372 +62,6 @@ namespace SiteServer.CMS.Core.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static void CreateExcelFileForComments(string filePath, PublishmentSystemInfo publishmentSystemInfo,
-            int nodeId, int contentId)
-        {
-            DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
-            FileUtils.DeleteFileIfExists(filePath);
-
-            var head = new List<string>();
-            var rows = new List<List<string>>();
-
-            head.Add("用户");
-            head.Add("评论");
-            head.Add("添加时间");
-
-            var commentInfoList =
-                DataProvider.CommentDao.GetCommentInfoListChecked(publishmentSystemInfo.PublishmentSystemId, nodeId,
-                    contentId, 10000, 0);
-            foreach (var commentInfo in commentInfoList)
-            {
-                var row = new List<string>
-                {
-                    commentInfo.UserName,
-                    StringUtils.StripTags(commentInfo.Content),
-                    DateUtils.GetDateAndTimeString(commentInfo.AddDate)
-                };
-
-                rows.Add(row);
-            }
-
-            CsvUtils.Export(filePath, head, rows);
-        }
-
-        public static void CreateExcelFileForTrackingHours(string filePath, int publishmentSystemId)
-        {
-            DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
-            FileUtils.DeleteFileIfExists(filePath);
-
-            var head = new List<string>();
-            var rows = new List<List<string>>();
-
-            var trackingHourHashtable = DataProvider.TrackingDao.GetTrackingHourHashtable(publishmentSystemId);
-            var uniqueTrackingHourHashtable =
-                DataProvider.TrackingDao.GetUniqueTrackingHourHashtable(publishmentSystemId);
-
-            head.Add("时间段");
-            head.Add("访问量");
-            head.Add("访客数");
-
-            var maxAccessNum = 0;
-            var uniqueMaxAccessNum = 0;
-
-            var now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, 0, 0);
-            for (var i = 0; i < 24; i++)
-            {
-                var datetime = now.AddHours(-i);
-                var accessNum = 0;
-                if (trackingHourHashtable[datetime] != null)
-                {
-                    accessNum = (int) trackingHourHashtable[datetime];
-                }
-                if (accessNum > maxAccessNum)
-                {
-                    maxAccessNum = accessNum;
-                }
-
-                var uniqueAccessNum = 0;
-                if (uniqueTrackingHourHashtable[datetime] != null)
-                {
-                    uniqueAccessNum = (int) uniqueTrackingHourHashtable[datetime];
-                }
-                if (uniqueAccessNum > uniqueMaxAccessNum)
-                {
-                    uniqueMaxAccessNum = uniqueAccessNum;
-                }
-
-                var row = new List<string>
-                {
-                    datetime.Hour.ToString(),
-                    accessNum.ToString(),
-                    uniqueAccessNum.ToString()
-                };
-
-                rows.Add(row);
-            }
-
-            CsvUtils.Export(filePath, head, rows);
-        }
-
-        public static void CreateExcelFileForTrackingDays(string filePath, int publishmentSystemId)
-        {
-            DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
-            FileUtils.DeleteFileIfExists(filePath);
-
-            var head = new List<string>();
-            var rows = new List<List<string>>();
-
-            var trackingDayHashtable = DataProvider.TrackingDao.GetTrackingDayHashtable(publishmentSystemId);
-            var uniqueTrackingDayHashtable = DataProvider.TrackingDao.GetUniqueTrackingDayHashtable(publishmentSystemId);
-
-            head.Add("时间段");
-            head.Add("访问量");
-            head.Add("访客数");
-
-            var maxAccessNum = 0;
-            var uniqueMaxAccessNum = 0;
-
-            var now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
-            for (var i = 0; i < 30; i++)
-            {
-                var datetime = now.AddDays(-i);
-                var accessNum = 0;
-                if (trackingDayHashtable[datetime] != null)
-                {
-                    accessNum = (int) trackingDayHashtable[datetime];
-                }
-                if (accessNum > maxAccessNum)
-                {
-                    maxAccessNum = accessNum;
-                }
-
-                var uniqueAccessNum = 0;
-                if (uniqueTrackingDayHashtable[datetime] != null)
-                {
-                    uniqueAccessNum = (int) uniqueTrackingDayHashtable[datetime];
-                }
-                if (uniqueAccessNum > uniqueMaxAccessNum)
-                {
-                    uniqueMaxAccessNum = uniqueAccessNum;
-                }
-
-                rows.Add(new List<string>
-                {
-                    datetime.Day.ToString(),
-                    accessNum.ToString(),
-                    uniqueAccessNum.ToString()
-                });
-            }
-
-            CsvUtils.Export(filePath, head, rows);
-        }
-
-        public static void CreateExcelFileForTrackingMonths(string filePath, int publishmentSystemId)
-        {
-            DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
-            FileUtils.DeleteFileIfExists(filePath);
-
-            var head = new List<string>();
-            var rows = new List<List<string>>();
-
-            var trackingMonthHashtable = DataProvider.TrackingDao.GetTrackingMonthHashtable(publishmentSystemId);
-            var uniqueTrackingMonthHashtable =
-                DataProvider.TrackingDao.GetUniqueTrackingMonthHashtable(publishmentSystemId);
-
-            head.Add("时间段");
-            head.Add("访问量");
-            head.Add("访客数");
-
-            var maxAccessNum = 0;
-            var uniqueMaxAccessNum = 0;
-
-            var now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1, 0, 0, 0);
-            for (var i = 0; i < 12; i++)
-            {
-                var datetime = now.AddMonths(-i);
-                var accessNum = 0;
-                if (trackingMonthHashtable[datetime] != null)
-                {
-                    accessNum = (int) trackingMonthHashtable[datetime];
-                }
-                if (accessNum > maxAccessNum)
-                {
-                    maxAccessNum = accessNum;
-                }
-
-                var uniqueAccessNum = 0;
-                if (uniqueTrackingMonthHashtable[datetime] != null)
-                {
-                    uniqueAccessNum = (int) uniqueTrackingMonthHashtable[datetime];
-                }
-                if (uniqueAccessNum > uniqueMaxAccessNum)
-                {
-                    uniqueMaxAccessNum = uniqueAccessNum;
-                }
-
-                rows.Add(new List<string>
-                {
-                    datetime.Month.ToString(),
-                    accessNum.ToString(),
-                    uniqueAccessNum.ToString()
-                });
-            }
-
-            CsvUtils.Export(filePath, head, rows);
-        }
-
-        public static void CreateExcelFileForTrackingYears(string filePath, int publishmentSystemId)
-        {
-            DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
-            FileUtils.DeleteFileIfExists(filePath);
-
-            var head = new List<string>();
-            var rows = new List<List<string>>();
-
-            var trackingYearHashtable = DataProvider.TrackingDao.GetTrackingYearHashtable(publishmentSystemId);
-            var uniqueTrackingYearHashtable =
-                DataProvider.TrackingDao.GetUniqueTrackingYearHashtable(publishmentSystemId);
-
-            head.Add("时间段");
-            head.Add("访问量");
-            head.Add("访客数");
-
-            var maxAccessNum = 0;
-            var uniqueMaxAccessNum = 0;
-
-            var now = new DateTime(DateTime.Now.Year, 1, 1, 0, 0, 0);
-            for (var i = 0; i < 10; i++)
-            {
-                var datetime = now.AddYears(-i);
-                var accessNum = 0;
-                if (trackingYearHashtable[datetime] != null)
-                {
-                    accessNum = (int) trackingYearHashtable[datetime];
-                }
-                if (accessNum > maxAccessNum)
-                {
-                    maxAccessNum = accessNum;
-                }
-
-                var uniqueAccessNum = 0;
-                if (uniqueTrackingYearHashtable[datetime] != null)
-                {
-                    uniqueAccessNum = (int) uniqueTrackingYearHashtable[datetime];
-                }
-                if (uniqueAccessNum > uniqueMaxAccessNum)
-                {
-                    uniqueMaxAccessNum = uniqueAccessNum;
-                }
-
-                rows.Add(new List<string>
-                {
-                    datetime.Year.ToString(),
-                    accessNum.ToString(),
-                    uniqueAccessNum.ToString()
-                });
-            }
-
-            CsvUtils.Export(filePath, head, rows);
-        }
-
-        public static void CreateExcelFileForTrackingContents(string filePath, string startDateString,
-            string endDateString, PublishmentSystemInfo publishmentSystemInfo, int nodeId, int contentId, int totalNum,
-            bool isDelete)
-        {
-            DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
-            FileUtils.DeleteFileIfExists(filePath);
-
-            var head = new List<string>
-            {
-                "目标页面",
-                "上级栏目",
-                "上上级栏目",
-                "IP地址",
-                "访问时间",
-                "访问来源"
-            };
-            var rows = new List<List<string>>();
-
-            var target = string.Empty;
-            var upChannel = string.Empty;
-            var upupChannel = string.Empty;
-            if (contentId != 0)
-            {
-                var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
-                target = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
-                upChannel = NodeManager.GetNodeName(publishmentSystemInfo.PublishmentSystemId, nodeId);
-                if (nodeId != publishmentSystemInfo.PublishmentSystemId)
-                {
-                    upupChannel = NodeManager.GetNodeName(publishmentSystemInfo.PublishmentSystemId,
-                        NodeManager.GetParentId(publishmentSystemInfo.PublishmentSystemId, nodeId));
-                }
-            }
-
-            var begin = DateUtils.SqlMinValue;
-            if (!string.IsNullOrEmpty(startDateString))
-            {
-                begin = TranslateUtils.ToDateTime(startDateString);
-            }
-            var end = TranslateUtils.ToDateTime(endDateString);
-
-            var ipAddresses =
-                DataProvider.TrackingDao.GetContentIpAddressArrayList(publishmentSystemInfo.PublishmentSystemId, nodeId,
-                    contentId, begin, end);
-            var trackingInfoArrayList =
-                DataProvider.TrackingDao.GetTrackingInfoArrayList(publishmentSystemInfo.PublishmentSystemId, nodeId,
-                    contentId, begin, end);
-
-            var ipAddressWithNumSortedList = new SortedList();
-            foreach (string ipAddress in ipAddresses)
-            {
-                if (ipAddressWithNumSortedList[ipAddress] != null)
-                {
-                    ipAddressWithNumSortedList[ipAddress] = (int) ipAddressWithNumSortedList[ipAddress] + 1;
-                }
-                else
-                {
-                    ipAddressWithNumSortedList[ipAddress] = 1;
-                }
-            }
-
-            foreach (TrackingInfo trackingInfo in trackingInfoArrayList)
-            {
-                if (contentId == 0)
-                {
-                    if (trackingInfo.PageContentId != 0)
-                    {
-                        var tableName = NodeManager.GetTableName(publishmentSystemInfo, trackingInfo.PageNodeId);
-                        target = DataProvider.ContentDao.GetValue(tableName, trackingInfo.PageContentId,
-                            ContentAttribute.Title);
-                        upChannel = NodeManager.GetNodeName(publishmentSystemInfo.PublishmentSystemId,
-                            trackingInfo.PageNodeId);
-                        if (trackingInfo.PageNodeId != publishmentSystemInfo.PublishmentSystemId)
-                        {
-                            upupChannel = NodeManager.GetNodeName(publishmentSystemInfo.PublishmentSystemId,
-                                NodeManager.GetParentId(publishmentSystemInfo.PublishmentSystemId,
-                                    trackingInfo.PageNodeId));
-                        }
-                    }
-                    else if (trackingInfo.PageNodeId != 0)
-                    {
-                        target = NodeManager.GetNodeName(publishmentSystemInfo.PublishmentSystemId,
-                            trackingInfo.PageNodeId);
-                        if (trackingInfo.PageNodeId != publishmentSystemInfo.PublishmentSystemId)
-                        {
-                            var upChannelId = NodeManager.GetParentId(publishmentSystemInfo.PublishmentSystemId,
-                                trackingInfo.PageNodeId);
-                            upChannel = NodeManager.GetNodeName(publishmentSystemInfo.PublishmentSystemId, upChannelId);
-                            if (upChannelId != publishmentSystemInfo.PublishmentSystemId)
-                            {
-                                upupChannel = NodeManager.GetNodeName(publishmentSystemInfo.PublishmentSystemId,
-                                    NodeManager.GetParentId(publishmentSystemInfo.PublishmentSystemId, upChannelId));
-                            }
-                        }
-                    }
-                }
-                var ipAddress = trackingInfo.IpAddress;
-                var accessDate = trackingInfo.AccessDateTime.ToString(DateUtils.FormatStringDateTime);
-                var referrer = trackingInfo.Referrer;
-
-                rows.Add(new List<string>
-                {
-                    target,
-                    upChannel,
-                    upupChannel,
-                    ipAddress,
-                    accessDate,
-                    referrer
-                });
-            }
-
-            CsvUtils.Export(filePath, head, rows);
-
-            if (isDelete)
-            {
-                DataProvider.TrackingDao.DeleteAll(publishmentSystemInfo.PublishmentSystemId);
-            }
-        }
-
         public static void CreateExcelFileForUsers(string filePath, ETriState checkedState)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
@@ -511,15 +78,15 @@ namespace SiteServer.CMS.Core.Office
             };
             var rows = new List<List<string>>();
 
-            var userIdList = BaiRongDataProvider.UserDao.GetUserIdList(checkedState != ETriState.False);
+            List<int> userIdList = DataProvider.UserDao.GetIdList(checkedState != ETriState.False);
             if (checkedState == ETriState.All)
             {
-                userIdList.AddRange(BaiRongDataProvider.UserDao.GetUserIdList(false));
+                userIdList.AddRange(DataProvider.UserDao.GetIdList(false));
             }
 
             foreach (var userId in userIdList)
             {
-                var userInfo = BaiRongDataProvider.UserDao.GetUserInfo(userId);
+                var userInfo = DataProvider.UserDao.GetUserInfo(userId);
 
                 rows.Add(new List<string>
                 {
@@ -535,8 +102,8 @@ namespace SiteServer.CMS.Core.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static List<ContentInfo> GetContentsByCsvFile(string filePath, PublishmentSystemInfo publishmentSystemInfo,
-            NodeInfo nodeInfo)
+        public static List<ContentInfo> GetContentsByCsvFile(string filePath, SiteInfo siteInfo,
+            ChannelInfo nodeInfo)
         {
             var contentInfoList = new List<ContentInfo>();
 
@@ -548,12 +115,12 @@ namespace SiteServer.CMS.Core.Office
 
             var relatedidentityes =
                 RelatedIdentities.GetChannelRelatedIdentities(
-                    publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId);
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-            // ArrayList tableStyleInfoArrayList = TableStyleManager.GetTableStyleInfoArrayList(ETableStyle.BackgroundContent, publishmentSystemInfo.AuxiliaryTableForContent, relatedidentityes);
+                    siteInfo.Id, nodeInfo.Id);
+            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
+            // ArrayList tableStyleInfoArrayList = TableStyleManager.GetTableStyleInfoArrayList(ETableStyle.BackgroundContent, siteInfo.AuxiliaryTableForContent, relatedidentityes);
 
             var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedidentityes);
-            tableStyleInfoList = ContentUtility.GetAllTableStyleInfoList(publishmentSystemInfo, tableStyleInfoList);
+            tableStyleInfoList = ContentUtility.GetAllTableStyleInfoList(siteInfo, tableStyleInfoList);
             var nameValueCollection = new NameValueCollection();
 
             foreach (var styleInfo in tableStyleInfoList)
@@ -586,8 +153,8 @@ namespace SiteServer.CMS.Core.Office
 
                 if (!string.IsNullOrEmpty(contentInfo.Title))
                 {
-                    contentInfo.PublishmentSystemId = publishmentSystemInfo.PublishmentSystemId;
-                    contentInfo.NodeId = nodeInfo.NodeId;
+                    contentInfo.SiteId = siteInfo.Id;
+                    contentInfo.ChannelId = nodeInfo.Id;
                     contentInfo.LastEditDate = DateTime.Now;
 
                     contentInfoList.Add(contentInfo);
@@ -596,68 +163,5 @@ namespace SiteServer.CMS.Core.Office
 
             return contentInfoList;
         }
-
-        //public static List<InputContentInfo> GetInputContentsByCsvFile(string filePath, PublishmentSystemInfo publishmentSystemInfo,
-        //    InputInfo inputInfo)
-        //{
-        //    var contentInfoList = new List<InputContentInfo>();
-
-        //    List<string> head;
-        //    List<List<string>> rows;
-        //    CsvUtils.Import(filePath, out head, out rows);
-
-        //    if (rows.Count > 0)
-        //    {
-        //        var relatedidentityes = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent,
-        //            publishmentSystemInfo.PublishmentSystemId, inputInfo.InputId);
-        //        var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent,
-        //            DataProvider.InputContentDao.TableName, relatedidentityes);
-
-        //        var nameValueCollection = new NameValueCollection();
-
-        //        foreach (var styleInfo in tableStyleInfoList)
-        //        {
-        //            nameValueCollection[styleInfo.DisplayName] = styleInfo.AttributeName.ToLower();
-        //        }
-
-        //        nameValueCollection["回复"] = InputContentAttribute.Reply.ToLower();
-        //        nameValueCollection["添加时间"] = InputContentAttribute.AddDate.ToLower();
-
-        //        var attributeNames = new List<string>();
-        //        foreach (var columnName in head)
-        //        {
-        //            if (!string.IsNullOrEmpty(nameValueCollection[columnName]))
-        //            {
-        //                attributeNames.Add(nameValueCollection[columnName]);
-        //            }
-        //            else
-        //            {
-        //                attributeNames.Add(columnName);
-        //            }
-        //        }
-
-        //        foreach (var row in rows)
-        //        {
-        //            if (row.Count != attributeNames.Count) continue;
-
-        //            var contentInfo = new InputContentInfo(0, inputInfo.InputId, 0, true, string.Empty, string.Empty,
-        //                DateTime.Now, string.Empty);
-
-        //            for (var i = 0; i < attributeNames.Count; i++)
-        //            {
-        //                var attributeName = attributeNames[i];
-        //                if (!string.IsNullOrEmpty(attributeName))
-        //                {
-        //                    var value = row[i];
-        //                    contentInfo.SetExtendedAttribute(attributeName, value);
-        //                }
-        //            }
-
-        //            contentInfoList.Add(contentInfo);
-        //        }
-        //    }
-
-        //    return contentInfoList;
-        //}
     }
 }

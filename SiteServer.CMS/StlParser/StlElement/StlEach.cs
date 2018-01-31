@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
+using SiteServer.CMS.Model;
+using SiteServer.Utils;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -56,11 +55,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeItemClass, "项Css类"}
         };
 
-        public const string TypePhoto = "Photo";
-
         public static SortedList<string, string> TypeList => new SortedList<string, string>
         {
-            {TypePhoto, "遍历内容模型为图片的内容的图片列表"},
             {BackgroundContentAttribute.ImageUrl, "遍历内容的图片字段"},
             {BackgroundContentAttribute.VideoUrl, "遍历内容的视频字段"},
             {BackgroundContentAttribute.FileUrl, "遍历内容的附件字段"}
@@ -85,56 +81,48 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var contextType = EContextType.Each;
             IEnumerable dataSource = null;
-            if (StringUtils.EqualsIgnoreCase(type, TypePhoto))
+            var contentInfo = contextInfo.ContentInfo;
+            if (contentInfo != null)
             {
-                contextType = EContextType.Photo;
-                dataSource = StlDataUtility.GetPhotosDataSource(pageInfo.PublishmentSystemInfo, contextInfo.ContentId, listInfo.StartNum, listInfo.TotalNum);
-            }
-            else
-            {
-                var contentInfo = contextInfo.ContentInfo;
-                if (contentInfo != null)
+                var eachList = new List<string>();
+
+                if (!string.IsNullOrEmpty(contentInfo.GetString(type)))
                 {
-                    var eachList = new List<string>();
-
-                    if (!string.IsNullOrEmpty(contentInfo.GetString(type)))
-                    {
-                        eachList.Add(contentInfo.GetString(type));
-                    }
-
-                    var extendAttributeName = ContentAttribute.GetExtendAttributeName(type);
-                    var extendValues = contentInfo.GetString(extendAttributeName);
-                    if (!string.IsNullOrEmpty(extendValues))
-                    {
-                        foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
-                        {
-                            eachList.Add(extendValue);
-                        }
-                    }
-
-                    if (listInfo.StartNum > 1 || listInfo.TotalNum > 0)
-                    {
-                        if (listInfo.StartNum > 1)
-                        {
-                            var count = listInfo.StartNum - 1;
-                            if (count > eachList.Count)
-                            {
-                                count = eachList.Count;
-                            }
-                            eachList.RemoveRange(0, count);
-                        }
-
-                        if (listInfo.TotalNum > 0)
-                        {
-                            if (listInfo.TotalNum < eachList.Count)
-                            {
-                                eachList.RemoveRange(listInfo.TotalNum, eachList.Count - listInfo.TotalNum);
-                            }
-                        }
-                    }
-
-                    dataSource = eachList;
+                    eachList.Add(contentInfo.GetString(type));
                 }
+
+                var extendAttributeName = ContentAttribute.GetExtendAttributeName(type);
+                var extendValues = contentInfo.GetString(extendAttributeName);
+                if (!string.IsNullOrEmpty(extendValues))
+                {
+                    foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                    {
+                        eachList.Add(extendValue);
+                    }
+                }
+
+                if (listInfo.StartNum > 1 || listInfo.TotalNum > 0)
+                {
+                    if (listInfo.StartNum > 1)
+                    {
+                        var count = listInfo.StartNum - 1;
+                        if (count > eachList.Count)
+                        {
+                            count = eachList.Count;
+                        }
+                        eachList.RemoveRange(0, count);
+                    }
+
+                    if (listInfo.TotalNum > 0)
+                    {
+                        if (listInfo.TotalNum < eachList.Count)
+                        {
+                            eachList.RemoveRange(listInfo.TotalNum, eachList.Count - listInfo.TotalNum);
+                        }
+                    }
+                }
+
+                dataSource = eachList;
             }
 
             if (listInfo.Layout == ELayout.None)

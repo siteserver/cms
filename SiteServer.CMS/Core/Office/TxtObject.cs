@@ -1,16 +1,14 @@
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using System;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
 using System.Collections.Generic;
-using BaiRong.Core.Model.Attributes;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.Office
 {
 	public class TxtObject
 	{
-        public static List<ContentInfo> GetContentListByTxtFile(string directoryPath, PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
+        public static List<ContentInfo> GetContentListByTxtFile(string directoryPath, SiteInfo siteInfo, ChannelInfo nodeInfo)
         {
             var contentInfoList = new List<ContentInfo>();
 
@@ -31,8 +29,8 @@ namespace SiteServer.CMS.Core.Office
                             var contentInfo = new ContentInfo
                             {
                                 Title = title.Trim(),
-                                PublishmentSystemId = publishmentSystemInfo.PublishmentSystemId,
-                                NodeId = nodeInfo.NodeId,
+                                SiteId = siteInfo.Id,
+                                ChannelId = nodeInfo.Id,
                                 LastEditDate = DateTime.Now
                             };
                             contentInfo.Set(BackgroundContentAttribute.Content, StringUtils.ReplaceNewlineToBr(content.Replace(title, string.Empty).Trim()));

@@ -9,7 +9,8 @@
     "gulp-rev": "^7.1.2",
     "gulp-rev-all": "^0.9.7",
     "gulp-zip": "^4.0.0",
-    "rimraf": "^2.5.4"
+    "rimraf": "^2.5.4",
+    "yargs": "^10.1.1"
   },
   "devDependencies": {
     "gulp": "^3.9.1",

@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
-using BaiRong.Core;
-using BaiRong.Core.Net;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -111,11 +110,11 @@ namespace SiteServer.BackgroundPages.Ajax
             });
         }
 
-        public static string GetGetLoadingChannelsParameters(int publishmentSystemId, ELoadingType loadingType, NameValueCollection additional)
+        public static string GetGetLoadingChannelsParameters(int siteId, ELoadingType loadingType, NameValueCollection additional)
         {
             return TranslateUtils.NameValueCollectionToString(new NameValueCollection
             {
-                {"publishmentSystemID", publishmentSystemId.ToString() },
+                {"siteID", siteId.ToString() },
                 {"loadingType", ELoadingTypeUtils.GetValue(loadingType)},
                 {"additional", TranslateUtils.EncryptStringBySecretKey(TranslateUtils.NameValueCollectionToString(additional))}
             });
@@ -126,8 +125,8 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request["type"];
             var retval = new NameValueCollection();
             string retString = null;
-            var context = new RequestContext();
-            if (!context.IsAdminLoggin) return;
+            var request = new Request();
+            if (!request.IsAdminLoggin) return;
 
             if (type == TypeGetCountArray)
             {
@@ -155,11 +154,11 @@ namespace SiteServer.BackgroundPages.Ajax
             }
             else if (type == TypeGetLoadingChannels)
             {
-                var publishmentSystemId = TranslateUtils.ToInt(Request["publishmentSystemID"]);
+                var siteId = TranslateUtils.ToInt(Request["siteID"]);
                 var parentId = TranslateUtils.ToInt(Request["parentID"]);
                 var loadingType = Request["loadingType"];
                 var additional = Request["additional"];
-                retString = GetLoadingChannels(publishmentSystemId, parentId, loadingType, additional, context);
+                retString = GetLoadingChannels(siteId, parentId, loadingType, additional, request);
             }
             else if (type == TypePluginDownload)
             {
@@ -170,25 +169,25 @@ namespace SiteServer.BackgroundPages.Ajax
             //else if (type == "GetLoadingGovPublicCategories")
             //{
             //    string classCode = base.Request["classCode"];
-            //    int publishmentSystemID = TranslateUtils.ToInt(base.Request["publishmentSystemID"]);
+            //    int siteID = TranslateUtils.ToInt(base.Request["siteID"]);
             //    int parentID = TranslateUtils.ToInt(base.Request["parentID"]);
             //    string loadingType = base.Request["loadingType"];
             //    string additional = base.Request["additional"];
-            //    retString = GetLoadingGovPublicCategories(classCode, publishmentSystemID, parentID, loadingType, additional);
+            //    retString = GetLoadingGovPublicCategories(classCode, siteID, parentID, loadingType, additional);
             //}
             //else if (type == "GetLoadingTemplates")
             //{
-            //    int publishmentSystemID = TranslateUtils.ToInt(base.Request["publishmentSystemID"]);
+            //    int siteID = TranslateUtils.ToInt(base.Request["siteID"]);
             //    string templateType = base.Request["templateType"];
-            //    retString = GetLoadingTemplates(publishmentSystemID, templateType);
+            //    retString = GetLoadingTemplates(siteID, templateType);
             //}
             //else if (type == "StlTemplate")
             //{
-            //    int publishmentSystemID = TranslateUtils.ToInt(base.Request["publishmentSystemID"]);
+            //    int siteID = TranslateUtils.ToInt(base.Request["siteID"]);
             //    int templateID = TranslateUtils.ToInt(base.Request["templateID"]);
             //    string includeUrl = base.Request["includeUrl"];
             //    string operation = base.Request["operation"];
-            //    retval = TemplateDesignOperation.Operate(publishmentSystemID, templateID, includeUrl, operation, base.Request.Form);
+            //    retval = TemplateDesignOperation.Operate(siteID, templateID, includeUrl, operation, base.Request.Form);
             //}
 
             if (retString != null)
@@ -285,14 +284,14 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheMessageKey, "开始下载插件压缩包，可能需要几分钟，请耐心等待");
 
                 var fileName = PageUtils.GetFileNameFromUrl(downloadUrl);
-                var filePath = PathUtils.GetPluginsPath(fileName);
+                var filePath = PathUtils.GetPluginPath(fileName);
                 FileUtils.DeleteFileIfExists(filePath);
                 WebClientUtils.SaveRemoteFileToLocal(downloadUrl, filePath);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "4");
                 CacheUtils.Insert(cacheMessageKey, "插件压缩包下载成功，开始安装");
 
-                ZipUtils.UnpackFiles(filePath, PathUtils.GetPluginsPath(fileName.Substring(0, fileName.IndexOf(".", StringComparison.Ordinal))));
+                ZipUtils.UnpackFiles(filePath, PathUtils.GetPluginPath(fileName.Substring(0, fileName.IndexOf(".", StringComparison.Ordinal))));
 
                 CacheUtils.Insert(cacheCurrentCountKey, "5");
                 CacheUtils.Insert(cacheMessageKey, string.Empty);
@@ -391,31 +390,31 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
-        public string GetLoadingChannels(int publishmentSystemId, int parentId, string loadingType, string additional, RequestContext context)
+        public string GetLoadingChannels(int siteId, int parentId, string loadingType, string additional, Request request)
         {
             var list = new List<string>();
 
             var eLoadingType = ELoadingTypeUtils.GetEnumType(loadingType);
 
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByParentId(publishmentSystemId, parentId);
+            var channelIdList = DataProvider.ChannelDao.GetIdListByParentId(siteId, parentId);
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
 
             var nameValueCollection = TranslateUtils.ToNameValueCollection(TranslateUtils.DecryptStringBySecretKey(additional));
 
-            foreach (var nodeId in nodeIdList)
+            foreach (var channelId in channelIdList)
             {
-                var enabled = AdminUtility.IsOwningNodeId(context.AdminName, nodeId);
+                var enabled = AdminUtility.IsOwningChannelId(request.AdminName, channelId);
                 if (!enabled)
                 {
-                    if (!AdminUtility.IsHasChildOwningNodeId(context.AdminName, nodeId))
+                    if (!AdminUtility.IsHasChildOwningChannelId(request.AdminName, channelId))
                     {
                         continue;
                     }
                 }
-                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
+                var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
-                list.Add(ChannelLoading.GetChannelRowHtml(publishmentSystemInfo, nodeInfo, enabled, eLoadingType, nameValueCollection, context.AdminName));
+                list.Add(ChannelLoading.GetChannelRowHtml(siteInfo, nodeInfo, enabled, eLoadingType, nameValueCollection, request.AdminName));
             }
 
             //arraylist.Reverse();

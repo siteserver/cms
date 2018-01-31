@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -19,21 +17,19 @@ namespace SiteServer.BackgroundPages.Cms
         private bool _isList;
         private bool _isContent;
 
-        public static string GetOpenWindowStringToChannel(int publishmentSystemId, bool isList)
+        public static string GetOpenWindowStringToChannel(int siteId, bool isList)
         {
-            return LayerUtils.GetOpenScript("选择需要显示的项", PageUtils.GetCmsUrl(nameof(ModalSelectColumns), new NameValueCollection
+            return LayerUtils.GetOpenScript("选择需要显示的项", PageUtils.GetCmsUrl(siteId, nameof(ModalSelectColumns), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"RelatedIdentity", publishmentSystemId.ToString()},
+                {"RelatedIdentity", siteId.ToString()},
                 {"IsList", isList.ToString()}
             }), 520, 550);
         }
 
-        public static string GetOpenWindowStringToContent(int publishmentSystemId, int relatedIdentity, bool isList)
+        public static string GetOpenWindowStringToContent(int siteId, int relatedIdentity, bool isList)
         {
-            return LayerUtils.GetOpenScript("选择需要显示的项", PageUtils.GetCmsUrl(nameof(ModalSelectColumns), new NameValueCollection
+            return LayerUtils.GetOpenScript("选择需要显示的项", PageUtils.GetCmsUrl(siteId, nameof(ModalSelectColumns), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedIdentity", relatedIdentity.ToString()},
                 {"IsContent", true.ToString()},
                 {"IsList", isList.ToString()}
@@ -44,7 +40,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
             _relatedIdentity = Body.GetQueryInt("RelatedIdentity");
             _isList = Body.GetQueryBool("IsList");
@@ -52,31 +48,31 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!_isContent)
             {
-                var displayAttributes = PublishmentSystemInfo.Additional.ChannelDisplayAttributes;
+                var displayAttributes = SiteInfo.Additional.ChannelDisplayAttributes;
                 if (!_isList)
                 {
-                    displayAttributes = PublishmentSystemInfo.Additional.ChannelEditAttributes;
+                    displayAttributes = SiteInfo.Additional.ChannelEditAttributes;
                 }
 
                 if (IsPostBack) return;
 
                 //添加默认属性
-                var listitem = new ListItem("栏目名称", NodeAttribute.ChannelName);
-                if (CompareUtils.Contains(displayAttributes, NodeAttribute.ChannelName))
+                var listitem = new ListItem("栏目名称", ChannelAttribute.ChannelName);
+                if (CompareUtils.Contains(displayAttributes, ChannelAttribute.ChannelName))
                 {
                     listitem.Selected = true;
                 }
                 CblDisplayAttributes.Items.Add(listitem);
 
-                listitem = new ListItem("栏目索引", NodeAttribute.ChannelIndex);
-                if (CompareUtils.Contains(displayAttributes, NodeAttribute.ChannelIndex))
+                listitem = new ListItem("栏目索引", ChannelAttribute.ChannelIndex);
+                if (CompareUtils.Contains(displayAttributes, ChannelAttribute.ChannelIndex))
                 {
                     listitem.Selected = true;
                 }
                 CblDisplayAttributes.Items.Add(listitem);
 
-                listitem = new ListItem("生成页面路径", NodeAttribute.FilePath);
-                if (CompareUtils.Contains(displayAttributes, NodeAttribute.FilePath))
+                listitem = new ListItem("生成页面路径", ChannelAttribute.FilePath);
+                if (CompareUtils.Contains(displayAttributes, ChannelAttribute.FilePath))
                 {
                     listitem.Selected = true;
                 }
@@ -84,78 +80,78 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (!_isList)
                 {
-                    listitem = new ListItem("栏目图片地址", NodeAttribute.ImageUrl);
-                    if (CompareUtils.Contains(displayAttributes, NodeAttribute.ImageUrl))
+                    listitem = new ListItem("栏目图片地址", ChannelAttribute.ImageUrl);
+                    if (CompareUtils.Contains(displayAttributes, ChannelAttribute.ImageUrl))
                     {
                         listitem.Selected = true;
                     }
                     CblDisplayAttributes.Items.Add(listitem);
 
-                    listitem = new ListItem("栏目正文", NodeAttribute.Content);
-                    if (CompareUtils.Contains(displayAttributes, NodeAttribute.Content))
+                    listitem = new ListItem("栏目正文", ChannelAttribute.Content);
+                    if (CompareUtils.Contains(displayAttributes, ChannelAttribute.Content))
                     {
                         listitem.Selected = true;
                     }
                     CblDisplayAttributes.Items.Add(listitem);
 
-                    listitem = new ListItem("外部链接", NodeAttribute.LinkUrl);
-                    if (CompareUtils.Contains(displayAttributes, NodeAttribute.LinkUrl))
+                    listitem = new ListItem("外部链接", ChannelAttribute.LinkUrl);
+                    if (CompareUtils.Contains(displayAttributes, ChannelAttribute.LinkUrl))
                     {
                         listitem.Selected = true;
                     }
                     CblDisplayAttributes.Items.Add(listitem);
 
-                    listitem = new ListItem("链接类型", NodeAttribute.LinkUrl);
-                    if (CompareUtils.Contains(displayAttributes, NodeAttribute.LinkUrl))
+                    listitem = new ListItem("链接类型", ChannelAttribute.LinkUrl);
+                    if (CompareUtils.Contains(displayAttributes, ChannelAttribute.LinkUrl))
                     {
                         listitem.Selected = true;
                     }
                     CblDisplayAttributes.Items.Add(listitem);
 
-                    listitem = new ListItem("内容默认排序规则", nameof(NodeInfoExtend.DefaultTaxisType));
-                    if (CompareUtils.Contains(displayAttributes, nameof(NodeInfoExtend.DefaultTaxisType)))
+                    listitem = new ListItem("内容默认排序规则", nameof(ChannelInfoExtend.DefaultTaxisType));
+                    if (CompareUtils.Contains(displayAttributes, nameof(ChannelInfoExtend.DefaultTaxisType)))
                     {
                         listitem.Selected = true;
                     }
                     CblDisplayAttributes.Items.Add(listitem);
 
-                    listitem = new ListItem("栏目模版", NodeAttribute.ChannelTemplateId);
-                    if (CompareUtils.Contains(displayAttributes, NodeAttribute.ChannelTemplateId))
+                    listitem = new ListItem("栏目模版", ChannelAttribute.ChannelTemplateId);
+                    if (CompareUtils.Contains(displayAttributes, ChannelAttribute.ChannelTemplateId))
                     {
                         listitem.Selected = true;
                     }
                     CblDisplayAttributes.Items.Add(listitem);
 
-                    listitem = new ListItem("内容模版", NodeAttribute.ContentTemplateId);
-                    if (CompareUtils.Contains(displayAttributes, NodeAttribute.ContentTemplateId))
+                    listitem = new ListItem("内容模版", ChannelAttribute.ContentTemplateId);
+                    if (CompareUtils.Contains(displayAttributes, ChannelAttribute.ContentTemplateId))
                     {
                         listitem.Selected = true;
                     }
                     CblDisplayAttributes.Items.Add(listitem);
 
-                    listitem = new ListItem("关键字列表", NodeAttribute.Keywords);
-                    if (CompareUtils.Contains(displayAttributes, NodeAttribute.Keywords))
+                    listitem = new ListItem("关键字列表", ChannelAttribute.Keywords);
+                    if (CompareUtils.Contains(displayAttributes, ChannelAttribute.Keywords))
                     {
                         listitem.Selected = true;
                     }
                     CblDisplayAttributes.Items.Add(listitem);
 
-                    listitem = new ListItem("页面描述", NodeAttribute.Description);
-                    if (CompareUtils.Contains(displayAttributes, NodeAttribute.Description))
+                    listitem = new ListItem("页面描述", ChannelAttribute.Description);
+                    if (CompareUtils.Contains(displayAttributes, ChannelAttribute.Description))
                     {
                         listitem.Selected = true;
                     }
                     CblDisplayAttributes.Items.Add(listitem);
                 }
 
-                listitem = new ListItem("栏目组", NodeAttribute.ChannelGroupNameCollection);
-                if (CompareUtils.Contains(displayAttributes, NodeAttribute.ChannelGroupNameCollection))
+                listitem = new ListItem("栏目组", ChannelAttribute.ChannelGroupNameCollection);
+                if (CompareUtils.Contains(displayAttributes, ChannelAttribute.ChannelGroupNameCollection))
                 {
                     listitem.Selected = true;
                 }
                 CblDisplayAttributes.Items.Add(listitem);
 
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.NodeDao.TableName, _relatedIdentities);
+                var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName, _relatedIdentities);
 
                 foreach (var styleInfo in styleInfoList)
                 {
@@ -180,21 +176,21 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     else
                     {
-                        ControlUtils.SelectMultiItems(CblDisplayAttributes, NodeAttribute.ChannelName, NodeAttribute.ChannelIndex);
+                        ControlUtils.SelectMultiItems(CblDisplayAttributes, ChannelAttribute.ChannelName, ChannelAttribute.ChannelIndex);
                     }
                 }
             }
             else
             {
-                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _relatedIdentity);
-                var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
-                _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _relatedIdentity);
+                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _relatedIdentity);
+                var tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
+                _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _relatedIdentity);
                 var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(nodeInfo.Additional.ContentAttributesOfDisplay);
 
                 if (IsPostBack) return;
 
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, _relatedIdentities);
-                var columnTableStyleInfoList = ContentUtility.GetColumnTableStyleInfoList(PublishmentSystemInfo, styleInfoList);
+                var columnTableStyleInfoList = ContentUtility.GetColumnTableStyleInfoList(SiteInfo, styleInfoList);
                 foreach (var styleInfo in columnTableStyleInfoList)
                 {
                     if (styleInfo.AttributeName == ContentAttribute.Title) continue;
@@ -229,37 +225,37 @@ namespace SiteServer.BackgroundPages.Cms
                         FailMessage("必须至少选择一项！");
                         return;
                     }
-                    PublishmentSystemInfo.Additional.ChannelEditAttributes = displayAttributes;
+                    SiteInfo.Additional.ChannelEditAttributes = displayAttributes;
 
-                    Body.AddSiteLog(PublishmentSystemId, "设置栏目编辑项", $"编辑项:{displayAttributes}");
+                    Body.AddSiteLog(SiteId, "设置栏目编辑项", $"编辑项:{displayAttributes}");
                 }
                 else
                 {
-                    if (!CompareUtils.Contains(displayAttributes, NodeAttribute.ChannelName))
+                    if (!CompareUtils.Contains(displayAttributes, ChannelAttribute.ChannelName))
                     {
                         FailMessage("必须选择栏目名称项！");
                         return;
                     }
-                    if (!CompareUtils.Contains(displayAttributes, NodeAttribute.ChannelIndex))
+                    if (!CompareUtils.Contains(displayAttributes, ChannelAttribute.ChannelIndex))
                     {
                         FailMessage("必须选择栏目索引项！");
                         return;
                     }
-                    PublishmentSystemInfo.Additional.ChannelDisplayAttributes = displayAttributes;
+                    SiteInfo.Additional.ChannelDisplayAttributes = displayAttributes;
 
-                    Body.AddSiteLog(PublishmentSystemId, "设置栏目显示项", $"显示项:{displayAttributes}");
+                    Body.AddSiteLog(SiteId, "设置栏目显示项", $"显示项:{displayAttributes}");
                 }
-                DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
+                DataProvider.SiteDao.Update(SiteInfo);
             }
             else
             {
-                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _relatedIdentity);
+                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _relatedIdentity);
                 var attributesOfDisplay = ControlUtils.SelectedItemsValueToStringCollection(CblDisplayAttributes.Items);
                 nodeInfo.Additional.ContentAttributesOfDisplay = attributesOfDisplay;
 
-                DataProvider.NodeDao.UpdateNodeInfo(nodeInfo);
+                DataProvider.ChannelDao.Update(nodeInfo);
 
-                Body.AddSiteLog(PublishmentSystemId, "设置内容显示项", $"显示项:{attributesOfDisplay}");
+                Body.AddSiteLog(SiteId, "设置内容显示项", $"显示项:{attributesOfDisplay}");
             }
 
             if (!_isList)

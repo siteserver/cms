@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Provider
 {
@@ -21,14 +18,14 @@ namespace SiteServer.CMS.Provider
         {
             new TableColumnInfo
             {
-                ColumnName = nameof(TemplateInfo.TemplateId),
+                ColumnName = nameof(TemplateInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
             new TableColumnInfo
             {
-                ColumnName = nameof(TemplateInfo.PublishmentSystemId),
+                ColumnName = nameof(TemplateInfo.SiteId),
                 DataType = DataType.Integer
             },
             new TableColumnInfo
@@ -75,30 +72,30 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlSelectTemplateByTemplateName = "SELECT TemplateID, PublishmentSystemID, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE PublishmentSystemID = @PublishmentSystemID AND TemplateType = @TemplateType AND TemplateName = @TemplateName";
+        private const string SqlSelectTemplateByTemplateName = "SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = @SiteId AND TemplateType = @TemplateType AND TemplateName = @TemplateName";
 
-        private const string SqlSelectAllTemplateByType = "SELECT TemplateID, PublishmentSystemID, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE PublishmentSystemID = @PublishmentSystemID AND TemplateType = @TemplateType ORDER BY RelatedFileName";
+        private const string SqlSelectAllTemplateByType = "SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = @SiteId AND TemplateType = @TemplateType ORDER BY RelatedFileName";
 
-        private const string SqlSelectAllTemplateIdByType = "SELECT TemplateID FROM siteserver_Template WHERE PublishmentSystemID = @PublishmentSystemID AND TemplateType = @TemplateType ORDER BY RelatedFileName";
+        private const string SqlSelectAllIdByType = "SELECT Id FROM siteserver_Template WHERE SiteId = @SiteId AND TemplateType = @TemplateType ORDER BY RelatedFileName";
 
-        private const string SqlSelectAllTemplateByPublishmentSystemId = "SELECT TemplateID, PublishmentSystemID, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE PublishmentSystemID = @PublishmentSystemID ORDER BY TemplateType, RelatedFileName";
+        private const string SqlSelectAllTemplateBySiteId = "SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = @SiteId ORDER BY TemplateType, RelatedFileName";
 
-        private const string SqlSelectTemplateNames = "SELECT TemplateName FROM siteserver_Template WHERE PublishmentSystemID = @PublishmentSystemID AND TemplateType = @TemplateType";
+        private const string SqlSelectTemplateNames = "SELECT TemplateName FROM siteserver_Template WHERE SiteId = @SiteId AND TemplateType = @TemplateType";
 
-        private const string SqlSelectTemplateCount = "SELECT TemplateType, COUNT(*) FROM siteserver_Template WHERE PublishmentSystemID = @PublishmentSystemID GROUP BY TemplateType";
+        private const string SqlSelectTemplateCount = "SELECT TemplateType, COUNT(*) FROM siteserver_Template WHERE SiteId = @SiteId GROUP BY TemplateType";
 
-        private const string SqlSelectRelatedFileNameByTemplateType = "SELECT RelatedFileName FROM siteserver_Template WHERE PublishmentSystemID = @PublishmentSystemID AND TemplateType = @TemplateType";
+        private const string SqlSelectRelatedFileNameByTemplateType = "SELECT RelatedFileName FROM siteserver_Template WHERE SiteId = @SiteId AND TemplateType = @TemplateType";
 
-        private const string SqlUpdateTemplate = "UPDATE siteserver_Template SET TemplateName = @TemplateName, TemplateType = @TemplateType, RelatedFileName = @RelatedFileName, CreatedFileFullName = @CreatedFileFullName, CreatedFileExtName = @CreatedFileExtName, Charset = @Charset, IsDefault = @IsDefault WHERE  TemplateID = @TemplateID";
+        private const string SqlUpdateTemplate = "UPDATE siteserver_Template SET TemplateName = @TemplateName, TemplateType = @TemplateType, RelatedFileName = @RelatedFileName, CreatedFileFullName = @CreatedFileFullName, CreatedFileExtName = @CreatedFileExtName, Charset = @Charset, IsDefault = @IsDefault WHERE  Id = @Id";
 
-        private const string SqlDeleteTemplate = "DELETE FROM siteserver_Template WHERE  TemplateID = @TemplateID";
+        private const string SqlDeleteTemplate = "DELETE FROM siteserver_Template WHERE  Id = @Id";
 
         //by 20151106 sofuny
-        private const string SqlSelectTemplateByUrlType = "SELECT * FROM siteserver_Template WHERE PublishmentSystemID = @PublishmentSystemID AND TemplateType = @TemplateType and CreatedFileFullName=@CreatedFileFullName ";
-        private const string SqlSelectTemplateByTemplateid = "SELECT * FROM siteserver_Template WHERE PublishmentSystemID = @PublishmentSystemID AND TemplateType = @TemplateType and TemplateID = @TemplateID ";
+        private const string SqlSelectTemplateByUrlType = "SELECT * FROM siteserver_Template WHERE SiteId = @SiteId AND TemplateType = @TemplateType and CreatedFileFullName=@CreatedFileFullName ";
+        private const string SqlSelectTemplateById = "SELECT * FROM siteserver_Template WHERE SiteId = @SiteId AND TemplateType = @TemplateType and Id = @Id ";
 
-        private const string ParmTemplateId = "@TemplateID";
-        private const string ParmPublishmentSystemId = "@PublishmentSystemID";
+        private const string ParmId = "@Id";
+        private const string ParmSiteId = "@SiteId";
         private const string ParmTemplateName = "@TemplateName";
         private const string ParmTemplateType = "@TemplateType";
         private const string ParmRelatedFileName = "@RelatedFileName";
@@ -111,16 +108,16 @@ namespace SiteServer.CMS.Provider
         {
             if (templateInfo.IsDefault)
             {
-                SetAllTemplateDefaultToFalse(templateInfo.PublishmentSystemId, templateInfo.TemplateType);
+                SetAllTemplateDefaultToFalse(templateInfo.SiteId, templateInfo.TemplateType);
             }
 
-            var sqlInsertTemplate = "INSERT INTO siteserver_Template (PublishmentSystemID, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault) VALUES (@PublishmentSystemID, @TemplateName, @TemplateType, @RelatedFileName, @CreatedFileFullName, @CreatedFileExtName, @Charset, @IsDefault)";
+            var sqlInsertTemplate = "INSERT INTO siteserver_Template (SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault) VALUES (@SiteId, @TemplateName, @TemplateType, @RelatedFileName, @CreatedFileFullName, @CreatedFileExtName, @Charset, @IsDefault)";
             
             var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, DataType.Integer, templateInfo.PublishmentSystemId),
+				GetParameter(ParmSiteId, DataType.Integer, templateInfo.SiteId),
 				GetParameter(ParmTemplateName, DataType.VarChar, 50, templateInfo.TemplateName),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(templateInfo.TemplateType)),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, templateInfo.TemplateType.Value),
 				GetParameter(ParmRelatedFileName, DataType.VarChar, 50, templateInfo.RelatedFileName),
 				GetParameter(ParmCreatedFileFullName, DataType.VarChar, 50, templateInfo.CreatedFileFullName),
 				GetParameter(ParmCreatedFileExtName, DataType.VarChar, 50, templateInfo.CreatedFileExtName),
@@ -128,93 +125,93 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmIsDefault, DataType.VarChar, 18, templateInfo.IsDefault.ToString())
 			};
 
-            var templateId = ExecuteNonQueryAndReturnId(TableName, nameof(TemplateInfo.TemplateId), sqlInsertTemplate, insertParms);
+            var id = ExecuteNonQueryAndReturnId(TableName, nameof(TemplateInfo.Id), sqlInsertTemplate, insertParms);
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(templateInfo.PublishmentSystemId);
-            TemplateManager.WriteContentToTemplateFile(publishmentSystemInfo, templateInfo, templateContent, administratorName);
+            var siteInfo = SiteManager.GetSiteInfo(templateInfo.SiteId);
+            TemplateManager.WriteContentToTemplateFile(siteInfo, templateInfo, templateContent, administratorName);
 
-            TemplateManager.RemoveCache(templateInfo.PublishmentSystemId);
+            TemplateManager.RemoveCache(templateInfo.SiteId);
 
-            return templateId;
+            return id;
         }
 
-        public void Update(PublishmentSystemInfo publishmentSystemInfo, TemplateInfo templateInfo, string templateContent, string administratorName)
+        public void Update(SiteInfo siteInfo, TemplateInfo templateInfo, string templateContent, string administratorName)
         {
             if (templateInfo.IsDefault)
             {
-                SetAllTemplateDefaultToFalse(publishmentSystemInfo.PublishmentSystemId, templateInfo.TemplateType);
+                SetAllTemplateDefaultToFalse(siteInfo.Id, templateInfo.TemplateType);
             }
 
             var updateParms = new IDataParameter[]
 			{
 				GetParameter(ParmTemplateName, DataType.VarChar, 50, templateInfo.TemplateName),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(templateInfo.TemplateType)),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, templateInfo.TemplateType.Value),
 				GetParameter(ParmRelatedFileName, DataType.VarChar, 50, templateInfo.RelatedFileName),
 				GetParameter(ParmCreatedFileFullName, DataType.VarChar, 50, templateInfo.CreatedFileFullName),
 				GetParameter(ParmCreatedFileExtName, DataType.VarChar, 50, templateInfo.CreatedFileExtName),
 				GetParameter(ParmCharset, DataType.VarChar, 50, ECharsetUtils.GetValue(templateInfo.Charset)),
 				GetParameter(ParmIsDefault, DataType.VarChar, 18, templateInfo.IsDefault.ToString()),
-				GetParameter(ParmTemplateId, DataType.Integer, templateInfo.TemplateId)
+				GetParameter(ParmId, DataType.Integer, templateInfo.Id)
 			};
 
             ExecuteNonQuery(SqlUpdateTemplate, updateParms);
 
-            TemplateManager.WriteContentToTemplateFile(publishmentSystemInfo, templateInfo, templateContent, administratorName);
+            TemplateManager.WriteContentToTemplateFile(siteInfo, templateInfo, templateContent, administratorName);
 
-            TemplateManager.RemoveCache(templateInfo.PublishmentSystemId);
+            TemplateManager.RemoveCache(templateInfo.SiteId);
         }
 
-        private void SetAllTemplateDefaultToFalse(int publishmentSystemId, ETemplateType templateType)
+        private void SetAllTemplateDefaultToFalse(int siteId, TemplateType templateType)
         {
-            var sqlString = "UPDATE siteserver_Template SET IsDefault = @IsDefault WHERE PublishmentSystemID = @PublishmentSystemID AND TemplateType = @TemplateType";
+            var sqlString = "UPDATE siteserver_Template SET IsDefault = @IsDefault WHERE SiteId = @SiteId AND TemplateType = @TemplateType";
 
             var updateParms = new IDataParameter[]
 			{
 				GetParameter(ParmIsDefault, DataType.VarChar, 18, false.ToString()),
-				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(templateType))
+				GetParameter(ParmSiteId, DataType.Integer, siteId),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, templateType.Value)
 			};
 
             ExecuteNonQuery(sqlString, updateParms);
 
         }
 
-        public void SetDefault(int publishmentSystemId, int templateId)
+        public void SetDefault(int siteId, int id)
         {
-            var info = TemplateManager.GetTemplateInfo(publishmentSystemId, templateId);
-            SetAllTemplateDefaultToFalse(info.PublishmentSystemId, info.TemplateType);
+            var info = TemplateManager.GetTemplateInfo(siteId, id);
+            SetAllTemplateDefaultToFalse(info.SiteId, info.TemplateType);
 
-            var sqlString = "UPDATE siteserver_Template SET IsDefault = @IsDefault WHERE TemplateID = @TemplateID";
+            var sqlString = "UPDATE siteserver_Template SET IsDefault = @IsDefault WHERE Id = @Id";
 
             var updateParms = new IDataParameter[]
 			{
 				GetParameter(ParmIsDefault, DataType.VarChar, 18, true.ToString()),
-				GetParameter(ParmTemplateId, DataType.Integer, templateId)
+				GetParameter(ParmId, DataType.Integer, id)
 			};
 
             ExecuteNonQuery(sqlString, updateParms);
 
-            TemplateManager.RemoveCache(publishmentSystemId);
+            TemplateManager.RemoveCache(siteId);
         }
 
-        public void Delete(int publishmentSystemId, int templateId)
+        public void Delete(int siteId, int id)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var templateInfo = TemplateManager.GetTemplateInfo(publishmentSystemId, templateId);
-            var filePath = TemplateManager.GetTemplateFilePath(publishmentSystemInfo, templateInfo);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var templateInfo = TemplateManager.GetTemplateInfo(siteId, id);
+            var filePath = TemplateManager.GetTemplateFilePath(siteInfo, templateInfo);
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTemplateId, DataType.Integer, templateId)
+				GetParameter(ParmId, DataType.Integer, id)
 			};
 
             ExecuteNonQuery(SqlDeleteTemplate, parms);
             FileUtils.DeleteFileIfExists(filePath);
 
-            TemplateManager.RemoveCache(publishmentSystemId);
+            TemplateManager.RemoveCache(siteId);
         }
 
-        public string GetImportTemplateName(int publishmentSystemId, string templateName)
+        public string GetImportTemplateName(int siteId, string templateName)
         {
             string importTemplateName;
             if (templateName.IndexOf("_", StringComparison.Ordinal) != -1)
@@ -240,7 +237,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmSiteId, DataType.Integer, siteId),
 				GetParameter(ParmTemplateName, DataType.VarChar, 50, importTemplateName)
 			};
 
@@ -248,7 +245,7 @@ namespace SiteServer.CMS.Provider
             {
                 if (rdr.Read())
                 {
-                    importTemplateName = GetImportTemplateName(publishmentSystemId, importTemplateName);
+                    importTemplateName = GetImportTemplateName(siteId, importTemplateName);
                 }
                 rdr.Close();
             }
@@ -256,20 +253,20 @@ namespace SiteServer.CMS.Provider
             return importTemplateName;
         }
 
-        public Dictionary<ETemplateType, int> GetCountDictionary(int publishmentSystemId)
+        public Dictionary<TemplateType, int> GetCountDictionary(int siteId)
         {
-            var dictionary = new Dictionary<ETemplateType, int>();
+            var dictionary = new Dictionary<TemplateType, int>();
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
+				GetParameter(ParmSiteId, DataType.Integer, siteId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectTemplateCount, parms))
             {
                 while (rdr.Read())
                 {
-                    var templateType = ETemplateTypeUtils.GetEnumType(GetString(rdr, 0));
+                    var templateType = TemplateTypeUtils.GetEnumType(GetString(rdr, 0));
                     var count = GetInt(rdr, 1);
 
                     dictionary.Add(templateType, count);
@@ -280,31 +277,31 @@ namespace SiteServer.CMS.Provider
             return dictionary;
         }
 
-        public IEnumerable GetDataSourceByType(int publishmentSystemId, ETemplateType type)
+        public IDataReader GetDataSourceByType(int siteId, TemplateType type)
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(type))
+				GetParameter(ParmSiteId, DataType.Integer, siteId),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, type.Value)
 			};
 
-            var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllTemplateByType, parms);
+            var enumerable = ExecuteReader(SqlSelectAllTemplateByType, parms);
             return enumerable;
         }
 
-        public IEnumerable GetDataSource(int publishmentSystemId, string searchText, string templateTypeString)
+        public IDataReader GetDataSource(int siteId, string searchText, string templateTypeString)
         {
             if (string.IsNullOrEmpty(searchText) && string.IsNullOrEmpty(templateTypeString))
             {
                 var parms = new IDataParameter[]
 				{
-					GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
+					GetParameter(ParmSiteId, DataType.Integer, siteId)
 				};
 
-                var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllTemplateByPublishmentSystemId, parms);
+                var enumerable = ExecuteReader(SqlSelectAllTemplateBySiteId, parms);
                 return enumerable;
             }
-            else if (!string.IsNullOrEmpty(searchText))
+            if (!string.IsNullOrEmpty(searchText))
             {
                 var whereString = (string.IsNullOrEmpty(templateTypeString)) ? string.Empty :
                     $"AND TemplateType = '{templateTypeString}' ";
@@ -312,47 +309,45 @@ namespace SiteServer.CMS.Provider
                 whereString +=
                     $"AND (TemplateName LIKE '%{searchText}%' OR RelatedFileName LIKE '%{searchText}%' OR CreatedFileFullName LIKE '%{searchText}%' OR CreatedFileExtName LIKE '%{searchText}%')";
                 string sqlString =
-                    $"SELECT TemplateID, PublishmentSystemID, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE PublishmentSystemID = {publishmentSystemId} {whereString} ORDER BY TemplateType, RelatedFileName";
+                    $"SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = {siteId} {whereString} ORDER BY TemplateType, RelatedFileName";
 
-                var enumerable = (IEnumerable)ExecuteReader(sqlString);
+                var enumerable = ExecuteReader(sqlString);
                 return enumerable;
             }
-            else
-            {
-                return GetDataSourceByType(publishmentSystemId, ETemplateTypeUtils.GetEnumType(templateTypeString));
-            }
+
+            return GetDataSourceByType(siteId, TemplateTypeUtils.GetEnumType(templateTypeString));
         }
 
-        public List<int> GetTemplateIdListByType(int publishmentSystemId, ETemplateType type)
+        public List<int> GetIdListByType(int siteId, TemplateType type)
         {
             var list = new List<int>();
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(type))
+				GetParameter(ParmSiteId, DataType.Integer, siteId),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, type.Value)
 			};
 
-            using (var rdr = ExecuteReader(SqlSelectAllTemplateIdByType, parms))
+            using (var rdr = ExecuteReader(SqlSelectAllIdByType, parms))
             {
                 while (rdr.Read())
                 {
-                    var templateId = GetInt(rdr, 0);
-                    list.Add(templateId);
+                    var id = GetInt(rdr, 0);
+                    list.Add(id);
                 }
                 rdr.Close();
             }
             return list;
         }
 
-        public List<TemplateInfo> GetTemplateInfoListByType(int publishmentSystemId, ETemplateType type)
+        public List<TemplateInfo> GetTemplateInfoListByType(int siteId, TemplateType type)
         {
             var list = new List<TemplateInfo>();
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(type))
+				GetParameter(ParmSiteId, DataType.Integer, siteId),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, type.Value)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAllTemplateByType, parms))
@@ -360,7 +355,7 @@ namespace SiteServer.CMS.Provider
                 while (rdr.Read())
                 {
                     var i = 0;
-                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), ETemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
+                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
                     list.Add(info);
                 }
                 rdr.Close();
@@ -368,19 +363,19 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public List<TemplateInfo> GetTemplateInfoListOfFile(int publishmentSystemId)
+        public List<TemplateInfo> GetTemplateInfoListOfFile(int siteId)
         {
             var list = new List<TemplateInfo>();
 
             string sqlString =
-                $"SELECT TemplateID, PublishmentSystemID, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE PublishmentSystemID = {publishmentSystemId} AND TemplateType = '{ETemplateTypeUtils.GetValue(ETemplateType.FileTemplate)}' ORDER BY RelatedFileName";
+                $"SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = {siteId} AND TemplateType = '{TemplateType.FileTemplate.Value}' ORDER BY RelatedFileName";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
                     var i = 0;
-                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), ETemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
+                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
                     list.Add(info);
                 }
                 rdr.Close();
@@ -388,21 +383,21 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public List<TemplateInfo> GetTemplateInfoListByPublishmentSystemId(int publishmentSystemId)
+        public List<TemplateInfo> GetTemplateInfoListBySiteId(int siteId)
         {
             var list = new List<TemplateInfo>();
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
+				GetParameter(ParmSiteId, DataType.Integer, siteId)
 			};
 
-            using (var rdr = ExecuteReader(SqlSelectAllTemplateByPublishmentSystemId, parms))
+            using (var rdr = ExecuteReader(SqlSelectAllTemplateBySiteId, parms))
             {
                 while (rdr.Read())
                 {
                     var i = 0;
-                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), ETemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
+                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
                     list.Add(info);
                 }
                 rdr.Close();
@@ -410,14 +405,14 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public List<string> GetTemplateNameList(int publishmentSystemId, ETemplateType templateType)
+        public List<string> GetTemplateNameList(int siteId, TemplateType templateType)
         {
             var list = new List<string>();
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(templateType))
+				GetParameter(ParmSiteId, DataType.Integer, siteId),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, templateType.Value)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectTemplateNames, parms))
@@ -432,14 +427,14 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public List<string> GetLowerRelatedFileNameList(int publishmentSystemId, ETemplateType templateType)
+        public List<string> GetLowerRelatedFileNameList(int siteId, TemplateType templateType)
         {
             var list = new List<string>();
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(templateType))
+				GetParameter(ParmSiteId, DataType.Integer, siteId),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, templateType.Value)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectRelatedFileNameByTemplateType, parms))
@@ -454,20 +449,20 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public void CreateDefaultTemplateInfo(int publishmentSystemId, string administratorName)
+        public void CreateDefaultTemplateInfo(int siteId, string administratorName)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
 
             var templateInfoList = new List<TemplateInfo>();
-            var charset = ECharsetUtils.GetEnumType(publishmentSystemInfo.Additional.Charset);
+            var charset = ECharsetUtils.GetEnumType(siteInfo.Additional.Charset);
 
-            var templateInfo = new TemplateInfo(0, publishmentSystemInfo.PublishmentSystemId, "系统首页模板", ETemplateType.IndexPageTemplate, "T_系统首页模板.html", "@/index.html", ".html", charset, true);
+            var templateInfo = new TemplateInfo(0, siteInfo.Id, "系统首页模板", TemplateType.IndexPageTemplate, "T_系统首页模板.html", "@/index.html", ".html", charset, true);
             templateInfoList.Add(templateInfo);
 
-            templateInfo = new TemplateInfo(0, publishmentSystemInfo.PublishmentSystemId, "系统栏目模板", ETemplateType.ChannelTemplate, "T_系统栏目模板.html", "index.html", ".html", charset, true);
+            templateInfo = new TemplateInfo(0, siteInfo.Id, "系统栏目模板", TemplateType.ChannelTemplate, "T_系统栏目模板.html", "index.html", ".html", charset, true);
             templateInfoList.Add(templateInfo);
 
-            templateInfo = new TemplateInfo(0, publishmentSystemInfo.PublishmentSystemId, "系统内容模板", ETemplateType.ContentTemplate, "T_系统内容模板.html", "index.html", ".html", charset, true);
+            templateInfo = new TemplateInfo(0, siteInfo.Id, "系统内容模板", TemplateType.ContentTemplate, "T_系统内容模板.html", "index.html", ".html", charset, true);
             templateInfoList.Add(templateInfo);
 
             foreach (var theTemplateInfo in templateInfoList)
@@ -476,72 +471,22 @@ namespace SiteServer.CMS.Provider
             }
         }
 
-        public int GetTemplateUseCount(int publishmentSystemId, int templateId, ETemplateType templateType, bool isDefault)
-        {
-            var sqlString = string.Empty;
-
-            if (templateType == ETemplateType.IndexPageTemplate)
-            {
-                if (isDefault)
-                {
-                    return 1;
-                }
-                return 0;
-            }
-            if (templateType == ETemplateType.FileTemplate)
-            {
-                return 1;
-            }
-            if (templateType == ETemplateType.ChannelTemplate)
-            {
-                sqlString = isDefault ? $"SELECT count(*) FROM siteserver_Node WHERE (ChannelTemplateID = {templateId} OR ChannelTemplateID = 0) AND PublishmentSystemID = {publishmentSystemId}" : $"SELECT count(*) FROM siteserver_Node WHERE ChannelTemplateID = {templateId}";
-            }
-            else if (templateType == ETemplateType.ContentTemplate)
-            {
-                sqlString = isDefault ? $"SELECT count(*) FROM siteserver_Node WHERE (ContentTemplateID = {templateId} OR ContentTemplateID = 0) AND PublishmentSystemID = {publishmentSystemId}" : $"SELECT count(*) FROM siteserver_Node WHERE ContentTemplateID = {templateId}";
-            }
-
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
-        }
-
-        public List<int> GetNodeIdList(TemplateInfo templateInfo)
-        {
-            var list = new List<int>();
-            var sqlString = string.Empty;
-
-            if (templateInfo.TemplateType == ETemplateType.ChannelTemplate)
-            {
-                sqlString = templateInfo.IsDefault ? $"SELECT NodeID FROM siteserver_Node WHERE (ChannelTemplateID = {templateInfo.TemplateId} OR ChannelTemplateID = 0) AND PublishmentSystemID = {templateInfo.PublishmentSystemId}" : $"SELECT NodeID FROM siteserver_Node WHERE ChannelTemplateID = {templateInfo.TemplateId} AND PublishmentSystemID = {templateInfo.PublishmentSystemId}";
-            }
-            else if (templateInfo.TemplateType == ETemplateType.ContentTemplate)
-            {
-                sqlString = templateInfo.IsDefault ? $"SELECT NodeID FROM siteserver_Node WHERE (ContentTemplateID = {templateInfo.TemplateId} OR ContentTemplateID = 0) AND PublishmentSystemID = {templateInfo.PublishmentSystemId}" : $"SELECT NodeID FROM siteserver_Node WHERE ContentTemplateID = {templateInfo.TemplateId} AND PublishmentSystemID = {templateInfo.PublishmentSystemId}";
-            }
-
-            if (!string.IsNullOrEmpty(sqlString))
-            {
-                list = BaiRongDataProvider.DatabaseDao.GetIntList(sqlString);
-            }
-
-            return list;
-        }
-
-        public Dictionary<int, TemplateInfo> GetTemplateInfoDictionaryByPublishmentSystemId(int publishmentSystemId)
+        public Dictionary<int, TemplateInfo> GetTemplateInfoDictionaryBySiteId(int siteId)
         {
             var dictionary = new Dictionary<int, TemplateInfo>();
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
+				GetParameter(ParmSiteId, DataType.Integer, siteId)
 			};
 
-            using (var rdr = ExecuteReader(SqlSelectAllTemplateByPublishmentSystemId, parms))
+            using (var rdr = ExecuteReader(SqlSelectAllTemplateBySiteId, parms))
             {
                 while (rdr.Read())
                 {
                     var i = 0;
-                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), ETemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
-                    dictionary.Add(info.TemplateId, info);
+                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
+                    dictionary.Add(info.Id, info);
                 }
                 rdr.Close();
             }
@@ -550,13 +495,13 @@ namespace SiteServer.CMS.Provider
         }
 
 
-        public TemplateInfo GetTemplateByUrlType(int publishmentSystemId, ETemplateType type, string createdFileFullName)
+        public TemplateInfo GetTemplateByUrlType(int siteId, TemplateType type, string createdFileFullName)
         {
             TemplateInfo info = null;
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(type)),
+				GetParameter(ParmSiteId, DataType.Integer, siteId),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, type.Value),
 				GetParameter(ParmCreatedFileFullName, DataType.VarChar, 50, createdFileFullName)
 			};
 
@@ -565,29 +510,29 @@ namespace SiteServer.CMS.Provider
                 while (rdr.Read())
                 {
                     var i = 0;
-                    info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), ETemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
+                    info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
                 }
                 rdr.Close();
             }
             return info;
         }
 
-        public TemplateInfo GetTemplateByTemplateId(int publishmentSystemId, ETemplateType type, string tId)
+        public TemplateInfo GetTemplateById(int siteId, TemplateType type, string tId)
         {
             TemplateInfo info = null;
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(type)),
-				GetParameter(ParmTemplateId, DataType.Integer, tId)
+				GetParameter(ParmSiteId, DataType.Integer, siteId),
+				GetParameter(ParmTemplateType, DataType.VarChar, 50, type.Value),
+				GetParameter(ParmId, DataType.Integer, tId)
 			};
 
-            using (var rdr = ExecuteReader(SqlSelectTemplateByTemplateid, parms))
+            using (var rdr = ExecuteReader(SqlSelectTemplateById, parms))
             {
                 if (rdr.Read())
                 {
                     var i = 0;
-                    info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), ETemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
+                    info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
                 }
                 rdr.Close();
             }

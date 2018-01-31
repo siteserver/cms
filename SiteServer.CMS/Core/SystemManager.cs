@@ -1,57 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using System.IO;
+using System.Reflection;
+using SiteServer.CMS.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
+using SiteServer.Utils.Packaging;
 
 namespace SiteServer.CMS.Core
 {
     public class SystemManager
     {
-        public static void Install(string adminName, string adminPassword)
+        static SystemManager()
         {
-            InstallOrUpgrade(adminName, adminPassword);
+            var assembly = Assembly.GetExecutingAssembly();
+            var ssemblyName = assembly.GetName();
+            var assemblyVersion = ssemblyName.Version;
+            var version = assemblyVersion.ToString();
+            if (StringUtils.EndsWith(version, ".0"))
+            {
+                version = version.Substring(0, version.Length - 2);
+            }
+            Version = version;
         }
 
-        public static void Upgrade()
+        public static string Version { get; }
+
+        public static void InstallDatabase(string adminName, string adminPassword)
         {
-            InstallOrUpgrade(string.Empty, string.Empty);
-        }
-
-        private static void InstallOrUpgrade(string adminName, string adminPassword)
-        {
-            var providers = new List<DataProviderBase>();
-            providers.AddRange(BaiRongDataProvider.AllProviders);
-            providers.AddRange(DataProvider.AllProviders);
-
-            foreach (var provider in providers)
-            {
-                if (string.IsNullOrEmpty(provider.TableName) || provider.TableColumns == null || provider.TableColumns.Count <= 0) continue;
-
-                if (!BaiRongDataProvider.DatabaseDao.IsTableExists(provider.TableName))
-                {
-                    BaiRongDataProvider.DatabaseDao.CreateSystemTable(provider.TableName, provider.TableColumns);
-                }
-                else
-                {
-                    BaiRongDataProvider.DatabaseDao.AlterSystemTable(provider.TableName, provider.TableColumns);
-                }
-            }
-
-            var configInfo = BaiRongDataProvider.ConfigDao.GetConfigInfo();
-            if (configInfo == null)
-            {
-                configInfo = new ConfigInfo(true, AppManager.Version, DateTime.Now, string.Empty);
-                BaiRongDataProvider.ConfigDao.Insert(configInfo);
-            }
-            else
-            {
-                configInfo.DatabaseVersion = AppManager.Version;
-                configInfo.IsInitialized = true;
-                configInfo.UpdateDate = DateTime.Now;
-                BaiRongDataProvider.ConfigDao.Update(configInfo);
-            }
+            CheckAndExecuteDatabase();
 
             if (!string.IsNullOrEmpty(adminName) && !string.IsNullOrEmpty(adminPassword))
             {
@@ -65,23 +41,61 @@ namespace SiteServer.CMS.Core
 
                 string errorMessage;
                 AdminManager.CreateAdministrator(administratorInfo, out errorMessage);
-                BaiRongDataProvider.AdministratorsInRolesDao.AddUserToRole(adminName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
+                DataProvider.AdministratorsInRolesDao.AddUserToRole(adminName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
             }
-
-            BaiRongDataProvider.TableCollectionDao.CreateAllTableCollectionInfoIfNotExists();
         }
 
-        public static bool IsNeedUpgrade()
+        public static void UpdateDatabase()
         {
-            return !StringUtils.EqualsIgnoreCase(AppManager.Version, BaiRongDataProvider.ConfigDao.GetDatabaseVersion());
+            CheckAndExecuteDatabase();
+        }
+
+        private static void CheckAndExecuteDatabase()
+        {
+            CacheUtils.ClearAll();
+
+            foreach (var provider in DataProvider.AllProviders)
+            {
+                if (string.IsNullOrEmpty(provider.TableName) || provider.TableColumns == null || provider.TableColumns.Count <= 0) continue;
+
+                if (!DataProvider.DatabaseDao.IsTableExists(provider.TableName))
+                {
+                    DataProvider.DatabaseDao.CreateSystemTable(provider.TableName, provider.TableColumns);
+                }
+                else
+                {
+                    DataProvider.DatabaseDao.AlterSystemTable(provider.TableName, provider.TableColumns);
+                }
+            }
+
+            var configInfo = DataProvider.ConfigDao.GetConfigInfo();
+            if (configInfo == null)
+            {
+                configInfo = new ConfigInfo(true, Version, DateTime.Now, string.Empty);
+                DataProvider.ConfigDao.Insert(configInfo);
+            }
+            else
+            {
+                configInfo.DatabaseVersion = Version;
+                configInfo.IsInitialized = true;
+                configInfo.UpdateDate = DateTime.Now;
+                DataProvider.ConfigDao.Update(configInfo);
+            }
+
+            DataProvider.TableDao.CreateAllTableCollectionInfoIfNotExists();
+        }
+
+        public static bool IsNeedUpdate()
+        {
+            return !StringUtils.EqualsIgnoreCase(Version, DataProvider.ConfigDao.GetDatabaseVersion());
         }
 
         public static bool IsNeedInstall()
         {
-            var isNeedInstall = !BaiRongDataProvider.ConfigDao.IsInitialized();
+            var isNeedInstall = !DataProvider.ConfigDao.IsInitialized();
             if (isNeedInstall)
             {
-                isNeedInstall = !BaiRongDataProvider.ConfigDao.IsInitialized();
+                isNeedInstall = !DataProvider.ConfigDao.IsInitialized();
             }
             return isNeedInstall;
         }
@@ -91,6 +105,86 @@ namespace SiteServer.CMS.Core
             if (!IsNeedInstall()) return false;
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl("Installer"));
             return true;
+        }
+
+        public static bool UpdateSystem(string version, out string errorMessage)
+        {
+            try
+            {
+                var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{version}";
+                var packagePath = PathUtils.GetPackagesPath(idWithVersion);
+
+                string nuspecPath;
+                var metadata = GetSystemMetadataByDirectoryPath(packagePath, out nuspecPath, out errorMessage);
+                if (metadata == null)
+                {
+                    return false;
+                }
+
+                var packageWebConfigPath = PathUtils.Combine(packagePath, WebConfigUtils.WebConfigFileName);
+                if (!FileUtils.IsFileExists(packageWebConfigPath))
+                {
+                    errorMessage = "升级包配置文件不存在";
+                    return false;
+                }
+
+                WebConfigUtils.UpdateWebConfig(packageWebConfigPath, WebConfigUtils.IsProtectData, WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.SecretKey);
+
+                DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), PathUtils.GetSiteFilesPath(string.Empty), true);
+                DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), PathUtils.GetAdminDirectoryPath(string.Empty), true);
+                DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), PathUtils.GetBinDirectoryPath(string.Empty), true);
+                FileUtils.CopyFile(packageWebConfigPath,
+                    PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.WebConfigFileName), true);
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                return false;
+            }
+
+            return true;
+        }
+
+        public static PackageMetadata GetSystemMetadataByDirectoryPath(string directoryPath, out string nuspecPath, out string errorMessage)
+        {
+            nuspecPath = string.Empty;
+
+            foreach (var filePath in DirectoryUtils.GetFilePaths(directoryPath))
+            {
+                if (StringUtils.EqualsIgnoreCase(Path.GetExtension(filePath), ".nuspec"))
+                {
+                    nuspecPath = filePath;
+                    break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(nuspecPath))
+            {
+                errorMessage = "升级包配置文件不存在";
+                return null;
+            }
+
+            PackageMetadata metadata;
+            try
+            {
+                metadata = PackageUtils.GetPackageMetadata(nuspecPath);
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                return null;
+            }
+
+            var pluginId = metadata.Id;
+
+            if (string.IsNullOrEmpty(pluginId))
+            {
+                errorMessage = $"升级包配置文件 {nuspecPath} 不正确";
+                return null;
+            }
+
+            errorMessage = string.Empty;
+            return metadata;
         }
     }
 }

@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Table;
-using SiteServer.Plugin.Models;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Utils;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -33,11 +33,10 @@ namespace SiteServer.BackgroundPages.Cms
         private string _tableName;
         private string _redirectUrl;
 
-        public static string GetOpenWindowString(int publishmentSystemId, List<int> relatedIdentities, string tableName, string redirectUrl)
+        public static string GetOpenWindowString(int siteId, List<int> relatedIdentities, string tableName, string redirectUrl)
         {
-            return LayerUtils.GetOpenScript("批量添加显示样式", PageUtils.GetCmsUrl(nameof(ModalTableStylesAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("批量添加显示样式", PageUtils.GetCmsUrl(siteId, nameof(ModalTableStylesAdd), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedIdentities", TranslateUtils.ObjectCollectionToString(relatedIdentities)},
                 {"TableName", tableName},
                 {"RedirectUrl", StringUtils.ValueToUrl(redirectUrl)}
@@ -76,7 +75,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var styleInfo = TableStyleManager.GetTableStyleInfo(_tableName, string.Empty, _relatedIdentities);
 
-                ControlUtils.SelectSingleItem(DdlInputType, InputTypeUtils.GetValue(InputTypeUtils.GetEnumType(styleInfo.InputType)));
+                ControlUtils.SelectSingleItem(DdlInputType, styleInfo.InputType.Value);
                 TbDefaultValue.Text = styleInfo.DefaultValue;
                 DdlIsHorizontal.SelectedValue = styleInfo.IsHorizontal.ToString();
                 TbColumns.Text = styleInfo.Additional.Columns.ToString();
@@ -178,7 +177,7 @@ namespace SiteServer.BackgroundPages.Cms
                     return false;
                 }
 
-                var styleInfo = new TableStyleInfo(0, relatedIdentity, _tableName, attributeName, 0, displayName, string.Empty, false, InputTypeUtils.GetValue(inputType), TbDefaultValue.Text, TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue), string.Empty);
+                var styleInfo = new TableStyleInfo(0, relatedIdentity, _tableName, attributeName, 0, displayName, string.Empty, false, inputType, TbDefaultValue.Text, TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue), string.Empty);
                 styleInfo.Additional.Columns = TranslateUtils.ToInt(TbColumns.Text);
                 styleInfo.Additional.Height = TranslateUtils.ToInt(TbHeight.Text);
                 styleInfo.Additional.Width = TbWidth.Text;
@@ -190,7 +189,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var rapidValues = TranslateUtils.StringCollectionToStringList(TbRapidValues.Text);
                     foreach (var rapidValue in rapidValues)
                     {
-                        var itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, rapidValue, rapidValue, false);
+                        var itemInfo = new TableStyleItemInfo(0, styleInfo.Id, rapidValue, rapidValue, false);
                         styleInfo.StyleItems.Add(itemInfo);
                     }
                 }
@@ -208,9 +207,9 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 
 
-                if (PublishmentSystemId > 0)
+                if (SiteId > 0)
                 {
-                    Body.AddSiteLog(PublishmentSystemId, "批量添加表单显示样式", $"字段名: {TranslateUtils.ObjectCollectionToString(attributeNames)}");
+                    Body.AddSiteLog(SiteId, "批量添加表单显示样式", $"字段名: {TranslateUtils.ObjectCollectionToString(attributeNames)}");
                 }
                 else
                 {

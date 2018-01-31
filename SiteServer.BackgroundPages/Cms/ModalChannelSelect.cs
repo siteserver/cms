@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
@@ -10,7 +10,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalChannelSelect : BasePageCms
     {
-        public Literal LtlPublishmentSystem;
+        public Literal LtlSite;
         public Repeater RptChannel;
 
         private readonly NameValueCollection _additional = new NameValueCollection();
@@ -18,36 +18,33 @@ namespace SiteServer.BackgroundPages.Cms
         private string _jsMethod;
         private int _itemIndex;
 
-        public static string GetOpenWindowString(int publishmentSystemId)
+        public static string GetOpenWindowString(int siteId)
         {
-            return GetOpenWindowString(publishmentSystemId, false);
+            return GetOpenWindowString(siteId, false);
         }
 
-        public static string GetOpenWindowString(int publishmentSystemId, bool isProtocol)
+        public static string GetOpenWindowString(int siteId, bool isProtocol)
         {
             return LayerUtils.GetOpenScript("栏目选择",
-                PageUtils.GetCmsUrl(nameof(ModalChannelSelect), new NameValueCollection
+                PageUtils.GetCmsUrl(siteId, nameof(ModalChannelSelect), new NameValueCollection
                 {
-                    {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"isProtocol", isProtocol.ToString()}
                 }), 460, 450);
         }
 
-        public static string GetRedirectUrl(int publishmentSystemId, int nodeId)
+        public static string GetRedirectUrl(int siteId, int channelId)
         {
-            return PageUtils.GetCmsUrl(nameof(ModalChannelSelect), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(ModalChannelSelect), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"NodeID", nodeId.ToString()}
+                {"channelId", channelId.ToString()}
             });
         }
 
-        public static string GetOpenWindowStringByItemIndex(int publishmentSystemId, string jsMethod, string itemIndex)
+        public static string GetOpenWindowStringByItemIndex(int siteId, string jsMethod, string itemIndex)
         {
             return LayerUtils.GetOpenScript("栏目选择",
-                PageUtils.GetCmsUrl(nameof(ModalChannelSelect), new NameValueCollection
+                PageUtils.GetCmsUrl(siteId, nameof(ModalChannelSelect), new NameValueCollection
                 {
-                    {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"jsMethod", jsMethod},
                     {"itemIndex", itemIndex}
                 }), 460, 450);
@@ -67,42 +64,41 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                if (Body.IsQueryExists("NodeID"))
+                if (Body.IsQueryExists("channelId"))
                 {
-                    var nodeId = Body.GetQueryInt("NodeID");
-                    var nodeNames = NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId);
+                    var channelId = Body.GetQueryInt("channelId");
+                    var nodeNames = ChannelManager.GetChannelNameNavigation(SiteId, channelId);
 
                     if (!string.IsNullOrEmpty(_jsMethod))
                     {
-                        string scripts = $"window.parent.{_jsMethod}({_itemIndex}, '{nodeNames}', {nodeId});";
+                        string scripts = $"window.parent.{_jsMethod}({_itemIndex}, '{nodeNames}', {channelId});";
                         LayerUtils.CloseWithoutRefresh(Page, scripts);
                     }
                     else
                     {
-                        var pageUrl = PageUtility.GetChannelUrl(PublishmentSystemInfo, NodeManager.GetNodeInfo(PublishmentSystemId, nodeId), false);
+                        var pageUrl = PageUtility.GetChannelUrl(SiteInfo, ChannelManager.GetChannelInfo(SiteId, channelId), false);
                         if (_isProtocol)
                         {
                             pageUrl = PageUtils.AddProtocolToUrl(pageUrl);
                         }
 
-                        string scripts = $"window.parent.selectChannel('{nodeNames}', '{nodeId}', '{pageUrl}');";
+                        string scripts = $"window.parent.selectChannel('{nodeNames}', '{channelId}', '{pageUrl}');";
                         LayerUtils.CloseWithoutRefresh(Page, scripts);
                     }
                 }
                 else
                 {
-                    var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, PublishmentSystemId);
+                    var nodeInfo = ChannelManager.GetChannelInfo(SiteId, SiteId);
 
-                    var linkUrl = PageUtils.GetCmsUrl(nameof(ModalChannelSelect), new NameValueCollection
+                    var linkUrl = PageUtils.GetCmsUrl(SiteId, nameof(ModalChannelSelect), new NameValueCollection
                     {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                        {"NodeID", nodeInfo.NodeId.ToString()},
+                        {"channelId", nodeInfo.Id.ToString()},
                         {"isProtocol", _isProtocol.ToString()},
                         {"jsMethod", _jsMethod},
                         {"itemIndex", _itemIndex.ToString()}
                     });
-                    LtlPublishmentSystem.Text = $"<a href='{linkUrl}'>{nodeInfo.NodeName}</a>";
-                    ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.ChannelSelect, null));
+                    LtlSite.Text = $"<a href='{linkUrl}'>{nodeInfo.ChannelName}</a>";
+                    ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, ELoadingType.ChannelSelect, null));
                     BindGrid();
                 }
 			}
@@ -110,24 +106,24 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BindGrid()
         {
-            RptChannel.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, PublishmentSystemId);
+            RptChannel.DataSource = DataProvider.ChannelDao.GetIdListByParentId(SiteId, SiteId);
             RptChannel.ItemDataBound += rptChannel_ItemDataBound;
             RptChannel.DataBind();
         }
 
         void rptChannel_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            var nodeId = (int)e.Item.DataItem;
-            var enabled = IsOwningNodeId(nodeId);
+            var channelId = (int)e.Item.DataItem;
+            var enabled = IsOwningChannelId(channelId);
             if (!enabled)
             {
-                if (!IsHasChildOwningNodeId(nodeId)) e.Item.Visible = false;
+                if (!IsHasChildOwningChannelId(channelId)) e.Item.Visible = false;
             }
-            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.ChannelSelect, _additional, Body.AdminName);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ChannelSelect, _additional, Body.AdminName);
         }
 	}
 }

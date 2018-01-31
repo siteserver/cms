@@ -2,10 +2,10 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -112,7 +112,7 @@ namespace SiteServer.BackgroundPages.Settings
 	                return;
 	            }
 	            
-	            PageUtils.Redirect(ModalProgressBar.GetRedirectUrlStringWithSiteTemplateDownload(TbDownloadUrl.Text));
+	            PageUtils.Redirect(ModalProgressBar.GetRedirectUrlStringWithSiteTemplateDownload(0, TbDownloadUrl.Text));
 	        }
 	    }
     }

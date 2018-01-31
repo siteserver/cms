@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -18,22 +18,20 @@ namespace SiteServer.BackgroundPages.Cms
         private int _level;
         private int _totalLevel;
 
-        public static string GetRedirectUrl(int publishmentSystemId, int relatedFieldId, int parentId, int level)
+        public static string GetRedirectUrl(int siteId, int relatedFieldId, int parentId, int level)
         {
-            return PageUtils.GetCmsUrl(nameof(PageRelatedFieldItem), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageRelatedFieldItem), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString() },
                 {"RelatedFieldID", relatedFieldId.ToString() },
                 {"ParentID", parentId.ToString() },
                 {"Level", level.ToString() }
             });
         }
 
-        public static string GetRedirectUrl(int publishmentSystemId, int relatedFieldId, int level)
+        public static string GetRedirectUrl(int siteId, int relatedFieldId, int level)
         {
-            return PageUtils.GetCmsUrl(nameof(PageRelatedFieldItem), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageRelatedFieldItem), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString() },
                 {"RelatedFieldID", relatedFieldId.ToString() },
                 {"Level", level.ToString() }
             });
@@ -54,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
                 DataProvider.RelatedFieldItemDao.Delete(id);
                 if (_level != _totalLevel)
                 {
-                    AddScript($@"parent.location.href = '{PageRelatedFieldMain.GetRedirectUrl(PublishmentSystemId, _relatedFieldId, _totalLevel)}';");
+                    AddScript($@"parent.location.href = '{PageRelatedFieldMain.GetRedirectUrl(SiteId, _relatedFieldId, _totalLevel)}';");
                 }
             }
             else if ((Body.IsQueryExists("Up") || Body.IsQueryExists("Down")) && Body.IsQueryExists("ID"))
@@ -77,7 +75,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
 
             //if (_totalLevel >= 5)
             //{
@@ -88,11 +86,11 @@ namespace SiteServer.BackgroundPages.Cms
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
-            BtnAdd.Attributes.Add("onclick", ModalRelatedFieldItemAdd.GetOpenWindowString(PublishmentSystemId, _relatedFieldId, _parentId, _level));
+            BtnAdd.Attributes.Add("onclick", ModalRelatedFieldItemAdd.GetOpenWindowString(SiteId, _relatedFieldId, _parentId, _level));
 
             if (_level == 1)
             {
-                var urlReturn = PageRelatedField.GetRedirectUrl(PublishmentSystemId);
+                var urlReturn = PageRelatedField.GetRedirectUrl(SiteId);
                 BtnReturn.Attributes.Add("onclick", $"parent.location.href = '{urlReturn}';return false;");
             }
             else
@@ -121,20 +119,20 @@ namespace SiteServer.BackgroundPages.Cms
             else
             {
                 ltlItemName.Text =
-                    $@"<a href=""{GetRedirectUrl(PublishmentSystemId,
+                    $@"<a href=""{GetRedirectUrl(SiteId,
                         _relatedFieldId, itemInfo.Id, _level + 1)}"" target=""level{_level + 1}"">{itemInfo.ItemName}</a>";
             }
 
             ltlItemValue.Text = itemInfo.ItemValue;
-            hlUp.NavigateUrl = GetRedirectUrl(PublishmentSystemId, _relatedFieldId, _parentId, _level) + "&Up=True&ID=" + itemInfo.Id;
-            hlDown.NavigateUrl = GetRedirectUrl(PublishmentSystemId, _relatedFieldId, _parentId, _level) + "&Down=True&ID=" + itemInfo.Id;
+            hlUp.NavigateUrl = GetRedirectUrl(SiteId, _relatedFieldId, _parentId, _level) + "&Up=True&ID=" + itemInfo.Id;
+            hlDown.NavigateUrl = GetRedirectUrl(SiteId, _relatedFieldId, _parentId, _level) + "&Down=True&ID=" + itemInfo.Id;
 
             ltlEditUrl.Text =
                 $@"<a href='javascript:;' onclick=""{ModalRelatedFieldItemEdit.GetOpenWindowString(
-                    PublishmentSystemId, _relatedFieldId, _parentId, _level, itemInfo.Id)}"">编辑</a>";
+                    SiteId, _relatedFieldId, _parentId, _level, itemInfo.Id)}"">编辑</a>";
 
             ltlDeleteUrl.Text =
-                $@"<a href=""{GetRedirectUrl(PublishmentSystemId, _relatedFieldId, _parentId, _level)}&Delete=True&ID={itemInfo.Id}"" onClick=""javascript:return confirm('此操作将删除字段项“{itemInfo.ItemName}”及其子类，确认吗？');"">删除</a>";
+                $@"<a href=""{GetRedirectUrl(SiteId, _relatedFieldId, _parentId, _level)}&Delete=True&ID={itemInfo.Id}"" onClick=""javascript:return confirm('此操作将删除字段项“{itemInfo.ItemName}”及其子类，确认吗？');"">删除</a>";
         }
     }
 }

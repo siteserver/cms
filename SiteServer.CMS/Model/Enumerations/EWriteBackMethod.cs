@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 
-namespace SiteServer.CMS.Model
+namespace SiteServer.CMS.Model.Enumerations
 {
 
 	public enum EWriteBackMethod

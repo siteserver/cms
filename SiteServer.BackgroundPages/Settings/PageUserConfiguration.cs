@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -31,7 +32,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.User);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.User);
 
             EBooleanUtils.AddListItems(RblIsRegisterAllowed);
 
@@ -108,7 +109,7 @@ namespace SiteServer.BackgroundPages.Settings
             ConfigManager.SystemConfigInfo.IsUserFindPassword = TranslateUtils.ToBool(RblIsFindPassword.SelectedValue);
             ConfigManager.SystemConfigInfo.UserFindPasswordSmsTplId = TbFindPasswordSmsTplId.Text;
 
-            BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
+            DataProvider.ConfigDao.Update(ConfigManager.Instance);
 
             Body.AddAdminLog("修改用户设置");
 

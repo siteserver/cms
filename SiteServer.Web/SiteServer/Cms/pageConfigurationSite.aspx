@@ -17,10 +17,10 @@
 							<a class="nav-link" href="javascript:;">站点设置</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="pageConfigurationContent.aspx?publishmentSystemId=<%=PublishmentSystemId%>">内容设置</a>
+							<a class="nav-link" href="pageConfigurationContent.aspx?siteId=<%=SiteId%>">内容设置</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="pageConfigurationSiteAttributes.aspx?publishmentSystemId=<%=PublishmentSystemId%>">站点属性</a>
+							<a class="nav-link" href="pageConfigurationSiteAttributes.aspx?siteId=<%=SiteId%>">站点属性</a>
 						</li>
 					</ul>
 				</div>

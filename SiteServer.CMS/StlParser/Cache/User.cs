@@ -1,4 +1,4 @@
-using BaiRong.Core;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.StlParser.Cache
 {
@@ -17,7 +17,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<string>(cacheKey);
                 if (retval == null)
                 {
-                    retval = BaiRongDataProvider.UserDao.GetDisplayName(userName);
+                    retval = DataProvider.UserDao.GetDisplayName(userName);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }

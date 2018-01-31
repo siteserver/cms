@@ -1,5 +1,5 @@
 ﻿using System;
-using BaiRong.Core;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -11,7 +11,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                VerifyAdministratorPermissions(AppManager.Permissions.Settings.Utility);
+                VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Utility);
             }
         }
 	}

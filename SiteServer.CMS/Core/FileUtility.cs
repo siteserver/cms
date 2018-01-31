@@ -1,11 +1,9 @@
 using System;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using System.Collections.Generic;
-using BaiRong.Core.Images;
-using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
+using SiteServer.Utils.Images;
 
 namespace SiteServer.CMS.Core
 {
@@ -15,28 +13,28 @@ namespace SiteServer.CMS.Core
         {
         }
 
-        public static void AddWaterMark(PublishmentSystemInfo publishmentSystemInfo, string imagePath)
+        public static void AddWaterMark(SiteInfo siteInfo, string imagePath)
         {
             try
             {
                 var fileExtName = PathUtils.GetExtension(imagePath);
                 if (EFileSystemTypeUtils.IsImage(fileExtName))
                 {
-                    if (publishmentSystemInfo.Additional.IsWaterMark)
+                    if (siteInfo.Additional.IsWaterMark)
                     {
-                        if (publishmentSystemInfo.Additional.IsImageWaterMark)
+                        if (siteInfo.Additional.IsImageWaterMark)
                         {
-                            if (!string.IsNullOrEmpty(publishmentSystemInfo.Additional.WaterMarkImagePath))
+                            if (!string.IsNullOrEmpty(siteInfo.Additional.WaterMarkImagePath))
                             {
-                                ImageUtils.AddImageWaterMark(imagePath, PathUtility.MapPath(publishmentSystemInfo, publishmentSystemInfo.Additional.WaterMarkImagePath), publishmentSystemInfo.Additional.WaterMarkPosition, publishmentSystemInfo.Additional.WaterMarkTransparency, publishmentSystemInfo.Additional.WaterMarkMinWidth, publishmentSystemInfo.Additional.WaterMarkMinHeight);
+                                ImageUtils.AddImageWaterMark(imagePath, PathUtility.MapPath(siteInfo, siteInfo.Additional.WaterMarkImagePath), siteInfo.Additional.WaterMarkPosition, siteInfo.Additional.WaterMarkTransparency, siteInfo.Additional.WaterMarkMinWidth, siteInfo.Additional.WaterMarkMinHeight);
                             }
                         }
                         else
                         {
-                            if (!string.IsNullOrEmpty(publishmentSystemInfo.Additional.WaterMarkFormatString))
+                            if (!string.IsNullOrEmpty(siteInfo.Additional.WaterMarkFormatString))
                             {
                                 var now = DateTime.Now;
-                                ImageUtils.AddTextWaterMark(imagePath, string.Format(publishmentSystemInfo.Additional.WaterMarkFormatString, DateUtils.GetDateString(now), DateUtils.GetTimeString(now)), publishmentSystemInfo.Additional.WaterMarkFontName, publishmentSystemInfo.Additional.WaterMarkFontSize, publishmentSystemInfo.Additional.WaterMarkPosition, publishmentSystemInfo.Additional.WaterMarkTransparency, publishmentSystemInfo.Additional.WaterMarkMinWidth, publishmentSystemInfo.Additional.WaterMarkMinHeight);
+                                ImageUtils.AddTextWaterMark(imagePath, string.Format(siteInfo.Additional.WaterMarkFormatString, DateUtils.GetDateString(now), DateUtils.GetTimeString(now)), siteInfo.Additional.WaterMarkFontName, siteInfo.Additional.WaterMarkFontSize, siteInfo.Additional.WaterMarkPosition, siteInfo.Additional.WaterMarkTransparency, siteInfo.Additional.WaterMarkMinWidth, siteInfo.Additional.WaterMarkMinHeight);
                             }
                         }
                     }
@@ -48,12 +46,12 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void MoveFile(PublishmentSystemInfo sourcePublishmentSystemInfo, PublishmentSystemInfo destPublishmentSystemInfo, string relatedUrl)
+        public static void MoveFile(SiteInfo sourceSiteInfo, SiteInfo destSiteInfo, string relatedUrl)
         {
             if (!string.IsNullOrEmpty(relatedUrl))
             {
-                var sourceFilePath = PathUtility.MapPath(sourcePublishmentSystemInfo, relatedUrl);
-                var descFilePath = PathUtility.MapPath(destPublishmentSystemInfo, relatedUrl);
+                var sourceFilePath = PathUtility.MapPath(sourceSiteInfo, relatedUrl);
+                var descFilePath = PathUtility.MapPath(destSiteInfo, relatedUrl);
                 if (FileUtils.IsFileExists(sourceFilePath))
                 {
                     FileUtils.MoveFile(sourceFilePath, descFilePath, false);
@@ -61,9 +59,9 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void MoveFileByContentInfo(PublishmentSystemInfo sourcePublishmentSystemInfo, PublishmentSystemInfo destPublishmentSystemInfo, ContentInfo contentInfo)
+        public static void MoveFileByContentInfo(SiteInfo sourceSiteInfo, SiteInfo destSiteInfo, ContentInfo contentInfo)
         {
-            if (contentInfo == null || sourcePublishmentSystemInfo.PublishmentSystemId == destPublishmentSystemInfo.PublishmentSystemId) return;
+            if (contentInfo == null || sourceSiteInfo.Id == destSiteInfo.Id) return;
 
             try
             {
@@ -114,7 +112,7 @@ namespace SiteServer.CMS.Core
                 {
                     if (!string.IsNullOrEmpty(fileUrl) && PageUtility.IsVirtualUrl(fileUrl))
                     {
-                        MoveFile(sourcePublishmentSystemInfo, destPublishmentSystemInfo, fileUrl);
+                        MoveFile(sourceSiteInfo, destSiteInfo, fileUrl);
                     }
                 }
             }
@@ -124,15 +122,15 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void MoveFileByVirtaulUrl(PublishmentSystemInfo sourcePublishmentSystemInfo, PublishmentSystemInfo destPublishmentSystemInfo, string fileVirtaulUrl)
+        public static void MoveFileByVirtaulUrl(SiteInfo sourceSiteInfo, SiteInfo destSiteInfo, string fileVirtaulUrl)
         {
-            if (string.IsNullOrEmpty(fileVirtaulUrl) || sourcePublishmentSystemInfo.PublishmentSystemId == destPublishmentSystemInfo.PublishmentSystemId) return;
+            if (string.IsNullOrEmpty(fileVirtaulUrl) || sourceSiteInfo.Id == destSiteInfo.Id) return;
 
             try
             {
                 if (PageUtility.IsVirtualUrl(fileVirtaulUrl))
                 {
-                    MoveFile(sourcePublishmentSystemInfo, destPublishmentSystemInfo, fileVirtaulUrl);
+                    MoveFile(sourceSiteInfo, destSiteInfo, fileVirtaulUrl);
                 }
             }
             catch

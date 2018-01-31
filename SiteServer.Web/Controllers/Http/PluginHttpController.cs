@@ -2,27 +2,26 @@
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using BaiRong.Core;
 using SiteServer.CMS.Controllers.Http;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin.Features;
 
 namespace SiteServer.API.Controllers.Http
 {
     [RoutePrefix("api")]
     public class PluginHttpController : ApiController
     {
-        [HttpGet, Route(PluginHttpApi.Route)]
+        [HttpGet, Route(ApiRoutePluginHttp.Route)]
         public HttpResponseMessage Get(string pluginId)
         {
             try
             {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var request = new Request();
+                var service = PluginManager.GetService(pluginId);
 
-                return webApi?.HttpGet == null
+                return service?.HttpGet == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpGet.Invoke(context);
+                    : service.HttpGet.Invoke(request);
             }
             catch (Exception ex)
             {
@@ -31,17 +30,17 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpGet, Route(PluginHttpApi.RouteName)]
+        [HttpGet, Route(ApiRoutePluginHttp.RouteName)]
         public HttpResponseMessage Get(string pluginId, string name)
         {
             try
             {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var request = new Request();
+                var service = PluginManager.GetService(pluginId);
 
-                return webApi?.HttpGetWithName == null
+                return service?.HttpGetWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpGetWithName.Invoke(context, name);
+                    : service.HttpGetWithName.Invoke(request, name);
             }
             catch (Exception ex)
             {
@@ -50,17 +49,17 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpGet, Route(PluginHttpApi.RouteNameAndId)]
+        [HttpGet, Route(ApiRoutePluginHttp.RouteNameAndId)]
         public HttpResponseMessage Get(string pluginId, string name, string id)
         {
             try
             {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var request = new Request();
+                var service = PluginManager.GetService(pluginId);
 
-                return webApi?.HttpGetWithNameAndId == null
+                return service?.HttpGetWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpGetWithNameAndId.Invoke(context, name, id);
+                    : service.HttpGetWithNameAndId.Invoke(request, name, id);
             }
             catch (Exception ex)
             {
@@ -69,17 +68,17 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpPost, Route(PluginHttpApi.Route)]
+        [HttpPost, Route(ApiRoutePluginHttp.Route)]
         public HttpResponseMessage Post(string pluginId)
         {
             try
             {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var request = new Request();
+                var service = PluginManager.GetService(pluginId);
 
-                return webApi?.HttpPost == null
+                return service?.HttpPost == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPost.Invoke(context);
+                    : service.HttpPost.Invoke(request);
             }
             catch (Exception ex)
             {
@@ -88,17 +87,17 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpPost, Route(PluginHttpApi.RouteName)]
+        [HttpPost, Route(ApiRoutePluginHttp.RouteName)]
         public HttpResponseMessage Post(string pluginId, string name)
         {
             try
             {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var request = new Request();
+                var service = PluginManager.GetService(pluginId);
 
-                return webApi?.HttpPostWithName == null
+                return service?.HttpPostWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPostWithName.Invoke(context, name);
+                    : service.HttpPostWithName.Invoke(request, name);
             }
             catch (Exception ex)
             {
@@ -107,17 +106,17 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpPost, Route(PluginHttpApi.RouteNameAndId)]
+        [HttpPost, Route(ApiRoutePluginHttp.RouteNameAndId)]
         public HttpResponseMessage Post(string pluginId, string name, string id)
         {
             try
             {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var request = new Request();
+                var service = PluginManager.GetService(pluginId);
 
-                return webApi?.HttpPostWithNameAndId == null
+                return service?.HttpPostWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPostWithNameAndId.Invoke(context, name, id);
+                    : service.HttpPostWithNameAndId.Invoke(request, name, id);
             }
             catch (Exception ex)
             {
@@ -126,17 +125,17 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpPut, Route(PluginHttpApi.Route)]
+        [HttpPut, Route(ApiRoutePluginHttp.Route)]
         public HttpResponseMessage Put(string pluginId)
         {
             try
             {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var request = new Request();
+                var service = PluginManager.GetService(pluginId);
 
-                return webApi?.HttpPut == null
+                return service?.HttpPut == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPut.Invoke(context);
+                    : service.HttpPut.Invoke(request);
             }
             catch (Exception ex)
             {
@@ -145,17 +144,17 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpPut, Route(PluginHttpApi.RouteName)]
+        [HttpPut, Route(ApiRoutePluginHttp.RouteName)]
         public HttpResponseMessage Put(string pluginId, string name)
         {
             try
             {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var request = new Request();
+                var service = PluginManager.GetService(pluginId);
 
-                return webApi?.HttpPutWithName == null
+                return service?.HttpPutWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPutWithName.Invoke(context, name);
+                    : service.HttpPutWithName.Invoke(request, name);
             }
             catch (Exception ex)
             {
@@ -164,17 +163,17 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpPut, Route(PluginHttpApi.RouteNameAndId)]
+        [HttpPut, Route(ApiRoutePluginHttp.RouteNameAndId)]
         public HttpResponseMessage Put(string pluginId, string name, string id)
         {
             try
             {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var request = new Request();
+                var service = PluginManager.GetService(pluginId);
 
-                return webApi?.HttpPutWithNameAndId == null
+                return service?.HttpPutWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPutWithNameAndId.Invoke(context, name, id);
+                    : service.HttpPutWithNameAndId.Invoke(request, name, id);
             }
             catch (Exception ex)
             {
@@ -183,17 +182,17 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpDelete, Route(PluginHttpApi.Route)]
+        [HttpDelete, Route(ApiRoutePluginHttp.Route)]
         public HttpResponseMessage Delete(string pluginId)
         {
             try
             {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var request = new Request();
+                var service = PluginManager.GetService(pluginId);
 
-                return webApi?.HttpDelete == null
+                return service?.HttpDelete == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpDelete.Invoke(context);
+                    : service.HttpDelete.Invoke(request);
             }
             catch (Exception ex)
             {
@@ -202,17 +201,17 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpDelete, Route(PluginHttpApi.RouteName)]
+        [HttpDelete, Route(ApiRoutePluginHttp.RouteName)]
         public HttpResponseMessage Delete(string pluginId, string name)
         {
             try
             {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var request = new Request();
+                var service = PluginManager.GetService(pluginId);
 
-                return webApi?.HttpDeleteWithName == null
+                return service?.HttpDeleteWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpDeleteWithName.Invoke(context, name);
+                    : service.HttpDeleteWithName.Invoke(request, name);
             }
             catch (Exception ex)
             {
@@ -221,74 +220,17 @@ namespace SiteServer.API.Controllers.Http
             }
         }
 
-        [HttpDelete, Route(PluginHttpApi.RouteNameAndId)]
+        [HttpDelete, Route(ApiRoutePluginHttp.RouteNameAndId)]
         public HttpResponseMessage Delete(string pluginId, string name, string id)
         {
             try
             {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
+                var request = new Request();
+                var service = PluginManager.GetService(pluginId);
 
-                return webApi?.HttpDeleteWithNameAndId == null
+                return service?.HttpDeleteWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpDeleteWithNameAndId.Invoke(context, name, id);
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-        }
-
-        [HttpPatch, Route(PluginHttpApi.Route)]
-        public HttpResponseMessage Patch(string pluginId)
-        {
-            try
-            {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
-
-                return webApi?.HttpPatch == null
-                    ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPatch.Invoke(context);
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-        }
-
-        [HttpPatch, Route(PluginHttpApi.RouteName)]
-        public HttpResponseMessage Patch(string pluginId, string name)
-        {
-            try
-            {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
-
-                return webApi?.HttpPatchWithName == null
-                    ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPatchWithName.Invoke(context, name);
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-        }
-
-        [HttpPatch, Route(PluginHttpApi.RouteNameAndId)]
-        public HttpResponseMessage Patch(string pluginId, string name, string id)
-        {
-            try
-            {
-                var context = new RequestContext();
-                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
-
-                return webApi?.HttpPatchWithNameAndId == null
-                    ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPatchWithNameAndId.Invoke(context, name, id);
+                    : service.HttpDeleteWithNameAndId.Invoke(request, name, id);
             }
             catch (Exception ex)
             {

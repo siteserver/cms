@@ -1,9 +1,6 @@
 ﻿using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
@@ -29,25 +26,25 @@ namespace SiteServer.CMS.StlParser.Utility
                 contentItemInfo = pageInfo.ContentItems.Peek();
             }
             if (contentItemInfo == null) return string.Empty;
-            var contentInfo = Cache.Content.GetContentInfo(pageInfo.PublishmentSystemId, contentItemInfo.ChannelId,
+            var contentInfo = Cache.Content.GetContentInfo(pageInfo.SiteId, contentItemInfo.ChannelId,
                 contentItemInfo.ContentId);
 
             var contextInfo = contextInfoRef.Clone();
             contextInfo.ContextType = contextType;
             contextInfo.ItemContainer = itemContainer;
             contextInfo.ContainerClientId = containerClientId;
-            contextInfo.ChannelId = contentInfo.NodeId;
+            contextInfo.ChannelId = contentInfo.ChannelId;
             contextInfo.ContentId = contentInfo.Id;
             contextInfo.ContentInfo = contentInfo;
 
-            var prePublishmentSystemInfo = pageInfo.PublishmentSystemInfo;
-            var prePageNodeId = pageInfo.PageNodeId;
+            var preSiteInfo = pageInfo.SiteInfo;
+            var prePageChannelId = pageInfo.PageChannelId;
             var prePageContentId = pageInfo.PageContentId;
-            if (contentInfo.PublishmentSystemId != pageInfo.PublishmentSystemId)
+            if (contentInfo.SiteId != pageInfo.SiteId)
             {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(contentInfo.PublishmentSystemId);
-                contextInfo.PublishmentSystemInfo = publishmentSystemInfo;
-                pageInfo.ChangeSite(publishmentSystemInfo, publishmentSystemInfo.PublishmentSystemId, 0, contextInfo);
+                var siteInfo = SiteManager.GetSiteInfo(contentInfo.SiteId);
+                contextInfo.SiteInfo = siteInfo;
+                pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, contextInfo);
             }
 
             var theTemplateString = string.Empty;
@@ -83,9 +80,9 @@ namespace SiteServer.CMS.StlParser.Utility
 
             DbItemContainer.PopContentItem(pageInfo);
 
-            if (contentInfo.PublishmentSystemId != pageInfo.PublishmentSystemId)
+            if (contentInfo.SiteId != pageInfo.SiteId)
             {
-                pageInfo.ChangeSite(prePublishmentSystemInfo, prePageNodeId, prePageContentId, contextInfoRef);
+                pageInfo.ChangeSite(preSiteInfo, prePageChannelId, prePageContentId, contextInfoRef);
             }
 
             return innerBuilder.ToString();
@@ -161,12 +158,12 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 if (selectedValues.Count > 0)
                 {
-                    var nodeInfo = NodeManager.GetNodeInfo(contextInfo.ContentInfo.PublishmentSystemId, contextInfo.ContentInfo.NodeId);
+                    var nodeInfo = ChannelManager.GetChannelInfo(contextInfo.ContentInfo.SiteId, contextInfo.ContentInfo.ChannelId);
                     if (nodeInfo != null)
                     {
-                        if (selectedValues.Get(nodeInfo.NodeName) != null)
+                        if (selectedValues.Get(nodeInfo.ChannelName) != null)
                         {
-                            templateString = selectedValues.Get(nodeInfo.NodeName);
+                            templateString = selectedValues.Get(nodeInfo.ChannelName);
                             return true;
                         }
                     }
@@ -184,22 +181,22 @@ namespace SiteServer.CMS.StlParser.Utility
         {
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
 
-            var nodeId = itemContainer.ChannelItem.ChannelId;
+            var channelId = itemContainer.ChannelItem.ChannelId;
 
             var contextInfo = contextInfoRef.Clone();
             contextInfo.ContextType = contextType;
             contextInfo.ItemContainer = itemContainer;
             contextInfo.ContainerClientId = containerClientId;
-            contextInfo.ChannelId = nodeId;
+            contextInfo.ChannelId = channelId;
 
-            var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
             if (selectedItems != null && selectedItems.Count > 0)
             {
                 foreach (var itemType in selectedItems.Keys)
                 {
                     if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedCurrent))//当前栏目
                     {
-                        if (nodeId == pageInfo.PageNodeId)
+                        if (channelId == pageInfo.PageChannelId)
                         {
                             templateString = selectedItems.Get(itemType);
                             break;
@@ -218,8 +215,8 @@ namespace SiteServer.CMS.StlParser.Utility
                         var upLevel = StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedUp) ? 1 : TranslateUtils.ToInt(itemType.Substring(2));
                         if (upLevel > 0)
                         {
-                            var theNodeId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, pageInfo.PageNodeId, upLevel, -1);
-                            if (nodeId == theNodeId)
+                            var theChannelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, pageInfo.PageChannelId, upLevel, -1);
+                            if (channelId == theChannelId)
                             {
                                 templateString = selectedItems.Get(itemType);
                                 break;
@@ -231,8 +228,8 @@ namespace SiteServer.CMS.StlParser.Utility
                         var topLevel = StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedTop) ? 1 : TranslateUtils.ToInt(itemType.Substring(3));
                         if (topLevel >= 0)
                         {
-                            var theNodeId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, pageInfo.PageNodeId, 0, topLevel);
-                            if (nodeId == theNodeId)
+                            var theChannelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, pageInfo.PageChannelId, 0, topLevel);
+                            if (channelId == theChannelId)
                             {
                                 templateString = selectedItems.Get(itemType);
                                 break;
@@ -322,54 +319,25 @@ namespace SiteServer.CMS.StlParser.Utility
         {
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
 
-            var publishmentSystemId = SqlUtils.EvalInt(itemContainer.SiteItem.DataItem, PublishmentSystemAttribute.PublishmentSystemId);
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            var siteId = SqlUtils.EvalInt(itemContainer.SiteItem.DataItem, SiteAttribute.Id);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
 
             var contextInfo = contextInfoRef.Clone();
             contextInfo.ContainerClientId = containerClientId;
             contextInfo.ItemContainer = itemContainer;
             contextInfo.ContextType = contextType;
 
-            var prePublishmentSystemInfo = pageInfo.PublishmentSystemInfo;
-            var prePageNodeId = pageInfo.PageNodeId;
+            var preSiteInfo = pageInfo.SiteInfo;
+            var prePageChannelId = pageInfo.PageChannelId;
             var prePageContentId = pageInfo.PageContentId;
-            pageInfo.ChangeSite(publishmentSystemInfo, publishmentSystemInfo.PublishmentSystemId, 0, contextInfo);
+            pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, contextInfo);
 
             var innerBuilder = new StringBuilder(templateString);
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
 
             DbItemContainer.PopSiteItems(pageInfo);
 
-            pageInfo.ChangeSite(prePublishmentSystemInfo, prePageNodeId, prePageContentId, contextInfo);
-
-            return innerBuilder.ToString();
-        }
-
-        public static string GetPhotosTemplateString(string templateString, LowerNameValueCollection selectedItems, LowerNameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
-        {
-            var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
-
-            var contextInfo = contextInfoRef.Clone();
-            contextInfo.ContextType = contextType;
-            contextInfo.ContainerClientId = containerClientId;
-            contextInfo.ItemContainer = itemContainer;
-
-            if (selectedItems != null && selectedItems.Count > 0)
-            {
-                foreach (var itemType in selectedItems.Keys)
-                {
-                    if (IsNumberInRange(itemContainer.SqlItem.ItemIndex + 1, itemType))
-                    {
-                        templateString = selectedItems.Get(itemType);
-                        break;
-                    }
-                }
-            }
-
-            var innerBuilder = new StringBuilder(templateString);
-            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-
-            DbItemContainer.PopPhotoItem(pageInfo);
+            pageInfo.ChangeSite(preSiteInfo, prePageChannelId, prePageContentId, contextInfo);
 
             return innerBuilder.ToString();
         }

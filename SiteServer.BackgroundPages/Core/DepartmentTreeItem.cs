@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Text;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Settings;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -138,13 +138,13 @@ namespace SiteServer.BackgroundPages.Core
                 {
                     htmlBuilder.Append(
                         $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_departmentInfo
-                            .DepartmentId}"" src=""{_iconMinusUrl}"" />");
+                            .Id}"" src=""{_iconMinusUrl}"" />");
                 }
                 else
                 {
                     htmlBuilder.Append(
                         $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_departmentInfo
-                            .DepartmentId}"" src=""{_iconPlusUrl}"" />");
+                            .Id}"" src=""{_iconPlusUrl}"" />");
                 }
             }
             else
@@ -170,14 +170,14 @@ namespace SiteServer.BackgroundPages.Core
             {
                 var linkUrl = PageUtils.AddQueryString(additional["UrlFormatString"], new NameValueCollection
                 {
-                    {"DepartmentId", _departmentInfo.DepartmentId.ToString() }
+                    {"DepartmentId", _departmentInfo.Id.ToString() }
                 });
 
                 htmlBuilder.Append($"<a href='{linkUrl}'>{_departmentInfo.DepartmentName}</a>");
             }
             else if (loadingType == EDepartmentLoadingType.ContentTree)
             {
-                var linkUrl = PageContent.GetRedirectUrl(TranslateUtils.ToInt(additional["PublishmentSystemID"]), _departmentInfo.DepartmentId);
+                var linkUrl = PageContent.GetRedirectUrl(TranslateUtils.ToInt(additional["SiteId"]), _departmentInfo.Id);
 
                 htmlBuilder.Append(
                     $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_departmentInfo.DepartmentName}</a>");
@@ -256,7 +256,7 @@ function fontWeightLink(element){
     weightedLink = element;
 }
 
-var completedNodeID = null;
+var completedChannelId = null;
 function displayChildren(img){
 	if (isNull(img)) return;
 
@@ -264,7 +264,7 @@ function displayChildren(img){
 
     var isToOpen = img.getAttribute('isOpen') == 'false';
     var isByAjax = img.getAttribute('isAjax') == 'true';
-    var nodeID = img.getAttribute('id');
+    var channelId = img.getAttribute('id');
 
 	if (!isNull(img) && img.getAttribute('isOpen') != null){
 		if (img.getAttribute('isOpen') == 'false'){
@@ -282,7 +282,7 @@ function displayChildren(img){
         div.innerHTML = ""<img align='absmiddle' border='0' src='{iconLoadingUrl}' /> 加载中，请稍候..."";
         img.parentNode.appendChild(div);
         $(div).addClass('loading');
-        loadingChannels(tr, img, div, nodeID);
+        loadingChannels(tr, img, div, channelId);
     }
     else
     {
@@ -322,9 +322,9 @@ function displayChildren(img){
 }
 ";
             script += $@"
-function loadingChannels(tr, img, div, nodeID){{
+function loadingChannels(tr, img, div, channelId){{
     var url = '{AjaxSystemService.GetLoadingDepartmentsUrl()}';
-    var pars = '{AjaxSystemService.GetLoadingDepartmentsParameters(loadingType, additional)}&parentID=' + nodeID;
+    var pars = '{AjaxSystemService.GetLoadingDepartmentsParameters(loadingType, additional)}&parentID=' + channelId;
 
     jQuery.post(url, pars, function(data, textStatus)
     {{
@@ -332,17 +332,17 @@ function loadingChannels(tr, img, div, nodeID){{
         img.setAttribute('isAjax', 'false');
         img.parentNode.removeChild(div);
     }});
-    completedNodeID = nodeID;
+    completedChannelId = channelId;
 }}
 
 function loadingChannelsOnLoad(paths){{
     if (paths && paths.length > 0){{
-        var nodeIDs = paths.split(',');
-        var nodeID = nodeIDs[0];
-        var img = $('#' + nodeID);
+        var channelIds = paths.split(',');
+        var channelId = channelIds[0];
+        var img = $('#' + channelId);
         if (img.attr('isOpen') == 'false'){{
             displayChildren(img[0]);
-//            if (completedNodeID && completedNodeID == nodeID){{
+//            if (completedChannelId && completedChannelId == channelId){{
 //                if (paths.indexOf(',') != -1){{
 //                    setTimeout(""loadingChannelsOnLoad("" + paths + "")"", 3000);
 //                }}

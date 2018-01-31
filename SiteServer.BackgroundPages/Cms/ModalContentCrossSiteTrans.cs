@@ -2,88 +2,85 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalContentCrossSiteTrans : BasePageCms
     {
-	    protected DropDownList DdlPublishmentSystemId;
-        protected ListBox LbNodeId;
+	    protected DropDownList DdlSiteId;
+        protected ListBox LbChannelId;
 
-        private int _nodeId;
-	    private List<int> _contentIdArrayList;
+        private int _channelId;
+	    private List<int> _contentIdList;
 
-        public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
+        public static string GetOpenWindowString(int siteId, int channelId)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("跨站转发", PageUtils.GetCmsUrl(nameof(ModalContentCrossSiteTrans), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("跨站转发", PageUtils.GetCmsUrl(siteId, nameof(ModalContentCrossSiteTrans), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"NodeID", nodeId.ToString()}
-            }), "ContentIDCollection", "请选择需要转发的内容！", 400, 410);
+                {"channelId", channelId.ToString()}
+            }), "contentIdCollection", "请选择需要转发的内容！", 400, 410);
         }
 
 		public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID", "ContentIDCollection");
+            PageUtils.CheckRequestParameter("siteId", "channelId", "contentIdCollection");
 
-            _nodeId = Body.GetQueryInt("NodeID");
-            _contentIdArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection"));
+            _channelId = Body.GetQueryInt("channelId");
+            _contentIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("contentIdCollection"));
 
-			if (!IsPostBack)
-			{
-                CrossSiteTransUtility.LoadPublishmentSystemIdDropDownList(DdlPublishmentSystemId, PublishmentSystemInfo, _nodeId);
+            if (IsPostBack) return;
 
-                if (DdlPublishmentSystemId.Items.Count > 0)
-                {
-                    DdlPublishmentSystemId_SelectedIndexChanged(null, EventArgs.Empty);
-                }
-			}
-		}
+            CrossSiteTransUtility.LoadSiteIdDropDownList(DdlSiteId, SiteInfo, _channelId);
 
-        public void DdlPublishmentSystemId_SelectedIndexChanged(object sender, EventArgs e)
+            if (DdlSiteId.Items.Count > 0)
+            {
+                DdlSiteId_SelectedIndexChanged(null, EventArgs.Empty);
+            }
+        }
+
+        public void DdlSiteId_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var psId = int.Parse(DdlPublishmentSystemId.SelectedValue);
-            CrossSiteTransUtility.LoadNodeIdListBox(LbNodeId, PublishmentSystemInfo, psId, NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId), Body.AdminName);
+            var psId = int.Parse(DdlSiteId.SelectedValue);
+            CrossSiteTransUtility.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, ChannelManager.GetChannelInfo(SiteId, _channelId), Body.AdminName);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var targetPublishmentSystemId = int.Parse(DdlPublishmentSystemId.SelectedValue);
-            var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
+            var targetSiteId = int.Parse(DdlSiteId.SelectedValue);
+            var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
             try
             {
-                foreach (ListItem listItem in LbNodeId.Items)
+                foreach (ListItem listItem in LbChannelId.Items)
                 {
                     if (listItem.Selected)
                     {
-                        var targetNodeId = TranslateUtils.ToInt(listItem.Value);
-                        if (targetNodeId != 0)
+                        var targetChannelId = TranslateUtils.ToInt(listItem.Value);
+                        if (targetChannelId != 0)
                         {
-                            var targetTableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeId);
-                            var tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeId);
-                            foreach (var contentId in _contentIdArrayList)
+                            var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelId);
+                            var tableName = ChannelManager.GetTableName(SiteInfo, _channelId);
+                            foreach (var contentId in _contentIdList)
                             {
                                 var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
-                                FileUtility.MoveFileByContentInfo(PublishmentSystemInfo, targetPublishmentSystemInfo, contentInfo);
-                                contentInfo.PublishmentSystemId = targetPublishmentSystemId;
-                                contentInfo.SourceId = contentInfo.NodeId;
-                                contentInfo.NodeId = targetNodeId;
+                                FileUtility.MoveFileByContentInfo(SiteInfo, targetSiteInfo, contentInfo);
+                                contentInfo.SiteId = targetSiteId;
+                                contentInfo.SourceId = contentInfo.ChannelId;
+                                contentInfo.ChannelId = targetChannelId;
                                 
-                                contentInfo.IsChecked = targetPublishmentSystemInfo.Additional.IsCrossSiteTransChecked;
+                                contentInfo.IsChecked = targetSiteInfo.Additional.IsCrossSiteTransChecked;
                                 contentInfo.CheckedLevel = 0;
 
-                                DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
+                                DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, contentInfo);
                             }
                         }
                     }
                 }
 
-                Body.AddSiteLog(PublishmentSystemId, _nodeId, 0, "跨站转发", string.Empty);
+                Body.AddSiteLog(SiteId, _channelId, 0, "跨站转发", string.Empty);
 
                 SuccessMessage("内容转发成功，请选择后续操作。");
             }

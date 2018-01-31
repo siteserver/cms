@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -14,50 +14,46 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public Literal LtlTitles;
         public DropDownList DdlCheckType;
-        public DropDownList DdlTranslateNodeId;
+        public DropDownList DdlTranslateChannelId;
         public TextBox TbCheckReasons;
 
         private Dictionary<int, List<int>> _idsDictionary = new Dictionary<int, List<int>>();
         private string _returnUrl;
 
-        public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
+        public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(siteId, nameof(ModalContentCheck), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"NodeID", nodeId.ToString()},
+                {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
-            }), "ContentIDCollection", "请选择需要审核的内容！", 560, 550);
+            }), "contentIdCollection", "请选择需要审核的内容！", 560, 550);
         }
 
-        public static string GetOpenWindowStringForMultiChannels(int publishmentSystemId, string returnUrl)
+        public static string GetOpenWindowStringForMultiChannels(int siteId, string returnUrl)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(siteId, nameof(ModalContentCheck), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             }), "IDsCollection", "请选择需要审核的内容！", 560, 550);
         }
 
-        public static string GetOpenWindowString(int publishmentSystemId, int nodeId, int contentId, string returnUrl)
+        public static string GetOpenWindowString(int siteId, int channelId, int contentId, string returnUrl)
         {
-            return LayerUtils.GetOpenScript("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
+            return LayerUtils.GetOpenScript("审核内容", PageUtils.GetCmsUrl(siteId, nameof(ModalContentCheck), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"NodeID", nodeId.ToString()},
-                {"ContentIDCollection", contentId.ToString()},
+                {"channelId", channelId.ToString()},
+                {"contentIdCollection", contentId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             }), 560, 550);
         }
 
-        public static string GetRedirectUrl(int publishmentSystemId, int nodeId, int contentId, string returnUrl)
+        public static string GetRedirectUrl(int siteId, int channelId, int contentId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(ModalContentCheck), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"NodeID", nodeId.ToString()},
+                {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)},
-                {"ContentIDCollection", contentId.ToString()}
+                {"contentIdCollection", contentId.ToString()}
             });
         }
 
@@ -65,7 +61,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "ReturnUrl");
+            PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
 
             _idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
@@ -73,10 +69,10 @@ namespace SiteServer.BackgroundPages.Cms
             if (!IsPostBack)
             {
                 var titles = new StringBuilder();
-                foreach (var nodeId in _idsDictionary.Keys)
+                foreach (var channelId in _idsDictionary.Keys)
                 {
-                    var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
-                    var contentIdList = _idsDictionary[nodeId];
+                    var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                    var contentIdList = _idsDictionary[channelId];
                     foreach (var contentId in contentIdList)
                     {
                         var title = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
@@ -93,26 +89,26 @@ namespace SiteServer.BackgroundPages.Cms
                 var checkedLevel = 5;
                 var isChecked = true;
 
-                foreach (var nodeId in _idsDictionary.Keys)
+                foreach (var channelId in _idsDictionary.Keys)
                 {
-                    int checkedLevelByNodeId;
-                    var isCheckedByNodeId = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, nodeId, out checkedLevelByNodeId);
-                    if (checkedLevel > checkedLevelByNodeId)
+                    int checkedLevelByChannelId;
+                    var isCheckedByChannelId = CheckManager.GetUserCheckLevel(Body.AdminName, SiteInfo, channelId, out checkedLevelByChannelId);
+                    if (checkedLevel > checkedLevelByChannelId)
                     {
-                        checkedLevel = checkedLevelByNodeId;
+                        checkedLevel = checkedLevelByChannelId;
                     }
-                    if (!isCheckedByNodeId)
+                    if (!isCheckedByChannelId)
                     {
                         isChecked = false;
                     }
                 }
 
-                CheckManager.LoadContentLevelToCheck(DdlCheckType, PublishmentSystemInfo, isChecked, checkedLevel);
+                CheckManager.LoadContentLevelToCheck(DdlCheckType, SiteInfo, isChecked, checkedLevel);
 
                 var listItem = new ListItem("<保持原栏目不变>", "0");
-                DdlTranslateNodeId.Items.Add(listItem);
+                DdlTranslateChannelId.Items.Add(listItem);
 
-                NodeManager.AddListItemsForAddContent(DdlTranslateNodeId.Items, PublishmentSystemInfo, true, Body.AdminName);
+                ChannelManager.AddListItemsForAddContent(DdlTranslateChannelId.Items, SiteInfo, true, Body.AdminName);
             }
         }
 
@@ -120,42 +116,42 @@ namespace SiteServer.BackgroundPages.Cms
         {
             var checkedLevel = TranslateUtils.ToIntWithNagetive(DdlCheckType.SelectedValue);
 
-            var isChecked = checkedLevel >= PublishmentSystemInfo.CheckContentLevel;
+            var isChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
 
             var contentInfoArrayListToCheck = new List<ContentInfo>();
             var idsDictionaryToCheck = new Dictionary<int, List<int>>();
-            foreach (var nodeId in _idsDictionary.Keys)
+            foreach (var channelId in _idsDictionary.Keys)
             {
-                var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
-                var contentIdList = _idsDictionary[nodeId];
+                var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                var contentIdList = _idsDictionary[channelId];
                 var contentIdListToCheck = new List<int>();
 
                 int checkedLevelOfUser;
-                var isCheckedOfUser = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, nodeId, out checkedLevelOfUser);
+                var isCheckedOfUser = CheckManager.GetUserCheckLevel(Body.AdminName, SiteInfo, channelId, out checkedLevelOfUser);
 
                 foreach (var contentId in contentIdList)
                 {
                     var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
                     if (contentInfo != null)
                     {
-                        if (CheckManager.IsCheckable(PublishmentSystemInfo, contentInfo.NodeId, contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
+                        if (CheckManager.IsCheckable(SiteInfo, contentInfo.ChannelId, contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                         {
                             contentInfoArrayListToCheck.Add(contentInfo);
                             contentIdListToCheck.Add(contentId);
                         }
 
-                        DataProvider.ContentDao.Update(tableName, PublishmentSystemInfo, contentInfo);
+                        DataProvider.ContentDao.Update(tableName, SiteInfo, contentInfo);
 
                         if (contentInfo.IsChecked)
                         {
-                            CreateManager.CreateContentAndTrigger(PublishmentSystemId, contentInfo.NodeId, contentId);
+                            CreateManager.CreateContentAndTrigger(SiteId, contentInfo.ChannelId, contentId);
                         }
 
                     }
                 }
                 if (contentIdListToCheck.Count > 0)
                 {
-                    idsDictionaryToCheck[nodeId] = contentIdListToCheck;
+                    idsDictionaryToCheck[channelId] = contentIdListToCheck;
                 }
             }
 
@@ -167,34 +163,34 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 try
                 {
-                    var translateNodeId = TranslateUtils.ToInt(DdlTranslateNodeId.SelectedValue);
+                    var translateChannelId = TranslateUtils.ToInt(DdlTranslateChannelId.SelectedValue);
 
-                    foreach (var nodeId in idsDictionaryToCheck.Keys)
+                    foreach (var channelId in idsDictionaryToCheck.Keys)
                     {
-                        var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
-                        var contentIdList = idsDictionaryToCheck[nodeId];
-                        DataProvider.ContentDao.UpdateIsChecked(tableName, PublishmentSystemId, nodeId, contentIdList, translateNodeId, true, Body.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
+                        var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                        var contentIdList = idsDictionaryToCheck[channelId];
+                        DataProvider.ContentDao.UpdateIsChecked(tableName, SiteId, channelId, contentIdList, translateChannelId, true, Body.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
 
-                        DataProvider.NodeDao.UpdateContentNum(PublishmentSystemInfo, nodeId, true);
+                        DataProvider.ChannelDao.UpdateContentNum(SiteInfo, channelId, true);
                     }
 
-                    if (translateNodeId > 0)
+                    if (translateChannelId > 0)
                     {
-                        DataProvider.NodeDao.UpdateContentNum(PublishmentSystemInfo, translateNodeId, true);
+                        DataProvider.ChannelDao.UpdateContentNum(SiteInfo, translateChannelId, true);
                     }
 
-                    Body.AddSiteLog(PublishmentSystemId, PublishmentSystemId, 0, "设置内容状态为" + DdlCheckType.SelectedItem.Text, TbCheckReasons.Text);
+                    Body.AddSiteLog(SiteId, SiteId, 0, "设置内容状态为" + DdlCheckType.SelectedItem.Text, TbCheckReasons.Text);
 
                     if (isChecked)
                     {
-                        foreach (var nodeId in idsDictionaryToCheck.Keys)
+                        foreach (var channelId in idsDictionaryToCheck.Keys)
                         {
-                            var contentIdList = _idsDictionary[nodeId];
+                            var contentIdList = _idsDictionary[channelId];
                             if (contentIdList != null)
                             {
                                 foreach (var contentId in contentIdList)
                                 {
-                                    CreateManager.CreateContent(PublishmentSystemId, nodeId, contentId);
+                                    CreateManager.CreateContent(SiteId, channelId, contentId);
                                 }
                             }
                         }

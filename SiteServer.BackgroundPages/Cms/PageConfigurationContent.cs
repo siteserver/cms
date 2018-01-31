@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -19,47 +19,44 @@ namespace SiteServer.BackgroundPages.Cms
         public DropDownList DdlCheckContentLevel;
         public DropDownList DdlIsAutoCheckKeywords;
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(nameof(PageConfigurationContent), new NameValueCollection
-            {
-                {"PublishmentSystemID", publishmentSystemId.ToString()}
-            });
+            return PageUtils.GetCmsUrl(siteId, nameof(PageConfigurationContent), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
 
             EBooleanUtils.AddListItems(DdlIsSaveImageInTextEditor, "保存", "不保存");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsSaveImageInTextEditor, PublishmentSystemInfo.Additional.IsSaveImageInTextEditor.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsSaveImageInTextEditor, SiteInfo.Additional.IsSaveImageInTextEditor.ToString());
 
             EBooleanUtils.AddListItems(DdlIsAutoPageInTextEditor, "自动分页", "手动分页");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsAutoPageInTextEditor, PublishmentSystemInfo.Additional.IsAutoPageInTextEditor.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsAutoPageInTextEditor, SiteInfo.Additional.IsAutoPageInTextEditor.ToString());
 
-            PhAutoPage.Visible = PublishmentSystemInfo.Additional.IsAutoPageInTextEditor;
-            TbAutoPageWordNum.Text = PublishmentSystemInfo.Additional.AutoPageWordNum.ToString();
+            PhAutoPage.Visible = SiteInfo.Additional.IsAutoPageInTextEditor;
+            TbAutoPageWordNum.Text = SiteInfo.Additional.AutoPageWordNum.ToString();
 
             EBooleanUtils.AddListItems(DdlIsContentTitleBreakLine, "启用标题换行", "不启用");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsContentTitleBreakLine, PublishmentSystemInfo.Additional.IsContentTitleBreakLine.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsContentTitleBreakLine, SiteInfo.Additional.IsContentTitleBreakLine.ToString());
 
             //保存时，敏感词自动检测
             EBooleanUtils.AddListItems(DdlIsAutoCheckKeywords, "启用敏感词自动检测", "不启用");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsAutoCheckKeywords, PublishmentSystemInfo.Additional.IsAutoCheckKeywords.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsAutoCheckKeywords, SiteInfo.Additional.IsAutoCheckKeywords.ToString());
 
             DdlIsCheckContentUseLevel.Items.Add(new ListItem("默认审核机制", false.ToString()));
             DdlIsCheckContentUseLevel.Items.Add(new ListItem("多级审核机制", true.ToString()));
 
-            ControlUtils.SelectSingleItem(DdlIsCheckContentUseLevel, PublishmentSystemInfo.IsCheckContentUseLevel.ToString());
-            if (PublishmentSystemInfo.IsCheckContentUseLevel)
+            ControlUtils.SelectSingleItem(DdlIsCheckContentUseLevel, SiteInfo.Additional.IsCheckContentLevel.ToString());
+            if (SiteInfo.Additional.IsCheckContentLevel)
             {
-                ControlUtils.SelectSingleItem(DdlCheckContentLevel, PublishmentSystemInfo.CheckContentLevel.ToString());
+                ControlUtils.SelectSingleItem(DdlCheckContentLevel, SiteInfo.Additional.CheckContentLevel.ToString());
                 PhCheckContentLevel.Visible = true;
             }
             else
@@ -82,42 +79,42 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 		    if (!Page.IsPostBack || !Page.IsValid) return;
 
-		    PublishmentSystemInfo.Additional.IsSaveImageInTextEditor = TranslateUtils.ToBool(DdlIsSaveImageInTextEditor.SelectedValue, true);
+		    SiteInfo.Additional.IsSaveImageInTextEditor = TranslateUtils.ToBool(DdlIsSaveImageInTextEditor.SelectedValue, true);
 
 		    var isReCaculate = false;
 		    if (TranslateUtils.ToBool(DdlIsAutoPageInTextEditor.SelectedValue, false))
 		    {
-		        if (PublishmentSystemInfo.Additional.IsAutoPageInTextEditor == false)
+		        if (SiteInfo.Additional.IsAutoPageInTextEditor == false)
 		        {
 		            isReCaculate = true;
 		        }
-		        else if (PublishmentSystemInfo.Additional.AutoPageWordNum != TranslateUtils.ToInt(TbAutoPageWordNum.Text, PublishmentSystemInfo.Additional.AutoPageWordNum))
+		        else if (SiteInfo.Additional.AutoPageWordNum != TranslateUtils.ToInt(TbAutoPageWordNum.Text, SiteInfo.Additional.AutoPageWordNum))
 		        {
 		            isReCaculate = true;
 		        }
 		    }
 
-		    PublishmentSystemInfo.Additional.IsAutoPageInTextEditor = TranslateUtils.ToBool(DdlIsAutoPageInTextEditor.SelectedValue, false);
+		    SiteInfo.Additional.IsAutoPageInTextEditor = TranslateUtils.ToBool(DdlIsAutoPageInTextEditor.SelectedValue, false);
 
-		    PublishmentSystemInfo.Additional.AutoPageWordNum = TranslateUtils.ToInt(TbAutoPageWordNum.Text, PublishmentSystemInfo.Additional.AutoPageWordNum);
+		    SiteInfo.Additional.AutoPageWordNum = TranslateUtils.ToInt(TbAutoPageWordNum.Text, SiteInfo.Additional.AutoPageWordNum);
 
-		    PublishmentSystemInfo.Additional.IsContentTitleBreakLine = TranslateUtils.ToBool(DdlIsContentTitleBreakLine.SelectedValue, true);
+		    SiteInfo.Additional.IsContentTitleBreakLine = TranslateUtils.ToBool(DdlIsContentTitleBreakLine.SelectedValue, true);
 
-		    PublishmentSystemInfo.Additional.IsAutoCheckKeywords = TranslateUtils.ToBool(DdlIsAutoCheckKeywords.SelectedValue, true);
+		    SiteInfo.Additional.IsAutoCheckKeywords = TranslateUtils.ToBool(DdlIsAutoCheckKeywords.SelectedValue, true);
 
-		    PublishmentSystemInfo.IsCheckContentUseLevel = TranslateUtils.ToBool(DdlIsCheckContentUseLevel.SelectedValue);
-		    if (PublishmentSystemInfo.IsCheckContentUseLevel)
+		    SiteInfo.Additional.IsCheckContentLevel = TranslateUtils.ToBool(DdlIsCheckContentUseLevel.SelectedValue);
+		    if (SiteInfo.Additional.IsCheckContentLevel)
 		    {
-		        PublishmentSystemInfo.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
+		        SiteInfo.Additional.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
 		    }
 
-            DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
+            DataProvider.SiteDao.Update(SiteInfo);
             if (isReCaculate)
             {
-                DataProvider.ContentDao.UpdateAutoPageContent(PublishmentSystemInfo.AuxiliaryTableForContent, PublishmentSystemInfo);
+                DataProvider.ContentDao.UpdateAutoPageContent(SiteInfo.TableName, SiteInfo);
             }
 
-            Body.AddSiteLog(PublishmentSystemId, "修改内容设置");
+            Body.AddSiteLog(SiteId, "修改内容设置");
 
             SuccessMessage("内容设置修改成功！");
         }

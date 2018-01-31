@@ -2,11 +2,11 @@
 using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -22,22 +22,22 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Page_Load(object sender, EventArgs e)
         {
-            if (!BaiRongDataProvider.RecordDao.IsRecord()) return;
+            if (!DataProvider.RecordDao.IsRecord()) return;
 
             if (!string.IsNullOrEmpty(Request.QueryString["Delete"]))
             {
                 var list = TranslateUtils.StringCollectionToIntList(Request.QueryString["IdCollection"]);
-                BaiRongDataProvider.RecordDao.Delete(list);
+                DataProvider.RecordDao.Delete(list);
             }
             else if (!string.IsNullOrEmpty(Request.QueryString["DeleteAll"]))
             {
-                BaiRongDataProvider.RecordDao.DeleteAll();
+                DataProvider.RecordDao.DeleteAll();
             }
 
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = 100;
 
-            SpContents.SelectCommand = string.IsNullOrEmpty(Request.QueryString["Keyword"]) ? BaiRongDataProvider.RecordDao.GetSelectCommend() : BaiRongDataProvider.RecordDao.GetSelectCommend(Request.QueryString["Keyword"], Request.QueryString["DateFrom"], Request.QueryString["DateTo"]);
+            SpContents.SelectCommand = string.IsNullOrEmpty(Request.QueryString["Keyword"]) ? DataProvider.RecordDao.GetSqlString() : DataProvider.RecordDao.GetSqlString(Request.QueryString["Keyword"], Request.QueryString["DateFrom"], Request.QueryString["DateTo"]);
 
             SpContents.SortField = "Id";
             SpContents.SortMode = SortMode.DESC;

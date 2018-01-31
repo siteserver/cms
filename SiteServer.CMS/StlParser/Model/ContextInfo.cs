@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Xml;
-using BaiRong.Core.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Cache;
@@ -13,8 +12,8 @@ namespace SiteServer.CMS.StlParser.Model
 
         public ContextInfo(PageInfo pageInfo)
         {
-            PublishmentSystemInfo = pageInfo.PublishmentSystemInfo;
-            ChannelId = pageInfo.PageNodeId;
+            SiteInfo = pageInfo.SiteInfo;
+            ChannelId = pageInfo.PageChannelId;
             ContentId = pageInfo.PageContentId;
         }
 
@@ -22,7 +21,7 @@ namespace SiteServer.CMS.StlParser.Model
         private ContextInfo(ContextInfo contextInfo)
         {
             ContextType = contextInfo.ContextType;
-            PublishmentSystemInfo = contextInfo.PublishmentSystemInfo;
+            SiteInfo = contextInfo.SiteInfo;
             ChannelId = contextInfo.ChannelId;
             ContentId = contextInfo.ContentId;
             _contentInfo = contextInfo._contentInfo;
@@ -59,7 +58,7 @@ namespace SiteServer.CMS.StlParser.Model
 
         public EContextType ContextType { get; set; } = EContextType.Undefined;
 
-        public PublishmentSystemInfo PublishmentSystemInfo { get; set; }
+        public SiteInfo SiteInfo { get; set; }
 
         public int ChannelId { get; set; }
 
@@ -79,8 +78,8 @@ namespace SiteServer.CMS.StlParser.Model
             {
                 if (_contentInfo != null) return _contentInfo;
                 if (ContentId <= 0) return _contentInfo;
-                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemInfo.PublishmentSystemId, ChannelId);
-                var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
+                var nodeInfo = ChannelManager.GetChannelInfo(SiteInfo.Id, ChannelId);
+                var tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
                 //_contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, ContentId);
                 _contentInfo = Content.GetContentInfo(tableName, ContentId);
                 return _contentInfo;

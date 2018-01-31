@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
-using BaiRong.Core.Table;
-using SiteServer.Plugin.Models;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Utils;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -50,7 +49,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (Body.IsQueryExists("TableMetadataID"))
             {
                 var tableMetadataId = Body.GetQueryInt("TableMetadataID");
-                var info = BaiRongDataProvider.TableMetadataDao.GetTableMetadataInfo(tableMetadataId);
+                var info = DataProvider.TableMetadataDao.GetTableMetadataInfo(tableMetadataId);
                 if (info != null)
                 {
                     TbAttributeName.Text = info.AttributeName;
@@ -74,8 +73,8 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 var tableMetadataId = Body.GetQueryInt("TableMetadataID");
 
-                var info = BaiRongDataProvider.TableMetadataDao.GetTableMetadataInfo(tableMetadataId);
-                info.AuxiliaryTableEnName = _tableName;
+                var info = DataProvider.TableMetadataDao.GetTableMetadataInfo(tableMetadataId);
+                info.TableName = _tableName;
                 info.AttributeName = TbAttributeName.Text;
                 info.DataType = DataTypeUtils.GetEnumType(DdlDataType.SelectedValue);
 
@@ -92,7 +91,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 try
                 {
-                    BaiRongDataProvider.TableMetadataDao.Update(info);
+                    DataProvider.TableMetadataDao.Update(info);
 
                     Body.AddAdminLog("修改辅助表字段",
                         $"辅助表:{_tableName},字段名:{info.AttributeName}");
@@ -121,7 +120,7 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     var info = new TableMetadataInfo
                     {
-                        AuxiliaryTableEnName = _tableName,
+                        TableName = _tableName,
                         AttributeName = TbAttributeName.Text,
                         DataType = DataTypeUtils.GetEnumType(DdlDataType.SelectedValue)
                     };
@@ -140,7 +139,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                     try
                     {
-                        BaiRongDataProvider.TableMetadataDao.Insert(info);
+                        DataProvider.TableMetadataDao.Insert(info);
 
                         Body.AddAdminLog("添加辅助表字段",
                             $"辅助表:{_tableName},字段名:{info.AttributeName}");

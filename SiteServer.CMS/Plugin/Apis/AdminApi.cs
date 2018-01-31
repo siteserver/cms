@@ -1,30 +1,28 @@
-﻿using BaiRong.Core;
-using SiteServer.CMS.Core;
+﻿using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
-using SiteServer.Plugin.Apis;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
     public class AdminApi : IAdminApi
     {
-        private readonly PluginMetadata _metadata;
+        private readonly IMetadata _metadata;
 
-        public AdminApi(PluginMetadata metadata)
+        public AdminApi(IMetadata metadata)
         {
             _metadata = metadata;
         }
 
         public bool IsAdminNameExists(string adminName)
         {
-            return BaiRongDataProvider.AdministratorDao.IsAdminNameExists(adminName);
+            return DataProvider.AdministratorDao.IsAdminNameExists(adminName);
         }
 
         public string AdminName
         {
             get
             {
-                var request = new RequestContext();
+                var request = new Request();
                 return request.AdminName;
             }
         }
@@ -33,27 +31,27 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             get
             {
-                var request = new RequestContext();
+                var request = new Request();
                 return PermissionsManager.HasAdministratorPermissions(request.AdminName, _metadata.Id);
             }
         }
 
-        public bool IsSiteAuthorized(int publishmentSystemId)
+        public bool IsSiteAuthorized(int siteId)
         {
-            var request = new RequestContext();
-            return PermissionsManager.HasAdministratorPermissions(request.AdminName, _metadata.Id + publishmentSystemId);
+            var request = new Request();
+            return PermissionsManager.HasAdministratorPermissions(request.AdminName, _metadata.Id + siteId);
         }
 
-        public bool HasSitePermissions(int publishmentSystemId, params string[] sitePermissions)
+        public bool HasSitePermissions(int siteId, params string[] sitePermissions)
         {
-            var request = new RequestContext();
-            return AdminUtility.HasSitePermissions(request.AdminName, publishmentSystemId, sitePermissions);
+            var request = new Request();
+            return AdminUtility.HasSitePermissions(request.AdminName, siteId, sitePermissions);
         }
 
-        public bool HasChannelPermissions(int publishmentSystemId, int channelId, params string[] channelPermissions)
+        public bool HasChannelPermissions(int siteId, int channelId, params string[] channelPermissions)
         {
-            var request = new RequestContext();
-            return AdminUtility.HasChannelPermissions(request.AdminName, publishmentSystemId, channelId, channelPermissions);
+            var request = new Request();
+            return AdminUtility.HasChannelPermissions(request.AdminName, siteId, channelId, channelPermissions);
         }
     }
 }

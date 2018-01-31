@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Web.UI.WebControls;
 using System.Xml;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -68,9 +68,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             DisplayInfo = ListInfo.GetListInfoByXmlNode(pageInfo, _contextInfo, EContextType.Channel);
 
-            var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, _contextInfo.ChannelId, DisplayInfo.UpLevel, DisplayInfo.TopLevel);
+            var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, _contextInfo.ChannelId, DisplayInfo.UpLevel, DisplayInfo.TopLevel);
 
-            channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, DisplayInfo.ChannelIndex, DisplayInfo.ChannelName);
+            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, DisplayInfo.ChannelIndex, DisplayInfo.ChannelName);
 
             var isTotal = TranslateUtils.ToBool(DisplayInfo.Others.Get(AttributeIsTotal));
 
@@ -79,7 +79,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 DisplayInfo.Scope = EScopeType.Descendant;
             }
 
-            _dataSet = StlDataUtility.GetPageChannelsDataSet(pageInfo.PublishmentSystemId, channelId, DisplayInfo.GroupChannel, DisplayInfo.GroupChannelNot, DisplayInfo.IsImageExists, DisplayInfo.IsImage, DisplayInfo.StartNum, DisplayInfo.TotalNum, DisplayInfo.OrderByString, DisplayInfo.Scope, isTotal, DisplayInfo.Where);
+            _dataSet = StlDataUtility.GetPageChannelsDataSet(pageInfo.SiteId, channelId, DisplayInfo.GroupChannel, DisplayInfo.GroupChannelNot, DisplayInfo.IsImageExists, DisplayInfo.IsImage, DisplayInfo.StartNum, DisplayInfo.TotalNum, DisplayInfo.OrderByString, DisplayInfo.Scope, isTotal, DisplayInfo.Where);
         }
 
 
@@ -188,7 +188,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             }
 
                             pdlContents.DataSource = objPage;
-                            pdlContents.DataKeyField = NodeAttribute.NodeId;
+                            pdlContents.DataKeyField = ChannelAttribute.Id;
                             pdlContents.DataBind();
 
                             if (pdlContents.Items.Count > 0)

@@ -5,12 +5,12 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -31,20 +31,20 @@ namespace SiteServer.BackgroundPages.Settings
 
         public PlaceHolder PhSubmit;
         public Literal LtlSource;
-        public TextBox TbPublishmentSystemName;
-        public RadioButtonList RblIsHeadquarters;
-        public PlaceHolder PhIsNotHeadquarters;
-        public DropDownList DdlParentPublishmentSystemId;
-        public TextBox TbPublishmentSystemDir;
+        public TextBox TbSiteName;
+        public RadioButtonList RblIsRoot;
+        public PlaceHolder PhIsNotRoot;
+        public DropDownList DdlParentId;
+        public TextBox TbSiteDir;
         public DropDownList DdlCharset;
         public PlaceHolder PhIsImportContents;
         public CheckBox CbIsImportContents;
         public PlaceHolder PhIsImportTableStyles;
         public CheckBox CbIsImportTableStyles;
-        public PlaceHolder PhIsUserSiteTemplateAuxiliaryTables;
-        public RadioButtonList RblIsUserSiteTemplateAuxiliaryTables;
-        public PlaceHolder PhAuxiliaryTable;
-        public DropDownList DdlAuxiliaryTableForContent;
+        public PlaceHolder PhIsSiteTemplateTable;
+        public RadioButtonList RblIsSiteTemplateTable;
+        public PlaceHolder PhTableName;
+        public DropDownList DdlTableName;
         public RadioButtonList RblIsCheckContentUseLevel;
         public PlaceHolder PhCheckContentLevel;
         public DropDownList DdlCheckContentLevel;
@@ -73,60 +73,62 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteAdd);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.SiteAdd);
 
-            BaiRongDataProvider.TableCollectionDao.CreateAllTableCollectionInfoIfNotExists();
+            DataProvider.TableDao.CreateAllTableCollectionInfoIfNotExists();
 
-            var hqSiteId = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
+            var hqSiteId = DataProvider.SiteDao.GetIdByIsRoot();
             if (hqSiteId == 0)
             {
-                ControlUtils.SelectSingleItem(RblIsHeadquarters, true.ToString());
-                PhIsNotHeadquarters.Visible = false;
+                ControlUtils.SelectSingleItem(RblIsRoot, true.ToString());
+                PhIsNotRoot.Visible = false;
             }
             else
             {
-                RblIsHeadquarters.Enabled = false;
+                RblIsRoot.Enabled = false;
             }
 
-            DdlParentPublishmentSystemId.Items.Add(new ListItem("<无上级站点>", "0"));
-            var publishmentSystemIdArrayList = PublishmentSystemManager.GetPublishmentSystemIdList();
+            DdlParentId.Items.Add(new ListItem("<无上级站点>", "0"));
+            var siteIdArrayList = SiteManager.GetSiteIdList();
             var mySystemInfoArrayList = new ArrayList();
             var parentWithChildren = new Hashtable();
-            foreach (var publishmentSystemId in publishmentSystemIdArrayList)
+            foreach (var siteId in siteIdArrayList)
             {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                if (publishmentSystemInfo.IsHeadquarters == false)
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                if (siteInfo.IsRoot == false)
                 {
-                    if (publishmentSystemInfo.ParentPublishmentSystemId == 0)
+                    if (siteInfo.ParentId == 0)
                     {
-                        mySystemInfoArrayList.Add(publishmentSystemInfo);
+                        mySystemInfoArrayList.Add(siteInfo);
                     }
                     else
                     {
                         var children = new ArrayList();
-                        if (parentWithChildren.Contains(publishmentSystemInfo.ParentPublishmentSystemId))
+                        if (parentWithChildren.Contains(siteInfo.ParentId))
                         {
-                            children = (ArrayList)parentWithChildren[publishmentSystemInfo.ParentPublishmentSystemId];
+                            children = (ArrayList)parentWithChildren[siteInfo.ParentId];
                         }
-                        children.Add(publishmentSystemInfo);
-                        parentWithChildren[publishmentSystemInfo.ParentPublishmentSystemId] = children;
+                        children.Add(siteInfo);
+                        parentWithChildren[siteInfo.ParentId] = children;
                     }
                 }
             }
-            foreach (PublishmentSystemInfo publishmentSystemInfo in mySystemInfoArrayList)
+            foreach (SiteInfo siteInfo in mySystemInfoArrayList)
             {
-                AddSite(DdlParentPublishmentSystemId, publishmentSystemInfo, parentWithChildren, 0);
+                AddSite(DdlParentId, siteInfo, parentWithChildren, 0);
             }
-            ControlUtils.SelectSingleItem(DdlParentPublishmentSystemId, "0");
+            ControlUtils.SelectSingleItem(DdlParentId, "0");
 
             ECharsetUtils.AddListItems(DdlCharset);
             ControlUtils.SelectSingleItem(DdlCharset, ECharsetUtils.GetValue(ECharset.utf_8));
 
-            var tableList = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfoListCreatedInDb();
+            var tableList = DataProvider.TableDao.GetTableCollectionInfoListCreatedInDb();
             foreach (var tableInfo in tableList)
             {
-                var li = new ListItem($"{tableInfo.TableCnName}({tableInfo.TableEnName})", tableInfo.TableEnName);
-                DdlAuxiliaryTableForContent.Items.Add(li);
+                if (tableInfo.DisplayName.StartsWith("插件内容表：")) continue;
+
+                var li = new ListItem($"{tableInfo.DisplayName}({tableInfo.TableName})", tableInfo.TableName);
+                DdlTableName.Items.Add(li);
             }
 
             RblIsCheckContentUseLevel.Items.Add(new ListItem("默认审核机制", false.ToString()));
@@ -135,14 +137,14 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (SiteTemplateManager.Instance.IsSiteTemplateExists)
             {
-                RblSource.Items.Add(new ListItem("创建空站点（不使用模板）", ETriStateUtils.GetValue(ETriState.True)));
-                RblSource.Items.Add(new ListItem("使用站点模板创建站点", ETriStateUtils.GetValue(ETriState.False)));
-                RblSource.Items.Add(new ListItem("使用在线模板创建站点", ETriStateUtils.GetValue(ETriState.All)));
+                RblSource.Items.Add(new ListItem("创建空站点（不使用站点模板）", ETriStateUtils.GetValue(ETriState.True)));
+                RblSource.Items.Add(new ListItem("使用本地站点模板创建站点", ETriStateUtils.GetValue(ETriState.False)));
+                RblSource.Items.Add(new ListItem("使用在线站点模板创建站点", ETriStateUtils.GetValue(ETriState.All)));
             }
             else
             {
-                RblSource.Items.Add(new ListItem("创建空站点（不使用模板）", ETriStateUtils.GetValue(ETriState.True)));
-                RblSource.Items.Add(new ListItem("使用站点模板创建站点", ETriStateUtils.GetValue(ETriState.False)));
+                RblSource.Items.Add(new ListItem("创建空站点（不使用站点模板）", ETriStateUtils.GetValue(ETriState.True)));
+                RblSource.Items.Add(new ListItem("使用在线站点模板创建站点", ETriStateUtils.GetValue(ETriState.All)));
             }
             ControlUtils.SelectSingleItem(RblSource, ETriStateUtils.GetValue(ETriState.True));
 
@@ -167,14 +169,14 @@ namespace SiteServer.BackgroundPages.Settings
 
         private bool IsOnlineTemplate => ETriStateUtils.GetEnumType(RblSource.SelectedValue) == ETriState.All;
 
-        public void RblIsHeadquarters_SelectedIndexChanged(object sender, EventArgs e)
+        public void RblIsRoot_SelectedIndexChanged(object sender, EventArgs e)
         {
-            PhIsNotHeadquarters.Visible = !TranslateUtils.ToBool(RblIsHeadquarters.SelectedValue);
+            PhIsNotRoot.Visible = !TranslateUtils.ToBool(RblIsRoot.SelectedValue);
         }
 
-        public void RblIsUserSiteTemplateAuxiliaryTables_SelectedIndexChanged(object sender, EventArgs e)
+        public void RblIsSiteTemplateTable_SelectedIndexChanged(object sender, EventArgs e)
         {
-            PhAuxiliaryTable.Visible = !TranslateUtils.ToBool(RblIsUserSiteTemplateAuxiliaryTables.SelectedValue);
+            PhTableName.Visible = !TranslateUtils.ToBool(RblIsSiteTemplateTable.SelectedValue);
         }
 
         public void RblIsCheckContentUseLevel_OnSelectedIndexChanged(object sender, EventArgs e)
@@ -218,7 +220,7 @@ namespace SiteServer.BackgroundPages.Settings
                 }
                 else
                 {
-                    LtlSource.Text = "创建空站点（不使用模板）";
+                    LtlSource.Text = "创建空站点（不使用站点模板）";
 
                     ShowSubmit();
                 }
@@ -236,7 +238,7 @@ namespace SiteServer.BackgroundPages.Settings
                     return;
                 }
 
-                LtlSource.Text = $"使用站点模板创建站点（{siteTemplateDir}）";
+                LtlSource.Text = $"使用本地站点模板创建站点（{siteTemplateDir}）";
 
                 ShowSubmit();
             }
@@ -248,12 +250,12 @@ namespace SiteServer.BackgroundPages.Settings
 
                 if (string.IsNullOrEmpty(onlineTemplateName))
                 {
-                    FailMessage("请选择需要使用的在线模板");
+                    FailMessage("请选择需要使用的在线站点模板");
                     ShowOnlineTemplates();
                     return;
                 }
 
-                LtlSource.Text = $@"使用在线模板创建站点（<a href=""{OnlineTemplateManager.GetTemplateUrl(onlineTemplateName)}"" target=""_blank"">{onlineTemplateName}</a>）";
+                LtlSource.Text = $@"使用在线站点模板创建站点（<a href=""{OnlineTemplateManager.GetTemplateUrl(onlineTemplateName)}"" target=""_blank"">{onlineTemplateName}</a>）";
 
                 ShowSubmit();
             }
@@ -264,14 +266,14 @@ namespace SiteServer.BackgroundPages.Settings
             HideAll();
 
             string errorMessage;
-            var thePublishmentSystemId = Validate_PublishmentSystemInfo(out errorMessage);
-            if (thePublishmentSystemId > 0)
+            var theSiteId = Validate_SiteInfo(out errorMessage);
+            if (theSiteId > 0)
             {
                 var siteTemplateDir = IsSiteTemplate ? HihSiteTemplateDir.Value : string.Empty;
                 var onlineTemplateName = IsOnlineTemplate ? HihOnlineTemplateName.Value : string.Empty;
-                PageUtils.Redirect(PageProgressBar.GetCreatePublishmentSystemUrl(thePublishmentSystemId,
+                PageUtils.Redirect(PageProgressBar.GetCreateSiteUrl(theSiteId,
                     CbIsImportContents.Checked, CbIsImportTableStyles.Checked, siteTemplateDir, onlineTemplateName,
-                    TranslateUtils.ToBool(RblIsUserSiteTemplateAuxiliaryTables.SelectedValue), StringUtils.Guid()));
+                    TranslateUtils.ToBool(RblIsSiteTemplateTable.SelectedValue), StringUtils.Guid()));
             }
             else
             {
@@ -380,75 +382,76 @@ namespace SiteServer.BackgroundPages.Settings
             ltlPreviewUrl.Text = $@"<a href=""{templateUrl}"" target=""_blank"">模板详情</a>";
         }
 
-        private int Validate_PublishmentSystemInfo(out string errorMessage)
+        private int Validate_SiteInfo(out string errorMessage)
         {
             try
             {
-                var isHq = TranslateUtils.ToBool(RblIsHeadquarters.SelectedValue); // 是否主站
-                var parentPublishmentSystemId = 0;
-                var publishmentSystemDir = string.Empty;
+                var isHq = TranslateUtils.ToBool(RblIsRoot.SelectedValue); // 是否主站
+                var parentSiteId = 0;
+                var siteDir = string.Empty;
 
                 if (isHq == false)
                 {
-                    if (DirectoryUtils.IsSystemDirectory(TbPublishmentSystemDir.Text))
+                    if (DirectoryUtils.IsSystemDirectory(TbSiteDir.Text))
                     {
                         errorMessage = "文件夹名称不能为系统文件夹名称！";
                         return 0;
                     }
 
-                    parentPublishmentSystemId = TranslateUtils.ToInt(DdlParentPublishmentSystemId.SelectedValue);
-                    publishmentSystemDir = TbPublishmentSystemDir.Text;
+                    parentSiteId = TranslateUtils.ToInt(DdlParentId.SelectedValue);
+                    siteDir = TbSiteDir.Text;
 
-                    var list = DataProvider.NodeDao.GetLowerSystemDirList(parentPublishmentSystemId);
-                    if (list.IndexOf(publishmentSystemDir.ToLower()) != -1)
+                    var list = DataProvider.SiteDao.GetLowerSiteDirList(parentSiteId);
+                    if (list.IndexOf(siteDir.ToLower()) != -1)
                     {
                         errorMessage = "已存在相同的发布路径！";
                         return 0;
                     }
 
-                    if (!DirectoryUtils.IsDirectoryNameCompliant(publishmentSystemDir))
+                    if (!DirectoryUtils.IsDirectoryNameCompliant(siteDir))
                     {
                         errorMessage = "文件夹名称不符合系统要求！";
                         return 0;
                     }
                 }
 
-                var nodeInfo = new NodeInfo();
+                var nodeInfo = new ChannelInfo();
 
-                nodeInfo.NodeName = nodeInfo.NodeIndexName = "首页";
+                nodeInfo.ChannelName = nodeInfo.IndexName = "首页";
                 nodeInfo.ParentId = 0;
                 nodeInfo.ContentModelPluginId = string.Empty;
 
-                var psInfo = new PublishmentSystemInfo
+                var psInfo = new SiteInfo
                 {
-                    PublishmentSystemName = PageUtils.FilterXss(TbPublishmentSystemName.Text),
-                    AuxiliaryTableForContent = DdlAuxiliaryTableForContent.SelectedValue,
-                    PublishmentSystemDir = publishmentSystemDir,
-                    ParentPublishmentSystemId = parentPublishmentSystemId,
-                    IsHeadquarters = isHq,
-                    IsCheckContentUseLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue)
+                    SiteName = PageUtils.FilterXss(TbSiteName.Text),
+                    SiteDir = siteDir,
+                    TableName = DdlTableName.SelectedValue,
+                    ParentId = parentSiteId,
+                    IsRoot = isHq
                 };
 
-                if (psInfo.IsCheckContentUseLevel)
+                psInfo.Additional.IsCheckContentLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue);
+
+                if (psInfo.Additional.IsCheckContentLevel)
                 {
-                    psInfo.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
+                    psInfo.Additional.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
                 }
                 psInfo.Additional.Charset = DdlCharset.SelectedValue;
 
-                var thePublishmentSystemId = DataProvider.NodeDao.InsertPublishmentSystemInfo(nodeInfo, psInfo, Body.AdminName);
+                var theSiteId = DataProvider.ChannelDao.InsertSiteInfo(nodeInfo, psInfo, Body.AdminName);
 
                 var permissions = PermissionsManager.GetPermissions(Body.AdminName);
                 if (permissions.IsSystemAdministrator && !permissions.IsConsoleAdministrator)
                 {
-                    var publishmentSystemIdList = ProductPermissionsManager.Current.PublishmentSystemIdList ?? new List<int>();
-                    publishmentSystemIdList.Add(thePublishmentSystemId);
-                    BaiRongDataProvider.AdministratorDao.UpdatePublishmentSystemIdCollection(Body.AdminName, TranslateUtils.ObjectCollectionToString(publishmentSystemIdList));
+                    var siteIdList = ProductPermissionsManager.Current.SiteIdList ?? new List<int>();
+                    siteIdList.Add(theSiteId);
+                    DataProvider.AdministratorDao.UpdateSiteIdCollection(Body.AdminName, TranslateUtils.ObjectCollectionToString(siteIdList));
                 }
 
-                Body.AddAdminLog("创建新站点", $"站点名称：{PageUtils.FilterXss(TbPublishmentSystemName.Text)}");
+                Body.AddAdminLog("创建新站点", $"站点名称：{PageUtils.FilterXss(TbSiteName.Text)}");
 
                 errorMessage = string.Empty;
-                return thePublishmentSystemId;
+                return theSiteId;
             }
             catch (Exception e)
             {
@@ -457,7 +460,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
         }
 
-        private static void AddSite(ListControl listControl, PublishmentSystemInfo publishmentSystemInfo, Hashtable parentWithChildren, int level)
+        private static void AddSite(ListControl listControl, SiteInfo siteInfo, Hashtable parentWithChildren, int level)
         {
             if (level > 1) return;
             var padding = string.Empty;
@@ -470,19 +473,19 @@ namespace SiteServer.BackgroundPages.Settings
                 padding += "└ ";
             }
 
-            if (parentWithChildren[publishmentSystemInfo.PublishmentSystemId] != null)
+            if (parentWithChildren[siteInfo.Id] != null)
             {
-                var children = (ArrayList)parentWithChildren[publishmentSystemInfo.PublishmentSystemId];
-                listControl.Items.Add(new ListItem(padding + publishmentSystemInfo.PublishmentSystemName + $"({children.Count})", publishmentSystemInfo.PublishmentSystemId.ToString()));
+                var children = (ArrayList)parentWithChildren[siteInfo.Id];
+                listControl.Items.Add(new ListItem(padding + siteInfo.SiteName + $"({children.Count})", siteInfo.Id.ToString()));
                 level++;
-                foreach (PublishmentSystemInfo subSiteInfo in children)
+                foreach (SiteInfo subSiteInfo in children)
                 {
                     AddSite(listControl, subSiteInfo, parentWithChildren, level);
                 }
             }
             else
             {
-                listControl.Items.Add(new ListItem(padding + publishmentSystemInfo.PublishmentSystemName, publishmentSystemInfo.PublishmentSystemId.ToString()));
+                listControl.Items.Add(new ListItem(padding + siteInfo.SiteName, siteInfo.Id.ToString()));
             }
         }
 
@@ -493,8 +496,8 @@ namespace SiteServer.BackgroundPages.Settings
                     PhOnlineTemplates.Visible =
                         PhSubmit.Visible = PhIsImportContents.Visible =
                             PhIsImportTableStyles.Visible =
-                                PhIsUserSiteTemplateAuxiliaryTables.Visible =
-                                    PhAuxiliaryTable.Visible =
+                                PhIsSiteTemplateTable.Visible =
+                                    PhTableName.Visible =
                                         BtnPrevious.Enabled = BtnNext.Visible = BtnSubmit.Visible = false;
         }
 
@@ -520,20 +523,20 @@ namespace SiteServer.BackgroundPages.Settings
                 PhSubmit.Visible =
                     PhIsImportContents.Visible =
                         PhIsImportTableStyles.Visible =
-                            PhIsUserSiteTemplateAuxiliaryTables.Visible =
-                                PhAuxiliaryTable.Visible = BtnPrevious.Enabled = BtnSubmit.Visible = true;
+                            PhIsSiteTemplateTable.Visible =
+                                PhTableName.Visible = BtnPrevious.Enabled = BtnSubmit.Visible = true;
             }
             else if (IsOnlineTemplate)
             {
                 PhSubmit.Visible =
                     PhIsImportContents.Visible =
                         PhIsImportTableStyles.Visible =
-                            PhIsUserSiteTemplateAuxiliaryTables.Visible =
-                                PhAuxiliaryTable.Visible = BtnPrevious.Enabled = BtnSubmit.Visible = true;
+                            PhIsSiteTemplateTable.Visible =
+                                PhTableName.Visible = BtnPrevious.Enabled = BtnSubmit.Visible = true;
             }
             else
             {
-                PhSubmit.Visible = PhAuxiliaryTable.Visible = BtnPrevious.Enabled = BtnSubmit.Visible = true;
+                PhSubmit.Visible = PhTableName.Visible = BtnPrevious.Enabled = BtnSubmit.Visible = true;
             }
         }
     }

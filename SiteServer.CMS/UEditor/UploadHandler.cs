@@ -1,10 +1,10 @@
-﻿using BaiRong.Core;
+﻿using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using System;
 using System.IO;
 using System.Linq;
 using System.Web;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.UEditor
 {
@@ -14,17 +14,17 @@ namespace SiteServer.CMS.UEditor
     public class UploadHandler : Handler
     {
 
-        public UploadConfig UploadConfig { get; private set; }
-        public UploadResult Result { get; private set; }
-        public int PublishmentSystemID { get; private set; }
-        public EUploadType UploadType { get; private set; }
+        public UploadConfig UploadConfig { get; }
+        public UploadResult Result { get; }
+        public int SiteId { get; }
+        public EUploadType UploadType { get; }
 
-        public UploadHandler(HttpContext context, UploadConfig config, int publishmentSystemID, EUploadType uploadType)
+        public UploadHandler(HttpContext context, UploadConfig config, int siteId, EUploadType uploadType)
             : base(context)
         {
             UploadConfig = config;
             Result = new UploadResult() { State = UploadState.Unknown };
-            PublishmentSystemID = publishmentSystemID;
+            SiteId = siteId;
             UploadType = uploadType;
         }
 
@@ -74,15 +74,15 @@ namespace SiteServer.CMS.UEditor
             //var localPath = Server.MapPath(savePath);
 
             var currentType = PathUtils.GetExtension(Result.OriginFileName);
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(PublishmentSystemID);
-            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(publishmentSystemInfo, UploadType);
-            var localFileName = PathUtility.GetUploadFileName(publishmentSystemInfo, uploadFileName);
+            var siteInfo = SiteManager.GetSiteInfo(SiteId);
+            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, UploadType);
+            var localFileName = PathUtility.GetUploadFileName(siteInfo, uploadFileName);
             var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
             try
             {
                 //格式验证
-                if (!PathUtility.IsUploadExtenstionAllowed(UploadType, publishmentSystemInfo, currentType))
+                if (!PathUtility.IsUploadExtenstionAllowed(UploadType, siteInfo, currentType))
                 {
                     Result.State = UploadState.FileAccessError;
                     Result.ErrorMessage = "不允许的文件类型";
@@ -97,9 +97,9 @@ namespace SiteServer.CMS.UEditor
                     if (UploadType == EUploadType.Image)
                     {
                         //添加水印
-                        FileUtility.AddWaterMark(publishmentSystemInfo, localFilePath);
+                        FileUtility.AddWaterMark(siteInfo, localFilePath);
                     }
-                    Result.Url = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, localFilePath, true);
+                    Result.Url = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, localFilePath, true);
                     Result.State = UploadState.Success;
                 }
             }

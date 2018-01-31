@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
 
@@ -13,9 +13,9 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public const string TypeGetLoadingTemplates = "GetLoadingTemplates";
 
-        public static string GetRedirectUrl(string type)
+        public static string GetRedirectUrl(int siteId, string type)
         {
-            return PageUtils.GetCmsUrl(nameof(PageServiceStl), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageServiceStl), new NameValueCollection
             {
                 {"type", type}
             });
@@ -28,26 +28,26 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (type == TypeGetLoadingTemplates)
             {
-                var publishmentSystemId = TranslateUtils.ToInt(Request["publishmentSystemID"]);
+                var siteId = TranslateUtils.ToInt(Request["siteID"]);
                 var templateType = Request["templateType"];
-                retString = GetLoadingTemplates(publishmentSystemId, templateType);
+                retString = GetLoadingTemplates(siteId, templateType);
             }
 
             Page.Response.Write(retString);
             Page.Response.End();
         }
 
-        public string GetLoadingTemplates(int publishmentSystemId, string templateType)
+        public string GetLoadingTemplates(int siteId, string templateType)
         {
             var list = new List<string>();
 
-            var eTemplateType = ETemplateTypeUtils.GetEnumType(templateType);
+            var theTemplateType = TemplateTypeUtils.GetEnumType(templateType);
 
-            var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListByType(publishmentSystemId, eTemplateType);
+            var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListByType(siteId, theTemplateType);
 
             foreach (var templateInfo in templateInfoList)
             {
-                var templateAddUrl = PageTemplateAdd.GetRedirectUrl(publishmentSystemId, templateInfo.TemplateId, eTemplateType);
+                var templateAddUrl = PageTemplateAdd.GetRedirectUrl(siteId, templateInfo.Id, theTemplateType);
                 list.Add($@"
 <tr treeitemlevel=""3"">
 	<td align=""left"" nowrap="""">

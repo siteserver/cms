@@ -1,4 +1,4 @@
-using BaiRong.Core;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.StlParser.Cache
 {
@@ -18,7 +18,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetIntCache(cacheKey);
                 if (retval == -1)
                 {
-                    retval = BaiRongDataProvider.DatabaseDao.GetPageTotalCount(sqlString);
+                    retval = DataProvider.DatabaseDao.GetPageTotalCount(sqlString);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -38,7 +38,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<string>(cacheKey);
                 if (retval == null)
                 {
-                    retval = BaiRongDataProvider.DatabaseDao.GetStlPageSqlString(sqlString, orderByString, totalNum, pageNum,
+                    retval = DataProvider.DatabaseDao.GetStlPageSqlString(sqlString, orderByString, totalNum, pageNum,
                     currentPageIndex);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
@@ -59,7 +59,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<string>(cacheKey);
                 if (retval == null)
                 {
-                    retval = BaiRongDataProvider.DatabaseDao.GetString(connectionString, queryString);
+                    retval = DataProvider.DatabaseDao.GetString(connectionString, queryString);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }

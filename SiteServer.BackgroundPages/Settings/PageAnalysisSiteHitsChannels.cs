@@ -3,17 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
     public class PageAnalysisSiteHitsChannels : BasePageCms
     {
-        public DropDownList DdlPublishmentSystemId;
+        public DropDownList DdlSiteId;
         public Repeater RptContents;
         public SqlPager SpContents;
 
@@ -34,11 +34,11 @@ namespace SiteServer.BackgroundPages.Settings
         private const string YTypeHitsWeek = "YType_HitsWeek";
         private const string YTypeHitsMonth = "YType_HitsMonth";
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
             return PageUtils.GetSettingsUrl(nameof(PageAnalysisSiteHitsChannels), new NameValueCollection
             {
-                {"publishmentSystemId", publishmentSystemId.ToString()}
+                {"siteId", siteId.ToString()}
             });
         }
 
@@ -46,31 +46,31 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("publishmentSystemId");
+            PageUtils.CheckRequestParameter("siteId");
 
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
-            SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
+            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
 
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommandByHitsAnalysis(PublishmentSystemInfo.AuxiliaryTableForContent, PublishmentSystemId);
+            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommandByHitsAnalysis(SiteInfo.TableName, SiteId);
 
             SpContents.SortField = ContentAttribute.Hits;
             SpContents.SortMode = SortMode.DESC;
 
-            _pageUrl = GetRedirectUrl(PublishmentSystemId);
+            _pageUrl = GetRedirectUrl(SiteId);
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Chart);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Chart);
 
-            DdlPublishmentSystemId.Items.Add(new ListItem("<<全部站点>>", "0"));
-            var publishmentSystemIdList = PublishmentSystemManager.GetPublishmentSystemIdListOrderByLevel();
-            foreach (var publishmentSystemId in publishmentSystemIdList)
+            DdlSiteId.Items.Add(new ListItem("<<全部站点>>", "0"));
+            var siteIdList = SiteManager.GetSiteIdListOrderByLevel();
+            foreach (var siteId in siteIdList)
             {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                DdlPublishmentSystemId.Items.Add(new ListItem(publishmentSystemInfo.PublishmentSystemName, publishmentSystemId.ToString()));
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                DdlSiteId.Items.Add(new ListItem(siteInfo.SiteName, siteId.ToString()));
             }
-            ControlUtils.SelectSingleItem(DdlPublishmentSystemId, PublishmentSystemId.ToString());
+            ControlUtils.SelectSingleItem(DdlSiteId, SiteId.ToString());
 
             SpContents.DataBind();
 
@@ -95,9 +95,9 @@ yArrayHitsMonth.push('{yValueHitsMonth}');
 
         public void Analysis_OnClick(object sender, EventArgs e)
         {
-            var publishmentSystemId = TranslateUtils.ToInt(DdlPublishmentSystemId.SelectedValue);
-            PageUtils.Redirect(publishmentSystemId > 0
-                ? GetRedirectUrl(publishmentSystemId)
+            var siteId = TranslateUtils.ToInt(DdlSiteId.SelectedValue);
+            PageUtils.Redirect(siteId > 0
+                ? GetRedirectUrl(siteId)
                 : PageAnalysisSiteHits.GetRedirectUrl());
         }
 
@@ -115,17 +115,17 @@ yArrayHitsMonth.push('{yValueHitsMonth}');
 
             var contentInfo = new ContentInfo(e.Item.DataItem);
 
-            ltlItemTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, _pageUrl);
+            ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, _pageUrl);
 
             string nodeNameNavigation;
-            if (!_nodeNameNavigations.ContainsKey(contentInfo.NodeId))
+            if (!_nodeNameNavigations.ContainsKey(contentInfo.ChannelId))
             {
-                nodeNameNavigation = NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId);
-                _nodeNameNavigations.Add(contentInfo.NodeId, nodeNameNavigation);
+                nodeNameNavigation = ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId);
+                _nodeNameNavigations.Add(contentInfo.ChannelId, nodeNameNavigation);
             }
             else
             {
-                nodeNameNavigation = _nodeNameNavigations[contentInfo.NodeId] as string;
+                nodeNameNavigation = _nodeNameNavigations[contentInfo.ChannelId] as string;
             }
             ltlChannel.Text = nodeNameNavigation;
 

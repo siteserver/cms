@@ -4,10 +4,10 @@ using System.Linq;
 using System.Net;
 using System.Web;
 
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.UEditor
 {
@@ -18,10 +18,12 @@ namespace SiteServer.CMS.UEditor
     {
         private string[] Sources;
         private Crawler[] Crawlers;
-        public int PublishmentSystemID { get; private set; }
-        public CrawlerHandler(HttpContext context, int publishmentSystemID) : base(context) {
 
-            PublishmentSystemID = publishmentSystemID; 
+        public int SiteId { get; }
+
+        public CrawlerHandler(HttpContext context, int siteId) : base(context) {
+
+            SiteId = siteId; 
         }
 
         public override void Process()
@@ -35,9 +37,9 @@ namespace SiteServer.CMS.UEditor
                 });
                 return;
             }
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(PublishmentSystemID);
+            var siteInfo = SiteManager.GetSiteInfo(SiteId);
 
-            Crawlers = Sources.Select(x => new Crawler(x, publishmentSystemInfo,Server).Fetch()).ToArray();
+            Crawlers = Sources.Select(x => new Crawler(x, siteInfo,Server).Fetch()).ToArray();
             WriteJson(new
             {
                 state = "SUCCESS",
@@ -56,12 +58,12 @@ namespace SiteServer.CMS.UEditor
         public string SourceUrl { get; set; }
         public string ServerUrl { get; set; }
         public string State { get; set; }
-        public PublishmentSystemInfo PubSystemInfo { get; private set; }
+        public SiteInfo PubSystemInfo { get; private set; }
 
         private HttpServerUtility Server { get; set; }
 
 
-        public Crawler(string sourceUrl, PublishmentSystemInfo pubSystemInfo, HttpServerUtility server)
+        public Crawler(string sourceUrl, SiteInfo pubSystemInfo, HttpServerUtility server)
         {
             SourceUrl = sourceUrl;
             PubSystemInfo = pubSystemInfo;
@@ -126,7 +128,7 @@ namespace SiteServer.CMS.UEditor
                     File.WriteAllBytes(savePath, bytes);
                     State = "SUCCESS";
 
-                    ServerUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PubSystemInfo, savePath, true);
+                    ServerUrl = PageUtility.GetSiteUrlByPhysicalPath(PubSystemInfo, savePath, true);
 
                 }
                 catch (Exception e)

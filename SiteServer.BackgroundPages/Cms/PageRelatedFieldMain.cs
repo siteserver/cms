@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -10,11 +10,10 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public Literal ltlFrames;
 
-        public static string GetRedirectUrl(int publishmentSystemId, int relatedFieldId, int totalLevel)
+        public static string GetRedirectUrl(int siteId, int relatedFieldId, int totalLevel)
         {
-            return PageUtils.GetCmsUrl(nameof(PageRelatedFieldMain), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageRelatedFieldMain), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedFieldID", relatedFieldId.ToString()},
                 {"TotalLevel", totalLevel.ToString()}
             });
@@ -46,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
                     cols = "20%,20%,20%,20%,20%";
                 }
                 var builder = new StringBuilder();
-                var urlItem = PageRelatedFieldItem.GetRedirectUrl(PublishmentSystemId, relatedFieldId, 1);
+                var urlItem = PageRelatedFieldItem.GetRedirectUrl(SiteId, relatedFieldId, 1);
                 builder.Append($@"
 <frameset framespacing=""0"" border=""false"" cols=""{cols}"" frameborder=""0"" scrolling=""yes"">
 	<frame name=""level1"" scrolling=""auto"" marginwidth=""0"" marginheight=""0"" src=""{urlItem}"" >

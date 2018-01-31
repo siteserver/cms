@@ -3,12 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Controllers.Preview;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -29,19 +28,18 @@ namespace SiteServer.BackgroundPages.Cms
         public Button BtnSubmit;
         public HyperLink HlPreview;
 
-        private int _nodeId;
+        private int _channelId;
         private string _tableName;
         private List<int> _relatedIdentities;
         private int _contentId;
         private string _returnUrl;
         private ContentInfo _contentInfo;
 
-        public static string GetContentViewUrl(int publishmentSystemId, int nodeId, int contentId, string returnUrl)
+        public static string GetContentViewUrl(int siteId, int channelId, int contentId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(nameof(PageContentView), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageContentView), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"NodeID", nodeId.ToString()},
+                {"channelId", channelId.ToString()},
                 {"ID", contentId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
@@ -51,15 +49,15 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID", "ID", "ReturnUrl");
+            PageUtils.CheckRequestParameter("siteId", "channelId", "ID", "ReturnUrl");
 
-            _nodeId = Body.GetQueryInt("NodeID");
-            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
-            _tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
+            _channelId = Body.GetQueryInt("channelId");
+            var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+            _tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
             _contentId = Body.GetQueryInt("ID");
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
 
-            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
+            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
 
             _contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, _contentId);
 
@@ -79,7 +77,7 @@ namespace SiteServer.BackgroundPages.Cms
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
-            LtlNodeName.Text = NodeManager.GetNodeName(PublishmentSystemId, _nodeId);
+            LtlNodeName.Text = ChannelManager.GetChannelName(SiteId, _channelId);
 
             LtlTags.Text = _contentInfo.Tags;
             if (string.IsNullOrEmpty(LtlTags.Text))
@@ -87,7 +85,7 @@ namespace SiteServer.BackgroundPages.Cms
                 PhTags.Visible = false;
             }
 
-            LtlContentGroup.Text = _contentInfo.ContentGroupNameCollection;
+            LtlContentGroup.Text = _contentInfo.GroupNameCollection;
             if (string.IsNullOrEmpty(LtlContentGroup.Text))
             {
                 PhContentGroup.Visible = false;
@@ -97,30 +95,30 @@ namespace SiteServer.BackgroundPages.Cms
             LtlAddUserName.Text = AdminManager.GetDisplayName(_contentInfo.AddUserName, true);
             LtlLastEditUserName.Text = AdminManager.GetDisplayName(_contentInfo.LastEditUserName, true);
 
-            LtlContentLevel.Text = CheckManager.GetCheckState(PublishmentSystemInfo, _contentInfo.IsChecked, _contentInfo.CheckedLevel);
+            LtlContentLevel.Text = CheckManager.GetCheckState(SiteInfo, _contentInfo.IsChecked, _contentInfo.CheckedLevel);
 
             if (_contentInfo.ReferenceId > 0 && _contentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
             {
-                var referencePublishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(_contentInfo.SourceId);
-                var referencePublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(referencePublishmentSystemId);
-                var referenceTableName = NodeManager.GetTableName(referencePublishmentSystemInfo, _contentInfo.SourceId);
+                var referenceSiteId = DataProvider.ChannelDao.GetSiteId(_contentInfo.SourceId);
+                var referenceSiteInfo = SiteManager.GetSiteInfo(referenceSiteId);
+                var referenceTableName = ChannelManager.GetTableName(referenceSiteInfo, _contentInfo.SourceId);
                 var referenceContentInfo = DataProvider.ContentDao.GetContentInfo(referenceTableName, _contentInfo.ReferenceId);
 
                 if (referenceContentInfo != null)
                 {
-                    var pageUrl = PageUtility.GetContentUrl(referencePublishmentSystemInfo, referenceContentInfo, true);
-                    var referenceNodeInfo = NodeManager.GetNodeInfo(referenceContentInfo.PublishmentSystemId, referenceContentInfo.NodeId);
+                    var pageUrl = PageUtility.GetContentUrl(referenceSiteInfo, referenceContentInfo, true);
+                    var referenceNodeInfo = ChannelManager.GetChannelInfo(referenceContentInfo.SiteId, referenceContentInfo.ChannelId);
                     var addEditUrl =
-                        WebUtils.GetContentAddEditUrl(referencePublishmentSystemInfo.PublishmentSystemId,
+                        WebUtils.GetContentAddEditUrl(referenceSiteInfo.Id,
                             referenceNodeInfo, _contentInfo.ReferenceId, Body.GetQueryString("ReturnUrl"));
 
                     LtlScripts.Text += $@"
-<div class=""tips"">此内容为对内容 （站点：{referencePublishmentSystemInfo.PublishmentSystemName},栏目：{referenceNodeInfo.NodeName}）“<a href=""{pageUrl}"" target=""_blank"">{_contentInfo.Title}</a>”（<a href=""{addEditUrl}"">编辑</a>） 的引用，内容链接将和原始内容链接一致</div>";
+<div class=""tips"">此内容为对内容 （站点：{referenceSiteInfo.SiteName},栏目：{referenceNodeInfo.ChannelName}）“<a href=""{pageUrl}"" target=""_blank"">{_contentInfo.Title}</a>”（<a href=""{addEditUrl}"">编辑</a>） 的引用，内容链接将和原始内容链接一致</div>";
                 }
             }
 
-            BtnSubmit.Attributes.Add("onclick", ModalContentCheck.GetOpenWindowString(PublishmentSystemInfo.PublishmentSystemId, _nodeId, _contentId, _returnUrl));
-            HlPreview.NavigateUrl = PreviewApi.GetContentUrl(PublishmentSystemId, _contentInfo.NodeId, _contentInfo.Id);
+            BtnSubmit.Attributes.Add("onclick", ModalContentCheck.GetOpenWindowString(SiteInfo.Id, _channelId, _contentId, _returnUrl));
+            HlPreview.NavigateUrl = ApiRoutePreview.GetContentUrl(SiteId, _contentInfo.ChannelId, _contentInfo.Id);
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
@@ -129,7 +127,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var styleInfo = (TableStyleInfo)e.Item.DataItem;
 
-            var inputHtml = InputParserUtility.GetContentByTableStyle(_contentInfo.GetString(styleInfo.AttributeName), PublishmentSystemInfo, styleInfo);
+            var inputHtml = InputParserUtility.GetContentByTableStyle(_contentInfo.GetString(styleInfo.AttributeName), SiteInfo, styleInfo);
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 

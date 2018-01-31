@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -14,21 +14,19 @@ namespace SiteServer.BackgroundPages.Cms
 		private string _rootPath;
 		private string _directoryPath;
 
-        public static string GetOpenWindowString(int publishmentSystemId, string rootPath, string fileName)
+        public static string GetOpenWindowString(int siteId, string rootPath, string fileName)
         {
-            return LayerUtils.GetOpenScript("修改文件名", PageUtils.GetCmsUrl(nameof(ModalFileChangeName), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改文件名", PageUtils.GetCmsUrl(siteId, nameof(ModalFileChangeName), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RootPath", rootPath},
                 {"FileName", fileName}
             }), 400, 250);
         }
 
-        public static string GetOpenWindowString(int publishmentSystemId, string rootPath, string fileName, string hiddenClientId)
+        public static string GetOpenWindowString(int siteId, string rootPath, string fileName, string hiddenClientId)
         {
-            return LayerUtils.GetOpenScript("修改文件名", PageUtils.GetCmsUrl(nameof(ModalFileChangeName), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改文件名", PageUtils.GetCmsUrl(siteId, nameof(ModalFileChangeName), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RootPath", rootPath},
                 {"FileName", fileName},
                 {"HiddenClientID", hiddenClientId}
@@ -39,10 +37,10 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "RootPath");
+            PageUtils.CheckRequestParameter("siteId", "RootPath");
 
             _rootPath = Body.GetQueryString("RootPath").TrimEnd('/');
-            _directoryPath = PathUtility.MapPath(PublishmentSystemInfo, _rootPath);
+            _directoryPath = PathUtility.MapPath(SiteInfo, _rootPath);
 
 			if (!Page.IsPostBack)
 			{
@@ -52,7 +50,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         private string RedirectUrl()
         {
-            return ModalFileView.GetRedirectUrl(PublishmentSystemId, Body.GetQueryString("rootPath"),
+            return ModalFileView.GetRedirectUrl(SiteId, Body.GetQueryString("rootPath"),
                 Body.GetQueryString("FileName"), TbFileName.Text, Body.GetQueryString("HiddenClientID"));
         }
 
@@ -74,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
             FileUtils.MoveFile(pathSource, path, true);
             FileUtils.DeleteFileIfExists(pathSource);
 
-            Body.AddSiteLog(PublishmentSystemId, "修改文件名", $"文件名:{TbFileName.Text}");
+            Body.AddSiteLog(SiteId, "修改文件名", $"文件名:{TbFileName.Text}");
             //JsUtils.SubModal.CloseModalPageWithoutRefresh(Page);
             LayerUtils.CloseAndRedirect(Page, RedirectUrl());
         }

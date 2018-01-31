@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using BaiRong.Core;
-using BaiRong.Core.IO;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Rss;
+using SiteServer.Utils;
+using SiteServer.Utils.IO;
+using SiteServer.Utils.Rss;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -134,7 +134,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeOrder))
                 {
-                    orderByString = StlDataUtility.GetContentOrderByString(pageInfo.PublishmentSystemId, value, ETaxisType.OrderByTaxisDesc);
+                    orderByString = StlDataUtility.GetContentOrderByString(pageInfo.SiteId, value, ETaxisType.OrderByTaxisDesc);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeIsTop))
                 {
@@ -177,21 +177,21 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var scopeType = !string.IsNullOrEmpty(scopeTypeString) ? EScopeTypeUtils.GetEnumType(scopeTypeString) : EScopeType.All;
 
-            var channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName);
+            var channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, contextInfo.ChannelId, channelIndex, channelName);
 
-            var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
+            var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
             if (string.IsNullOrEmpty(channel.Title))
             {
-                channel.Title = nodeInfo.NodeName;
+                channel.Title = nodeInfo.ChannelName;
             }
             if (string.IsNullOrEmpty(channel.Description))
             {
                 channel.Description = nodeInfo.Content;
-                channel.Description = string.IsNullOrEmpty(channel.Description) ? nodeInfo.NodeName : StringUtils.MaxLengthText(channel.Description, 200);
+                channel.Description = string.IsNullOrEmpty(channel.Description) ? nodeInfo.ChannelName : StringUtils.MaxLengthText(channel.Description, 200);
             }
-            channel.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, nodeInfo, pageInfo.IsLocal)));
+            channel.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetChannelUrl(pageInfo.SiteInfo, nodeInfo, pageInfo.IsLocal)));
 
-            var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.PublishmentSystemInfo, channelId, 0, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, string.Empty, scopeType, groupChannel, groupChannelNot, null);
+            var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, string.Empty, scopeType, groupChannel, groupChannelNot, null);
 
             if (dataSource != null)
             {
@@ -209,7 +209,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 //    }
                 //    item.Description = StringUtils.Replace("&", item.Description, "&amp;");
                 //    item.PubDate = contentInfo.AddDate;
-                //    item.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo)));
+                //    item.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo)));
 
                 //    channel.Items.Add(item);
                 //}

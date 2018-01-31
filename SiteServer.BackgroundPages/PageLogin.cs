@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 
@@ -46,11 +46,11 @@ namespace SiteServer.BackgroundPages
                 // 再次探测是否需要安装或升级
                 if (SystemManager.IsNeedInstall())
                 {
-                    PageUtils.Redirect("installer/default.aspx");
+                    PageUtils.Redirect(PageInstaller.GetRedirectUrl());
                 }
-                else if (SystemManager.IsNeedUpgrade())
+                else if (SystemManager.IsNeedUpdate())
                 {
-                    PageUtils.Redirect("upgrade/default.aspx");
+                    PageUtils.Redirect(PageUpdateDatabase.GetRedirectUrl());
                 }
                 else
                 {
@@ -72,15 +72,15 @@ namespace SiteServer.BackgroundPages
 
             string userName;
             string errorMessage;
-            if (!BaiRongDataProvider.AdministratorDao.ValidateAccount(account, password, out userName, out errorMessage)) // 检测密码是否正确
+            if (!DataProvider.AdministratorDao.ValidateAccount(account, password, out userName, out errorMessage)) // 检测密码是否正确
             {
                 LogUtils.AddAdminLog(userName, "后台管理员登录失败");
-                BaiRongDataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfFailedLogin(userName); // 记录最后登录时间、失败次数+1
+                DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfFailedLogin(userName); // 记录最后登录时间、失败次数+1
                 LtlMessage.Text = GetMessageHtml(errorMessage); // 把错误信息显示在页面上
                 return;
             }
 
-            BaiRongDataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLogin(userName); // 记录最后登录时间、失败次数清零
+            DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLogin(userName); // 记录最后登录时间、失败次数清零
             Body.AdminLogin(userName); // 写Cookie并记录管理员操作日志
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty)); // 跳转到登录成功的后台页
         }

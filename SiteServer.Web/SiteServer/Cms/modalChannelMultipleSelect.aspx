@@ -12,11 +12,11 @@
       <form runat="server">
         <ctrl:alerts runat="server" />
 
-        <asp:PlaceHolder id="PhPublishmentSystemId" runat="server">
+        <asp:PlaceHolder id="PhSiteId" runat="server">
           <div class="form-group form-row">
             <label class="col-2 col-form-label text-right m-t-5">选择站点</label>
             <div class="col-6">
-              <asp:DropDownList class="form-control" ID="DdlPublishmentSystemId" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DdlPublishmentSystemId_OnSelectedIndexChanged">
+              <asp:DropDownList class="form-control" ID="DdlSiteId" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DdlSiteId_OnSelectedIndexChanged">
               </asp:DropDownList>
             </div>
             <div class="col-4"></div>

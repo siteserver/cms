@@ -1,5 +1,3 @@
-using SiteServer.CMS.Plugin;
-
 namespace SiteServer.CMS.Core.Security
 {
 	public class ProductPermissionsManager
@@ -16,7 +14,7 @@ namespace SiteServer.CMS.Core.Security
         {
             get
             {
-                var instance = new ProductPermissionsManager(RequestContext.CurrentAdministratorName);
+                var instance = new ProductPermissionsManager(Request.CurrentAdministratorName);
                 return instance.Permissions;
             }
         }

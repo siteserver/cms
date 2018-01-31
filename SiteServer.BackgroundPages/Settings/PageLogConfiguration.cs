@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -16,7 +17,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Log);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Log);
 
             EBooleanUtils.AddListItems(RblIsTimeThreshold, "启用", "不启用");
             ControlUtils.SelectSingleItem(RblIsTimeThreshold, ConfigManager.SystemConfigInfo.IsTimeThreshold.ToString());
@@ -38,7 +39,7 @@ namespace SiteServer.BackgroundPages.Settings
                 ConfigManager.SystemConfigInfo.TimeThreshold = TranslateUtils.ToInt(TbTime.Text);
             }
 
-            BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
+            DataProvider.ConfigDao.Update(ConfigManager.Instance);
 
             Body.AddAdminLog("设置日志阈值参数");
             SuccessMessage("日志设置成功");

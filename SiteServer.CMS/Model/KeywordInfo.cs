@@ -6,21 +6,21 @@ namespace SiteServer.CMS.Model
     {
         public KeywordInfo()
         {
-            KeywordId = 0;
+            Id = 0;
             Keyword = string.Empty;
             Alternative = string.Empty;
             Grade = EKeywordGrade.Normal;
         }
 
-        public KeywordInfo(int keywordId, string keyword, string alternative, EKeywordGrade grade)
+        public KeywordInfo(int id, string keyword, string alternative, EKeywordGrade grade)
         {
-            KeywordId = keywordId;
+            Id = id;
             Keyword = keyword;
             Alternative = alternative;
             Grade = grade;
         }
 
-        public int KeywordId { get; set; }
+        public int Id { get; set; }
 
         public string Keyword { get; set; }
 

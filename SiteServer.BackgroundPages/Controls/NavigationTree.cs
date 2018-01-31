@@ -2,8 +2,7 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
-using BaiRong.Core;
-using BaiRong.Core.Tabs;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Controls
@@ -13,7 +12,7 @@ namespace SiteServer.BackgroundPages.Controls
         protected override void Render(HtmlTextWriter writer)
         {
             var builder = new StringBuilder();
-            var tabList = TabManager.GetTabList(TopId, PublishmentSystemId);
+            var tabList = TabManager.GetTabList(TopId, SiteId);
             if (tabList != null && tabList.Count > 0)
             {
                 builder.Append($@"<li class=""text-muted menu-title"">{Title}</li>");
@@ -30,7 +29,7 @@ namespace SiteServer.BackgroundPages.Controls
             {
                 if (!TabManager.IsValid(parent, PermissionList)) continue;
 
-                //var linkUrl = PageUtils.AddQueryString(parent.Href, new NameValueCollection { { "publishmentSystemId", PublishmentSystemId.ToString() } });
+                //var linkUrl = PageUtils.AddQueryString(parent.Href, new NameValueCollection { { "siteId", SiteId.ToString() } });
                 //if (!string.IsNullOrEmpty(linkUrl) && !StringUtils.EqualsIgnoreCase(linkUrl, PageUtils.UnclickedUrl))
                 //{
                 //    linkUrl = PageUtils.GetLoadingUrl(linkUrl);
@@ -45,7 +44,7 @@ namespace SiteServer.BackgroundPages.Controls
                         {
                             if (!TabManager.IsValid(childTab, PermissionList)) continue;
 
-                            //var childUrl = PageUtils.AddQueryString(childTab.Href, new NameValueCollection { { "publishmentSystemId", PublishmentSystemId.ToString() } });
+                            //var childUrl = PageUtils.AddQueryString(childTab.Href, new NameValueCollection { { "siteId", SiteId.ToString() } });
                             //if (!string.IsNullOrEmpty(childUrl) && !StringUtils.EqualsIgnoreCase(childUrl, PageUtils.UnclickedUrl))
                             //{
                             //    childUrl = PageUtils.GetLoadingUrl(childUrl);
@@ -54,7 +53,7 @@ namespace SiteServer.BackgroundPages.Controls
                             if (!PageUtils.IsAbsoluteUrl(href))
                             {
                                 href = PageUtils.AddQueryString(href,
-                                    new NameValueCollection { { "publishmentSystemId", PublishmentSystemId.ToString() } });
+                                    new NameValueCollection { { "siteId", SiteId.ToString() } });
                             }
                             href = childTab.HasHref ? PageUtils.GetLoadingUrl(href) : "javascript:;";
 
@@ -90,7 +89,7 @@ namespace SiteServer.BackgroundPages.Controls
                     if (!PageUtils.IsAbsoluteUrl(href))
                     {
                         href = PageUtils.AddQueryString(href,
-                            new NameValueCollection {{"publishmentSystemId", PublishmentSystemId.ToString()}});
+                            new NameValueCollection {{"siteId", SiteId.ToString()}});
                     }
                     href = parent.HasHref ? PageUtils.GetLoadingUrl(href) : "javascript:;";
                     builder.Append($@"
@@ -128,9 +127,9 @@ namespace SiteServer.BackgroundPages.Controls
 
         //        builder.Append(item.GetTrHtml());
 
-        //        if (PublishmentSystemId > 0)
+        //        if (SiteId > 0)
         //        {
-        //            var tabCollection = NodeNaviTabManager.GetTabCollection(parent, PublishmentSystemId);
+        //            var tabCollection = NodeNaviTabManager.GetTabCollection(parent, SiteId);
         //            if (tabCollection?.Tabs != null && tabCollection.Tabs.Length > 0)
         //            {
         //                BuildNavigationTree(builder, tabCollection.Tabs.ToList(), parentsCount + 1, parent.Selected);
@@ -146,11 +145,11 @@ namespace SiteServer.BackgroundPages.Controls
         //    }
         //}
 
-        public int PublishmentSystemId
+        public int SiteId
         {
             get
             {
-                var state = ViewState["PublishmentSystemId"];
+                var state = ViewState["SiteId"];
                 if (state == null)
                 {
                     return 0;
@@ -159,7 +158,7 @@ namespace SiteServer.BackgroundPages.Controls
             }
             set
             {
-                ViewState["PublishmentSystemId"] = value;
+                ViewState["SiteId"] = value;
             }
         }
 

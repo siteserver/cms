@@ -1,10 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
+using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -16,13 +14,19 @@ namespace SiteServer.CMS.Provider
         {
             new TableColumnInfo
             {
-                ColumnName = nameof(TemplateMatchInfo.NodeId),
+                ColumnName = nameof(TemplateMatchInfo.Id),
                 DataType = DataType.Integer,
-                IsPrimaryKey = true
+                IsPrimaryKey = true,
+                IsIdentity = true
             },
             new TableColumnInfo
             {
-                ColumnName = nameof(TemplateMatchInfo.PublishmentSystemId),
+                ColumnName = nameof(TemplateMatchInfo.ChannelId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateMatchInfo.SiteId),
                 DataType = DataType.Integer
             },
             new TableColumnInfo
@@ -55,18 +59,18 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlSelect = "SELECT NodeID, PublishmentSystemID, ChannelTemplateID, ContentTemplateID, FilePath, ChannelFilePathRule, ContentFilePathRule FROM siteserver_TemplateMatch WHERE NodeID = @NodeID";
+        private const string SqlSelect = "SELECT Id, ChannelId, SiteId, ChannelTemplateId, ContentTemplateId, FilePath, ChannelFilePathRule, ContentFilePathRule FROM siteserver_TemplateMatch WHERE ChannelId = @ChannelId";
 
-        private const string SqlInsert = "INSERT INTO siteserver_TemplateMatch (NodeID, PublishmentSystemID, ChannelTemplateID, ContentTemplateID, FilePath, ChannelFilePathRule, ContentFilePathRule) VALUES (@NodeID, @PublishmentSystemID, @ChannelTemplateID, @ContentTemplateID, @FilePath, @ChannelFilePathRule, @ContentFilePathRule)";
+        private const string SqlInsert = "INSERT INTO siteserver_TemplateMatch (ChannelId, SiteId, ChannelTemplateId, ContentTemplateId, FilePath, ChannelFilePathRule, ContentFilePathRule) VALUES (@ChannelId, @SiteId, @ChannelTemplateId, @ContentTemplateId, @FilePath, @ChannelFilePathRule, @ContentFilePathRule)";
 
-        private const string SqlUpdate = "UPDATE siteserver_TemplateMatch SET ChannelTemplateID = @ChannelTemplateID, ContentTemplateID = @ContentTemplateID, FilePath = @FilePath, ChannelFilePathRule = @ChannelFilePathRule, ContentFilePathRule = @ContentFilePathRule WHERE NodeID = @NodeID";
+        private const string SqlUpdate = "UPDATE siteserver_TemplateMatch SET ChannelTemplateId = @ChannelTemplateId, ContentTemplateId = @ContentTemplateId, FilePath = @FilePath, ChannelFilePathRule = @ChannelFilePathRule, ContentFilePathRule = @ContentFilePathRule WHERE ChannelId = @ChannelId";
 
-        private const string SqlDelete = "DELETE FROM siteserver_TemplateMatch WHERE NodeID = @NodeID";
+        private const string SqlDelete = "DELETE FROM siteserver_TemplateMatch WHERE ChannelId = @ChannelId";
 
-        private const string ParmNodeId = "@NodeID";
-        private const string ParmPublishmentSystemId = "@PublishmentSystemID";
-        private const string ParmChannelTemplateId = "@ChannelTemplateID";
-        private const string ParmContentTemplateId = "@ContentTemplateID";
+        private const string ParmChannelId = "@ChannelId";
+        private const string ParmSiteId = "@SiteId";
+        private const string ParmChannelTemplateId = "@ChannelTemplateId";
+        private const string ParmContentTemplateId = "@ContentTemplateId";
         private const string ParmFilepath = "@FilePath";
         private const string ParmChannelFilepathRule = "@ChannelFilePathRule";
         private const string ParmContentFilepathRule = "@ContentFilePathRule";
@@ -75,8 +79,8 @@ namespace SiteServer.CMS.Provider
         {
             var insertParms = new IDataParameter[]
 		    {
-                GetParameter(ParmNodeId, DataType.Integer, info.NodeId),
-                GetParameter(ParmPublishmentSystemId, DataType.Integer, info.PublishmentSystemId),
+                GetParameter(ParmChannelId, DataType.Integer, info.ChannelId),
+                GetParameter(ParmSiteId, DataType.Integer, info.SiteId),
 			    GetParameter(ParmChannelTemplateId, DataType.Integer, info.ChannelTemplateId),
                 GetParameter(ParmContentTemplateId, DataType.Integer, info.ContentTemplateId),
                 GetParameter(ParmFilepath, DataType.VarChar, 200, info.FilePath),
@@ -96,30 +100,30 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmFilepath, DataType.VarChar, 200, info.FilePath),
                 GetParameter(ParmChannelFilepathRule, DataType.VarChar, 200, info.ChannelFilePathRule),
                 GetParameter(ParmContentFilepathRule, DataType.VarChar, 200, info.ContentFilePathRule),
-                GetParameter(ParmNodeId, DataType.Integer, info.NodeId)
+                GetParameter(ParmChannelId, DataType.Integer, info.ChannelId)
 		    };
 
             ExecuteNonQuery(SqlUpdate, updateParms);
         }
 
-        public void Delete(int nodeId)
+        public void Delete(int channelId)
         {
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmNodeId, DataType.Integer, nodeId)
+				GetParameter(ParmChannelId, DataType.Integer, channelId)
 			};
 
             ExecuteNonQuery(SqlDelete, parms);
         }
 
-        public TemplateMatchInfo GetTemplateMatchInfo(int nodeId)
+        public TemplateMatchInfo GetTemplateMatchInfo(int channelId)
         {
             TemplateMatchInfo info = null;
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmNodeId, DataType.Integer, nodeId)
+				GetParameter(ParmChannelId, DataType.Integer, channelId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms))
@@ -127,7 +131,7 @@ namespace SiteServer.CMS.Provider
                 if (rdr.Read())
                 {
                     var i = 0;
-                    info = new TemplateMatchInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
+                    info = new TemplateMatchInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
                 }
                 rdr.Close();
             }
@@ -135,11 +139,11 @@ namespace SiteServer.CMS.Provider
             return info;
         }
 
-        public bool IsExists(int nodeId)
+        public bool IsExists(int channelId)
         {
             var isExists = false;
 
-            string sqlString = $"SELECT NodeID FROM siteserver_TemplateMatch WHERE NodeID = {nodeId}";
+            string sqlString = $"SELECT ChannelId FROM siteserver_TemplateMatch WHERE ChannelId = {channelId}";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -153,49 +157,49 @@ namespace SiteServer.CMS.Provider
             return isExists;
         }
 
-        public Hashtable GetChannelTemplateIdHashtable(int publishmentSystemId)
+        public Dictionary<int, int> GetChannelTemplateIdDict(int siteId)
         {
-            var hashtable = new Hashtable();
+            var dict = new Dictionary<int, int>();
 
             string sqlString =
-                $"SELECT NodeID, ChannelTemplateID FROM siteserver_TemplateMatch WHERE PublishmentSystemID = {publishmentSystemId}";
+                $"SELECT ChannelId, ChannelTemplateId FROM siteserver_TemplateMatch WHERE SiteId = {siteId}";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    hashtable.Add(GetInt(rdr, 0), GetInt(rdr, 1));
+                    dict[GetInt(rdr, 0)] = GetInt(rdr, 1);
                 }
                 rdr.Close();
             }
 
-            return hashtable;
+            return dict;
         }
 
-        public Hashtable GetContentTemplateIdHashtable(int publishmentSystemId)
+        public Dictionary<int, int> GetContentTemplateIdDict(int siteId)
         {
-            var hashtable = new Hashtable();
+            var dict = new Dictionary<int, int>();
 
             string sqlString =
-                $"SELECT NodeID, ContentTemplateID FROM siteserver_TemplateMatch WHERE PublishmentSystemID = {publishmentSystemId}";
+                $"SELECT ChannelId, ContentTemplateId FROM siteserver_TemplateMatch WHERE SiteId = {siteId}";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    hashtable.Add(GetInt(rdr, 0), GetInt(rdr, 1));
+                    dict[GetInt(rdr, 0)] = GetInt(rdr, 1);
                 }
                 rdr.Close();
             }
 
-            return hashtable;
+            return dict;
         }
 
-        public int GetChannelTemplateId(int nodeId)
+        public int GetChannelTemplateId(int channelId)
         {
             var templateId = 0;
 
-            string sqlString = $"SELECT ChannelTemplateID FROM siteserver_TemplateMatch WHERE NodeID = {nodeId}";
+            string sqlString = $"SELECT ChannelTemplateId FROM siteserver_TemplateMatch WHERE ChannelId = {channelId}";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -209,11 +213,11 @@ namespace SiteServer.CMS.Provider
             return templateId;
         }
 
-        public int GetContentTemplateId(int nodeId)
+        public int GetContentTemplateId(int channelId)
         {
             var templateId = 0;
 
-            string sqlString = $"SELECT ContentTemplateID FROM siteserver_TemplateMatch WHERE NodeID = {nodeId}";
+            string sqlString = $"SELECT ContentTemplateId FROM siteserver_TemplateMatch WHERE ChannelId = {channelId}";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -227,11 +231,11 @@ namespace SiteServer.CMS.Provider
             return templateId;
         }
 
-        public string GetFilePath(int nodeId)
+        public string GetFilePath(int channelId)
         {
             var filePath = string.Empty;
 
-            string sqlString = $"SELECT FilePath FROM siteserver_TemplateMatch WHERE NodeID = {nodeId}";
+            string sqlString = $"SELECT FilePath FROM siteserver_TemplateMatch WHERE ChannelId = {channelId}";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -245,11 +249,11 @@ namespace SiteServer.CMS.Provider
             return filePath;
         }
 
-        public string GetChannelFilePathRule(int nodeId)
+        public string GetChannelFilePathRule(int channelId)
         {
             var filePathRule = string.Empty;
 
-            string sqlString = $"SELECT ChannelFilePathRule FROM siteserver_TemplateMatch WHERE NodeID = {nodeId}";
+            string sqlString = $"SELECT ChannelFilePathRule FROM siteserver_TemplateMatch WHERE ChannelId = {channelId}";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -263,11 +267,11 @@ namespace SiteServer.CMS.Provider
             return filePathRule;
         }
 
-        public string GetContentFilePathRule(int nodeId)
+        public string GetContentFilePathRule(int channelId)
         {
             var filePathRule = string.Empty;
 
-            string sqlString = $"SELECT ContentFilePathRule FROM siteserver_TemplateMatch WHERE NodeID = {nodeId}";
+            string sqlString = $"SELECT ContentFilePathRule FROM siteserver_TemplateMatch WHERE ChannelId = {channelId}";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -281,12 +285,12 @@ namespace SiteServer.CMS.Provider
             return filePathRule;
         }
 
-        public List<string> GetAllFilePathByPublishmentSystemId(int publishmentSystemId)
+        public List<string> GetAllFilePathBySiteId(int siteId)
         {
             var list = new List<string>();
 
             string sqlString =
-                $"SELECT FilePath FROM siteserver_TemplateMatch WHERE FilePath <> '' AND PublishmentSystemID = {publishmentSystemId}";
+                $"SELECT FilePath FROM siteserver_TemplateMatch WHERE FilePath <> '' AND SiteId = {siteId}";
 
             using (var rdr = ExecuteReader(sqlString))
             {

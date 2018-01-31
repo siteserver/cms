@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -13,34 +13,42 @@ using SiteServer.CMS.Controllers.Preview;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
+using SiteServer.Utils.Packaging;
+using ApiRouteVersion = SiteServer.CMS.Controllers.Sys.Packaging.ApiRouteVersion;
 
 namespace SiteServer.BackgroundPages
 {
     public class PageMain : BasePageCms
     {
         public Literal LtlTopMenus;
-        public PlaceHolder PhPublishmentSystem;
+        public PlaceHolder PhSite;
         public Literal LtlCreateStatus;
         public NavigationTree NtLeftManagement;
         public NavigationTree NtLeftFunctions;
 
-        private PublishmentSystemInfo _publishmentSystemInfo = new PublishmentSystemInfo();
-        private PublishmentSystemInfo _hqPublishmentSystemInfo;
+        private SiteInfo _siteInfo = new SiteInfo();
+        private SiteInfo _hqSiteInfo;
         private readonly List<int> _addedSiteIdList = new List<int>();
         private AdministratorWithPermissions _permissions;
 
         protected override bool IsSinglePage => true;
+
+        public string VersionApiUrl => ApiRouteVersion.GetUrl(PageUtility.InnerApiUrl, PackageUtils.PackageIdSsCms);
+
+        public string CurrentVersion => SystemManager.Version;
+
+        public string UpdateSystemUrl => PageUpdateSystem.GetRedirectUrl();
 
         public static string GetRedirectUrl()
         {
             return PageUtils.GetSiteServerUrl(nameof(PageMain), null);
         }
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
             return PageUtils.GetSiteServerUrl(nameof(PageMain), new NameValueCollection
             {
-                {"publishmentSystemId", publishmentSystemId.ToString()}
+                {"siteId", siteId.ToString()}
             });
         }
 
@@ -50,73 +58,73 @@ namespace SiteServer.BackgroundPages
 
             _permissions = PermissionsManager.GetPermissions(Body.AdminName);
 
-            var publishmentSystemId = PublishmentSystemId;
+            var siteId = SiteId;
 
-            if (publishmentSystemId == 0)
+            if (siteId == 0)
             {
-                publishmentSystemId = Body.AdministratorInfo.PublishmentSystemId;
+                siteId = Body.AdministratorInfo.SiteId;
             }
 
-            var publishmentSystemIdList = ProductPermissionsManager.Current.PublishmentSystemIdList;
+            var siteIdList = ProductPermissionsManager.Current.SiteIdList;
 
             //站点要判断是否存在，是否有权限
-            if (publishmentSystemId == 0 || !PublishmentSystemManager.IsExists(publishmentSystemId) || !publishmentSystemIdList.Contains(publishmentSystemId))
+            if (siteId == 0 || !SiteManager.IsExists(siteId) || !siteIdList.Contains(siteId))
             {
-                if (publishmentSystemIdList != null && publishmentSystemIdList.Count > 0)
+                if (siteIdList != null && siteIdList.Count > 0)
                 {
-                    publishmentSystemId = publishmentSystemIdList[0];
+                    siteId = siteIdList[0];
                 }
             }
 
-            _publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            _siteInfo = SiteManager.GetSiteInfo(siteId);
 
-            if (_publishmentSystemInfo != null && _publishmentSystemInfo.PublishmentSystemId > 0)
+            if (_siteInfo != null && _siteInfo.Id > 0)
             {
-                if (PublishmentSystemId == 0)
+                if (SiteId == 0)
                 {
-                    PageUtils.Redirect(GetRedirectUrl(_publishmentSystemInfo.PublishmentSystemId));
+                    PageUtils.Redirect(GetRedirectUrl(_siteInfo.Id));
                     return;
                 }
 
-                var showPublishmentSystem = false;
+                var showSite = false;
 
                 var permissionList = new List<string>();
-                if (ProductPermissionsManager.Current.WebsitePermissionDict.ContainsKey(_publishmentSystemInfo.PublishmentSystemId))
+                if (ProductPermissionsManager.Current.WebsitePermissionDict.ContainsKey(_siteInfo.Id))
                 {
-                    var websitePermissionList = ProductPermissionsManager.Current.WebsitePermissionDict[_publishmentSystemInfo.PublishmentSystemId];
+                    var websitePermissionList = ProductPermissionsManager.Current.WebsitePermissionDict[_siteInfo.Id];
                     if (websitePermissionList != null)
                     {
-                        showPublishmentSystem = true;
+                        showSite = true;
                         permissionList.AddRange(websitePermissionList);
                     }
                 }
 
-                ICollection nodeIdCollection = ProductPermissionsManager.Current.ChannelPermissionDict.Keys;
-                foreach (int nodeId in nodeIdCollection)
+                ICollection channelIdCollection = ProductPermissionsManager.Current.ChannelPermissionDict.Keys;
+                foreach (int channelId in channelIdCollection)
                 {
-                    if (NodeManager.IsAncestorOrSelf(_publishmentSystemInfo.PublishmentSystemId, _publishmentSystemInfo.PublishmentSystemId, nodeId))
+                    if (ChannelManager.IsAncestorOrSelf(_siteInfo.Id, _siteInfo.Id, channelId))
                     {
-                        showPublishmentSystem = true;
-                        var list = ProductPermissionsManager.Current.ChannelPermissionDict[nodeId];
+                        showSite = true;
+                        var list = ProductPermissionsManager.Current.ChannelPermissionDict[channelId];
                         permissionList.AddRange(list);
                     }
                 }
 
-                var publishmentSystemIdHashtable = new Hashtable();
-                if (publishmentSystemIdList != null)
+                var siteIdHashtable = new Hashtable();
+                if (siteIdList != null)
                 {
-                    foreach (var thePublishmentSystemId in publishmentSystemIdList)
+                    foreach (var theSiteId in siteIdList)
                     {
-                        publishmentSystemIdHashtable.Add(thePublishmentSystemId, thePublishmentSystemId);
+                        siteIdHashtable.Add(theSiteId, theSiteId);
                     }
                 }
 
-                if (!publishmentSystemIdHashtable.Contains(PublishmentSystemId))
+                if (!siteIdHashtable.Contains(SiteId))
                 {
-                    showPublishmentSystem = false;
+                    showSite = false;
                 }
 
-                if (!showPublishmentSystem)
+                if (!showSite)
                 {
                     PageUtils.RedirectToErrorPage("您没有此发布系统的操作权限！");
                     return;
@@ -129,21 +137,21 @@ namespace SiteServer.BackgroundPages
                     LtlTopMenus.Text += GetTopMenusHtml();
                 }
 
-                PhPublishmentSystem.Visible = true;
+                PhSite.Visible = true;
 
                 LtlCreateStatus.Text = $@"
-<a href=""javascript:;"" onclick=""{PageCreateStatus.GetOpenLayerString(_publishmentSystemInfo.PublishmentSystemId)}"">
+<a href=""javascript:;"" onclick=""{PageCreateStatus.GetOpenLayerString(_siteInfo.Id)}"">
     <i class=""ion-wand""></i>
     <span id=""progress"" class=""badge badge-xs badge-pink"">0</span>
 </a>
 ";
 
-                NtLeftManagement.TopId = AppManager.IdSite;
-                NtLeftManagement.PublishmentSystemId = _publishmentSystemInfo.PublishmentSystemId;
+                NtLeftManagement.TopId = ConfigManager.IdSite;
+                NtLeftManagement.SiteId = _siteInfo.Id;
                 NtLeftManagement.PermissionList = permissionList;
 
                 NtLeftFunctions.TopId = string.Empty;
-                NtLeftFunctions.PublishmentSystemId = _publishmentSystemInfo.PublishmentSystemId;
+                NtLeftFunctions.SiteId = _siteInfo.Id;
                 NtLeftFunctions.PermissionList = permissionList;
 
                 ClientScriptRegisterClientScriptBlock("NodeTreeScript", NodeNaviTreeItem.GetNavigationBarScript());
@@ -157,25 +165,25 @@ namespace SiteServer.BackgroundPages
                 }
             }
 
-            if (_publishmentSystemInfo != null && _publishmentSystemInfo.PublishmentSystemId > 0 && Body.AdministratorInfo.PublishmentSystemId != _publishmentSystemInfo.PublishmentSystemId)
+            if (_siteInfo != null && _siteInfo.Id > 0 && Body.AdministratorInfo.SiteId != _siteInfo.Id)
             {
-                BaiRongDataProvider.AdministratorDao.UpdatePublishmentSystemId(Body.AdminName, _publishmentSystemInfo.PublishmentSystemId);
+                DataProvider.AdministratorDao.UpdateSiteId(Body.AdminName, _siteInfo.Id);
             }
         }
 
-        private void AddSite(StringBuilder builder, PublishmentSystemInfo publishmentSystemInfo, Dictionary<int, List<PublishmentSystemInfo>> parentWithChildren, int level)
+        private void AddSite(StringBuilder builder, SiteInfo siteInfo, Dictionary<int, List<SiteInfo>> parentWithChildren, int level)
         {
-            if (_addedSiteIdList.Contains(publishmentSystemInfo.PublishmentSystemId)) return;
+            if (_addedSiteIdList.Contains(siteInfo.Id)) return;
 
-            var loadingUrl = PageUtils.GetLoadingUrl(GetRedirectUrl(publishmentSystemInfo.PublishmentSystemId));
+            var loadingUrl = PageUtils.GetLoadingUrl(GetRedirectUrl(siteInfo.Id));
 
-            if (parentWithChildren.ContainsKey(publishmentSystemInfo.PublishmentSystemId))
+            if (parentWithChildren.ContainsKey(siteInfo.Id))
             {
-                var children = parentWithChildren[publishmentSystemInfo.PublishmentSystemId];
+                var children = parentWithChildren[siteInfo.Id];
 
                 builder.Append($@"
-<li class=""has-submenu {(publishmentSystemInfo.PublishmentSystemId == _publishmentSystemInfo.PublishmentSystemId ? "active" : "")}"">
-    <a href=""{loadingUrl}"">{publishmentSystemInfo.PublishmentSystemName}</a>
+<li class=""has-submenu {(siteInfo.Id == _siteInfo.Id ? "active" : "")}"">
+    <a href=""{loadingUrl}"">{siteInfo.SiteName}</a>
     <ul class=""submenu"">
 ");
 
@@ -192,70 +200,70 @@ namespace SiteServer.BackgroundPages
             else
             {
                 builder.Append(
-                    $@"<li class=""{(publishmentSystemInfo.PublishmentSystemId == _publishmentSystemInfo.PublishmentSystemId ? "active" : "")}""><a href=""{loadingUrl}"">{publishmentSystemInfo.PublishmentSystemName}</a></li>");
+                    $@"<li class=""{(siteInfo.Id == _siteInfo.Id ? "active" : "")}""><a href=""{loadingUrl}"">{siteInfo.SiteName}</a></li>");
             }
 
-            _addedSiteIdList.Add(publishmentSystemInfo.PublishmentSystemId);
+            _addedSiteIdList.Add(siteInfo.Id);
         }
 
         private string GetTopMenuSitesHtml()
         {
-            var publishmentSystemIdList = ProductPermissionsManager.Current.PublishmentSystemIdList;
+            var siteIdList = ProductPermissionsManager.Current.SiteIdList;
 
-            if (!_permissions.IsSystemAdministrator && publishmentSystemIdList.Count == 0)
+            if (!_permissions.IsSystemAdministrator && siteIdList.Count == 0)
             {
                 return string.Empty;
             }
 
             //操作者拥有的站点列表
-            var mySystemInfoList = new List<PublishmentSystemInfo>();
+            var mySystemInfoList = new List<SiteInfo>();
 
-            var parentWithChildren = new Dictionary<int, List<PublishmentSystemInfo>>();
+            var parentWithChildren = new Dictionary<int, List<SiteInfo>>();
 
             if (ProductPermissionsManager.Current.IsSystemAdministrator)
             {
-                foreach (var publishmentSystemId in publishmentSystemIdList)
+                foreach (var siteId in siteIdList)
                 {
-                    AddToMySystemInfoList(mySystemInfoList, parentWithChildren, publishmentSystemId);
+                    AddToMySystemInfoList(mySystemInfoList, parentWithChildren, siteId);
                 }
             }
             else
             {
-                ICollection nodeIdCollection = ProductPermissionsManager.Current.ChannelPermissionDict.Keys;
-                ICollection publishmentSystemIdCollection = ProductPermissionsManager.Current.WebsitePermissionDict.Keys;
-                foreach (var publishmentSystemId in publishmentSystemIdList)
+                ICollection channelIdCollection = ProductPermissionsManager.Current.ChannelPermissionDict.Keys;
+                ICollection siteIdCollection = ProductPermissionsManager.Current.WebsitePermissionDict.Keys;
+                foreach (var siteId in siteIdList)
                 {
-                    var showPublishmentSystem = IsShowPublishmentSystem(publishmentSystemId, publishmentSystemIdCollection, nodeIdCollection);
-                    if (showPublishmentSystem)
+                    var showSite = IsShowSite(siteId, siteIdCollection, channelIdCollection);
+                    if (showSite)
                     {
-                        AddToMySystemInfoList(mySystemInfoList, parentWithChildren, publishmentSystemId);
+                        AddToMySystemInfoList(mySystemInfoList, parentWithChildren, siteId);
                     }
                 }
             }
 
             var builder = new StringBuilder();
 
-            if (_hqPublishmentSystemInfo != null || mySystemInfoList.Count > 0)
+            if (_hqSiteInfo != null || mySystemInfoList.Count > 0)
             {
-                if (_hqPublishmentSystemInfo != null)
+                if (_hqSiteInfo != null)
                 {
-                    AddSite(builder, _hqPublishmentSystemInfo, parentWithChildren, 0);
+                    AddSite(builder, _hqSiteInfo, parentWithChildren, 0);
                 }
 
                 if (mySystemInfoList.Count > 0)
                 {
                     var count = 0;
-                    foreach (var publishmentSystemInfo in mySystemInfoList)
+                    foreach (var siteInfo in mySystemInfoList)
                     {
-                        if (publishmentSystemInfo.IsHeadquarters == false)
+                        if (siteInfo.IsRoot == false)
                         {
                             count++;
-                            AddSite(builder, publishmentSystemInfo, parentWithChildren, 0);
+                            AddSite(builder, siteInfo, parentWithChildren, 0);
                         }
                         if (count == 13)
                         {
                             builder.Append(
-                                $@"<li><a href=""javascript:;"" onclick=""{ModalPublishmentSystemSelect.GetOpenLayerString()}"">列出全部站点...</a></li>");
+                                $@"<li><a href=""javascript:;"" onclick=""{ModalSiteSelect.GetOpenLayerString(SiteId)}"">列出全部站点...</a></li>");
                             break;
                         }
                     }
@@ -264,13 +272,13 @@ namespace SiteServer.BackgroundPages
 
             var clazz = "has-submenu";
             var menuText = "站点管理";
-            if (_publishmentSystemInfo != null && _publishmentSystemInfo.PublishmentSystemId > 0)
+            if (_siteInfo != null && _siteInfo.Id > 0)
             {
                 clazz = "has-submenu active";
-                menuText = _publishmentSystemInfo.PublishmentSystemName;
-                if (_publishmentSystemInfo.ParentPublishmentSystemId > 0)
+                menuText = _siteInfo.SiteName;
+                if (_siteInfo.ParentId > 0)
                 {
-                    menuText += $" ({PublishmentSystemManager.GetPublishmentSystemLevel(_publishmentSystemInfo.PublishmentSystemId) + 1}级)";
+                    menuText += $" ({SiteManager.GetSiteLevel(_siteInfo.Id) + 1}级)";
                 }
             }
 
@@ -284,7 +292,7 @@ namespace SiteServer.BackgroundPages
 
         private string GetTopMenuLinksHtml()
         {
-            if (_publishmentSystemInfo == null || _publishmentSystemInfo.PublishmentSystemId <= 0)
+            if (_siteInfo == null || _siteInfo.Id <= 0)
             {
                 return string.Empty;
             }
@@ -292,9 +300,9 @@ namespace SiteServer.BackgroundPages
             var builder = new StringBuilder();
 
             builder.Append(
-                    $@"<li><a href=""{PageUtility.GetPublishmentSystemUrl(_publishmentSystemInfo, false)}"" target=""_blank"">访问站点</a></li>");
+                    $@"<li><a href=""{PageUtility.GetSiteUrl(_siteInfo, false)}"" target=""_blank"">访问站点</a></li>");
             builder.Append(
-                    $@"<li><a href=""{PreviewApi.GetPublishmentSystemUrl(_publishmentSystemInfo.PublishmentSystemId)}"" target=""_blank"">预览站点</a></li>");
+                    $@"<li><a href=""{ApiRoutePreview.GetSiteUrl(_siteInfo.Id)}"" target=""_blank"">预览站点</a></li>");
 
             return $@"<li class=""has-submenu"">
               <a href=""javascript:;""><i class=""ion-link""></i>站点链接</a>
@@ -314,9 +322,9 @@ namespace SiteServer.BackgroundPages
             }
 
             var permissionList = new List<string>();
-            if (ProductPermissionsManager.Current.WebsitePermissionDict.ContainsKey(PublishmentSystemId))
+            if (ProductPermissionsManager.Current.WebsitePermissionDict.ContainsKey(SiteId))
             {
-                var websitePermissionList = ProductPermissionsManager.Current.WebsitePermissionDict[PublishmentSystemId];
+                var websitePermissionList = ProductPermissionsManager.Current.WebsitePermissionDict[SiteId];
                 if (websitePermissionList != null)
                 {
                     permissionList.AddRange(websitePermissionList);
@@ -328,7 +336,7 @@ namespace SiteServer.BackgroundPages
             var builder = new StringBuilder();
             foreach (var tab in topMenuTabs)
             {
-                if (!TabManager.IsValid(tab, _permissions.PermissionList)) continue;
+                if (!ProductPermissionsManager.Current.IsConsoleAdministrator && !TabManager.IsValid(tab, permissionList)) continue;
 
                 var target = string.Empty;
                 if (!string.IsNullOrEmpty(tab.Target))
@@ -340,7 +348,7 @@ namespace SiteServer.BackgroundPages
                 var tabsBuilder = new StringBuilder();
                 foreach (var parent in tabs)
                 {
-                    if (!TabManager.IsValid(parent, permissionList)) continue;
+                    if (!ProductPermissionsManager.Current.IsConsoleAdministrator && !TabManager.IsValid(parent, permissionList)) continue;
 
                     var hasChildren = parent.Children != null && parent.Children.Length > 0;
 
@@ -385,18 +393,18 @@ namespace SiteServer.BackgroundPages
             return builder.ToString();
         }
 
-        private static bool IsShowPublishmentSystem(int publishmentSystemId, ICollection publishmentSystemIdCollection, ICollection nodeIdCollection)
+        private static bool IsShowSite(int siteId, ICollection siteIdCollection, ICollection channelIdCollection)
         {
-            foreach (int psId in publishmentSystemIdCollection)
+            foreach (int psId in siteIdCollection)
             {
-                if (psId == publishmentSystemId)
+                if (psId == siteId)
                 {
                     return true;
                 }
             }
-            foreach (int nodeId in nodeIdCollection)
+            foreach (int channelId in channelIdCollection)
             {
-                if (NodeManager.IsAncestorOrSelf(publishmentSystemId, publishmentSystemId, nodeId))
+                if (ChannelManager.IsAncestorOrSelf(siteId, siteId, channelId))
                 {
                     return true;
                 }
@@ -404,26 +412,26 @@ namespace SiteServer.BackgroundPages
             return false;
         }
 
-        private void AddToMySystemInfoList(List<PublishmentSystemInfo> mySystemInfoList, Dictionary<int, List<PublishmentSystemInfo>> parentWithChildren, int publishmentSystemId)
+        private void AddToMySystemInfoList(List<SiteInfo> mySystemInfoList, Dictionary<int, List<SiteInfo>> parentWithChildren, int siteId)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            if (publishmentSystemInfo == null) return;
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            if (siteInfo == null) return;
 
-            if (publishmentSystemInfo.IsHeadquarters)
+            if (siteInfo.IsRoot)
             {
-                _hqPublishmentSystemInfo = publishmentSystemInfo;
+                _hqSiteInfo = siteInfo;
             }
-            else if (publishmentSystemInfo.ParentPublishmentSystemId > 0)
+            else if (siteInfo.ParentId > 0)
             {
-                var children = new List<PublishmentSystemInfo>();
-                if (parentWithChildren.ContainsKey(publishmentSystemInfo.ParentPublishmentSystemId))
+                var children = new List<SiteInfo>();
+                if (parentWithChildren.ContainsKey(siteInfo.ParentId))
                 {
-                    children = parentWithChildren[publishmentSystemInfo.ParentPublishmentSystemId];
+                    children = parentWithChildren[siteInfo.ParentId];
                 }
-                children.Add(publishmentSystemInfo);
-                parentWithChildren[publishmentSystemInfo.ParentPublishmentSystemId] = children;
+                children.Add(siteInfo);
+                parentWithChildren[siteInfo.ParentId] = children;
             }
-            mySystemInfoList.Add(publishmentSystemInfo);
+            mySystemInfoList.Add(siteInfo);
         }
     }
 }

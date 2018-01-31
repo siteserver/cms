@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core.Security;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -25,8 +26,8 @@ namespace SiteServer.BackgroundPages.Settings
 				var roleName = Body.GetQueryString("RoleName");
 				try
 				{
-                    BaiRongDataProvider.PermissionsInRolesDao.Delete(roleName);
-                    BaiRongDataProvider.RoleDao.DeleteRole(roleName);
+                    DataProvider.PermissionsInRolesDao.Delete(roleName);
+                    DataProvider.RoleDao.DeleteRole(roleName);
 
                     Body.AddAdminLog("删除管理员角色", $"角色名称:{roleName}");
 
@@ -40,12 +41,12 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Admin);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Admin);
 
             var permissioins = PermissionsManager.GetPermissions(Body.AdminName);
             RptContents.DataSource = permissioins.IsConsoleAdministrator
-                ? BaiRongDataProvider.RoleDao.GetAllRoles()
-                : BaiRongDataProvider.RoleDao.GetAllRolesByCreatorUserName(Body.AdminName);
+                ? DataProvider.RoleDao.GetAllRoles()
+                : DataProvider.RoleDao.GetAllRolesByCreatorUserName(Body.AdminName);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
@@ -65,7 +66,7 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlDelete = (Literal)e.Item.FindControl("ltlDelete");
 
             ltlRoleName.Text = roleName;
-            ltlDescription.Text = BaiRongDataProvider.RoleDao.GetRoleDescription(roleName);
+            ltlDescription.Text = DataProvider.RoleDao.GetRoleDescription(roleName);
             ltlEdit.Text = $@"<a href=""{PageAdminRoleAdd.GetRedirectUrl(roleName)}"">修改</a>";
             ltlDelete.Text = $@"<a href=""javascript:;"" onClick=""{AlertUtils.ConfirmDelete("删除角色", $"此操作将会删除角色“{roleName}”，确认吗？", $"{GetRedirectUrl()}?Delete={true}&RoleName={roleName}")}"">删除</a>";
         }

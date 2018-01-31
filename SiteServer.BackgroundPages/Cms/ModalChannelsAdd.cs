@@ -3,12 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin.Features;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -27,23 +26,21 @@ namespace SiteServer.BackgroundPages.Cms
 
         private string _returnUrl;
 
-        public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
+        public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
         {
             return LayerUtils.GetOpenScript("添加栏目",
-                PageUtils.GetCmsUrl(nameof(ModalChannelsAdd), new NameValueCollection
+                PageUtils.GetCmsUrl(siteId, nameof(ModalChannelsAdd), new NameValueCollection
                 {
-                    {"PublishmentSystemID", publishmentSystemId.ToString()},
-                    {"NodeID", nodeId.ToString()},
+                    {"channelId", channelId.ToString()},
                     {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
                 }));
         }
 
-        public static string GetRedirectUrl(int publishmentSystemId, int nodeId, string returnUrl)
+        public static string GetRedirectUrl(int siteId, int channelId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(nameof(ModalChannelsAdd), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(ModalChannelsAdd), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"NodeID", nodeId.ToString()},
+                {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
         }
@@ -52,26 +49,26 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID", "ReturnUrl");
+            PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
 
-            var nodeId = Body.GetQueryInt("NodeID");
+            var channelId = Body.GetQueryInt("channelId");
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
 
             if (IsPostBack) return;
 
             DdlContentModelPluginId.Items.Add(new ListItem("<与父栏目相同>", string.Empty));
-            var contentTables = PluginManager.GetContentModelPlugins();
+            var contentTables = PluginContentManager.GetContentModelPlugins();
             foreach (var contentTable in contentTables)
             {
-                DdlContentModelPluginId.Items.Add(new ListItem(contentTable.DisplayName, contentTable.Id));
+                DdlContentModelPluginId.Items.Add(new ListItem(contentTable.Title, contentTable.Id));
             }
 
-            var plugins = PluginManager.GetAllContentRelatedPlugins(false);
+            var plugins = PluginContentManager.GetAllContentRelatedPlugins(false);
             if (plugins.Count > 0)
             {
                 foreach (var pluginMetadata in plugins)
                 {
-                    CblContentRelatedPluginIds.Items.Add(new ListItem(pluginMetadata.DisplayName, pluginMetadata.Id));
+                    CblContentRelatedPluginIds.Items.Add(new ListItem(pluginMetadata.Title, pluginMetadata.Id));
                 }
             }
             else
@@ -79,8 +76,8 @@ namespace SiteServer.BackgroundPages.Cms
                 PhContentRelatedPluginIds.Visible = false;
             }
 
-            DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(PublishmentSystemId, ETemplateType.ChannelTemplate);
-            DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(PublishmentSystemId, ETemplateType.ContentTemplate);
+            DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ChannelTemplate);
+            DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ContentTemplate);
 
             DdlChannelTemplateId.DataBind();
             DdlChannelTemplateId.Items.Insert(0, new ListItem("<默认>", "0"));
@@ -89,18 +86,18 @@ namespace SiteServer.BackgroundPages.Cms
             DdlContentTemplateId.Items.Insert(0, new ListItem("<默认>", "0"));
             DdlContentTemplateId.Items[0].Selected = true;
 
-            HlSelectChannel.Attributes.Add("onclick", ModalChannelSelect.GetOpenWindowString(PublishmentSystemId));
+            HlSelectChannel.Attributes.Add("onclick", ModalChannelSelect.GetOpenWindowString(SiteId));
             LtlSelectChannelScript.Text =
-                $@"<script>selectChannel('{NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId)}', '{nodeId}');</script>";
+                $@"<script>selectChannel('{ChannelManager.GetChannelNameNavigation(SiteId, channelId)}', '{channelId}');</script>";
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             bool isChanged;
-            var parentNodeId = TranslateUtils.ToInt(Request.Form["nodeID"]);
-            if (parentNodeId == 0)
+            var parentChannelId = TranslateUtils.ToInt(Request.Form["channelId"]);
+            if (parentChannelId == 0)
             {
-                parentNodeId = PublishmentSystemId;
+                parentChannelId = SiteId;
             }
 
             try
@@ -111,7 +108,7 @@ namespace SiteServer.BackgroundPages.Cms
                     return;
                 }
 
-                var insertedNodeIdHashtable = new Hashtable {[1] = parentNodeId}; //key为栏目的级别，1为第一级栏目
+                var insertedChannelIdHashtable = new Hashtable {[1] = parentChannelId}; //key为栏目的级别，1为第一级栏目
 
                 var nodeNameArray = TbNodeNames.Text.Split('\n');
                 List<string> nodeIndexNameList = null;
@@ -125,7 +122,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var nodeIndex = string.Empty;
                     count++;
 
-                    if (!string.IsNullOrEmpty(nodeName) && insertedNodeIdHashtable.Contains(count))
+                    if (!string.IsNullOrEmpty(nodeName) && insertedChannelIdHashtable.Contains(count))
                     {
                         if (CbIsNameToIndex.Checked)
                         {
@@ -147,7 +144,7 @@ namespace SiteServer.BackgroundPages.Cms
                         {
                             if (nodeIndexNameList == null)
                             {
-                                nodeIndexNameList = DataProvider.NodeDao.GetNodeIndexNameList(PublishmentSystemId);
+                                nodeIndexNameList = DataProvider.ChannelDao.GetIndexNameList(SiteId);
                             }
                             if (nodeIndexNameList.IndexOf(nodeIndex) != -1)
                             {
@@ -159,25 +156,25 @@ namespace SiteServer.BackgroundPages.Cms
                             }
                         }
 
-                        var parentId = (int)insertedNodeIdHashtable[count];
+                        var parentId = (int)insertedChannelIdHashtable[count];
                         var contentModelPluginId = DdlContentModelPluginId.SelectedValue;
                         if (string.IsNullOrEmpty(contentModelPluginId))
                         {
-                            var parentNodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, parentId);
+                            var parentNodeInfo = ChannelManager.GetChannelInfo(SiteId, parentId);
                             contentModelPluginId = parentNodeInfo.ContentModelPluginId;
                         }
 
                         var channelTemplateId = TranslateUtils.ToInt(DdlChannelTemplateId.SelectedValue);
                         var contentTemplateId = TranslateUtils.ToInt(DdlContentTemplateId.SelectedValue);
 
-                        var insertedNodeId = DataProvider.NodeDao.InsertNodeInfo(PublishmentSystemId, parentId, nodeName, nodeIndex, contentModelPluginId, ControlUtils.GetSelectedListControlValueCollection(CblContentRelatedPluginIds), channelTemplateId, contentTemplateId);
-                        insertedNodeIdHashtable[count + 1] = insertedNodeId;
+                        var insertedChannelId = DataProvider.ChannelDao.Insert(SiteId, parentId, nodeName, nodeIndex, contentModelPluginId, ControlUtils.GetSelectedListControlValueCollection(CblContentRelatedPluginIds), channelTemplateId, contentTemplateId);
+                        insertedChannelIdHashtable[count + 1] = insertedChannelId;
 
-                        CreateManager.CreateChannel(PublishmentSystemId, insertedNodeId);
+                        CreateManager.CreateChannel(SiteId, insertedChannelId);
                     }
                 }
 
-                Body.AddSiteLog(PublishmentSystemId, parentNodeId, 0, "快速添加栏目", $"父栏目:{NodeManager.GetNodeName(PublishmentSystemId, parentNodeId)},栏目:{TbNodeNames.Text.Replace('\n', ',')}");
+                Body.AddSiteLog(SiteId, parentChannelId, 0, "快速添加栏目", $"父栏目:{ChannelManager.GetChannelName(SiteId, parentChannelId)},栏目:{TbNodeNames.Text.Replace('\n', ',')}");
 
                 isChanged = true;
             }

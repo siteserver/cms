@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Diagnostics;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -18,7 +16,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Utility);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Utility);
 
             var parameterList = new List<KeyValuePair<string, string>>
             {
@@ -31,9 +29,9 @@ namespace SiteServer.BackgroundPages.Settings
                 new KeyValuePair<string, string>("域名", PageUtils.GetHost()),
                 new KeyValuePair<string, string>("访问IP", PageUtils.GetIpAddress()),
                 new KeyValuePair<string, string>(".NET版本", Environment.Version.ToString()),
-                new KeyValuePair<string, string>("SiteServer CMS 版本", AppManager.GetFullVersion()),
+                new KeyValuePair<string, string>("SiteServer CMS 版本", SystemManager.Version),
                 new KeyValuePair<string, string>("最近升级时间", DateUtils.GetDateAndTimeString(ConfigManager.Instance.UpdateDate)),
-                new KeyValuePair<string, string>("数据库类型", EDatabaseTypeUtils.GetValue(WebConfigUtils.DatabaseType)),
+                new KeyValuePair<string, string>("数据库类型", WebConfigUtils.DatabaseType.Value),
                 new KeyValuePair<string, string>("数据库名称", SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             };
 

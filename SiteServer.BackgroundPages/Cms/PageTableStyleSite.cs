@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -26,21 +25,19 @@ namespace SiteServer.BackgroundPages.Cms
         private List<string> _attributeNames;
         private string _returnUrl;
 
-        public static string GetRedirectUrl(int publishmentSystemId, int relatedIdentity, string returnUrl)
+        public static string GetRedirectUrl(int siteId, int relatedIdentity, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(nameof(PageTableStyleSite), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageTableStyleSite), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedIdentity", relatedIdentity.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
         }
 
-        public static string GetRedirectUrl(int publishmentSystemId, int relatedIdentity, int itemId, string returnUrl)
+        public static string GetRedirectUrl(int siteId, int relatedIdentity, int itemId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(nameof(PageTableStyleSite), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageTableStyleSite), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedIdentity", relatedIdentity.ToString()},
                 {"ItemID", itemId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -51,16 +48,16 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _relatedIdentity = string.IsNullOrEmpty(Body.GetQueryString("RelatedIdentity")) ? PublishmentSystemId : Body.GetQueryInt("RelatedIdentity");
-            _tableName = DataProvider.PublishmentSystemDao.TableName;
+            _relatedIdentity = string.IsNullOrEmpty(Body.GetQueryString("RelatedIdentity")) ? SiteId : Body.GetQueryInt("RelatedIdentity");
+            _tableName = DataProvider.SiteDao.TableName;
             _itemId = Body.GetQueryInt("itemID");
-            _relatedIdentities = RelatedIdentities.GetRelatedIdentities(PublishmentSystemId, _relatedIdentity);
+            _relatedIdentities = RelatedIdentities.GetRelatedIdentities(SiteId, _relatedIdentity);
             _attributeNames = TableMetadataManager.GetAttributeNameList(_tableName);
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
 
             //删除样式
             if (Body.IsQueryExists("DeleteStyle"))
@@ -71,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
                     try
                     {
                         TableStyleManager.Delete(_relatedIdentity, _tableName, attributeName);
-                        Body.AddSiteLog(PublishmentSystemId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
+                        Body.AddSiteLog(SiteId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
                         SuccessDeleteMessage();
                     }
                     catch (Exception ex)
@@ -94,13 +91,13 @@ namespace SiteServer.BackgroundPages.Cms
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
-            var redirectUrl = GetRedirectUrl(PublishmentSystemId, _relatedIdentity, _itemId, _returnUrl);
+            var redirectUrl = GetRedirectUrl(SiteId, _relatedIdentity, _itemId, _returnUrl);
 
-            BtnAddStyle.Attributes.Add("onclick", ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, 0, _relatedIdentities, _tableName, string.Empty, redirectUrl));
-            BtnAddStyles.Attributes.Add("onclick", ModalTableStylesAdd.GetOpenWindowString(PublishmentSystemId, _relatedIdentities, _tableName, redirectUrl));
+            BtnAddStyle.Attributes.Add("onclick", ModalTableStyleAdd.GetOpenWindowString(SiteId, 0, _relatedIdentities, _tableName, string.Empty, redirectUrl));
+            BtnAddStyles.Attributes.Add("onclick", ModalTableStylesAdd.GetOpenWindowString(SiteId, _relatedIdentities, _tableName, redirectUrl));
 
-            BtnImport.Attributes.Add("onclick", ModalTableStyleImport.GetOpenWindowString(_tableName, PublishmentSystemId, _relatedIdentity));
-            BtnExport.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToSingleTableStyle(_tableName, PublishmentSystemId, _relatedIdentity));
+            BtnImport.Attributes.Add("onclick", ModalTableStyleImport.GetOpenWindowString(_tableName, SiteId, _relatedIdentity));
+            BtnExport.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToSingleTableStyle(_tableName, SiteId, _relatedIdentity));
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
@@ -126,25 +123,24 @@ namespace SiteServer.BackgroundPages.Cms
             ltlAttributeName.Text = styleInfo.AttributeName;
 
             ltlDisplayName.Text = styleInfo.DisplayName;
-            ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
+            ltlInputType.Text = InputTypeUtils.GetText(styleInfo.InputType);
 
-            ltlValidate.Text = ValidateTypeUtils.GetValidateInfo(styleInfo);
+            ltlValidate.Text = TableStyleManager.GetValidateInfo(styleInfo);
 
-            var redirectUrl = GetRedirectUrl(PublishmentSystemId, _relatedIdentity, _itemId, _returnUrl);
-            var showPopWinString = ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, redirectUrl);
+            var redirectUrl = GetRedirectUrl(SiteId, _relatedIdentity, _itemId, _returnUrl);
+            var showPopWinString = ModalTableStyleAdd.GetOpenWindowString(SiteId, styleInfo.Id, _relatedIdentities, _tableName, styleInfo.AttributeName, redirectUrl);
             var editText = styleInfo.RelatedIdentity == _relatedIdentity ? "修改" : "设置";
             ltlEditStyle.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">{editText}</a>";
 
-            showPopWinString = ModalTableStyleValidateAdd.GetOpenWindowString(styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, redirectUrl);
+            showPopWinString = ModalTableStyleValidateAdd.GetOpenWindowString(SiteId, styleInfo.Id, _relatedIdentities, _tableName, styleInfo.AttributeName, redirectUrl);
             ltlEditValidate.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">设置</a>";
 
             ltlTaxis.Text = styleInfo.Taxis.ToString();
 
             if (styleInfo.RelatedIdentity != _relatedIdentity) return;
 
-            var urlStyle = PageUtils.GetCmsUrl(nameof(PageTableStyleSite), new NameValueCollection
+            var urlStyle = PageUtils.GetCmsUrl(SiteId, nameof(PageTableStyleSite), new NameValueCollection
             {
-                {"PublishmentSystemID", PublishmentSystemId.ToString()},
                 {"TableName", _tableName},
                 {"RelatedIdentity", _relatedIdentity.ToString()},
                 {"DeleteStyle", true.ToString()},

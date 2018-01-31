@@ -59,7 +59,7 @@ function chkSelect(e) {
 	}
 }
 
-function showImage(obj, imageID, rootUrl, publishmentSystemUrl){
+function showImage(obj, imageID, rootUrl, siteUrl){
     if(obj.value==""){
 		document.getElementById(imageID).setAttribute('href', '../assets/icon/empty.gif');
 		return false;
@@ -70,7 +70,7 @@ function showImage(obj, imageID, rootUrl, publishmentSystemUrl){
 			if (imageUrl.charAt(0) == '~'){
 				imageUrl = imageUrl.replace('~', rootUrl);
 			}else if (imageUrl.charAt(0) == '@'){
-				imageUrl = imageUrl.replace('@', publishmentSystemUrl);
+				imageUrl = imageUrl.replace('@', siteUrl);
 			}
 		}
 		if(imageUrl && imageUrl.substr(0,2)=='//'){

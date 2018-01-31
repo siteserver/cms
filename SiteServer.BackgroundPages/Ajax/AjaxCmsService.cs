@@ -2,9 +2,9 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -24,49 +24,49 @@ namespace SiteServer.BackgroundPages.Ajax
             });
         }
 
-        public static string GetTitlesUrl(int publishmentSystemId, int nodeId)
+        public static string GetTitlesUrl(int siteId, int channelId)
         {
             return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
             {
                 {"type", TypeGetTitles},
-                {"publishmentSystemID", publishmentSystemId.ToString()},
-                {"nodeID", nodeId.ToString()}
+                {"siteId", siteId.ToString()},
+                {"channelId", channelId.ToString()}
             });
         }
 
-        public static string GetWordSpliterUrl(int publishmentSystemId)
+        public static string GetWordSpliterUrl(int siteId)
         {
             return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
             {
                 {"type", TypeGetWordSpliter},
-                {"publishmentSystemID", publishmentSystemId.ToString()}
+                {"siteId", siteId.ToString()}
             });
         }
 
-        public static string GetDetectionUrl(int publishmentSystemId)
+        public static string GetDetectionUrl(int siteId)
         {
             return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
             {
                 {"type", TypeGetDetection},
-                {"publishmentSystemID", publishmentSystemId.ToString()}
+                {"siteId", siteId.ToString()}
             });
         }
 
-        public static string GetDetectionReplaceUrl(int publishmentSystemId)
+        public static string GetDetectionReplaceUrl(int siteId)
         {
             return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
             {
                 {"type", TypeGetDetectionReplace},
-                {"publishmentSystemID", publishmentSystemId.ToString()}
+                {"siteId", siteId.ToString()}
             });
         }
 
-        public static string GetTagsUrl(int publishmentSystemId)
+        public static string GetTagsUrl(int siteId)
         {
             return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
             {
                 {"type", TypeGetTags},
-                {"publishmentSystemID", publishmentSystemId.ToString()}
+                {"siteId", siteId.ToString()}
             });
         }
 
@@ -77,15 +77,10 @@ namespace SiteServer.BackgroundPages.Ajax
 
             if (type == TypeGetTitles)
             {
-                var publishmentSystemId = TranslateUtils.ToInt(Request["publishmentSystemID"]);
-                var channelId = TranslateUtils.ToInt(Request["channelID"]);
-                var nodeId = TranslateUtils.ToInt(Request["nodeID"]);
-                if (channelId > 0)
-                {
-                    nodeId = channelId;
-                }
+                var siteId = TranslateUtils.ToInt(Request["siteId"]);
+                var channelId = TranslateUtils.ToInt(Request["channelId"]);
                 var title = Request["title"];
-                var titles = GetTitles(publishmentSystemId, nodeId, title);
+                var titles = GetTitles(siteId, channelId, title);
 
                 Page.Response.Write(titles);
                 Page.Response.End();
@@ -94,9 +89,9 @@ namespace SiteServer.BackgroundPages.Ajax
             }
             if (type == TypeGetWordSpliter)
             {
-                var publishmentSystemId = TranslateUtils.ToInt(Request["publishmentSystemID"]);
+                var siteId = TranslateUtils.ToInt(Request["siteId"]);
                 var contents = Request.Form["content"];
-                var tags = WordSpliter.GetKeywords(contents, publishmentSystemId, 10);
+                var tags = WordSpliter.GetKeywords(contents, siteId, 10);
 
                 Page.Response.Write(tags);
                 Page.Response.End();
@@ -106,9 +101,9 @@ namespace SiteServer.BackgroundPages.Ajax
 
             if (type == TypeGetTags)
             {
-                var publishmentSystemId = TranslateUtils.ToInt(Request["publishmentSystemID"]);
+                var siteId = TranslateUtils.ToInt(Request["siteId"]);
                 var tag = Request["tag"];
-                var tags = GetTags(publishmentSystemId, tag);
+                var tags = GetTags(siteId, tag);
 
                 Page.Response.Write(tags);
                 Page.Response.End();
@@ -147,13 +142,13 @@ namespace SiteServer.BackgroundPages.Ajax
             Page.Response.End();
         }
 
-        public string GetTitles(int publishmentSystemId, int nodeId, string title)
+        public string GetTitles(int siteId, int channelId, string title)
         {
             var retval = new StringBuilder();
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
-            var titleList = DataProvider.ContentDao.GetValueListByStartString(tableName, nodeId, ContentAttribute.Title, title, 10);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+            var titleList = DataProvider.ContentDao.GetValueListByStartString(tableName, channelId, ContentAttribute.Title, title, 10);
             if (titleList.Count > 0)
             {
                 foreach (var value in titleList)
@@ -167,11 +162,11 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval.ToString();
         }
 
-        public string GetTags(int publishmentSystemId, string tag)
+        public string GetTags(int siteId, string tag)
         {
             var retval = new StringBuilder();
 
-            var tagList = BaiRongDataProvider.TagDao.GetTagListByStartString(publishmentSystemId, tag, 10);
+            var tagList = DataProvider.TagDao.GetTagListByStartString(siteId, tag, 10);
             if (tagList.Count > 0)
             {
                 foreach (var value in tagList)

@@ -2,13 +2,13 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -41,13 +41,13 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.ControlToPaginate = RptContents;
             SpContents.SelectCommand = DataProvider.KeywordDao.GetSelectCommand();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
-            SpContents.SortField = "KeywordID";
+            SpContents.SortField = nameof(KeywordInfo.Id);
             SpContents.SortMode = SortMode.DESC; //排序
             SpContents.ItemsPerPage = 20;
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
 
             SpContents.DataBind();
             BtnAdd.Attributes.Add("onclick", ModalKeywordAdd.GetOpenWindowStringToAdd());
@@ -58,10 +58,10 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var keywordId = SqlUtils.EvalInt(e.Item.DataItem, "KeywordID");
-            var keyword = SqlUtils.EvalString(e.Item.DataItem, "Keyword");
-            var alternative = SqlUtils.EvalString(e.Item.DataItem, "Alternative");
-            var grade = EKeywordGradeUtils.GetEnumType(SqlUtils.EvalString(e.Item.DataItem, "Grade"));
+            var keywordId = SqlUtils.EvalInt(e.Item.DataItem, nameof(KeywordInfo.Id));
+            var keyword = SqlUtils.EvalString(e.Item.DataItem, nameof(KeywordInfo.Keyword));
+            var alternative = SqlUtils.EvalString(e.Item.DataItem, nameof(KeywordInfo.Alternative));
+            var grade = EKeywordGradeUtils.GetEnumType(SqlUtils.EvalString(e.Item.DataItem, nameof(KeywordInfo.Grade)));
 
             var ltlKeyword = (Literal)e.Item.FindControl("ltlKeyword");
             var ltlAlternative = (Literal)e.Item.FindControl("ltlAlternative");

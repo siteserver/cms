@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.CMS.StlParser.Cache;
@@ -94,7 +94,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 contentId = contextInfo.ContentId;
             }
 
-            var tagInfoList = Tag.GetTagInfoList(pageInfo.PublishmentSystemId, contentId, isOrderByCount, totalNum);
+            var tagInfoList = Tag.GetTagInfoList(pageInfo.SiteId, contentId, isOrderByCount, totalNum);
             tagInfoList = TagUtils.GetTagInfoList(tagInfoList, totalNum, tagLevel);
             if (contextInfo.ContextType == EContextType.Content && contextInfo.ContentInfo != null)
             {
@@ -116,7 +116,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         if (!isAdd)
                         {
-                            var tagInfo = new TagInfo(0, pageInfo.PublishmentSystemId, contentId.ToString(), tagName, 1);
+                            var tagInfo = new TagInfo(0, pageInfo.SiteId, contentId.ToString(), tagName, 1);
                             tagInfoList2.Add(tagInfo);
                         }
                     }
@@ -138,7 +138,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {
-                    var url = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo,
+                    var url = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo,
                         $"@/utils/tags.html?tagName={PageUtils.UrlEncode(tagInfo.Tag)}", pageInfo.IsLocal);
                     tagsBuilder.Append($@"
 <li class=""tag_popularity_{tagInfo.Level}""><a target=""_blank"" href=""{url}"">{tagInfo.Tag}</a></li>

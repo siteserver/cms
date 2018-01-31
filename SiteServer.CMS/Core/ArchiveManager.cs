@@ -1,18 +1,16 @@
-﻿using BaiRong.Core;
-using BaiRong.Core.Table;
-using SiteServer.CMS.Model;
+﻿using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.Core
 {
 	public class ArchiveManager
 	{
-        public static void CreateArchiveTableIfNotExists(PublishmentSystemInfo publishmentSystemInfo, string tableName)
+        public static void CreateArchiveTableIfNotExists(SiteInfo siteInfo, string tableName)
         {
-            if (!BaiRongDataProvider.DatabaseDao.IsTableExists(TableMetadataManager.GetTableNameOfArchive(tableName)))
+            if (!DataProvider.DatabaseDao.IsTableExists(TableMetadataManager.GetTableNameOfArchive(tableName)))
             {
                 try
                 {
-                    BaiRongDataProvider.TableCollectionDao.CreateDbTableOfArchive(tableName);
+                    DataProvider.TableDao.CreateDbTableOfArchive(tableName);
                 }
                 catch
                 {

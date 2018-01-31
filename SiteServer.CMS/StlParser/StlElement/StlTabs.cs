@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Xml;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -14,36 +14,33 @@ namespace SiteServer.BackgroundPages.Cms
 
         private bool _isContent;
         private Dictionary<int, List<int>> _idsDictionary = new Dictionary<int, List<int>>();
-        private List<int> _nodeIdArrayList = new List<int>();
+        private List<int> _channelIdArrayList = new List<int>();
 
-        public static string GetOpenWindowStringToContentForMultiChannels(int publishmentSystemId)
+        public static string GetOpenWindowStringToContentForMultiChannels(int siteId)
         {
             return LayerUtils.GetOpenScriptWithCheckBoxValue("添加到内容组",
-                PageUtils.GetCmsUrl(nameof(ModalAddToGroup), new NameValueCollection
+                PageUtils.GetCmsUrl(siteId, nameof(ModalAddToGroup), new NameValueCollection
                 {
-                    {"PublishmentSystemID", publishmentSystemId.ToString()},
-                    {"IsContent", "True"}
+                    {"isContent", "True"}
                 }), "IDsCollection", "请选择需要设置组别的内容！", 650, 550);
         }
 
-        public static string GetOpenWindowStringToContent(int publishmentSystemId, int nodeId)
+        public static string GetOpenWindowStringToContent(int siteId, int channelId)
         {
             return LayerUtils.GetOpenScriptWithCheckBoxValue("添加到内容组",
-                PageUtils.GetCmsUrl(nameof(ModalAddToGroup), new NameValueCollection
+                PageUtils.GetCmsUrl(siteId, nameof(ModalAddToGroup), new NameValueCollection
                 {
-                    {"PublishmentSystemID", publishmentSystemId.ToString()},
-                    {"NodeID", nodeId.ToString()},
-                    {"IsContent", "True"}
-                }), "ContentIDCollection", "请选择需要设置组别的内容！", 650, 550);
+                    {"channelId", channelId.ToString()},
+                    {"isContent", "True"}
+                }), "contentIdCollection", "请选择需要设置组别的内容！", 650, 550);
         }
 
-        public static string GetOpenWindowStringToChannel(int publishmentSystemId)
+        public static string GetOpenWindowStringToChannel(int siteId)
         {
             return LayerUtils.GetOpenScriptWithCheckBoxValue("添加到栏目组",
-                PageUtils.GetCmsUrl(nameof(ModalAddToGroup), new NameValueCollection
+                PageUtils.GetCmsUrl(siteId, nameof(ModalAddToGroup), new NameValueCollection
                 {
-                    {"PublishmentSystemID", publishmentSystemId.ToString()},
-                    {"IsContent", "False"}
+                    {"isContent", "False"}
                 }), "ChannelIDCollection", "请选择需要设置组别的栏目！", 650, 550);
         }
 
@@ -51,11 +48,11 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
-            if (Body.IsQueryExists("IsContent"))
+            if (Body.IsQueryExists("isContent"))
             {
-                _isContent = Body.GetQueryBool("IsContent");
+                _isContent = Body.GetQueryBool("isContent");
             }
             if (_isContent)
             {
@@ -65,31 +62,31 @@ namespace SiteServer.BackgroundPages.Cms
             else
             {
                 BtnAddGroup.Text = " 新建栏目组";
-                _nodeIdArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
+                _channelIdArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
             }
             if (!IsPostBack)
             {
                 if (_isContent)
                 {
-                    var contentGroupNameList = DataProvider.ContentGroupDao.GetContentGroupNameList(PublishmentSystemId);
+                    var contentGroupNameList = DataProvider.ContentGroupDao.GetGroupNameList(SiteId);
                     foreach (var groupName in contentGroupNameList)
                     {
                         var item = new ListItem(groupName, groupName);
                         CblGroupNameCollection.Items.Add(item);
                     }
-                    var showPopWinString = ModalContentGroupAdd.GetOpenWindowString(PublishmentSystemId);
+                    var showPopWinString = ModalContentGroupAdd.GetOpenWindowString(SiteId);
                     BtnAddGroup.Attributes.Add("onclick", showPopWinString);
                 }
                 else
                 {
-                    var nodeGroupNameList = DataProvider.NodeGroupDao.GetNodeGroupNameList(PublishmentSystemId);
+                    var nodeGroupNameList = DataProvider.ChannelGroupDao.GetGroupNameList(SiteId);
                     foreach (var groupName in nodeGroupNameList)
                     {
                         var item = new ListItem(groupName, groupName);
                         CblGroupNameCollection.Items.Add(item);
                     }
 
-                    var showPopWinString = ModalNodeGroupAdd.GetOpenWindowString(PublishmentSystemId);
+                    var showPopWinString = ModalNodeGroupAdd.GetOpenWindowString(SiteId);
                     BtnAddGroup.Attributes.Add("onclick", showPopWinString);
                 }
             }
@@ -112,10 +109,10 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    foreach (var nodeId in _idsDictionary.Keys)
+                    foreach (var channelId in _idsDictionary.Keys)
                     {
-                        var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
-                        var contentIdArrayList = _idsDictionary[nodeId];
+                        var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                        var contentIdArrayList = _idsDictionary[channelId];
                         if (contentIdArrayList != null)
                         {
                             foreach (var contentId in contentIdArrayList)
@@ -125,7 +122,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    Body.AddSiteLog(PublishmentSystemId, "添加内容到内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNameList)}");
+                    Body.AddSiteLog(SiteId, "添加内容到内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNameList)}");
 
                     isChanged = true;
                 }
@@ -138,12 +135,12 @@ namespace SiteServer.BackgroundPages.Cms
                         if (item.Selected) groupNameList.Add(item.Value);
                     }
 
-                    foreach (int nodeId in _nodeIdArrayList)
+                    foreach (int channelId in _channelIdArrayList)
                     {
-                        DataProvider.NodeDao.AddNodeGroupList(PublishmentSystemId, nodeId, groupNameList);
+                        DataProvider.ChannelDao.AddGroupNameList(SiteId, channelId, groupNameList);
                     }
 
-                    Body.AddSiteLog(PublishmentSystemId, "添加栏目到栏目组", $"栏目组:{TranslateUtils.ObjectCollectionToString(groupNameList)}");
+                    Body.AddSiteLog(SiteId, "添加栏目到栏目组", $"栏目组:{TranslateUtils.ObjectCollectionToString(groupNameList)}");
 
                     isChanged = true;
                 }

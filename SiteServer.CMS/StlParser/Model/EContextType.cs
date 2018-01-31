@@ -7,9 +7,7 @@ namespace SiteServer.CMS.StlParser.Model
         Content,
         Channel,
         Comment,
-        Photo,
         Each,
-        //InputContent,
         SqlContent,
         Site,
         Undefined
@@ -19,46 +17,36 @@ namespace SiteServer.CMS.StlParser.Model
 	{
 		public static string GetValue(EContextType type)
 		{
-            if (type == EContextType.Content)
+		    if (type == EContextType.Content)
             {
                 return "Content";
             }
-            else if (type == EContextType.Channel)
-			{
-                return "Channel";
-            }
-            else if (type == EContextType.Comment)
-            {
-                return "Comment";
-            }
-            else if (type == EContextType.Photo)
-            {
-                return "Photo";
-            }
-            else if (type == EContextType.Each)
-            {
-                return "Each";
-            }
-            //else if (type == EContextType.InputContent)
-            //{
-            //    return "InputContent";
-            //}
-            else if (type == EContextType.SqlContent)
-            {
-                return "SqlContent";
-            }
-            else if (type == EContextType.Site)
-            {
-                return "Site";
-            }
-            else if (type == EContextType.Undefined)
-            {
-                return "Undefined";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EContextType.Channel)
+		    {
+		        return "Channel";
+		    }
+		    if (type == EContextType.Comment)
+		    {
+		        return "Comment";
+		    }
+		    if (type == EContextType.Each)
+		    {
+		        return "Each";
+		    }
+		    if (type == EContextType.SqlContent)
+		    {
+		        return "SqlContent";
+		    }
+		    if (type == EContextType.Site)
+		    {
+		        return "Site";
+		    }
+		    if (type == EContextType.Undefined)
+		    {
+		        return "Undefined";
+		    }
+
+		    throw new Exception();
 		}
 
 		public static EContextType GetEnumType(string typeStr)
@@ -77,18 +65,10 @@ namespace SiteServer.CMS.StlParser.Model
             {
                 retval = EContextType.Comment;
             }
-            else if (Equals(EContextType.Photo, typeStr))
-            {
-                retval = EContextType.Photo;
-            }
             else if (Equals(EContextType.Each, typeStr))
             {
                 retval = EContextType.Each;
             }
-            //else if (Equals(EContextType.InputContent, typeStr))
-            //{
-            //    retval = EContextType.InputContent;
-            //}
             else if (Equals(EContextType.SqlContent, typeStr))
             {
                 retval = EContextType.SqlContent;

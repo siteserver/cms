@@ -4,11 +4,10 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.ThirdParty.Sgml;
+using SiteServer.Utils;
+using SiteServer.Utils.ThirdParty.Sgml;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.Utility
@@ -25,9 +24,6 @@ namespace SiteServer.CMS.StlParser.Utility
         public const string OrderHitsByDay = "HitsByDay";	    //日点击量
         public const string OrderHitsByWeek = "HitsByWeek";	//周点击量
         public const string OrderHitsByMonth = "HitsByMonth";	//月点击量
-        public const string OrderStars = "Stars";	            //评分数
-        public const string OrderDigg = "Digg";	            //Digg数
-        public const string OrderComments = "Comments";        //评论数
         public const string OrderRandom = "Random";            //随机
 
         private const string XmlDeclaration = "<?xml version='1.0'?>";
@@ -209,11 +205,11 @@ namespace SiteServer.CMS.StlParser.Utility
         {
             var stlEntity = string.Empty;
             var labelList = TranslateUtils.StringCollectionToStringList(insertedLabelCollection);
-            foreach (var labelWithDisplayModeEnNameAndNodeId in labelList)
+            foreach (var labelWithDisplayModeEnNameAndChannelId in labelList)
             {
-                if (labelWithDisplayModeEnNameAndNodeId.StartsWith(stlEntityName.Substring(0, stlEntityName.Length - 1)))
+                if (labelWithDisplayModeEnNameAndChannelId.StartsWith(stlEntityName.Substring(0, stlEntityName.Length - 1)))
                 {
-                    stlEntity = labelWithDisplayModeEnNameAndNodeId;
+                    stlEntity = labelWithDisplayModeEnNameAndChannelId;
                     break;
                 }
             }
@@ -223,12 +219,12 @@ namespace SiteServer.CMS.StlParser.Utility
         public static string GetStlElement(string stlElementName, List<string> labelList)
         {
             var stlElement = string.Empty;
-            foreach (var labelWithDisplayModeEnNameAndNodeId in labelList)
+            foreach (var labelWithDisplayModeEnNameAndChannelId in labelList)
             {
-                if (labelWithDisplayModeEnNameAndNodeId.ToLower().StartsWith($"<{stlElementName.ToLower()} ") || labelWithDisplayModeEnNameAndNodeId.ToLower().StartsWith(
+                if (labelWithDisplayModeEnNameAndChannelId.ToLower().StartsWith($"<{stlElementName.ToLower()} ") || labelWithDisplayModeEnNameAndChannelId.ToLower().StartsWith(
                         $"<{stlElementName.ToLower()}>"))
                 {
-                    stlElement = labelWithDisplayModeEnNameAndNodeId;
+                    stlElement = labelWithDisplayModeEnNameAndChannelId;
                     break;
                 }
             }
@@ -544,10 +540,6 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 dbItemIndex = contextInfo.ItemContainer.ContentItem.ItemIndex;
             }
-            //else if (contextInfo.ContextType == EContextType.InputContent)
-            //{
-            //    dbItemIndex = contextInfo.ItemContainer.InputItem.ItemIndex;
-            //}
             else if (contextInfo.ContextType == EContextType.SqlContent)
             {
                 dbItemIndex = contextInfo.ItemContainer.SqlItem.ItemIndex;
@@ -555,10 +547,6 @@ namespace SiteServer.CMS.StlParser.Utility
             else if (contextInfo.ContextType == EContextType.Site)
             {
                 dbItemIndex = contextInfo.ItemContainer.SiteItem.ItemIndex;
-            }
-            else if (contextInfo.ContextType == EContextType.Photo)
-            {
-                dbItemIndex = contextInfo.ItemContainer.PhotoItem.ItemIndex;
             }
             else if (contextInfo.ContextType == EContextType.Each)
             {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -11,18 +11,18 @@ namespace SiteServer.BackgroundPages.Cms
 
         protected override bool IsSinglePage => true;
 
-        public static string GetRedirectUrlString(string content)
+        public static string GetRedirectUrlString(int siteId, string content)
         {
-            return PageUtils.GetCmsUrl(nameof(ModalTipMessage), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(ModalTipMessage), new NameValueCollection
             {
                 {"content", TranslateUtils.EncryptStringBySecretKey(content)}
             });
         }
 
-        public static string GetOpenWindowString(string title, string content)
+        public static string GetOpenWindowString(int siteId, string title, string content)
         {
             return LayerUtils.GetOpenScript(title,
-                PageUtils.GetCmsUrl(nameof(ModalTipMessage), new NameValueCollection
+                PageUtils.GetCmsUrl(siteId, nameof(ModalTipMessage), new NameValueCollection
                 {
                     {"content", TranslateUtils.EncryptStringBySecretKey(content)}
                 }), 500, 500);

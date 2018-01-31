@@ -27,14 +27,6 @@ namespace SiteServer.CMS.StlParser.Model
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlAction), stlAttribute)
                     },
                     {
-                        StlAd.ElementName,
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlAd), stlAttribute)
-                    },
-                    {
-                        StlAnalysis.ElementName,
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlAnalysis), stlAttribute)
-                    },
-                    {
                         StlAudio.ElementName,
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlAudio), stlAttribute)
                     },
@@ -45,18 +37,6 @@ namespace SiteServer.CMS.StlParser.Model
                     {
                         StlChannels.ElementName,
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlChannels), stlAttribute)
-                    },
-                    {
-                        StlComment.ElementName,
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlComment), stlAttribute)
-                    },
-                    {
-                        StlCommentInput.ElementName,
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlCommentInput), stlAttribute)
-                    },
-                    {
-                        StlComments.ElementName,
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlComments), stlAttribute)
                     },
                     {
                         StlContainer.ElementName,
@@ -73,10 +53,6 @@ namespace SiteServer.CMS.StlParser.Model
                     {
                         StlCount.ElementName,
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlCount), stlAttribute)
-                    },
-                    {
-                        StlDigg.ElementName,
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlDigg), stlAttribute)
                     },
                     {
                         StlDynamic.ElementName,
@@ -110,14 +86,6 @@ namespace SiteServer.CMS.StlParser.Model
                         StlInclude.ElementName, 
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlInclude), stlAttribute)
                     },
-                    //{
-                    //    StlInputContent.ElementName,
-                    //    (StlAttribute) Attribute.GetCustomAttribute(typeof(StlInputContent), stlAttribute)
-                    //},
-                    //{
-                    //    StlInputContents.ElementName,
-                    //    (StlAttribute) Attribute.GetCustomAttribute(typeof(StlInputContents), stlAttribute)
-                    //},
                     {
                         StlItemTemplate.ElementName,
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlItemTemplate), stlAttribute)
@@ -147,17 +115,9 @@ namespace SiteServer.CMS.StlParser.Model
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlPageChannels), stlAttribute)
                     },
                     {
-                        StlPageComments.ElementName,
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlPageComments), stlAttribute)
-                    },
-                    {
                         StlPageContents.ElementName,
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlPageContents), stlAttribute)
                     },
-                    //{
-                    //    StlPageInputContents.ElementName,
-                    //    (StlAttribute) Attribute.GetCustomAttribute(typeof(StlPageInputContents), stlAttribute)
-                    //},
                     {
                         StlPageItem.ElementName, 
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlPageItem), stlAttribute)
@@ -169,10 +129,6 @@ namespace SiteServer.CMS.StlParser.Model
                     {
                         StlPageSqlContents.ElementName,
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlPageSqlContents), stlAttribute)
-                    },
-                    {
-                        StlPhoto.ElementName, 
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlPhoto), stlAttribute)
                     },
                     {
                         StlPlayer.ElementName, 
@@ -207,20 +163,12 @@ namespace SiteServer.CMS.StlParser.Model
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlSites), stlAttribute)
                     },
                     {
-                        StlSlide.ElementName, 
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlSlide), stlAttribute)
-                    },
-                    {
                         StlSqlContent.ElementName,
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlSqlContent), stlAttribute)
                     },
                     {
                         StlSqlContents.ElementName,
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlSqlContents), stlAttribute)
-                    },
-                    {
-                        StlStar.ElementName, 
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlStar), stlAttribute)
                     },
                     {
                         StlTabs.ElementName, 
@@ -257,19 +205,13 @@ namespace SiteServer.CMS.StlParser.Model
             {
                 {StlA.ElementName, StlA.AttributeList},
                 {StlAction.ElementName, StlAction.AttributeList},
-                {StlAd.ElementName, StlAd.AttributeList},
-                {StlAnalysis.ElementName, StlAnalysis.AttributeList},
                 {StlAudio.ElementName, StlAudio.AttributeList},
                 {StlChannel.ElementName, StlChannel.AttributeList},
                 {StlChannels.ElementName, StlChannels.AttributeList},
-                {StlComment.ElementName, StlComment.AttributeList},
-                {StlCommentInput.ElementName, StlCommentInput.AttributeList},
-                {StlComments.ElementName, StlComments.AttributeList},
                 {StlContainer.ElementName, StlContainer.AttributeList},
                 {StlContent.ElementName, StlContent.AttributeList},
                 {StlContents.ElementName, StlContents.AttributeList},
                 {StlCount.ElementName, StlCount.AttributeList},
-                {StlDigg.ElementName, StlDigg.AttributeList},
                 {StlDynamic.ElementName, StlDynamic.AttributeList},
                 {StlEach.ElementName, StlEach.AttributeList},
                 {StlFile.ElementName, StlFile.AttributeList},
@@ -278,8 +220,6 @@ namespace SiteServer.CMS.StlParser.Model
                 {StlIf.ElementName, StlIf.AttributeList},
                 {StlImage.ElementName, StlImage.AttributeList},
                 {StlInclude.ElementName, StlInclude.AttributeList},
-                //{StlInputContent.ElementName, StlInputContent.AttributeList},
-                //{StlInputContents.ElementName, StlInputContents.AttributeList},
                 {StlItemTemplate.ElementName, StlItemTemplate.AttributeList},
                 {StlLoading.ElementName, StlLoading.AttributeList},
                 {StlLocation.ElementName, StlLocation.AttributeList},
@@ -287,13 +227,10 @@ namespace SiteServer.CMS.StlParser.Model
                 {StlNavigation.ElementName, StlNavigation.AttributeList},
                 {StlNo.ElementName, StlNo.AttributeList},
                 {StlPageChannels.ElementName, StlPageChannels.AttributeList},
-                {StlPageComments.ElementName, StlPageComments.AttributeList},
                 {StlPageContents.ElementName, StlPageContents.AttributeList},
-                //{StlPageInputContents.ElementName, StlPageInputContents.AttributeList},
                 {StlPageItem.ElementName, StlPageItem.AttributeList},
                 {StlPageItems.ElementName, StlPageItems.AttributeList},
                 {StlPageSqlContents.ElementName, StlPageSqlContents.AttributeList},
-                {StlPhoto.ElementName, StlPhoto.AttributeList},
                 {StlPlayer.ElementName, StlPlayer.AttributeList},
                 {StlPrinter.ElementName, StlPrinter.AttributeList},
                 {StlQueryString.ElementName, StlQueryString.AttributeList},
@@ -302,10 +239,8 @@ namespace SiteServer.CMS.StlParser.Model
                 {StlSelect.ElementName, StlSelect.AttributeList},
                 {StlSite.ElementName, StlSite.AttributeList},
                 {StlSites.ElementName, StlSites.AttributeList},
-                {StlSlide.ElementName, StlSlide.AttributeList},
                 {StlSqlContent.ElementName, StlSqlContent.AttributeList},
                 {StlSqlContents.ElementName, StlSqlContents.AttributeList},
-                {StlStar.ElementName, StlStar.AttributeList},
                 {StlTabs.ElementName, StlTabs.AttributeList},
                 {StlTags.ElementName, StlTags.AttributeList},
                 {StlTree.ElementName, StlTree.AttributeList},
@@ -332,10 +267,6 @@ namespace SiteServer.CMS.StlParser.Model
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlChannelEntities), stlAttribute)
                     },
                     {
-                        StlCommentEntities.EntityName,
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlCommentEntities), stlAttribute)
-                    },
-                    {
                         StlContentEntities.EntityName,
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlContentEntities), stlAttribute)
                     },
@@ -346,10 +277,6 @@ namespace SiteServer.CMS.StlParser.Model
                     {
                         StlNavigationEntities.EntityName,
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlNavigationEntities), stlAttribute)
-                    },
-                    {
-                        StlPhotoEntities.EntityName,
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlPhotoEntities), stlAttribute)
                     },
                     {
                         StlRequestEntities.EntityName,
@@ -374,11 +301,9 @@ namespace SiteServer.CMS.StlParser.Model
                 => new SortedList<string, SortedList<string, string>>
                 {
                     {StlChannelEntities.EntityName, StlChannelEntities.AttributeList},
-                    {StlCommentEntities.EntityName, StlCommentEntities.AttributeList},
                     {StlContentEntities.EntityName, StlContentEntities.AttributeList},
                     {StlElementEntities.EntityName, StlElementEntities.AttributeList},
                     {StlNavigationEntities.EntityName, StlNavigationEntities.AttributeList},
-                    {StlPhotoEntities.EntityName, StlPhotoEntities.AttributeList},
                     {StlRequestEntities.EntityName, StlRequestEntities.AttributeList},
                     {StlSqlEntities.EntityName, StlSqlEntities.AttributeList},
                     {StlStlEntities.EntityName, StlStlEntities.AttributeList},

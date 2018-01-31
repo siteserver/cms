@@ -14,16 +14,16 @@
         <div class="card-box">
           <ul class="nav nav-pills">
             <li class="nav-item">
-              <a class="nav-link" href="pageTableStyleContent.aspx?publishmentSystemId=<%=PublishmentSystemId%>">内容字段管理</a>
+              <a class="nav-link" href="pageTableStyleContent.aspx?siteId=<%=SiteId%>">内容字段管理</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageTableStyleChannel.aspx?publishmentSystemId=<%=PublishmentSystemId%>">栏目字段管理</a>
+              <a class="nav-link" href="pageTableStyleChannel.aspx?siteId=<%=SiteId%>">栏目字段管理</a>
             </li>
             <li class="nav-item active">
               <a class="nav-link" href="javascript:;">站点字段管理</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageRelatedField.aspx?publishmentSystemId=<%=PublishmentSystemId%>">联动字段设置</a>
+              <a class="nav-link" href="pageRelatedField.aspx?siteId=<%=SiteId%>">联动字段设置</a>
             </li>
           </ul>
         </div>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -18,11 +18,10 @@ namespace SiteServer.BackgroundPages.Cms
 
         protected override bool IsSinglePage => true;
 
-	    public static string GetOpenWindowString(int publishmentSystemId, int templateId, string includeUrl)
+	    public static string GetOpenWindowString(int siteId, int templateId, string includeUrl)
         {
-            return LayerUtils.GetOpenScript("还原历史版本", PageUtils.GetCmsUrl(nameof(ModalTemplateRestore), new NameValueCollection
+            return LayerUtils.GetOpenScript("还原历史版本", PageUtils.GetCmsUrl(siteId, nameof(ModalTemplateRestore), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"templateID", templateId.ToString()},
                 {"includeUrl", includeUrl}
             }));
@@ -32,7 +31,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
             _templateId = Body.GetQueryInt("templateID");
             _includeUrl = Body.GetQueryString("includeUrl");
@@ -40,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            var logDictionary = DataProvider.TemplateLogDao.GetLogIdWithNameDictionary(PublishmentSystemId, _templateId);
+            var logDictionary = DataProvider.TemplateLogDao.GetLogIdWithNameDictionary(SiteId, _templateId);
             if (logDictionary.Count > 0)
             {
                 PhContent.Visible = true;
@@ -69,9 +68,8 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void DdlLogId_SelectedIndexChanged(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUtils.GetCmsUrl(nameof(ModalTemplateRestore), new NameValueCollection
+            PageUtils.Redirect(PageUtils.GetCmsUrl(SiteId, nameof(ModalTemplateRestore), new NameValueCollection
             {
-                {"PublishmentSystemID", PublishmentSystemId.ToString()},
                 {"templateID", _templateId.ToString()},
                 {"includeUrl", _includeUrl},
                 {"logID", DdlLogId.SelectedValue}
@@ -87,7 +85,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                LayerUtils.CloseAndRedirect(Page, PageTemplateAdd.GetRedirectUrlToRestore(PublishmentSystemId, _templateId, templateLogId));
+                LayerUtils.CloseAndRedirect(Page, PageTemplateAdd.GetRedirectUrlToRestore(SiteId, _templateId, templateLogId));
             }
         }
 	}

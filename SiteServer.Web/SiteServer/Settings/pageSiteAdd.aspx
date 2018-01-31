@@ -146,41 +146,41 @@
             <div class="form-group">
               <label class="col-form-label">
                 站点名称
-                <asp:RequiredFieldValidator ControlToValidate="TbPublishmentSystemName" errorMessage=" *" foreColor="red" Display="Dynamic"
+                <asp:RequiredFieldValidator ControlToValidate="TbSiteName" errorMessage=" *" foreColor="red" Display="Dynamic"
                   runat="server" />
-                <asp:RegularExpressionValidator runat="server" ControlToValidate="TbPublishmentSystemName" ValidationExpression="[^']+" errorMessage=" *"
+                <asp:RegularExpressionValidator runat="server" ControlToValidate="TbSiteName" ValidationExpression="[^']+" errorMessage=" *"
                   foreColor="red" Display="Dynamic" />
               </label>
-              <asp:TextBox id="TbPublishmentSystemName" class="form-control" runat="server" />
+              <asp:TextBox id="TbSiteName" class="form-control" runat="server" />
             </div>
 
             <div class="form-group">
               <label class="col-form-label">
                 站点级别
               </label>
-              <asp:RadioButtonList ID="RblIsHeadquarters" cssClass="radio radio-primary" AutoPostBack="true" OnSelectedIndexChanged="RblIsHeadquarters_SelectedIndexChanged"
+              <asp:RadioButtonList ID="RblIsRoot" cssClass="radio radio-primary" AutoPostBack="true" OnSelectedIndexChanged="RblIsRoot_SelectedIndexChanged"
                 RepeatDirection="Horizontal" runat="server">
                 <asp:ListItem Text="主站" Value="True"></asp:ListItem>
                 <asp:ListItem Text="子站" Value="False" Selected="true"></asp:ListItem>
               </asp:RadioButtonList>
             </div>
 
-            <asp:PlaceHolder ID="PhIsNotHeadquarters" runat="server">
+            <asp:PlaceHolder ID="PhIsNotRoot" runat="server">
               <div class="form-group">
                 <label class="col-form-label">
                   上级站点
                 </label>
-                <asp:DropDownList ID="DdlParentPublishmentSystemId" cssClass="form-control" runat="server"></asp:DropDownList>
+                <asp:DropDownList ID="DdlParentId" cssClass="form-control" runat="server"></asp:DropDownList>
               </div>
               <div class="form-group">
                 <label class="col-form-label">
                   文件夹名称
-                  <asp:RequiredFieldValidator ControlToValidate="TbPublishmentSystemDir" errorMessage=" *" foreColor="red" Display="Dynamic"
+                  <asp:RequiredFieldValidator ControlToValidate="TbSiteDir" errorMessage=" *" foreColor="red" Display="Dynamic"
                     runat="server" />
-                  <asp:RegularExpressionValidator runat="server" ControlToValidate="TbPublishmentSystemDir" ValidationExpression="[\\.a-zA-Z0-9_-]+"
+                  <asp:RegularExpressionValidator runat="server" ControlToValidate="TbSiteDir" ValidationExpression="[\\.a-zA-Z0-9_-]+"
                     foreColor="red" ErrorMessage=" 只允许包含字母、数字、下划线、中划线及小数点" Display="Dynamic" />
                 </label>
-                <asp:TextBox id="TbPublishmentSystemDir" class="form-control" runat="server" />
+                <asp:TextBox id="TbSiteDir" class="form-control" runat="server" />
                 <small class="form-text text-muted">实际在服务器中保存此网站的文件夹名称，此路径必须以英文或拼音命名</small>
               </div>
             </asp:PlaceHolder>
@@ -210,12 +210,12 @@
               </div>
             </asp:PlaceHolder>
 
-            <asp:PlaceHolder id="PhIsUserSiteTemplateAuxiliaryTables" runat="server">
+            <asp:PlaceHolder id="PhIsSiteTemplateTable" runat="server">
               <div class="form-group">
                 <label class="col-form-label">
                   站点表结构设置
                 </label>
-                <asp:RadioButtonList ID="RblIsUserSiteTemplateAuxiliaryTables" class="radio radio-primary" AutoPostBack="true" OnSelectedIndexChanged="RblIsUserSiteTemplateAuxiliaryTables_SelectedIndexChanged"
+                <asp:RadioButtonList ID="RblIsSiteTemplateTable" class="radio radio-primary" AutoPostBack="true" OnSelectedIndexChanged="RblIsSiteTemplateTable_SelectedIndexChanged"
                   RepeatDirection="Horizontal" runat="server">
                   <asp:ListItem Text="使用站点模板中的辅助表" Value="True"></asp:ListItem>
                   <asp:ListItem Text="使用指定的辅助表" Value="False" Selected="true"></asp:ListItem>
@@ -223,14 +223,14 @@
               </div>
             </asp:PlaceHolder>
 
-            <asp:PlaceHolder ID="PhAuxiliaryTable" runat="server" Visible="false">
+            <asp:PlaceHolder ID="PhTableName" runat="server" Visible="false">
               <div class="form-group">
                 <label class="col-form-label">
                   内容辅助表
-                  <asp:RequiredFieldValidator ControlToValidate="DdlAuxiliaryTableForContent" ErrorMessage="辅助表不能为空！" foreColor="red" Display="Dynamic"
+                  <asp:RequiredFieldValidator ControlToValidate="DdlTableName" ErrorMessage="辅助表不能为空！" foreColor="red" Display="Dynamic"
                     runat="server" />
                 </label>
-                <asp:DropDownList ID="DdlAuxiliaryTableForContent" class="form-control" runat="server"></asp:DropDownList>
+                <asp:DropDownList ID="DdlTableName" class="form-control" runat="server"></asp:DropDownList>
               </div>
             </asp:PlaceHolder>
 

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -37,7 +38,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var departmentIdArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("DepartmentIDCollection"));
                 foreach (var departmentId in departmentIdArrayList)
                 {
-                    BaiRongDataProvider.DepartmentDao.Delete(departmentId);
+                    DataProvider.DepartmentDao.Delete(departmentId);
                 }
                 SuccessMessage("成功删除所选部门");
             }
@@ -45,7 +46,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 var departmentId = Body.GetQueryInt("DepartmentID");
                 var isSubtract = Body.IsQueryExists("Subtract");
-                BaiRongDataProvider.DepartmentDao.UpdateTaxis(departmentId, isSubtract);
+                DataProvider.DepartmentDao.UpdateTaxis(departmentId, isSubtract);
 
                 PageUtils.Redirect(GetRedirectUrl(departmentId));
                 return;
@@ -53,7 +54,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Admin);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Admin);
 
             ClientScriptRegisterClientScriptBlock("NodeTreeScript", DepartmentTreeItem.GetScript(EDepartmentLoadingType.ContentList, null));
 
@@ -74,7 +75,7 @@ namespace SiteServer.BackgroundPages.Settings
                 {"Delete", "True" }
             }), "DepartmentIDCollection", "DepartmentIDCollection", "请选择需要删除的部门！", "此操作将删除对应部门以及所有下级部门，确认删除吗？"));
 
-            RptContents.DataSource = BaiRongDataProvider.DepartmentDao.GetDepartmentIdListByParentId(0);
+            RptContents.DataSource = DataProvider.DepartmentDao.GetIdListByParentId(0);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }
@@ -130,23 +131,23 @@ namespace SiteServer.BackgroundPages.Settings
             else if (loadingType == EDepartmentLoadingType.ContentList)
             {
                 string editUrl = $@"<a href=""javascript:;"" onclick=""{ModalDepartmentAdd.GetOpenWindowStringToEdit(
-                    departmentInfo.DepartmentId, GetRedirectUrl(departmentInfo.DepartmentId))}"">编辑</a>";
+                    departmentInfo.Id, GetRedirectUrl(departmentInfo.Id))}"">编辑</a>";
 
                 var urlUp = PageUtils.GetSettingsUrl(nameof(PageAdminDepartment), new NameValueCollection
                 {
                     {"Subtract", "True"},
-                    {"DepartmentID", departmentInfo.DepartmentId.ToString()}
+                    {"DepartmentID", departmentInfo.Id.ToString()}
                 });
                 string upLink = $@"<a href=""{urlUp}""><img src=""../Pic/icon/up.gif"" border=""0"" alt=""上升"" /></a>";
 
                 var urlDown = PageUtils.GetSettingsUrl(nameof(PageAdminDepartment), new NameValueCollection
                 {
                     {"Add", "True"},
-                    {"DepartmentID", departmentInfo.DepartmentId.ToString()}
+                    {"DepartmentID", departmentInfo.Id.ToString()}
                 });
                 string downLink = $@"<a href=""{urlDown}""><img src=""../Pic/icon/down.gif"" border=""0"" alt=""下降"" /></a>";
 
-                string checkBoxHtml = $"<input type='checkbox' name='DepartmentIDCollection' value='{departmentInfo.DepartmentId}' />";
+                string checkBoxHtml = $"<input type='checkbox' name='DepartmentIDCollection' value='{departmentInfo.Id}' />";
 
                 rowHtml = $@"
 <tr treeItemLevel=""{departmentInfo.ParentsCount + 1}"">

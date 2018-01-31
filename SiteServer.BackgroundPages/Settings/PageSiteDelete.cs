@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
 	public class PageSiteDelete : BasePageCms
 	{
-	    public Literal LtlPublishmentSystemName;
+	    public Literal LtlSiteName;
 		public RadioButtonList RblRetainFiles;
 
-	    public static string GetRedirectUrl(int publishmentSystemId)
+	    public static string GetRedirectUrl(int siteId)
 	    {
 	        return PageUtils.GetSettingsUrl(nameof(PageSiteDelete), new NameValueCollection
 	        {
-	            {"publishmentSystemId", publishmentSystemId.ToString()}
+	            {"siteId", siteId.ToString()}
 	        });
 	    }
 
@@ -25,11 +25,11 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
 
-            LtlPublishmentSystemName.Text = PublishmentSystemInfo.PublishmentSystemName;
+            LtlSiteName.Text = SiteInfo.SiteName;
 
-            InfoMessage($"此操作将会删除站点“{PublishmentSystemInfo.PublishmentSystemName}({PublishmentSystemInfo.PublishmentSystemDir})”，确认吗？");
+            InfoMessage($"此操作将会删除站点“{SiteInfo.SiteName}({SiteInfo.SiteDir})”，确认吗？");
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (isRetainFiles == false)
             {
-                DirectoryUtility.DeletePublishmentSystemFiles(PublishmentSystemInfo);
+                DirectoryUtility.DeleteSiteFiles(SiteInfo);
                 SuccessMessage("成功删除站点以及相关文件！");
             }
             else
@@ -48,7 +48,7 @@ namespace SiteServer.BackgroundPages.Settings
                 SuccessMessage("成功删除站点，相关文件未被删除！");
             }
 
-            if (Body.AdministratorInfo.PublishmentSystemId != PublishmentSystemId)
+            if (Body.AdministratorInfo.SiteId != SiteId)
             {
                 AddWaitAndRedirectScript(PageSite.GetRedirectUrl());
             }
@@ -58,9 +58,9 @@ namespace SiteServer.BackgroundPages.Settings
                     $@"setTimeout(""window.top.location.href='{PageMain.GetRedirectUrl()}'"", 1500);");
             }
 
-            Body.AddAdminLog("删除站点", $"站点:{PublishmentSystemInfo.PublishmentSystemName}");
+            Body.AddAdminLog("删除站点", $"站点:{SiteInfo.SiteName}");
 
-            DataProvider.PublishmentSystemDao.Delete(PublishmentSystemId);
+            DataProvider.SiteDao.Delete(SiteId);
         }
 
 	    public void Return_OnClick(object sender, EventArgs e)

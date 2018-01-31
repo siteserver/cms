@@ -4,7 +4,7 @@ using System.Text;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using System.Xml;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
@@ -67,7 +67,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         };
 
         //对“翻页项”（pageItem）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
-        public static string ParseElement(string stlElement, PageInfo pageInfo, int nodeId, int contentId, int currentPageIndex, int pageCount, int totalNum, bool isXmlContent, EContextType contextType)
+        public static string ParseElement(string stlElement, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum, bool isXmlContent, EContextType contextType)
         {
             var parsedContent = string.Empty;
             try
@@ -158,17 +158,17 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
 
                 //以下三个对象仅isChannelPage=true时需要
-                NodeInfo nodeInfo = null;
+                ChannelInfo nodeInfo = null;
 
                 string pageUrl;
                 if (contextType == EContextType.Channel)
                 {
-                    nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, nodeId);
-                    pageUrl = PagerUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, 0, currentPageIndex, pageCount, pageInfo.IsLocal);
+                    nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
+                    pageUrl = PagerUtility.GetUrlInChannelPage(type, pageInfo.SiteInfo, nodeInfo, 0, currentPageIndex, pageCount, pageInfo.IsLocal);
                 }
                 else
                 {
-                    pageUrl = PagerUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, 0, currentPageIndex, pageCount, pageInfo.IsLocal);
+                    pageUrl = PagerUtility.GetUrlInContentPage(type, pageInfo.SiteInfo, channelId, contentId, 0, currentPageIndex, pageCount, pageInfo.IsLocal);
                 }
 
                 var isActive = false;
@@ -357,7 +357,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //pre ellipsis
                     if (index + pageLength < currentPageIndex + 1 && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal) : PagerUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal);
+                        pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPage(type, pageInfo.SiteInfo, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal) : PagerUtility.GetUrlInContentPage(type, pageInfo.SiteInfo, channelId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal);
 
                         pageBuilder.Append(!string.IsNullOrEmpty(successTemplateString)
                             ? GetParsedContent(successTemplateString, pageUrl, listEllipsis, pageInfo)
@@ -368,7 +368,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (currentPageIndex + 1 != index)
                         {
-                            pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal) : PagerUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal);
+                            pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPage(type, pageInfo.SiteInfo, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal) : PagerUtility.GetUrlInContentPage(type, pageInfo.SiteInfo, channelId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal);
 
                             if (!string.IsNullOrEmpty(successTemplateString))
                             {
@@ -407,7 +407,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //pre ellipsis
                     if (index < pageCount && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal) : PagerUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal);
+                        pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPage(type, pageInfo.SiteInfo, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal) : PagerUtility.GetUrlInContentPage(type, pageInfo.SiteInfo, channelId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal);
 
                         pageBuilder.Append(!string.IsNullOrEmpty(successTemplateString)
                             ? GetParsedContent(successTemplateString, pageUrl, listEllipsis, pageInfo)
@@ -439,7 +439,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (currentPageIndex + 1 != index)
                         {
-                            pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal) : PagerUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal);
+                            pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPage(type, pageInfo.SiteInfo, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal) : PagerUtility.GetUrlInContentPage(type, pageInfo.SiteInfo, channelId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal);
 
                             var listitem = new ListItem(index.ToString(), pageUrl);
                             selectControl.Items.Add(listitem);
@@ -469,7 +469,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             //return parsedContent;
         }
 
-        public static string ParseEntity(string stlEntity, PageInfo pageInfo, int nodeId, int contentId, int currentPageIndex, int pageCount, int totalNum, bool isXmlContent, EContextType contextType)
+        public static string ParseEntity(string stlEntity, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum, bool isXmlContent, EContextType contextType)
         {
             var parsedContent = string.Empty;
             try
@@ -487,12 +487,12 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 if (contextType == EContextType.Channel)
                 {
-                    var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, nodeId);
-                    pageUrl = PagerUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, 0, currentPageIndex, pageCount, pageInfo.IsLocal);
+                    var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
+                    pageUrl = PagerUtility.GetUrlInChannelPage(type, pageInfo.SiteInfo, nodeInfo, 0, currentPageIndex, pageCount, pageInfo.IsLocal);
                 }
                 else
                 {
-                    pageUrl = PagerUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, 0, currentPageIndex, pageCount, pageInfo.IsLocal);
+                    pageUrl = PagerUtility.GetUrlInContentPage(type, pageInfo.SiteInfo, channelId, contentId, 0, currentPageIndex, pageCount, pageInfo.IsLocal);
                 }
 
                 if (StringUtils.EqualsIgnoreCase(type, TypeFirstPage) || StringUtils.EqualsIgnoreCase(type, TypeLastPage) || StringUtils.EqualsIgnoreCase(type, TypePreviousPage) || StringUtils.EqualsIgnoreCase(type, TypeNextPage))
@@ -549,7 +549,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             return parsedContent;
         }
 
-        public static string ParseElementInSearchPage(string stlElement, PageInfo pageInfo, string ajaxDivId, int nodeId, int currentPageIndex, int pageCount, int totalNum)
+        public static string ParseElementInSearchPage(string stlElement, PageInfo pageInfo, string ajaxDivId, int channelId, int currentPageIndex, int pageCount, int totalNum)
         {
             var parsedContent = string.Empty;
             try
@@ -964,7 +964,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             return parsedContent;
         }
 
-        public static string ParseEntityInSearchPage(string stlEntity, PageInfo pageInfo, string ajaxDivId, int nodeId, int currentPageIndex, int pageCount, int totalNum)
+        public static string ParseEntityInSearchPage(string stlEntity, PageInfo pageInfo, string ajaxDivId, int channelId, int currentPageIndex, int pageCount, int totalNum)
         {
             var parsedContent = string.Empty;
             try
@@ -1033,7 +1033,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         }
 
 
-        public static string ParseElementInDynamicPage(string stlElement, PageInfo pageInfo, string pageUrl, int nodeId, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static string ParseElementInDynamicPage(string stlElement, PageInfo pageInfo, string pageUrl, int channelId, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
             var parsedContent = string.Empty;
             try
@@ -1143,7 +1143,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                 }
 
-                var jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                var jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
 
                 var isActive = false;
                 var isAddSpan = false;
@@ -1330,7 +1330,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //pre ellipsis
                     if (index + pageLength < currentPageIndex + 1 && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                        jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
 
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
@@ -1348,7 +1348,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (currentPageIndex + 1 != index)
                         {
-                            jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                            jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
 
                             if (!string.IsNullOrEmpty(successTemplateString))
                             {
@@ -1386,7 +1386,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //pre ellipsis
                     if (index < pageCount && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                        jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
 
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
@@ -1442,7 +1442,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             return parsedContent;
         }
 
-        public static string ParseEntityInDynamicPage(string stlEntity, PageInfo pageInfo, string pageUrl, int nodeId, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static string ParseEntityInDynamicPage(string stlEntity, PageInfo pageInfo, string pageUrl, int channelId, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
             var parsedContent = string.Empty;
             try
@@ -1456,7 +1456,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 var isHyperlink = false;
 
-                var jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                var jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
 
                 if (StringUtils.EqualsIgnoreCase(type, TypeFirstPage) || StringUtils.EqualsIgnoreCase(type, TypeLastPage) || StringUtils.EqualsIgnoreCase(type, TypePreviousPage) || StringUtils.EqualsIgnoreCase(type, TypeNextPage))
                 {

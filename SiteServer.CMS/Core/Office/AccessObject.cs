@@ -1,19 +1,17 @@
 using System.Collections;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Collections.Specialized;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Table;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.Office
 {
 	public class AccessObject
 	{
-        public static bool CreateAccessFileForContents(string filePath, PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
+        public static bool CreateAccessFileForContents(string filePath, SiteInfo siteInfo, ChannelInfo nodeInfo, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
             FileUtils.DeleteFileIfExists(filePath);
@@ -21,20 +19,20 @@ namespace SiteServer.CMS.Core.Office
             var sourceFilePath = SiteServerAssets.GetPath(SiteServerAssets.Default.AccessMdb);
             FileUtils.CopyFile(sourceFilePath, filePath);
 
-            var relatedidentityes = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId);
+            var relatedidentityes = RelatedIdentities.GetChannelRelatedIdentities(siteInfo.Id, nodeInfo.Id);
 
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
             var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedidentityes);
-            styleInfoList = ContentUtility.GetAllTableStyleInfoList(publishmentSystemInfo, styleInfoList);
+            styleInfoList = ContentUtility.GetAllTableStyleInfoList(siteInfo, styleInfoList);
 
             var accessDao = new AccessDao(filePath);
 
-            var createTableSqlString = accessDao.GetCreateTableSqlString(nodeInfo.NodeName, styleInfoList, displayAttributes);
+            var createTableSqlString = accessDao.GetCreateTableSqlString(nodeInfo.ChannelName, styleInfoList, displayAttributes);
             accessDao.ExecuteSqlString(createTableSqlString);
 
             bool isExport;
 
-            var insertSqlArrayList = accessDao.GetInsertSqlStringArrayList(nodeInfo.NodeName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, tableName, styleInfoList, displayAttributes, contentIdList, isPeriods, dateFrom, dateTo, checkedState, out isExport);
+            var insertSqlArrayList = accessDao.GetInsertSqlStringArrayList(nodeInfo.ChannelName, siteInfo.Id, nodeInfo.Id, tableName, styleInfoList, displayAttributes, contentIdList, isPeriods, dateFrom, dateTo, checkedState, out isExport);
 
             foreach (string insertSql in insertSqlArrayList)
             {
@@ -44,7 +42,7 @@ namespace SiteServer.CMS.Core.Office
             return isExport;
         }
 
-        public static List<ContentInfo> GetContentsByAccessFile(string filePath, PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
+        public static List<ContentInfo> GetContentsByAccessFile(string filePath, SiteInfo siteInfo, ChannelInfo nodeInfo)
         {
             var contentInfoList = new List<ContentInfo>();
 
@@ -61,9 +59,9 @@ namespace SiteServer.CMS.Core.Office
 
                     if (oleDt.Rows.Count > 0)
                     {
-                        var relatedidentityes = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId);
+                        var relatedidentityes = RelatedIdentities.GetChannelRelatedIdentities(siteInfo.Id, nodeInfo.Id);
 
-                        var theTableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+                        var theTableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
 
                         var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(theTableName, relatedidentityes);
 
@@ -99,8 +97,8 @@ namespace SiteServer.CMS.Core.Office
 
                             if (!string.IsNullOrEmpty(contentInfo.Title))
                             {
-                                contentInfo.PublishmentSystemId = publishmentSystemInfo.PublishmentSystemId;
-                                contentInfo.NodeId = nodeInfo.NodeId;
+                                contentInfo.SiteId = siteInfo.Id;
+                                contentInfo.ChannelId = nodeInfo.Id;
                                 contentInfo.LastEditDate = DateTime.Now;
 
                                 contentInfoList.Add(contentInfo);

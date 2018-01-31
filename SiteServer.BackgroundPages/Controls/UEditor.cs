@@ -3,8 +3,8 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web;
 using System.Web.UI;
-using BaiRong.Core;
-using BaiRong.Core.Web.Controls;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -12,8 +12,8 @@ namespace SiteServer.BackgroundPages.Controls
     {
         protected override void Render(HtmlTextWriter writer)
         {
-            var controllerUrl = CMS.Controllers.Sys.Editors.UEditor.GetUrl(PageUtils.OuterApiUrl, 0);
-            var editorUrl = SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "ueditor");
+            var controllerUrl = CMS.Controllers.Sys.Editors.ApiRouteUEditor.GetUrl(PageUtility.OuterApiUrl, 0);
+            var editorUrl = SiteFilesAssets.GetUrl(PageUtility.OuterApiUrl, "ueditor");
 
             if (string.IsNullOrEmpty(Height) || Height == "0")
             {

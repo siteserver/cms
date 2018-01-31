@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -123,11 +123,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImplNotAjax(PageInfo pageInfo, ContextInfo contextInfo, string channelIndex, string channelName, int upLevel, int topLevel, string groupChannel, string groupChannelNot, string title, bool isShowContentNum, bool isShowTreeLine, string currentFormatString)
         {
-            var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
+            var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
-            channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
+            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
 
-            var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
+            var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
 
             var target = "";
 
@@ -135,41 +135,41 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             htmlBuilder.Append(@"<table border=""0"" cellpadding=""0"" cellspacing=""0"" style=""width:100%;"">");
 
-            //var theNodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(channel.NodeId, channel.ChildrenCount, EScopeType.All, groupChannel, groupChannelNot);
-            var theNodeIdList = Node.GetNodeIdListByScopeType(channel.NodeId, channel.ChildrenCount, EScopeType.All, groupChannel, groupChannelNot);
-            var isLastNodeArray = new bool[theNodeIdList.Count];
-            var nodeIdList = new List<int>();
+            //var theChannelIdList = DataProvider.ChannelDao.GetIdListByScopeType(channel.ChannelId, channel.ChildrenCount, EScopeType.All, groupChannel, groupChannelNot);
+            var theChannelIdList = Node.GetIdListByScopeType(channel.Id, channel.ChildrenCount, EScopeType.All, groupChannel, groupChannelNot);
+            var isLastNodeArray = new bool[theChannelIdList.Count];
+            var channelIdList = new List<int>();
 
-            var currentNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, pageInfo.PageNodeId);
-            if (currentNodeInfo != null)
+            var currentChannelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, pageInfo.PageChannelId);
+            if (currentChannelInfo != null)
             {
-                nodeIdList = TranslateUtils.StringCollectionToIntList(currentNodeInfo.ParentsPath);
-                nodeIdList.Add(currentNodeInfo.NodeId);
+                channelIdList = TranslateUtils.StringCollectionToIntList(currentChannelInfo.ParentsPath);
+                channelIdList.Add(currentChannelInfo.Id);
             }
 
-            foreach (var theNodeId in theNodeIdList)
+            foreach (var theChannelId in theChannelIdList)
             {
-                var theNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, theNodeId);
-                var nodeInfo = new NodeInfo(theNodeInfo);
-                if (theNodeId == pageInfo.PublishmentSystemId && !string.IsNullOrEmpty(title))
+                var theChannelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, theChannelId);
+                var nodeInfo = new ChannelInfo(theChannelInfo);
+                if (theChannelId == pageInfo.SiteId && !string.IsNullOrEmpty(title))
                 {
-                    nodeInfo.NodeName = title;
+                    nodeInfo.ChannelName = title;
                 }
-                var isDisplay = nodeIdList.Contains(theNodeId);
+                var isDisplay = channelIdList.Contains(theChannelId);
                 if (!isDisplay)
                 {
-                    isDisplay = nodeInfo.ParentId == channelId || nodeIdList.Contains(nodeInfo.ParentId);
+                    isDisplay = nodeInfo.ParentId == channelId || channelIdList.Contains(nodeInfo.ParentId);
                 }
 
-                var selected = theNodeId == channelId;
-                if (!selected && nodeIdList.Contains(nodeInfo.NodeId))
+                var selected = theChannelId == channelId;
+                if (!selected && channelIdList.Contains(nodeInfo.Id))
                 {
                     selected = true;
                 }
                 var hasChildren = nodeInfo.ChildrenCount != 0;
 
-                var linkUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, theNodeInfo, pageInfo.IsLocal);
-                var level = theNodeInfo.ParentsCount - channel.ParentsCount;
+                var linkUrl = PageUtility.GetChannelUrl(pageInfo.SiteInfo, theChannelInfo, pageInfo.IsLocal);
+                var level = theChannelInfo.ParentsCount - channel.ParentsCount;
                 var item = new StlTreeItemNotAjax(isDisplay, selected, pageInfo, nodeInfo, hasChildren, linkUrl, target, isShowTreeLine, isShowContentNum, isLastNodeArray, currentFormatString, channelId, level);
 
                 htmlBuilder.Append(item.GetTrHtml());
@@ -193,7 +193,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             private readonly bool _isDisplay;
             private readonly bool _selected;
             private readonly PageInfo _pageInfo;
-            private readonly NodeInfo _nodeInfo;
+            private readonly ChannelInfo _nodeInfo;
             private readonly bool _hasChildren;
             private readonly string _linkUrl;
             private readonly string _target;
@@ -201,10 +201,10 @@ namespace SiteServer.CMS.StlParser.StlElement
             private readonly bool _isShowContentNum;
             private readonly bool[] _isLastNodeArray;
             private readonly string _currentFormatString;
-            private readonly int _topNodeId;
+            private readonly int _topChannelId;
             private readonly int _level;
 
-            public StlTreeItemNotAjax(bool isDisplay, bool selected, PageInfo pageInfo, NodeInfo nodeInfo, bool hasChildren, string linkUrl, string target, bool isShowTreeLine, bool isShowContentNum, bool[] isLastNodeArray, string currentFormatString, int topNodeId, int level)
+            public StlTreeItemNotAjax(bool isDisplay, bool selected, PageInfo pageInfo, ChannelInfo nodeInfo, bool hasChildren, string linkUrl, string target, bool isShowTreeLine, bool isShowContentNum, bool[] isLastNodeArray, string currentFormatString, int topChannelId, int level)
             {
                 _isDisplay = isDisplay;
                 _selected = selected;
@@ -217,7 +217,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 _isShowContentNum = isShowContentNum;
                 _isLastNodeArray = isLastNodeArray;
                 _currentFormatString = currentFormatString;
-                _topNodeId = topNodeId;
+                _topChannelId = topChannelId;
                 _level = level;
 
                 _treeDirectoryUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, "tree");
@@ -246,7 +246,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var htmlBuilder = new StringBuilder();
                 if (_isShowTreeLine)
                 {
-                    if (_topNodeId == _nodeInfo.NodeId)
+                    if (_topChannelId == _nodeInfo.Id)
                     {
                         _nodeInfo.IsLastNode = true;
                     }
@@ -358,8 +358,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 htmlBuilder.Append("&nbsp;");
 
-                var nodeName = _nodeInfo.NodeName;
-                if ((_pageInfo.TemplateInfo.TemplateType == ETemplateType.ChannelTemplate || _pageInfo.TemplateInfo.TemplateType == ETemplateType.ContentTemplate) && _pageInfo.PageNodeId == _nodeInfo.NodeId)
+                var nodeName = _nodeInfo.ChannelName;
+                if ((_pageInfo.TemplateInfo.TemplateType == TemplateType.ChannelTemplate || _pageInfo.TemplateInfo.TemplateType == TemplateType.ContentTemplate) && _pageInfo.PageChannelId == _nodeInfo.Id)
                 {
                     nodeName = string.Format(_currentFormatString, nodeName);
                 }
@@ -568,11 +568,11 @@ var stltree_isNodeTree = {isNodeTree};
         {
             pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Jquery);
 
-            var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
+            var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
-            channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
+            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
 
-            var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
+            var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
 
             var target = "";
 
@@ -580,33 +580,33 @@ var stltree_isNodeTree = {isNodeTree};
 
             htmlBuilder.Append(@"<table border=""0"" cellpadding=""0"" cellspacing=""0"" style=""width:100%;"">");
 
-            //var theNodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(channel.NodeId, channel.ChildrenCount, EScopeType.SelfAndChildren, groupChannel, groupChannelNot);
-            var theNodeIdList = Node.GetNodeIdListByScopeType(channel.NodeId, channel.ChildrenCount, EScopeType.SelfAndChildren, groupChannel, groupChannelNot);
+            //var theChannelIdList = DataProvider.ChannelDao.GetIdListByScopeType(channel.ChannelId, channel.ChildrenCount, EScopeType.SelfAndChildren, groupChannel, groupChannelNot);
+            var theChannelIdList = Node.GetIdListByScopeType(channel.Id, channel.ChildrenCount, EScopeType.SelfAndChildren, groupChannel, groupChannelNot);
 
-            foreach (var theNodeId in theNodeIdList)
+            foreach (var theChannelId in theChannelIdList)
             {
-                var theNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, theNodeId);
-                var nodeInfo = new NodeInfo(theNodeInfo);
-                if (theNodeId == pageInfo.PublishmentSystemId && !string.IsNullOrEmpty(title))
+                var theChannelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, theChannelId);
+                var nodeInfo = new ChannelInfo(theChannelInfo);
+                if (theChannelId == pageInfo.SiteId && !string.IsNullOrEmpty(title))
                 {
-                    nodeInfo.NodeName = title;
+                    nodeInfo.ChannelName = title;
                 }
 
-                var rowHtml = GetChannelRowHtml(pageInfo.PublishmentSystemInfo, nodeInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelId, channel.ParentsCount, pageInfo.PageNodeId, isLocal);
+                var rowHtml = GetChannelRowHtml(pageInfo.SiteInfo, nodeInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelId, channel.ParentsCount, pageInfo.PageChannelId, isLocal);
 
                 htmlBuilder.Append(rowHtml);
             }
 
             htmlBuilder.Append("</table>");
 
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAgStlTreeAjax, StlTreeItemAjax.GetScript(pageInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelId, channel.ParentsCount, pageInfo.PageNodeId));
+            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAgStlTreeAjax, StlTreeItemAjax.GetScript(pageInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelId, channel.ParentsCount, pageInfo.PageChannelId));
 
             return htmlBuilder.ToString();
         }
 
-        public static string GetChannelRowHtml(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string target, bool isShowTreeLine, bool isShowContentNum, string currentFormatString, int topNodeId, int topParantsCount, int currentNodeId, bool isLocal)
+        public static string GetChannelRowHtml(SiteInfo siteInfo, ChannelInfo nodeInfo, string target, bool isShowTreeLine, bool isShowContentNum, string currentFormatString, int topChannelId, int topParantsCount, int currentChannelId, bool isLocal)
         {
-            var nodeTreeItem = new StlTreeItemAjax(publishmentSystemInfo, nodeInfo, target, isShowContentNum, currentFormatString, topNodeId, topParantsCount, currentNodeId, isLocal);
+            var nodeTreeItem = new StlTreeItemAjax(siteInfo, nodeInfo, target, isShowContentNum, currentFormatString, topChannelId, topParantsCount, currentChannelId, isLocal);
             var title = nodeTreeItem.GetItemHtml();
 
             string rowHtml = $@"
@@ -627,29 +627,29 @@ var stltree_isNodeTree = {isNodeTree};
             private readonly string _iconMinusUrl;
             private readonly string _iconPlusUrl;
 
-            private readonly NodeInfo _nodeInfo;
+            private readonly ChannelInfo _nodeInfo;
             private readonly bool _hasChildren;
             private readonly string _linkUrl;
             private readonly string _target;
             private readonly bool _isShowContentNum;
             private readonly string _currentFormatString;
-            private readonly int _topNodeId;
+            private readonly int _topChannelId;
             private readonly int _level;
-            private readonly int _currentNodeId;
+            private readonly int _currentChannelId;
 
-            public StlTreeItemAjax(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string target, bool isShowContentNum, string currentFormatString, int topNodeId, int topParentsCount, int currentNodeId, bool isLocal)
+            public StlTreeItemAjax(SiteInfo siteInfo, ChannelInfo nodeInfo, string target, bool isShowContentNum, string currentFormatString, int topChannelId, int topParentsCount, int currentChannelId, bool isLocal)
             {
                 _nodeInfo = nodeInfo;
                 _hasChildren = nodeInfo.ChildrenCount != 0;
-                _linkUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, isLocal);
+                _linkUrl = PageUtility.GetChannelUrl(siteInfo, nodeInfo, isLocal);
                 _target = target;
                 _isShowContentNum = isShowContentNum;
                 _currentFormatString = currentFormatString;
-                _topNodeId = topNodeId;
+                _topChannelId = topChannelId;
                 _level = nodeInfo.ParentsCount - topParentsCount;
-                _currentNodeId = currentNodeId;
+                _currentChannelId = currentChannelId;
 
-                var treeDirectoryUrl = SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "tree");
+                var treeDirectoryUrl = SiteFilesAssets.GetUrl(PageUtility.OuterApiUrl, "tree");
                 _iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
                 _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
                 _iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");
@@ -668,9 +668,9 @@ var stltree_isNodeTree = {isNodeTree};
                 if (_hasChildren)
                 {
                     htmlBuilder.Append(
-                        _topNodeId != _nodeInfo.NodeId
-                            ? $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isAjax=\"true\" isOpen=\"false\" id=\"{_nodeInfo.NodeId}\" src=\"{_iconPlusUrl}\"/>"
-                            : $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isAjax=\"false\" isOpen=\"true\" id=\"{_nodeInfo.NodeId}\" src=\"{_iconMinusUrl}\"/>");
+                        _topChannelId != _nodeInfo.Id
+                            ? $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isAjax=\"true\" isOpen=\"false\" id=\"{_nodeInfo.Id}\" src=\"{_iconPlusUrl}\"/>"
+                            : $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isAjax=\"false\" isOpen=\"true\" id=\"{_nodeInfo.Id}\" src=\"{_iconMinusUrl}\"/>");
                 }
                 else
                 {
@@ -684,8 +684,8 @@ var stltree_isNodeTree = {isNodeTree};
 
                 htmlBuilder.Append("&nbsp;");
 
-                var nodeName = _nodeInfo.NodeName;
-                if (_currentNodeId == _nodeInfo.NodeId)
+                var nodeName = _nodeInfo.ChannelName;
+                if (_currentChannelId == _nodeInfo.Id)
                 {
                     nodeName = string.Format(_currentFormatString, nodeName);
                 }
@@ -710,7 +710,7 @@ var stltree_isNodeTree = {isNodeTree};
                 return htmlBuilder.ToString();
             }
 
-            public static string GetScript(PageInfo pageInfo, string target, bool isShowTreeLine, bool isShowContentNum, string currentFormatString, int topNodeId, int topParentsCount, int currentNodeId)
+            public static string GetScript(PageInfo pageInfo, string target, bool isShowTreeLine, bool isShowContentNum, string currentFormatString, int topChannelId, int topParentsCount, int currentChannelId)
             {
                 var script = @"
 <script language=""JavaScript"">
@@ -777,7 +777,7 @@ function fontWeightLink(element){
     weightedLink = element;
 }
 
-var completedNodeID = null;
+var completedChannelId = null;
 function stltree_displayChildren(img){
 	if (stltree_isNull(img)) return;
 
@@ -785,7 +785,7 @@ function stltree_displayChildren(img){
 
     var isToOpen = img.getAttribute('isOpen') == 'false';
     var isByAjax = img.getAttribute('isAjax') == 'true';
-    var nodeID = img.getAttribute('id');
+    var channelId = img.getAttribute('id');
 
 	if (!stltree_isNull(img) && img.getAttribute('isOpen') != null){
 		if (img.getAttribute('isOpen') == 'false'){
@@ -803,7 +803,7 @@ function stltree_displayChildren(img){
         div.innerHTML = ""<img align='absmiddle' border='0' src='{iconLoadingUrl}' /> 加载中，请稍候..."";
         img.parentNode.appendChild(div);
         //Element.addClassName(div, 'loading');
-        loadingChannels(tr, img, div, nodeID);
+        loadingChannels(tr, img, div, channelId);
     }
     else
     {
@@ -842,19 +842,19 @@ function stltree_displayChildren(img){
     }
 }
 ";
-                var loadingUrl = ActionsLoadingChannels.GetUrl(pageInfo.ApiUrl);
+                var loadingUrl = ApiRouteActionsLoadingChannels.GetUrl(pageInfo.ApiUrl);
                 var formatString = TranslateUtils.EncryptStringBySecretKey(currentFormatString);
 
                 script += $@"
-function loadingChannels(tr, img, div, nodeID){{
+function loadingChannels(tr, img, div, channelId){{
     var url = '{loadingUrl}';
-    var pars = 'publishmentSystemID={pageInfo.PublishmentSystemId}&parentID=' + nodeID + '&target={target}&isShowTreeLine={isShowTreeLine}&isShowContentNum={isShowContentNum}&currentFormatString={formatString}&topNodeID={topNodeId}&topParentsCount={topParentsCount}&currentNodeID={currentNodeId}';
+    var pars = 'siteID={pageInfo.SiteId}&parentID=' + channelId + '&target={target}&isShowTreeLine={isShowTreeLine}&isShowContentNum={isShowContentNum}&currentFormatString={formatString}&topChannelId={topChannelId}&topParentsCount={topParentsCount}&currentChannelId={currentChannelId}';
 
     //jQuery.post(url, pars, function(data, textStatus){{
         //$($.parseHTML(data)).insertAfter($(tr));
         //img.setAttribute('isAjax', 'false');
         //img.parentNode.removeChild(div);
-        //completedNodeID = nodeID;
+        //completedChannelId = channelId;
     //}});
     $.ajax({{
                 url: url,
@@ -871,21 +871,21 @@ function loadingChannels(tr, img, div, nodeID){{
                     $($.parseHTML(data)).insertAfter($(tr));
                     img.setAttribute('isAjax', 'false');
                     img.parentNode.removeChild(div);
-                    completedNodeID = nodeID;
+                    completedChannelId = channelId;
                 }}
     }});
 }}
 
 function loadingChannelsOnLoad(path){{
     if (path && path.length > 0){{
-        var nodeIDs = path.split(',');
-        var nodeID = nodeIDs[0];
-        var img = $(nodeID);
+        var channelIds = path.split(',');
+        var channelId = channelIds[0];
+        var img = $(channelId);
         if (!img) return;
         if (img.getAttribute('isOpen') == 'false'){{
             stltree_displayChildren(img);
             new PeriodicalExecuter(function(pe){{
-                if (completedNodeID && completedNodeID == nodeID){{
+                if (completedChannelId && completedChannelId == channelId){{
                     if (path.indexOf(',') != -1){{
                         var thePath = path.substring(path.indexOf(',') + 1);
                         loadingChannelsOnLoad(thePath);
@@ -899,7 +899,7 @@ function loadingChannelsOnLoad(path){{
 </script>
 ";
 
-                script += GetScriptOnLoad(pageInfo.PublishmentSystemId, topNodeId, pageInfo.PageNodeId);
+                script += GetScriptOnLoad(pageInfo.SiteId, topChannelId, pageInfo.PageChannelId);
 
                 var treeDirectoryUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, "tree");
                 var iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
@@ -918,21 +918,21 @@ function loadingChannelsOnLoad(path){{
                 return script;
             }
 
-            private static string GetScriptOnLoad(int publishmentSystemId, int topNodeId, int currentNodeId)
+            private static string GetScriptOnLoad(int siteId, int topChannelId, int currentChannelId)
             {
-                if (currentNodeId == 0 || currentNodeId == publishmentSystemId || currentNodeId == topNodeId)
+                if (currentChannelId == 0 || currentChannelId == siteId || currentChannelId == topChannelId)
                     return string.Empty;
-                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, currentNodeId);
+                var nodeInfo = ChannelManager.GetChannelInfo(siteId, currentChannelId);
                 if (nodeInfo != null)
                 {
                     string path;
-                    if (nodeInfo.ParentId == publishmentSystemId)
+                    if (nodeInfo.ParentId == siteId)
                     {
-                        path = currentNodeId.ToString();
+                        path = currentChannelId.ToString();
                     }
                     else
                     {
-                        path = nodeInfo.ParentsPath.Substring(nodeInfo.ParentsPath.IndexOf(",", StringComparison.Ordinal) + 1) + "," + currentNodeId;
+                        path = nodeInfo.ParentsPath.Substring(nodeInfo.ParentsPath.IndexOf(",", StringComparison.Ordinal) + 1) + "," + currentChannelId;
                     }
                     return $@"
 <script language=""JavaScript"">

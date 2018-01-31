@@ -1,5 +1,5 @@
 ﻿using System.Web.UI;
-using BaiRong.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Controls
 {

@@ -1,23 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using BaiRong.Core;
-using BaiRong.Core.IO;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Net;
-using Newtonsoft.Json;
+using SiteServer.Utils;
+using SiteServer.Utils.IO;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Apis;
+using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
-using SiteServer.Plugin.Features;
-using SiteServer.Plugin.Models;
+using SiteServer.Utils.Packaging;
 
 namespace SiteServer.CMS.Plugin
 {
@@ -31,8 +25,6 @@ namespace SiteServer.CMS.Plugin
             private static readonly object LockObject = new object();
             private const string CacheKey = "SiteServer.CMS.Plugin.PluginCache";
             private static readonly FileWatcherClass FileWatcher;
-            
-            private static FileSystemWatcher _watcher;
 
             static PluginManagerCache()
             {
@@ -45,43 +37,36 @@ namespace SiteServer.CMS.Plugin
                 CacheUtils.Remove(CacheKey);
             }
 
-            private static SortedList<string, PluginPair> Load()
+            private static SortedList<string, PluginInfo> Load()
             {
-                Environment = new PluginEnvironment(EDatabaseTypeUtils.GetValue(WebConfigUtils.DatabaseType), WebConfigUtils.ConnectionString,
-                WebConfigUtils.PhysicalApplicationPath);
-                var dict = new SortedList<string, PluginPair>();
+                Environment = new PluginEnvironment(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath);
+                var dict = new SortedList<string, PluginInfo>();
 
                 Thread.Sleep(2000);
 
                 try
                 {
-                    var pluginsPath = PathUtils.GetPluginsPath();
+                    var pluginsPath = PathUtils.PluginsPath;
                     if (!Directory.Exists(pluginsPath))
                     {
-                        Directory.CreateDirectory(pluginsPath);
+                        return dict;
                     }
 
-                    var directoryPaths = DirectoryUtils.GetDirectoryPaths(pluginsPath);
-                    foreach (var directoryPath in directoryPaths)
+                    var directoryNames = DirectoryUtils.GetDirectoryNames(pluginsPath);
+                    foreach (var directoryName in directoryNames)
                     {
-                        var pluginPair = ActivePlugin(directoryPath);
-                        if (pluginPair != null)
+                        if (StringUtils.StartsWith(directoryName, ".") || StringUtils.EqualsIgnoreCase(directoryName, "packages")) continue;
+                        
+                        var pluginInfo = ActivePlugin(directoryName);
+                        if (pluginInfo != null)
                         {
-                            dict[pluginPair.Metadata.Id] = pluginPair;
+                            dict[directoryName] = pluginInfo;
                         }
                     }
 
-                    _watcher = new FileSystemWatcher
-                    {
-                        Path = pluginsPath,
-                        NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
-                        IncludeSubdirectories = true
-                    };
-                    _watcher.Created += Watcher_EventHandler;
-                    _watcher.Changed += Watcher_EventHandler;
-                    _watcher.Deleted += Watcher_EventHandlerDelete;
-                    _watcher.Renamed += Watcher_EventHandler;
-                    _watcher.EnableRaisingEvents = true;
+#if DEBUG
+                    PluginDebugger.Instance.Run();
+#endif
                 }
                 catch (Exception ex)
                 {
@@ -91,171 +76,103 @@ namespace SiteServer.CMS.Plugin
                 return dict;
             }
 
-            private static PluginPair ActivePlugin(string directoryPath)
+            private static PluginInfo ActivePlugin(string directoryName)
             {
-                //if (directoryPath.IndexOf("image-poll") == -1) return;
+                string errorMessage;
 
                 try
                 {
-                    var metadata = GetMetadataFromJson(directoryPath);
-                    if (metadata == null)
+                    string dllDirectoryPath;
+                    var metadata = GetPluginMetadata(directoryName, out dllDirectoryPath, out errorMessage);
+                    if (metadata != null)
                     {
-                        return null;
+                        //foreach (var filePath in DirectoryUtils.GetFilePaths(DirectoryUtils.GetDirectoryPath(metadata.ExecuteFilePath)))
+                        //{
+
+                        //    if (!StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(filePath), ".dll")) continue;
+                        //    var fileName = PathUtils.GetFileName(filePath);
+                        //    if (StringUtils.EqualsIgnoreCase(fileName, PathUtils.GetFileName(metadata.ExecuteFilePath))) continue;
+                        //    if (FileUtils.IsFileExists(PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "Bin", fileName))) continue;
+                        //    Assembly.Load(File.ReadAllBytes(filePath));
+                        //}
+                        //var assembly = Assembly.Load(File.ReadAllBytes(metadata.ExecuteFilePath));
+
+                        //metadata.GetDependencyGroups()
+
+                        CopyDllsToBin(metadata.Id, dllDirectoryPath);
+                        
+                        //var assembly = Assembly.Load(File.ReadAllBytes(PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "Bin", PathUtils.GetFileName(metadata.ExecuteFilePath))));
+                        var assembly = Assembly.Load(metadata.Id);  // load the dll from bin directory
+
+                        var type = assembly.GetTypes().First(o => o.IsClass && !o.IsAbstract && o.IsSubclassOf(typeof(PluginBase)));
+
+                        return ActiveAndAdd(metadata, type);
                     }
-
-                    //foreach (var filePath in DirectoryUtils.GetFilePaths(DirectoryUtils.GetDirectoryPath(metadata.ExecuteFilePath)))
-                    //{
-
-                    //    if (!StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(filePath), ".dll")) continue;
-                    //    var fileName = PathUtils.GetFileName(filePath);
-                    //    if (StringUtils.EqualsIgnoreCase(fileName, PathUtils.GetFileName(metadata.ExecuteFilePath))) continue;
-                    //    if (FileUtils.IsFileExists(PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "Bin", fileName))) continue;
-                    //    Assembly.Load(File.ReadAllBytes(filePath));
-                    //}
-                    //var assembly = Assembly.Load(File.ReadAllBytes(metadata.ExecuteFilePath));
-
-                    foreach (var filePath in DirectoryUtils.GetFilePaths(DirectoryUtils.GetDirectoryPath(metadata.ExecuteFilePath)))
-                    {
-                        if (!StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(filePath), ".dll")) continue;
-
-                        var fileName = PathUtils.GetFileName(filePath);
-                        var binFilePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "Bin", fileName);
-
-                        if (!FileUtils.IsFileExists(binFilePath))
-                        {
-                            FileUtils.MoveFile(filePath, binFilePath, false);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(fileName, PathUtils.GetFileName(metadata.ExecuteFilePath)))
-                        {
-                            if (FileUtils.ComputeHash(filePath) != FileUtils.ComputeHash(binFilePath))
-                            {
-                                FileUtils.MoveFile(filePath, binFilePath, true);
-                            }
-                        }
-                    }
-                    //var assembly = Assembly.Load(File.ReadAllBytes(PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "Bin", PathUtils.GetFileName(metadata.ExecuteFilePath))));
-                    var assembly = Assembly.Load(PathUtils.GetFileNameWithoutExtension(metadata.ExecuteFilePath));
-
-                    var type = assembly.GetTypes().First(o => o.IsClass && !o.IsAbstract && o.GetInterfaces().Contains(typeof(IPlugin)));
-                    var plugin = (IPlugin)Activator.CreateInstance(type);
-
-                    return ActiveAndAdd(metadata, plugin);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    LogUtils.AddSystemErrorLog(e, $"插件加载：{directoryPath}");
+                    errorMessage = ex.Message;
+                    LogUtils.AddSystemErrorLog(ex, $"插件加载：{directoryName}");
                 }
 
-                return null;
+                return new PluginInfo(directoryName, errorMessage);
             }
 
-            private static PluginPair ActiveAndAdd(PluginMetadata metadata, IPlugin plugin)
+            private static void CopyDllsToBin(string pluginId, string pluginDllDirectoryPath)
             {
-                if (metadata == null || plugin == null) return null;
+                foreach (var filePath in DirectoryUtils.GetFilePaths(pluginDllDirectoryPath))
+                {
+                    if (!StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(filePath), ".dll")) continue;
+
+                    var fileName = PathUtils.GetFileName(filePath);
+                    var binFilePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "Bin", fileName);
+
+                    if (!FileUtils.IsFileExists(binFilePath))
+                    {
+                        FileUtils.MoveFile(filePath, binFilePath, false);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(fileName, pluginId + ".dll"))
+                    {
+                        if (FileUtils.ComputeHash(filePath) != FileUtils.ComputeHash(binFilePath))
+                        {
+                            FileUtils.MoveFile(filePath, binFilePath, true);
+                        }
+                    }
+                }
+            }
+
+            // TODO: 增加SINGLETON约束
+            private static PluginInfo ActiveAndAdd(IMetadata metadata, Type type)
+            {
+                if (metadata == null || type == null) return null;
 
                 var s = Stopwatch.StartNew();
 
-                var context = new PluginContext
+                //var plugin = (IPlugin)Activator.CreateInstance(type);
+
+                var plugin = (PluginBase)Activator.CreateInstance(type);
+                plugin.Initialize(metadata, Environment, new PluginApiCollection
                 {
-                    Environment = Environment,
-                    Metadata = metadata,
                     AdminApi = new AdminApi(metadata),
                     ConfigApi = new ConfigApi(metadata),
                     ContentApi = ContentApi.Instance,
-                    DataApi = new DataApi(metadata),
-                    FilesApi = new FilesApi(metadata),
-                    NodeApi = NodeApi.Instance,
+                    DataApi = DataProvider.DataApi,
+                    FilesApi = FilesApi.Instance,
+                    ChannelApi = ChannelApi.Instance,
                     ParseApi = ParseApi.Instance,
-                    PaymentApi = PaymentApi.Instance,
-                    PublishmentSystemApi = PublishmentSystemApi.Instance,
-                    SmsApi = SmsApi.Instance,
+                    PluginApi = new PluginApi(metadata),
+                    SiteApi = SiteApi.Instance,
                     UserApi = UserApi.Instance
-                };
-                plugin.PluginActive?.Invoke(context);
+                });
 
-                var contentModel = plugin as IContentModel;
-                PluginTableUtils.SyncContentModel(contentModel, metadata);
+                var service = new PluginService(metadata);
 
-                var table = plugin as ITable;
-                PluginTableUtils.SyncTable(table, metadata);
+                plugin.Startup(service);
 
-                var milliseconds = s.ElapsedMilliseconds;
+                PluginContentTableManager.SyncContentTable(service);
+                PluginDatabaseTableManager.SyncTable(service);
 
-                metadata.InitTime = milliseconds;
-
-                var pair = new PluginPair(context, plugin);
-
-                return pair;
-            }
-
-            private static void Watcher_EventHandler(object sender, FileSystemEventArgs e)
-            {
-                var fullPath = e.FullPath.ToLower();
-                if (!fullPath.Contains("-") || !fullPath.EndsWith(PluginConfigName) && !fullPath.EndsWith(".dll")) return;
-
-                try
-                {
-                    _watcher.EnableRaisingEvents = false;
-                    OnConfigOrDllChanged(e.FullPath);
-                }
-                finally
-                {
-                    _watcher.EnableRaisingEvents = true;
-                }
-            }
-
-            private static void Watcher_EventHandlerDelete(object sender, FileSystemEventArgs e)
-            {
-                if (!PathUtils.IsDirectoryPath(e.FullPath)) return;
-
-                try
-                {
-                    _watcher.EnableRaisingEvents = false;
-                    OnDirectoryDeleted(e.FullPath);
-                }
-                finally
-                {
-                    _watcher.EnableRaisingEvents = true;
-                }
-            }
-
-            private static void OnConfigOrDllChanged(string fullPath)
-            {
-                var directoryPath = DirectoryUtils.GetDirectoryPath(fullPath);
-
-                var pluginDirectoryPath = string.Empty;
-                var dirPaths = DirectoryUtils.GetDirectoryPaths(PathUtils.GetPluginsPath(string.Empty));
-                foreach (var dirPath in dirPaths)
-                {
-                    if (!DirectoryUtils.IsInDirectory(dirPath, directoryPath)) continue;
-                    pluginDirectoryPath = dirPath;
-                    break;
-                }
-                if (string.IsNullOrEmpty(pluginDirectoryPath)) return;
-
-                var plugin = AllPluginPairs.FirstOrDefault(pluginPair => PathUtils.IsEquals(pluginDirectoryPath, pluginPair.Metadata.DirectoryPath));
-                if (plugin != null)
-                {
-                    Clear();
-                }
-            }
-
-            private static void OnDirectoryDeleted(string fullPath)
-            {
-                var directoryPath = DirectoryUtils.GetDirectoryPath(fullPath);
-
-                var isPlugin = false;
-                foreach (var pluginPair in AllPluginPairs)
-                {
-                    if (!PathUtils.IsEquals(pluginPair.Metadata.DirectoryPath, directoryPath)) continue;
-                    isPlugin = true;
-                    break;
-                }
-
-                if (isPlugin)
-                {
-                    Clear();
-                }
+                return new PluginInfo(service, plugin, s.ElapsedMilliseconds);
             }
 
             public static void Clear()
@@ -264,14 +181,14 @@ namespace SiteServer.CMS.Plugin
                 FileWatcher.UpdateCacheFile();
             }
 
-            public static SortedList<string, PluginPair> GetPluginSortedList()
+            public static SortedList<string, PluginInfo> GetPluginSortedList()
             {
-                var retval = CacheUtils.Get<SortedList<string, PluginPair>>(CacheKey);
+                var retval = CacheUtils.Get<SortedList<string, PluginInfo>>(CacheKey);
                 if (retval != null) return retval;
 
                 lock (LockObject)
                 {
-                    retval = CacheUtils.Get<SortedList<string, PluginPair>>(CacheKey);
+                    retval = CacheUtils.Get<SortedList<string, PluginInfo>>(CacheKey);
                     if (retval == null)
                     {
                         retval = Load();
@@ -283,7 +200,6 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        internal const string PluginConfigName = "plugin.config";
         public static PluginEnvironment Environment { get; private set; }
 
         public static void ClearCache()
@@ -291,13 +207,13 @@ namespace SiteServer.CMS.Plugin
             PluginManagerCache.Clear();
         }
 
-        public static PluginMetadata GetMetadata(string pluginId)
+        public static IMetadata GetMetadata(string pluginId)
         {
             var dict = PluginManagerCache.GetPluginSortedList();
-            PluginPair pair;
-            if (dict.TryGetValue(pluginId, out pair))
+            PluginInfo pluginInfo;
+            if (dict.TryGetValue(pluginId, out pluginInfo))
             {
-                return pair.Metadata.Copy();
+                return pluginInfo.Plugin;
             }
             return null;
         }
@@ -311,218 +227,202 @@ namespace SiteServer.CMS.Plugin
             return dict.ContainsKey(pluginId);
         }
 
-        public static List<PluginPair> AllPluginPairs
+        public static List<PluginInfo> PluginInfoListRunnable
         {
             get
             {
                 var dict = PluginManagerCache.GetPluginSortedList();
-                return dict.Values.Where(pluginPair => pluginPair?.Metadata != null && pluginPair.Plugin != null).ToList();
+                return dict.Values.Where(pluginInfo => pluginInfo.Plugin != null).ToList();
             }
         }
 
-        public static List<PluginPair> GetEnabledPluginPairs<T>() where T : IPlugin
+        public static List<PluginInfo> PluginInfoListNotRunnable
+        {
+            get
+            {
+                var dict = PluginManagerCache.GetPluginSortedList();
+                return dict.Values.Where(pluginInfo => pluginInfo.Plugin == null).ToList();
+            }
+        }
+
+        public static List<PluginInfo> AllPluginInfoList
+        {
+            get
+            {
+                var dict = PluginManagerCache.GetPluginSortedList();
+                return dict.Values.ToList();
+            }
+        }
+
+        public static List<PluginInfo> GetEnabledPluginInfoList<T>() where T : PluginBase
         {
             var dict = PluginManagerCache.GetPluginSortedList();
             return
                     dict.Values.Where(
-                            pair =>
-                                pair?.Metadata != null && pair.Plugin != null && !pair.Metadata.Disabled &&
-                                pair.Plugin is T
+                            pluginInfo =>
+                                pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
+                                pluginInfo.Plugin is T
                         )
                         .ToList();
         }
 
-        public static PluginPair GetEnabledPluginPair<T>(string pluginId) where T : IPlugin
+        public static List<PluginService> Services
+        {
+            get
+            {
+                var dict = PluginManagerCache.GetPluginSortedList();
+
+                return dict.Values.Where(
+                            pluginInfo =>
+                                pluginInfo.Plugin != null && !pluginInfo.IsDisabled
+                        ).Select(pluginInfo => pluginInfo.Service).ToList();
+            }
+        }
+
+        public static PluginInfo GetPluginInfo(string pluginId)
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
             var dict = PluginManagerCache.GetPluginSortedList();
 
-            PluginPair pair;
-            var isGet = dict.TryGetValue(pluginId, out pair);
-            if (isGet && pair?.Metadata != null && pair.Plugin != null && !pair.Metadata.Disabled &&
-                pair.Plugin is T)
+            PluginInfo pluginInfo;
+            if (dict.TryGetValue(pluginId, out pluginInfo))
             {
-                return pair;
+                return pluginInfo;
             }
             return null;
         }
 
-        public static List<PluginPair> GetEnabledPluginPairs<T1, T2>()
-        {
-            var dict = PluginManagerCache.GetPluginSortedList();
-
-            return dict.Values.Where(
-                            pair =>
-                                pair?.Metadata != null && pair.Plugin != null && !pair.Metadata.Disabled &&
-                                (pair.Plugin is T1 || pair.Plugin is T2)
-                        )
-                        .ToList();
-        }
-
-        public static List<PluginMetadata> GetEnabledPluginMetadatas<T>() where T : IPlugin
-        {
-            var dict = PluginManagerCache.GetPluginSortedList();
-
-            return dict.Values.Where(
-                        pair =>
-                            pair?.Metadata != null && pair.Plugin != null && !pair.Metadata.Disabled &&
-                            pair.Plugin is T
-                    ).Select(pluginPair => pluginPair.Metadata).ToList();
-        }
-
-        public static PluginMetadata GetEnabledPluginMetadata<T>(string pluginId) where T : IPlugin
+        public static PluginInfo GetEnabledPluginInfo<T>(string pluginId) where T : PluginBase
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
             var dict = PluginManagerCache.GetPluginSortedList();
 
-            PluginPair pair;
-            var isGet = dict.TryGetValue(pluginId, out pair);
-            if (isGet && pair?.Metadata != null && pair.Plugin != null && !pair.Metadata.Disabled &&
-                pair.Plugin is T)
+            PluginInfo pluginInfo;
+            var isGet = dict.TryGetValue(pluginId, out pluginInfo);
+            if (isGet && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
+                pluginInfo.Plugin is T)
             {
-                return pair.Metadata;
+                return pluginInfo;
             }
             return null;
         }
 
-        public static T GetEnabledFeature<T>(string pluginId) where T : IPlugin
+        public static List<PluginInfo> GetEnabledPluginInfoList<T1, T2>()
+        {
+            var dict = PluginManagerCache.GetPluginSortedList();
+
+            return dict.Values.Where(
+                            pluginInfo =>
+                                pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
+                                (pluginInfo.Plugin is T1 || pluginInfo.Plugin is T2)
+                        )
+                        .ToList();
+        }
+
+        public static List<PluginBase> GetEnabledPluginMetadatas<T>() where T : PluginBase
+        {
+            var dict = PluginManagerCache.GetPluginSortedList();
+
+            return dict.Values.Where(
+                        pluginInfo =>
+                            pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
+                            pluginInfo.Plugin is T
+                    ).Select(pluginInfo => pluginInfo.Plugin).ToList();
+        }
+
+        public static IMetadata GetEnabledPluginMetadata<T>(string pluginId) where T : PluginBase
+        {
+            if (string.IsNullOrEmpty(pluginId)) return null;
+
+            var dict = PluginManagerCache.GetPluginSortedList();
+
+            PluginInfo pluginInfo;
+            var isGet = dict.TryGetValue(pluginId, out pluginInfo);
+            if (isGet && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
+                pluginInfo.Plugin is T)
+            {
+                return pluginInfo.Plugin;
+            }
+            return null;
+        }
+
+        public static T GetEnabledFeature<T>(string pluginId) where T : PluginBase
         {
             if (string.IsNullOrEmpty(pluginId)) return default(T);
 
             var dict = PluginManagerCache.GetPluginSortedList();
 
-            PluginPair pair;
-            var isGet = dict.TryGetValue(pluginId, out pair);
-            if (isGet && pair?.Metadata != null && pair.Plugin != null && !pair.Metadata.Disabled &&
-                pair.Plugin is T)
+            PluginInfo pluginInfo;
+            var isGet = dict.TryGetValue(pluginId, out pluginInfo);
+            if (isGet && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
+                pluginInfo.Plugin is T)
             {
-                return (T)pair.Plugin;
+                return (T)pluginInfo.Plugin;
             }
             return default(T);
         }
 
-        public static List<T> GetEnabledFeatures<T>() where T : IPlugin
+        public static List<T> GetEnabledFeatures<T>() where T : PluginBase
         {
             var dict = PluginManagerCache.GetPluginSortedList();
 
-            var pairs = dict.Values.Where(
-                        pair =>
-                            pair?.Metadata != null && pair.Plugin != null && !pair.Metadata.Disabled &&
-                            pair.Plugin is T
+            var pluginInfos = dict.Values.Where(
+                        pluginInfo =>
+                            pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
+                            pluginInfo.Plugin is T
                     )
                     .ToList();
-            return pairs.Select(pluginPair => (T)pluginPair.Plugin).ToList();
+            return pluginInfos.Select(pluginInfo => (T)pluginInfo.Plugin).ToList();
         }
 
-        public static List<PermissionConfig> GetTopPermissions()
+        public static PluginService GetService(string pluginId)
         {
-            var permissions = new List<PermissionConfig>();
-            foreach (var pluginPair in GetEnabledPluginPairs<IMenu>())
+            if (string.IsNullOrEmpty(pluginId)) return null;
+
+            foreach (var service in Services)
             {
-                var feature = pluginPair.Plugin as IMenu;
-                if (feature?.PluginMenu == null) continue;
-                permissions.Add(new PermissionConfig(pluginPair.Metadata.Id, $"系统管理 -> {pluginPair.Metadata.DisplayName}（插件）"));
-            }
-
-            return permissions;
-        }
-
-        public static List<PermissionConfig> GetSitePermissions(int siteId)
-        {
-            var pairs = GetEnabledPluginPairs<IMenu>();
-            var permissions = new List<PermissionConfig>();
-
-            foreach (var pluginPair in pairs)
-            {
-                var feature = pluginPair.Plugin as IMenu;
-                if (feature?.SiteMenu == null) continue;
-                permissions.Add(new PermissionConfig(pluginPair.Metadata.Id, $"{pluginPair.Metadata.DisplayName}（插件）"));
-            }
-
-            return permissions;
-        }
-
-        public static Dictionary<string, PluginMenu> GetTopMenus()
-        {
-            var menus = new Dictionary<string, PluginMenu>();
-
-            var pairs = GetEnabledPluginPairs<IMenu>();
-            if (pairs != null && pairs.Count > 0)
-            {
-                foreach (var pluginPair in pairs)
+                if (service.PluginId == pluginId)
                 {
-                    var feature = pluginPair.Plugin as IMenu;
-                    if (feature?.PluginMenu == null) continue;
-
-                    var pluginMenu = GetMenu(pluginPair.Metadata.Id, 0, feature.PluginMenu, 0);
-
-                    menus.Add(pluginPair.Metadata.Id, pluginMenu);
+                    return service;
                 }
             }
 
-            return menus;
+            return null;
         }
 
-        public static Dictionary<string, PluginMenu> GetSiteMenus(int siteId)
-        {
-            var pairs = GetEnabledPluginPairs<IMenu>();
-            if (pairs == null || pairs.Count == 0) return null;
 
-            var menus = new Dictionary<string, PluginMenu>();
 
-            foreach (var pluginPair in pairs)
-            {
-                var feature = pluginPair.Plugin as IMenu;
-
-                PluginMenu metadataMenu = null;
-                try
-                {
-                    metadataMenu = feature?.SiteMenu?.Invoke(siteId);
-                }
-                catch (Exception ex)
-                {
-                    LogUtils.AddPluginErrorLog(pluginPair.Metadata.Id, ex);
-                }
-                if (metadataMenu == null) continue;
-                var pluginMenu = GetMenu(pluginPair.Metadata.Id, siteId, metadataMenu, 0);
-
-                menus.Add(pluginPair.Metadata.Id, pluginMenu);
-            }
-
-            return menus;
-        }
-
-        //public static List<ContentModelInfo> GetAllContentModels(PublishmentSystemInfo publishmentSystemInfo)
+        //public static List<ContentModelInfo> GetAllContentModels(SiteInfo siteInfo)
         //{
-        //    var cacheName = nameof(GetAllContentModels) + publishmentSystemInfo.PublishmentSystemId;
+        //    var cacheName = nameof(GetAllContentModels) + siteInfo.Id;
         //    var contentModels = GetCache<List<ContentModelInfo>>(cacheName);
         //    if (contentModels != null) return contentModels;
 
         //    contentModels = new List<ContentModelInfo>();
 
-        //    foreach (var pluginPair in GetEnabledPluginPairs<IContentModel>())
+        //    foreach (var pluginInfo in GetEnabledPluginInfoLists<IContentModel>())
         //    {
-        //        var model = pluginPair.Plugin as IContentModel;
+        //        var model = pluginInfo.Plugin as IContentModel;
 
         //        if (model == null) continue;
 
-        //        var tableName = publishmentSystemInfo.AuxiliaryTableForContent;
+        //        var tableName = siteInfo.AuxiliaryTableForContent;
         //        var tableType = EAuxiliaryTableType.BackgroundContent;
         //        if (model.ContentTableColumns != null && model.ContentTableColumns.Count > 0)
         //        {
-        //            tableName = pluginPair.Metadata.Id;
+        //            tableName = pluginInfo.Id;
         //            tableType = EAuxiliaryTableType.Custom;
         //        }
 
         //        contentModels.Add(new ContentModelInfo(
-        //            pluginPair.Metadata.Id,
-        //            pluginPair.Metadata.Id,
-        //            $"插件：{pluginPair.Metadata.DisplayName}",
+        //            pluginInfo.Id,
+        //            pluginInfo.Id,
+        //            $"插件：{pluginInfo.Metadata.DisplayName}",
         //            tableName,
         //            tableType,
-        //            PageUtils.GetPluginDirectoryUrl(pluginPair.Metadata.Id, pluginPair.Metadata.Icon))
+        //            PageUtils.GetPluginDirectoryUrl(pluginInfo.Id, pluginInfo.Metadata.Icon))
         //        );
         //    }
 
@@ -531,101 +431,19 @@ namespace SiteServer.CMS.Plugin
         //    return contentModels;
         //}
 
-        public static List<PluginMetadata> GetContentModelPlugins()
-        {
-            var list = new List<PluginMetadata>();
 
-            var pairs = GetEnabledPluginPairs<IContentModel>();
-            foreach (var pluginPair in pairs)
-            {
-                var plugin = (IContentModel) pluginPair.Plugin;
 
-                if (string.IsNullOrEmpty(plugin.ContentTableName) || plugin.ContentTableColumns == null || plugin.ContentTableColumns.Count == 0) continue;
-
-                list.Add(pluginPair.Metadata);
-            }
-
-            return list;
-        }
-
-        public static List<PluginMetadata> GetAllContentRelatedPlugins(bool includeContentTable)
-        {
-            var list = new List<PluginMetadata>();
-
-            var pairs = GetEnabledPluginPairs<IContentRelated>();
-            foreach (var pluginPair in pairs)
-            {
-                if (!includeContentTable && pluginPair.Plugin is IContentModel) continue;
-
-                list.Add(pluginPair.Metadata);
-            }
-
-            return list;
-        }
-
-        public static List<PluginMetadata> GetContentRelatedPlugins(NodeInfo nodeInfo, bool includeContentTable)
-        {
-            var list = new List<PluginMetadata>();
-            var pluginIds = TranslateUtils.StringCollectionToStringList(nodeInfo.ContentRelatedPluginIds);
-            if (!string.IsNullOrEmpty(nodeInfo.ContentModelPluginId))
-            {
-                pluginIds.Add(nodeInfo.ContentModelPluginId);
-            }
-
-            var pairs = GetEnabledPluginPairs<IContentRelated>();
-            foreach (var pluginPair in pairs)
-            {
-                var pluginId = pluginPair.Metadata.Id;
-                if (!pluginIds.Contains(pluginId)) continue;
-
-                if (!includeContentTable && pluginPair.Plugin is IContentModel) continue;
-
-                list.Add(pluginPair.Metadata);
-            }
-
-            return list;
-        }
-
-        public static Dictionary<string, IContentRelated> GetContentRelatedFeatures(NodeInfo nodeInfo)
-        {
-            if (string.IsNullOrEmpty(nodeInfo.ContentRelatedPluginIds) &&
-                string.IsNullOrEmpty(nodeInfo.ContentModelPluginId))
-            {
-                return new Dictionary<string, IContentRelated>();
-            }
-
-            var dict = new Dictionary<string, IContentRelated>();
-            var pluginIds = TranslateUtils.StringCollectionToStringList(nodeInfo.ContentRelatedPluginIds);
-            if (!string.IsNullOrEmpty(nodeInfo.ContentModelPluginId))
-            {
-                pluginIds.Add(nodeInfo.ContentModelPluginId);
-            }
-
-            var pairs = GetEnabledPluginPairs<IContentRelated>();
-            foreach (var pluginPair in pairs)
-            {
-                var pluginId = pluginPair.Metadata.Id;
-                if (!pluginIds.Contains(pluginId)) continue;
-
-                var feature = (IContentRelated)pluginPair.Plugin;
-
-                dict[pluginId] = feature;
-            }
-
-            return dict;
-        }
-
-        //public static List<ContentModelInfo> GetAllContentModels(PublishmentSystemInfo publishmentSystemInfo)
+        //public static List<ContentModelInfo> GetAllContentModels(SiteInfo siteInfo)
         //{
-        //    var cacheName = nameof(GetAllContentModels) + publishmentSystemInfo.PublishmentSystemId;
+        //    var cacheName = nameof(GetAllContentModels) + siteInfo.Id;
         //    var contentModels = GetCache<List<ContentModelInfo>>(cacheName);
         //    if (contentModels != null) return contentModels;
 
         //    contentModels = new List<ContentModelInfo>();
 
-        //    foreach (var pluginPair in GetEnabledPluginPairs<IContentModel>())
+        //    foreach (var pluginInfo in GetEnabledPluginInfoLists<IContentModel>())
         //    {
-        //        var model = pluginPair.Plugin as IContentModel;
+        //        var model = pluginInfo.Plugin as IContentModel;
 
         //        if (model == null) continue;
 
@@ -635,25 +453,25 @@ namespace SiteServer.CMS.Plugin
         //            links.AddRange(model.ContentLinks.Select(link => new PluginContentLink
         //            {
         //                Text = link.Text,
-        //                Href = PageUtils.GetPluginDirectoryUrl(pluginPair.Metadata.Id, link.Href),
+        //                Href = PageUtils.GetPluginDirectoryUrl(pluginInfo.Id, link.Href),
         //                Target = link.Target
         //            }));
         //        }
-        //        var tableName = publishmentSystemInfo.AuxiliaryTableForContent;
+        //        var tableName = siteInfo.AuxiliaryTableForContent;
         //        var tableType = EAuxiliaryTableType.BackgroundContent;
         //        if (model.IsCustomContentTable && model.CustomContentTableColumns != null && model.CustomContentTableColumns.Count > 0)
         //        {
-        //            tableName = pluginPair.Metadata.Id;
+        //            tableName = pluginInfo.Id;
         //            tableType = EAuxiliaryTableType.Custom;
         //        }
 
         //        contentModels.Add(new ContentModelInfo(
-        //            pluginPair.Metadata.Id,
-        //            pluginPair.Metadata.Id,
-        //            $"插件：{pluginPair.Metadata.DisplayName}",
+        //            pluginInfo.Id,
+        //            pluginInfo.Id,
+        //            $"插件：{pluginInfo.Metadata.DisplayName}",
         //            tableName,
         //            tableType,
-        //            PageUtils.GetPluginDirectoryUrl(pluginPair.Metadata.Id, pluginPair.Metadata.Icon),
+        //            PageUtils.GetPluginDirectoryUrl(pluginInfo.Id, pluginInfo.Metadata.Icon),
         //            links)
         //        );
         //    }
@@ -663,299 +481,333 @@ namespace SiteServer.CMS.Plugin
         //    return contentModels;
         //}
 
-        public static Dictionary<string, Func<PluginParseContext, string>> GetParses()
+
+
+        //public static Dictionary<string, Func<PluginRenderContext, string>> GetRenders()
+        //{
+        //    var renders = new Dictionary<string, Func<PluginRenderContext, string>>();
+
+        //    var pluginInfoList = GetEnabledPluginInfoList<IRender>();
+        //    if (pluginInfoList != null && pluginInfoList.Count > 0)
+        //    {
+        //        foreach (var pluginInfo in pluginInfoList)
+        //        {
+        //            var plugin = pluginInfo.Plugin as IRender;
+        //            if (plugin?.Render != null)
+        //            {
+        //                renders.Add(pluginInfo.Metadata.Id, plugin.Render);
+        //            }
+        //            //if (!(pluginInfo.Plugin is IRender plugin)) continue;
+
+        //            //if (plugin.Render != null)
+        //            //{
+        //            //    renders.Add(pluginInfo.Metadata.Id, plugin.Render);
+        //            //}
+        //        }
+        //    }
+
+        //    return renders;
+        //}
+
+        //public static List<Action<object, FileSystemEventArgs>> GetFileSystemChangedActions()
+        //{
+        //    var actions = new List<Action<object, FileSystemEventArgs>>();
+
+        //    var plugins = GetEnabledFeatures<IFileSystem>();
+        //    if (plugins != null && plugins.Count > 0)
+        //    {
+        //        foreach (var plugin in plugins)
+        //        {
+        //            if (plugin.FileSystemChanged != null)
+        //            {
+        //                actions.Add(plugin.FileSystemChanged);
+        //            }
+        //        }
+        //    }
+
+        //    return actions;
+        //}
+
+        public static bool Install(string idWithVersion, out string errorMessage)
         {
-            var elementsToParse = new Dictionary<string, Func<PluginParseContext, string>>();
-
-            var plugins = GetEnabledFeatures<IParse>();
-            if (plugins != null && plugins.Count > 0)
-            {
-                foreach (var plugin in plugins)
-                {
-                    if (plugin.ElementsToParse != null && plugin.ElementsToParse.Count > 0)
-                    {
-                        foreach (var elementName in plugin.ElementsToParse.Keys)
-                        {
-                            elementsToParse[elementName.ToLower()] = plugin.ElementsToParse[elementName];
-                        }
-                    }
-                }
-            }
-
-            return elementsToParse;
-        }
-
-        public static Dictionary<string, Func<PluginRenderContext, string>> GetRenders()
-        {
-            var renders = new Dictionary<string, Func<PluginRenderContext, string>>();
-
-            var pairs = GetEnabledPluginPairs<IRender>();
-            if (pairs != null && pairs.Count > 0)
-            {
-                foreach (var pair in pairs)
-                {
-                    var plugin = pair.Plugin as IRender;
-                    if (plugin?.Render != null)
-                    {
-                        renders.Add(pair.Metadata.Id, plugin.Render);
-                    }
-                    //if (!(pair.Plugin is IRender plugin)) continue;
-
-                    //if (plugin.Render != null)
-                    //{
-                    //    renders.Add(pair.Metadata.Id, plugin.Render);
-                    //}
-                }
-            }
-
-            return renders;
-        }
-
-        public static List<Action<object, FileSystemEventArgs>> GetFileSystemChangedActions()
-        {
-            var actions = new List<Action<object, FileSystemEventArgs>>();
-
-            var plugins = GetEnabledFeatures<IFileSystem>();
-            if (plugins != null && plugins.Count > 0)
-            {
-                foreach (var plugin in plugins)
-                {
-                    if (plugin.FileSystemChanged != null)
-                    {
-                        actions.Add(plugin.FileSystemChanged);
-                    }
-                }
-            }
-
-            return actions;
-        }
-
-        public static bool Install(string pluginId, string version, out string errorMessage)
-        {
-            errorMessage = string.Empty;
-            if (string.IsNullOrEmpty(pluginId)) return false;
-
             try
             {
-                if (IsExists(pluginId))
-                {
-                    errorMessage = "插件已存在";
-                    return false;
-                }
-                var directoryPath = PathUtils.GetPluginsPath(pluginId);
-                DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
+                var directoryPath = PathUtils.GetPackagesPath(idWithVersion);
 
-                var zipFilePath = PathUtility.GetTemporaryFilesPath(pluginId + ".zip");
-                FileUtils.DeleteFileIfExists(zipFilePath);
-
-                var downloadUrl = $"http://download.siteserver.cn/plugins/{pluginId}/{version}/{pluginId}.zip";
-                WebClientUtils.SaveRemoteFileToLocal(downloadUrl, zipFilePath);
-                
-                ZipUtils.UnpackFiles(zipFilePath, directoryPath);
-                FileUtils.DeleteFileIfExists(zipFilePath);
-
-                var jsonPath = PathUtils.Combine(directoryPath, PluginConfigName);
-                if (!FileUtils.IsFileExists(jsonPath))
-                {
-                    errorMessage = $"插件配置文件{PluginConfigName}不存在";
-                    return false;
-                }
-
-                var metadata = GetMetadataFromJson(directoryPath);
+                string nuspecPath;
+                string dllDirectoryPath;
+                var metadata = GetPluginMetadataByDirectoryPath(directoryPath, out nuspecPath, out dllDirectoryPath, out errorMessage);
                 if (metadata == null)
                 {
-                    errorMessage = "插件配置文件不正确";
                     return false;
                 }
 
-                metadata.Disabled = false;
-                metadata.DatabaseType = string.Empty;
-                metadata.ConnectionString = string.Empty;
+                if (IsExists(metadata.Id))
+                {
+                    errorMessage = $"插件 {metadata.Id} 已存在";
+                    return false;
+                }
 
-                SaveMetadataToJson(metadata);
+                var pluginPath = PathUtils.GetPluginPath(metadata.Id);
+                DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);
+
+                DirectoryUtils.Copy(PathUtils.Combine(directoryPath, "content"), pluginPath, true);
+                DirectoryUtils.Copy(dllDirectoryPath, PathUtils.Combine(pluginPath, "Bin"), true);
+
+                var configFilelPath = PathUtils.Combine(pluginPath, $"{metadata.Id}.nuspec");
+                FileUtils.CopyFile(nuspecPath, configFilelPath, true);
+
+                ClearCache();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                errorMessage = e.Message;
+                errorMessage = ex.Message;
                 return false;
             }
 
             return true;
         }
 
-        public static PluginMetadata Delete(string pluginId)
+        //public static bool Install(string pluginId, string version, out string errorMessage)
+        //{
+        //    errorMessage = string.Empty;
+        //    if (string.IsNullOrEmpty(pluginId)) return false;
+
+        //    try
+        //    {
+        //        if (IsExists(pluginId))
+        //        {
+        //            errorMessage = $"插件 {pluginId} 已存在";
+        //            return false;
+        //        }
+        //        var directoryPath = PathUtils.GetPluginPath(pluginId);
+        //        DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
+
+        //        var zipFilePath = PathUtility.GetTemporaryFilesPath(pluginId + ".zip");
+        //        FileUtils.DeleteFileIfExists(zipFilePath);
+
+        //        var downloadUrl = $"http://download.siteserver.cn/plugins/{pluginId}/{version}/{pluginId}.zip";
+        //        WebClientUtils.SaveRemoteFileToLocal(downloadUrl, zipFilePath);
+                
+        //        ZipUtils.UnpackFiles(zipFilePath, directoryPath);
+        //        FileUtils.DeleteFileIfExists(zipFilePath);
+
+        //        string dllDirectoryPath;
+        //        var metadata = GetPluginMetadata(pluginId, out dllDirectoryPath, out errorMessage);
+        //        if (metadata == null)
+        //        {
+        //            return false;
+        //        }
+
+        //        //SaveMetadataToJson(metadata);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        errorMessage = ex.Message;
+        //        return false;
+        //    }
+
+        //    return true;
+        //}
+
+        public static void Delete(string pluginId)
         {
-            var metadata = GetMetadata(pluginId);
-            if (metadata != null)
-            {
-                DirectoryUtils.DeleteDirectoryIfExists(metadata.DirectoryPath);
-            }
-            return metadata;
+            DirectoryUtils.DeleteDirectoryIfExists(PathUtils.GetPluginPath(pluginId));
+            ClearCache();
         }
 
-        public static PluginMetadata UpdateDisabled(string pluginId, bool isDisabled)
+        public static void UpdateDisabled(string pluginId, bool isDisabled)
         {
-            var metadata = GetMetadata(pluginId);
-            if (metadata != null)
+            var pluginInfo = GetPluginInfo(pluginId);
+            if (pluginInfo != null)
             {
-                metadata.Disabled = isDisabled;
-                SaveMetadataToJson(metadata);
+                pluginInfo.IsDisabled = isDisabled;
+                DataProvider.PluginDao.UpdateIsDisabled(pluginId, isDisabled);
             }
-            return metadata;
         }
 
-        public static PluginMetadata UpdateDatabase(string pluginId, string databaseType, string connectionString)
+        public static void UpdateTaxis(string pluginId, int taxis)
         {
-            var metadata = GetMetadata(pluginId);
-            if (metadata != null)
+            var pluginInfo = GetPluginInfo(pluginId);
+            if (pluginInfo != null)
             {
-                if (WebConfigUtils.IsProtectData && !string.IsNullOrEmpty(databaseType))
-                {
-                    databaseType = TranslateUtils.EncryptStringBySecretKey(databaseType);
-                }
-                if (WebConfigUtils.IsProtectData && !string.IsNullOrEmpty(connectionString))
-                {
-                    connectionString = TranslateUtils.EncryptStringBySecretKey(connectionString);
-                }
-                metadata.DatabaseType = databaseType;
-                metadata.ConnectionString = connectionString;
-                SaveMetadataToJson(metadata);
+                pluginInfo.Taxis = taxis;
+                DataProvider.PluginDao.UpdateTaxis(pluginId, taxis);
             }
-            return metadata;
         }
+
+        //public static PluginMetadata UpdateDatabase(string pluginId, string databaseType, string connectionString)
+        //{
+        //    var metadata = GetMetadata(pluginId);
+        //    if (metadata != null)
+        //    {
+        //        if (WebConfigUtils.IsProtectData && !string.IsNullOrEmpty(databaseType))
+        //        {
+        //            databaseType = TranslateUtils.EncryptStringBySecretKey(databaseType);
+        //        }
+        //        if (WebConfigUtils.IsProtectData && !string.IsNullOrEmpty(connectionString))
+        //        {
+        //            connectionString = TranslateUtils.EncryptStringBySecretKey(connectionString);
+        //        }
+        //        metadata.DatabaseType = databaseType;
+        //        metadata.ConnectionString = connectionString;
+        //        SaveMetadataToJson(metadata);
+        //    }
+        //    return metadata;
+        //}
 
         /// <summary>
         /// Parse plugin metadata in giving directories
         /// </summary>
         /// <returns></returns>
-        internal static PluginMetadata GetMetadataFromJson(string directoryPath)
+        //internal static PluginMetadata GetMetadataFromJson(string directoryPath)
+        //{
+        //    var configPath = Path.Combine(directoryPath, PluginConfigName);
+        //    if (!File.Exists(configPath))
+        //    {
+        //        return null;
+        //    }
+
+        //    PluginMetadata metadata;
+        //    try
+        //    {
+        //        metadata = JsonConvert.DeserializeObject<PluginMetadata>(File.ReadAllText(configPath));
+        //        metadata.DirectoryPath = directoryPath;
+        //    }
+        //    catch
+        //    {
+        //        return null;
+        //    }
+
+        //    if (string.IsNullOrEmpty(metadata.Id))
+        //    {
+        //        return null;
+        //    }
+
+        //    return metadata;
+        //}
+
+        private static PackageMetadata GetPluginMetadata(string directoryName, out string dllDirectoryPath, out string errorMessage)
         {
-            var configPath = Path.Combine(directoryPath, PluginConfigName);
-            if (!File.Exists(configPath))
+            dllDirectoryPath = string.Empty;
+            var nuspecPath = PathUtils.GetPluginNuspecPath(directoryName);
+            if (!File.Exists(nuspecPath))
             {
+                errorMessage = $"插件配置文件 {directoryName}.nuspec 不存在";
+                return null;
+            }
+            dllDirectoryPath = PathUtils.GetPluginDllDirectoryPath(directoryName);
+            if (string.IsNullOrEmpty(dllDirectoryPath))
+            {
+                errorMessage = $"插件可执行文件 {directoryName}.dll 不存在";
                 return null;
             }
 
-            PluginMetadata metadata;
+            PackageMetadata metadata;
             try
             {
-                metadata = JsonConvert.DeserializeObject<PluginMetadata>(File.ReadAllText(configPath));
-                metadata.DirectoryPath = directoryPath;
+                metadata = PackageUtils.GetPackageMetadata(nuspecPath);
             }
-            catch
+            catch(Exception ex)
             {
+                errorMessage = ex.Message;
                 return null;
             }
 
-            if (string.IsNullOrEmpty(metadata.Id) || string.IsNullOrEmpty(metadata.Publisher) ||
-                string.IsNullOrEmpty(metadata.Name) || string.IsNullOrEmpty(metadata.ExecuteFilePath) ||
-                !File.Exists(metadata.ExecuteFilePath))
+            if (string.IsNullOrEmpty(metadata.Id))
             {
+                errorMessage = "插件配置文件不正确";
                 return null;
             }
 
+            errorMessage = string.Empty;
             return metadata;
         }
 
-        internal static bool SaveMetadataToJson(PluginMetadata metadata)
+        public static PackageMetadata GetPluginMetadataByDirectoryPath(string directoryPath, out string nuspecPath, out string dllDirectoryPath, out string errorMessage)
         {
-            var retval = true;
-            var configPath = Path.Combine(metadata.DirectoryPath, PluginConfigName);
+            nuspecPath = string.Empty;
+            dllDirectoryPath = string.Empty;
 
+            foreach (var filePath in DirectoryUtils.GetFilePaths(directoryPath))
+            {
+                if (StringUtils.EqualsIgnoreCase(Path.GetExtension(filePath), ".nuspec"))
+                {
+                    nuspecPath = filePath;
+                    break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(nuspecPath))
+            {
+                errorMessage = "插件配置文件不存在";
+                return null;
+            }
+
+            PackageMetadata metadata;
             try
             {
-                var settings = new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore
-                };
-                var json = JsonConvert.SerializeObject(metadata, Formatting.Indented, settings);
-                FileUtils.WriteText(configPath, ECharset.utf_8, json);
+                metadata = PackageUtils.GetPackageMetadata(nuspecPath);
             }
             catch (Exception ex)
             {
-                retval = false;
-                LogUtils.AddPluginErrorLog(metadata.Id, ex);
+                errorMessage = ex.Message;
+                return null;
             }
 
-            return retval;
+            var pluginId = metadata.Id;
+
+            if (string.IsNullOrEmpty(pluginId))
+            {
+                errorMessage = $"插件配置文件 {nuspecPath} 不正确";
+                return null;
+            }
+
+            //https://docs.microsoft.com/en-us/nuget/schema/target-frameworks#supported-frameworks
+
+            foreach (var directoryName in DirectoryUtils.GetDirectoryNames(PathUtils.Combine(directoryPath, "lib")))
+            {
+                if (StringUtils.StartsWithIgnoreCase(directoryName, "net45") || StringUtils.StartsWithIgnoreCase(directoryName, "net451") || StringUtils.StartsWithIgnoreCase(directoryName, "net452") || StringUtils.StartsWithIgnoreCase(directoryName, "net46") || StringUtils.StartsWithIgnoreCase(directoryName, "net461") || StringUtils.StartsWithIgnoreCase(directoryName, "net462"))
+                {
+                    dllDirectoryPath = PathUtils.Combine(directoryPath, "lib", directoryName);
+                    break;
+                }
+            }
+            if (string.IsNullOrEmpty(dllDirectoryPath))
+            {
+                dllDirectoryPath = PathUtils.Combine(directoryPath, "lib");
+            }
+
+            if (!FileUtils.IsFileExists(PathUtils.Combine(dllDirectoryPath, pluginId + ".dll")))
+            {
+                errorMessage = $"插件可执行文件 {pluginId}.dll 不存在";
+                return null;
+            }
+
+            errorMessage = string.Empty;
+            return metadata;
         }
 
-        public static string GetMenuHref(string pluginId, string href, int publishmentSystemId)
+        public static string GetPluginIconUrl(string pluginId)
         {
-            if (PageUtils.IsAbsoluteUrl(href))
+            foreach (var service in Services)
             {
-                return href;
-            }
-            var url = PageUtils.AddQueryString(PageUtils.GetPluginDirectoryUrl(pluginId, href), new NameValueCollection
-            {
-                {"apiUrl", PageUtils.AddProtocolToUrl(PageUtils.OuterApiUrl)},
-                {"v", StringUtils.GetRandomInt(1, 1000).ToString()}
-            });
-            if (publishmentSystemId > 0)
-            {
-                url = PageUtils.AddQueryString(url, new NameValueCollection
+                if (service.PluginId == pluginId)
                 {
-                    {"publishmentSystemId", publishmentSystemId.ToString()}
-                });
+                    return GetPluginIconUrl(service);
+                }
+            }
+            return string.Empty;
+        }
+
+        public static string GetPluginIconUrl(PluginService service)
+        {
+            var url = string.Empty;
+            if (service.Metadata.IconUrl != null)
+            {
+                url = service.Metadata.IconUrl.ToString();
             }
             return url;
-        }
-
-        public static string GetMenuContentHref(string pluginId, string href, int publishmentSystemId, int channelId, int contentId, string returnUrl)
-        {
-            if (PageUtils.IsAbsoluteUrl(href))
-            {
-                return href;
-            }
-            return PageUtils.AddQueryString(PageUtils.GetPluginDirectoryUrl(pluginId, href), new NameValueCollection
-            {
-                {"apiUrl", PageUtils.AddProtocolToUrl(PageUtils.OuterApiUrl)},
-                {"publishmentSystemId", publishmentSystemId.ToString()},
-                {"channelId", channelId.ToString()},
-                {"contentId", contentId.ToString()},
-                {"returnUrl", returnUrl},
-                {"v", StringUtils.GetRandomInt(1, 1000).ToString()}
-            });
-        }
-
-        internal static PluginMenu GetMenu(string pluginId, int publishmentSystemId, PluginMenu metadataMenu, int i)
-        {
-            var menu = new PluginMenu
-            {
-                Id = metadataMenu.Id,
-                Text = metadataMenu.Text,
-                Href = metadataMenu.Href,
-                Target = metadataMenu.Target,
-                IconClass = metadataMenu.IconClass
-            };
-
-            if (string.IsNullOrEmpty(menu.Id))
-            {
-                menu.Id = pluginId + i;
-            }
-            if (!string.IsNullOrEmpty(menu.Href))
-            {
-                menu.Href = GetMenuHref(pluginId, menu.Href, publishmentSystemId);
-            }
-            if (string.IsNullOrEmpty(menu.Target))
-            {
-                menu.Target = "right";
-            }
-
-            if (metadataMenu.Menus != null && metadataMenu.Menus.Count > 0)
-            {
-                var chlildren = new List<PluginMenu>();
-                var x = 1;
-                foreach (var childMetadataMenu in metadataMenu.Menus)
-                {
-                    var child = GetMenu(pluginId, publishmentSystemId, childMetadataMenu, x++);
-
-                    chlildren.Add(child);
-                }
-                menu.Menus = chlildren;
-            }
-
-            return menu;
         }
     }
 }

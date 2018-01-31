@@ -1,14 +1,13 @@
 ﻿using System.Collections;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -222,15 +221,15 @@ namespace SiteServer.CMS.StlParser.Model
                 {
                     if (contextType == EContextType.Content)
                     {
-                        listInfo.OrderByString = StlDataUtility.GetContentOrderByString(pageInfo.PublishmentSystemId, value, ETaxisType.OrderByTaxisDesc);
+                        listInfo.OrderByString = StlDataUtility.GetContentOrderByString(pageInfo.SiteId, value, ETaxisType.OrderByTaxisDesc);
                     }
                     else if (contextType == EContextType.Channel)
                     {
-                        listInfo.OrderByString = StlDataUtility.GetChannelOrderByString(pageInfo.PublishmentSystemId, value, ETaxisType.OrderByTaxis);
+                        listInfo.OrderByString = StlDataUtility.GetChannelOrderByString(pageInfo.SiteId, value, ETaxisType.OrderByTaxis);
                     }
                     //else if (contextType == EContextType.InputContent)
                     //{
-                    //    listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, value, ETableStyle.InputContent, ETaxisType.OrderByTaxisDesc);
+                    //    listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.SiteId, value, ETableStyle.InputContent, ETaxisType.OrderByTaxisDesc);
                     //}
                     else
                     {

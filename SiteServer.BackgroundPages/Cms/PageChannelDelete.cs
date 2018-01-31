@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using System.Collections.Generic;
 
@@ -19,11 +19,10 @@ namespace SiteServer.BackgroundPages.Cms
 
         public string ReturnUrl { get; private set; }
 
-        public static string GetRedirectUrl(int publishmentSystemId, string returnUrl)
+        public static string GetRedirectUrl(int siteId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(nameof(PageChannelDelete), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageChannelDelete), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
         }
@@ -32,22 +31,22 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "ReturnUrl");
+            PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
             ReturnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
             _deleteContents = Body.GetQueryBool("DeleteContents");
 
             if (IsPostBack) return;
 
-            var nodeIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
-            nodeIdList.Sort();
-            nodeIdList.Reverse();
-            foreach (var nodeId in nodeIdList)
+            var channelIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
+            channelIdList.Sort();
+            channelIdList.Reverse();
+            foreach (var channelId in channelIdList)
             {
-                if (nodeId == PublishmentSystemId) continue;
-                if (!HasChannelPermissions(nodeId, AppManager.Permissions.Channel.ChannelDelete)) continue;
+                if (channelId == SiteId) continue;
+                if (!HasChannelPermissions(channelId, ConfigManager.Permissions.Channel.ChannelDelete)) continue;
 
-                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
-                var displayName = nodeInfo.NodeName;
+                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                var displayName = nodeInfo.ChannelName;
                 if (nodeInfo.ContentNum > 0)
                 {
                     displayName += $"({nodeInfo.ContentNum})";
@@ -82,24 +81,24 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                var nodeIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
-                nodeIdList.Sort();
-                nodeIdList.Reverse();
+                var channelIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
+                channelIdList.Sort();
+                channelIdList.Reverse();
 
-                var nodeIdArrayList = new List<int>();
-                foreach (var nodeId in nodeIdList)
+                var channelIdArrayList = new List<int>();
+                foreach (var channelId in channelIdList)
                 {
-                    if (nodeId == PublishmentSystemId) continue;
-                    if (HasChannelPermissions(nodeId, AppManager.Permissions.Channel.ChannelDelete))
+                    if (channelId == SiteId) continue;
+                    if (HasChannelPermissions(channelId, ConfigManager.Permissions.Channel.ChannelDelete))
                     {
-                        nodeIdArrayList.Add(nodeId);
+                        channelIdArrayList.Add(channelId);
                     }
                 }
 
                 var builder = new StringBuilder();
-                foreach (var nodeId in nodeIdArrayList)
+                foreach (var channelId in channelIdArrayList)
                 {
-                    builder.Append(NodeManager.GetNodeName(PublishmentSystemId, nodeId)).Append(",");
+                    builder.Append(ChannelManager.GetChannelName(SiteId, channelId)).Append(",");
                 }
 
                 if (builder.Length > 0)
@@ -113,21 +112,21 @@ namespace SiteServer.BackgroundPages.Cms
                         ? "成功删除内容以及生成页面！"
                         : "成功删除内容，生成页面未被删除！");
 
-                    foreach (var nodeId in nodeIdArrayList)
+                    foreach (var channelId in channelIdArrayList)
                     {
-                        var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
-                        var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, nodeId);
-                        DirectoryUtility.DeleteContents(PublishmentSystemInfo, nodeId, contentIdList);
-                        DataProvider.ContentDao.TrashContents(PublishmentSystemId, tableName, contentIdList);
+                        var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                        var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId);
+                        DirectoryUtility.DeleteContents(SiteInfo, channelId, contentIdList);
+                        DataProvider.ContentDao.TrashContents(SiteId, tableName, contentIdList);
                     }
 
-                    Body.AddSiteLog(PublishmentSystemId, "清空栏目下的内容", $"栏目:{builder}");
+                    Body.AddSiteLog(SiteId, "清空栏目下的内容", $"栏目:{builder}");
                 }
                 else
                 {
                     if (bool.Parse(RblRetainFiles.SelectedValue) == false)
                     {
-                        DirectoryUtility.DeleteChannels(PublishmentSystemInfo, nodeIdArrayList);
+                        DirectoryUtility.DeleteChannels(SiteInfo, channelIdArrayList);
                         SuccessMessage("成功删除栏目以及相关生成页面！");
                     }
                     else
@@ -135,14 +134,14 @@ namespace SiteServer.BackgroundPages.Cms
                         SuccessMessage("成功删除栏目，相关生成页面未被删除！");
                     }
 
-                    foreach (var nodeId in nodeIdArrayList)
+                    foreach (var channelId in channelIdArrayList)
                     {
-                        var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
-                        DataProvider.ContentDao.TrashContentsByNodeId(PublishmentSystemId, tableName, nodeId);
-                        DataProvider.NodeDao.Delete(nodeId);
+                        var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                        DataProvider.ContentDao.TrashContentsByChannelId(SiteId, tableName, channelId);
+                        DataProvider.ChannelDao.Delete(SiteId, channelId);
                     }
 
-                    Body.AddSiteLog(PublishmentSystemId, "删除栏目", $"栏目:{builder}");
+                    Body.AddSiteLog(SiteId, "删除栏目", $"栏目:{builder}");
                 }
 
                 AddWaitAndRedirectScript(ReturnUrl);

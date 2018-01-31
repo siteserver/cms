@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -29,15 +30,15 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
-            SpContents.SelectCommand = !Body.IsQueryExists("Keyword") ? BaiRongDataProvider.UserLogDao.GetSelectCommend() : BaiRongDataProvider.UserLogDao.GetSelectCommend(Body.GetQueryString("UserName"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"));
+            SpContents.SelectCommand = !Body.IsQueryExists("Keyword") ? DataProvider.UserLogDao.GetSelectCommend() : DataProvider.UserLogDao.GetSelectCommend(Body.GetQueryString("UserName"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"));
 
-            SpContents.SortField = "ID";
+            SpContents.SortField = nameof(UserLogInfo.Id);
             SpContents.SortMode = SortMode.DESC;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Log);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Log);
 
             if (Body.IsQueryExists("Keyword"))
             {
@@ -50,18 +51,18 @@ namespace SiteServer.BackgroundPages.Settings
             if (Body.IsQueryExists("Delete"))
             {
                 var list = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("IDCollection"));
-                BaiRongDataProvider.UserLogDao.Delete(list);
+                DataProvider.UserLogDao.Delete(list);
                 SuccessDeleteMessage();
             }
             else if (Body.IsQueryExists("DeleteAll"))
             {
-                BaiRongDataProvider.UserLogDao.DeleteAll();
+                DataProvider.UserLogDao.DeleteAll();
                 SuccessDeleteMessage();
             }
             else if (Body.IsQueryExists("Setting"))
             {
                 ConfigManager.SystemConfigInfo.IsLogUser = !ConfigManager.SystemConfigInfo.IsLogUser;
-                BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
+                DataProvider.ConfigDao.Update(ConfigManager.Instance);
                 SuccessMessage($"成功{(ConfigManager.SystemConfigInfo.IsLogUser ? "启用" : "禁用")}日志记录");
             }
 
@@ -112,11 +113,11 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlAction = (Literal)e.Item.FindControl("ltlAction");
             var ltlSummary = (Literal)e.Item.FindControl("ltlSummary");
 
-            ltlUserName.Text = SqlUtils.EvalString(e.Item.DataItem, "UserName");
-            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, "AddDate"));
-            ltlIpAddress.Text = SqlUtils.EvalString(e.Item.DataItem, "IPAddress");
-            ltlAction.Text = EUserActionTypeUtils.GetText(EUserActionTypeUtils.GetEnumType(SqlUtils.EvalString(e.Item.DataItem, "Action")));
-            ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, "Summary");
+            ltlUserName.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(UserLogInfo.UserName));
+            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, nameof(UserLogInfo.AddDate)));
+            ltlIpAddress.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(UserLogInfo.IpAddress));
+            ltlAction.Text = EUserActionTypeUtils.GetText(EUserActionTypeUtils.GetEnumType(SqlUtils.EvalString(e.Item.DataItem, nameof(UserLogInfo.Action))));
+            ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(UserLogInfo.Summary));
         }
 
         public void Search_OnClick(object sender, EventArgs e)

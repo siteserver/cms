@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -19,25 +18,24 @@ namespace SiteServer.BackgroundPages.Cms
         public CheckBoxList CblDisplayAttributes;
         public DropDownList DdlIsChecked;
 
-        private int _nodeId;
+        private int _channelId;
 
-        public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
+        public static string GetOpenWindowString(int siteId, int channelId)
         {
             return LayerUtils.GetOpenScriptWithCheckBoxValue("导出内容",
-                PageUtils.GetCmsUrl(nameof(ModalContentExport), new NameValueCollection
+                PageUtils.GetCmsUrl(siteId, nameof(ModalContentExport), new NameValueCollection
                 {
-                    {"PublishmentSystemID", publishmentSystemId.ToString()},
-                    {"NodeID", nodeId.ToString()}
-                }), "ContentIDCollection", string.Empty);
+                    {"channelId", channelId.ToString()}
+                }), "contentIdCollection", string.Empty);
         }
 
         private void LoadDisplayAttributeCheckBoxList()
         {
-            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
-            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
-            var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
+            var tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
             var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
-            styleInfoList = ContentUtility.GetAllTableStyleInfoList(PublishmentSystemInfo, styleInfoList);
+            styleInfoList = ContentUtility.GetAllTableStyleInfoList(SiteInfo, styleInfoList);
 
             foreach (var styleInfo in styleInfoList)
             {
@@ -53,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _nodeId = Body.GetQueryInt("NodeID", PublishmentSystemId);
+            _channelId = Body.GetQueryInt("channelId", SiteId);
             if (IsPostBack) return;
 
             LoadDisplayAttributeCheckBoxList();
@@ -64,31 +62,31 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (isLoad)
             {
-                if (!string.IsNullOrEmpty(PublishmentSystemInfo.Additional.ConfigExportType))
+                if (!string.IsNullOrEmpty(SiteInfo.Additional.ConfigExportType))
                 {
-                    DdlExportType.SelectedValue = PublishmentSystemInfo.Additional.ConfigExportType;
+                    DdlExportType.SelectedValue = SiteInfo.Additional.ConfigExportType;
                 }
-                if (!string.IsNullOrEmpty(PublishmentSystemInfo.Additional.ConfigExportPeriods))
+                if (!string.IsNullOrEmpty(SiteInfo.Additional.ConfigExportPeriods))
                 {
-                    DdlPeriods.SelectedValue = PublishmentSystemInfo.Additional.ConfigExportPeriods;
+                    DdlPeriods.SelectedValue = SiteInfo.Additional.ConfigExportPeriods;
                 }
-                if (!string.IsNullOrEmpty(PublishmentSystemInfo.Additional.ConfigExportDisplayAttributes))
+                if (!string.IsNullOrEmpty(SiteInfo.Additional.ConfigExportDisplayAttributes))
                 {
-                    var displayAttributes = TranslateUtils.StringCollectionToStringList(PublishmentSystemInfo.Additional.ConfigExportDisplayAttributes);
+                    var displayAttributes = TranslateUtils.StringCollectionToStringList(SiteInfo.Additional.ConfigExportDisplayAttributes);
                     ControlUtils.SelectMultiItems(CblDisplayAttributes, displayAttributes);
                 }
-                if (!string.IsNullOrEmpty(PublishmentSystemInfo.Additional.ConfigExportIsChecked))
+                if (!string.IsNullOrEmpty(SiteInfo.Additional.ConfigExportIsChecked))
                 {
-                    DdlIsChecked.SelectedValue = PublishmentSystemInfo.Additional.ConfigExportIsChecked;
+                    DdlIsChecked.SelectedValue = SiteInfo.Additional.ConfigExportIsChecked;
                 }
             }
             else
             {
-                PublishmentSystemInfo.Additional.ConfigExportType = DdlExportType.SelectedValue;
-                PublishmentSystemInfo.Additional.ConfigExportPeriods = DdlPeriods.SelectedValue;
-                PublishmentSystemInfo.Additional.ConfigExportDisplayAttributes = ControlUtils.GetSelectedListControlValueCollection(CblDisplayAttributes);
-                PublishmentSystemInfo.Additional.ConfigExportIsChecked = DdlIsChecked.SelectedValue;
-                DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
+                SiteInfo.Additional.ConfigExportType = DdlExportType.SelectedValue;
+                SiteInfo.Additional.ConfigExportPeriods = DdlPeriods.SelectedValue;
+                SiteInfo.Additional.ConfigExportDisplayAttributes = ControlUtils.GetSelectedListControlValueCollection(CblDisplayAttributes);
+                SiteInfo.Additional.ConfigExportIsChecked = DdlIsChecked.SelectedValue;
+                DataProvider.SiteDao.Update(SiteInfo);
             }
         }
 
@@ -127,7 +125,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
             var checkedState = ETriStateUtils.GetEnumType(DdlPeriods.SelectedValue);
-            var redirectUrl = ModalExportMessage.GetRedirectUrlStringToExportContent(PublishmentSystemId, _nodeId, DdlExportType.SelectedValue, Body.GetQueryString("ContentIDCollection"), displayAttributes, isPeriods, startDate, endDate, checkedState);
+            var redirectUrl = ModalExportMessage.GetRedirectUrlStringToExportContent(SiteId, _channelId, DdlExportType.SelectedValue, Body.GetQueryString("contentIdCollection"), displayAttributes, isPeriods, startDate, endDate, checkedState);
             PageUtils.Redirect(redirectUrl);
 		}
 	}

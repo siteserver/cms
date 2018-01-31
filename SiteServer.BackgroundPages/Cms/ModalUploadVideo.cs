@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -15,20 +15,18 @@ namespace SiteServer.BackgroundPages.Cms
         private string _currentRootPath;
         private string _textBoxClientId;
 
-        public static string GetOpenWindowStringToTextBox(int publishmentSystemId, string textBoxClientId)
+        public static string GetOpenWindowStringToTextBox(int siteId, string textBoxClientId)
         {
-            return LayerUtils.GetOpenScript("上传视频", PageUtils.GetCmsUrl(nameof(ModalUploadVideo), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传视频", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadVideo), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"TextBoxClientID", textBoxClientId}
             }), 520, 220);
         }
 
-        public static string GetOpenWindowStringToList(int publishmentSystemId, string currentRootPath)
+        public static string GetOpenWindowStringToList(int siteId, string currentRootPath)
         {
-            return LayerUtils.GetOpenScript("上传视频", PageUtils.GetCmsUrl(nameof(ModalUploadVideo), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传视频", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadVideo), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"CurrentRootPath", currentRootPath}
             }), 520, 220);
         }
@@ -37,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
             _currentRootPath = Body.GetQueryString("CurrentRootPath");
             if (!string.IsNullOrEmpty(_currentRootPath) && !_currentRootPath.StartsWith("@"))
             {
@@ -54,21 +52,21 @@ namespace SiteServer.BackgroundPages.Cms
             try
             {
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(PublishmentSystemInfo, fileExtName);
+                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(SiteInfo, fileExtName);
                 if (!string.IsNullOrEmpty(_currentRootPath))
                 {
-                    localDirectoryPath = PathUtility.MapPath(PublishmentSystemInfo, _currentRootPath);
+                    localDirectoryPath = PathUtility.MapPath(SiteInfo, _currentRootPath);
                     DirectoryUtils.CreateDirectoryIfNotExists(localDirectoryPath);
                 }
-                var localFileName = PathUtility.GetUploadFileName(PublishmentSystemInfo, filePath);
+                var localFileName = PathUtility.GetUploadFileName(SiteInfo, filePath);
                 var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
-                if (!PathUtility.IsVideoExtenstionAllowed(PublishmentSystemInfo, fileExtName))
+                if (!PathUtility.IsVideoExtenstionAllowed(SiteInfo, fileExtName))
                 {
                     FailMessage("上传失败，上传视频格式不正确！");
                     return;
                 }
-                if (!PathUtility.IsVideoSizeAllowed(PublishmentSystemInfo, HifUpload.PostedFile.ContentLength))
+                if (!PathUtility.IsVideoSizeAllowed(SiteInfo, HifUpload.PostedFile.ContentLength))
                 {
                     FailMessage("上传失败，上传视频超出规定文件大小！");
                     return;
@@ -76,8 +74,8 @@ namespace SiteServer.BackgroundPages.Cms
 
                 HifUpload.PostedFile.SaveAs(localFilePath);
 
-                var videoUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath, true);
-                var textBoxUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, videoUrl);
+                var videoUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, localFilePath, true);
+                var textBoxUrl = PageUtility.GetVirtualUrl(SiteInfo, videoUrl);
 
                 if (string.IsNullOrEmpty(_textBoxClientId))
                 {

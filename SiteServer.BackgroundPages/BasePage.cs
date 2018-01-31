@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Web.UI;
-using BaiRong.Core;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core.Security;
-using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages
 {
@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages
 
         protected bool IsForbidden { get; private set; }
 
-        public RequestContext Body { get; private set; }
+        public Request Body { get; private set; }
 
         private void SetMessage(MessageUtils.Message.EMessageType messageType, Exception ex, string message)
         {
@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages
         {
             base.OnInit(e);
 
-            Body = new RequestContext();
+            Body = new Request();
 
             if (!IsAccessable && !Body.IsAdminLoggin) // 如果页面不能直接访问且又没有登录则直接跳登录页
             {
@@ -214,15 +214,15 @@ $('.operation-area').hide();
             return ClientScript.IsStartupScriptRegistered(key);
         }
 
-        public static string GetShowImageScript(string imageClientId, string publishmentSystemUrl)
+        public static string GetShowImageScript(string imageClientId, string siteUrl)
         {
-            return GetShowImageScript("this", imageClientId, publishmentSystemUrl);
+            return GetShowImageScript("this", imageClientId, siteUrl);
         }
 
-        public static string GetShowImageScript(string objString, string imageClientId, string publishmentSystemUrl)
+        public static string GetShowImageScript(string objString, string imageClientId, string siteUrl)
         {
             return
-                $"showImage({objString}, '{imageClientId}', '{PageUtils.ApplicationPath}', '{publishmentSystemUrl}')";
+                $"showImage({objString}, '{imageClientId}', '{PageUtils.ApplicationPath}', '{siteUrl}')";
         }
 
         public string SwalError(string title, string message)

@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Web.UI.HtmlControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -166,16 +165,16 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (contentInfo != null && contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0)
                         {
-                            var targetNodeId = contentInfo.SourceId;
-                            //var targetPublishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(targetNodeId);
-                            var targetPublishmentSystemId = Node.GetPublishmentSystemId(targetNodeId);
-                            var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
-                            var targetNodeInfo = NodeManager.GetNodeInfo(targetPublishmentSystemId, targetNodeId);
+                            var targetChannelId = contentInfo.SourceId;
+                            //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
+                            var targetSiteId = Node.GetSiteId(targetChannelId);
+                            var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
+                            var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
-                            var tableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeInfo);
+                            var tableName = ChannelManager.GetTableName(targetSiteInfo, targetNodeInfo);
                             //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
                             var targetContentInfo = Content.GetContentInfo(tableName, contentInfo.ReferenceId);
-                            if (targetContentInfo != null && targetContentInfo.NodeId > 0)
+                            if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                             {
                                 contentInfo = targetContentInfo;
                             }
@@ -184,8 +183,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     if (contentInfo == null)
                     {
-                        //contentInfo = DataProvider.ContentDao.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId);
-                        contentInfo = Content.GetContentInfo(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId);
+                        //contentInfo = DataProvider.ContentDao.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.SiteInfo.AuxiliaryTableForContent, contentId);
+                        contentInfo = Content.GetContentInfo(pageInfo.SiteInfo.TableName, contentId);
                     }
 
                     if (contentInfo != null)
@@ -216,11 +215,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (contextType == EContextType.Channel)//获取栏目图片
                 {
-                    var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
+                    var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
-                    channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
+                    channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
 
-                    var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
+                    var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
 
                     picUrl = channel.ImageUrl;
                 }
@@ -248,7 +247,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {
-                    stlImage.Src = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, picUrl, pageInfo.IsLocal);
+                    stlImage.Src = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, picUrl, pageInfo.IsLocal);
                     parsedContent = ControlUtils.GetControlRenderHtml(stlImage);
                 }
             }

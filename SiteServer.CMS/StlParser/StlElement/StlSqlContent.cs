@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.UI;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
@@ -195,7 +195,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     connectionString = WebConfigUtils.ConnectionString;
                 }
 
-                //parsedContent = BaiRongDataProvider.DatabaseDao.GetString(connectionString, queryString);
+                //parsedContent = DataProvider.DatabaseDao.GetString(connectionString, queryString);
                 parsedContent = Database.GetString(connectionString, queryString);
             }
 

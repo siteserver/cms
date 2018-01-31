@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using SiteServer.Plugin.Apis;
-using SiteServer.Plugin.Models;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Utils;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
@@ -10,46 +10,47 @@ namespace SiteServer.CMS.Plugin.Apis
     {
         private UserApi() { }
 
-        public static UserApi Instance { get; } = new UserApi();
+        private static UserApi _instance;
+        public static UserApi Instance => _instance ?? (_instance = new UserApi());
 
         public IUserInfo GetUserInfoByUserId(int userId)
         {
-            return BaiRongDataProvider.UserDao.GetUserInfo(userId);
+            return DataProvider.UserDao.GetUserInfo(userId);
         }
 
         public IUserInfo GetUserInfoByUserName(string userName)
         {
-            return BaiRongDataProvider.UserDao.GetUserInfoByUserName(userName);
+            return DataProvider.UserDao.GetUserInfoByUserName(userName);
         }
 
         public IUserInfo GetUserInfoByEmail(string email)
         {
-            return BaiRongDataProvider.UserDao.GetUserInfoByEmail(email);
+            return DataProvider.UserDao.GetUserInfoByEmail(email);
         }
 
         public IUserInfo GetUserInfoByMobile(string mobile)
         {
-            return BaiRongDataProvider.UserDao.GetUserInfoByMobile(mobile);
+            return DataProvider.UserDao.GetUserInfoByMobile(mobile);
         }
 
         public string GetMobileByAccount(string account)
         {
-            return BaiRongDataProvider.UserDao.GetMobileByAccount(account);
+            return DataProvider.UserDao.GetMobileByAccount(account);
         }
 
         public bool IsUserNameExists(string userName)
         {
-            return BaiRongDataProvider.UserDao.IsUserNameExists(userName);
+            return DataProvider.UserDao.IsUserNameExists(userName);
         }
 
         public bool IsEmailExists(string email)
         {
-            return BaiRongDataProvider.UserDao.IsEmailExists(email);
+            return DataProvider.UserDao.IsEmailExists(email);
         }
 
         public bool IsMobileExists(string mobile)
         {
-            return BaiRongDataProvider.UserDao.IsMobileExists(mobile);
+            return DataProvider.UserDao.IsMobileExists(mobile);
         }
 
         public IUserInfo NewInstance()
@@ -59,37 +60,37 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public bool Insert(IUserInfo userInfo, string password, out string errorMessage)
         {
-            return BaiRongDataProvider.UserDao.Insert(userInfo, password, PageUtils.GetIpAddress(), out errorMessage);
+            return DataProvider.UserDao.Insert(userInfo, password, PageUtils.GetIpAddress(), out errorMessage);
         }
 
         public bool Validate(string account, string password, out string userName, out string errorMessage)
         {
-            return BaiRongDataProvider.UserDao.Validate(account, password, out userName, out errorMessage);
+            return DataProvider.UserDao.Validate(account, password, out userName, out errorMessage);
         }
 
         public void UpdateLastActivityDateAndCountOfFailedLogin(string userName)
         {
-            BaiRongDataProvider.UserDao.UpdateLastActivityDateAndCountOfFailedLogin(userName);
+            DataProvider.UserDao.UpdateLastActivityDateAndCountOfFailedLogin(userName);
         }
 
         public void UpdateLastActivityDateAndCountOfLogin(string userName)
         {
-            BaiRongDataProvider.UserDao.UpdateLastActivityDateAndCountOfLogin(userName);
+            DataProvider.UserDao.UpdateLastActivityDateAndCountOfLogin(userName);
         }
 
         public bool ChangePassword(string userName, string password, out string errorMessage)
         {
-            return BaiRongDataProvider.UserDao.ChangePassword(userName, password, out errorMessage);
+            return DataProvider.UserDao.ChangePassword(userName, password, out errorMessage);
         }
 
         public void Update(IUserInfo userInfo)
         {
-            BaiRongDataProvider.UserDao.Update(userInfo);
+            DataProvider.UserDao.Update(userInfo);
         }
 
         public bool IsPasswordCorrect(string password, out string errorMessage)
         {
-            return BaiRongDataProvider.UserDao.IsPasswordCorrect(password, out errorMessage);
+            return DataProvider.UserDao.IsPasswordCorrect(password, out errorMessage);
         }
 
         public void AddLog(string userName, string action, string summary)
@@ -99,7 +100,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public List<ILogInfo> GetLogs(string userName, int totalNum, string action = "")
         {
-            return BaiRongDataProvider.UserLogDao.List(userName, totalNum, action);
+            return DataProvider.UserLogDao.List(userName, totalNum, action);
         }
     }
 }

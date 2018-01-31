@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -112,7 +113,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Chart);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Chart);
 
             LtlPageTitle1.Text = $"管理员登录最近{_count}{EStatictisXTypeUtils.GetText(EStatictisXTypeUtils.GetEnumType(Body.GetQueryString("XType")))}分配图表（按日期统计）";
             LtlPageTitle2.Text = $"管理员登录最近{_count}{EStatictisXTypeUtils.GetText(EStatictisXTypeUtils.GetEnumType(Body.GetQueryString("XType")))}分配图表（按管理员统计）";
@@ -140,10 +141,10 @@ namespace SiteServer.BackgroundPages.Settings
             DdlXType.SelectedValue = EStatictisXTypeUtils.GetValue(_xType);
 
             //管理员登录量统计，按照日期
-            var trackingDayDictionary = BaiRongDataProvider.LogDao.GetAdminLoginDictionaryByDate(TranslateUtils.ToDateTime(Body.GetQueryString("DateFrom")), TranslateUtils.ToDateTime(Body.GetQueryString("DateTo"), DateTime.Now), EStatictisXTypeUtils.GetValue(_xType), LogInfo.AdminLogin);
+            var trackingDayDictionary = DataProvider.LogDao.GetAdminLoginDictionaryByDate(TranslateUtils.ToDateTime(Body.GetQueryString("DateFrom")), TranslateUtils.ToDateTime(Body.GetQueryString("DateTo"), DateTime.Now), EStatictisXTypeUtils.GetValue(_xType), LogInfo.AdminLogin);
 
             //管理员登录量统计，按照用户名
-            var adminNumDictionaryName = BaiRongDataProvider.LogDao.GetAdminLoginDictionaryByName(TranslateUtils.ToDateTime(Body.GetQueryString("DateFrom")), TranslateUtils.ToDateTime(Body.GetQueryString("DateTo"), DateTime.Now), LogInfo.AdminLogin);
+            var adminNumDictionaryName = DataProvider.LogDao.GetAdminLoginDictionaryByName(TranslateUtils.ToDateTime(Body.GetQueryString("DateFrom")), TranslateUtils.ToDateTime(Body.GetQueryString("DateTo"), DateTime.Now), LogInfo.AdminLogin);
 
             var now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
             for (var i = 0; i < _count; i++)

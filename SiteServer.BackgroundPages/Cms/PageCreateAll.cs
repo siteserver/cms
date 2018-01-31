@@ -1,5 +1,5 @@
 ﻿using System;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core.Create;
 
@@ -11,12 +11,12 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
-            CreateManager.CreateAll(PublishmentSystemId);
-            PageCreateStatus.Redirect(PublishmentSystemId);
+            CreateManager.CreateAll(SiteId);
+            PageCreateStatus.Redirect(SiteId);
         }
     }
 }

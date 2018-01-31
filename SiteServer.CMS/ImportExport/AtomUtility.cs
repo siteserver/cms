@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using Atom.AdditionalElements;
 using Atom.AdditionalElements.DublinCore;
 using Atom.Core;
-using BaiRong.Core;
-using BaiRong.Core.Auth;
+using SiteServer.Utils;
+using SiteServer.Utils.Auth;
 
 namespace SiteServer.CMS.ImportExport
 {
@@ -23,21 +24,45 @@ namespace SiteServer.CMS.ImportExport
             }
         }
 
+        public static void AddDcElement(ScopedElementCollection collection, List<string> nameList, string content)
+        {
+            if (!string.IsNullOrEmpty(content))
+            {
+                foreach (var name in nameList)
+                {
+                    collection.Add(new DcElement(Prefix + name, StringUtils.ToXmlContent(content)));
+                }
+            }
+        }
+
         public static string GetDcElementContent(ScopedElementCollection additionalElements, string name)
         {
             return GetDcElementContent(additionalElements, name, "");
         }
 
+        public static string GetDcElementContent(ScopedElementCollection additionalElements, List<string> nameList)
+        {
+            return GetDcElementContent(additionalElements, nameList, "");
+        }
+
         public static string GetDcElementContent(ScopedElementCollection additionalElements, string name, string defaultContent)
         {
-            var content = defaultContent;
             var localName = Prefix + name;
             var element = additionalElements.FindScopedElementByLocalName(localName);
-            if (element != null)
+            return element != null ? element.Content : defaultContent;
+        }
+
+        public static string GetDcElementContent(ScopedElementCollection additionalElements, List<string> nameList, string defaultContent)
+        {
+            foreach (var name in nameList)
             {
-                content = element.Content;
+                var localName = Prefix + name;
+                var element = additionalElements.FindScopedElementByLocalName(localName);
+                if (element == null) continue;
+
+                return element.Content;
             }
-            return content;
+            return defaultContent;
         }
 
         public static NameValueCollection GetDcElementNameValueCollection(ScopedElementCollection additionalElements)

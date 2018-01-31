@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using BaiRong.Core;
-using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -147,10 +147,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (contentInfo == null)
                     {
-                        var nodeInfo = NodeManager.GetNodeInfo(contextInfo.PublishmentSystemInfo.PublishmentSystemId, contextInfo.ChannelId);
-                        var tableName = NodeManager.GetTableName(contextInfo.PublishmentSystemInfo, nodeInfo);
+                        var nodeInfo = ChannelManager.GetChannelInfo(contextInfo.SiteInfo.Id, contextInfo.ChannelId);
+                        var tableName = ChannelManager.GetTableName(contextInfo.SiteInfo, nodeInfo);
 
-                        //picUrl = BaiRongDataProvider.ContentDao.GetValue(tableName, contentId, type);
+                        //picUrl = DataProvider.ContentDao.GetValue(tableName, contentId, type);
                         picUrl = Content.GetValue(tableName, contentId, type);
                     }
                     else
@@ -160,10 +160,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else//获取栏目Flash
                 {
-                    var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
+                    var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
-                    channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
-                    var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
+                    channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
+                    var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
 
                     picUrl = channel.ImageUrl;
                 }
@@ -195,7 +195,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAcSwfObject);
 
-                    picUrl = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, picUrl, pageInfo.IsLocal);
+                    picUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, picUrl, pageInfo.IsLocal);
 
                     if (!contextInfo.Attributes.ContainsKey("quality"))
                     {

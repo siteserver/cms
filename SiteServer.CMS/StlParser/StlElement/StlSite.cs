@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Cache;
@@ -57,39 +57,39 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string siteName, string siteDir)
         {
-            PublishmentSystemInfo publishmentSystemInfo = null;
+            SiteInfo siteInfo = null;
 
             if (!string.IsNullOrEmpty(siteName))
             {
-                publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfoBySiteName(siteName);
+                siteInfo = SiteManager.GetSiteInfoBySiteName(siteName);
             }
             else if (!string.IsNullOrEmpty(siteDir))
             {
-                publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfoByDirectory(siteDir);
+                siteInfo = SiteManager.GetSiteInfoByDirectory(siteDir);
             }
             else
             {
-                //var siteId = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
-                var siteId = PublishmentSystem.GetPublishmentSystemIdByIsHeadquarters();
+                //var siteId = DataProvider.SiteDao.GetSiteIdByIsRoot();
+                var siteId = Site.GetSiteIdByIsRoot();
                 if (siteId > 0)
                 {
-                    publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
+                    siteInfo = SiteManager.GetSiteInfo(siteId);
                 }
             }
 
-            if (publishmentSystemInfo == null) return string.Empty;
+            if (siteInfo == null) return string.Empty;
 
-            var prePublishmentSystemInfo = pageInfo.PublishmentSystemInfo;
-            var prePageNodeId = pageInfo.PageNodeId;
+            var preSiteInfo = pageInfo.SiteInfo;
+            var prePageChannelId = pageInfo.PageChannelId;
             var prePageContentId = pageInfo.PageContentId;
 
-            pageInfo.ChangeSite(publishmentSystemInfo, publishmentSystemInfo.PublishmentSystemId, 0, contextInfo);
+            pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, contextInfo);
 
             var innerBuilder = new StringBuilder(contextInfo.InnerXml);
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
             var parsedContent = innerBuilder.ToString();
 
-            pageInfo.ChangeSite(prePublishmentSystemInfo, prePageNodeId, prePageContentId, contextInfo);
+            pageInfo.ChangeSite(preSiteInfo, prePageChannelId, prePageContentId, contextInfo);
 
             return parsedContent;
         }

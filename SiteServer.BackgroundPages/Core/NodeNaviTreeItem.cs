@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Core
@@ -23,11 +23,11 @@ namespace SiteServer.BackgroundPages.Core
         private bool _enabled = true;
         private bool _isClickChange;
         private bool _isNodeTree = true;
-        private int _publishmentSystemId;
-        private int _nodeId;
+        private int _siteId;
+        private int _channelId;
         private int _contentNum;
 
-        public static NodeNaviTreeItem CreateNodeTreeItem(bool isDisplay, bool selected, int parentsCount, bool hasChildren, string text, string linkUrl, string onClickUrl, string target, bool enabled, bool isClickChange, int publishmentSystemId, int nodeId, int contentNum)
+        public static NodeNaviTreeItem CreateNodeTreeItem(bool isDisplay, bool selected, int parentsCount, bool hasChildren, string text, string linkUrl, string onClickUrl, string target, bool enabled, bool isClickChange, int siteId, int channelId, int contentNum)
         {
             var item = new NodeNaviTreeItem();
             item._isDisplay = isDisplay;
@@ -41,8 +41,8 @@ namespace SiteServer.BackgroundPages.Core
             item._enabled = enabled;
             item._isClickChange = isClickChange;
             item._isNodeTree = true;
-            item._publishmentSystemId = publishmentSystemId;
-            item._nodeId = nodeId;
+            item._siteId = siteId;
+            item._channelId = channelId;
             item._contentNum = contentNum;
             return item;
         }
@@ -149,10 +149,10 @@ namespace SiteServer.BackgroundPages.Core
 
             if (!string.IsNullOrEmpty(_iconFolderUrl))
             {
-                if (_nodeId > 0)
+                if (_channelId > 0)
                 {
                     htmlBuilder.Append(
-                        $"<a href=\"{PageRedirect.GetRedirectUrlToChannel(_publishmentSystemId, _nodeId)}\" target=\"_blank\" title='浏览页面'><img align=\"absmiddle\" border=\"0\" src=\"{_iconFolderUrl}\"/></a>");
+                        $"<a href=\"{PageRedirect.GetRedirectUrlToChannel(_siteId, _channelId)}\" target=\"_blank\" title='浏览页面'><img align=\"absmiddle\" border=\"0\" src=\"{_iconFolderUrl}\"/></a>");
                 }
                 else
                 {
@@ -187,12 +187,12 @@ namespace SiteServer.BackgroundPages.Core
                 htmlBuilder.Append(_text);
             }
 
-            if (_isNodeTree && _publishmentSystemId != 0)
+            if (_isNodeTree && _siteId != 0)
             {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(_publishmentSystemId);
+                var siteInfo = SiteManager.GetSiteInfo(_siteId);
 
                 htmlBuilder.Append("&nbsp;");
-                htmlBuilder.Append(NodeManager.GetNodeTreeLastImageHtml(publishmentSystemInfo, NodeManager.GetNodeInfo(_publishmentSystemId, _nodeId)));
+                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(siteInfo, ChannelManager.GetChannelInfo(_siteId, _channelId)));
 
                 if (_contentNum >= 0)
                 {
@@ -248,10 +248,10 @@ namespace SiteServer.BackgroundPages.Core
 
             if (!string.IsNullOrEmpty(_iconFolderUrl))
             {
-                if (_nodeId > 0)
+                if (_channelId > 0)
                 {
                     htmlBuilder.Append(
-                        $"<a href=\"{PageRedirect.GetRedirectUrlToChannel(_publishmentSystemId, _nodeId)}\" target=\"_blank\" title='浏览页面'><img align=\"absmiddle\" border=\"0\" src=\"{_iconFolderUrl}\"/></a>");
+                        $"<a href=\"{PageRedirect.GetRedirectUrlToChannel(_siteId, _channelId)}\" target=\"_blank\" title='浏览页面'><img align=\"absmiddle\" border=\"0\" src=\"{_iconFolderUrl}\"/></a>");
                 }
                 else
                 {
@@ -286,12 +286,12 @@ namespace SiteServer.BackgroundPages.Core
                 htmlBuilder.Append(_text);
             }
 
-            if (_isNodeTree && _publishmentSystemId != 0)
+            if (_isNodeTree && _siteId != 0)
             {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(_publishmentSystemId);
+                var siteInfo = SiteManager.GetSiteInfo(_siteId);
 
                 htmlBuilder.Append("&nbsp;");
-                htmlBuilder.Append(NodeManager.GetNodeTreeLastImageHtml(publishmentSystemInfo, NodeManager.GetNodeInfo(_publishmentSystemId, _nodeId)));
+                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(siteInfo, ChannelManager.GetChannelInfo(_siteId, _channelId)));
 
                 if (_contentNum >= 0)
                 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -13,11 +13,10 @@ namespace SiteServer.BackgroundPages.Cms
 		private string _currentRootPath;
 		private string _directoryPath;
 
-        public static string GetOpenWindowString(int publishmentSystemId, string currentRootPath)
+        public static string GetOpenWindowString(int siteId, string currentRootPath)
         {
-            return LayerUtils.GetOpenScript("创建文件夹", PageUtils.GetCmsUrl(nameof(ModalCreateDirectory), new NameValueCollection
+            return LayerUtils.GetOpenScript("创建文件夹", PageUtils.GetCmsUrl(siteId, nameof(ModalCreateDirectory), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"CurrentRootPath", currentRootPath}
             }), 400, 250);
         }
@@ -26,10 +25,10 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "CurrentRootPath");
+            PageUtils.CheckRequestParameter("siteId", "CurrentRootPath");
 
 			_currentRootPath = Body.GetQueryString("CurrentRootPath").TrimEnd('/');
-			_directoryPath = PathUtility.MapPath(PublishmentSystemInfo, _currentRootPath);
+			_directoryPath = PathUtility.MapPath(SiteInfo, _currentRootPath);
 		}
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -48,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             DirectoryUtils.CreateDirectoryIfNotExists(path);
-            Body.AddSiteLog(PublishmentSystemId, "新建文件夹", $"文件夹:{TbDirectoryName.Text}");
+            Body.AddSiteLog(SiteId, "新建文件夹", $"文件夹:{TbDirectoryName.Text}");
             LayerUtils.Close(Page);
         }
 	}

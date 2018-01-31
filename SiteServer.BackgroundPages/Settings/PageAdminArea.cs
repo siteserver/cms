@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -37,7 +38,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var areaIdArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("AreaIDCollection"));
                 foreach (var areaId in areaIdArrayList)
                 {
-                    BaiRongDataProvider.AreaDao.Delete(areaId);
+                    DataProvider.AreaDao.Delete(areaId);
                 }
                 SuccessMessage("成功删除所选区域");
             }
@@ -45,7 +46,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 var areaId = int.Parse(Body.GetQueryString("AreaID"));
                 var isSubtract = Body.IsQueryExists("Subtract");
-                BaiRongDataProvider.AreaDao.UpdateTaxis(areaId, isSubtract);
+                DataProvider.AreaDao.UpdateTaxis(areaId, isSubtract);
 
                 PageUtils.Redirect(GetRedirectUrl(areaId));
                 return;
@@ -53,7 +54,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Admin);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Admin);
 
             ClientScriptRegisterClientScriptBlock("NodeTreeScript", AreaTreeItem.GetScript(EAreaLoadingType.Management, null));
 
@@ -100,7 +101,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void BindGrid()
         {
-            RptContents.DataSource = BaiRongDataProvider.AreaDao.GetAreaIdListByParentId(0);
+            RptContents.DataSource = DataProvider.AreaDao.GetIdListByParentId(0);
             RptContents.ItemDataBound += rptContents_ItemDataBound;
             RptContents.DataBind();
         }
@@ -125,24 +126,24 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (loadingType == EAreaLoadingType.Management)
             {
-                string editUrl = $@"<a href=""javascript:;"" onclick=""{ModalAreaAdd.GetOpenWindowStringToEdit(areaInfo.AreaId,
-                    GetRedirectUrl(areaInfo.AreaId))}"">编辑</a>";
+                string editUrl = $@"<a href=""javascript:;"" onclick=""{ModalAreaAdd.GetOpenWindowStringToEdit(areaInfo.Id,
+                    GetRedirectUrl(areaInfo.Id))}"">编辑</a>";
 
                 var urlUp = PageUtils.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
                 {
                     {"Subtract", "True"},
-                    {"AreaID", areaInfo.AreaId.ToString()}
+                    {"AreaID", areaInfo.Id.ToString()}
                 });
                 string upLink = $@"<a href=""{urlUp}""><img src=""../Pic/icon/up.gif"" border=""0"" alt=""上升"" /></a>";
 
                 var urlDown = PageUtils.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
                 {
                     {"Add", "True"},
-                    {"AreaID", areaInfo.AreaId.ToString()}
+                    {"AreaID", areaInfo.Id.ToString()}
                 });
                 string downLink = $@"<a href=""{urlDown}""><img src=""../Pic/icon/down.gif"" border=""0"" alt=""下降"" /></a>";
 
-                string checkBoxHtml = $"<input type='checkbox' name='AreaIDCollection' value='{areaInfo.AreaId}' />";
+                string checkBoxHtml = $"<input type='checkbox' name='AreaIDCollection' value='{areaInfo.Id}' />";
 
                 rowHtml = $@"
 <tr treeItemLevel=""{areaInfo.ParentsCount + 1}"">

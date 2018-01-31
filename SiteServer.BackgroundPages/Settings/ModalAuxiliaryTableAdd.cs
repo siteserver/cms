@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
     public class ModalAuxiliaryTableAdd : BasePageCms
     {
-        public TextBox TbTableEnName;
-        public TextBox TbTableCnName;
+        public TextBox TbTableName;
+        public TextBox TbDisplayName;
         public TextBox TbDescription;
 
         private string _tableName;
@@ -35,16 +36,16 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
 
             if (!string.IsNullOrEmpty(_tableName))
             {
-                var info = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfo(_tableName);
+                var info = DataProvider.TableDao.GetTableCollectionInfo(_tableName);
                 if (info != null)
                 {
-                    TbTableEnName.Text = info.TableEnName;
-                    TbTableEnName.Enabled = false;
-                    TbTableCnName.Text = info.TableCnName;
+                    TbTableName.Text = info.TableName;
+                    TbTableName.Enabled = false;
+                    TbDisplayName.Text = info.DisplayName;
                     TbDescription.Text = info.Description;
                 }
             }
@@ -56,11 +57,11 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!string.IsNullOrEmpty(_tableName))
             {
-                var info = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfo(_tableName);
-                info.TableCnName = TbTableCnName.Text;
+                var info = DataProvider.TableDao.GetTableCollectionInfo(_tableName);
+                info.DisplayName = TbDisplayName.Text;
                 info.Description = TbDescription.Text;
 
-                BaiRongDataProvider.TableCollectionDao.Update(info);
+                DataProvider.TableDao.Update(info);
 
                 Body.AddAdminLog("修改辅助表", $"辅助表:{_tableName}");
 
@@ -69,27 +70,27 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                var tableEnNameList = BaiRongDataProvider.TableCollectionDao.GetTableEnNameList();
-                if (tableEnNameList.IndexOf(TbTableEnName.Text) != -1)
+                var tableNameList = DataProvider.TableDao.GetTableNameList();
+                if (tableNameList.IndexOf(TbTableName.Text) != -1)
                 {
                     FailMessage("辅助表添加失败，辅助表标识已存在！");
                 }
-                else if (BaiRongDataProvider.DatabaseDao.IsTableExists(TbTableEnName.Text))
+                else if (DataProvider.DatabaseDao.IsTableExists(TbTableName.Text))
                 {
                     FailMessage("辅助表添加失败，数据库中已存在此表！");
                 }
                 else
                 {
-                    var info = new TableCollectionInfo
+                    var info = new TableInfo
                     {
-                        TableEnName = TbTableEnName.Text,
-                        TableCnName = TbTableCnName.Text,
+                        TableName = TbTableName.Text,
+                        DisplayName = TbDisplayName.Text,
                         Description = TbDescription.Text
                     };
 
-                    BaiRongDataProvider.TableCollectionDao.Insert(info, BaiRongDataProvider.TableMetadataDao.GetDefaultTableMetadataInfoList(info.TableEnName));
+                    DataProvider.TableDao.Insert(info, DataProvider.TableMetadataDao.GetDefaultTableMetadataInfoList(info.TableName));
 
-                    Body.AddAdminLog("添加辅助表", $"辅助表:{TbTableEnName.Text}");
+                    Body.AddAdminLog("添加辅助表", $"辅助表:{TbTableName.Text}");
 
                     SuccessMessage("辅助表添加成功！");
                     LayerUtils.Close(Page);

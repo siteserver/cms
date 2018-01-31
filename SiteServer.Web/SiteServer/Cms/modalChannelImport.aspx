@@ -24,7 +24,7 @@
         <div class="form-group form-row">
           <label class="col-4 col-form-label text-right">父栏目</label>
           <div class="col-7">
-            <asp:DropDownList class="form-control" ID="DdlParentNodeId" runat="server"></asp:DropDownList>
+            <asp:DropDownList class="form-control" ID="DdlParentChannelId" runat="server"></asp:DropDownList>
           </div>
           <div class="col-1"></div>
         </div>

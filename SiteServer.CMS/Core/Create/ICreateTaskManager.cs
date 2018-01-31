@@ -7,11 +7,11 @@ namespace SiteServer.CMS.Core.Create
     {
         void AddPendingTask(CreateTaskInfo task);
 
-        int GetPendingTaskCount(int publishmentSystemId);
+        int GetPendingTaskCount(int siteId);
 
-        CreateTaskInfo GetAndRemoveLastPendingTask(int publishmentSystemId);
+        CreateTaskInfo GetAndRemoveLastPendingTask(int siteId);
 
-        void RemoveCurrent(int publishmentSystemId, CreateTaskInfo taskInfo);
+        void RemoveCurrent(int siteId, CreateTaskInfo taskInfo);
 
         void AddSuccessLog(CreateTaskInfo taskInfo, string timeSpan);
 
@@ -19,8 +19,8 @@ namespace SiteServer.CMS.Core.Create
 
         void ClearAllTask();
 
-        void ClearAllTask(int publishmentSystemId);
+        void ClearAllTask(int siteId);
 
-        CreateTaskSummary GetTaskSummary(int publishmentSystemId);
+        CreateTaskSummary GetTaskSummary(int siteId);
     }
 }

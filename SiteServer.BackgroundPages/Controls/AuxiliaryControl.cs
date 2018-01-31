@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
-using BaiRong.Core;
-using BaiRong.Core.Model;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin.Features;
-using SiteServer.Plugin.Models;
+using SiteServer.CMS.Plugin;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -16,13 +15,11 @@ namespace SiteServer.BackgroundPages.Controls
     {
         public IAttributes Attributes { get; set; }
 
-        public PublishmentSystemInfo PublishmentSystemInfo { get; set; }
+        public SiteInfo SiteInfo { get; set; }
 
-        public int NodeId { get; set; }
+        public int ChannelId { get; set; }
 
         public List<TableStyleInfo> StyleInfoList { get; set; }
-
-        public Dictionary<string, IContentRelated> Plugins { get; set; }
 
         protected override void Render(HtmlTextWriter output)
         {
@@ -30,65 +27,17 @@ namespace SiteServer.BackgroundPages.Controls
 
             var pageScripts = new NameValueCollection();
 
-            var pluginFuncDictLowercase = new Dictionary<string, Func<int, int, IAttributes, string>>();
-            foreach (var pluginId in Plugins.Keys)
-            {
-                var plugin = Plugins[pluginId];
-
-                if (plugin.ContentFormCustomized == null || plugin.ContentFormCustomized.Count == 0) continue;
-
-                foreach (var attributeName in plugin.ContentFormCustomized.Keys)
-                {
-                    if (!pluginFuncDictLowercase.ContainsKey(attributeName.ToLower()) && plugin.ContentFormCustomized[attributeName] != null)
-                    {
-                        pluginFuncDictLowercase[attributeName.ToLower()] = plugin.ContentFormCustomized[attributeName];
-                    }
-                }
-            }
-
             var builder = new StringBuilder();
             foreach (var styleInfo in StyleInfoList)
             {
-                if (pluginFuncDictLowercase.ContainsKey(styleInfo.AttributeName.ToLower()))
-                {
-                    var formFunc = pluginFuncDictLowercase[styleInfo.AttributeName.ToLower()];
-
-                    var html = string.Empty;
-                    try
-                    {
-                        html = formFunc(PublishmentSystemInfo.PublishmentSystemId, NodeId, Attributes);
-                    }
-                    catch (Exception ex)
-                    {
-                        var formPluginId = string.Empty;
-                        foreach (var pluginId in Plugins.Keys)
-                        {
-                            var plugin = Plugins[pluginId];
-
-                            if (plugin.ContentFormCustomized == null || plugin.ContentFormCustomized.Count == 0) continue;
-
-                            foreach (var attributeName in plugin.ContentFormCustomized.Keys)
-                            {
-                                if (plugin.ContentFormCustomized[attributeName] == null) continue;
-                                formPluginId = pluginId;
-                                break;
-                            }
-                        }
-                        LogUtils.AddPluginErrorLog(formPluginId, ex, "ContentFormCustomized");
-                    }
-
-                    builder.Append(html);
-                    continue;
-                }
-
                 string extra;
-                var value = BackgroundInputTypeParser.Parse(PublishmentSystemInfo, NodeId, styleInfo, Attributes, pageScripts, out extra);
+                var value = BackgroundInputTypeParser.Parse(SiteInfo, ChannelId, styleInfo, Attributes, pageScripts, out extra);
 
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
-                if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
+                if (styleInfo.InputType == InputType.TextEditor)
                 {
-                    var commands = WebUtils.GetTextEditorCommands(PublishmentSystemInfo, styleInfo.AttributeName);
+                    var commands = WebUtils.GetTextEditorCommands(SiteInfo, styleInfo.AttributeName);
                     builder.Append($@"
 <div class=""form-group form-row"">
     <label class=""col-sm-1 col-form-label text-right"">{styleInfo.DisplayName}</label>
@@ -105,7 +54,7 @@ namespace SiteServer.BackgroundPages.Controls
                 }
                 else
                 {
-                    builder.Append($@"
+                    var htmlBuilder = new StringBuilder($@"
 <div class=""form-group form-row"">
     <label class=""col-sm-1 col-form-label text-right"">{styleInfo.DisplayName}</label>
     <div class=""col-sm-6"">
@@ -115,6 +64,24 @@ namespace SiteServer.BackgroundPages.Controls
         {extra}
     </div>
 </div>");
+
+                    if (styleInfo.InputType == InputType.Customize)
+                    {
+                        var eventArgs = new ContentFormLoadEventArgs(SiteInfo.Id, ChannelId, styleInfo.AttributeName, Attributes, htmlBuilder);
+                        foreach (var service in PluginManager.Services)
+                        {
+                            try
+                            {
+                                service.OnContentFormLoad(eventArgs);
+                            }
+                            catch (Exception ex)
+                            {
+                                LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(IService.ContentFormLoad));
+                            }
+                        }
+                    }
+
+                    builder.Append(htmlBuilder);
                 }
             }
 

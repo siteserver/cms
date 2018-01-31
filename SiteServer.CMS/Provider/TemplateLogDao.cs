@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
+using SiteServer.CMS.Data;
+using SiteServer.Utils;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -28,7 +27,7 @@ namespace SiteServer.CMS.Provider
             },
             new TableColumnInfo
             {
-                ColumnName = nameof(TemplateLogInfo.PublishmentSystemId),
+                ColumnName = nameof(TemplateLogInfo.SiteId),
                 DataType = DataType.Integer
             },
             new TableColumnInfo
@@ -54,8 +53,8 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string ParmTemplateId = "@TemplateID";
-        private const string ParmPublishmentSystemId = "@PublishmentSystemID";
+        private const string ParmTemplateId = "@TemplateId";
+        private const string ParmSiteId = "@SiteId";
         private const string ParmAddDate = "@AddDate";
         private const string ParmAddUserName = "@AddUserName";
         private const string ParmContentLength = "@ContentLength";
@@ -63,12 +62,12 @@ namespace SiteServer.CMS.Provider
 
         public void Insert(TemplateLogInfo logInfo)
         {
-            var sqlString = "INSERT INTO siteserver_TemplateLog(TemplateID, PublishmentSystemID, AddDate, AddUserName, ContentLength, TemplateContent) VALUES (@TemplateID, @PublishmentSystemID, @AddDate, @AddUserName, @ContentLength, @TemplateContent)";
+            var sqlString = "INSERT INTO siteserver_TemplateLog(TemplateId, SiteId, AddDate, AddUserName, ContentLength, TemplateContent) VALUES (@TemplateId, @SiteId, @AddDate, @AddUserName, @ContentLength, @TemplateContent)";
 
             var parms = new IDataParameter[]
 			{
                 GetParameter(ParmTemplateId, DataType.Integer, logInfo.TemplateId),
-                GetParameter(ParmPublishmentSystemId, DataType.Integer, logInfo.PublishmentSystemId),
+                GetParameter(ParmSiteId, DataType.Integer, logInfo.SiteId),
                 GetParameter(ParmAddDate, DataType.DateTime, logInfo.AddDate),
                 GetParameter(ParmAddUserName, DataType.VarChar, 255, logInfo.AddUserName),
                 GetParameter(ParmContentLength, DataType.Integer, logInfo.ContentLength),
@@ -78,10 +77,10 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString, parms);
         }
 
-        public string GetSelectCommend(int publishmentSystemId, int templateId)
+        public string GetSelectCommend(int siteId, int templateId)
         {
             return
-                $"SELECT ID, TemplateID, PublishmentSystemID, AddDate, AddUserName, ContentLength, TemplateContent FROM siteserver_TemplateLog WHERE PublishmentSystemID = {publishmentSystemId} AND TemplateID = {templateId}";
+                $"SELECT ID, TemplateId, SiteId, AddDate, AddUserName, ContentLength, TemplateContent FROM siteserver_TemplateLog WHERE SiteId = {siteId} AND TemplateId = {templateId}";
         }
 
         public string GetTemplateContent(int logId)
@@ -102,12 +101,12 @@ namespace SiteServer.CMS.Provider
             return templateContent;
         }
 
-        public Dictionary<int, string> GetLogIdWithNameDictionary(int publishmentSystemId, int templateId)
+        public Dictionary<int, string> GetLogIdWithNameDictionary(int siteId, int templateId)
         {
             var dictionary = new Dictionary<int, string>();
 
             string sqlString =
-                $"SELECT ID, AddDate, AddUserName, ContentLength FROM siteserver_TemplateLog WHERE TemplateID = {templateId}";
+                $"SELECT ID, AddDate, AddUserName, ContentLength FROM siteserver_TemplateLog WHERE TemplateId = {templateId}";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -134,7 +133,7 @@ namespace SiteServer.CMS.Provider
             if (idList != null && idList.Count > 0)
             {
                 string sqlString =
-                    $"DELETE FROM siteserver_TemplateLog WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
+                    $"DELETE FROM siteserver_TemplateLog WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
 
                 ExecuteNonQuery(sqlString);
             }

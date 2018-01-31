@@ -5,17 +5,16 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
     public class PageSiteReplace : BasePageCms
     {
-        public Literal LtlPublishmentSystemName;
+        public Literal LtlSiteName;
 		public PlaceHolder PhChooseSiteTemplate;
 		public Repeater RptContents;
 		public HtmlInputHidden HihSiteTemplateDir;
@@ -32,11 +31,11 @@ namespace SiteServer.BackgroundPages.Settings
 
 		private SortedList _sortedlist = new SortedList();
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
             return PageUtils.GetSettingsUrl(nameof(PageSiteReplace), new NameValueCollection
             {
-                {"publishmentSystemId", publishmentSystemId.ToString()}
+                {"siteId", siteId.ToString()}
             });
         }
 
@@ -48,9 +47,9 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
 
-            LtlPublishmentSystemName.Text = PublishmentSystemInfo.PublishmentSystemName;
+            LtlSiteName.Text = SiteInfo.SiteName;
 
             var directoryList = new List<DirectoryInfo>();
             foreach (string directoryName in _sortedlist.Keys)
@@ -133,9 +132,9 @@ namespace SiteServer.BackgroundPages.Settings
             var userKeyPrefix = StringUtils.Guid();
             var siteTemplatePath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
 
-            Body.AddAdminLog("整站替换", $"站点:{PublishmentSystemInfo.PublishmentSystemName}");
+            Body.AddAdminLog("整站替换", $"站点:{SiteInfo.SiteName}");
 
-            PageUtils.Redirect(PageProgressBar.GetRecoveryUrl(PublishmentSystemId, RblIsDeleteChannels.SelectedValue, RblIsDeleteTemplates.SelectedValue, RblIsDeleteFiles.SelectedValue, false, siteTemplatePath, RblIsOverride.SelectedValue, RblIsOverride.SelectedValue, userKeyPrefix));
+            PageUtils.Redirect(PageProgressBar.GetRecoveryUrl(SiteId, RblIsDeleteChannels.SelectedValue, RblIsDeleteTemplates.SelectedValue, RblIsDeleteFiles.SelectedValue, false, siteTemplatePath, RblIsOverride.SelectedValue, RblIsOverride.SelectedValue, userKeyPrefix));
         }
 
         public void Return_OnClick(object sender, EventArgs e)

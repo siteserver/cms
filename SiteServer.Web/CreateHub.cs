@@ -1,5 +1,6 @@
 ﻿using System;
-using BaiRong.Core;
+using System.Threading.Tasks;
+using SiteServer.Utils;
 using Microsoft.AspNet.SignalR;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -9,12 +10,12 @@ namespace SiteServer.API
 {
     public class CreateHub : Hub
     {
-        public void Execute(int publishmentSystemId)
+        public async Task Execute(int siteId)
         {
             var pendingTaskCount = 0;
             try
             {
-                pendingTaskCount = ExecuteTask(publishmentSystemId);
+                pendingTaskCount = await ExecuteTaskAsync(siteId);
             }
             catch (Exception ex)
             {
@@ -24,23 +25,17 @@ namespace SiteServer.API
             Clients.Client(Context.ConnectionId).next(pendingTaskCount);
         }
 
-        private static int ExecuteTask(int publishmentSystemId)
+        private static async Task<int> ExecuteTaskAsync(int siteId)
         {
-            // 如果服务组件启用了的话，则通过服务组件生成
-            if (ServiceManager.IsServiceOnline)
-            {
-                return 0;
-            }
-
             var instance = CreateTaskManager.Instance;
 
-            var pendingTask = instance.GetAndRemoveLastPendingTask(publishmentSystemId);
+            var pendingTask = instance.GetAndRemoveLastPendingTask(siteId);
             if (pendingTask == null) return 0;
 
             try
             {
                 var start = DateTime.Now;
-                FileSystemObject.Execute(pendingTask.PublishmentSystemId, pendingTask.CreateType, pendingTask.ChannelId,
+                await FileSystemObjectAsync.ExecuteAsync(pendingTask.SiteId, pendingTask.CreateType, pendingTask.ChannelId,
                     pendingTask.ContentId, pendingTask.TemplateId);
                 var timeSpan = DateUtils.GetRelatedDateTimeString(start);
                 instance.AddSuccessLog(pendingTask, timeSpan);
@@ -51,34 +46,26 @@ namespace SiteServer.API
             }
             finally
             {
-                instance.RemoveCurrent(publishmentSystemId, pendingTask);
+                instance.RemoveCurrent(siteId, pendingTask);
             }
 
-            return instance.GetPendingTaskCount(publishmentSystemId);
+            return instance.GetPendingTaskCount(siteId);
         }
 
-        public void GetTasks(int publishmentSystemId)
+        public async Task GetTasks(int siteId)
         {
             try
             {
-                if (publishmentSystemId > 0)
+                if (siteId > 0)
                 {
-                    var summary = CreateTaskManager.Instance.GetTaskSummary(publishmentSystemId);
+                    var summary = CreateTaskManager.Instance.GetTaskSummary(siteId);
                     Clients.Client(Context.ConnectionId).show(true, summary.Tasks, summary.ChannelsCount, summary.ContentsCount, summary.FilesCount);
 
-                    Execute(publishmentSystemId);
+                    await Execute(siteId);
                 }
                 else
                 {
-                    if (ServiceManager.IsServiceOnline)
-                    {
-                        var summary = CreateTaskManager.Instance.GetTaskSummary(publishmentSystemId);
-                        Clients.Client(Context.ConnectionId).show(true, summary.Tasks, summary.ChannelsCount, summary.ContentsCount, summary.FilesCount);
-                    }
-                    else
-                    {
-                        Clients.Client(Context.ConnectionId).show(false, null, 0, 0, 0, 0);
-                    }
+                    Clients.Client(Context.ConnectionId).show(false, null, 0, 0, 0, 0);
                 }
             }
             catch (Exception ex)

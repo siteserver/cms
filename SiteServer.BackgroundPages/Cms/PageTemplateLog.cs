@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -17,11 +17,10 @@ namespace SiteServer.BackgroundPages.Cms
 
         private int _templateId;
 
-        public static string GetRedirectUrl(int publishmentSystemId, int templateId)
+        public static string GetRedirectUrl(int siteId, int templateId)
         {
-            return PageUtils.GetCmsUrl(nameof(PageTemplateLog), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateLog), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"TemplateID", templateId.ToString()}
             });
         }
@@ -49,21 +48,20 @@ namespace SiteServer.BackgroundPages.Cms
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
-            SpContents.SelectCommand = DataProvider.TemplateLogDao.GetSelectCommend(PublishmentSystemId, _templateId);
+            SpContents.SelectCommand = DataProvider.TemplateLogDao.GetSelectCommend(SiteId, _templateId);
 
-            SpContents.SortField = "ID";
+            SpContents.SortField = nameof(TemplateLogInfo.Id);
             SpContents.SortMode = SortMode.DESC;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Template);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
 
             BtnDelete.Attributes.Add("onclick",
                 PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
-                    PageUtils.GetCmsUrl(nameof(PageTemplateLog), new NameValueCollection
+                    PageUtils.GetCmsUrl(SiteId, nameof(PageTemplateLog), new NameValueCollection
                     {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
                         {"TemplateID", _templateId.ToString()},
                         {"Delete", true.ToString()}
                     }), "IDCollection", "IDCollection", "请选择需要删除的修订历史！", "此操作将删除所选修订历史，确认吗？"));
@@ -81,14 +79,14 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlContentLength = (Literal)e.Item.FindControl("ltlContentLength");
             var ltlView = (Literal)e.Item.FindControl("ltlView");
 
-            var logId = SqlUtils.EvalInt(e.Item.DataItem, "ID");
+            var logId = SqlUtils.EvalInt(e.Item.DataItem, nameof(TemplateLogInfo.Id));
 
             ltlIndex.Text = Convert.ToString(e.Item.ItemIndex + 1);
-            ltlAddUserName.Text = SqlUtils.EvalString(e.Item.DataItem, "AddUserName");
-            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, "AddDate"));
-            ltlContentLength.Text = SqlUtils.EvalInt(e.Item.DataItem, "ContentLength").ToString();
+            ltlAddUserName.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateLogInfo.AddUserName));
+            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, nameof(TemplateLogInfo.AddDate)));
+            ltlContentLength.Text = SqlUtils.EvalInt(e.Item.DataItem, nameof(TemplateLogInfo.ContentLength)).ToString();
             ltlView.Text =
-                $@"<a href=""javascript:;"" onclick=""{ModalTemplateView.GetOpenWindowString(PublishmentSystemId,
+                $@"<a href=""javascript:;"" onclick=""{ModalTemplateView.GetOpenWindowString(SiteId,
                     logId)}"">查看</a>";
         }
     }

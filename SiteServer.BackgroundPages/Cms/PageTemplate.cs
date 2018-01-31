@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -18,20 +18,16 @@ namespace SiteServer.BackgroundPages.Cms
         private string _templateType;
         private string _keywords;
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(nameof(PageTemplate), new NameValueCollection
-            {
-                {"publishmentSystemId", publishmentSystemId.ToString()}
-            });
+            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplate), null);
         }
 
-        public static string GetRedirectUrl(int publishmentSystemId, ETemplateType templateType)
+        public static string GetRedirectUrl(int siteId, TemplateType templateType)
         {
-            return PageUtils.GetCmsUrl(nameof(PageTemplate), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplate), new NameValueCollection
             {
-                {"publishmentSystemId", publishmentSystemId.ToString()},
-                {"templateType", ETemplateTypeUtils.GetValue(templateType)}
+                {"templateType", templateType.Value}
             });
         }
 
@@ -39,17 +35,17 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("publishmentSystemId");
+            PageUtils.CheckRequestParameter("siteId");
 
             _templateType = Body.GetQueryString("templateType");
             _keywords = Body.GetQueryString("keywords");
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Template);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
 
             DdlTemplateType.Items.Add(new ListItem("<所有类型>", string.Empty));
-            ETemplateTypeUtils.AddListItems(DdlTemplateType);
+            TemplateTypeUtils.AddListItems(DdlTemplateType);
             ControlUtils.SelectSingleItem(DdlTemplateType, _templateType);
 
             TbKeywords.Text = _keywords;
@@ -60,12 +56,12 @@ namespace SiteServer.BackgroundPages.Cms
 
                 try
                 {
-                    var templateInfo = TemplateManager.GetTemplateInfo(PublishmentSystemId, templateId);
+                    var templateInfo = TemplateManager.GetTemplateInfo(SiteId, templateId);
                     if (templateInfo != null)
                     {
-                        DataProvider.TemplateDao.Delete(PublishmentSystemId, templateId);
-                        Body.AddSiteLog(PublishmentSystemId,
-                            $"删除{ETemplateTypeUtils.GetText(templateInfo.TemplateType)}",
+                        DataProvider.TemplateDao.Delete(SiteId, templateId);
+                        Body.AddSiteLog(SiteId,
+                            $"删除{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
                             $"模板名称:{templateInfo.TemplateName}");
                     }
                     SuccessDeleteMessage();
@@ -81,12 +77,12 @@ namespace SiteServer.BackgroundPages.Cms
 			
                 try
                 {
-                    var templateInfo = TemplateManager.GetTemplateInfo(PublishmentSystemId, templateId);
+                    var templateInfo = TemplateManager.GetTemplateInfo(SiteId, templateId);
                     if (templateInfo != null)
                     {
-                        DataProvider.TemplateDao.SetDefault(PublishmentSystemId, templateId);
-                        Body.AddSiteLog(PublishmentSystemId,
-                            $"设置默认{ETemplateTypeUtils.GetText(templateInfo.TemplateType)}",
+                        DataProvider.TemplateDao.SetDefault(SiteId, templateId);
+                        Body.AddSiteLog(SiteId,
+                            $"设置默认{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
                             $"模板名称:{templateInfo.TemplateName}");
                     }
                     SuccessMessage();
@@ -100,30 +96,29 @@ namespace SiteServer.BackgroundPages.Cms
             if (string.IsNullOrEmpty(_templateType))
             {
                 LtlCommands.Text = $@"
-<input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(PublishmentSystemId, 0, ETemplateType.IndexPageTemplate)}';"" value=""添加首页模板"" />
-<input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(PublishmentSystemId, 0, ETemplateType.ChannelTemplate)}';"" value=""添加栏目模板"" />
-<input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(PublishmentSystemId, 0, ETemplateType.ContentTemplate)}';"" value=""添加内容模板"" />
-<input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(PublishmentSystemId, 0, ETemplateType.FileTemplate)}';"" value=""添加单页模板"" />
+<input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(SiteId, 0, TemplateType.IndexPageTemplate)}';"" value=""添加首页模板"" />
+<input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(SiteId, 0, TemplateType.ChannelTemplate)}';"" value=""添加栏目模板"" />
+<input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(SiteId, 0, TemplateType.ContentTemplate)}';"" value=""添加内容模板"" />
+<input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(SiteId, 0, TemplateType.FileTemplate)}';"" value=""添加单页模板"" />
 ";
             }
             else
             {
-                var eTemplateType = ETemplateTypeUtils.GetEnumType(_templateType);
+                var templateType = TemplateTypeUtils.GetEnumType(_templateType);
                 LtlCommands.Text = $@"
-<input type=""button"" class=""btn btn-success"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(PublishmentSystemId, 0, eTemplateType)}';"" value=""添加{ETemplateTypeUtils.GetText(eTemplateType)}"" />
+<input type=""button"" class=""btn btn-success"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(SiteId, 0, templateType)}';"" value=""添加{TemplateTypeUtils.GetText(templateType)}"" />
 ";
             }
 
-            RptContents.DataSource = DataProvider.TemplateDao.GetDataSource(PublishmentSystemId, _keywords, _templateType);
+            RptContents.DataSource = DataProvider.TemplateDao.GetDataSource(SiteId, _keywords, _templateType);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }
 
         public void DdlTemplateType_OnSelectedIndexChanged(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUtils.GetCmsUrl(nameof(PageTemplate), new NameValueCollection
+            PageUtils.Redirect(PageUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
             {
-                {"PublishmentSystemID", PublishmentSystemId.ToString()},
                 {"templateType", DdlTemplateType.SelectedValue},
                 {"keywords", TbKeywords.Text}
             }));
@@ -131,9 +126,8 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BtnSearch_Click(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUtils.GetCmsUrl(nameof(PageTemplate), new NameValueCollection
+            PageUtils.Redirect(PageUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
             {
-                {"PublishmentSystemID", PublishmentSystemId.ToString()},
                 {"templateType", DdlTemplateType.SelectedValue},
                 {"keywords", TbKeywords.Text}
             }));
@@ -143,12 +137,12 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var templateId = SqlUtils.EvalInt(e.Item.DataItem, "TemplateID");
-            var templateType = ETemplateTypeUtils.GetEnumType(SqlUtils.EvalString(e.Item.DataItem, "TemplateType"));
-            var templateName = SqlUtils.EvalString(e.Item.DataItem, "TemplateName");
-            var relatedFileName = SqlUtils.EvalString(e.Item.DataItem, "RelatedFileName");
-            var createdFileFullName = SqlUtils.EvalString(e.Item.DataItem, "CreatedFileFullName");
-            var isDefault = TranslateUtils.ToBool(SqlUtils.EvalString(e.Item.DataItem, "IsDefault"));
+            var templateId = SqlUtils.EvalInt(e.Item.DataItem, nameof(TemplateInfo.Id));
+            var templateType = TemplateTypeUtils.GetEnumType(SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.TemplateType)));
+            var templateName = SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.TemplateName));
+            var relatedFileName = SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.RelatedFileName));
+            var createdFileFullName = SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.CreatedFileFullName));
+            var isDefault = TranslateUtils.ToBool(SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.IsDefault)));
 
             var ltlTemplateName = (Literal)e.Item.FindControl("ltlTemplateName");
             var ltlRelatedFileName = (Literal)e.Item.FindControl("ltlRelatedFileName");
@@ -161,21 +155,21 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlCreateUrl = (Literal)e.Item.FindControl("ltlCreateUrl");
             var ltlDeleteUrl = (Literal)e.Item.FindControl("ltlDeleteUrl");
 
-            var templateAddUrl = PageTemplateAdd.GetRedirectUrl(PublishmentSystemId, templateId, templateType);
+            var templateAddUrl = PageTemplateAdd.GetRedirectUrl(SiteId, templateId, templateType);
             ltlTemplateName.Text = $@"<a href=""{templateAddUrl}"">{templateName}</a>";
             ltlRelatedFileName.Text = relatedFileName;
 
-            if (templateType == ETemplateType.IndexPageTemplate || templateType == ETemplateType.FileTemplate)
+            if (templateType == TemplateType.IndexPageTemplate || templateType == TemplateType.FileTemplate)
             {
-                var url = PageUtility.ParseNavigationUrl(PublishmentSystemInfo, createdFileFullName, false);
+                var url = PageUtility.ParseNavigationUrl(SiteInfo, createdFileFullName, false);
                 ltlFileName.Text = $"<a href='{url}' target='_blank'>{createdFileFullName}</a>";
             }
 
-            ltlUseCount.Text = DataProvider.TemplateDao.GetTemplateUseCount(PublishmentSystemId, templateId, templateType, isDefault).ToString();
+            ltlUseCount.Text = DataProvider.ChannelDao.GetTemplateUseCount(SiteId, templateId, templateType, isDefault).ToString();
 
-            ltlTemplateType.Text = ETemplateTypeUtils.GetText(templateType);
+            ltlTemplateType.Text = TemplateTypeUtils.GetText(templateType);
 
-            if (templateType != ETemplateType.FileTemplate)
+            if (templateType != TemplateType.FileTemplate)
             {
                 if (isDefault)
                 {
@@ -183,9 +177,8 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    var defaultUrl = PageUtils.GetCmsUrl(nameof(PageTemplate), new NameValueCollection
+                    var defaultUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
                     {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
                         {"TemplateID", templateId.ToString()},
                         {"SetDefault", true.ToString()}
                     });
@@ -194,21 +187,20 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            var copyUrl = PageTemplateAdd.GetRedirectUrlToCopy(PublishmentSystemId, templateId);
+            var copyUrl = PageTemplateAdd.GetRedirectUrlToCopy(SiteId, templateId);
             ltlCopyUrl.Text = $@"<a href=""{copyUrl}"">快速复制</a>";
 
-            var logUrl = PageTemplateLog.GetRedirectUrl(PublishmentSystemId, templateId);
+            var logUrl = PageTemplateLog.GetRedirectUrl(SiteId, templateId);
             ltlLogUrl.Text = $@"<a href=""{logUrl}"">修订历史</a>";
 
             ltlCreateUrl.Text =
                 $@"<a href=""javascript:;"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateByTemplate(
-                    PublishmentSystemId, templateId)}"">生成页面</a>";
+                    SiteId, templateId)}"">生成页面</a>";
 
             if (!isDefault)
             {
-                var deleteUrl = PageUtils.GetCmsUrl(nameof(PageTemplate), new NameValueCollection
+                var deleteUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
                 {
-                    {"PublishmentSystemID", PublishmentSystemId.ToString()},
                     {"TemplateID", templateId.ToString()},
                     {"Delete", true.ToString()}
                 });

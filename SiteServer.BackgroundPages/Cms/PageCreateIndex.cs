@@ -1,5 +1,5 @@
 ﻿using System;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core.Create;
 
@@ -11,12 +11,12 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID"); // 检测参数PublishmentSystemID是否合法(不能为空)
+            PageUtils.CheckRequestParameter("siteId");
 
             if (!IsPostBack)
             {
-                CreateManager.CreateChannel(PublishmentSystemId, PublishmentSystemId); // 创建任务
-                PageCreateStatus.Redirect(PublishmentSystemId); // 转到查询任务进度页面
+                CreateManager.CreateChannel(SiteId, SiteId); // 创建任务
+                PageCreateStatus.Redirect(SiteId); // 转到查询任务进度页面
             }
         }
     }

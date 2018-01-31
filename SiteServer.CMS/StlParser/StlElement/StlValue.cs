@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using BaiRong.Core;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -148,11 +147,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (type.ToLower().Equals(TypeSiteName.ToLower()))
             {
-                parsedContent = pageInfo.PublishmentSystemInfo.PublishmentSystemName;
+                parsedContent = pageInfo.SiteInfo.SiteName;
             }
             else if (type.ToLower().Equals(TypeSiteUrl.ToLower()))
             {
-                parsedContent = pageInfo.PublishmentSystemInfo.Additional.WebUrl;
+                parsedContent = pageInfo.SiteInfo.Additional.WebUrl;
             }
             else if (type.ToLower().Equals(TypeDate.ToLower()))
             {
@@ -172,24 +171,24 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else
             {
-                if (pageInfo.PublishmentSystemInfo.Additional.GetString(type) != null)
+                if (pageInfo.SiteInfo.Additional.GetString(type) != null)
                 {
-                    parsedContent = pageInfo.PublishmentSystemInfo.Additional.GetString(type);
+                    parsedContent = pageInfo.SiteInfo.Additional.GetString(type);
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
-                        var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.PublishmentSystemDao.TableName, type, RelatedIdentities.GetRelatedIdentities(pageInfo.PublishmentSystemId, pageInfo.PublishmentSystemId));
+                        var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.SiteDao.TableName, type, RelatedIdentities.GetRelatedIdentities(pageInfo.SiteId, pageInfo.SiteId));
 
                         // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
-                        if (styleInfo.TableStyleId > 0)
+                        if (styleInfo.Id > 0)
                         {
                             if (isClearTags && InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
                             {
-                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, parsedContent, pageInfo.IsLocal);
+                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, parsedContent, pageInfo.IsLocal);
                             }
                             else
                             {
-                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.PublishmentSystemInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerXml, false);
-                                parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerXml, false);
+                                parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                             }
                         }
                         else

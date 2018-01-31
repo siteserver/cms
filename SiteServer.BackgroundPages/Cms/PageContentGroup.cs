@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -12,12 +12,9 @@ namespace SiteServer.BackgroundPages.Cms
 		public Repeater RptContents;
 		public Button BtnAddGroup;
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(nameof(PageContentGroup), new NameValueCollection
-            {
-                {"PublishmentSystemID", publishmentSystemId.ToString()}
-            });
+            return PageUtils.GetCmsUrl(siteId, nameof(PageContentGroup), null);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -30,8 +27,8 @@ namespace SiteServer.BackgroundPages.Cms
 			
 				try
 				{
-					DataProvider.ContentGroupDao.Delete(groupName, PublishmentSystemId);
-                    Body.AddSiteLog(PublishmentSystemId, "删除内容组", $"内容组:{groupName}");
+					DataProvider.ContentGroupDao.Delete(groupName, SiteId);
+                    Body.AddSiteLog(SiteId, "删除内容组", $"内容组:{groupName}");
 					SuccessDeleteMessage();
 				}
 				catch(Exception ex)
@@ -47,25 +44,25 @@ namespace SiteServer.BackgroundPages.Cms
                 switch (direction.ToUpper())
                 {
                     case "UP":
-                        DataProvider.ContentGroupDao.UpdateTaxisToUp(PublishmentSystemId, groupName);
+                        DataProvider.ContentGroupDao.UpdateTaxisToUp(SiteId, groupName);
                         break;
                     case "DOWN":
-                        DataProvider.ContentGroupDao.UpdateTaxisToDown(PublishmentSystemId, groupName);
+                        DataProvider.ContentGroupDao.UpdateTaxisToDown(SiteId, groupName);
                         break;
                 }
                 SuccessMessage("排序成功！");
-                AddWaitAndRedirectScript(GetRedirectUrl(PublishmentSystemId));
+                AddWaitAndRedirectScript(GetRedirectUrl(SiteId));
             }
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
 
-            RptContents.DataSource = DataProvider.ContentGroupDao.GetContentGroupInfoList(PublishmentSystemId);
+            RptContents.DataSource = DataProvider.ContentGroupDao.GetContentGroupInfoList(SiteId);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
-            var showPopWinString = ModalContentGroupAdd.GetOpenWindowString(PublishmentSystemId);
+            var showPopWinString = ModalContentGroupAdd.GetOpenWindowString(SiteId);
             BtnAddGroup.Attributes.Add("onclick", showPopWinString);
         }
 
@@ -83,35 +80,32 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlEdit = (Literal)e.Item.FindControl("ltlEdit");
             var ltlDelete = (Literal)e.Item.FindControl("ltlDelete");
 
-            ltlContentGroupName.Text = groupInfo.ContentGroupName;
+            ltlContentGroupName.Text = groupInfo.GroupName;
             ltlDescription.Text = groupInfo.Description;
 
-            hlUp.NavigateUrl = PageUtils.GetCmsUrl(nameof(PageContentGroup), new NameValueCollection
+            hlUp.NavigateUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageContentGroup), new NameValueCollection
             {
-                {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                {"GroupName", groupInfo.ContentGroupName},
+                {"GroupName", groupInfo.GroupName},
                 {"SetTaxis", true.ToString()},
                 {"Direction", "UP"}
             });
-            hlDown.NavigateUrl = PageUtils.GetCmsUrl(nameof(PageContentGroup), new NameValueCollection
+            hlDown.NavigateUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageContentGroup), new NameValueCollection
             {
-                {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                {"GroupName", groupInfo.ContentGroupName},
+                {"GroupName", groupInfo.GroupName},
                 {"SetTaxis", true.ToString()},
                 {"Direction", "DOWN"}
             });
 
-            ltlContents.Text = $@"<a href=""{PageContentsGroup.GetRedirectUrl(PublishmentSystemId, groupInfo.ContentGroupName)}"">查看内容</a>";
+            ltlContents.Text = $@"<a href=""{PageContentsGroup.GetRedirectUrl(SiteId, groupInfo.GroupName)}"">查看内容</a>";
 
             ltlEdit.Text =
-                $@"<a href=""javascript:;"" onClick=""{ModalContentGroupAdd.GetOpenWindowString(PublishmentSystemId, groupInfo.ContentGroupName)}"">修改</a>";
+                $@"<a href=""javascript:;"" onClick=""{ModalContentGroupAdd.GetOpenWindowString(SiteId, groupInfo.GroupName)}"">修改</a>";
 
-            ltlDelete.Text = $@"<a href=""{PageUtils.GetCmsUrl(nameof(PageContentGroup), new NameValueCollection
+            ltlDelete.Text = $@"<a href=""{PageUtils.GetCmsUrl(SiteId, nameof(PageContentGroup), new NameValueCollection
             {
-                {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                {"GroupName", groupInfo.ContentGroupName},
+                {"GroupName", groupInfo.GroupName},
                 {"Delete", true.ToString()}
-            })}"" onClick=""javascript:return confirm('此操作将删除内容组“{groupInfo.ContentGroupName}”，确认吗？');"">删除</a>";
+            })}"" onClick=""javascript:return confirm('此操作将删除内容组“{groupInfo.GroupName}”，确认吗？');"">删除</a>";
         }
 	}
 }

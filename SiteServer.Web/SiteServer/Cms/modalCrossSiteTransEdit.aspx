@@ -21,11 +21,11 @@
           <div class="col-5"></div>
         </div>
 
-        <asp:PlaceHolder ID="PhPublishmentSystem" Visible="false" runat="server">
+        <asp:PlaceHolder ID="PhSite" Visible="false" runat="server">
           <div class="form-group form-row">
             <label class="col-2 col-form-label text-right">指定跨站转发站点</label>
             <div class="col-5">
-              <asp:DropDownList ID="DdlPublishmentSystemId" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="DdlPublishmentSystemId_OnSelectedIndexChanged"
+              <asp:DropDownList ID="DdlSiteId" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="DdlSiteId_OnSelectedIndexChanged"
                 runat="server"></asp:DropDownList>
             </div>
             <div class="col-5"></div>
@@ -33,7 +33,7 @@
           <div class="form-group form-row">
             <label class="col-2 col-form-label text-right">选择可跨站转发的栏目</label>
             <div class="col-5">
-              <asp:ListBox ID="LbNodeId" class="form-control" SelectionMode="Multiple" Rows="12" runat="server"></asp:ListBox>
+              <asp:ListBox ID="LbChannelId" class="form-control" SelectionMode="Multiple" Rows="12" runat="server"></asp:ListBox>
             </div>
             <div class="col-5"></div>
           </div>

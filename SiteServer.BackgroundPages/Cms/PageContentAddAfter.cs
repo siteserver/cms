@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -11,12 +11,12 @@ namespace SiteServer.BackgroundPages.Cms
 	public class PageContentAddAfter : BasePageCms
     {
         public RadioButtonList RblOperation;
-        public PlaceHolder PhPublishmentSystemId;
-        public DropDownList DdlPublishmentSystemId;
-        public ListBox LbNodeId;
+        public PlaceHolder PhSiteId;
+        public DropDownList DdlSiteId;
+        public ListBox LbChannelId;
         public PlaceHolder PhSubmit;
 
-        private NodeInfo _nodeInfo;
+        private ChannelInfo _channelInfo;
         private int _contentId;
         private string _returnUrl;
 
@@ -27,12 +27,11 @@ namespace SiteServer.BackgroundPages.Cms
             Contribute
         }
 
-        public static string GetRedirectUrl(int publishmentSystemId, int nodeId, int contentId, string returnUrl)
+        public static string GetRedirectUrl(int siteId, int channelId, int contentId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(nameof(PageContentAddAfter), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageContentAddAfter), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"NodeID", nodeId.ToString()},
+                {"channelId", channelId.ToString()},
                 {"ContentID", contentId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
@@ -42,22 +41,22 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-			PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID", "ContentID", "ReturnUrl");
-			var nodeId = Body.GetQueryInt("NodeID");
+			PageUtils.CheckRequestParameter("siteId", "channelId", "ContentID", "ReturnUrl");
+			var channelId = Body.GetQueryInt("channelId");
             _contentId = Body.GetQueryInt("ContentID");
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
 
-            _nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
+            _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 
             if (IsPostBack) return;
 
             RblOperation.Items.Add(new ListItem("继续添加内容", EContentAddAfter.ContinueAdd.ToString()));
             RblOperation.Items.Add(new ListItem("返回管理界面", EContentAddAfter.ManageContents.ToString()));
 
-            var isCrossSiteTrans = CrossSiteTransUtility.IsCrossSiteTrans(PublishmentSystemInfo, _nodeInfo);
-            var isAutomatic = CrossSiteTransUtility.IsAutomatic(_nodeInfo);
+            var isCrossSiteTrans = CrossSiteTransUtility.IsCrossSiteTrans(SiteInfo, _channelInfo);
+            var isAutomatic = CrossSiteTransUtility.IsAutomatic(_channelInfo);
 
-            var isTranslated = ContentUtility.AfterContentAdded(PublishmentSystemInfo, _nodeInfo, _contentId, isCrossSiteTrans, isAutomatic);
+            var isTranslated = ContentUtility.AfterContentAdded(SiteInfo, _channelInfo, _contentId, isCrossSiteTrans, isAutomatic);
             if (isCrossSiteTrans && !isAutomatic)
             {
                 RblOperation.Items.Add(new ListItem("转发到其他站点", EContentAddAfter.Contribute.ToString()));
@@ -65,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             SuccessMessage(isTranslated ? "内容添加成功并已转发到指定站点，请选择后续操作。" : "内容添加成功，请选择后续操作。");
 
-            PhPublishmentSystemId.Visible = PhSubmit.Visible = false;
+            PhSiteId.Visible = PhSubmit.Visible = false;
         }
 
         public void RblOperation_SelectedIndexChanged(object sender, EventArgs e)
@@ -73,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
             var after = (EContentAddAfter)TranslateUtils.ToEnum(typeof(EContentAddAfter), RblOperation.SelectedValue, EContentAddAfter.ContinueAdd);
             if (after == EContentAddAfter.ContinueAdd)
             {
-                PageUtils.Redirect(WebUtils.GetContentAddAddUrl(PublishmentSystemId, _nodeInfo, Body.GetQueryString("ReturnUrl")));
+                PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo, Body.GetQueryString("ReturnUrl")));
             }
             else if (after == EContentAddAfter.ManageContents)
             {
@@ -81,48 +80,48 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else if (after == EContentAddAfter.Contribute)
             {
-                CrossSiteTransUtility.LoadPublishmentSystemIdDropDownList(DdlPublishmentSystemId, PublishmentSystemInfo, _nodeInfo.NodeId);
+                CrossSiteTransUtility.LoadSiteIdDropDownList(DdlSiteId, SiteInfo, _channelInfo.Id);
 
-                if (DdlPublishmentSystemId.Items.Count > 0)
+                if (DdlSiteId.Items.Count > 0)
                 {
-                    DdlPublishmentSystemId_SelectedIndexChanged(sender, e);
+                    DdlSiteId_SelectedIndexChanged(sender, e);
                 }
-                PhPublishmentSystemId.Visible = PhSubmit.Visible = true;
+                PhSiteId.Visible = PhSubmit.Visible = true;
             }
 		}
 
-        public void DdlPublishmentSystemId_SelectedIndexChanged(object sender, EventArgs e)
+        public void DdlSiteId_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var psId = int.Parse(DdlPublishmentSystemId.SelectedValue);
-            CrossSiteTransUtility.LoadNodeIdListBox(LbNodeId, PublishmentSystemInfo, psId, _nodeInfo, Body.AdminName);
+            var psId = int.Parse(DdlSiteId.SelectedValue);
+            CrossSiteTransUtility.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, _channelInfo, Body.AdminName);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var targetPublishmentSystemId = int.Parse(DdlPublishmentSystemId.SelectedValue);
-            var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
+            var targetSiteId = int.Parse(DdlSiteId.SelectedValue);
+            var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
             try
             {
-                foreach (ListItem listItem in LbNodeId.Items)
+                foreach (ListItem listItem in LbChannelId.Items)
                 {
                     if (!listItem.Selected) continue;
-                    var targetNodeId = TranslateUtils.ToInt(listItem.Value);
-                    if (targetNodeId != 0)
+                    var targetChannelId = TranslateUtils.ToInt(listItem.Value);
+                    if (targetChannelId != 0)
                     {
-                        CrossSiteTransUtility.TransContentInfo(PublishmentSystemInfo, _nodeInfo, _contentId, targetPublishmentSystemInfo, targetNodeId);
+                        CrossSiteTransUtility.TransContentInfo(SiteInfo, _channelInfo, _contentId, targetSiteInfo, targetChannelId);
                     }
                 }
 
-                Body.AddSiteLog(PublishmentSystemId, _nodeInfo.NodeId, _contentId, "内容跨站转发", $"转发到站点:{targetPublishmentSystemInfo.PublishmentSystemName}");
+                Body.AddSiteLog(SiteId, _channelInfo.Id, _contentId, "内容跨站转发", $"转发到站点:{targetSiteInfo.SiteName}");
 
                 SuccessMessage("内容跨站转发成功，请选择后续操作。");
                 RblOperation.Items.Clear();
                 RblOperation.Items.Add(new ListItem("继续添加内容", EContentAddAfter.ContinueAdd.ToString()));
                 RblOperation.Items.Add(new ListItem("返回管理界面", EContentAddAfter.ManageContents.ToString()));
                 RblOperation.Items.Add(new ListItem("转发到其他站点", EContentAddAfter.Contribute.ToString()));
-                PhPublishmentSystemId.Visible = PhSubmit.Visible = false;
+                PhSiteId.Visible = PhSubmit.Visible = false;
             }
             catch (Exception ex)
             {

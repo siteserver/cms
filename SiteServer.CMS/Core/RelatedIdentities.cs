@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Model;
-using BaiRong.Core.Model;
-using BaiRong.Core.Table;
 
 namespace SiteServer.CMS.Core
 {
@@ -12,26 +10,26 @@ namespace SiteServer.CMS.Core
 		{
 		}
 
-        public static List<int> GetRelatedIdentities(int publishmentSystemId, int relatedIdentity)
+        public static List<int> GetRelatedIdentities(int siteId, int relatedIdentity)
         {
-            List<int> relatedIdentities = GetChannelRelatedIdentities(publishmentSystemId, relatedIdentity);
+            List<int> relatedIdentities = GetChannelRelatedIdentities(siteId, relatedIdentity);
 
             return relatedIdentities;
         }
 
-        public static List<int> GetChannelRelatedIdentities(int publishmentSystemId, int nodeId)
+        public static List<int> GetChannelRelatedIdentities(int siteId, int channelId)
         {
             var arraylist = new List<int>();
-            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
-            if (nodeInfo != null)
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            if (channelInfo != null)
             {
-                var nodeIdCollection = "0," + nodeInfo.NodeId;
-                if (nodeInfo.ParentsCount > 0)
+                var channelIdCollection = "0," + channelInfo.Id;
+                if (channelInfo.ParentsCount > 0)
                 {
-                    nodeIdCollection = "0," + nodeInfo.ParentsPath + "," + nodeInfo.NodeId;
+                    channelIdCollection = "0," + channelInfo.ParentsPath + "," + channelInfo.Id;
                 }
 
-                arraylist = TranslateUtils.StringCollectionToIntList(nodeIdCollection);
+                arraylist = TranslateUtils.StringCollectionToIntList(channelIdCollection);
                 arraylist.Reverse();
             }
             else
@@ -41,11 +39,11 @@ namespace SiteServer.CMS.Core
             return arraylist;
         }
 
-        public static List<TableStyleInfo> GetTableStyleInfoList(PublishmentSystemInfo publishmentSystemInfo, int nodeId)
+        public static List<TableStyleInfo> GetTableStyleInfoList(SiteInfo siteInfo, int channelId)
         {
-            List<int> relatedIdentities = GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, nodeId);
+            List<int> relatedIdentities = GetChannelRelatedIdentities(siteInfo.Id, channelId);
 
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
             return TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
         }

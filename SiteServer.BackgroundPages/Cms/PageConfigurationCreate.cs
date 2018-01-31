@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -22,57 +22,53 @@ namespace SiteServer.BackgroundPages.Cms
         public DropDownList DdlIsCreateStaticContentByAddDate;
         public PlaceHolder PhIsCreateStaticContentByAddDate;
         public DateTimeTextBox TbCreateStaticContentAddDate;
-        public DropDownList DdlIsCreateMultiThread; // 是否启用多线程生成页面
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Create);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Create);
 
             EBooleanUtils.AddListItems(DdlIsCreateContentIfContentChanged, "生成", "不生成");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateContentIfContentChanged, PublishmentSystemInfo.Additional.IsCreateContentIfContentChanged.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateContentIfContentChanged, SiteInfo.Additional.IsCreateContentIfContentChanged.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateChannelIfChannelChanged, "生成", "不生成");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateChannelIfChannelChanged, PublishmentSystemInfo.Additional.IsCreateChannelIfChannelChanged.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateChannelIfChannelChanged, SiteInfo.Additional.IsCreateChannelIfChannelChanged.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateShowPageInfo, "显示", "不显示");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateShowPageInfo, PublishmentSystemInfo.Additional.IsCreateShowPageInfo.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateShowPageInfo, SiteInfo.Additional.IsCreateShowPageInfo.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateIe8Compatible, "强制兼容", "不设置");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateIe8Compatible, PublishmentSystemInfo.Additional.IsCreateIe8Compatible.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateIe8Compatible, SiteInfo.Additional.IsCreateIe8Compatible.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateBrowserNoCache, "强制清除缓存", "不设置");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateBrowserNoCache, PublishmentSystemInfo.Additional.IsCreateBrowserNoCache.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateBrowserNoCache, SiteInfo.Additional.IsCreateBrowserNoCache.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateJsIgnoreError, "包含JS容错代码", "不设置");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateJsIgnoreError, PublishmentSystemInfo.Additional.IsCreateJsIgnoreError.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateJsIgnoreError, SiteInfo.Additional.IsCreateJsIgnoreError.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateSearchDuplicate, "包含", "不包含");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateSearchDuplicate, PublishmentSystemInfo.Additional.IsCreateSearchDuplicate.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateSearchDuplicate, SiteInfo.Additional.IsCreateSearchDuplicate.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateWithJQuery, "是", "否");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateWithJQuery, PublishmentSystemInfo.Additional.IsCreateWithJQuery.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateWithJQuery, SiteInfo.Additional.IsCreateWithJQuery.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateDoubleClick, "启用双击生成", "不启用");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateDoubleClick, PublishmentSystemInfo.Additional.IsCreateDoubleClick.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateDoubleClick, SiteInfo.Additional.IsCreateDoubleClick.ToString());
 
-            TbCreateStaticMaxPage.Text = PublishmentSystemInfo.Additional.CreateStaticMaxPage.ToString();
+            TbCreateStaticMaxPage.Text = SiteInfo.Additional.CreateStaticMaxPage.ToString();
 
             EBooleanUtils.AddListItems(DdlIsCreateStaticContentByAddDate, "启用", "不启用");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateStaticContentByAddDate, PublishmentSystemInfo.Additional.IsCreateStaticContentByAddDate.ToString());
-            PhIsCreateStaticContentByAddDate.Visible = PublishmentSystemInfo.Additional.IsCreateStaticContentByAddDate;
-            if (PublishmentSystemInfo.Additional.CreateStaticContentAddDate != DateTime.MinValue)
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateStaticContentByAddDate, SiteInfo.Additional.IsCreateStaticContentByAddDate.ToString());
+            PhIsCreateStaticContentByAddDate.Visible = SiteInfo.Additional.IsCreateStaticContentByAddDate;
+            if (SiteInfo.Additional.CreateStaticContentAddDate != DateTime.MinValue)
             {
-                TbCreateStaticContentAddDate.DateTime = PublishmentSystemInfo.Additional.CreateStaticContentAddDate;
+                TbCreateStaticContentAddDate.DateTime = SiteInfo.Additional.CreateStaticContentAddDate;
             }
-
-            EBooleanUtils.AddListItems(DdlIsCreateMultiThread, "启用", "不启用");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateMultiThread, PublishmentSystemInfo.Additional.IsCreateMultiThread.ToString());
         }
 
         public void DdlIsCreateStaticContentByAddDate_SelectedIndexChanged(object sender, EventArgs e)
@@ -84,30 +80,28 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 		    if (!Page.IsPostBack || !Page.IsValid) return;
 
-		    PublishmentSystemInfo.Additional.IsCreateContentIfContentChanged = TranslateUtils.ToBool(DdlIsCreateContentIfContentChanged.SelectedValue);
-		    PublishmentSystemInfo.Additional.IsCreateChannelIfChannelChanged = TranslateUtils.ToBool(DdlIsCreateChannelIfChannelChanged.SelectedValue);
+		    SiteInfo.Additional.IsCreateContentIfContentChanged = TranslateUtils.ToBool(DdlIsCreateContentIfContentChanged.SelectedValue);
+		    SiteInfo.Additional.IsCreateChannelIfChannelChanged = TranslateUtils.ToBool(DdlIsCreateChannelIfChannelChanged.SelectedValue);
 
-		    PublishmentSystemInfo.Additional.IsCreateShowPageInfo = TranslateUtils.ToBool(DdlIsCreateShowPageInfo.SelectedValue);
-		    PublishmentSystemInfo.Additional.IsCreateIe8Compatible = TranslateUtils.ToBool(DdlIsCreateIe8Compatible.SelectedValue);
-		    PublishmentSystemInfo.Additional.IsCreateBrowserNoCache = TranslateUtils.ToBool(DdlIsCreateBrowserNoCache.SelectedValue);
-		    PublishmentSystemInfo.Additional.IsCreateJsIgnoreError = TranslateUtils.ToBool(DdlIsCreateJsIgnoreError.SelectedValue);
-		    PublishmentSystemInfo.Additional.IsCreateSearchDuplicate = TranslateUtils.ToBool(DdlIsCreateSearchDuplicate.SelectedValue);
-		    PublishmentSystemInfo.Additional.IsCreateWithJQuery = TranslateUtils.ToBool(DdlIsCreateWithJQuery.SelectedValue);
+		    SiteInfo.Additional.IsCreateShowPageInfo = TranslateUtils.ToBool(DdlIsCreateShowPageInfo.SelectedValue);
+		    SiteInfo.Additional.IsCreateIe8Compatible = TranslateUtils.ToBool(DdlIsCreateIe8Compatible.SelectedValue);
+		    SiteInfo.Additional.IsCreateBrowserNoCache = TranslateUtils.ToBool(DdlIsCreateBrowserNoCache.SelectedValue);
+		    SiteInfo.Additional.IsCreateJsIgnoreError = TranslateUtils.ToBool(DdlIsCreateJsIgnoreError.SelectedValue);
+		    SiteInfo.Additional.IsCreateSearchDuplicate = TranslateUtils.ToBool(DdlIsCreateSearchDuplicate.SelectedValue);
+		    SiteInfo.Additional.IsCreateWithJQuery = TranslateUtils.ToBool(DdlIsCreateWithJQuery.SelectedValue);
 
-		    PublishmentSystemInfo.Additional.IsCreateDoubleClick = TranslateUtils.ToBool(DdlIsCreateDoubleClick.SelectedValue);
-		    PublishmentSystemInfo.Additional.CreateStaticMaxPage = TranslateUtils.ToInt(TbCreateStaticMaxPage.Text);
+		    SiteInfo.Additional.IsCreateDoubleClick = TranslateUtils.ToBool(DdlIsCreateDoubleClick.SelectedValue);
+		    SiteInfo.Additional.CreateStaticMaxPage = TranslateUtils.ToInt(TbCreateStaticMaxPage.Text);
 
-		    PublishmentSystemInfo.Additional.IsCreateStaticContentByAddDate = TranslateUtils.ToBool(DdlIsCreateStaticContentByAddDate.SelectedValue);
-		    if (PublishmentSystemInfo.Additional.IsCreateStaticContentByAddDate)
+		    SiteInfo.Additional.IsCreateStaticContentByAddDate = TranslateUtils.ToBool(DdlIsCreateStaticContentByAddDate.SelectedValue);
+		    if (SiteInfo.Additional.IsCreateStaticContentByAddDate)
 		    {
-		        PublishmentSystemInfo.Additional.CreateStaticContentAddDate = TbCreateStaticContentAddDate.DateTime;
+		        SiteInfo.Additional.CreateStaticContentAddDate = TbCreateStaticContentAddDate.DateTime;
 		    } 
 
-		    PublishmentSystemInfo.Additional.IsCreateMultiThread = TranslateUtils.ToBool(DdlIsCreateMultiThread.SelectedValue);
+            DataProvider.SiteDao.Update(SiteInfo);
 
-            DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
-
-            Body.AddSiteLog(PublishmentSystemId, "修改页面生成设置");
+            Body.AddSiteLog(SiteId, "修改页面生成设置");
 
             SuccessMessage("页面生成设置修改成功！");
         }

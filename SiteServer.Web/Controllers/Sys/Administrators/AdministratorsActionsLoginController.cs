@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Web.Http;
-using BaiRong.Core;
 using SiteServer.CMS.Controllers.Sys.Administrators;
-using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.API.Controllers.Sys.Administrators
 {
     [RoutePrefix("api")]
     public class AdministratorsActionsLoginController : ApiController
     {
-        [HttpPost, Route(ActionsLogin.Route)]
+        [HttpPost, Route(ApiRouteActionsLogin.Route)]
         public IHttpActionResult Main()
         {
             try
             {
-                var context = new RequestContext();
-                var account = context.GetPostString("account");
-                var password = context.GetPostString("password");
+                var request = new Request();
+                var account = request.GetPostString("account");
+                var password = request.GetPostString("password");
                 if (string.IsNullOrEmpty(account) || string.IsNullOrEmpty(password))
                 {
                     return Unauthorized();
@@ -24,15 +23,15 @@ namespace SiteServer.API.Controllers.Sys.Administrators
 
                 string userName;
                 string errorMessage;
-                if (!BaiRongDataProvider.AdministratorDao.ValidateAccount(account, password, out userName, out errorMessage))
+                if (!DataProvider.AdministratorDao.ValidateAccount(account, password, out userName, out errorMessage))
                 {
                     LogUtils.AddAdminLog(userName, "后台管理员登录失败");
-                    BaiRongDataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfFailedLogin(userName);
+                    DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfFailedLogin(userName);
                     return Unauthorized();
                 }
 
-                BaiRongDataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLogin(userName);
-                context.AdminLogin(userName);
+                DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLogin(userName);
+                request.AdminLogin(userName);
 
                 return Ok(new
                 {

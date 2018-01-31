@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.IO.FileManagement;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Utils.Enumerations;
+using SiteServer.Utils.IO;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -29,25 +29,23 @@ namespace SiteServer.BackgroundPages.Cms
             //here, limit top path
             if (!DirectoryUtils.IsInDirectory(TopPath, path))
                 path = TopPath;
-            return PageUtils.GetCmsUrl(nameof(ModalSelectVideo), new NameValueCollection
+            return PageUtils.GetCmsUrl(SiteId, nameof(ModalSelectVideo), new NameValueCollection
             {
-                {"PublishmentSystemID", PublishmentSystemId.ToString()},
                 {"RootPath", _rootPath},
                 {"CurrentRootPath", path},
                 {"TextBoxClientID", _textBoxClientId}
             });
 		}
 
-        public string PublishmentSystemUrl => PublishmentSystemInfo.Additional.WebUrl;
+        public string SiteUrl => SiteInfo.Additional.WebUrl;
 
 	    public string RootUrl => PageUtils.ApplicationPath;
 
-	    public static string GetOpenWindowString(PublishmentSystemInfo publishmentSystemInfo, string textBoxClientId)
+	    public static string GetOpenWindowString(SiteInfo siteInfo, string textBoxClientId)
 	    {
 	        return LayerUtils.GetOpenScript("选择视频",
-	            PageUtils.GetCmsUrl(nameof(ModalSelectVideo), new NameValueCollection
+	            PageUtils.GetCmsUrl(siteInfo.Id, nameof(ModalSelectVideo), new NameValueCollection
 	            {
-	                {"PublishmentSystemID", publishmentSystemInfo.PublishmentSystemId.ToString()},
 	                {"RootPath", "@"},
 	                {"CurrentRootPath", string.Empty},
 	                {"TextBoxClientID", textBoxClientId}
@@ -58,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "RootPath", "CurrentRootPath", "TextBoxClientID");
+            PageUtils.CheckRequestParameter("siteId", "RootPath", "CurrentRootPath", "TextBoxClientID");
 
 			_rootPath = Body.GetQueryString("RootPath").TrimEnd('/');
             _currentRootPath = Body.GetQueryString("CurrentRootPath");
@@ -66,21 +64,21 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (string.IsNullOrEmpty(_currentRootPath))
             {
-                _currentRootPath = PublishmentSystemInfo.Additional.ConfigSelectVideoCurrentUrl.TrimEnd('/');
+                _currentRootPath = SiteInfo.Additional.ConfigSelectVideoCurrentUrl.TrimEnd('/');
             }
             else
             {
-                PublishmentSystemInfo.Additional.ConfigSelectVideoCurrentUrl = _currentRootPath;
-                DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
+                SiteInfo.Additional.ConfigSelectVideoCurrentUrl = _currentRootPath;
+                DataProvider.SiteDao.Update(SiteInfo);
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');
 
-			_directoryPath = PathUtility.MapPath(PublishmentSystemInfo, _currentRootPath);
+			_directoryPath = PathUtility.MapPath(SiteInfo, _currentRootPath);
             DirectoryUtils.CreateDirectoryIfNotExists(_directoryPath);
 
             if (Page.IsPostBack) return;
 
-            BtnUpload.Attributes.Add("onclick", ModalUploadVideo.GetOpenWindowStringToList(PublishmentSystemId, _currentRootPath));
+            BtnUpload.Attributes.Add("onclick", ModalUploadVideo.GetOpenWindowStringToList(SiteId, _currentRootPath));
 
             var previousUrls = Session["PreviousUrls"] as ArrayList ?? new ArrayList();
             var currentUrl = GetRedirectUrl(_currentRootPath);
@@ -113,7 +111,7 @@ namespace SiteServer.BackgroundPages.Cms
                     else if (directoryName.Equals("@"))
                     {
                         navigationBuilder.Append(
-                            $"<a href='{GetRedirectUrl(_rootPath)}'>{PublishmentSystemInfo.PublishmentSystemDir}</a>");
+                            $"<a href='{GetRedirectUrl(_rootPath)}'>{SiteInfo.SiteDir}</a>");
                     }
                     else
                     {
@@ -173,7 +171,7 @@ namespace SiteServer.BackgroundPages.Cms
 			var builder = new StringBuilder();
             builder.Append(@"<table class=""table table-noborder table-hover"">");
 			
-			var directoryUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, _directoryPath, true);
+			var directoryUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, _directoryPath, true);
             var backgroundImageUrl = SiteServerAssets.GetIconUrl("filesystem/management/background.gif");
 			var directoryImageUrl = SiteServerAssets.GetFileSystemIconUrl(EFileSystemType.Directory, true);
 
@@ -217,7 +215,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			foreach (FileSystemInfoExtend fileInfo in fileSystemInfoExtendCollection.Files)
 			{
-                if (!PathUtility.IsVideoExtenstionAllowed(PublishmentSystemInfo, fileInfo.Type))
+                if (!PathUtility.IsVideoExtenstionAllowed(SiteInfo, fileInfo.Type))
 				{
 					continue;
 				}
@@ -231,7 +229,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var fileImageUrl = SiteServerAssets.GetFileSystemIconUrl(EFileSystemType.Video, true);
 
-                var textBoxUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, linkUrl);
+                var textBoxUrl = PageUtility.GetVirtualUrl(SiteInfo, linkUrl);
 
 				builder.Append($@"
 <td onmouseover=""this.className='tdbg-dark';"" onmouseout=""this.className='';"">

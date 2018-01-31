@@ -17,13 +17,13 @@
               <a class="nav-link" href="javascript:;">内容字段管理</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageTableStyleChannel.aspx?publishmentSystemId=<%=PublishmentSystemId%>">栏目字段管理</a>
+              <a class="nav-link" href="pageTableStyleChannel.aspx?siteId=<%=SiteId%>">栏目字段管理</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageTableStyleSite.aspx?publishmentSystemId=<%=PublishmentSystemId%>">站点字段管理</a>
+              <a class="nav-link" href="pageTableStyleSite.aspx?siteId=<%=SiteId%>">站点字段管理</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageRelatedField.aspx?publishmentSystemId=<%=PublishmentSystemId%>">联动字段设置</a>
+              <a class="nav-link" href="pageRelatedField.aspx?siteId=<%=SiteId%>">联动字段设置</a>
             </li>
           </ul>
         </div>
@@ -35,7 +35,7 @@
             <div class="form-inline">
               <div class="form-group">
                 <label class="col-form-label m-r-10">栏目</label>
-                <asp:DropDownList ID="DdlNodeId" class="form-control m-r-10" OnSelectedIndexChanged="Redirect" AutoPostBack="true" runat="server"></asp:DropDownList>
+                <asp:DropDownList ID="DdlChannelId" class="form-control m-r-10" OnSelectedIndexChanged="Redirect" AutoPostBack="true" runat="server"></asp:DropDownList>
                 <small class="form-text text-muted">
                   下级栏目的字段默认继承上级栏目的字段，设置字段时请先选择合适的栏目
                 </small>

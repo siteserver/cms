@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -33,11 +32,11 @@ namespace SiteServer.BackgroundPages.Ajax
             });
         }
 
-        public static string GetBackupParameters(int publishmentSystemId, string backupType, string userKeyPrefix)
+        public static string GetBackupParameters(int siteId, string backupType, string userKeyPrefix)
         {
             return TranslateUtils.NameValueCollectionToString(new NameValueCollection
             {
-                {"publishmentSystemID", publishmentSystemId.ToString()},
+                {"siteID", siteId.ToString()},
                 {"backupType", backupType},
                 {"userKeyPrefix", userKeyPrefix}
             });
@@ -51,11 +50,11 @@ namespace SiteServer.BackgroundPages.Ajax
             });
         }
 
-        public static string GetRecoveryParameters(int publishmentSystemId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix)
+        public static string GetRecoveryParameters(int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix)
         {
             return TranslateUtils.NameValueCollectionToString(new NameValueCollection
             {
-                {"publishmentSystemID", publishmentSystemId.ToString()},
+                {"siteID", siteId.ToString()},
                 {"isDeleteChannels", isDeleteChannels.ToString()},
                 {"isDeleteTemplates", isDeleteTemplates.ToString()},
                 {"isDeleteFiles", isDeleteFiles.ToString()},
@@ -72,17 +71,17 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retval = new NameValueCollection();
-            var context = new RequestContext();
+            var request = new Request();
 
             if (type == TypeBackup)
             {
-                var publishmentSystemId = TranslateUtils.ToInt(Request.Form["publishmentSystemID"]);
+                var siteId = TranslateUtils.ToInt(Request.Form["siteID"]);
                 var backupType = Request.Form["backupType"];
-                retval = Backup(publishmentSystemId, backupType, userKeyPrefix);
+                retval = Backup(siteId, backupType, userKeyPrefix);
             }
             else if (type == TypeRecovery)
             {
-                var publishmentSystemId = TranslateUtils.ToInt(Request.Form["publishmentSystemID"]);
+                var siteId = TranslateUtils.ToInt(Request.Form["siteID"]);
                 var isDeleteChannels = TranslateUtils.ToBool(Request.Form["isDeleteChannels"]);
                 var isDeleteTemplates = TranslateUtils.ToBool(Request.Form["isDeleteTemplates"]);
                 var isDeleteFiles = TranslateUtils.ToBool(Request.Form["isDeleteFiles"]);
@@ -90,7 +89,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 var path = Request.Form["path"];
                 var isOverride = TranslateUtils.ToBool(Request.Form["isOverride"]);
                 var isUseTable = TranslateUtils.ToBool(Request.Form["isUseTable"]);
-                retval = Recovery(publishmentSystemId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, path, isOverride, isUseTable, userKeyPrefix, context);
+                retval = Recovery(siteId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, path, isOverride, isUseTable, userKeyPrefix, request);
             }
 
             var jsonString = TranslateUtils.NameValueCollectionToJsonString(retval);
@@ -98,7 +97,7 @@ namespace SiteServer.BackgroundPages.Ajax
             Page.Response.End();
         }
 
-        public NameValueCollection Backup(int publishmentSystemId, string backupType, string userKeyPrefix)
+        public NameValueCollection Backup(int siteId, string backupType, string userKeyPrefix)
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;
@@ -107,30 +106,30 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 var eBackupType = EBackupTypeUtils.GetEnumType(backupType);
 
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                var filePath = PathUtility.GetBackupFilePath(publishmentSystemInfo, eBackupType);
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var filePath = PathUtility.GetBackupFilePath(siteInfo, eBackupType);
                 DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                 FileUtils.DeleteFileIfExists(filePath);
 
                 if (eBackupType == EBackupType.Templates)
                 {
-                    BackupUtility.BackupTemplates(publishmentSystemId, filePath);
+                    BackupUtility.BackupTemplates(siteId, filePath);
                 }
                 else if (eBackupType == EBackupType.ChannelsAndContents)
                 {
-                    BackupUtility.BackupChannelsAndContents(publishmentSystemId, filePath);
+                    BackupUtility.BackupChannelsAndContents(siteId, filePath);
                 }
                 else if (eBackupType == EBackupType.Files)
                 {
-                    BackupUtility.BackupFiles(publishmentSystemId, filePath);
+                    BackupUtility.BackupFiles(siteId, filePath);
                 }
                 else if (eBackupType == EBackupType.Site)
                 {
-                    BackupUtility.BackupSite(publishmentSystemId, filePath);
+                    BackupUtility.BackupSite(siteId, filePath);
                 }
 
                 string resultString =
-                    $"任务完成，备份地址：<br /><strong> {filePath} </strong>&nbsp;<a href='{ActionsDownload.GetUrl(PageUtils.InnerApiUrl, filePath)}'><img src='{SiteServerAssets.GetIconUrl("download.gif")}' />下载</a>。";
+                    $"任务完成，备份地址：<br /><strong> {filePath} </strong>&nbsp;<a href='{ApiRouteActionsDownload.GetUrl(PageUtility.InnerApiUrl, filePath)}'><img src='{SiteServerAssets.GetIconUrl("download.gif")}' />下载</a>。";
 
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(resultString, string.Empty, string.Empty);
             }
@@ -143,16 +142,16 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
-        public NameValueCollection Recovery(int publishmentSystemId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix, RequestContext context)
+        public NameValueCollection Recovery(int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix, Request request)
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;
 
             try
             {
-                BackupUtility.RecoverySite(publishmentSystemId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, PageUtils.UrlDecode(path), isOverride, isUseTable, context.AdminName);
+                BackupUtility.RecoverySite(siteId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, PageUtils.UrlDecode(path), isOverride, isUseTable, request.AdminName);
 
-                context.AddSiteLog(publishmentSystemId, "恢复备份数据", context.AdminName);
+                request.AddSiteLog(siteId, "恢复备份数据", request.AdminName);
 
                 retval = AjaxManager.GetWaitingTaskNameValueCollection("数据恢复成功!", string.Empty, string.Empty);
 

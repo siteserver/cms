@@ -31,16 +31,43 @@
             <ul class="navigation-menu">
               <asp:Literal id="LtlTopMenus" runat="server" />
             </ul>
-            <asp:PlaceHolder id="PhPublishmentSystem" runat="server" visible="false">
+            <asp:PlaceHolder id="PhSite" runat="server" visible="false">
               <div class="menu-extras">
                 <ul class="nav navbar-nav navbar-right float-right">
+                  <li id="newVersion" class="dropdown hidden-xs" style="display: none">
+                    <a href="javascript:;" onclick="$('#newVersionCard').toggle();">
+                      <i class="ion-android-download text-warning"></i>
+                    </a>
+                    <div id="newVersionCard" class="card bg-warning text-dark" style="width: 18rem; z-index: 11; position: absolute; display: none">
+                      <div class="card-body" style="padding-bottom: 0;">
+                        <h5 class="card-title">发现系统新版本</h5>
+                        <p class="card-text">
+                          当前版本：
+                          <%=CurrentVersion%>
+                            <br /> 最新版本：
+                            <span id="newVersionLast"></span>
+                            <br /> 发布日期：
+                            <span id="newVersionDate"></span>
+                            <br />
+                            <hr />
+                            <span id="newVersionNotes"></span>
+                            <a id="newVersionLink" class="card-link" href="javascript:;" target="_blank">查看发行说明</a>
+                            <hr />
+                            <div class="text-center">
+                              <a href="<%=UpdateSystemUrl%>" class="card-link btn btn-primary">立即升级</a>
+                              <a href="javascript:;" onclick="$('#newVersionCard').hide();" class="card-link btn btn-secondary">稍后再说</a>
+                            </div>
+                        </p>
+                      </div>
+                    </div>
+                  </li>
                   <li class="dropdown hidden-xs">
                     <asp:Literal id="LtlCreateStatus" runat="server" />
                   </li>
                   <li>
-                    <form id="search" role="search" class="navbar-left app-search float-left hidden-xs" action="cms/pagecontentsearch.aspx?publishmentSystemId=<%=PublishmentSystemId%>"
+                    <form id="search" role="search" class="navbar-left app-search float-left hidden-xs" action="cms/pagecontentsearch.aspx?siteId=<%=SiteId%>"
                       target="right" method="get">
-                      <input name="publishmentSystemId" type="hidden" value="<%=PublishmentSystemId%>">
+                      <input name="siteId" type="hidden" value="<%=SiteId%>">
                       <input name="keyword" type="text" placeholder="内容搜索..." class="form-control">
                       <a href="javascript:;" onclick="$('#search').submit();">
                         <i class="ion-search"></i>
@@ -80,20 +107,16 @@
     </html>
 
     <script src="assets/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
-    <script src="assets/signalR/jquery.signalR-2.2.1.min.js" type="text/javascript"></script>
+    <script src="assets/signalR/jquery.signalR-2.2.2.min.js" type="text/javascript"></script>
     <script src="assets/layer/layer.min.js" type="text/javascript"></script>
     <script src="/signalr/hubs" type="text/javascript"></script>
     <script src="inc/script.js" type="text/javascript"></script>
     <script src="assets/jQuery-slimScroll/jquery.slimscroll.min.js" type="text/javascript"></script>
 
     <script type="text/javascript">
-      function redirect(url) {
-        $('#right').src = url;
-      }
-
-      var siteId = <%=PublishmentSystemId%>;
-
+      var siteId = <%=SiteId%>;
       var create = $.connection.createHub;
+
       create.client.next = function (total) {
         $('#progress').html(total);
         if (total) {
@@ -108,21 +131,23 @@
         create.server.execute(siteId);
       });
 
+      window.onresize = function (event) {
+        $('#frmMain').height($(window).height() - 62);
+        $('#frmMain').width($(window).width() - 200);
+      };
+
+      function redirect(url) {
+        $('#right').src = url;
+      }
+
+      if (window.top != self) {
+        window.top.location = self.location;
+      }
+
       $(document).ready(function () {
         $('#frmMain').height($(window).height() - 62);
         $('#frmMain').width($(window).width() - 200);
 
-        // $('.waves-primary').click(function () {
-        //   if ($(this).hasClass('subdrop')) {
-        //     $(this).removeClass('subdrop');
-        //     $(this).siblings('ul').hide();
-        //   } else {
-        //     $('.waves-primary').removeClass('subdrop');
-        //     $('.list-unstyled').hide();
-        //     $(this).addClass('subdrop');
-        //     $(this).siblings('ul').show();
-        //   }
-        // });
         $('.waves-primary').click(function () {
           if ($(this).hasClass('subdrop')) {
             $(this).removeClass('subdrop');
@@ -145,47 +170,35 @@
           color: '#dcdcdc',
           wheelStep: 5
         });
-      });
 
-      window.onresize = function (event) {
-        $('#frmMain').height($(window).height() - 62);
-        $('#frmMain').width($(window).width() - 200);
-      };
+        $.ajax({
+          url: "<%=VersionApiUrl%>",
+          type: "GET",
+          dataType: "json",
+          success: function (data) {
+            if (!data || !data.version) return;
 
-      ! function () {
-        var analytics = window.analytics = window.analytics || [];
-        if (!analytics.initialize)
-          if (analytics.invoked) window.console && console.error && console.error("Segment snippet included twice.");
-          else {
-            analytics.invoked = !0;
-            analytics.methods = ["trackSubmit", "trackClick", "trackLink", "trackForm", "pageview", "identify", "reset",
-              "group", "track", "ready", "alias", "debug", "page", "once", "off", "on"
-            ];
-            analytics.factory = function (t) {
-              return function () {
-                var e = Array.prototype.slice.call(arguments);
-                e.unshift(t);
-                analytics.push(e);
-                return analytics
-              }
-            };
-            for (var t = 0; t < analytics.methods.length; t++) {
-              var e = analytics.methods[t];
-              analytics[e] = analytics.factory(e)
+            var version = data.version;
+            if (version.indexOf('-') != -1) {
+              version = version.substring(0, version.indexOf('-'));
             }
-            analytics.load = function (t) {
-              var e = document.createElement("script");
-              e.type = "text/javascript";
-              e.async = !0;
-              e.src = ("https:" === document.location.protocol ? "https://" : "http://") +
-                "cdn.segment.com/analytics.js/v1/" + t + "/analytics.min.js";
-              var n = document.getElementsByTagName("script")[0];
-              n.parentNode.insertBefore(e, n)
-            };
-            analytics.SNIPPET_VERSION = "4.0.0";
-            analytics.load("FJtqVJJwjWQsJxU9f2ovi7VPG5hFDzoj");
-            analytics.page();
+            if (version == '<%=CurrentVersion%>') return;
+
+            $('#newVersion').show();
+            $('#newVersionCard').show();
+            // setTimeout(function () {
+            //   $('#newVersionCard').fadeOut();
+            // }, 5000);
+            $('#newVersionLast').html(data.version);
+            $('#newVersionDate').html(data.published);
+            if (data.releaseNotes) {
+              $('#newVersionNotes').html(data.releaseNotes + '<br />');
+            }
+            $('#newVersionLink').attr('href', 'http://www.siteserver.cn/releasenotes/index.html?version=' +
+              data.version);
           }
-      }();
+        });
+      });
     </script>
     <!--#include file="inc/foot.html"-->
+    <script src="assets/segment/product.min.js" type="text/javascript"></script>

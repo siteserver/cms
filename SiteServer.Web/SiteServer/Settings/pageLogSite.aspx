@@ -23,12 +23,6 @@
               <a class="nav-link" href="pageLogUser.aspx">用户日志</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageLogServiceTask.aspx">服务组件任务日志</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="pageLogServiceCreateTask.aspx">服务组件生成日志</a>
-            </li>
-            <li class="nav-item">
               <a class="nav-link" href="pageLogError.aspx">系统错误日志</a>
             </li>
             <li class="nav-item">
@@ -43,7 +37,7 @@
           <div class="form-inline">
             <div class="form-group">
               <label class="col-form-label m-r-10">站点</label>
-              <asp:DropDownList ID="DdlPublishmentSystemId" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="Search_OnClick"
+              <asp:DropDownList ID="DdlSiteId" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="Search_OnClick"
                 runat="server"></asp:DropDownList>
             </div>
 
@@ -83,7 +77,7 @@
                 <table id="contents" class="table tablesaw table-hover m-0">
                   <thead>
                     <tr class="thead">
-                      <asp:Literal ID="LtlPublishmentSystem" runat="server"></asp:Literal>
+                      <asp:Literal ID="LtlSite" runat="server"></asp:Literal>
                       <th class="text-center text-nowrap">管理员</th>
                       <th class="text-center text-nowrap">IP地址</th>
                       <th class="text-center text-nowrap">日期</th>
@@ -98,7 +92,7 @@
                     <asp:Repeater ID="RptContents" runat="server">
                       <itemtemplate>
                         <tr>
-                          <asp:Literal ID="ltlPublishmentSystem" runat="server"></asp:Literal>
+                          <asp:Literal ID="ltlSite" runat="server"></asp:Literal>
                           <td class="text-center text-nowrap">
                             <asp:Literal ID="ltlUserName" runat="server"></asp:Literal>
                           </td>

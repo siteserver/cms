@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -28,21 +28,17 @@ namespace SiteServer.BackgroundPages.Cms
         public TextBox TbPrefix5;
         public TextBox TbSuffix5;
 
-        public static string GetOpenWindowString(int publishmentSystemId, int relatedFieldId)
+        public static string GetOpenWindowString(int siteId, int relatedFieldId)
         {
-            return LayerUtils.GetOpenScript("修改联动字段", PageUtils.GetCmsUrl(nameof(ModalRelatedFieldAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改联动字段", PageUtils.GetCmsUrl(siteId, nameof(ModalRelatedFieldAdd), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedFieldID", relatedFieldId.ToString()}
             }), 550, 550);
         }
 
-        public static string GetOpenWindowString(int publishmentSystemId)
+        public static string GetOpenWindowString(int siteId)
         {
-            return LayerUtils.GetOpenScript("添加联动字段", PageUtils.GetCmsUrl(nameof(ModalRelatedFieldAdd), new NameValueCollection
-            {
-                {"PublishmentSystemID", publishmentSystemId.ToString()}
-            }), 550, 550);
+            return LayerUtils.GetOpenScript("添加联动字段", PageUtils.GetCmsUrl(siteId, nameof(ModalRelatedFieldAdd), null), 550, 550);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -57,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var relatedFieldInfo = DataProvider.RelatedFieldDao.GetRelatedFieldInfo(relatedFieldId);
                 if (relatedFieldInfo != null)
                 {
-                    TbRelatedFieldName.Text = relatedFieldInfo.RelatedFieldName;
+                    TbRelatedFieldName.Text = relatedFieldInfo.Title;
                     ControlUtils.SelectSingleItemIgnoreCase(DdlTotalLevel, relatedFieldInfo.TotalLevel.ToString());
 
                     if (!string.IsNullOrEmpty(relatedFieldInfo.Prefixes))
@@ -112,8 +108,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             var relatedFieldInfo = new RelatedFieldInfo
             {
-                RelatedFieldName = TbRelatedFieldName.Text,
-                PublishmentSystemId = PublishmentSystemId,
+                Title = TbRelatedFieldName.Text,
+                SiteId = SiteId,
                 TotalLevel = TranslateUtils.ToInt(DdlTotalLevel.SelectedValue)
             };
             var prefix = new ArrayList
@@ -139,9 +135,9 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				try
 				{
-                    relatedFieldInfo.RelatedFieldId = Body.GetQueryInt("RelatedFieldID");
+                    relatedFieldInfo.Id = Body.GetQueryInt("RelatedFieldID");
                     DataProvider.RelatedFieldDao.Update(relatedFieldInfo);
-                    Body.AddSiteLog(PublishmentSystemId, "修改联动字段", $"联动字段:{relatedFieldInfo.RelatedFieldName}");
+                    Body.AddSiteLog(SiteId, "修改联动字段", $"联动字段:{relatedFieldInfo.Title}");
 					isChanged = true;
 				}
 				catch(Exception ex)
@@ -151,7 +147,7 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 			else
 			{
-                var relatedFieldNameList = DataProvider.RelatedFieldDao.GetRelatedFieldNameList(PublishmentSystemId);
+                var relatedFieldNameList = DataProvider.RelatedFieldDao.GetTitleList(SiteId);
                 if (relatedFieldNameList.IndexOf(TbRelatedFieldName.Text) != -1)
 				{
                     FailMessage("联动字段添加失败，联动字段名称已存在！");
@@ -161,7 +157,7 @@ namespace SiteServer.BackgroundPages.Cms
 					try
 					{
                         DataProvider.RelatedFieldDao.Insert(relatedFieldInfo);
-                        Body.AddSiteLog(PublishmentSystemId, "添加联动字段", $"联动字段:{relatedFieldInfo.RelatedFieldName}");
+                        Body.AddSiteLog(SiteId, "添加联动字段", $"联动字段:{relatedFieldInfo.Title}");
 						isChanged = true;
 					}
 					catch(Exception ex)

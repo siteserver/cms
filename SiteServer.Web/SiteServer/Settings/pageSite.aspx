@@ -66,10 +66,10 @@
                       <ItemTemplate>
                         <tr>
                           <td>
-                            <asp:Literal ID="ltlPublishmentSystemName" runat="server"></asp:Literal>
+                            <asp:Literal ID="ltlSiteName" runat="server"></asp:Literal>
                           </td>
                           <td>
-                            <asp:Literal ID="ltlPublishmentSystemDir" runat="server"></asp:Literal>
+                            <asp:Literal ID="ltlSiteDir" runat="server"></asp:Literal>
                           </td>
                           <td class="text-center">
                             <asp:Literal ID="ltlAddDate" runat="server"></asp:Literal>

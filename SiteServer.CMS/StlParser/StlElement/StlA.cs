@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.HtmlControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
@@ -138,7 +138,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var onclick = string.Empty;
             if (!string.IsNullOrEmpty(href))
             {
-                url = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, href, pageInfo.IsLocal);
+                url = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, href, pageInfo.IsLocal);
 
                 var innerBuilder = new StringBuilder(contextInfo.InnerXml);
                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
@@ -154,19 +154,19 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (contextInfo.ContentInfo != null)
                     {
-                        url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ContentInfo, pageInfo.IsLocal);
+                        url = PageUtility.GetContentUrl(pageInfo.SiteInfo, contextInfo.ContentInfo, pageInfo.IsLocal);
                     }
                     else
                     {
-                        var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId);
-                        url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, nodeInfo, contextInfo.ContentId, pageInfo.IsLocal);
+                        var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
+                        url = PageUtility.GetContentUrl(pageInfo.SiteInfo, nodeInfo, contextInfo.ContentId, pageInfo.IsLocal);
                     }
                     if (string.IsNullOrEmpty(contextInfo.InnerXml))
                     {
                         var title = contextInfo.ContentInfo?.Title;
                         title = ContentUtility.FormatTitle(contextInfo.ContentInfo?.GetString("BackgroundContentAttribute.TitleFormatString"), title);
 
-                        if (pageInfo.PublishmentSystemInfo.Additional.IsContentTitleBreakLine)
+                        if (pageInfo.SiteInfo.Additional.IsContentTitleBreakLine)
                         {
                             title = title.Replace("  ", string.Empty);
                         }
@@ -182,14 +182,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (contextInfo.ContextType == EContextType.Channel)//获取栏目Url
                 {
-                    contextInfo.ChannelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
-                    contextInfo.ChannelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName);
-                    var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId);
+                    contextInfo.ChannelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
+                    contextInfo.ChannelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, contextInfo.ChannelId, channelIndex, channelName);
+                    var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
 
-                    url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, channel, pageInfo.IsLocal);
+                    url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, channel, pageInfo.IsLocal);
                     if (contextInfo.InnerXml.Trim().Length == 0)
                     {
-                        stlAnchor.InnerHtml = channel.NodeName;
+                        stlAnchor.InnerHtml = channel.ChannelName;
                     }
                     else
                     {

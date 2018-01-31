@@ -65,9 +65,9 @@
                     <tr class="thead">
                       <th>内容标题(点击查看) </th>
                       <asp:Literal id="LtlColumnsHead" runat="server"></asp:Literal>
-                      <asp:Literal id="LtlCommandsHead" runat="server"></asp:Literal>
-                      <th width="80" class="text-center">状态</th>
-                      <th width="20" class="text-center">
+                      <th class="text-center text-nowrap" width="100">操作</th>
+                      <th class="text-center text-nowrap" width="100">状态</th>
+                      <th width="20" class="text-center text-nowrap">
                         <input type="checkbox" onClick="selectRows(document.getElementById('contents'), this.checked);">
                       </th>
                     </tr>
@@ -80,13 +80,13 @@
                             <asp:Literal ID="ltlTitle" runat="server"></asp:Literal>
                           </td>
                           <asp:Literal ID="ltlColumns" runat="server"></asp:Literal>
-                          <td class="text-center">
+                          <td class="text-center text-nowrap">
                             <asp:Literal ID="ltlCommands" runat="server"></asp:Literal>
                           </td>
-                          <td class="text-center">
+                          <td class="text-center text-nowrap">
                             <asp:Literal ID="ltlStatus" runat="server"></asp:Literal>
                           </td>
-                          <td class="text-center">
+                          <td class="text-center text-nowrap">
                             <asp:Literal ID="ltlSelect" runat="server"></asp:Literal>
                           </td>
                         </tr>

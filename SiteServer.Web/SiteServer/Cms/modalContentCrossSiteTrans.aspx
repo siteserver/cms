@@ -15,7 +15,7 @@
         <div class="form-group form-row">
           <label class="col-3 col-form-label text-right">选择站点</label>
           <div class="col-8">
-            <asp:DropDownList ID="DdlPublishmentSystemId" class="form-control" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DdlPublishmentSystemId_SelectedIndexChanged"></asp:DropDownList>
+            <asp:DropDownList ID="DdlSiteId" class="form-control" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DdlSiteId_SelectedIndexChanged"></asp:DropDownList>
           </div>
           <div class="col-1"></div>
         </div>
@@ -23,10 +23,10 @@
         <div class="form-group form-row">
           <label class="col-3 col-form-label text-right">转发到</label>
           <div class="col-8">
-            <asp:ListBox ID="LbNodeId" class="form-control" style="height:200px;" SelectionMode="Multiple" runat="server"></asp:ListBox>
+            <asp:ListBox ID="LbChannelId" class="form-control" style="height:200px;" SelectionMode="Multiple" runat="server"></asp:ListBox>
           </div>
           <div class="col-1">
-            <asp:RequiredFieldValidator ControlToValidate="LbNodeId" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+            <asp:RequiredFieldValidator ControlToValidate="LbChannelId" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
             />
           </div>
         </div>

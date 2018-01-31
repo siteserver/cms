@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -60,7 +61,7 @@ namespace SiteServer.BackgroundPages.Settings
                 foreach (var theDepartmentId in departmentIdList)
                 {
                     var departmentInfo = DepartmentManager.GetDepartmentInfo(theDepartmentId);
-                    var listitem = new ListItem(GetTitle(departmentInfo.DepartmentId, departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode), theDepartmentId.ToString());
+                    var listitem = new ListItem(GetTitle(departmentInfo.Id, departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode), theDepartmentId.ToString());
                     DdlParentId.Items.Add(listitem);
                 }
             }
@@ -116,7 +117,7 @@ namespace SiteServer.BackgroundPages.Settings
                         Summary = TbSummary.Text
                     };
 
-                    BaiRongDataProvider.DepartmentDao.Insert(departmentInfo);
+                    DataProvider.DepartmentDao.Insert(departmentInfo);
                 }
                 else
                 {
@@ -127,7 +128,7 @@ namespace SiteServer.BackgroundPages.Settings
                     departmentInfo.ParentId = TranslateUtils.ToInt(DdlParentId.SelectedValue);
                     departmentInfo.Summary = TbSummary.Text;
 
-                    BaiRongDataProvider.DepartmentDao.Update(departmentInfo);
+                    DataProvider.DepartmentDao.Update(departmentInfo);
                 }
 
                 Body.AddAdminLog("维护部门信息");

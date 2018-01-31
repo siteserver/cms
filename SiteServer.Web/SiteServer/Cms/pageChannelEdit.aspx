@@ -89,7 +89,7 @@
           <div class="form-group form-row">
             <label class="col-sm-2 col-form-label text-right">栏目模板</label>
             <div class="col-sm-4">
-              <asp:DropDownList ID="DdlChannelTemplateId" class="form-control" DataTextField="TemplateName" DataValueField="TemplateId"
+              <asp:DropDownList ID="DdlChannelTemplateId" class="form-control" DataTextField="TemplateName" DataValueField="Id"
                 runat="server"></asp:DropDownList>
             </div>
             <div class="col-sm-6"></div>
@@ -97,7 +97,7 @@
           <div class="form-group form-row">
             <label class="col-sm-2 col-form-label text-right">本栏目内容模板</label>
             <div class="col-sm-4">
-              <asp:DropDownList ID="DdlContentTemplateId" class="form-control" DataTextField="TemplateName" DataValueField="TemplateId"
+              <asp:DropDownList ID="DdlContentTemplateId" class="form-control" DataTextField="TemplateName" DataValueField="Id"
                 runat="server"></asp:DropDownList>
             </div>
             <div class="col-sm-6"></div>
@@ -194,7 +194,7 @@
           <div class="form-group form-row">
             <label class="col-sm-2 col-form-label text-right">栏目组</label>
             <div class="col-sm-4">
-              <asp:CheckBoxList CssClass="checkbox checkbox-primary" ID="CblNodeGroupNameCollection" DataTextField="NodeGroupName" DataValueField="NodeGroupName"
+              <asp:CheckBoxList CssClass="checkbox checkbox-primary" ID="CblNodeGroupNameCollection" DataTextField="GroupName" DataValueField="GroupName"
                 RepeatDirection="Horizontal" RepeatColumns="5" runat="server" />
             </div>
             <div class="col-sm-6"></div>

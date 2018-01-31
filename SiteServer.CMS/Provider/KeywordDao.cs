@@ -1,13 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Data;
+using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -19,7 +17,7 @@ namespace SiteServer.CMS.Provider
         {
             new TableColumnInfo
             {
-                ColumnName = nameof(KeywordInfo.KeywordId),
+                ColumnName = nameof(KeywordInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
@@ -44,24 +42,24 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string ParmKeywordId = "@KeywordID";
+        private const string ParmId = "@Id";
         private const string ParmKeyword = "@Keyword";
         private const string ParmAlternative = "@Alternative";
         private const string ParmGrade = "@Grade";
 
-        private const string SqlUpdate = "UPDATE siteserver_Keyword SET Keyword=@Keyword,Alternative=@Alternative,Grade=@Grade WHERE KeywordID=@KeywordID";
+        private const string SqlUpdate = "UPDATE siteserver_Keyword SET Keyword=@Keyword, Alternative=@Alternative, Grade=@Grade WHERE Id=@Id";
 
-        private const string SqlDelete = "DELETE FROM siteserver_Keyword WHERE KeywordID=@KeywordID";
+        private const string SqlDelete = "DELETE FROM siteserver_Keyword WHERE Id=@Id";
 
-        private const string SqlSelect = "SELECT KeywordID,Keyword,Alternative,Grade FROM siteserver_Keyword WHERE KeywordID=@KeywordID";
+        private const string SqlSelect = "SELECT Id, Keyword, Alternative, Grade FROM siteserver_Keyword WHERE Id=@Id";
 
-        private const string SqlSelectAll = "SELECT KeywordID,Keyword,Alternative,Grade FROM siteserver_Keyword";
+        private const string SqlSelectAll = "SELECT Id, Keyword, Alternative, Grade FROM siteserver_Keyword";
 
-        private const string SqlSelectKeyword = "SELECT KeywordID,Keyword,Alternative,Grade FROM siteserver_Keyword WHERE Keyword = @Keyword";
+        private const string SqlSelectKeyword = "SELECT Id, Keyword, Alternative, Grade FROM siteserver_Keyword WHERE Keyword = @Keyword";
 
         public void Insert(KeywordInfo keywordInfo)
         {
-            var sqlString = "INSERT INTO siteserver_Keyword(Keyword,Alternative,Grade) VALUES(@Keyword,@Alternative,@Grade)";
+            var sqlString = "INSERT INTO siteserver_Keyword(Keyword, Alternative, Grade) VALUES(@Keyword, @Alternative, @Grade)";
 
             var parms = new IDataParameter[]
             {
@@ -76,7 +74,7 @@ namespace SiteServer.CMS.Provider
         public int GetCount()
         {
             var sqlString = "SELECT COUNT(*) AS TotalNum FROM siteserver_Keyword";
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         public void Update(KeywordInfo keywordInfo)
@@ -86,18 +84,18 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmKeyword, DataType.VarChar,50, keywordInfo.Keyword),
                 GetParameter(ParmAlternative, DataType.VarChar,50, keywordInfo.Alternative),
                 GetParameter(ParmGrade, DataType.VarChar, 50, EKeywordGradeUtils.GetValue(keywordInfo.Grade)),
-                GetParameter(ParmKeywordId, DataType.Integer, keywordInfo.KeywordId)
+                GetParameter(ParmId, DataType.Integer, keywordInfo.Id)
             };
             ExecuteNonQuery(SqlUpdate, parms);
         }
 
-        public KeywordInfo GetKeywordInfo(int keywordId)
+        public KeywordInfo GetKeywordInfo(int id)
         {
             var keywordInfo = new KeywordInfo();
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmKeywordId, DataType.Integer, keywordId)
+                GetParameter(ParmId, DataType.Integer, id)
             };
 
             using (var rdr = ExecuteReader(SqlSelect, parms))
@@ -112,20 +110,19 @@ namespace SiteServer.CMS.Provider
             return keywordInfo;
         }
 
-        public void Delete(int keywordId)
+        public void Delete(int id)
         {
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmKeywordId, DataType.Integer, keywordId)
+                GetParameter(ParmId, DataType.Integer, id)
             };
             ExecuteNonQuery(SqlDelete, parms);
         }
 
-        public void Delete(ArrayList idArrayList)
+        public void Delete(List<int> idList)
         {
             string sqlString =
-                $@"DELETE FROM siteserver_Keyword WHERE KeywordID IN ({TranslateUtils.ObjectCollectionToString(
-                    idArrayList)})";
+                $@"DELETE FROM siteserver_Keyword WHERE Id IN ({TranslateUtils.ObjectCollectionToString(idList)})";
             ExecuteNonQuery(sqlString);
         }
 
@@ -175,7 +172,7 @@ namespace SiteServer.CMS.Provider
 
             var list = new List<KeywordInfo>();
             string sqlSelectKeywords =
-                $"SELECT KeywordID,Keyword,Alternative,Grade FROM siteserver_Keyword WHERE Keyword in ({TranslateUtils.ToSqlInStringWithQuote(keywords)})";
+                $"SELECT Id, Keyword, Alternative, Grade FROM siteserver_Keyword WHERE Keyword IN ({TranslateUtils.ToSqlInStringWithQuote(keywords)})";
             using (var rdr = ExecuteReader(sqlSelectKeywords))
             {
                 while (rdr.Read())
@@ -194,7 +191,7 @@ namespace SiteServer.CMS.Provider
             //string sqlString =
             //    $"SELECT Keyword FROM siteserver_Keyword WHERE CHARINDEX(Keyword, '{PageUtils.FilterSql(content)}') > 0";
             var sqlString = $"SELECT Keyword FROM siteserver_Keyword WHERE {SqlUtils.GetInStrReverse(PageUtils.FilterSql(content), nameof(KeywordInfo.Keyword))}";
-            return BaiRongDataProvider.DatabaseDao.GetStringList(sqlString);
+            return DataProvider.DatabaseDao.GetStringList(sqlString);
         }
     }
 }

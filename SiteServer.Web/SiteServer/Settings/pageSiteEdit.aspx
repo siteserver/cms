@@ -49,41 +49,41 @@
 
           <div class="form-group">
             <label class="col-form-label">站点名称
-              <asp:RequiredFieldValidator ControlToValidate="TbPublishmentSystemName" errorMessage=" *" foreColor="red" Display="Dynamic"
+              <asp:RequiredFieldValidator ControlToValidate="TbSiteName" errorMessage=" *" foreColor="red" Display="Dynamic"
                 runat="server" />
-              <asp:RegularExpressionValidator runat="server" ControlToValidate="TbPublishmentSystemName" ValidationExpression="[^']+" errorMessage=" *"
+              <asp:RegularExpressionValidator runat="server" ControlToValidate="TbSiteName" ValidationExpression="[^']+" errorMessage=" *"
                 foreColor="red" Display="Dynamic" />
             </label>
-            <asp:TextBox cssClass="form-control" id="TbPublishmentSystemName" runat="server" />
+            <asp:TextBox cssClass="form-control" id="TbSiteName" runat="server" />
           </div>
 
 
-          <asp:PlaceHolder id="PhPublishmentSystemDir" runat="server">
+          <asp:PlaceHolder id="PhSiteDir" runat="server">
             <div class="form-group">
               <label class="col-form-label">文件夹名称
-                <asp:RequiredFieldValidator ControlToValidate="TbPublishmentSystemDir" errorMessage=" *" foreColor="red" Display="Dynamic"
+                <asp:RequiredFieldValidator ControlToValidate="TbSiteDir" errorMessage=" *" foreColor="red" Display="Dynamic"
                   runat="server" />
-                <asp:RegularExpressionValidator runat="server" ControlToValidate="TbPublishmentSystemDir" ValidationExpression="[\\.a-zA-Z0-9_-]+"
+                <asp:RegularExpressionValidator runat="server" ControlToValidate="TbSiteDir" ValidationExpression="[\\.a-zA-Z0-9_-]+"
                   foreColor="red" ErrorMessage=" 只允许包含字母、数字、下划线、中划线及小数点" Display="Dynamic" />
               </label>
-              <asp:TextBox cssClass="form-control" id="TbPublishmentSystemDir" runat="server" />
+              <asp:TextBox cssClass="form-control" id="TbSiteDir" runat="server" />
               <small class="form-text text-muted">实际在服务器中保存此网站的文件夹名称，此路径必须以英文或拼音命名。</small>
             </div>
           </asp:PlaceHolder>
 
-          <asp:PlaceHolder id="PhParentPublishmentSystemId" runat="server">
+          <asp:PlaceHolder id="PhParentId" runat="server">
             <div class="form-group">
               <label class="col-form-label">上级站点</label>
-              <asp:DropDownList ID="DdlParentPublishmentSystemId" class="form-control" runat="server"></asp:DropDownList>
+              <asp:DropDownList ID="DdlParentId" class="form-control" runat="server"></asp:DropDownList>
             </div>
           </asp:PlaceHolder>
 
           <div class="form-group">
             <label class="col-form-label">内容辅助表
-              <asp:RequiredFieldValidator ControlToValidate="DdlAuxiliaryTableForContent" ErrorMessage="辅助表不能为空！" foreColor="red" Display="Dynamic"
+              <asp:RequiredFieldValidator ControlToValidate="DdlTableName" ErrorMessage="辅助表不能为空！" foreColor="red" Display="Dynamic"
                 runat="server" />
             </label>
-            <asp:DropDownList ID="DdlAuxiliaryTableForContent" class="form-control" runat="server"> </asp:DropDownList>
+            <asp:DropDownList ID="DdlTableName" class="form-control" runat="server"> </asp:DropDownList>
           </div>
 
           <div class="form-group">

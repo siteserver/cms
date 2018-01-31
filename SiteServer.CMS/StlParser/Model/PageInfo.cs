@@ -1,10 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.StlParser.Cache;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -18,7 +17,7 @@ namespace SiteServer.CMS.StlParser.Model
 
         private readonly SortedDictionary<string, string> _pageEndScripts;
 
-        public PublishmentSystemInfo PublishmentSystemInfo { get; private set; }
+        public SiteInfo SiteInfo { get; private set; }
 
         public string ApiUrl { get; }
 
@@ -26,9 +25,9 @@ namespace SiteServer.CMS.StlParser.Model
 
         public IUserInfo UserInfo { get; set; }
 
-        public int PublishmentSystemId { get; private set; }
+        public int SiteId { get; private set; }
 
-        public int PageNodeId { get; private set; }
+        public int PageChannelId { get; private set; }
 
         public int PageContentId { get; private set; }
 
@@ -43,8 +42,6 @@ namespace SiteServer.CMS.StlParser.Model
         public Stack SqlItems { get; }
 
         public Stack SiteItems { get; }
-
-        public Stack PhotoItems { get; }
 
         public Stack EachItems { get; }
 
@@ -66,40 +63,39 @@ namespace SiteServer.CMS.StlParser.Model
 
         public ICollection PageBeforeBodyScriptKeys => _pageBeforeBodyScripts.Keys;
 
-        public PageInfo(int pageNodeId, int pageContentId, PublishmentSystemInfo publishmentSystemInfo, TemplateInfo templateInfo)
+        public PageInfo(int pageChannelId, int pageContentId, SiteInfo siteInfo, TemplateInfo templateInfo)
         {
             TemplateInfo = templateInfo;
-            PublishmentSystemId = publishmentSystemInfo.PublishmentSystemId;
-            PageNodeId = pageNodeId;
+            SiteId = siteInfo.Id;
+            PageChannelId = pageChannelId;
             PageContentId = pageContentId;
             IsLocal = false;
             _pageAfterBodyScripts = new SortedDictionary<string, string>();
             _pageBeforeBodyScripts = new SortedDictionary<string, string>();
             _pageEndScripts = new SortedDictionary<string, string>();
             _pageHeadScripts = new SortedDictionary<string, string>();
-            PublishmentSystemInfo = publishmentSystemInfo;
+            SiteInfo = siteInfo;
             UserInfo = null;
             _uniqueId = 1;
-            ApiUrl = PageUtils.OuterApiUrl;
+            ApiUrl = PageUtility.OuterApiUrl;
 
             ChannelItems = new Stack<ChannelItemInfo>(5);
             ContentItems = new Stack<ContentItemInfo>(5);
             CommentItems = new Stack(5);
             SqlItems = new Stack(5);
             SiteItems = new Stack(5);
-            PhotoItems = new Stack(5);
             EachItems = new Stack(5);
         }
 
-        public void ChangeSite(PublishmentSystemInfo publishmentSystemInfo, int pageNodeId, int pageContentId, ContextInfo contextInfo)
+        public void ChangeSite(SiteInfo siteInfo, int pageChannelId, int pageContentId, ContextInfo contextInfo)
         {
-            PublishmentSystemId = publishmentSystemInfo.PublishmentSystemId;
-            PublishmentSystemInfo = publishmentSystemInfo;
-            PageNodeId = pageNodeId;
+            SiteId = siteInfo.Id;
+            SiteInfo = siteInfo;
+            PageChannelId = pageChannelId;
             PageContentId = pageContentId;
 
-            contextInfo.PublishmentSystemInfo = publishmentSystemInfo;
-            contextInfo.ChannelId = pageNodeId;
+            contextInfo.SiteInfo = siteInfo;
+            contextInfo.ChannelId = pageChannelId;
             contextInfo.ContentId = pageContentId;
         }
 
@@ -303,38 +299,6 @@ namespace SiteServer.CMS.StlParser.Model
             _pageHeadScripts.Clear();
         }
 
-        public List<InnerLinkInfo> CacheOfInnerLinkInfoList
-        {
-            get
-            {
-                var list = InnerLink.GetInnerLinkInfoList(PublishmentSystemId);
-
-                var innerLinkNameList = new List<string>();
-                foreach (var innerLinkInfo in list)
-                {
-                    innerLinkNameList.Add(innerLinkInfo.InnerLinkName);
-                }
-                if (PublishmentSystemInfo.Additional.IsInnerLinkByChannelName)
-                {
-                    var nodeInfoList = NodeManager.GetNodeInfoList(PublishmentSystemId);
-                    foreach (var nodeInfo in nodeInfoList)
-                    {
-                        if (innerLinkNameList.Contains(nodeInfo.NodeName)) continue;
-
-                        var innerLinkInfo = new InnerLinkInfo(nodeInfo.NodeName, PublishmentSystemId, PageUtility.GetChannelUrl(PublishmentSystemInfo, nodeInfo, IsLocal));
-                        list.Add(innerLinkInfo);
-                        innerLinkNameList.Add(nodeInfo.NodeName);
-                    }
-                }
-                foreach (var innerLinkInfo in list)
-                {
-                    innerLinkInfo.InnerString = string.Format(PublishmentSystemInfo.Additional.InnerLinkFormatString, PageUtils.AddProtocolToUrl(PageUtility.ParseNavigationUrl(PublishmentSystemInfo, innerLinkInfo.LinkUrl, IsLocal)), innerLinkInfo.InnerLinkName);
-                }
-
-                return list;
-            }
-        }
-
         public class Const
         {
             public const string Jquery = "Jquery";
@@ -359,7 +323,6 @@ namespace SiteServer.CMS.StlParser.Model
             public const string JsAcVideoJs = "Js_Ac_VideoJs";                    //video.js
 
             public const string JsAdStlCountHits = "Js_Ad_StlCountHits";          //统计访问量
-            public const string JsAdAddTracker = "Js_Ad_AddTracker";              //添加流量统计代码
             public const string JsAeStlZoom = "Js_Ae_StlZoom";                    //文字缩放
             public const string JsAfStlPrinter = "Js_Af_StlPrinter";              //打印
             public const string JsAgStlTreeNotAjax = "Js_Ag_StlTreeNotAjax";                    //树状导航
@@ -496,7 +459,7 @@ wnd_frame.src=url;}}
             {
                 retval = $@"
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsPageScript)}""></script>
-<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{PublishmentSystemInfo.PublishmentSystemId}', {PublishmentSystemInfo.Additional.WebUrl.TrimEnd('/')}');</script>
+<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{SiteInfo.Id}', {SiteInfo.Additional.WebUrl.TrimEnd('/')}');</script>
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsUserScript)}""></script>";
             }
             else if (pageJsName == Const.JsInnerCalendar)

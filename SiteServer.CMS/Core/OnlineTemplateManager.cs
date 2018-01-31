@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Net;
+using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -16,11 +17,11 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Template);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
 
             var elementsDictionary = StlAll.StlElements.GetElementsNameDictionary();
             var attributesDictionary = StlAll.StlElements.ElementsAttributesDictionary;

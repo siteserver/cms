@@ -2,14 +2,14 @@ using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.StlParser.Cache
 {
-    public class PublishmentSystem
+    public class Site
     {
         private static readonly object LockObject = new object();
 
-        public static int GetPublishmentSystemIdByIsHeadquarters()
+        public static int GetSiteIdByIsRoot()
         {
-            var cacheKey = StlCacheUtils.GetCacheKey(nameof(PublishmentSystem),
-                       nameof(GetPublishmentSystemIdByIsHeadquarters));
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Site),
+                       nameof(GetSiteIdByIsRoot));
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
 
@@ -18,7 +18,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetIntCache(cacheKey);
                 if (retval == -1)
                 {
-                    retval = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
+                    retval = DataProvider.SiteDao.GetIdByIsRoot();
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -26,10 +26,10 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static int GetPublishmentSystemIdByPublishmentSystemDir(string publishmentSystemDir)
+        public static int GetSiteIdBySiteDir(string siteDir)
         {
-            var cacheKey = StlCacheUtils.GetCacheKey(nameof(PublishmentSystem),
-                       nameof(GetPublishmentSystemIdByPublishmentSystemDir), publishmentSystemDir);
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Site),
+                       nameof(GetSiteIdBySiteDir), siteDir);
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
 
@@ -39,8 +39,8 @@ namespace SiteServer.CMS.StlParser.Cache
                 if (retval == -1)
                 {
                     retval =
-                        DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByPublishmentSystemDir(
-                            publishmentSystemDir);
+                        DataProvider.SiteDao.GetIdBySiteDir(
+                            siteDir);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }

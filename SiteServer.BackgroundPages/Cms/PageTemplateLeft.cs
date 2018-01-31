@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -15,17 +15,17 @@ namespace SiteServer.BackgroundPages.Cms
         public Literal LtlContentCount;
         public Literal LtlFileCount;
 
-        private Dictionary<ETemplateType, int> _dictionary;
+        private Dictionary<TemplateType, int> _dictionary;
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
-            _dictionary = DataProvider.TemplateDao.GetCountDictionary(PublishmentSystemId);
+            _dictionary = DataProvider.TemplateDao.GetCountDictionary(SiteId);
 
             LtlTotalCount.Text = $"({GetCount(string.Empty)})";
             LtlIndexPageCount.Text = $"({GetCount("IndexPageTemplate")})";
@@ -36,12 +36,12 @@ namespace SiteServer.BackgroundPages.Cms
 
         public string GetServiceUrl()
         {
-            return PageServiceStl.GetRedirectUrl(PageServiceStl.TypeGetLoadingTemplates);
+            return PageServiceStl.GetRedirectUrl(SiteId, PageServiceStl.TypeGetLoadingTemplates);
         }
 
         public string GetServiceParams()
         {
-            return $"publishmentSystemID={PublishmentSystemId}&templateType=";
+            return $"siteID={SiteId}&templateType=";
         }
 
         private int GetCount(string templateType)
@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                var eTemplateType = ETemplateTypeUtils.GetEnumType(templateType);
+                var eTemplateType = TemplateTypeUtils.GetEnumType(templateType);
                 if (_dictionary.ContainsKey(eTemplateType))
                 {
                     count = _dictionary[eTemplateType];

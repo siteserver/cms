@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -18,37 +18,35 @@ namespace SiteServer.BackgroundPages.Cms
         protected HtmlInputHidden HihType;
         protected TextBox TbHits;
 
-        private int _nodeId;
+        private int _channelId;
         private string _tableName;
         private List<int> _idArrayList;
 
-        public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
+        public static string GetOpenWindowString(int siteId, int channelId)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(nameof(ModalContentAttributes), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(siteId, nameof(ModalContentAttributes), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"nodeID", nodeId.ToString()}
-            }), "ContentIDCollection", "请选择需要设置属性的内容！", 450, 350);
+                {"channelId", channelId.ToString()}
+            }), "contentIdCollection", "请选择需要设置属性的内容！", 450, 350);
         }
 
-        public static string GetOpenWindowStringWithCheckBoxValue(int publishmentSystemId, int nodeId)
+        public static string GetOpenWindowStringWithCheckBoxValue(int siteId, int channelId)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(nameof(ModalContentAttributes), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(siteId, nameof(ModalContentAttributes), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"nodeID", nodeId.ToString()}
-            }), "ContentIDCollection", "请选择需要设置属性的内容！", 450, 350);
+                {"channelId", channelId.ToString()}
+            }), "contentIdCollection", "请选择需要设置属性的内容！", 450, 350);
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID");
+            PageUtils.CheckRequestParameter("siteId", "channelId");
 
-            _nodeId = Body.GetQueryInt("NodeID");
-            _tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeId);
-            _idArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection"));
+            _channelId = Body.GetQueryInt("channelId");
+            _tableName = ChannelManager.GetTableName(SiteInfo, _channelId);
+            _idArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("contentIdCollection"));
 		}
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -82,11 +80,11 @@ namespace SiteServer.BackgroundPages.Cms
                                 {
                                     contentInfo.IsTop = true;
                                 }
-                                DataProvider.ContentDao.Update(_tableName, PublishmentSystemInfo, contentInfo);
+                                DataProvider.ContentDao.Update(_tableName, SiteInfo, contentInfo);
                             }
                         }
 
-                        Body.AddSiteLog(PublishmentSystemId, "设置内容属性");
+                        Body.AddSiteLog(SiteId, "设置内容属性");
 
                         isChanged = true;
                     }
@@ -116,11 +114,11 @@ namespace SiteServer.BackgroundPages.Cms
                                 {
                                     contentInfo.IsTop = false;
                                 }
-                                DataProvider.ContentDao.Update(_tableName, PublishmentSystemInfo, contentInfo);
+                                DataProvider.ContentDao.Update(_tableName, SiteInfo, contentInfo);
                             }
                         }
 
-                        Body.AddSiteLog(PublishmentSystemId, "取消内容属性");
+                        Body.AddSiteLog(SiteId, "取消内容属性");
 
                         isChanged = true;
                     }
@@ -134,7 +132,7 @@ namespace SiteServer.BackgroundPages.Cms
                         DataProvider.ContentDao.SetValue(_tableName, contentId, ContentAttribute.Hits, hits.ToString());
                     }
 
-                    Body.AddSiteLog(PublishmentSystemId, "设置内容点击量");
+                    Body.AddSiteLog(SiteId, "设置内容点击量");
 
                     isChanged = true;
                 }

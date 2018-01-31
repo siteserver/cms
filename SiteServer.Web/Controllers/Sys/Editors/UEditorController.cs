@@ -1,27 +1,27 @@
 ﻿using System.Web;
 using System.Web.Http;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Controllers.Sys.Editors;
 using SiteServer.CMS.UEditor;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys.Editors
 {
     [RoutePrefix("api")]
     public class UEditorController : ApiController
     {
-        [HttpGet, Route(UEditor.Route)]
-        public void GetMain(int publishmentSystemId)
+        [HttpGet, Route(ApiRouteUEditor.Route)]
+        public void GetMain(int siteId)
         {
-            Main(publishmentSystemId);
+            Main(siteId);
         }
 
-        [HttpPost, Route(UEditor.Route)]
-        public void PostMain(int publishmentSystemId)
+        [HttpPost, Route(ApiRouteUEditor.Route)]
+        public void PostMain(int siteId)
         {
-            Main(publishmentSystemId);
+            Main(siteId);
         }
 
-        public void Main(int publishmentSystemId)
+        public void Main(int siteId)
         {
             var queryString = HttpContext.Current.Request.QueryString;
 
@@ -38,7 +38,7 @@ namespace SiteServer.API.Controllers.Sys.Editors
                         PathFormat = Config.GetString("imagePathFormat"),
                         SizeLimit = Config.GetInt("imageMaxSize"),
                         UploadFieldName = Config.GetString("imageFieldName")
-                    }, publishmentSystemId, EUploadType.Image);
+                    }, siteId, EUploadType.Image);
                     break;
                 case "uploadscrawl":
                     action = new UploadHandler(HttpContext.Current, new UploadConfig
@@ -49,7 +49,7 @@ namespace SiteServer.API.Controllers.Sys.Editors
                         UploadFieldName = Config.GetString("scrawlFieldName"),
                         Base64 = true,
                         Base64Filename = "scrawl.png"
-                    }, publishmentSystemId, EUploadType.Image);
+                    }, siteId, EUploadType.Image);
                     break;
                 case "uploadvideo":
                     action = new UploadHandler(HttpContext.Current, new UploadConfig
@@ -58,7 +58,7 @@ namespace SiteServer.API.Controllers.Sys.Editors
                         PathFormat = Config.GetString("videoPathFormat"),
                         SizeLimit = Config.GetInt("videoMaxSize"),
                         UploadFieldName = Config.GetString("videoFieldName")
-                    }, publishmentSystemId, EUploadType.Video);
+                    }, siteId, EUploadType.Video);
                     break;
                 case "uploadfile":
                     action = new UploadHandler(HttpContext.Current, new UploadConfig
@@ -67,16 +67,16 @@ namespace SiteServer.API.Controllers.Sys.Editors
                         PathFormat = Config.GetString("filePathFormat"),
                         SizeLimit = Config.GetInt("fileMaxSize"),
                         UploadFieldName = Config.GetString("fileFieldName")
-                    }, publishmentSystemId, EUploadType.File);
+                    }, siteId, EUploadType.File);
                     break;
                 case "listimage":
-                    action = new ListFileManager(HttpContext.Current, Config.GetString("imageManagerListPath"), Config.GetStringList("imageManagerAllowFiles"), publishmentSystemId, EUploadType.Image);
+                    action = new ListFileManager(HttpContext.Current, Config.GetString("imageManagerListPath"), Config.GetStringList("imageManagerAllowFiles"), siteId, EUploadType.Image);
                     break;
                 case "listfile":
-                    action = new ListFileManager(HttpContext.Current, Config.GetString("fileManagerListPath"), Config.GetStringList("fileManagerAllowFiles"), publishmentSystemId, EUploadType.File);
+                    action = new ListFileManager(HttpContext.Current, Config.GetString("fileManagerListPath"), Config.GetStringList("fileManagerAllowFiles"), siteId, EUploadType.File);
                     break;
                 case "catchimage":
-                    action = new CrawlerHandler(HttpContext.Current, publishmentSystemId);
+                    action = new CrawlerHandler(HttpContext.Current, siteId);
                     break;
                 default:
                     action = new NotSupportedHandler(HttpContext.Current);

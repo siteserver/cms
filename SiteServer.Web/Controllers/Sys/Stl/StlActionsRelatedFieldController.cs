@@ -1,24 +1,23 @@
 ﻿using System.Text;
 using System.Web;
 using System.Web.Http;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin;
 
 namespace SiteServer.API.Controllers.Sys.Stl
 {
     [RoutePrefix("api")]
     public class StlActionsRelatedFieldController : ApiController
     {
-        [HttpPost, Route(ActionsRelatedField.Route)]
-        public void Main(int publishmentSystemId)
+        [HttpPost, Route(ApiRouteActionsRelatedField.Route)]
+        public void Main(int siteId)
         {
-            var context = new RequestContext();
+            var request = new Request();
 
-            var callback = context.GetQueryString("callback");
-            var relatedFieldId = context.GetQueryInt("relatedFieldId");
-            var parentId = context.GetQueryInt("parentId");
+            var callback = request.GetQueryString("callback");
+            var relatedFieldId = request.GetQueryInt("relatedFieldId");
+            var parentId = request.GetQueryInt("parentId");
             var jsonString = GetRelatedField(relatedFieldId, parentId);
             var call = callback + "(" + jsonString + ")";
 

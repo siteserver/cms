@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -18,14 +18,13 @@ namespace SiteServer.BackgroundPages.Cms
         public SqlPager SpContents;
 
         private string _tableName;
-        private NodeInfo _nodeInfo;
+        private ChannelInfo _nodeInfo;
         private string _contentGroupName;
 
-        public static string GetRedirectUrl(int publishmentSystemId, string contentGroupName)
+        public static string GetRedirectUrl(int siteId, string contentGroupName)
         {
-            return PageUtils.GetCmsUrl(nameof(PageContentsGroup), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageContentsGroup), new NameValueCollection
             {
-                {"publishmentSystemId", publishmentSystemId.ToString()},
                 {"contentGroupName", contentGroupName}
             });
         }
@@ -34,39 +33,39 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            var publishmentSystemId = Body.GetQueryInt("publishmentSystemId");
+            var siteId = Body.GetQueryInt("siteId");
             _contentGroupName = Body.GetQueryString("contentGroupName");
-            _nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, publishmentSystemId);
-            _tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeInfo);
+            _nodeInfo = ChannelManager.GetChannelInfo(siteId, siteId);
+            _tableName = ChannelManager.GetTableName(SiteInfo, _nodeInfo);
 
             if (Body.IsQueryExists("remove"))
             {
                 var contentId = Body.GetQueryInt("contentId");
 
                 var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, contentId);
-                var groupList = TranslateUtils.StringCollectionToStringList(contentInfo.ContentGroupNameCollection);
+                var groupList = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
                 if (groupList.Contains(_contentGroupName))
                 {
                     groupList.Remove(_contentGroupName);
                 }
 
-                contentInfo.ContentGroupNameCollection = TranslateUtils.ObjectCollectionToString(groupList);
-                DataProvider.ContentDao.Update(_tableName, PublishmentSystemInfo, contentInfo);
-                Body.AddSiteLog(PublishmentSystemId, "移除内容", $"内容:{contentInfo.Title}");
+                contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(groupList);
+                DataProvider.ContentDao.Update(_tableName, SiteInfo, contentInfo);
+                Body.AddSiteLog(SiteId, "移除内容", $"内容:{contentInfo.Title}");
                 SuccessMessage("移除成功");
                 AddWaitAndRedirectScript(PageUrl);
             }
 
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
-            SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommendByContentGroup(_tableName, _contentGroupName, publishmentSystemId);
-            SpContents.SortField = "AddDate";
+            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
+            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlStringByContentGroup(_tableName, _contentGroupName, siteId);
+            SpContents.SortField = ContentAttribute.AddDate;
             SpContents.SortMode = SortMode.DESC;
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
             LtlContentGroupName.Text = "内容组：" + _contentGroupName;
             SpContents.DataBind();
         }
@@ -84,21 +83,20 @@ namespace SiteServer.BackgroundPages.Cms
 
             var contentInfo = new ContentInfo(e.Item.DataItem);
 
-            ltlItemTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, PageUrl);
-            ltlItemChannel.Text = NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId);
+            ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
+            ltlItemChannel.Text = ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId);
             ltlItemAddDate.Text = DateUtils.GetDateAndTimeString(contentInfo.AddDate);
-            ltlItemStatus.Text = CheckManager.GetCheckState(PublishmentSystemInfo, contentInfo.IsChecked,
+            ltlItemStatus.Text = CheckManager.GetCheckState(SiteInfo, contentInfo.IsChecked,
                 contentInfo.CheckedLevel);
 
-            if (!HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) &&
+            if (!HasChannelPermissions(contentInfo.ChannelId, ConfigManager.Permissions.Channel.ContentEdit) &&
                 Body.AdminName != contentInfo.AddUserName) return;
 
             ltlItemEditUrl.Text =
-                $@"<a href=""{WebUtils.GetContentAddEditUrl(PublishmentSystemId, _nodeInfo, contentInfo.Id, PageUrl)}"">编辑</a>";
+                $@"<a href=""{WebUtils.GetContentAddEditUrl(SiteId, _nodeInfo, contentInfo.Id, PageUrl)}"">编辑</a>";
 
-            var removeUrl = PageUtils.GetCmsUrl(nameof(PageContentsGroup), new NameValueCollection
+            var removeUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageContentsGroup), new NameValueCollection
             {
-                {"publishmentSystemId", PublishmentSystemId.ToString()},
                 {"contentGroupName", _contentGroupName},
                 {"contentId", contentInfo.Id.ToString()},
                 {"remove", true.ToString()}
@@ -115,9 +113,8 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (string.IsNullOrEmpty(_pageUrl))
                 {
-                    _pageUrl = PageUtils.GetCmsUrl(nameof(PageContentsGroup), new NameValueCollection
+                    _pageUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageContentsGroup), new NameValueCollection
                     {
-                        {"publishmentSystemId", PublishmentSystemId.ToString()},
                         {"contentGroupName", _contentGroupName}
                     });
                 }
@@ -127,7 +124,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageContentGroup.GetRedirectUrl(PublishmentSystemId));
+            PageUtils.Redirect(PageContentGroup.GetRedirectUrl(SiteId));
         }
     }
 }

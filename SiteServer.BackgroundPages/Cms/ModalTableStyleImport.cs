@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.ImportExport;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -14,13 +14,12 @@ namespace SiteServer.BackgroundPages.Cms
         private string _tableName;
         private int _relatedIdentity;
 
-        public static string GetOpenWindowString(string tableName, int publishmentSystemId, int relatedIdentity)
+        public static string GetOpenWindowString(string tableName, int siteId, int relatedIdentity)
         {
             return LayerUtils.GetOpenScript("导入表样式",
-                PageUtils.GetCmsUrl(nameof(ModalTableStyleImport), new NameValueCollection
+                PageUtils.GetCmsUrl(siteId, nameof(ModalTableStyleImport), new NameValueCollection
                 {
                     {"TableName", tableName},
-                    {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"RelatedIdentity", relatedIdentity.ToString()}
                 }), 760, 200);
         }
@@ -52,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     ImportObject.ImportTableStyleByZipFile(_tableName, _relatedIdentity, localFilePath);
 
-                    Body.AddSiteLog(PublishmentSystemId, "导入表单显示样式");
+                    Body.AddSiteLog(SiteId, "导入表单显示样式");
 
                     LayerUtils.Close(Page);
 				}

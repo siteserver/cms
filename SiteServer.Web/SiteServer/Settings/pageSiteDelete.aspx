@@ -48,7 +48,7 @@
           </div>
           <p class="text-muted font-13 m-b-25">
             站点名称：
-            <asp:Literal id="LtlPublishmentSystemName" runat="server"></asp:Literal>
+            <asp:Literal id="LtlSiteName" runat="server"></asp:Literal>
           </p>
 
           <div class="form-group">

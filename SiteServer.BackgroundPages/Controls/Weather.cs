@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Web.UI;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Net;
+using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Controls
 {

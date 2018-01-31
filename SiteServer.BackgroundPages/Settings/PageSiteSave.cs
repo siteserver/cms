@@ -4,13 +4,12 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.IO.FileManagement;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
+using SiteServer.Utils.Enumerations;
+using SiteServer.Utils.IO;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -49,11 +48,11 @@ namespace SiteServer.BackgroundPages.Settings
 
         private ExportObject _exportObject;
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
             return PageUtils.GetSettingsUrl(nameof(PageSiteSave), new NameValueCollection
             {
-                {"publishmentSystemId", publishmentSystemId.ToString()}
+                {"siteId", siteId.ToString()}
             });
         }
 
@@ -61,45 +60,45 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
-            _exportObject = new ExportObject(PublishmentSystemId);
+            _exportObject = new ExportObject(SiteId);
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
 
-            if (PublishmentSystemInfo.IsHeadquarters)
+            if (SiteInfo.IsRoot)
             {
-                TbSiteTemplateDir.Text = "T_" + PublishmentSystemInfo.PublishmentSystemName;
+                TbSiteTemplateDir.Text = "T_" + SiteInfo.SiteName;
             }
             else
             {
-                TbSiteTemplateDir.Text = "T_" + PublishmentSystemInfo.PublishmentSystemDir.Replace("\\", "_");
+                TbSiteTemplateDir.Text = "T_" + SiteInfo.SiteDir.Replace("\\", "_");
             }
-            TbSiteTemplateName.Text = PublishmentSystemInfo.PublishmentSystemName;
+            TbSiteTemplateName.Text = SiteInfo.SiteName;
 
             EBooleanUtils.AddListItems(RblIsSaveAllFiles, "全部文件", "指定文件");
             ControlUtils.SelectSingleItemIgnoreCase(RblIsSaveAllFiles, true.ToString());
 
-            var publishmentSystemDirList = DataProvider.PublishmentSystemDao.GetLowerPublishmentSystemDirListThatNotIsHeadquarters();
-            var fileSystems = FileManager.GetFileSystemInfoExtendCollection(PathUtility.GetPublishmentSystemPath(PublishmentSystemInfo), true);
+            var siteDirList = DataProvider.SiteDao.GetLowerSiteDirListThatNotIsRoot();
+            var fileSystems = FileManager.GetFileSystemInfoExtendCollection(PathUtility.GetSitePath(SiteInfo), true);
             foreach (FileSystemInfoExtend fileSystem in fileSystems)
             {
                 if (!fileSystem.IsDirectory) continue;
 
-                var isPublishmentSystemDirectory = false;
-                if (PublishmentSystemInfo.IsHeadquarters)
+                var isSiteDirectory = false;
+                if (SiteInfo.IsRoot)
                 {
-                    foreach (var publishmentSystemDir in publishmentSystemDirList)
+                    foreach (var siteDir in siteDirList)
                     {
-                        if (StringUtils.EqualsIgnoreCase(publishmentSystemDir, fileSystem.Name))
+                        if (StringUtils.EqualsIgnoreCase(siteDir, fileSystem.Name))
                         {
-                            isPublishmentSystemDirectory = true;
+                            isSiteDirectory = true;
                         }
                     }
                 }
-                if (!isPublishmentSystemDirectory && !DirectoryUtils.IsSystemDirectory(fileSystem.Name))
+                if (!isSiteDirectory && !DirectoryUtils.IsSystemDirectory(fileSystem.Name))
                 {
                     CblDirectoriesAndFiles.Items.Add(new ListItem(fileSystem.Name, fileSystem.Name.ToLower()));
                 }
@@ -129,11 +128,11 @@ namespace SiteServer.BackgroundPages.Settings
             var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
 
             htmlBuilder.Append("<span id='ChannelSelectControl'>");
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(PublishmentSystemId);
-            var isLastNodeArray = new bool[nodeIdList.Count];
-            foreach (var nodeId in nodeIdList)
+            var channelIdList = DataProvider.ChannelDao.GetIdListBySiteId(SiteId);
+            var isLastNodeArray = new bool[channelIdList.Count];
+            foreach (var channelId in channelIdList)
             {
-                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
+                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
                 htmlBuilder.Append(GetTitle(nodeInfo, treeDirectoryUrl, isLastNodeArray));
                 htmlBuilder.Append("<br/>");
             }
@@ -141,10 +140,10 @@ namespace SiteServer.BackgroundPages.Settings
             return htmlBuilder.ToString();
         }
 
-        private string GetTitle(NodeInfo nodeInfo, string treeDirectoryUrl, IList<bool> isLastNodeArray)
+        private string GetTitle(ChannelInfo nodeInfo, string treeDirectoryUrl, IList<bool> isLastNodeArray)
         {
             var itemBuilder = new StringBuilder();
-            if (nodeInfo.NodeId == PublishmentSystemId)
+            if (nodeInfo.Id == SiteId)
             {
                 nodeInfo.IsLastNode = true;
             }
@@ -175,8 +174,8 @@ namespace SiteServer.BackgroundPages.Settings
 
             itemBuilder.Append($@"
 <span class=""checkbox checkbox-primary"" style=""padding-left: 0px;"">
-    <input type=""checkbox"" id=""NodeIDCollection_{nodeInfo.NodeId}"" name=""NodeIDCollection"" value=""{nodeInfo.NodeId}""/>
-    <label for=""NodeIDCollection_{nodeInfo.NodeId}""> {nodeInfo.NodeName} &nbsp;<span style=""font-size:8pt;font-family:arial"" class=""gray"">({nodeInfo.ContentNum})</span></label>
+    <input type=""checkbox"" id=""ChannelIdCollection_{nodeInfo.Id}"" name=""ChannelIdCollection"" value=""{nodeInfo.Id}""/>
+    <label for=""ChannelIdCollection_{nodeInfo.Id}""> {nodeInfo.ChannelName} &nbsp;<span style=""font-size:8pt;font-family:arial"" class=""gray"">({nodeInfo.ContentNum})</span></label>
 </span>
 ");
 
@@ -255,8 +254,8 @@ namespace SiteServer.BackgroundPages.Settings
                 var isSaveContents = TranslateUtils.ToBool(RblIsSaveContents.SelectedValue);
                 var isSaveAllChannels = TranslateUtils.ToBool(RblIsSaveAllChannels.SelectedValue);
 
-                var nodeIdList = TranslateUtils.StringCollectionToIntList(Request.Form["NodeIDCollection"]);
-                _exportObject.ExportSiteContent(siteContentDirectoryPath, isSaveContents, isSaveAllChannels, nodeIdList);
+                var channelIdList = TranslateUtils.StringCollectionToIntList(Request.Form["ChannelIdCollection"]);
+                _exportObject.ExportSiteContent(siteContentDirectoryPath, isSaveContents, isSaveAllChannels, channelIdList);
 
                 errorMessage = "";
                 return true;
@@ -273,7 +272,7 @@ namespace SiteServer.BackgroundPages.Settings
             errorMessage = string.Empty;
             try
             {
-                SiteTemplateManager.ExportPublishmentSystemToSiteTemplate(PublishmentSystemInfo, TbSiteTemplateDir.Text);
+                SiteTemplateManager.ExportSiteToSiteTemplate(SiteInfo, TbSiteTemplateDir.Text);
 
                 return true;
             }
@@ -307,7 +306,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (SaveFiles(out errorMessage))
             {
                 BtnSaveSiteContentsNext.Visible = PhSaveSiteContents.Visible = true;
-                Body.AddAdminLog("保存站点模板", $"站点:{PublishmentSystemInfo.PublishmentSystemName}");
+                Body.AddAdminLog("保存站点模板", $"站点:{SiteInfo.SiteName}");
             }
             else
             {

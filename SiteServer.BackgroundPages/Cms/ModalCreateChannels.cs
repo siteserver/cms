@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 
@@ -14,19 +14,16 @@ namespace SiteServer.BackgroundPages.Cms
 
         private string _channelIdCollection;
 
-        public static string GetOpenWindowString(int publishmentSystemId)
+        public static string GetOpenWindowString(int siteId)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("生成栏目页", PageUtils.GetCmsUrl(nameof(ModalCreateChannels), new NameValueCollection
-            {
-                {"PublishmentSystemID", publishmentSystemId.ToString()}
-            }), "ChannelIDCollection", "请选择需要生成页面的栏目!", 550, 300);
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("生成栏目页", PageUtils.GetCmsUrl(siteId, nameof(ModalCreateChannels), null), "ChannelIDCollection", "请选择需要生成页面的栏目!", 550, 300);
         }
 
 		public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "ChannelIDCollection");
+            PageUtils.CheckRequestParameter("siteId", "ChannelIDCollection");
 
             _channelIdCollection = Body.GetQueryString("ChannelIDCollection");
 		}
@@ -38,19 +35,19 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var channelId in TranslateUtils.StringCollectionToIntList(_channelIdCollection))
             {
-                CreateManager.CreateChannel(PublishmentSystemId, channelId);
+                CreateManager.CreateChannel(SiteId, channelId);
                 if (isCreateContents)
                 {
-                    CreateManager.CreateAllContent(PublishmentSystemId, channelId);
+                    CreateManager.CreateAllContent(SiteId, channelId);
                 }
                 if (isIncludeChildren)
                 {
-                    foreach (var childChannelId in DataProvider.NodeDao.GetNodeIdListForDescendant(channelId))
+                    foreach (var childChannelId in DataProvider.ChannelDao.GetIdListForDescendant(channelId))
                     {
-                        CreateManager.CreateChannel(PublishmentSystemId, childChannelId);
+                        CreateManager.CreateChannel(SiteId, childChannelId);
                         if (isCreateContents)
                         {
-                            CreateManager.CreateAllContent(PublishmentSystemId, channelId);
+                            CreateManager.CreateAllContent(SiteId, channelId);
                         }
                     }
                 }

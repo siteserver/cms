@@ -1,21 +1,20 @@
-using BaiRong.Core;
+using SiteServer.Utils;
 using System.Collections.Generic;
-using SiteServer.CMS.Plugin;
 
 namespace SiteServer.CMS.Core.Security
 {
     public class AdminUtility
     {
-        public static bool HasSitePermissions(string administratorName, int publishmentSystemId, params string[] sitePermissions)
+        public static bool HasSitePermissions(string administratorName, int siteId, params string[] sitePermissions)
         {
             var permissions = PermissionsManager.GetPermissions(administratorName);
             if (permissions.IsSystemAdministrator)
             {
                 return true;
             }
-            if (ProductPermissionsManager.Current.WebsitePermissionDict.ContainsKey(publishmentSystemId))
+            if (ProductPermissionsManager.Current.WebsitePermissionDict.ContainsKey(siteId))
             {
-                var websitePermissionList = ProductPermissionsManager.Current.WebsitePermissionDict[publishmentSystemId];
+                var websitePermissionList = ProductPermissionsManager.Current.WebsitePermissionDict[siteId];
                 if (websitePermissionList != null && websitePermissionList.Count > 0)
                 {
                     foreach (var sitePermission in sitePermissions)
@@ -31,13 +30,13 @@ namespace SiteServer.CMS.Core.Security
             return false;
         }
 
-        public static void VerifySitePermissions(string administratorName, int publishmentSystemId, params string[] sitePermissions)
+        public static void VerifySitePermissions(string administratorName, int siteId, params string[] sitePermissions)
         {
-            if (HasSitePermissions(administratorName, publishmentSystemId, sitePermissions))
+            if (HasSitePermissions(administratorName, siteId, sitePermissions))
             {
                 return;
             }
-            var request = new RequestContext();
+            var request = new Request();
             request.AdminLogout();
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
         }
@@ -59,73 +58,73 @@ namespace SiteServer.CMS.Core.Security
             return false;
         }
 
-        public static bool HasChannelPermissions(string administratorName, int publishmentSystemId, int nodeId, params string[] channelPermissions)
+        public static bool HasChannelPermissions(string administratorName, int siteId, int channelId, params string[] channelPermissions)
         {
-            if (nodeId == 0) return false;
+            if (channelId == 0) return false;
             var permissions = PermissionsManager.GetPermissions(administratorName);
             if (permissions.IsSystemAdministrator)
             {
                 return true;
             }
-            if (ProductPermissionsManager.Current.ChannelPermissionDict.ContainsKey(nodeId) && HasChannelPermissions(administratorName, ProductPermissionsManager.Current.ChannelPermissionDict[nodeId], channelPermissions))
+            if (ProductPermissionsManager.Current.ChannelPermissionDict.ContainsKey(channelId) && HasChannelPermissions(administratorName, ProductPermissionsManager.Current.ChannelPermissionDict[channelId], channelPermissions))
             {
                 return true;
             }
 
-            var parentNodeId = NodeManager.GetParentId(publishmentSystemId, nodeId);
-            return HasChannelPermissions(administratorName, publishmentSystemId, parentNodeId, channelPermissions);
+            var parentChannelId = ChannelManager.GetParentId(siteId, channelId);
+            return HasChannelPermissions(administratorName, siteId, parentChannelId, channelPermissions);
         }
 
-        public static bool HasChannelPermissionsIgnoreNodeId(string administratorName, params string[] channelPermissions)
+        public static bool HasChannelPermissionsIgnoreChannelId(string administratorName, params string[] channelPermissions)
         {
             var permissions = PermissionsManager.GetPermissions(administratorName);
             if (permissions.IsSystemAdministrator)
             {
                 return true;
             }
-            if (HasChannelPermissions(administratorName, ProductPermissionsManager.Current.ChannelPermissionListIgnoreNodeId, channelPermissions))
+            if (HasChannelPermissions(administratorName, ProductPermissionsManager.Current.ChannelPermissionListIgnoreChannelId, channelPermissions))
             {
                 return true;
             }
             return false;
         }
 
-        public static void VerifyChannelPermissions(string administratorName, int publishmentSystemId, int nodeId, params string[] channelPermissions)
+        public static void VerifyChannelPermissions(string administratorName, int siteId, int channelId, params string[] channelPermissions)
         {
-            if (HasChannelPermissions(administratorName, publishmentSystemId, nodeId, channelPermissions))
+            if (HasChannelPermissions(administratorName, siteId, channelId, channelPermissions))
             {
                 return;
             }
-            var request = new RequestContext();
+            var request = new Request();
             request.AdminLogout();
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
         }
 
-        public static bool IsOwningNodeId(string administratorName, int nodeId)
+        public static bool IsOwningChannelId(string administratorName, int channelId)
         {
             var permissions = PermissionsManager.GetPermissions(administratorName);
             if (permissions.IsSystemAdministrator)
             {
                 return true;
             }
-            if (ProductPermissionsManager.Current.OwningNodeIdList.Contains(nodeId))
+            if (ProductPermissionsManager.Current.OwningChannelIdList.Contains(channelId))
             {
                 return true;
             }
             return false;
         }
 
-        public static bool IsHasChildOwningNodeId(string administratorName, int nodeId)
+        public static bool IsHasChildOwningChannelId(string administratorName, int channelId)
         {
             var permissions = PermissionsManager.GetPermissions(administratorName);
             if (permissions.IsSystemAdministrator)
             {
                 return true;
             }
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListForDescendant(nodeId);
-            foreach (var theNodeId in nodeIdList)
+            var channelIdList = DataProvider.ChannelDao.GetIdListForDescendant(channelId);
+            foreach (var theChannelId in channelIdList)
             {
-                if (IsOwningNodeId(administratorName, theNodeId))
+                if (IsOwningChannelId(administratorName, theChannelId))
                 {
                     return true;
                 }
@@ -133,12 +132,12 @@ namespace SiteServer.CMS.Core.Security
             return false;
         }
 
-        public static bool IsViewContentOnlySelf(string administratorName, int publishmentSystemId, int nodeId)
+        public static bool IsViewContentOnlySelf(string administratorName, int siteId, int channelId)
         {
             var permissions = PermissionsManager.GetPermissions(administratorName);
             if (permissions.IsConsoleAdministrator || permissions.IsSystemAdministrator)
                 return false;
-            if (HasChannelPermissions(administratorName, publishmentSystemId, nodeId, AppManager.Permissions.Channel.ContentCheck))
+            if (HasChannelPermissions(administratorName, siteId, channelId, ConfigManager.Permissions.Channel.ContentCheck))
                 return false;
             return ConfigManager.SystemConfigInfo.IsViewContentOnlySelf;
         }

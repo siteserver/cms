@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
@@ -39,8 +39,8 @@ namespace SiteServer.BackgroundPages
             var redirectUrl = PageMain.GetRedirectUrl(); // 如果检测登录帐号一切正常，则准备转到框架主页 pagemain.aspx
 
             var permissions = PermissionsManager.GetPermissions(Body.AdminName); // 获取登录管理员的权限
-            var publishmentSystemIdList = ProductPermissionsManager.Current.PublishmentSystemIdList; // 获取当前站点ID
-            if (publishmentSystemIdList == null || publishmentSystemIdList.Count == 0) // 如果目前还没有创建站点
+            var siteIdList = ProductPermissionsManager.Current.SiteIdList; // 获取当前站点ID
+            if (siteIdList == null || siteIdList.Count == 0) // 如果目前还没有创建站点
             {
                 if (permissions.IsSystemAdministrator)  // 如果目前还没有创建站点并且当前登录管理员是系统管理员
                 {

@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Data;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
+using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -28,7 +27,7 @@ namespace SiteServer.CMS.Provider
             },
             new TableColumnInfo
             {
-                ColumnName = nameof(PluginConfigInfo.PublishmentSystemId),
+                ColumnName = nameof(PluginConfigInfo.SiteId),
                 DataType = DataType.Integer
             },
             new TableColumnInfo
@@ -45,18 +44,18 @@ namespace SiteServer.CMS.Provider
         };
 
         private const string ParmPluginId = "@PluginId";
-        private const string ParmPublishmentSystemId = "@PublishmentSystemId";
+        private const string ParmSiteId = "@SiteId";
         private const string ParmConfigName = "@ConfigName";
         private const string ParmConfigValue = "@ConfigValue";
 
         public void Insert(PluginConfigInfo configInfo)
         {
-            const string sqlString = "INSERT INTO siteserver_PluginConfig(PluginId, PublishmentSystemId, ConfigName, ConfigValue) VALUES (@PluginId, @PublishmentSystemId, @ConfigName, @ConfigValue)";
+            const string sqlString = "INSERT INTO siteserver_PluginConfig(PluginId, SiteId, ConfigName, ConfigValue) VALUES (@PluginId, @SiteId, @ConfigName, @ConfigValue)";
 
             var parms = new IDataParameter[]
 			{
                 GetParameter(ParmPluginId, DataType.VarChar, 50, configInfo.PluginId),
-                GetParameter(ParmPublishmentSystemId, DataType.Integer, configInfo.PublishmentSystemId),
+                GetParameter(ParmSiteId, DataType.Integer, configInfo.SiteId),
                 GetParameter(ParmConfigName, DataType.VarChar, 200, configInfo.ConfigName),
                 GetParameter(ParmConfigValue, DataType.Text, configInfo.ConfigValue)
 			};
@@ -64,14 +63,14 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString, parms);
         }
 
-        public void Delete(string pluginId, int publishmentSystemId, string configName)
+        public void Delete(string pluginId, int siteId, string configName)
         {
-            const string sqlString = "DELETE FROM siteserver_PluginConfig WHERE PluginId = @PluginId AND PublishmentSystemId = @PublishmentSystemId AND ConfigName = @ConfigName";
+            const string sqlString = "DELETE FROM siteserver_PluginConfig WHERE PluginId = @PluginId AND SiteId = @SiteId AND ConfigName = @ConfigName";
 
             var parms = new IDataParameter[]
             {
                 GetParameter(ParmPluginId, DataType.VarChar, 50, pluginId),
-                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmSiteId, DataType.Integer, siteId),
                 GetParameter(ParmConfigName, DataType.VarChar, 200, configName)
             };
 
@@ -90,13 +89,13 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString, parms);
         }
 
-        public void DeleteAll(int publishmentSystemId)
+        public void DeleteAll(int siteId)
         {
-            const string sqlString = "DELETE FROM siteserver_PluginConfig WHERE PublishmentSystemId = @PublishmentSystemId";
+            const string sqlString = "DELETE FROM siteserver_PluginConfig WHERE SiteId = @SiteId";
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
+                GetParameter(ParmSiteId, DataType.Integer, siteId)
             };
 
             ExecuteNonQuery(sqlString, parms);
@@ -104,28 +103,28 @@ namespace SiteServer.CMS.Provider
 
         public void Update(PluginConfigInfo configInfo)
         {
-            const string sqlString = "UPDATE siteserver_PluginConfig SET ConfigValue = @ConfigValue WHERE PluginId = @PluginId AND PublishmentSystemId = @PublishmentSystemId AND ConfigName = @ConfigName";
+            const string sqlString = "UPDATE siteserver_PluginConfig SET ConfigValue = @ConfigValue WHERE PluginId = @PluginId AND SiteId = @SiteId AND ConfigName = @ConfigName";
 
             var parms = new IDataParameter[]
             {
                 GetParameter(ParmConfigValue, DataType.Text, configInfo.ConfigValue),
                 GetParameter(ParmPluginId, DataType.VarChar, 50, configInfo.PluginId),
-                GetParameter(ParmPublishmentSystemId, DataType.Integer, configInfo.PublishmentSystemId),
+                GetParameter(ParmSiteId, DataType.Integer, configInfo.SiteId),
                 GetParameter(ParmConfigName, DataType.VarChar, 200, configInfo.ConfigName)
             };
             ExecuteNonQuery(sqlString, parms);
         }
 
-        public string GetValue(string pluginId, int publishmentSystemId, string configName)
+        public string GetValue(string pluginId, int siteId, string configName)
         {
             var value = string.Empty;
 
-            const string sqlString = "SELECT ConfigValue FROM siteserver_PluginConfig WHERE PluginId = @PluginId AND PublishmentSystemId = @PublishmentSystemId AND ConfigName = @ConfigName";
+            const string sqlString = "SELECT ConfigValue FROM siteserver_PluginConfig WHERE PluginId = @PluginId AND SiteId = @SiteId AND ConfigName = @ConfigName";
 
             var parms = new IDataParameter[]
             {
                 GetParameter(ParmPluginId, DataType.VarChar, 50, pluginId),
-                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmSiteId, DataType.Integer, siteId),
                 GetParameter(ParmConfigName, DataType.VarChar, 200, configName)
             };
 
@@ -141,16 +140,16 @@ namespace SiteServer.CMS.Provider
             return value;
         }
 
-        public bool IsExists(string pluginId, int publishmentSystemId, string configName)
+        public bool IsExists(string pluginId, int siteId, string configName)
         {
             var exists = false;
 
-            const string sqlString = "SELECT Id FROM siteserver_PluginConfig WHERE PluginId = @PluginId AND PublishmentSystemId = @PublishmentSystemId AND ConfigName = @ConfigName";
+            const string sqlString = "SELECT Id FROM siteserver_PluginConfig WHERE PluginId = @PluginId AND SiteId = @SiteId AND ConfigName = @ConfigName";
 
             var parms = new IDataParameter[]
             {
                 GetParameter(ParmPluginId, DataType.VarChar, 50, pluginId),
-                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmSiteId, DataType.Integer, siteId),
                 GetParameter(ParmConfigName, DataType.VarChar, 200, configName)
             };
 

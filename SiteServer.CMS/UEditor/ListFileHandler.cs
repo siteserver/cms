@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Web;
 
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.UEditor
 {
@@ -32,15 +32,15 @@ namespace SiteServer.CMS.UEditor
         private string[] FileList;
         private string[] SearchExtensions;
 
-        public int PublishmentSystemID { get; private set; }
-        public EUploadType UploadType { get; private set; }
+        public int SiteId { get; }
+        public EUploadType UploadType { get; }
 
-        public ListFileManager(HttpContext context, string pathToList, string[] searchExtensions, int publishmentSystemID, EUploadType uploadType)
+        public ListFileManager(HttpContext context, string pathToList, string[] searchExtensions, int siteId, EUploadType uploadType)
             : base(context)
         {
             SearchExtensions = searchExtensions.Select(x => x.ToLower()).ToArray();
             PathToList = pathToList;
-            PublishmentSystemID = publishmentSystemID;
+            SiteId = siteId;
             UploadType = uploadType;
         }
 
@@ -60,20 +60,20 @@ namespace SiteServer.CMS.UEditor
             var buildingList = new List<String>();
             try
             {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(PublishmentSystemID);
-                var publishmentSystemPath = PathUtility.GetPublishmentSystemPath(publishmentSystemInfo); // 本站点物理路径
+                var siteInfo = SiteManager.GetSiteInfo(SiteId);
+                var sitePath = PathUtility.GetSitePath(siteInfo); // 本站点物理路径
                 var applicationPath = WebConfigUtils.PhysicalApplicationPath.ToLower().Trim(' ', '/', '\\'); // 系统物理路径
                 if (UploadType == EUploadType.Image)
                 {
-                    PathToList = publishmentSystemInfo.Additional.ImageUploadDirectoryName; 
+                    PathToList = siteInfo.Additional.ImageUploadDirectoryName; 
                 }
                 else if(UploadType == EUploadType.File)
                 {
-                    PathToList = publishmentSystemInfo.Additional.FileUploadDirectoryName;
+                    PathToList = siteInfo.Additional.FileUploadDirectoryName;
                 }
 
                 //var localPath = Server.MapPath(PathToList);
-                var localPath = PathUtils.Combine(publishmentSystemPath, PathToList);
+                var localPath = PathUtils.Combine(sitePath, PathToList);
 
                 buildingList.AddRange(Directory.GetFiles(localPath, "*", SearchOption.AllDirectories)
                     .Where(x => SearchExtensions.Contains(Path.GetExtension(x).ToLower()))

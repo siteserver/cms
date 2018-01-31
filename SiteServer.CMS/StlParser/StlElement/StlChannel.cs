@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
-using BaiRong.Core;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -71,7 +70,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var channelName = string.Empty;
             var upLevel = 0;
             var topLevel = -1;
-            var type = NodeAttribute.Title;
+            var type = ChannelAttribute.Title;
             var formatString = string.Empty;
             string separator = null;
             var startIndex = 0;
@@ -181,10 +180,10 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var parsedContent = string.Empty;
 
-            var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
+            var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
-            channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
-            var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
+            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
+            var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
 
             if (!string.IsNullOrEmpty(formatString))
             {
@@ -201,9 +200,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (!string.IsNullOrEmpty(type))
             {
-                if (type.ToLower().Equals(NodeAttribute.Title.ToLower()))
+                if (type.ToLower().Equals(ChannelAttribute.Title.ToLower()))
                 {
-                    parsedContent = channel.NodeName;
+                    parsedContent = channel.ChannelName;
 
                     if (isClearTags)
                     {
@@ -220,9 +219,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                         parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
                     }
                 }
-                else if (type.ToLower().Equals(NodeAttribute.ChannelIndex.ToLower()))
+                else if (type.ToLower().Equals(ChannelAttribute.ChannelIndex.ToLower()))
                 {
-                    parsedContent = channel.NodeIndexName;
+                    parsedContent = channel.IndexName;
 
                     if (!string.IsNullOrEmpty(replace))
                     {
@@ -234,9 +233,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                         parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
                     }
                 }
-                else if (type.ToLower().Equals(NodeAttribute.Content.ToLower()))
+                else if (type.ToLower().Equals(ChannelAttribute.Content.ToLower()))
                 {
-                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.PublishmentSystemInfo, channel.Content, pageInfo.IsLocal);
+                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.SiteInfo, channel.Content, pageInfo.IsLocal);
 
                     if (isClearTags)
                     {
@@ -253,11 +252,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                         parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
                     }
                 }
-                else if (type.ToLower().Equals(NodeAttribute.PageContent.ToLower()))
+                else if (type.ToLower().Equals(ChannelAttribute.PageContent.ToLower()))
                 {
-                    if (contextInfo.IsInnerElement || pageInfo.TemplateInfo.TemplateType != ETemplateType.ChannelTemplate)
+                    if (contextInfo.IsInnerElement || pageInfo.TemplateInfo.TemplateType != TemplateType.ChannelTemplate)
                     {
-                        parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.PublishmentSystemInfo, channel.Content, pageInfo.IsLocal);
+                        parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.SiteInfo, channel.Content, pageInfo.IsLocal);
 
                         if (isClearTags)
                         {
@@ -279,15 +278,15 @@ namespace SiteServer.CMS.StlParser.StlElement
                         return contextInfo.StlElement;
                     }
                 }
-                else if (type.ToLower().Equals(NodeAttribute.AddDate.ToLower()))
+                else if (type.ToLower().Equals(ChannelAttribute.AddDate.ToLower()))
                 {
                     parsedContent = DateUtils.Format(channel.AddDate, formatString);
                 }
-                else if (type.ToLower().Equals(NodeAttribute.ImageUrl.ToLower()))
+                else if (type.ToLower().Equals(ChannelAttribute.ImageUrl.ToLower()))
                 { 
-                    parsedContent = InputParserUtility.GetImageOrFlashHtml(pageInfo.PublishmentSystemInfo, channel.ImageUrl, contextInfo.Attributes, contextInfo.IsCurlyBrace); // contextInfo.IsCurlyBrace = true 表示实体标签
+                    parsedContent = InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo, channel.ImageUrl, contextInfo.Attributes, contextInfo.IsCurlyBrace); // contextInfo.IsCurlyBrace = true 表示实体标签
                 }
-                else if (type.ToLower().Equals(NodeAttribute.Id.ToLower()))
+                else if (type.ToLower().Equals(ChannelAttribute.Id.ToLower()))
                 {
                     parsedContent = channelId.ToString();
                 }
@@ -296,24 +295,24 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var itemIndex = StlParserUtility.ParseItemIndex(contextInfo.ItemContainer.ChannelItem.ItemIndex, type, contextInfo);
                     parsedContent = !string.IsNullOrEmpty(formatString) ? string.Format(formatString, itemIndex) : itemIndex.ToString();
                 }
-                else if (type.ToLower().Equals(NodeAttribute.CountOfChannels.ToLower()))
+                else if (type.ToLower().Equals(ChannelAttribute.CountOfChannels.ToLower()))
                 {
                     parsedContent = channel.ChildrenCount.ToString();
                 }
-                else if (type.ToLower().Equals(NodeAttribute.CountOfContents.ToLower()))
+                else if (type.ToLower().Equals(ChannelAttribute.CountOfContents.ToLower()))
                 {
                     parsedContent = channel.ContentNum.ToString();
                 }
-                else if (type.ToLower().Equals(NodeAttribute.CountOfImageContents.ToLower()))
+                else if (type.ToLower().Equals(ChannelAttribute.CountOfImageContents.ToLower()))
                 { 
-                    var count = Content.GetCountCheckedImage(pageInfo.PublishmentSystemId, channel.NodeId);
+                    var count = Content.GetCountCheckedImage(pageInfo.SiteId, channel.Id);
                     parsedContent = count.ToString();
                 }
-                else if (type.ToLower().Equals(NodeAttribute.Keywords.ToLower()))
+                else if (type.ToLower().Equals(ChannelAttribute.Keywords.ToLower()))
                 {
                     parsedContent = channel.Keywords;
                 }
-                else if (type.ToLower().Equals(NodeAttribute.Description.ToLower()))
+                else if (type.ToLower().Equals(ChannelAttribute.Description.ToLower()))
                 {
                     parsedContent = channel.Description;
                 }
@@ -324,15 +323,15 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var formCollection = channel.Additional.ToNameValueCollection();
                     if (formCollection != null && formCollection.Count > 0)
                     {
-                        var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.NodeDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.PublishmentSystemId, channel.NodeId));
+                        var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.ChannelDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, channel.Id));
                         // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
-                        if (styleInfo.TableStyleId > 0)
+                        if (styleInfo.Id > 0)
                         {
                             parsedContent = GetValue(attributeName, formCollection, false, styleInfo.DefaultValue);
                             if (!string.IsNullOrEmpty(parsedContent))
                             {
-                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.PublishmentSystemInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerXml, false);
-                                parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerXml, false);
+                                parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                             }
                         }
                     }

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Xml;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
 
 namespace SiteServer.CMS.Core.Security
@@ -154,8 +154,8 @@ namespace SiteServer.CMS.Core.Security
 		        }
 		    }
 
-            GeneralPermissions.AddRange(PluginManager.GetTopPermissions());
-            WebsitePermissions.AddRange(PluginManager.GetSitePermissions(0));
+            GeneralPermissions.AddRange(PluginMenuManager.GetTopPermissions());
+            WebsitePermissions.AddRange(PluginMenuManager.GetSitePermissions(0));
 		}
 
         private static void GetPermissions(XmlNode node, List<PermissionConfig> list) 

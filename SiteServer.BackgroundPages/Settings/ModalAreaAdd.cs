@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -56,7 +57,7 @@ namespace SiteServer.BackgroundPages.Settings
                 foreach (var theAreaId in areaIdList)
                 {
                     var areaInfo = AreaManager.GetAreaInfo(theAreaId);
-                    var listitem = new ListItem(GetTitle(areaInfo.AreaId, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode), theAreaId.ToString());
+                    var listitem = new ListItem(GetTitle(areaInfo.Id, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode), theAreaId.ToString());
                     DdlParentId.Items.Add(listitem);
                 }
             }
@@ -108,7 +109,7 @@ namespace SiteServer.BackgroundPages.Settings
                         ParentId = TranslateUtils.ToInt(DdlParentId.SelectedValue)
                     };
 
-                    BaiRongDataProvider.AreaDao.Insert(areaInfo);
+                    DataProvider.AreaDao.Insert(areaInfo);
                 }
                 else
                 {
@@ -117,7 +118,7 @@ namespace SiteServer.BackgroundPages.Settings
                     areaInfo.AreaName = TbAreaName.Text;
                     areaInfo.ParentId = TranslateUtils.ToInt(DdlParentId.SelectedValue);
 
-                    BaiRongDataProvider.AreaDao.Update(areaInfo);
+                    DataProvider.AreaDao.Update(areaInfo);
                 }
 
                 Body.AddAdminLog("维护区域信息");

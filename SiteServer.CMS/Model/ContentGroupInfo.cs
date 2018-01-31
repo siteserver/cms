@@ -4,25 +4,25 @@ namespace SiteServer.CMS.Model
 	{
 	    public ContentGroupInfo()
 		{
-			ContentGroupName = string.Empty;
-			PublishmentSystemId = 0;
+			GroupName = string.Empty;
+			SiteId = 0;
             Taxis = 0;
 			Description = string.Empty;
 		}
 
-		public ContentGroupInfo(string contentGroupName, int publishmentSystemId, int taxis, string description) 
+		public ContentGroupInfo(string groupName, int siteId, int taxis, string description) 
 		{
-			ContentGroupName = contentGroupName;
-			PublishmentSystemId = publishmentSystemId;
+			GroupName = groupName;
+            SiteId = siteId;
             Taxis = taxis;
 			Description = description;
 		}
 
         public int Id { get; set; }
 
-        public string ContentGroupName { get; set; }
+        public string GroupName { get; set; }
 
-	    public int PublishmentSystemId { get; set; }
+	    public int SiteId { get; set; }
 
 	    public int Taxis { get; set; }
 

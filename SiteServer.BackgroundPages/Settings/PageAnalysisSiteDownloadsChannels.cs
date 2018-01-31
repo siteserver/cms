@@ -3,20 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Provider;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
     public class PageAnalysisSiteDownloadsChannels : BasePageCms
     {
-        public DropDownList DdlPublishmentSystemId;
+        public DropDownList DdlSiteId;
         public Repeater RptContents;
         public SqlPager SpContents;
 
@@ -30,11 +29,11 @@ namespace SiteServer.BackgroundPages.Settings
         private readonly Hashtable _yHashtableDownload = new Hashtable();
         private const string YTypeDownload = "YType_Download";
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
             return PageUtils.GetSettingsUrl(nameof(PageAnalysisSiteDownloadsChannels), new NameValueCollection
             {
-                {"publishmentSystemID", publishmentSystemId.ToString()}
+                {"siteID", siteId.ToString()}
             });
         }
 
@@ -42,29 +41,29 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
-            SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
+            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
 
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommendByDownloads(PublishmentSystemInfo.AuxiliaryTableForContent, PublishmentSystemId);
+            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlStringByDownloads(SiteInfo.TableName, SiteId);
 
             SpContents.SortField = ContentDao.SortFieldName;
             SpContents.SortMode = SortMode.DESC;
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Chart);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Chart);
 
-            DdlPublishmentSystemId.Items.Add(new ListItem("<<全部站点>>", "0"));
-            var publishmentSystemIdList = PublishmentSystemManager.GetPublishmentSystemIdListOrderByLevel();
-            foreach (var publishmentSystemId in publishmentSystemIdList)
+            DdlSiteId.Items.Add(new ListItem("<<全部站点>>", "0"));
+            var siteIdList = SiteManager.GetSiteIdListOrderByLevel();
+            foreach (var siteId in siteIdList)
             {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                DdlPublishmentSystemId.Items.Add(new ListItem(publishmentSystemInfo.PublishmentSystemName, publishmentSystemId.ToString()));
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                DdlSiteId.Items.Add(new ListItem(siteInfo.SiteName, siteId.ToString()));
             }
-            ControlUtils.SelectSingleItem(DdlPublishmentSystemId, PublishmentSystemId.ToString());
+            ControlUtils.SelectSingleItem(DdlSiteId, SiteId.ToString());
 
             SpContents.DataBind();
 
@@ -82,9 +81,9 @@ xArrayDownload.push('{xValue}');
 
         public void Analysis_OnClick(object sender, EventArgs e)
         {
-            var publishmentSystemId = TranslateUtils.ToInt(DdlPublishmentSystemId.SelectedValue);
-            PageUtils.Redirect(publishmentSystemId > 0
-                ? GetRedirectUrl(publishmentSystemId)
+            var siteId = TranslateUtils.ToInt(DdlSiteId.SelectedValue);
+            PageUtils.Redirect(siteId > 0
+                ? GetRedirectUrl(siteId)
                 : PageAnalysisSiteDownloads.GetRedirectUrl());
         }
 
@@ -98,17 +97,17 @@ xArrayDownload.push('{xValue}');
 
             var contentInfo = new ContentInfo(e.Item.DataItem);
 
-            ltlItemTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, PageUrl);
+            ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
 
             string nodeNameNavigation;
-            if (!_nodeNameNavigations.ContainsKey(contentInfo.NodeId))
+            if (!_nodeNameNavigations.ContainsKey(contentInfo.ChannelId))
             {
-                nodeNameNavigation = NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId);
-                _nodeNameNavigations.Add(contentInfo.NodeId, nodeNameNavigation);
+                nodeNameNavigation = ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId);
+                _nodeNameNavigations.Add(contentInfo.ChannelId, nodeNameNavigation);
             }
             else
             {
-                nodeNameNavigation = _nodeNameNavigations[contentInfo.NodeId] as string;
+                nodeNameNavigation = _nodeNameNavigations[contentInfo.ChannelId] as string;
             }
             ltlChannel.Text = nodeNameNavigation;
 
@@ -116,13 +115,13 @@ xArrayDownload.push('{xValue}');
             if (!string.IsNullOrEmpty(fileUrl))
             {
                 ltlFileUrl.Text =
-                $@"<a href=""{PageUtility.ParseNavigationUrl(PublishmentSystemInfo, fileUrl, true)}"" target=""_blank"">{fileUrl}</a>";
+                $@"<a href=""{PageUtility.ParseNavigationUrl(SiteInfo, fileUrl, true)}"" target=""_blank"">{fileUrl}</a>";
             }
 
             //x轴信息
             SetXHashtable(contentInfo.Id, contentInfo.Title);
             //y轴信息
-            SetYHashtable(contentInfo.Id, CountManager.GetCount(PublishmentSystemInfo.AuxiliaryTableForContent, contentInfo.Id.ToString(), ECountType.Download));
+            SetYHashtable(contentInfo.Id, CountManager.GetCount(SiteInfo.TableName, contentInfo.Id.ToString(), ECountType.Download));
         }
 
         private string _pageUrl;
@@ -134,7 +133,7 @@ xArrayDownload.push('{xValue}');
                 {
                     _pageUrl = PageUtils.GetSettingsUrl(nameof(PageAnalysisSiteDownloadsChannels), new NameValueCollection
                     {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()}
+                        {"SiteId", SiteId.ToString()}
                     });
                 }
                 return _pageUrl;

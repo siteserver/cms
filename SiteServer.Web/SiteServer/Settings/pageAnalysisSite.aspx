@@ -41,7 +41,7 @@
           <div class="form-inline">
             <div class="form-group">
               <label class="col-form-label m-r-10">站点</label>
-              <asp:DropDownList ID="DdlPublishmentSystemId" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="Analysis_OnClick"
+              <asp:DropDownList ID="DdlSiteId" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="Analysis_OnClick"
                 runat="server" />
             </div>
 
@@ -145,7 +145,7 @@
                       <ItemTemplate>
                         <tr>
                           <td>
-                            <asp:Literal ID="ltlPublishmentSystemName" runat="server"></asp:Literal>
+                            <asp:Literal ID="ltlSiteName" runat="server"></asp:Literal>
                           </td>
                           <td class="text-center">
                             <asp:Literal ID="ltlNewContentNum" runat="server"></asp:Literal>

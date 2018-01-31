@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using BaiRong.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core.Security
 {
@@ -61,19 +61,19 @@ namespace SiteServer.CMS.Core.Security
             return $"User_ChannelPermissionDict_{userName}";
         }
 
-        public static string GetChannelPermissionListIgnoreNodeIdKey(string userName)
+        public static string GetChannelPermissionListIgnoreChannelIdKey(string userName)
         {
-            return $"User_ChannelPermissionListIgnoreNodeID_{userName}";
+            return $"User_ChannelPermissionListIgnoreChannelId_{userName}";
         }
 
-        public static string GetPublishmentSystemIdKey(string userName)
+        public static string GetSiteIdKey(string userName)
         {
-            return $"User_PublishmentSystemID_{userName}";
+            return $"User_SiteId_{userName}";
         }
 
-        public static string GetOwningNodeIdListKey(string userName)
+        public static string GetOwningChannelIdListKey(string userName)
         {
-            return $"User_OwningNodeIDList_{userName}";
+            return $"User_OwningChannelIdList_{userName}";
         }
 
         public static List<string> GetCackeKeyStartStringList(string userName)
@@ -84,9 +84,9 @@ namespace SiteServer.CMS.Core.Security
                 GetPermissionListKey(userName),
                 GetWebsitePermissionDictKey(userName),
                 GetChannelPermissionDictKey(userName),
-                GetChannelPermissionListIgnoreNodeIdKey(userName),
-                GetPublishmentSystemIdKey(userName),
-                GetOwningNodeIdListKey(userName)
+                GetChannelPermissionListIgnoreChannelIdKey(userName),
+                GetSiteIdKey(userName),
+                GetOwningChannelIdListKey(userName)
             };
         }
 

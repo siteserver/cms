@@ -14,13 +14,13 @@
         <div class="card-box">
           <ul class="nav nav-pills">
             <li class="nav-item">
-              <a class="nav-link" href="pageConfigurationCreateRule.aspx?publishmentSystemId=<%=PublishmentSystemId%>">页面命名规则</a>
+              <a class="nav-link" href="pageConfigurationCreateRule.aspx?siteId=<%=SiteId%>">页面命名规则</a>
             </li>
             <li class="nav-item active">
               <a class="nav-link" href="javascript:;">页面生成设置</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageConfigurationCreateTrigger.aspx?publishmentSystemId=<%=PublishmentSystemId%>">页面生成触发器</a>
+              <a class="nav-link" href="pageConfigurationCreateTrigger.aspx?siteId=<%=SiteId%>">页面生成触发器</a>
             </li>
           </ul>
         </div>
@@ -105,14 +105,6 @@
               </small>
             </div>
           </asp:PlaceHolder>
-
-          <div class="form-group">
-            <label class="col-form-label">是否启用多线程生成页面</label>
-            <asp:DropDownList ID="DdlIsCreateMultiThread" class="form-control" runat="server"></asp:DropDownList>
-            <small class="form-text text-muted">
-              此功能通常用于CMS服务器配置较高而且现在生成页面时CPU和内存利用率不太高（不超过60%）时建议启用
-            </small>
-          </div>
 
           <hr />
 

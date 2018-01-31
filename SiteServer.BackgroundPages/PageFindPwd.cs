@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Integration;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages
 {
@@ -64,15 +64,15 @@ namespace SiteServer.BackgroundPages
             string userName = null;
             if (StringUtils.IsMobile(account))
             {
-                userName = BaiRongDataProvider.AdministratorDao.GetUserNameByMobile(account);
+                userName = DataProvider.AdministratorDao.GetUserNameByMobile(account);
             }
             else if (StringUtils.IsEmail(account))
             {
-                userName = BaiRongDataProvider.AdministratorDao.GetUserNameByEmail(account);
+                userName = DataProvider.AdministratorDao.GetUserNameByEmail(account);
             }
             else
             {
-                if (BaiRongDataProvider.AdministratorDao.IsAdminNameExists(account))
+                if (DataProvider.AdministratorDao.IsAdminNameExists(account))
                 {
                     userName = account;
                 }
@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages
                 return;
             }
 
-            var mobile = BaiRongDataProvider.AdministratorDao.GetMobileByUserName(account);
+            var mobile = DataProvider.AdministratorDao.GetMobileByUserName(account);
             if (string.IsNullOrEmpty(mobile) || !StringUtils.IsMobile(mobile))
             {
                 LtlMessage.Text = GetMessageHtml("找回密码错误，账号对应的管理员未设置手机号码", true);
@@ -142,7 +142,7 @@ namespace SiteServer.BackgroundPages
             }
 
             string errorMessage;
-            if (!BaiRongDataProvider.AdministratorDao.ChangePassword(userName, password, out errorMessage))
+            if (!DataProvider.AdministratorDao.ChangePassword(userName, password, out errorMessage))
             {
                 LtlMessage.Text = GetMessageHtml($"重设密码错误：{errorMessage}", true);
                 return;

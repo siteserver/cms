@@ -15,7 +15,7 @@
         <div class="form-group form-row">
           <label class="col-2 col-form-label text-right">文件名</label>
           <div class="col-6">
-            <asp:TextBox class="form-control" id="TbFileName" runat="server" />
+            <asp:TextBox cssClass="form-control" id="TbFileName" runat="server" />
           </div>
           <div class="col-4">
             <asp:RequiredFieldValidator ControlToValidate="TbFileName" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server"

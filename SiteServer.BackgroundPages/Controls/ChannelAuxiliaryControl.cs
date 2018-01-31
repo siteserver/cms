@@ -1,13 +1,11 @@
-using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
-using BaiRong.Core;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -15,9 +13,9 @@ namespace SiteServer.BackgroundPages.Controls
 	{
         public IAttributes Attributes { get; set; }
 
-        public PublishmentSystemInfo PublishmentSystemInfo { get; set; }
+        public SiteInfo SiteInfo { get; set; }
 
-        public int NodeId { get; set; }
+        public int ChannelId { get; set; }
 
         public string AdditionalAttributes { get; set; }
 
@@ -25,8 +23,8 @@ namespace SiteServer.BackgroundPages.Controls
 		{
             if (Attributes == null) return;
 
-            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemInfo.PublishmentSystemId, NodeId);
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.NodeDao.TableName, relatedIdentities);
+            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteInfo.Id, ChannelId);
+            var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName, relatedIdentities);
 
 		    if (styleInfoList == null) return;
 
@@ -35,7 +33,7 @@ namespace SiteServer.BackgroundPages.Controls
 		    foreach (var styleInfo in styleInfoList)
 		    {
 		        string extra;
-		        var value = BackgroundInputTypeParser.Parse(PublishmentSystemInfo, NodeId, styleInfo, Attributes, pageScripts, out extra);
+		        var value = BackgroundInputTypeParser.Parse(SiteInfo, ChannelId, styleInfo, Attributes, pageScripts, out extra);
 
 		        if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 

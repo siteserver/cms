@@ -31,7 +31,7 @@
           <div class="form-group form-row">
             <label class="col-3 col-form-label text-right">转移到栏目</label>
             <div class="col-8">
-              <asp:DropDownList ID="DdlTranslateNodeId" class="form-control" runat="server"></asp:DropDownList>
+              <asp:DropDownList ID="DdlTranslateChannelId" class="form-control" runat="server"></asp:DropDownList>
             </div>
             <div class="col-1"></div>
           </div>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
@@ -12,14 +12,13 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public Repeater RptContents;
 
-        private int _currentNodeId;
+        private int _currentChannelId;
 
-        public static string GetRedirectUrl(int publishmentSystemId, int nodeId)
+        public static string GetRedirectUrl(int siteId, int channelId)
         {
-            return PageUtils.GetCmsUrl(nameof(PageConfigurationCreateTrigger), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageConfigurationCreateTrigger), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"CurrentNodeID", nodeId.ToString()}
+                {"CurrentChannelId", channelId.ToString()}
             });
         }
 
@@ -27,18 +26,18 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
 			if (!IsPostBack)
 			{
-                VerifySitePermissions(AppManager.Permissions.WebSite.Create);
+                VerifySitePermissions(ConfigManager.Permissions.WebSite.Create);
 
-                ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.ConfigurationCreateDetails, null));
+                ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, ELoadingType.ConfigurationCreateDetails, null));
 
-                if (Body.IsQueryExists("CurrentNodeID"))
+                if (Body.IsQueryExists("CurrentChannelId"))
                 {
-                    _currentNodeId = Body.GetQueryInt("CurrentNodeID");
-                    var onLoadScript = ChannelLoading.GetScriptOnLoad(PublishmentSystemId, _currentNodeId);
+                    _currentChannelId = Body.GetQueryInt("CurrentChannelId");
+                    var onLoadScript = ChannelLoading.GetScriptOnLoad(SiteId, _currentChannelId);
                     if (!string.IsNullOrEmpty(onLoadScript))
                     {
                         ClientScriptRegisterClientScriptBlock("NodeTreeScriptOnLoad", onLoadScript);
@@ -51,25 +50,25 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BindGrid()
         {
-            RptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
+            RptContents.DataSource = DataProvider.ChannelDao.GetIdListByParentId(SiteId, 0);
             RptContents.ItemDataBound += rptContents_ItemDataBound;
             RptContents.DataBind();
         }
 
         void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            var nodeId = (int)e.Item.DataItem;
-            var enabled = IsOwningNodeId(nodeId);
+            var channelId = (int)e.Item.DataItem;
+            var enabled = IsOwningChannelId(channelId);
             if (!enabled)
             {
-                if (!IsHasChildOwningNodeId(nodeId)) e.Item.Visible = false;
+                if (!IsHasChildOwningChannelId(channelId)) e.Item.Visible = false;
             }
 
-            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             var ltlHtml = e.Item.FindControl("ltlHtml") as Literal;
             if (ltlHtml != null)
             {
-                ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.ConfigurationCreateDetails, null, Body.AdminName);
+                ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ConfigurationCreateDetails, null, Body.AdminName);
             }
         }
 	}

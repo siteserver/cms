@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Data;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -29,7 +30,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var list = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("IDCollection"));
                 try
                 {
-                    BaiRongDataProvider.ErrorLogDao.Delete(list);
+                    DataProvider.ErrorLogDao.Delete(list);
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -41,7 +42,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    BaiRongDataProvider.ErrorLogDao.DeleteAll();
+                    DataProvider.ErrorLogDao.DeleteAll();
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -53,22 +54,22 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
-            SpContents.SelectCommand = BaiRongDataProvider.ErrorLogDao.GetSelectCommend(Body.GetQueryString("PluginId"), Body.GetQueryString("Keyword"),
+            SpContents.SelectCommand = DataProvider.ErrorLogDao.GetSelectCommend(Body.GetQueryString("PluginId"), Body.GetQueryString("Keyword"),
                     Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"));
 
-            SpContents.SortField = "Id";
+            SpContents.SortField = nameof(ErrorLogInfo.Id);
             SpContents.SortMode = SortMode.DESC;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
             if (IsPostBack) return;
 
             DdlPluginId.Items.Add(new ListItem("全部错误", string.Empty));
-            foreach (var pair in PluginManager.AllPluginPairs)
+            foreach (var pluginInfo in PluginManager.AllPluginInfoList)
             {
-                DdlPluginId.Items.Add(new ListItem(pair.Metadata.DisplayName, pair.Metadata.Id));
+                DdlPluginId.Items.Add(new ListItem(pluginInfo.Id, pluginInfo.Id));
             }
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Log);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Log);
 
             if (Body.IsQueryExists("Keyword"))
             {
@@ -97,17 +98,23 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
+            var id = SqlUtils.EvalInt(e.Item.DataItem, nameof(ErrorLogInfo.Id));
+            var addDate = SqlUtils.EvalDateTime(e.Item.DataItem, nameof(ErrorLogInfo.AddDate));
+            var message = SqlUtils.EvalString(e.Item.DataItem, nameof(ErrorLogInfo.Message));
+            var stacktrace = SqlUtils.EvalString(e.Item.DataItem, nameof(ErrorLogInfo.Stacktrace));
+            var summary = SqlUtils.EvalString(e.Item.DataItem, nameof(ErrorLogInfo.Summary));
+
             var ltlId = (Literal)e.Item.FindControl("ltlId");
             var ltlAddDate = (Literal)e.Item.FindControl("ltlAddDate");
             var ltlMessage = (Literal)e.Item.FindControl("ltlMessage");
             var ltlStacktrace = (Literal)e.Item.FindControl("ltlStacktrace");
             var ltlSummary = (Literal)e.Item.FindControl("ltlSummary");
 
-            ltlId.Text = SqlUtils.EvalInt(e.Item.DataItem, "Id").ToString();
-            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, "AddDate"));
-            ltlMessage.Text = SqlUtils.EvalString(e.Item.DataItem, "Message");
-            ltlStacktrace.Text = SqlUtils.EvalString(e.Item.DataItem, "Stacktrace");
-            ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, "Summary");
+            ltlId.Text = id.ToString();
+            ltlAddDate.Text = DateUtils.GetDateAndTimeString(addDate);
+            ltlMessage.Text = message;
+            ltlStacktrace.Text = stacktrace;
+            ltlSummary.Text = summary;
             if (!string.IsNullOrEmpty(ltlSummary.Text))
             {
                 ltlSummary.Text += "<br />";

@@ -15,10 +15,10 @@
         <div class="card-box">
           <ul class="nav nav-pills">
             <li class="nav-item">
-              <a class="nav-link" href="pageConfigurationSite.aspx?publishmentSystemId=<%=PublishmentSystemId%>">站点设置</a>
+              <a class="nav-link" href="pageConfigurationSite.aspx?siteId=<%=SiteId%>">站点设置</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageConfigurationContent.aspx?publishmentSystemId=<%=PublishmentSystemId%>">内容设置</a>
+              <a class="nav-link" href="pageConfigurationContent.aspx?siteId=<%=SiteId%>">内容设置</a>
             </li>
             <li class="nav-item active">
               <a class="nav-link" href="javascript:;">站点属性</a>
@@ -31,12 +31,12 @@
         <div class="card-box">
           <div class="form-group">
             <label class="col-form-label">站点名称
-              <asp:RequiredFieldValidator ControlToValidate="TbPublishmentSystemName" errorMessage=" *" foreColor="red" display="Dynamic"
+              <asp:RequiredFieldValidator ControlToValidate="TbSiteName" errorMessage=" *" foreColor="red" display="Dynamic"
                 runat="server" />
-              <asp:RegularExpressionValidator runat="server" ControlToValidate="TbPublishmentSystemName" ValidationExpression="[^']+" errorMessage=" *"
+              <asp:RegularExpressionValidator runat="server" ControlToValidate="TbSiteName" ValidationExpression="[^']+" errorMessage=" *"
                 foreColor="red" display="Dynamic" />
             </label>
-            <asp:TextBox MaxLength="50" id="TbPublishmentSystemName" runat="server" class="form-control" />
+            <asp:TextBox MaxLength="50" id="TbSiteName" runat="server" class="form-control" />
           </div>
 
           <asp:Literal ID="LtlAttributes" runat="server" />

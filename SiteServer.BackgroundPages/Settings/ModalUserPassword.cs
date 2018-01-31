@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -45,7 +46,7 @@ namespace SiteServer.BackgroundPages.Settings
             try
             {
                 string errorMessage;
-                if (BaiRongDataProvider.UserDao.ChangePassword(_userName, TbPassword.Text, out errorMessage))
+                if (DataProvider.UserDao.ChangePassword(_userName, TbPassword.Text, out errorMessage))
                 {
                     SuccessMessage("重设密码成功！");
                 }

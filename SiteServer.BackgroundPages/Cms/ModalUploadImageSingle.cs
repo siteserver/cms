@@ -2,9 +2,9 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -20,39 +20,36 @@ namespace SiteServer.BackgroundPages.Cms
 
         protected override bool IsSinglePage => true;
 
-        public static string GetOpenWindowStringToTextBox(int publishmentSystemId, string textBoxClientId)
+        public static string GetOpenWindowStringToTextBox(int siteId, string textBoxClientId)
         {
-            return LayerUtils.GetOpenScript("上传图片", PageUtils.GetCmsUrl(nameof(ModalUploadImageSingle), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传图片", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadImageSingle), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"TextBoxClientID", textBoxClientId}
-            }), 480, 220);
+            }), 520, 220);
         }
 
-        public static string GetOpenWindowStringToTextBox(int publishmentSystemId, string textBoxClientId, bool isNeedWaterMark)
+        public static string GetOpenWindowStringToTextBox(int siteId, string textBoxClientId, bool isNeedWaterMark)
         {
-            return LayerUtils.GetOpenScript("上传图片", PageUtils.GetCmsUrl(nameof(ModalUploadImageSingle), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传图片", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadImageSingle), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"TextBoxClientID", textBoxClientId},
                 {"IsNeedWaterMark", isNeedWaterMark.ToString()}
-            }), 480, 220);
+            }), 520, 220);
         }
 
-        public static string GetOpenWindowStringToList(int publishmentSystemId, string currentRootPath)
+        public static string GetOpenWindowStringToList(int siteId, string currentRootPath)
         {
-            return LayerUtils.GetOpenScript("上传图片", PageUtils.GetCmsUrl(nameof(ModalUploadImageSingle), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传图片", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadImageSingle), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"CurrentRootPath", currentRootPath}
-            }), 480, 220);
+            }), 520, 220);
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
             _currentRootPath = Body.GetQueryString("CurrentRootPath");
             if (!string.IsNullOrEmpty(_currentRootPath) && !_currentRootPath.StartsWith("@"))
             {
@@ -70,21 +67,21 @@ namespace SiteServer.BackgroundPages.Cms
             try
             {
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(PublishmentSystemInfo, fileExtName);
+                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(SiteInfo, fileExtName);
                 if (!string.IsNullOrEmpty(_currentRootPath))
                 {
-                    localDirectoryPath = PathUtility.MapPath(PublishmentSystemInfo, _currentRootPath);
+                    localDirectoryPath = PathUtility.MapPath(SiteInfo, _currentRootPath);
                     DirectoryUtils.CreateDirectoryIfNotExists(localDirectoryPath);
                 }
-                var localFileName = PathUtility.GetUploadFileName(PublishmentSystemInfo, filePath);
+                var localFileName = PathUtility.GetUploadFileName(SiteInfo, filePath);
                 var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
-                if (!PathUtility.IsImageExtenstionAllowed(PublishmentSystemInfo, fileExtName))
+                if (!PathUtility.IsImageExtenstionAllowed(SiteInfo, fileExtName))
                 {
                     FailMessage("上传失败，上传图片格式不正确！");
                     return;
                 }
-                if (!PathUtility.IsImageSizeAllowed(PublishmentSystemInfo, HifUpload.PostedFile.ContentLength))
+                if (!PathUtility.IsImageSizeAllowed(SiteInfo, HifUpload.PostedFile.ContentLength))
                 {
                     FailMessage("上传失败，上传图片超出规定文件大小！");
                     return;
@@ -96,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (isImage && _isNeedWaterMark)
                 {
-                    FileUtility.AddWaterMark(PublishmentSystemInfo, localFilePath);
+                    FileUtility.AddWaterMark(SiteInfo, localFilePath);
                 }
 
                 if (string.IsNullOrEmpty(_textBoxClientId))
@@ -105,8 +102,8 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    var imageUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath, true);
-                    var textBoxUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, imageUrl);
+                    var imageUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, localFilePath, true);
+                    var textBoxUrl = PageUtility.GetVirtualUrl(SiteInfo, imageUrl);
 
                     LtlScript.Text = $@"
 <script type=""text/javascript"" language=""javascript"">

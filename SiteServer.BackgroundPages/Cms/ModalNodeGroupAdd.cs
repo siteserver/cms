@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -13,21 +13,17 @@ namespace SiteServer.BackgroundPages.Cms
         public Literal LtlNodeGroupName;
         public TextBox TbDescription;
 
-        public static string GetOpenWindowString(int publishmentSystemId, string groupName)
+        public static string GetOpenWindowString(int siteId, string groupName)
         {
-            return LayerUtils.GetOpenScript("修改栏目组", PageUtils.GetCmsUrl(nameof(ModalNodeGroupAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改栏目组", PageUtils.GetCmsUrl(siteId, nameof(ModalNodeGroupAdd), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"GroupName", groupName}
             }), 600, 300);
         }
 
-        public static string GetOpenWindowString(int publishmentSystemId)
+        public static string GetOpenWindowString(int siteId)
         {
-            return LayerUtils.GetOpenScript("添加栏目组", PageUtils.GetCmsUrl(nameof(ModalNodeGroupAdd), new NameValueCollection
-            {
-                {"PublishmentSystemID", publishmentSystemId.ToString()}
-            }), 600, 300);
+            return LayerUtils.GetOpenScript("添加栏目组", PageUtils.GetCmsUrl(siteId, nameof(ModalNodeGroupAdd), null), 600, 300);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -38,12 +34,12 @@ namespace SiteServer.BackgroundPages.Cms
             if (Body.IsQueryExists("GroupName"))
             {
                 var groupName = Body.GetQueryString("GroupName");
-                var nodeGroupInfo = DataProvider.NodeGroupDao.GetNodeGroupInfo(PublishmentSystemId, groupName);
+                var nodeGroupInfo = DataProvider.ChannelGroupDao.GetGroupInfo(SiteId, groupName);
                 if (nodeGroupInfo != null)
                 {
-                    TbNodeGroupName.Text = nodeGroupInfo.NodeGroupName;
+                    TbNodeGroupName.Text = nodeGroupInfo.GroupName;
                     TbNodeGroupName.Visible = false;
-                    LtlNodeGroupName.Text = $"<strong>{nodeGroupInfo.NodeGroupName}</strong>";
+                    LtlNodeGroupName.Text = $"<strong>{nodeGroupInfo.GroupName}</strong>";
                     TbDescription.Text = nodeGroupInfo.Description;
                 }
             }
@@ -53,10 +49,10 @@ namespace SiteServer.BackgroundPages.Cms
         {
 			var isChanged = false;
 
-            var nodeGroupInfo = new NodeGroupInfo
+            var nodeGroupInfo = new ChannelGroupInfo
             {
-                NodeGroupName = TbNodeGroupName.Text,
-                PublishmentSystemId = PublishmentSystemId,
+                GroupName = TbNodeGroupName.Text,
+                SiteId = SiteId,
                 Description = TbDescription.Text
             };
 
@@ -64,8 +60,8 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				try
 				{
-                    DataProvider.NodeGroupDao.Update(nodeGroupInfo);
-                    Body.AddSiteLog(PublishmentSystemId, "修改栏目组", $"栏目组:{nodeGroupInfo.NodeGroupName}");
+                    DataProvider.ChannelGroupDao.Update(nodeGroupInfo);
+                    Body.AddSiteLog(SiteId, "修改栏目组", $"栏目组:{nodeGroupInfo.GroupName}");
 					isChanged = true;
                 }
 				catch(Exception ex)
@@ -75,7 +71,7 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 			else
 			{
-                var nodeGroupNameList = DataProvider.NodeGroupDao.GetNodeGroupNameList(PublishmentSystemId);
+                var nodeGroupNameList = DataProvider.ChannelGroupDao.GetGroupNameList(SiteId);
 				if (nodeGroupNameList.IndexOf(TbNodeGroupName.Text) != -1)
 				{
                     FailMessage("栏目组添加失败，栏目组名称已存在！");
@@ -84,8 +80,8 @@ namespace SiteServer.BackgroundPages.Cms
 				{
 					try
 					{
-						DataProvider.NodeGroupDao.Insert(nodeGroupInfo);
-                        Body.AddSiteLog(PublishmentSystemId, "添加栏目组", $"栏目组:{nodeGroupInfo.NodeGroupName}");
+						DataProvider.ChannelGroupDao.Insert(nodeGroupInfo);
+                        Body.AddSiteLog(SiteId, "添加栏目组", $"栏目组:{nodeGroupInfo.GroupName}");
 						isChanged = true;
                     }
                     catch (Exception ex)

@@ -3,47 +3,43 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.Plugin.Models;
+using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageConfigurationSiteAttributes : BasePageCms
     {
-		public TextBox TbPublishmentSystemName;
+		public TextBox TbSiteName;
         public Literal LtlAttributes;
         public Button BtnSubmit;
 
         private List<TableStyleInfo> _styleInfoList;
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(nameof(PageConfigurationSiteAttributes), new NameValueCollection
-            {
-                {"PublishmentSystemID", publishmentSystemId.ToString()}
-            });
+            return PageUtils.GetCmsUrl(siteId, nameof(PageConfigurationSiteAttributes), null);
         }
 
 		public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
-            var relatedIdentities = RelatedIdentities.GetRelatedIdentities(PublishmentSystemId, PublishmentSystemId);
-            _styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.PublishmentSystemDao.TableName, relatedIdentities);
+            var relatedIdentities = RelatedIdentities.GetRelatedIdentities(SiteId, SiteId);
+            _styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.SiteDao.TableName, relatedIdentities);
 
             if (!IsPostBack)
 			{
-                VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+                VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
 
-                TbPublishmentSystemName.Text = PublishmentSystemInfo.PublishmentSystemName;
+                TbSiteName.Text = SiteInfo.SiteName;
 
-                LtlAttributes.Text = GetAttributesHtml(PublishmentSystemInfo.Additional.ToNameValueCollection());
+                LtlAttributes.Text = GetAttributesHtml(SiteInfo.Additional.ToNameValueCollection());
 
                 BtnSubmit.Attributes.Add("onclick", InputParserUtils.GetValidateSubmitOnClickScript("myForm"));
             }
@@ -70,12 +66,12 @@ namespace SiteServer.BackgroundPages.Cms
             foreach (var styleInfo in _styleInfoList)
             {
                 string extra;
-                var value = BackgroundInputTypeParser.Parse(PublishmentSystemInfo, 0, styleInfo, attributes, pageScripts, out extra);
+                var value = BackgroundInputTypeParser.Parse(SiteInfo, 0, styleInfo, attributes, pageScripts, out extra);
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
                 if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
                 {
-                    var commands = WebUtils.GetTextEditorCommands(PublishmentSystemInfo, styleInfo.AttributeName);
+                    var commands = WebUtils.GetTextEditorCommands(SiteInfo, styleInfo.AttributeName);
                     builder.Append($@"
 <div class=""form-group"">
     <label class=""control-label"">{styleInfo.DisplayName}</label>
@@ -108,15 +104,15 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 			if (Page.IsPostBack && Page.IsValid)
 			{
-				PublishmentSystemInfo.PublishmentSystemName = TbPublishmentSystemName.Text;
+				SiteInfo.SiteName = TbSiteName.Text;
                 
 				try
 				{
-                    BackgroundInputTypeParser.SaveAttributes(PublishmentSystemInfo.Additional, PublishmentSystemInfo, _styleInfoList, Page.Request.Form, null);
+                    BackgroundInputTypeParser.SaveAttributes(SiteInfo.Additional, SiteInfo, _styleInfoList, Page.Request.Form, null);
 
-                    DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
+                    DataProvider.SiteDao.Update(SiteInfo);
 
-                    Body.AddSiteLog(PublishmentSystemId, "修改站点设置");
+                    Body.AddSiteLog(SiteId, "修改站点设置");
 
 					SuccessMessage("站点设置修改成功！");
 				}

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -20,19 +20,15 @@ namespace SiteServer.BackgroundPages.Cms
         private string _fileName;
         private string _directoryPath;
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(nameof(PageTemplateIncludeAdd), new NameValueCollection
-            {
-                {"PublishmentSystemID", publishmentSystemId.ToString()}
-            });
+            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateIncludeAdd), null);
         }
 
-        public static string GetRedirectUrl(int publishmentSystemId, string fileName)
+        public static string GetRedirectUrl(int siteId, string fileName)
         {
-            return PageUtils.GetCmsUrl(nameof(PageTemplateIncludeAdd), new NameValueCollection
+            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateIncludeAdd), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"FileName", fileName}
             });
         }
@@ -41,22 +37,22 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
             if (Body.IsQueryExists("FileName"))
             {
                 _fileName = Body.GetQueryString("FileName");
                 _fileName = PathUtils.RemoveParentPath(_fileName);
             }
-            _directoryPath = PathUtility.MapPath(PublishmentSystemInfo, "@/include");
+            _directoryPath = PathUtility.MapPath(SiteInfo, "@/include");
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Template);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
 
             LtlPageTitle.Text = string.IsNullOrEmpty(_fileName) ? "添加包含文件" : "编辑包含文件";
 
-            var isCodeMirror = PublishmentSystemInfo.Additional.ConfigTemplateIsCodeMirror;
+            var isCodeMirror = SiteInfo.Additional.ConfigTemplateIsCodeMirror;
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
             PhCodeMirror.Visible = isCodeMirror;
 
@@ -80,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
             else
             {
                 LtlCreatedFileExtName.Text = ".html";
-                ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, PublishmentSystemInfo.Additional.Charset);
+                ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, SiteInfo.Additional.Charset);
             }
         }
 
@@ -88,10 +84,10 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var isCodeMirror = PublishmentSystemInfo.Additional.ConfigTemplateIsCodeMirror;
+            var isCodeMirror = SiteInfo.Additional.ConfigTemplateIsCodeMirror;
             isCodeMirror = !isCodeMirror;
-            PublishmentSystemInfo.Additional.ConfigTemplateIsCodeMirror = isCodeMirror;
-            DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
+            SiteInfo.Additional.ConfigTemplateIsCodeMirror = isCodeMirror;
+            DataProvider.SiteDao.Update(SiteInfo);
 
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
             PhCodeMirror.Visible = isCodeMirror;
@@ -138,9 +134,9 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     FileUtils.DeleteFileIfExists(PathUtils.Combine(_directoryPath, previousFileName));
                 }
-                Body.AddSiteLog(PublishmentSystemId, "修改包含文件", $"包含文件:{currentFileName}");
+                Body.AddSiteLog(SiteId, "修改包含文件", $"包含文件:{currentFileName}");
                 SuccessMessage("包含文件修改成功！");
-                AddWaitAndRedirectScript(PageTemplateInclude.GetRedirectUrl(PublishmentSystemId));
+                AddWaitAndRedirectScript(PageTemplateInclude.GetRedirectUrl(SiteId));
             }
             else
             {
@@ -158,15 +154,15 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var charset = ECharsetUtils.GetEnumType(DdlCharset.SelectedValue);
                 FileUtils.WriteText(PathUtils.Combine(_directoryPath, currentFileName), charset, TbContent.Text);
-                Body.AddSiteLog(PublishmentSystemId, "添加包含文件", $"包含文件:{currentFileName}");
+                Body.AddSiteLog(SiteId, "添加包含文件", $"包含文件:{currentFileName}");
                 SuccessMessage("包含文件添加成功！");
-                AddWaitAndRedirectScript(PageTemplateInclude.GetRedirectUrl(PublishmentSystemId));
+                AddWaitAndRedirectScript(PageTemplateInclude.GetRedirectUrl(SiteId));
             }
         }
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageTemplateInclude.GetRedirectUrl(PublishmentSystemId));
+            PageUtils.Redirect(PageTemplateInclude.GetRedirectUrl(SiteId));
         }
     }
 }

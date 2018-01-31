@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -10,11 +10,10 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public TextBox TbContent;
 
-        public static string GetOpenWindowString(int publishmentSystemId, int templateLogId)
+        public static string GetOpenWindowString(int siteId, int templateLogId)
         {
-            return LayerUtils.GetOpenScript("查看修订内容", PageUtils.GetCmsUrl(nameof(ModalTemplateView), new NameValueCollection
+            return LayerUtils.GetOpenScript("查看修订内容", PageUtils.GetCmsUrl(siteId, nameof(ModalTemplateView), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"templateLogID", templateLogId.ToString()}
             }));
         }
@@ -23,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
            
 			if (!IsPostBack)
 			{

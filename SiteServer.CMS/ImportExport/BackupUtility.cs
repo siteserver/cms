@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
 
@@ -14,32 +14,32 @@ namespace SiteServer.CMS.ImportExport
         public const string UploadFolderName = "upload"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件夹目录
         public const string UploadFileName = "upload.xml"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件名
 
-        public static void BackupTemplates(int publishmentSystemId, string filePath)
+        public static void BackupTemplates(int siteId, string filePath)
         {
-            var exportObject = new ExportObject(publishmentSystemId);
+            var exportObject = new ExportObject(siteId);
             exportObject.ExportTemplates(filePath);
         }
 
-        public static void BackupChannelsAndContents(int publishmentSystemId, string filePath)
+        public static void BackupChannelsAndContents(int siteId, string filePath)
         {
-            var exportObject = new ExportObject(publishmentSystemId);
+            var exportObject = new ExportObject(siteId);
 
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByParentId(publishmentSystemId, publishmentSystemId);
-            exportObject.ExportChannels(nodeIdList, filePath);  
+            var channelIdList = DataProvider.ChannelDao.GetIdListByParentId(siteId, siteId);
+            exportObject.ExportChannels(channelIdList, filePath);  
         }
 
-        public static void BackupFiles(int publishmentSystemId, string filePath)
+        public static void BackupFiles(int siteId, string filePath)
         {
-            var exportObject = new ExportObject(publishmentSystemId);
+            var exportObject = new ExportObject(siteId);
 
             exportObject.ExportFiles(filePath);
         }
 
 
-        public static void BackupSite(int publishmentSystemId, string filePath)
+        public static void BackupSite(int siteId, string filePath)
         {
-            var exportObject = new ExportObject(publishmentSystemId);
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            var exportObject = new ExportObject(siteId);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
 
             var siteTemplateDir = PathUtils.GetFileNameWithoutExtension(filePath);
             var siteTemplatePath = PathUtils.Combine(DirectoryUtils.GetDirectoryPath(filePath), siteTemplateDir);
@@ -56,27 +56,19 @@ namespace SiteServer.CMS.ImportExport
             exportObject.ExportTemplates(templateFilePath);
             var tableDirectoryPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.Table);
             exportObject.ExportTablesAndStyles(tableDirectoryPath);
-            var tagStyleFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileTagStyle);
-            exportObject.ExportTagStyle(tagStyleFilePath);
-            var adFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileAd);
-            exportObject.ExportAd(adFilePath);
-            var gatherRuleFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileGatherRule);
-            exportObject.ExportGatherRule(gatherRuleFilePath);
-            //var inputDirectoryPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.Input);
-            //exportObject.ExportInput(inputDirectoryPath);
             var configurationFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);
             exportObject.ExportConfiguration(configurationFilePath);
-            exportObject.ExportMetadata(publishmentSystemInfo.PublishmentSystemName, publishmentSystemInfo.Additional.WebUrl, string.Empty, string.Empty, metadataPath);
+            exportObject.ExportMetadata(siteInfo.SiteName, siteInfo.Additional.WebUrl, string.Empty, string.Empty, metadataPath);
 
             ZipUtils.PackFiles(filePath, siteTemplatePath);
             DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
         }
 
-        public static void RecoverySite(int publishmentSystemId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string administratorName)
+        public static void RecoverySite(int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string administratorName)
         {
-            var importObject = new ImportObject(publishmentSystemId);
+            var importObject = new ImportObject(siteId);
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
 
             var siteTemplatePath = path;
             if (isZip)
@@ -92,27 +84,27 @@ namespace SiteServer.CMS.ImportExport
 
             if (isDeleteChannels)
             {
-                var nodeIdList = DataProvider.NodeDao.GetNodeIdListByParentId(publishmentSystemId, publishmentSystemId);
-                foreach (int nodeId in nodeIdList)
+                var channelIdList = DataProvider.ChannelDao.GetIdListByParentId(siteId, siteId);
+                foreach (var channelId in channelIdList)
                 {
-                    DataProvider.NodeDao.Delete(nodeId);
+                    DataProvider.ChannelDao.Delete(siteId, channelId);
                 }
             }
             if (isDeleteTemplates)
             {
                 var templateInfoList =
-                    DataProvider.TemplateDao.GetTemplateInfoListByPublishmentSystemId(publishmentSystemId);
+                    DataProvider.TemplateDao.GetTemplateInfoListBySiteId(siteId);
                 foreach (var templateInfo in templateInfoList)
                 {
                     if (templateInfo.IsDefault == false)
                     {
-                        DataProvider.TemplateDao.Delete(publishmentSystemId, templateInfo.TemplateId);
+                        DataProvider.TemplateDao.Delete(siteId, templateInfo.Id);
                     }
                 }
             }
             if (isDeleteFiles)
             {
-                DirectoryUtility.DeletePublishmentSystemFiles(publishmentSystemInfo);
+                DirectoryUtility.DeleteSiteFiles(siteInfo);
             }
 
             //导入文件
@@ -126,22 +118,6 @@ namespace SiteServer.CMS.ImportExport
             var tableDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.Table);
             importObject.ImportAuxiliaryTables(tableDirectoryPath, isUseTable);
 
-            //导入标签样式
-            var tagStyleFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileTagStyle);
-            importObject.ImportTagStyle(tagStyleFilePath, isOverride);
-
-            //导入固定广告
-            var adFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileAd);
-            importObject.ImportAd(adFilePath, isOverride);
-
-            //导入采集规则
-            var gatherRuleFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileGatherRule);
-            importObject.ImportGatherRule(gatherRuleFilePath, isOverride);
-
-            //导入提交表单
-            //var inputDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.Input);
-            //importObject.ImportInput(inputDirectoryPath, isOverride);
-
             //导入站点设置
             var configurationFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);
             importObject.ImportConfiguration(configurationFilePath);
@@ -150,7 +126,7 @@ namespace SiteServer.CMS.ImportExport
             var siteContentDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.SiteContent);
             importObject.ImportChannelsAndContents(0, siteContentDirectoryPath, isOverride);
 
-            DataProvider.NodeDao.UpdateContentNum(publishmentSystemInfo);
+            DataProvider.ChannelDao.UpdateContentNum(siteInfo);
 
             //导入表样式及清除缓存
             if (isUseTable)

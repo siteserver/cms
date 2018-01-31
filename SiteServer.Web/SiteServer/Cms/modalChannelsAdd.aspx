@@ -7,9 +7,9 @@
       <meta charset="utf-8">
       <!--#include file="../inc/head.html"-->
       <script language="javascript">
-        function selectChannel(nodeNames, nodeID) {
+        function selectChannel(nodeNames, channelId) {
           $('#nodeNames').html(nodeNames);
-          $('#nodeID').val(nodeID);
+          $('#channelId').val(channelId);
         }
       </script>
     </head>
@@ -22,7 +22,7 @@
           <label class="col-2 col-form-label text-right">父栏目</label>
           <div class="col-9 help-block text-danger">
             <span id="nodeNames" class="m-l-10 m-r-10"></span>
-            <input id="nodeID" name="nodeID" value="0" type="hidden">
+            <input id="channelId" name="channelId" value="0" type="hidden">
             <asp:HyperLink id="HlSelectChannel" class="btn btn-success" runat="server">选择</asp:HyperLink>
             <asp:Literal ID="LtlSelectChannelScript" runat="server"></asp:Literal>
           </div>
@@ -47,7 +47,7 @@
         <div class="form-group form-row">
           <label class="col-2 col-form-label text-right">栏目模板</label>
           <div class="col-4">
-            <asp:DropDownList class="form-control" ID="DdlChannelTemplateId" DataTextField="TemplateName" DataValueField="TemplateId"
+            <asp:DropDownList class="form-control" ID="DdlChannelTemplateId" DataTextField="TemplateName" DataValueField="Id"
               runat="server"></asp:DropDownList>
           </div>
           <div class="col-6"></div>
@@ -55,7 +55,7 @@
         <div class="form-group form-row">
           <label class="col-2 col-form-label text-right">内容模板</label>
           <div class="col-4">
-            <asp:DropDownList class="form-control" ID="DdlContentTemplateId" DataTextField="TemplateName" DataValueField="TemplateId"
+            <asp:DropDownList class="form-control" ID="DdlContentTemplateId" DataTextField="TemplateName" DataValueField="Id"
               runat="server"></asp:DropDownList>
           </div>
           <div class="col-6"></div>

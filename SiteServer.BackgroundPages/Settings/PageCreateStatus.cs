@@ -1,38 +1,38 @@
 ﻿using System;
 using System.Collections.Specialized;
-using BaiRong.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
     public class PageCreateStatus : BasePageCms
     {
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
             return PageUtils.GetSettingsUrl(nameof(PageCreateStatus), new NameValueCollection
             {
-                {"publishmentSystemID", publishmentSystemId.ToString()}
+                {"siteID", siteId.ToString()}
             });
         }
 
-        public static string GetOpenLayerString(int publishmentSystemId)
+        public static string GetOpenLayerString(int siteId)
         {
             return LayerUtils.GetOpenScript("页面生成进度",
                 PageUtils.GetSettingsUrl(nameof(PageCreateStatus), new NameValueCollection
                 {
-                    {"publishmentSystemID", publishmentSystemId.ToString()}
+                    {"siteID", siteId.ToString()}
                 }));
         }
 
-        public static void Redirect(int publishmentSystemId)
+        public static void Redirect(int siteId)
         {
             var pageUrl = PageUtils.GetSettingsUrl(nameof(PageCreateStatus), new NameValueCollection
             {
-                {"publishmentSystemID", publishmentSystemId.ToString()}
+                {"siteID", siteId.ToString()}
             });
             PageUtils.Redirect(pageUrl);
         }
 
-        public string SiteUrl => PageRedirect.GetRedirectUrl(PublishmentSystemId);
+        public string SiteUrl => PageRedirect.GetRedirectUrl(SiteId);
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             //if (!string.IsNullOrEmpty(base.Body.GetQueryString("Cancel")))
             //{
-            //    DataProvider.CreateTaskDAO.DeleteAll(base.PublishmentSystemID);
+            //    DataProvider.CreateTaskDAO.DeleteAll(base.SiteId);
             //}
         }
     }

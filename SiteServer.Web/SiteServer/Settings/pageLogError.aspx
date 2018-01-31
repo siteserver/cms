@@ -22,12 +22,6 @@
             <li class="nav-item">
               <a class="nav-link" href="pageLogUser.aspx">用户日志</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="pageLogServiceTask.aspx">服务组件任务日志</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="pageLogServiceCreateTask.aspx">服务组件生成日志</a>
-            </li>
             <li class="nav-item active">
               <a class="nav-link" href="pageLogError.aspx">系统错误日志</a>
             </li>

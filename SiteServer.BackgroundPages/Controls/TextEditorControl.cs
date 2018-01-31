@@ -1,8 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
-using System.Web;
 using System.Web.UI;
-using BaiRong.Core.Model;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Model;
 
@@ -11,12 +9,12 @@ namespace SiteServer.BackgroundPages.Controls
 	public class TextEditorControl : Control
 	{
         private string _value;
-        private PublishmentSystemInfo _publishmentSystemInfo;
+        private SiteInfo _siteInfo;
         private string _attributeName;
 
-        public void SetParameters(PublishmentSystemInfo publishmentSystemInfo, string attributeName, string value)
+        public void SetParameters(SiteInfo siteInfo, string attributeName, string value)
         {
-            _publishmentSystemInfo = publishmentSystemInfo;
+            _siteInfo = siteInfo;
             _attributeName = attributeName;
             _value = value;
         }
@@ -31,7 +29,7 @@ namespace SiteServer.BackgroundPages.Controls
 		    attributes.Set(_attributeName, _value);
 
 		    var extraBuilder = new StringBuilder();
-		    var inputHtml = BackgroundInputTypeParser.ParseTextEditor(attributes, _attributeName, _publishmentSystemInfo, pageScripts, extraBuilder);
+		    var inputHtml = BackgroundInputTypeParser.ParseTextEditor(attributes, _attributeName, _siteInfo, pageScripts, extraBuilder);
 
 		    output.Write(inputHtml + extraBuilder);
 

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -28,7 +29,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
 
             var userName = Body.GetQueryString("UserName");
-            var adminInfo = BaiRongDataProvider.AdministratorDao.GetByUserName(userName);
+            var adminInfo = DataProvider.AdministratorDao.GetByUserName(userName);
             LtlUserName.Text = adminInfo.UserName;
             LtlDisplayName.Text = adminInfo.DisplayName;
             LtlCreationDate.Text = DateUtils.GetDateAndTimeString(adminInfo.CreationDate);

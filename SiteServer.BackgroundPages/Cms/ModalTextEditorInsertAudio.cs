@@ -2,10 +2,10 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Text.LitJson;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.Utils.Enumerations;
+using SiteServer.Utils.LitJson;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -16,18 +16,16 @@ namespace SiteServer.BackgroundPages.Cms
 
         private string _attributeName;
 
-        public static string GetOpenWindowString(int publishmentSystemId, string attributeName)
+        public static string GetOpenWindowString(int siteId, string attributeName)
         {
-            return LayerUtils.GetOpenScript("插入音频", PageUtils.GetCmsUrl(nameof(ModalTextEditorInsertAudio), new NameValueCollection
+            return LayerUtils.GetOpenScript("插入音频", PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorInsertAudio), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"AttributeName", attributeName}
             }), 600, 400);
         }
 
-        public string UploadUrl => PageUtils.GetCmsUrl(nameof(ModalTextEditorInsertAudio), new NameValueCollection
+        public string UploadUrl => PageUtils.GetCmsUrl(SiteId, nameof(ModalTextEditorInsertAudio), new NameValueCollection
         {
-            {"PublishmentSystemID", PublishmentSystemId.ToString()},
             {"upload", true.ToString()}
         });
 
@@ -46,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
             _attributeName = Body.GetQueryString("AttributeName");
         }
 
-        public string TypeCollection => PublishmentSystemInfo.Additional.VideoUploadTypeCollection;
+        public string TypeCollection => SiteInfo.Additional.VideoUploadTypeCollection;
 
         private Hashtable Upload()
         {
@@ -65,12 +63,12 @@ namespace SiteServer.BackgroundPages.Cms
                         var fileExtName = PathUtils.GetExtension(filePath);
 
                         var isAllow = true;
-                        if (!PathUtility.IsVideoExtenstionAllowed(PublishmentSystemInfo, fileExtName))
+                        if (!PathUtility.IsVideoExtenstionAllowed(SiteInfo, fileExtName))
                         {
                             message = "此格式不允许上传，请选择有效的音频文件";
                             isAllow = false;
                         }
-                        if (!PathUtility.IsVideoSizeAllowed(PublishmentSystemInfo, postedFile.ContentLength))
+                        if (!PathUtility.IsVideoSizeAllowed(SiteInfo, postedFile.ContentLength))
                         {
                             message = "上传失败，上传文件超出规定文件大小";
                             isAllow = false;
@@ -78,13 +76,13 @@ namespace SiteServer.BackgroundPages.Cms
 
                         if (isAllow)
                         {
-                            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(PublishmentSystemInfo, fileExtName);
-                            var localFileName = PathUtility.GetUploadFileName(PublishmentSystemInfo, filePath);
+                            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(SiteInfo, fileExtName);
+                            var localFileName = PathUtility.GetUploadFileName(SiteInfo, filePath);
                             var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
                             postedFile.SaveAs(localFilePath);
-                            playUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath, true);
-                            playUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, playUrl);
+                            playUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, localFilePath, true);
+                            playUrl = PageUtility.GetVirtualUrl(SiteInfo, playUrl);
                             success = true;
                         }
                     }

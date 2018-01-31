@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -13,12 +13,9 @@ namespace SiteServer.BackgroundPages.Cms
 		public Button BtnAdd;
         public Button BtnImport;
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(nameof(PageRelatedField), new NameValueCollection
-            {
-                {"PublishmentSystemID", publishmentSystemId.ToString()}
-            });
+            return PageUtils.GetCmsUrl(siteId, nameof(PageRelatedField), null);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -29,22 +26,22 @@ namespace SiteServer.BackgroundPages.Cms
 			{
                 var relatedFieldId = Body.GetQueryInt("RelatedFieldID");
 
-                var relatedFieldName = DataProvider.RelatedFieldDao.GetRelatedFieldName(relatedFieldId);
+                var relatedFieldName = DataProvider.RelatedFieldDao.GetTitle(relatedFieldId);
                 DataProvider.RelatedFieldDao.Delete(relatedFieldId);
-                Body.AddSiteLog(PublishmentSystemId, "删除联动字段", $"联动字段:{relatedFieldName}");
+                Body.AddSiteLog(SiteId, "删除联动字段", $"联动字段:{relatedFieldName}");
                 SuccessDeleteMessage();
             }
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
 
-            RptContents.DataSource = DataProvider.RelatedFieldDao.GetRelatedFieldInfoList(PublishmentSystemId);
+            RptContents.DataSource = DataProvider.RelatedFieldDao.GetRelatedFieldInfoList(SiteId);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
-            BtnAdd.Attributes.Add("onclick", ModalRelatedFieldAdd.GetOpenWindowString(PublishmentSystemId));
-            BtnImport.Attributes.Add("onclick", ModalImport.GetOpenWindowString(PublishmentSystemId, ModalImport.TypeRelatedField));
+            BtnAdd.Attributes.Add("onclick", ModalRelatedFieldAdd.GetOpenWindowString(SiteId));
+            BtnImport.Attributes.Add("onclick", ModalImport.GetOpenWindowString(SiteId, ModalImport.TypeRelatedField));
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
@@ -60,22 +57,21 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlExportUrl = (Literal)e.Item.FindControl("ltlExportUrl");
             var ltlDeleteUrl = (Literal)e.Item.FindControl("ltlDeleteUrl");
 
-            ltlRelatedFieldName.Text = relatedFieldInfo.RelatedFieldName;
+            ltlRelatedFieldName.Text = relatedFieldInfo.Title;
             ltlTotalLevel.Text = relatedFieldInfo.TotalLevel.ToString();
-            var urlItems = PageRelatedFieldMain.GetRedirectUrl(PublishmentSystemId, relatedFieldInfo.RelatedFieldId, relatedFieldInfo.TotalLevel);
+            var urlItems = PageRelatedFieldMain.GetRedirectUrl(SiteId, relatedFieldInfo.Id, relatedFieldInfo.TotalLevel);
             ltlItemsUrl.Text = $@"<a href=""{urlItems}"">管理字段项</a>";
 
             ltlEditUrl.Text =
                 $@"<a href=""javascript:;"" onclick=""{ModalRelatedFieldAdd.GetOpenWindowString(
-                    PublishmentSystemId, relatedFieldInfo.RelatedFieldId)}"">编辑</a>";
+                    SiteId, relatedFieldInfo.Id)}"">编辑</a>";
             ltlExportUrl.Text =
-                $@"<a href=""javascript:;"" onclick=""{ModalExportMessage.GetOpenWindowStringToRelatedField(PublishmentSystemId, relatedFieldInfo.RelatedFieldId)}"">导出</a>";
+                $@"<a href=""javascript:;"" onclick=""{ModalExportMessage.GetOpenWindowStringToRelatedField(SiteId, relatedFieldInfo.Id)}"">导出</a>";
             ltlDeleteUrl.Text =
                 $@"<a href=""javascript:;"" onclick=""{PageUtils.GetRedirectStringWithConfirm(
-                    PageUtils.GetCmsUrl(nameof(PageRelatedField), new NameValueCollection
+                    PageUtils.GetCmsUrl(SiteId, nameof(PageRelatedField), new NameValueCollection
                     {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                        {"RelatedFieldID", relatedFieldInfo.RelatedFieldId.ToString()},
+                        {"RelatedFieldID", relatedFieldInfo.Id.ToString()},
                         {"Delete", true.ToString()}
                     }), "确认删除此联动字段吗？")}"">删除</a>";
         }

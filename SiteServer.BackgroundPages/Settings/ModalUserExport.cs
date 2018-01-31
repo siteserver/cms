@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -43,7 +44,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 var link = new HyperLink
                 {
-                    NavigateUrl = ActionsDownload.GetUrl(PageUtils.InnerApiUrl, filePath),
+                    NavigateUrl = ApiRouteActionsDownload.GetUrl(PageUtility.InnerApiUrl, filePath),
                     Text = "下载"
                 };
                 var successMessage = "成功导出文件！&nbsp;&nbsp;" + ControlUtils.GetControlRenderHtml(link);

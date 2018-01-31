@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -52,7 +53,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (Page.IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Admin);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Admin);
 
             LtlPageTitle.Text = string.IsNullOrEmpty(_userName) ? "添加管理员" : "编辑管理员";
 
@@ -88,7 +89,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!string.IsNullOrEmpty(_userName))
             {
-                var adminInfo = BaiRongDataProvider.AdministratorDao.GetByUserName(_userName);
+                var adminInfo = DataProvider.AdministratorDao.GetByUserName(_userName);
                 if (adminInfo != null)
                 {
                     ControlUtils.SelectSingleItem(DdlDepartmentId, adminInfo.DepartmentId.ToString());
@@ -123,13 +124,13 @@ namespace SiteServer.BackgroundPages.Settings
                     AreaId = TranslateUtils.ToInt(DdlAreaId.SelectedValue)
                 };
 
-                if (!string.IsNullOrEmpty(BaiRongDataProvider.AdministratorDao.GetUserNameByEmail(TbEmail.Text)))
+                if (!string.IsNullOrEmpty(DataProvider.AdministratorDao.GetUserNameByEmail(TbEmail.Text)))
                 {
                     FailMessage("管理员添加失败，邮箱地址已存在");
                     return;
                 }
 
-                if (!string.IsNullOrEmpty(BaiRongDataProvider.AdministratorDao.GetUserNameByMobile(TbMobile.Text)))
+                if (!string.IsNullOrEmpty(DataProvider.AdministratorDao.GetUserNameByMobile(TbMobile.Text)))
                 {
                     FailMessage("管理员添加失败，手机号码已存在");
                     return;
@@ -148,15 +149,15 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                var adminInfo = BaiRongDataProvider.AdministratorDao.GetByUserName(_userName);
+                var adminInfo = DataProvider.AdministratorDao.GetByUserName(_userName);
 
-                if (adminInfo.Email != TbEmail.Text && !string.IsNullOrEmpty(BaiRongDataProvider.AdministratorDao.GetUserNameByEmail(TbEmail.Text)))
+                if (adminInfo.Email != TbEmail.Text && !string.IsNullOrEmpty(DataProvider.AdministratorDao.GetUserNameByEmail(TbEmail.Text)))
                 {
                     FailMessage("管理员设置失败，邮箱地址已存在");
                     return;
                 }
 
-                if (adminInfo.Mobile != TbMobile.Text && !string.IsNullOrEmpty(BaiRongDataProvider.AdministratorDao.GetUserNameByMobile(adminInfo.Mobile)))
+                if (adminInfo.Mobile != TbMobile.Text && !string.IsNullOrEmpty(DataProvider.AdministratorDao.GetUserNameByMobile(adminInfo.Mobile)))
                 {
                     FailMessage("管理员设置失败，手机号码已存在");
                     return;
@@ -168,7 +169,7 @@ namespace SiteServer.BackgroundPages.Settings
                 adminInfo.DepartmentId = TranslateUtils.ToInt(DdlDepartmentId.SelectedValue);
                 adminInfo.AreaId = TranslateUtils.ToInt(DdlAreaId.SelectedValue);
 
-                BaiRongDataProvider.AdministratorDao.Update(adminInfo);
+                DataProvider.AdministratorDao.Update(adminInfo);
 
                 Body.AddAdminLog("修改管理员属性", $"管理员:{TbUserName.Text.Trim()}");
                 SuccessMessage("管理员设置成功！");

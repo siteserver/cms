@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Preview;
 using SiteServer.CMS.Core;
 
@@ -12,89 +12,89 @@ namespace SiteServer.BackgroundPages
 
 	    protected override bool IsAccessable => true;
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
             return PageUtils.GetSiteServerUrl(nameof(PageRedirect), new NameValueCollection
             {
-                {nameof(publishmentSystemId), publishmentSystemId.ToString() }
+                {nameof(siteId), siteId.ToString() }
             });
         }
 
-        public static string GetRedirectUrlToChannel(int publishmentSystemId, int channelId)
+        public static string GetRedirectUrlToChannel(int siteId, int channelId)
         {
             return PageUtils.GetSiteServerUrl(nameof(PageRedirect), new NameValueCollection
             {
-                {nameof(publishmentSystemId), publishmentSystemId.ToString() },
+                {nameof(siteId), siteId.ToString() },
                 {nameof(channelId), channelId.ToString() }
             });
         }
 
-        public static string GetRedirectUrlToContent(int publishmentSystemId, int channelId, int contentId)
+        public static string GetRedirectUrlToContent(int siteId, int channelId, int contentId)
         {
             return PageUtils.GetSiteServerUrl(nameof(PageRedirect), new NameValueCollection
             {
-                {nameof(publishmentSystemId), publishmentSystemId.ToString() },
+                {nameof(siteId), siteId.ToString() },
                 {nameof(channelId), channelId.ToString() },
                 {nameof(contentId), contentId.ToString() }
             });
         }
 
-        public static string GetRedirectUrlToFile(int publishmentSystemId, int templateId)
+        public static string GetRedirectUrlToFile(int siteId, int templateId)
         {
             return PageUtils.GetSiteServerUrl(nameof(PageRedirect), new NameValueCollection
             {
-                {nameof(publishmentSystemId), publishmentSystemId.ToString() },
+                {nameof(siteId), siteId.ToString() },
                 {nameof(templateId), templateId.ToString() }
             });
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
-            var publishmentSystemId = TranslateUtils.ToInt(Request.QueryString["publishmentSystemId"]);
+            var siteId = TranslateUtils.ToInt(Request.QueryString["siteId"]);
             var channelId = TranslateUtils.ToInt(Request.QueryString["channelId"]);
             var contentId = TranslateUtils.ToInt(Request.QueryString["contentId"]);
             var templateId = TranslateUtils.ToInt(Request.QueryString["templateId"]);
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
             var url = string.Empty;
-            var isLocal = publishmentSystemInfo.Additional.IsSeparatedWeb || publishmentSystemInfo.Additional.IsSeparatedAssets;
+            var isLocal = siteInfo.Additional.IsSeparatedWeb || siteInfo.Additional.IsSeparatedAssets;
 
-            if (publishmentSystemId > 0 && channelId > 0 && contentId > 0)
+            if (siteId > 0 && channelId > 0 && contentId > 0)
             {
-                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-                url = PageUtility.GetContentUrl(publishmentSystemInfo, nodeInfo, contentId, isLocal);
+                var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                url = PageUtility.GetContentUrl(siteInfo, nodeInfo, contentId, isLocal);
             }
-            else if (publishmentSystemId > 0 && channelId > 0)
+            else if (siteId > 0 && channelId > 0)
             {
-                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-                url = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, isLocal);
+                var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                url = PageUtility.GetChannelUrl(siteInfo, nodeInfo, isLocal);
             }
-            else if (publishmentSystemId > 0 && templateId > 0)
+            else if (siteId > 0 && templateId > 0)
             {
-                url = PageUtility.GetFileUrl(publishmentSystemInfo, templateId, isLocal);
+                url = PageUtility.GetFileUrl(siteInfo, templateId, isLocal);
             }
-            else if (publishmentSystemId > 0)
+            else if (siteId > 0)
             {
-                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, publishmentSystemId);
-                url = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, isLocal);
+                var nodeInfo = ChannelManager.GetChannelInfo(siteId, siteId);
+                url = PageUtility.GetChannelUrl(siteInfo, nodeInfo, isLocal);
             }
 
-            //if (publishmentSystemInfo.Additional.IsSeparatedWeb)
+            //if (siteInfo.Additional.IsSeparatedWeb)
             //{
-            //    if (publishmentSystemId > 0 && channelId > 0 && contentId > 0)
+            //    if (siteId > 0 && channelId > 0 && contentId > 0)
             //    {
-            //        url = PreviewApi.GetContentUrl(publishmentSystemId, channelId, contentId);
+            //        url = PreviewApi.GetContentUrl(siteId, channelId, contentId);
             //    }
-            //    else if (publishmentSystemId > 0 && channelId > 0)
+            //    else if (siteId > 0 && channelId > 0)
             //    {
-            //        url = PreviewApi.GetChannelUrl(publishmentSystemId, channelId);
+            //        url = PreviewApi.GetChannelUrl(siteId, channelId);
             //    }
-            //    else if (publishmentSystemId > 0 && templateId > 0)
+            //    else if (siteId > 0 && templateId > 0)
             //    {
-            //        url = PreviewApi.GetFileUrl(publishmentSystemId, templateId);
+            //        url = PreviewApi.GetFileUrl(siteId, templateId);
             //    }
-            //    else if (publishmentSystemId > 0)
+            //    else if (siteId > 0)
             //    {
-            //        url = PreviewApi.GetPublishmentSystemUrl(publishmentSystemId);
+            //        url = PreviewApi.GetSiteUrl(siteId);
             //    }
             //}
             //else
@@ -104,7 +104,7 @@ namespace SiteServer.BackgroundPages
 
             if (string.IsNullOrEmpty(url) || StringUtils.EqualsIgnoreCase(url, PageUtils.UnclickedUrl))
             {
-                DefaultRedirect(publishmentSystemId);
+                DefaultRedirect(siteId);
             }
             else
             {
@@ -112,18 +112,18 @@ namespace SiteServer.BackgroundPages
             }
         }
 
-        private static void DefaultRedirect(int publishmentSystemId)
+        private static void DefaultRedirect(int siteId)
         {
-            if (publishmentSystemId == 0)
+            if (siteId == 0)
             {
-                publishmentSystemId = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
+                siteId = DataProvider.SiteDao.GetIdByIsRoot();
             }
-            if (publishmentSystemId != 0)
+            if (siteId != 0)
             {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                var url = publishmentSystemInfo.Additional.IsSeparatedWeb
-                    ? PreviewApi.GetPublishmentSystemUrl(publishmentSystemId)
-                    : publishmentSystemInfo.Additional.WebUrl;
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var url = siteInfo.Additional.IsSeparatedWeb
+                    ? ApiRoutePreview.GetSiteUrl(siteId)
+                    : siteInfo.Additional.WebUrl;
                 PageUtils.Redirect(url);
             }
             else

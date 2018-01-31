@@ -1,27 +1,27 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
 	public class PageSiteUrlAssetsConfig : BasePageCms
     {
-        public Literal LtlPublishmentSystemName;
+        public Literal LtlSiteName;
 
         public RadioButtonList RblIsSeparatedAssets;
         public PlaceHolder PhSeparatedAssets;
         public TextBox TbSeparatedAssetsUrl;
         public TextBox TbAssetsDir;
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
             return PageUtils.GetSettingsUrl(nameof(PageSiteUrlAssetsConfig), new NameValueCollection
             {
                 {
-                    "PublishmentSystemID", publishmentSystemId.ToString()
+                    "SiteId", siteId.ToString()
                 }
             });
         }
@@ -31,15 +31,15 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
 
-            LtlPublishmentSystemName.Text = PublishmentSystemInfo.PublishmentSystemName;
+            LtlSiteName.Text = SiteInfo.SiteName;
 
             EBooleanUtils.AddListItems(RblIsSeparatedAssets, "资源文件独立部署", "资源文件与Web部署在一起");
-            ControlUtils.SelectSingleItem(RblIsSeparatedAssets, PublishmentSystemInfo.Additional.IsSeparatedAssets.ToString());
-            PhSeparatedAssets.Visible = PublishmentSystemInfo.Additional.IsSeparatedAssets;
-            TbSeparatedAssetsUrl.Text = PublishmentSystemInfo.Additional.SeparatedAssetsUrl;
-            TbAssetsDir.Text = PublishmentSystemInfo.Additional.AssetsDir;
+            ControlUtils.SelectSingleItem(RblIsSeparatedAssets, SiteInfo.Additional.IsSeparatedAssets.ToString());
+            PhSeparatedAssets.Visible = SiteInfo.Additional.IsSeparatedAssets;
+            TbSeparatedAssetsUrl.Text = SiteInfo.Additional.SeparatedAssetsUrl;
+            TbAssetsDir.Text = SiteInfo.Additional.AssetsDir;
         }
 
         public void RblIsSeparatedAssets_SelectedIndexChanged(object sender, EventArgs e)
@@ -49,12 +49,12 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            PublishmentSystemInfo.Additional.IsSeparatedAssets = TranslateUtils.ToBool(RblIsSeparatedAssets.SelectedValue);
-            PublishmentSystemInfo.Additional.SeparatedAssetsUrl = TbSeparatedAssetsUrl.Text;
-            PublishmentSystemInfo.Additional.AssetsDir = TbAssetsDir.Text;
+            SiteInfo.Additional.IsSeparatedAssets = TranslateUtils.ToBool(RblIsSeparatedAssets.SelectedValue);
+            SiteInfo.Additional.SeparatedAssetsUrl = TbSeparatedAssetsUrl.Text;
+            SiteInfo.Additional.AssetsDir = TbAssetsDir.Text;
 
-            DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
-            Body.AddSiteLog(PublishmentSystemId, "修改资源文件访问地址");
+            DataProvider.SiteDao.Update(SiteInfo);
+            Body.AddSiteLog(SiteId, "修改资源文件访问地址");
 
             SuccessMessage("资源文件访问地址修改成功！");
             AddWaitAndRedirectScript(PageSiteUrlAssets.GetRedirectUrl());

@@ -1,0 +1,294 @@
+﻿using System.Text;
+using System.Xml;
+using SiteServer.Plugin;
+
+namespace SiteServer.Utils
+{
+    public class WebConfigUtils
+    {
+        public const string WebConfigFileName = "Web.config";
+        /// <summary>
+        /// 获取当前正在执行的服务器应用程序的根目录的物理文件系统路径。
+        /// </summary>
+        public static string PhysicalApplicationPath { get; private set; }
+
+        public static bool IsProtectData { get; private set; }
+        public static DatabaseType DatabaseType { get; private set; }
+        public static string ConnectionString { get; private set; }
+
+        public static string AdminDirectory { get; private set; }
+        public static string SecretKey { get; private set; }
+
+        public static bool AllowNightlyBuild { get; private set; }
+        public static bool AllowPrereleaseVersions { get; private set; }
+        public static bool AllowDebugRecord { get; private set; }
+
+        public static void Load(string physicalApplicationPath)
+        {
+            PhysicalApplicationPath = physicalApplicationPath;
+
+            var isProtectData = false;
+            var databaseType = string.Empty;
+            var connectionString = string.Empty;
+            try
+            {
+                var doc = new XmlDocument();
+
+                var configFile = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
+
+                doc.Load(configFile);
+
+                var appSettings = doc.SelectSingleNode("configuration/appSettings");
+                if (appSettings != null)
+                {
+                    foreach (XmlNode setting in appSettings)
+                    {
+                        if (setting.Name == "add")
+                        {
+                            var attrKey = setting.Attributes?["key"];
+                            if (attrKey != null)
+                            {
+                                if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(IsProtectData)))
+                                {
+                                    var attrValue = setting.Attributes["value"];
+                                    if (attrValue != null)
+                                    {
+                                        isProtectData = TranslateUtils.ToBool(attrValue.Value);
+                                    }
+                                }
+                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(DatabaseType)))
+                                {
+                                    var attrValue = setting.Attributes["value"];
+                                    if (attrValue != null)
+                                    {
+                                        databaseType = attrValue.Value;
+                                    }
+                                }
+                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(ConnectionString)))
+                                {
+                                    var attrValue = setting.Attributes["value"];
+                                    if (attrValue != null)
+                                    {
+                                        connectionString = attrValue.Value;
+                                    }
+                                }
+                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(AdminDirectory)))
+                                {
+                                    var attrValue = setting.Attributes["value"];
+                                    if (attrValue != null)
+                                    {
+                                        AdminDirectory = attrValue.Value;
+                                    }
+                                }
+                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(SecretKey)))
+                                {
+                                    var attrValue = setting.Attributes["value"];
+                                    if (attrValue != null)
+                                    {
+                                        SecretKey = attrValue.Value;
+                                    }
+                                }
+                                
+                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, "VersionSettings:" + nameof(AllowNightlyBuild)))
+                                {
+                                    var attrValue = setting.Attributes["value"];
+                                    if (attrValue != null)
+                                    {
+                                        AllowNightlyBuild = TranslateUtils.ToBool(attrValue.Value);
+                                    }
+                                }
+                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, "VersionSettings:" + nameof(AllowPrereleaseVersions)))
+                                {
+                                    var attrValue = setting.Attributes["value"];
+                                    if (attrValue != null)
+                                    {
+                                        AllowPrereleaseVersions = TranslateUtils.ToBool(attrValue.Value);
+                                    }
+                                }
+                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, "VersionSettings:" + nameof(AllowDebugRecord)))
+                                {
+                                    var attrValue = setting.Attributes["value"];
+                                    if (attrValue != null)
+                                    {
+                                        AllowDebugRecord = TranslateUtils.ToBool(attrValue.Value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (isProtectData)
+                    {
+                        databaseType = TranslateUtils.DecryptStringBySecretKey(databaseType);
+                        connectionString = TranslateUtils.DecryptStringBySecretKey(connectionString);
+                    }
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+
+            IsProtectData = isProtectData;
+            DatabaseType = DatabaseTypeUtils.GetEnumType(databaseType);
+            ConnectionString = connectionString;
+            if (string.IsNullOrEmpty(AdminDirectory))
+            {
+                AdminDirectory = "siteserver";
+            }
+            if (string.IsNullOrEmpty(SecretKey))
+            {
+                SecretKey = StringUtils.GetShortGuid();
+                //SecretKey = "vEnfkn16t8aeaZKG3a4Gl9UUlzf4vgqU9xwh8ZV5";
+            }
+        }
+
+        public static void ResetWebConfig()
+        {
+            var configPath = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
+            ResetWebConfig(configPath);
+        }
+
+        public static void ResetWebConfig(string configPath)
+        {
+            var content = FileUtils.ReadText(configPath, Encoding.UTF8);
+            FileUtils.WriteText(configPath, Encoding.UTF8, content);
+        }
+
+        public static void UpdateWebConfig(bool isProtectData, DatabaseType databaseType, string connectionString,
+            string adminDirectory, string secretKey)
+        {
+            var configPath = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
+            UpdateWebConfig(configPath, isProtectData, databaseType, connectionString, adminDirectory, secretKey);
+        }
+
+        public static void UpdateWebConfig(string configPath, bool isProtectData, DatabaseType databaseType, string connectionString, string adminDirectory, string secretKey)
+        {
+            var doc = new XmlDocument();
+            doc.Load(configPath);
+            var dirty = false;
+            var appSettings = doc.SelectSingleNode("configuration/appSettings");
+            if (appSettings != null)
+            {
+                foreach (XmlNode setting in appSettings)
+                {
+                    if (setting.Name == "add")
+                    {
+                        var attrKey = setting.Attributes?["key"];
+                        if (attrKey != null)
+                        {
+                            if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(IsProtectData)))
+                            {
+                                var attrValue = setting.Attributes["value"];
+                                if (attrValue != null)
+                                {
+                                    attrValue.Value = isProtectData.ToString();
+                                    dirty = true;
+                                }
+                            }
+                            else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(DatabaseType)))
+                            {
+                                var attrValue = setting.Attributes["value"];
+                                if (attrValue != null)
+                                {
+                                    attrValue.Value = databaseType.Value;
+                                    if (isProtectData)
+                                    {
+                                        attrValue.Value = TranslateUtils.EncryptStringBySecretKey(attrValue.Value);
+                                    }
+                                    dirty = true;
+                                }
+                            }
+                            else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(ConnectionString)))
+                            {
+                                var attrValue = setting.Attributes["value"];
+                                if (attrValue != null)
+                                {
+                                    attrValue.Value = connectionString;
+                                    if (isProtectData)
+                                    {
+                                        attrValue.Value = TranslateUtils.EncryptStringBySecretKey(attrValue.Value);
+                                    }
+                                    dirty = true;
+                                }
+                            }
+                            else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(AdminDirectory)))
+                            {
+                                var attrValue = setting.Attributes["value"];
+                                if (attrValue != null)
+                                {
+                                    attrValue.Value = adminDirectory;
+                                    dirty = true;
+                                }
+                            }
+                            else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(AdminDirectory)))
+                            {
+                                var attrValue = setting.Attributes["value"];
+                                if (attrValue != null)
+                                {
+                                    attrValue.Value = adminDirectory;
+                                    dirty = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (dirty)
+            {
+                var writer = new XmlTextWriter(configPath, Encoding.UTF8)
+                {
+                    Formatting = Formatting.Indented
+                };
+                doc.Save(writer);
+                writer.Flush();
+                writer.Close();
+            }
+
+            IsProtectData = isProtectData;
+            DatabaseType = databaseType;
+            ConnectionString = connectionString;
+        }
+
+        public static string GetConnectionStringByName(string name)
+        {
+            var connectionString = string.Empty;
+            try
+            {
+                var doc = new XmlDocument();
+
+                var configFile = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
+
+                doc.Load(configFile);
+
+                var appSettings = doc.SelectSingleNode("configuration/appSettings");
+                if (appSettings != null)
+                {
+                    foreach (XmlNode setting in appSettings)
+                    {
+                        if (setting.Name != "add") continue;
+
+                        var attrKey = setting.Attributes?["key"];
+                        if (attrKey == null) continue;
+
+                        if (!StringUtils.EqualsIgnoreCase(attrKey.Value, name)) continue;
+
+                        var attrValue = setting.Attributes["value"];
+                        if (attrValue != null)
+                        {
+                            connectionString = attrValue.Value;
+                        }
+                        break;
+                    }
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return connectionString;
+        }
+    }
+}

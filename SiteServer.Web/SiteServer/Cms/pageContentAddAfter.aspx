@@ -27,11 +27,11 @@
             <div class="col-sm-6 help-block"></div>
           </div>
 
-          <asp:PlaceHolder id="PhPublishmentSystemId" runat="server">
+          <asp:PlaceHolder id="PhSiteId" runat="server">
             <div class="form-group form-row">
               <label class="col-sm-2 col-form-label">选择站点</label>
               <div class="col-sm-4">
-                <asp:DropDownList ID="DdlPublishmentSystemId" class="form-control" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DdlPublishmentSystemId_SelectedIndexChanged"></asp:DropDownList>
+                <asp:DropDownList ID="DdlSiteId" class="form-control" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DdlSiteId_SelectedIndexChanged"></asp:DropDownList>
               </div>
               <div class="col-sm-6 help-block">
 
@@ -40,10 +40,10 @@
             <div class="form-group form-row">
               <label class="col-sm-2 col-form-label">投稿到</label>
               <div class="col-sm-4">
-                <asp:ListBox ID="LbNodeId" SelectionMode="Multiple" Height="320" class="form-control" runat="server"></asp:ListBox>
+                <asp:ListBox ID="LbChannelId" SelectionMode="Multiple" Height="320" class="form-control" runat="server"></asp:ListBox>
               </div>
               <div class="col-sm-6">
-                <asp:RequiredFieldValidator ControlToValidate="LbNodeId" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+                <asp:RequiredFieldValidator ControlToValidate="LbChannelId" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
                 />
               </div>
             </div>

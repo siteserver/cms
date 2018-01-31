@@ -3,25 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
     public class PageAnalysisSiteChannels : BasePageCms
     {
-        public DropDownList DdlPublishmentSystemId;
+        public DropDownList DdlSiteId;
         public DateTimeTextBox TbStartDate;
         public DateTimeTextBox TbEndDate;
         public Repeater RptChannels;
 
         public string StrArray1 { get; set; }
 
-        private readonly List<int> _publishmentSystemIdList = new List<int>();
+        private readonly List<int> _siteIdList = new List<int>();
         private readonly Hashtable _xHashtable = new Hashtable();
         private readonly Hashtable _yHashtableNew = new Hashtable();
         private readonly Hashtable _yHashtableUpdate = new Hashtable();
@@ -36,19 +36,19 @@ namespace SiteServer.BackgroundPages.Settings
 
         protected override bool IsSinglePage => true;
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
             return PageUtils.GetSettingsUrl(nameof(PageAnalysisSiteChannels), new NameValueCollection
             {
-                {"publishmentSystemId", publishmentSystemId.ToString()}
+                {"siteId", siteId.ToString()}
             });
         }
 
-        public static string GetRedirectUrl(int publishmentSystemId, string startDate, string endDate)
+        public static string GetRedirectUrl(int siteId, string startDate, string endDate)
         {
             return PageUtils.GetSettingsUrl(nameof(PageAnalysisSiteChannels), new NameValueCollection
             {
-                {"publishmentSystemId", publishmentSystemId.ToString()},
+                {"siteId", siteId.ToString()},
                 {"startDate", startDate},
                 {"endDate", endDate}
             });
@@ -71,16 +71,16 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Chart);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Chart);
 
-            DdlPublishmentSystemId.Items.Add(new ListItem("<<全部站点>>", "0"));
-            var publishmentSystemIdList = PublishmentSystemManager.GetPublishmentSystemIdListOrderByLevel();
-            foreach (var publishmentSystemId in publishmentSystemIdList)
+            DdlSiteId.Items.Add(new ListItem("<<全部站点>>", "0"));
+            var siteIdList = SiteManager.GetSiteIdListOrderByLevel();
+            foreach (var siteId in siteIdList)
             {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                DdlPublishmentSystemId.Items.Add(new ListItem(publishmentSystemInfo.PublishmentSystemName, publishmentSystemId.ToString()));
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                DdlSiteId.Items.Add(new ListItem(siteInfo.SiteName, siteId.ToString()));
             }
-            ControlUtils.SelectSingleItem(DdlPublishmentSystemId, PublishmentSystemId.ToString());
+            ControlUtils.SelectSingleItem(DdlSiteId, SiteId.ToString());
 
             TbStartDate.Text = DateUtils.GetDateAndTimeString(_begin);
             TbEndDate.Text = DateUtils.GetDateAndTimeString(_end);
@@ -91,11 +91,11 @@ namespace SiteServer.BackgroundPages.Settings
                 ["EndDate"] = TbEndDate.Text
             };
 
-            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.SiteAnalysis, _additional));
+            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, ELoadingType.SiteAnalysis, _additional));
 
             BindGrid();
 
-            foreach (var key in _publishmentSystemIdList)
+            foreach (var key in _siteIdList)
             {
                 var yValueNew = GetYHashtable(key, YTypeNew);
                 var yValueUpdate = GetYHashtable(key, YTypeUpdate);
@@ -109,19 +109,19 @@ yArrayUpdate.push('{yValueUpdate}');";
 
         public void BindGrid()
         {
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
-            foreach (var nodeId in nodeIdList)
+            var channelIdList = DataProvider.ChannelDao.GetIdListByParentId(SiteId, 0);
+            foreach (var channelId in channelIdList)
             {
-                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
-                var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
+                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
 
-                SetXHashtable(nodeId, nodeInfo.NodeName);
+                SetXHashtable(channelId, nodeInfo.ChannelName);
 
-                SetYHashtable(nodeId, DataProvider.ContentDao.GetCountOfContentAdd(tableName, PublishmentSystemId, nodeInfo.NodeId, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeNew);
-                SetYHashtable(nodeId, DataProvider.ContentDao.GetCountOfContentUpdate(tableName, PublishmentSystemId, nodeInfo.NodeId, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeUpdate);
+                SetYHashtable(channelId, DataProvider.ContentDao.GetCountOfContentAdd(tableName, SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeNew);
+                SetYHashtable(channelId, DataProvider.ContentDao.GetCountOfContentUpdate(tableName, SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeUpdate);
             }
 
-            RptChannels.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
+            RptChannels.DataSource = DataProvider.ChannelDao.GetIdListByParentId(SiteId, 0);
             RptChannels.ItemDataBound += RptChannels_ItemDataBound;
             RptChannels.DataBind();
         }
@@ -130,51 +130,51 @@ yArrayUpdate.push('{yValueUpdate}');";
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var nodeId = (int)e.Item.DataItem;
-            var enabled = IsOwningNodeId(nodeId);
+            var channelId = (int)e.Item.DataItem;
+            var enabled = IsOwningChannelId(channelId);
             if (!enabled)
             {
-                if (!IsHasChildOwningNodeId(nodeId)) e.Item.Visible = false;
+                if (!IsHasChildOwningChannelId(channelId)) e.Item.Visible = false;
             }
-            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 
             var ltlRow = (Literal)e.Item.FindControl("ltlRow");
 
-            ltlRow.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.SiteAnalysis, _additional, Body.AdminName);
+            ltlRow.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.SiteAnalysis, _additional, Body.AdminName);
         }
 
         public void Analysis_OnClick(object sender, EventArgs e)
         {
-            var publishmentSystemId = TranslateUtils.ToInt(DdlPublishmentSystemId.SelectedValue);
-            PageUtils.Redirect(publishmentSystemId > 0
-                ? GetRedirectUrl(publishmentSystemId, TbStartDate.Text, TbEndDate.Text)
+            var siteId = TranslateUtils.ToInt(DdlSiteId.SelectedValue);
+            PageUtils.Redirect(siteId > 0
+                ? GetRedirectUrl(siteId, TbStartDate.Text, TbEndDate.Text)
                 : PageAnalysisSite.GetRedirectUrl(TbStartDate.Text, TbEndDate.Text));
         }
 
-        private void SetXHashtable(int publishmentSystemId, string publishmentSystemName)
+        private void SetXHashtable(int siteId, string siteName)
         {
-            if (publishmentSystemId == YTypeOther)
+            if (siteId == YTypeOther)
             {
                 if (!_xHashtable.ContainsKey(YTypeOther))
                 {
                     _xHashtable.Add(YTypeOther, "其他");
                 }
             }
-            else if (!_xHashtable.ContainsKey(publishmentSystemId))
+            else if (!_xHashtable.ContainsKey(siteId))
             {
-                _xHashtable.Add(publishmentSystemId, publishmentSystemName);
+                _xHashtable.Add(siteId, siteName);
             }
-            if (!_publishmentSystemIdList.Contains(publishmentSystemId))
+            if (!_siteIdList.Contains(siteId))
             {
-                _publishmentSystemIdList.Add(publishmentSystemId);
+                _siteIdList.Add(siteId);
             }
-            _publishmentSystemIdList.Sort();
-            _publishmentSystemIdList.Reverse();
+            _siteIdList.Sort();
+            _siteIdList.Reverse();
         }
 
-        private string GetXHashtable(int publishmentSystemId)
+        private string GetXHashtable(int siteId)
         {
-            return _xHashtable.ContainsKey(publishmentSystemId) ? _xHashtable[publishmentSystemId].ToString() : string.Empty;
+            return _xHashtable.ContainsKey(siteId) ? _xHashtable[siteId].ToString() : string.Empty;
         }
 
         private void SetYHashtable(int publishemtSystemId, int value, string yType)
@@ -233,16 +233,16 @@ yArrayUpdate.push('{yValueUpdate}');";
             }
         }
 
-        private void SetHorizental(int publishmentSystemId, int num)
+        private void SetHorizental(int siteId, int num)
         {
-            if (_horizentalHashtable[publishmentSystemId] == null)
+            if (_horizentalHashtable[siteId] == null)
             {
-                _horizentalHashtable[publishmentSystemId] = num;
+                _horizentalHashtable[siteId] = num;
             }
             else
             {
-                var totalNum = (int)_horizentalHashtable[publishmentSystemId];
-                _horizentalHashtable[publishmentSystemId] = totalNum + num;
+                var totalNum = (int)_horizentalHashtable[siteId];
+                _horizentalHashtable[siteId] = totalNum + num;
             }
         }
 

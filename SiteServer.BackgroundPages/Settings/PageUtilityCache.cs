@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -16,7 +17,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Utility);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Utility);
 
             LtlCount.Text = CacheUtils.Count.ToString();
 

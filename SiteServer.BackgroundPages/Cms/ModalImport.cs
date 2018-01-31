@@ -3,9 +3,9 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.ImportExport;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -18,33 +18,17 @@ namespace SiteServer.BackgroundPages.Cms
 
         public const int Width = 560;
         public const int Height = 260;
-        //public const string TypeInput = "INPUT";
         public const string TypeRelatedField = "RELATED_FIELD";
-        public const string TypeTagstyle = "TAGSTYLE";
-        public const string TypeGatherrule = "GATHERRULE";
 
-        public static string GetOpenWindowString(int publishmentSystemId, string type)
+        public static string GetOpenWindowString(int siteId, string type)
         {
             var title = string.Empty;
-            if (StringUtils.EqualsIgnoreCase(type, TypeGatherrule))
-            {
-                title = "导入采集规则"; 
-            }
-            //else if (StringUtils.EqualsIgnoreCase(type, TypeInput))
-            //{
-            //    title = "导入提交表单";
-            //}
-            else if (StringUtils.EqualsIgnoreCase(type, TypeRelatedField))
+            if (StringUtils.EqualsIgnoreCase(type, TypeRelatedField))
             {
                 title = "导入联动字段";
             }
-            else if (StringUtils.EqualsIgnoreCase(type, TypeTagstyle))
+            return LayerUtils.GetOpenScript(title, PageUtils.GetCmsUrl(siteId, nameof(ModalImport), new NameValueCollection
             {
-                title = "导入模板标签样式";
-            }
-            return LayerUtils.GetOpenScript(title, PageUtils.GetCmsUrl(nameof(ModalImport), new NameValueCollection
-            {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"Type", type}
             }), Width, Height);
         }
@@ -53,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
             _type = Body.GetQueryString("Type");
 
             if (!IsPostBack)
@@ -64,67 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            if (StringUtils.EqualsIgnoreCase(_type, TypeGatherrule))
-            {
-                if (HifMyFile.PostedFile != null && "" != HifMyFile.PostedFile.FileName)
-                {
-                    var filePath = HifMyFile.PostedFile.FileName;
-                    if (EFileSystemTypeUtils.GetEnumType(Path.GetExtension(filePath)) != EFileSystemType.Xml)
-                    {
-                        FailMessage("必须上传XML文件");
-                        return;
-                    }
-
-                    try
-                    {
-                        var localFilePath = PathUtils.GetTemporaryFilesPath(Path.GetFileName(filePath));
-
-                        HifMyFile.PostedFile.SaveAs(localFilePath);
-
-                        var importObject = new ImportObject(PublishmentSystemId);
-                        importObject.ImportGatherRule(localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue));
-
-                        Body.AddSiteLog(PublishmentSystemId, "导入采集规则");
-
-                        LayerUtils.Close(Page);
-                    }
-                    catch (Exception ex)
-                    {
-                        FailMessage(ex, "导入采集规则失败！");
-                    }
-                }
-            }
-            //else if (StringUtils.EqualsIgnoreCase(_type, TypeInput))
-            //{
-            //    if (myFile.PostedFile != null && "" != myFile.PostedFile.FileName)
-            //    {
-            //        var filePath = myFile.PostedFile.FileName;
-            //        if (EFileSystemTypeUtils.GetEnumType(Path.GetExtension(filePath)) != EFileSystemType.Zip)
-            //        {
-            //            FailMessage("必须上传ZIP文件");
-            //            return;
-            //        }
-
-            //        try
-            //        {
-            //            var localFilePath = PathUtils.GetTemporaryFilesPath(Path.GetFileName(filePath));
-
-            //            myFile.PostedFile.SaveAs(localFilePath);
-
-            //            var importObject = new ImportObject(PublishmentSystemId);
-            //            importObject.ImportInputByZipFile(localFilePath, TranslateUtils.ToBool(IsOverride.SelectedValue));
-
-            //            Body.AddSiteLog(PublishmentSystemId, "导入提交表单");
-
-            //            PageUtils.CloseModalPage(Page);
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            FailMessage(ex, "导入提交表单失败！");
-            //        }
-            //    }
-            //}
-            else if (StringUtils.EqualsIgnoreCase(_type, TypeRelatedField))
+            if (StringUtils.EqualsIgnoreCase(_type, TypeRelatedField))
             {
                 if (HifMyFile.PostedFile != null && "" != HifMyFile.PostedFile.FileName)
                 {
@@ -141,46 +65,16 @@ namespace SiteServer.BackgroundPages.Cms
 
                         HifMyFile.PostedFile.SaveAs(localFilePath);
 
-                        var importObject = new ImportObject(PublishmentSystemId);
+                        var importObject = new ImportObject(SiteId);
                         importObject.ImportRelatedFieldByZipFile(localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue));
 
-                        Body.AddSiteLog(PublishmentSystemId, "导入联动字段");
+                        Body.AddSiteLog(SiteId, "导入联动字段");
 
                         LayerUtils.Close(Page);
                     }
                     catch (Exception ex)
                     {
                         FailMessage(ex, "导入联动字段失败！");
-                    }
-                }
-            }
-            else if (StringUtils.EqualsIgnoreCase(_type, TypeTagstyle))
-            {
-                if (HifMyFile.PostedFile != null && "" != HifMyFile.PostedFile.FileName)
-                {
-                    var filePath = HifMyFile.PostedFile.FileName;
-                    if (EFileSystemTypeUtils.GetEnumType(Path.GetExtension(filePath)) != EFileSystemType.Xml)
-                    {
-                        FailMessage("必须上传XML文件");
-                        return;
-                    }
-
-                    try
-                    {
-                        var localFilePath = PathUtils.GetTemporaryFilesPath(Path.GetFileName(filePath));
-
-                        HifMyFile.PostedFile.SaveAs(localFilePath);
-
-                        var importObject = new ImportObject(PublishmentSystemId);
-                        importObject.ImportTagStyle(localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue));
-
-                        Body.AddSiteLog(PublishmentSystemId, "导入模板标签样式");
-
-                        LayerUtils.Close(Page);
-                    }
-                    catch (Exception ex)
-                    {
-                        FailMessage(ex, "导入模板标签样式失败！");
                     }
                 }
             }

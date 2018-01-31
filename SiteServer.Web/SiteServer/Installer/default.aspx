@@ -50,7 +50,7 @@
 
             <div class="form-group">
               <label class="col-form-label">
-                SiteServer CMS 开源协议
+                SiteServer CMS 开源协议（GPL-3.0）
                 <img src="../Pic/Installer/printerIcon.gif">
                 <a href="eula.html" target="new"> 可打印版本</a>
               </label>

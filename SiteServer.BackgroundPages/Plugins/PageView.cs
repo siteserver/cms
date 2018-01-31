@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.CMS.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
+using SiteServer.Utils.Packaging;
 
 namespace SiteServer.BackgroundPages.Plugins
 {
@@ -15,6 +17,10 @@ namespace SiteServer.BackgroundPages.Plugins
 
         private string _pluginId;
         private string _version;
+
+        public string AllowNightlyBuild => WebConfigUtils.AllowNightlyBuild.ToString().ToLower();
+
+        public string AllowPrereleaseVersions => WebConfigUtils.AllowPrereleaseVersions.ToString().ToLower();
 
         public static string GetRedirectUrl(string pluginId, string version)
         {
@@ -34,7 +40,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
             if (Page.IsPostBack) return;
 
-            VerifyAdministratorPermissions(AppManager.Permissions.Plugins.Add, AppManager.Permissions.Plugins.Management);
+            VerifyAdministratorPermissions(ConfigManager.Permissions.Plugins.Add, ConfigManager.Permissions.Plugins.Management);
 
             if (PluginManager.IsExists(_pluginId))
             {
@@ -46,16 +52,22 @@ namespace SiteServer.BackgroundPages.Plugins
         public void BtnInstall_Click(object sender, EventArgs e)
         {
             string errorMessage;
-            var isSuccess = PluginManager.Install(_pluginId, _version, out errorMessage);
-            if (isSuccess)
-            {
-                PhSuccess.Visible = true;
-            }
-            else
+
+            if (!PackageUtils.InstallPackage(_pluginId, _version, out errorMessage))
             {
                 PhFailure.Visible = true;
                 LtlErrorMessage.Text = errorMessage;
+                return;
             }
+
+            if (!PluginManager.Install($"{_pluginId}.{_version}", out errorMessage))
+            {
+                PhFailure.Visible = true;
+                LtlErrorMessage.Text = errorMessage;
+                return;
+            }
+
+            PhSuccess.Visible = true;
         }
 
         public void Return_Click(object sender, EventArgs e)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -16,11 +16,10 @@ namespace SiteServer.BackgroundPages.Cms
         private int _level;
         private int _id;
 
-        public static string GetOpenWindowString(int publishmentSystemId, int relatedFieldId, int parentId, int level, int id)
+        public static string GetOpenWindowString(int siteId, int relatedFieldId, int parentId, int level, int id)
         {
-            return LayerUtils.GetOpenScript("编辑字段项", PageUtils.GetCmsUrl(nameof(ModalRelatedFieldItemEdit), new NameValueCollection
+            return LayerUtils.GetOpenScript("编辑字段项", PageUtils.GetCmsUrl(siteId, nameof(ModalRelatedFieldItemEdit), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedFieldID", relatedFieldId.ToString()},
                 {"ParentID", parentId.ToString()},
                 {"Level", level.ToString()},
@@ -65,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (isChanged)
             {
-                LayerUtils.CloseAndRedirect(Page, PageRelatedFieldItem.GetRedirectUrl(PublishmentSystemId, _relatedFieldId, _parentId, _level));
+                LayerUtils.CloseAndRedirect(Page, PageRelatedFieldItem.GetRedirectUrl(SiteId, _relatedFieldId, _parentId, _level));
             }
         }
     }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using BaiRong.Core;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -15,7 +15,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
         public const string EntityName = "user";
 
-        public static string UserId = "UserId";
+        public static string Id = "Id";
         public static string UserName = "UserName";
         public static string CreateDate = "CreateDate";
         public static string LastActivityDate = "LastActivityDate";
@@ -41,7 +41,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
         public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
-            {UserId, "用户ID"},
+            {Id, "用户ID"},
             {UserName, "用户名"},
             {CreateDate, "注册日期"},
             {LastActivityDate, "最后活动日期"},
@@ -76,9 +76,9 @@ namespace SiteServer.CMS.StlParser.StlEntity
 	            var entityName = StlParserUtility.GetNameFromEntity(stlEntity);
 	            var attributeName = entityName.Substring(6, entityName.Length - 7);
 
-                if (StringUtils.EqualsIgnoreCase(UserId, attributeName))
+                if (StringUtils.EqualsIgnoreCase(Id, attributeName))
                 {
-                    parsedContent = pageInfo.UserInfo.UserId.ToString();
+                    parsedContent = pageInfo.UserInfo.Id.ToString();
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserName, attributeName))
                 {

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Table;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
@@ -187,16 +183,16 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0 && contentInfo.GetString(ContentAttribute.TranslateContentType) == ETranslateContentType.Reference.ToString())
                 {
-                    var targetNodeId = contentInfo.SourceId;
-                    //var targetPublishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(targetNodeId);
-                    var targetPublishmentSystemId = Node.GetPublishmentSystemId(targetNodeId);
-                    var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
-                    var targetNodeInfo = NodeManager.GetNodeInfo(targetPublishmentSystemId, targetNodeId);
+                    var targetChannelId = contentInfo.SourceId;
+                    //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
+                    var targetSiteId = Node.GetSiteId(targetChannelId);
+                    var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
+                    var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
-                    var tableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeInfo);
+                    var tableName = ChannelManager.GetTableName(targetSiteInfo, targetNodeInfo);
                     //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
                     var targetContentInfo = Content.GetContentInfo(tableName, contentInfo.ReferenceId);
-                    if (targetContentInfo != null && targetContentInfo.NodeId > 0)
+                    if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                     {
                         //标题可以使用自己的
                         targetContentInfo.Title = contentInfo.Title;
@@ -222,13 +218,13 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (ContentAttribute.Title.ToLower().Equals(type))
                 {
-                    var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(pageInfo.PublishmentSystemId, contentInfo.NodeId);
-                    var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contentInfo.NodeId);
-                    var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, nodeInfo);
+                    var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, contentInfo.ChannelId);
+                    var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contentInfo.ChannelId);
+                    var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, nodeInfo);
 
                     var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, type, relatedIdentities);
-                    parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo.Title, separator, pageInfo.PublishmentSystemInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerXml, false);
-                    parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                    parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo.Title, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerXml, false);
+                    parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
                     if (!isClearTags && !string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString)))
                     {
@@ -240,7 +236,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         parsedContent = parsedContent.Replace("&", "&amp;");
                     }
 
-                    if (pageInfo.PublishmentSystemInfo.Additional.IsContentTitleBreakLine)
+                    if (pageInfo.SiteInfo.Additional.IsContentTitleBreakLine)
                     {
                         parsedContent = parsedContent.Replace("  ", !contextInfo.IsInnerElement ? "<br />" : string.Empty);
                     }
@@ -255,50 +251,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (BackgroundContentAttribute.Content.ToLower().Equals(type))
                 {
-                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.PublishmentSystemInfo, contentInfo.GetString(BackgroundContentAttribute.Content), pageInfo.IsLocal);
-
-                    if (pageInfo.PublishmentSystemInfo.Additional.IsInnerLink)
-                    {
-                        var innerLinkInfoList = pageInfo.CacheOfInnerLinkInfoList;
-                        if (innerLinkInfoList != null && innerLinkInfoList.Count > 0)
-                        {
-                            InnerLinkInfo newInnerLinkInfo;
-                            for (var i = 0; i < innerLinkInfoList.Count - 1; i++)
-                            {
-                                for (var j = i + 1; j < innerLinkInfoList.Count; j++)
-                                {
-                                    if (innerLinkInfoList[i].InnerLinkName.Length < innerLinkInfoList[j].InnerLinkName.Length)
-                                    {
-                                        newInnerLinkInfo = innerLinkInfoList[i];
-                                        innerLinkInfoList[i] = innerLinkInfoList[j];
-                                        innerLinkInfoList[j] = newInnerLinkInfo;
-                                    }
-                                }
-                            }
-
-                            var arrayLinkName = new List<string>();
-                            var arrayInnerLink = new List<string>();
-                            foreach (InnerLinkInfo innerLinkInfo in innerLinkInfoList)
-                            {
-                                newInnerLinkInfo = innerLinkInfo;
-                                arrayLinkName.Add(newInnerLinkInfo.InnerLinkName);
-                                arrayInnerLink.Add(newInnerLinkInfo.InnerString);
-                            }
-                            for (var m = 0; m < arrayLinkName.Count; m++)
-                            {
-                                var innerLinkName = arrayLinkName[m];
-                                arrayLinkName[m] = Guid.NewGuid().ToString();
-                                parsedContent = RegexUtils.Replace(
-                                    $"({innerLinkName.Replace(" ", "\\s")})(?!</a>)(?![^><]*>)", parsedContent, arrayLinkName[m], pageInfo.PublishmentSystemInfo.Additional.InnerLinkMaxNum);
-
-                            }
-                            for (var n = 0; n < arrayLinkName.Count; n++)
-                            {
-                                parsedContent = RegexUtils.Replace(
-                                    $"({arrayLinkName[n].Replace(" ", "\\s")})(?!</a>)(?![^><]*>)", parsedContent, arrayInnerLink[n], pageInfo.PublishmentSystemInfo.Additional.InnerLinkMaxNum);
-                            }
-                        }
-                    }
+                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.Content), pageInfo.IsLocal);
 
                     if (isClearTags)
                     {
@@ -329,43 +282,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     //if (contextInfo.IsInnerElement)
                     // {
-                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.PublishmentSystemInfo, contentInfo.GetString(BackgroundContentAttribute.Content), pageInfo.IsLocal);
-
-                    if (pageInfo.PublishmentSystemInfo.Additional.IsInnerLink)
-                    {
-                        var innerLinkInfoList = pageInfo.CacheOfInnerLinkInfoList;
-                        if (innerLinkInfoList != null && innerLinkInfoList.Count > 0)
-                        {
-                            InnerLinkInfo newInnerLinkInfo;
-                            for (var i = 0; i < innerLinkInfoList.Count - 1; i++)
-                            {
-                                for (var j = i + 1; j < innerLinkInfoList.Count; j++)
-                                {
-
-                                    if (innerLinkInfoList[i].InnerLinkName.Length < innerLinkInfoList[j].InnerLinkName.Length)
-                                    {
-                                        newInnerLinkInfo = innerLinkInfoList[i];
-                                        innerLinkInfoList[i] = innerLinkInfoList[j];
-                                        innerLinkInfoList[j] = newInnerLinkInfo;
-                                    }
-                                }
-                            }
-                            for (var i = 0; i < innerLinkInfoList.Count; i++)
-                            {
-                                newInnerLinkInfo = innerLinkInfoList[i];
-                                for (var j = i + 1; j < innerLinkInfoList.Count; j++)
-                                {
-                                    var lastInnerLinkInfo = innerLinkInfoList[j];
-                                    if (newInnerLinkInfo.InnerLinkName.Contains(lastInnerLinkInfo.InnerLinkName))
-                                    {
-                                        innerLinkInfoList.Remove(lastInnerLinkInfo);
-                                    }
-                                }
-                                parsedContent = RegexUtils.Replace(
-                                    $"({newInnerLinkInfo.InnerLinkName.Replace(" ", "\\s")})(?!</a>)(?![^><]*>)", parsedContent, newInnerLinkInfo.InnerString, pageInfo.PublishmentSystemInfo.Additional.InnerLinkMaxNum);
-                            }
-                        }
-                    }
+                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.Content), pageInfo.IsLocal);
 
                     if (isClearTags)
                     {
@@ -402,9 +319,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var sbParsedContent = new StringBuilder();
                         //第一条
                         sbParsedContent.Append(contextInfo.IsCurlyBrace
-                            ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo,
+                            ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo,
                                 contentInfo.GetString(BackgroundContentAttribute.ImageUrl), pageInfo.IsLocal)
-                            : InputParserUtility.GetImageOrFlashHtml(pageInfo.PublishmentSystemInfo,
+                            : InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo,
                                 contentInfo.GetString(BackgroundContentAttribute.ImageUrl),
                                 contextInfo.Attributes, false));
                         //第n条
@@ -416,8 +333,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                             {
                                 var newExtendValue = extendValue;
                                 sbParsedContent.Append(contextInfo.IsCurlyBrace
-                                    ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, newExtendValue, pageInfo.IsLocal)
-                                    : InputParserUtility.GetImageOrFlashHtml(pageInfo.PublishmentSystemInfo,
+                                    ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, newExtendValue, pageInfo.IsLocal)
+                                    : InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo,
                                         newExtendValue, contextInfo.Attributes, false));
                             }
                         }
@@ -429,7 +346,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var num = TranslateUtils.ToInt(no, 0);
                         if (num <= 1)
                         {
-                            parsedContent = contextInfo.IsCurlyBrace ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl), pageInfo.IsLocal) : InputParserUtility.GetImageOrFlashHtml(pageInfo.PublishmentSystemInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl), contextInfo.Attributes, false);
+                            parsedContent = contextInfo.IsCurlyBrace ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl), pageInfo.IsLocal) : InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl), contextInfo.Attributes, false);
                         }
                         else
                         {
@@ -443,7 +360,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                     var newExtendValue = extendValue;
                                     if (index == num)
                                     {
-                                        parsedContent = contextInfo.IsCurlyBrace ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, newExtendValue, pageInfo.IsLocal) : InputParserUtility.GetImageOrFlashHtml(pageInfo.PublishmentSystemInfo, newExtendValue, contextInfo.Attributes, false);
+                                        parsedContent = contextInfo.IsCurlyBrace ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, newExtendValue, pageInfo.IsLocal) : InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo, newExtendValue, contextInfo.Attributes, false);
                                         break;
                                     }
                                     index++;
@@ -458,7 +375,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         var sbParsedContent = new StringBuilder();
                         //第一条
-                        sbParsedContent.Append(InputParserUtility.GetVideoHtml(pageInfo.PublishmentSystemInfo, contentInfo.GetString(BackgroundContentAttribute.VideoUrl), contextInfo.Attributes, contextInfo.IsCurlyBrace));
+                        sbParsedContent.Append(InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.VideoUrl), contextInfo.Attributes, contextInfo.IsCurlyBrace));
 
                         //第n条
                         var extendAttributeName = ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.VideoUrl);
@@ -468,7 +385,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
                             {
 
-                                sbParsedContent.Append(InputParserUtility.GetVideoHtml(pageInfo.PublishmentSystemInfo, extendValue, contextInfo.Attributes, contextInfo.IsCurlyBrace));
+                                sbParsedContent.Append(InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, extendValue, contextInfo.Attributes, contextInfo.IsCurlyBrace));
 
                             }
                         }
@@ -480,7 +397,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var num = TranslateUtils.ToInt(no, 0);
                         if (num <= 1)
                         {
-                            parsedContent = InputParserUtility.GetVideoHtml(pageInfo.PublishmentSystemInfo, contentInfo.GetString(BackgroundContentAttribute.VideoUrl), contextInfo.Attributes, contextInfo.IsCurlyBrace);
+                            parsedContent = InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.VideoUrl), contextInfo.Attributes, contextInfo.IsCurlyBrace);
                         }
                         else
                         {
@@ -493,7 +410,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 {
                                     if (index == num)
                                     {
-                                        parsedContent = InputParserUtility.GetVideoHtml(pageInfo.PublishmentSystemInfo, extendValue, contextInfo.Attributes, contextInfo.IsCurlyBrace);
+                                        parsedContent = InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, extendValue, contextInfo.Attributes, contextInfo.IsCurlyBrace);
                                         break;
                                     }
                                     index++;
@@ -527,7 +444,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         else
                         {
                             //第一条
-                            sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.PublishmentSystemInfo, contentInfo.NodeId, contentInfo.Id, contentInfo.GetString(BackgroundContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerXml, false));
+                            sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.GetString(BackgroundContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerXml, false));
                             //第n条
                             var extendAttributeName = ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl);
                             var extendValues = contentInfo.GetString(extendAttributeName);
@@ -535,7 +452,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             {
                                 foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
                                 {
-                                    sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.PublishmentSystemInfo, contentInfo.NodeId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerXml, false));
+                                    sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerXml, false));
                                 }
                             }
 
@@ -574,14 +491,14 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                             if (!string.IsNullOrEmpty(parsedContent))
                             {
-                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, parsedContent, pageInfo.IsLocal);
+                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, parsedContent, pageInfo.IsLocal);
                             }
                         }
                         else
                         {
                             if (num <= 1)
                             {
-                                parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.PublishmentSystemInfo, contentInfo.NodeId, contentInfo.Id, contentInfo.GetString(BackgroundContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerXml, false);
+                                parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.GetString(BackgroundContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerXml, false);
                             }
                             else
                             {
@@ -594,7 +511,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                     {
                                         if (index == num)
                                         {
-                                            parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.PublishmentSystemInfo, contentInfo.NodeId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerXml, false);
+                                            parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerXml, false);
                                             break;
                                         }
                                         index++;
@@ -608,7 +525,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (BackgroundContentAttribute.NavigationUrl.ToLower().Equals(type))
                 {
-                    parsedContent = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo, pageInfo.IsLocal);
+                    parsedContent = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, pageInfo.IsLocal);
                 }
                 else if (ContentAttribute.Tags.ToLower().Equals(type))
                 {
@@ -623,28 +540,27 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (!string.IsNullOrEmpty(contentInfo.AddUserName))
                     {
-                        //var displayName = BaiRongDataProvider.AdministratorDao.GetDisplayName(contentInfo.AddUserName);
+                        //var displayName = DataProvider.AdministratorDao.GetDisplayName(contentInfo.AddUserName);
                         var displayName = Administrator.GetDisplayName(contentInfo.AddUserName);
                         parsedContent = string.IsNullOrEmpty(displayName) ? contentInfo.AddUserName : displayName;
                     }
                 }
                 else
                 {
-                    var isSelected = false;
-                    var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contentInfo.NodeId);
+                    var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contentInfo.ChannelId);
 
-                    if (!isSelected && contentInfo.ContainsKey(type))
+                    if (contentInfo.ContainsKey(type))
                     {
                         if (!ContentAttribute.AllAttributesLowercase.Contains(type.ToLower()))
                         {
-                            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(pageInfo.PublishmentSystemId, contentInfo.NodeId);
-                            var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, nodeInfo);
+                            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, contentInfo.ChannelId);
+                            var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, nodeInfo);
                             var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, type, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
                             var num = TranslateUtils.ToInt(no);
-                            parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo, separator, pageInfo.PublishmentSystemInfo, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerXml, false);
-                            parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                            parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo, separator, pageInfo.SiteInfo, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerXml, false);
+                            parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                         else
                         {

@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model;
+using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin.Models;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -17,20 +15,20 @@ namespace SiteServer.CMS.Provider
         {
             new TableColumnInfo
             {
-                ColumnName = nameof(RelatedFieldInfo.RelatedFieldId),
+                ColumnName = nameof(RelatedFieldInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
             new TableColumnInfo
             {
-                ColumnName = nameof(RelatedFieldInfo.RelatedFieldName),
+                ColumnName = nameof(RelatedFieldInfo.Title),
                 DataType = DataType.VarChar,
                 Length = 50
             },
             new TableColumnInfo
             {
-                ColumnName = nameof(RelatedFieldInfo.PublishmentSystemId),
+                ColumnName = nameof(RelatedFieldInfo.SiteId),
                 DataType = DataType.Integer
             },
             new TableColumnInfo
@@ -52,64 +50,64 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlUpdate = "UPDATE siteserver_RelatedField SET RelatedFieldName = @RelatedFieldName, TotalLevel = @TotalLevel, Prefixes = @Prefixes, Suffixes = @Suffixes WHERE RelatedFieldID = @RelatedFieldID";
-        private const string SqlDelete = "DELETE FROM siteserver_RelatedField WHERE RelatedFieldID = @RelatedFieldID";
+        private const string SqlUpdate = "UPDATE siteserver_RelatedField SET Title = @Title, TotalLevel = @TotalLevel, Prefixes = @Prefixes, Suffixes = @Suffixes WHERE Id = @Id";
+        private const string SqlDelete = "DELETE FROM siteserver_RelatedField WHERE Id = @Id";
 
-        private const string ParmRelatedFieldId = "@RelatedFieldID";
-        private const string ParmRelatedFieldName = "@RelatedFieldName";
-		private const string ParmPublishmentsystemid = "@PublishmentSystemID";
+        private const string ParmId = "@Id";
+        private const string ParmTitle = "@Title";
+		private const string ParmSiteId = "@SiteId";
         private const string ParmTotalLevel = "@TotalLevel";
         private const string ParmPrefixes = "@Prefixes";
         private const string ParmSuffixes = "@Suffixes";
 
 		public int Insert(RelatedFieldInfo relatedFieldInfo) 
 		{
-            const string sqlString = "INSERT INTO siteserver_RelatedField (RelatedFieldName, PublishmentSystemID, TotalLevel, Prefixes, Suffixes) VALUES (@RelatedFieldName, @PublishmentSystemID, @TotalLevel, @Prefixes, @Suffixes)";
+            const string sqlString = "INSERT INTO siteserver_RelatedField (Title, SiteId, TotalLevel, Prefixes, Suffixes) VALUES (@Title, @SiteId, @TotalLevel, @Prefixes, @Suffixes)";
 
 			var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmRelatedFieldName, DataType.VarChar, 50, relatedFieldInfo.RelatedFieldName),
-				GetParameter(ParmPublishmentsystemid, DataType.Integer, relatedFieldInfo.PublishmentSystemId),
+				GetParameter(ParmTitle, DataType.VarChar, 50, relatedFieldInfo.Title),
+				GetParameter(ParmSiteId, DataType.Integer, relatedFieldInfo.SiteId),
                 GetParameter(ParmTotalLevel, DataType.Integer, relatedFieldInfo.TotalLevel),
                 GetParameter(ParmPrefixes, DataType.VarChar, 255, relatedFieldInfo.Prefixes),
                 GetParameter(ParmSuffixes, DataType.VarChar, 255, relatedFieldInfo.Suffixes),
 			};
 
-            return ExecuteNonQueryAndReturnId(TableName, nameof(RelatedFieldInfo.RelatedFieldId), sqlString, insertParms);
+            return ExecuteNonQueryAndReturnId(TableName, nameof(RelatedFieldInfo.Id), sqlString, insertParms);
 		}
 
         public void Update(RelatedFieldInfo relatedFieldInfo) 
 		{
 			var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmRelatedFieldName, DataType.VarChar, 50, relatedFieldInfo.RelatedFieldName),
+				GetParameter(ParmTitle, DataType.VarChar, 50, relatedFieldInfo.Title),
                 GetParameter(ParmTotalLevel, DataType.Integer, relatedFieldInfo.TotalLevel),
                 GetParameter(ParmPrefixes, DataType.VarChar, 255, relatedFieldInfo.Prefixes),
                 GetParameter(ParmSuffixes, DataType.VarChar, 255, relatedFieldInfo.Suffixes),
-				GetParameter(ParmRelatedFieldId, DataType.Integer, relatedFieldInfo.RelatedFieldId)
+				GetParameter(ParmId, DataType.Integer, relatedFieldInfo.Id)
 			};
 
             ExecuteNonQuery(SqlUpdate, updateParms);
 		}
 
-		public void Delete(int relatedFieldId)
+		public void Delete(int id)
 		{
 			var relatedFieldInfoParms = new IDataParameter[]
 			{
-				GetParameter(ParmRelatedFieldId, DataType.Integer, relatedFieldId)
+				GetParameter(ParmId, DataType.Integer, id)
 			};
 
             ExecuteNonQuery(SqlDelete, relatedFieldInfoParms);
 		}
 
-        public RelatedFieldInfo GetRelatedFieldInfo(int relatedFieldId)
+        public RelatedFieldInfo GetRelatedFieldInfo(int id)
 		{
-            if (relatedFieldId <= 0) return null;
+            if (id <= 0) return null;
 
             RelatedFieldInfo relatedFieldInfo = null;
 
 		    string sqlString =
-		        $"SELECT RelatedFieldID, RelatedFieldName, PublishmentSystemID, TotalLevel, Prefixes, Suffixes FROM siteserver_RelatedField WHERE RelatedFieldID = {relatedFieldId}";
+		        $"SELECT Id, Title, SiteId, TotalLevel, Prefixes, Suffixes FROM siteserver_RelatedField WHERE Id = {id}";
 
 		    using (var rdr = ExecuteReader(sqlString))
 		    {
@@ -124,16 +122,16 @@ namespace SiteServer.CMS.Provider
 		    return relatedFieldInfo;
 		}
 
-        public RelatedFieldInfo GetRelatedFieldInfo(int publishmentSystemId, string relatedFieldName)
+        public RelatedFieldInfo GetRelatedFieldInfo(int siteId, string relatedFieldName)
         {
             RelatedFieldInfo relatedFieldInfo = null;
 
             string sqlString =
-                $"SELECT RelatedFieldID, RelatedFieldName, PublishmentSystemID, TotalLevel, Prefixes, Suffixes FROM siteserver_RelatedField WHERE PublishmentSystemID = {publishmentSystemId} AND RelatedFieldName = @RelatedFieldName";
+                $"SELECT Id, Title, SiteId, TotalLevel, Prefixes, Suffixes FROM siteserver_RelatedField WHERE SiteId = {siteId} AND Title = @Title";
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmRelatedFieldName, DataType.VarChar, 255, relatedFieldName)			 
+				GetParameter(ParmTitle, DataType.VarChar, 255, relatedFieldName)			 
 			};
 
             using (var rdr = ExecuteReader(sqlString, selectParms))
@@ -149,12 +147,12 @@ namespace SiteServer.CMS.Provider
             return relatedFieldInfo;
         }
 
-        public string GetRelatedFieldName(int relatedFieldId)
+        public string GetTitle(int id)
         {
             var relatedFieldName = string.Empty;
 
             string sqlString =
-                $"SELECT RelatedFieldName FROM siteserver_RelatedField WHERE RelatedFieldID = {relatedFieldId}";
+                $"SELECT Title FROM siteserver_RelatedField WHERE Id = {id}";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -168,11 +166,11 @@ namespace SiteServer.CMS.Provider
             return relatedFieldName;
         }
 
-		public List<RelatedFieldInfo> GetRelatedFieldInfoList(int publishmentSystemId)
+		public List<RelatedFieldInfo> GetRelatedFieldInfoList(int siteId)
 		{
 			var list = new List<RelatedFieldInfo>();
             string sqlString =
-                $"SELECT RelatedFieldID, RelatedFieldName, PublishmentSystemID, TotalLevel, Prefixes, Suffixes FROM siteserver_RelatedField WHERE PublishmentSystemID = {publishmentSystemId} ORDER BY RelatedFieldID";
+                $"SELECT Id, Title, SiteId, TotalLevel, Prefixes, Suffixes FROM siteserver_RelatedField WHERE SiteId = {siteId} ORDER BY Id";
 
 			using (var rdr = ExecuteReader(sqlString)) 
 			{
@@ -187,11 +185,11 @@ namespace SiteServer.CMS.Provider
 			return list;
 		}
 
-		public List<string> GetRelatedFieldNameList(int publishmentSystemId)
+		public List<string> GetTitleList(int siteId)
 		{
 			var list = new List<string>();
             string sqlString =
-                $"SELECT RelatedFieldName FROM siteserver_RelatedField WHERE PublishmentSystemID = {publishmentSystemId} ORDER BY RelatedFieldID";
+                $"SELECT Title FROM siteserver_RelatedField WHERE SiteId = {siteId} ORDER BY Id";
 			
 			using (var rdr = ExecuteReader(sqlString)) 
 			{
@@ -205,7 +203,7 @@ namespace SiteServer.CMS.Provider
 			return list;
 		}
 
-        public string GetImportRelatedFieldName(int publishmentSystemId, string relatedFieldName)
+        public string GetImportTitle(int siteId, string relatedFieldName)
         {
             string importName;
             if (relatedFieldName.IndexOf("_", StringComparison.Ordinal) != -1)
@@ -229,10 +227,10 @@ namespace SiteServer.CMS.Provider
                 importName = relatedFieldName + "_1";
             }
 
-            var relatedFieldInfo = GetRelatedFieldInfo(publishmentSystemId, relatedFieldName);
+            var relatedFieldInfo = GetRelatedFieldInfo(siteId, relatedFieldName);
             if (relatedFieldInfo != null)
             {
-                importName = GetImportRelatedFieldName(publishmentSystemId, importName);
+                importName = GetImportTitle(siteId, importName);
             }
 
             return importName;

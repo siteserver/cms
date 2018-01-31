@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -46,7 +47,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
 
             var userName = Request.QueryString["UserName"];
-            _userInfo = BaiRongDataProvider.UserDao.GetUserInfoByAccount(userName);
+            _userInfo = DataProvider.UserDao.GetUserInfoByAccount(userName);
 
             LtlUserName.Text = _userInfo.UserName;
             LtlDisplayName.Text = _userInfo.DisplayName;
