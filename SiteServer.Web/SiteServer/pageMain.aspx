@@ -112,6 +112,8 @@
     <script src="/signalr/hubs" type="text/javascript"></script>
     <script src="inc/script.js" type="text/javascript"></script>
     <script src="assets/jQuery-slimScroll/jquery.slimscroll.min.js" type="text/javascript"></script>
+    <script src="assets/js/apiUtils.js"></script>
+    <script src="assets/js/compareversion.js"></script>
 
     <script type="text/javascript">
       var siteId = <%=SiteId%>;
@@ -171,32 +173,30 @@
           wheelStep: 5
         });
 
-        $.ajax({
-          url: "<%=VersionApiUrl%>",
-          type: "GET",
-          dataType: "json",
-          success: function (data) {
-            if (!data || !data.version) return;
+        var api = new apiUtils.Api();
+        var isNightly = <%=IsNightly%>;
 
-            var version = data.version;
-            if (version.indexOf('-') != -1) {
-              version = version.substring(0, version.indexOf('-'));
-            }
-            if (version == '<%=CurrentVersion%>') return;
+        api.get({
+          isNightly: isNightly
+        }, function (err, res) {
+          if (!err && res) {
+            if (!res || !res.version) return;
+
+            if (compareversion('<%=CurrentVersion%>', res.version) != -1) return;
 
             $('#newVersion').show();
-            // setTimeout(function () {
-            //   $('#newVersionCard').fadeOut();
-            // }, 5000);
-            $('#newVersionLast').html(data.version);
-            $('#newVersionDate').html(data.published);
-            if (data.releaseNotes) {
-              $('#newVersionNotes').html(data.releaseNotes + '<br />');
+            $('#newVersionLast').html(res.version);
+            $('#newVersionDate').html(res.published);
+            if (res.releaseNotes) {
+              $('#newVersionNotes').html(res.releaseNotes + '<br />');
             }
-            $('#newVersionLink').attr('href', 'http://www.siteserver.cn/releasenotes/index.html?version=' +
-              data.version);
+            var major = res.version.split('.')[0];
+            var minor = res.version.split('.')[1];
+            var updatesUrl = 'http://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
+
+            $('#newVersionLink').attr('href', updatesUrl);
           }
-        });
+        }, 'packages', '<%=PackageId%>');
       });
     </script>
     <!--#include file="inc/foot.html"-->

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using SiteServer.CMS.Controllers.Sys.Packaging;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
-using ApiRouteVersion = SiteServer.CMS.Controllers.Sys.Packaging.ApiRouteVersion;
 
 namespace SiteServer.BackgroundPages.Plugins
 {
@@ -15,7 +17,44 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public string AdminUrl => PageUtils.GetAdminDirectoryUrl(string.Empty);
 
-        public string VersionApiUrl => ApiRouteVersion.GetPluginsUrl(PageUtility.InnerApiUrl);
+        public string IsNightly => WebConfigUtils.IsNightlyUpdate.ToString().ToLower();
+
+        public string Packages
+        {
+            get
+            {
+                var list = new List<object>();
+
+                var dict = PluginManager.GetPluginIdAndVersionDict();
+
+                foreach (var pluginId in dict.Keys)
+                {
+                    var version = dict[pluginId];
+
+                    var versionAndNotes = new
+                    {
+                        Id = pluginId,
+                        Version = version
+                    };
+
+                    list.Add(versionAndNotes);
+                }
+
+                return TranslateUtils.JsonSerialize(list);
+            }
+        }
+
+        public string PackageIds
+        {
+            get
+            {
+                var dict = PluginManager.GetPluginIdAndVersionDict();
+
+                var list = dict.Keys.ToList();
+
+                return TranslateUtils.ObjectCollectionToString(list);
+            }
+        }
 
         public string DownloadApiUrl => ApiRouteDownload.GetUrl(PageUtility.InnerApiUrl);
 

@@ -10,7 +10,6 @@ namespace SiteServer.Utils.IO
         public const string Site = nameof(Site);
         public const string TableMetadata = nameof(TableMetadata);
         public const string TableColumn = nameof(TableColumn);
-        public const string Plugin = nameof(Plugin);
 
         private FileSystemWatcher _fileSystemWatcher;
         private readonly string _cacheFilePath;

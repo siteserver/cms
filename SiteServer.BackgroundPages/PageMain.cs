@@ -13,7 +13,7 @@ using SiteServer.CMS.Controllers.Preview;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
-using ApiRouteVersion = SiteServer.CMS.Controllers.Sys.Packaging.ApiRouteVersion;
+using SiteServer.CMS.Packaging;
 
 namespace SiteServer.BackgroundPages
 {
@@ -32,7 +32,9 @@ namespace SiteServer.BackgroundPages
 
         protected override bool IsSinglePage => true;
 
-        public string VersionApiUrl => ApiRouteVersion.GetCmsUrl(PageUtility.InnerApiUrl);
+        public string PackageId = PackageUtils.PackageIdSsCms;
+
+        public string IsNightly => WebConfigUtils.IsNightlyUpdate.ToString().ToLower();
 
         public string CurrentVersion => SystemManager.Version;
 

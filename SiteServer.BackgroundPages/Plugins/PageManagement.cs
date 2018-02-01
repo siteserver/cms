@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
@@ -11,20 +12,16 @@ namespace SiteServer.BackgroundPages.Plugins
 {
     public class PageManagement : BasePage
     {
-        public Literal LtlNav;
         public Button BtnReload;
-        public PlaceHolder PhRunnable;
-        public Repeater RptRunnable;
-        public PlaceHolder PhNotRunnable;
-        public Repeater RptNotRunnable;
-
-        private int _type;
+        public Repeater RptEnabled;
+        public Repeater RptDisabled;
+        public Repeater RptError;
 
         public static string GetRedirectUrl()
         {
             return PageUtils.GetPluginsUrl(nameof(PageManagement), new NameValueCollection
             {
-                {"type", "0"}
+                {"type", "1"}
             });
         }
 
@@ -34,6 +31,51 @@ namespace SiteServer.BackgroundPages.Plugins
             {
                 {"type", type.ToString()}
             });
+        }
+
+        public int PageType { get; set; }
+
+        public int CountEnabled { get; set; }
+        public int CountDisabled { get; set; }
+        public int CountError { get; set; }
+
+        public string IsNightly => WebConfigUtils.IsNightlyUpdate.ToString().ToLower();
+
+        public string Packages
+        {
+            get
+            {
+                var list = new List<object>();
+
+                var dict = PluginManager.GetPluginIdAndVersionDict();
+
+                foreach (var pluginId in dict.Keys)
+                {
+                    var version = dict[pluginId];
+
+                    var versionAndNotes = new
+                    {
+                        Id = pluginId,
+                        Version = version
+                    };
+
+                    list.Add(versionAndNotes);
+                }
+
+                return TranslateUtils.JsonSerialize(list);
+            }
+        }
+
+        public string PackageIds
+        {
+            get
+            {
+                var dict = PluginManager.GetPluginIdAndVersionDict();
+
+                var list = dict.Keys.ToList();
+
+                return TranslateUtils.ObjectCollectionToString(list);
+            }
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -70,95 +112,47 @@ namespace SiteServer.BackgroundPages.Plugins
 
             if (Page.IsPostBack) return;
 
-            _type = Body.GetQueryInt("type");
+            PageType = Body.GetQueryInt("type", 1);
 
             VerifyAdministratorPermissions(ConfigManager.Permissions.Plugins.Management);
 
-            var list = new List<PluginInfo>();
-            int[] arr = {0, 0, 0, 0};
+            var listEnabled = new List<PluginInfo>();
+            var listDisabled = new List<PluginInfo>();
+            var listError = new List<PluginInfo>();
+
             foreach (var pluginInfo in PluginManager.AllPluginInfoList)
             {
                 if (pluginInfo.Plugin == null)
                 {
-                    arr[3]++;
-                    if (_type == 3)
-                    {
-                        list.Add(pluginInfo);
-                    }
+                    CountError++;
+                    listError.Add(pluginInfo);
                 }
                 else
                 {
-                    if (!pluginInfo.IsDisabled)
+                    if (pluginInfo.IsDisabled)
                     {
-                        arr[0]++;
-                        arr[1]++;
+                        CountDisabled++;
+                        listDisabled.Add(pluginInfo);
                     }
                     else
                     {
-                        arr[0]++;
-                        arr[2]++;
-                    }
-
-                    if (_type == 0)
-                    {
-                        list.Add(pluginInfo);
-                    }
-                    else if (_type == 1)
-                    {
-                        if (!pluginInfo.IsDisabled)
-                        {
-                            list.Add(pluginInfo);
-                        }
-                    }
-                    else if (_type == 2)
-                    {
-                        if (pluginInfo.IsDisabled)
-                        {
-                            list.Add(pluginInfo);
-                        }
+                        CountEnabled++;
+                        listEnabled.Add(pluginInfo);
                     }
                 }
             }
 
-            LtlNav.Text = $@"
-<li class=""nav-item {(_type == 0 ? "active" : string.Empty)}"">
-    <a class=""nav-link"" href=""{GetRedirectUrl(0)}"">所有插件 <span class=""badge {(_type == 0 ? "badge-light" : "badge-secondary")}"">{arr[0]}</span></a>
-</li>
-<li class=""nav-item {(_type == 1 ? "active" : string.Empty)}"">
-    <a class=""nav-link"" href=""{GetRedirectUrl(1)}"">已启用 <span class=""badge {(_type == 1 ? "badge-light" : "badge-secondary")}"">{arr[1]}</span></a>
-</li>
-<li class=""nav-item {(_type == 2 ? "active" : string.Empty)}"">
-    <a class=""nav-link"" href=""{GetRedirectUrl(2)}"">已禁用 <span class=""badge {(_type == 2 ? "badge-light" : "badge-secondary")}"">{arr[2]}</span></a>
-</li>";
-            if (arr[3] > 0)
-            {
-                LtlNav.Text += $@"
-<li class=""nav-item {(_type == 3 ? "active" : string.Empty)}"">
-    <a class=""nav-link"" href=""{GetRedirectUrl(3)}"">运行错误 <span class=""badge badge-danger"" {(_type == 3
-                    ? @"style=""color: #fff"""
-                    : "")}>{arr[3]}</span></a>
-</li>";
-                
-            }
-            
-            if (_type == 3)
-            {
-                PhRunnable.Visible = false;
-                PhNotRunnable.Visible = true;
+            RptEnabled.DataSource = listEnabled;
+            RptEnabled.ItemDataBound += RptRunnable_ItemDataBound;
+            RptEnabled.DataBind();
 
-                RptNotRunnable.DataSource = list;
-                RptNotRunnable.ItemDataBound += RptNotRunnable_ItemDataBound;
-                RptNotRunnable.DataBind();
-            }
-            else
-            {
-                PhRunnable.Visible = true;
-                PhNotRunnable.Visible = false;
+            RptDisabled.DataSource = listDisabled;
+            RptDisabled.ItemDataBound += RptRunnable_ItemDataBound;
+            RptDisabled.DataBind();
 
-                RptRunnable.DataSource = list;
-                RptRunnable.ItemDataBound += RptRunnable_ItemDataBound;
-                RptRunnable.DataBind();
-            }
+            RptError.DataSource = listError;
+            RptError.ItemDataBound += RptError_ItemDataBound;
+            RptError.DataBind();
         }
 
         public void BtnReload_Click(object sender, EventArgs e)
@@ -226,7 +220,7 @@ namespace SiteServer.BackgroundPages.Plugins
 <a href=""javascript:;"" onClick=""{AlertUtils.ConfirmDelete("删除插件", $"此操作将会删除“{pluginInfo.Id}”插件，确认吗？", deleteUrl)}"">删除插件</a>";
         }
 
-        private void RptNotRunnable_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        private void RptError_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
             if (e.Item.ItemType != ListItemType.AlternatingItem && e.Item.ItemType != ListItemType.Item) return;
 

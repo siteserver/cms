@@ -19,9 +19,7 @@ namespace SiteServer.Utils
         public static string AdminDirectory { get; private set; }
         public static string SecretKey { get; private set; }
 
-        public static bool AllowNightlyBuild { get; private set; }
-        public static bool AllowPrereleaseVersions { get; private set; }
-        public static bool AllowDebugRecord { get; private set; }
+        public static bool IsNightlyUpdate { get; private set; }
 
         public static void Load(string physicalApplicationPath)
         {
@@ -89,28 +87,12 @@ namespace SiteServer.Utils
                                     }
                                 }
                                 
-                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, "VersionSettings:" + nameof(AllowNightlyBuild)))
+                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(IsNightlyUpdate)))
                                 {
                                     var attrValue = setting.Attributes["value"];
                                     if (attrValue != null)
                                     {
-                                        AllowNightlyBuild = TranslateUtils.ToBool(attrValue.Value);
-                                    }
-                                }
-                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, "VersionSettings:" + nameof(AllowPrereleaseVersions)))
-                                {
-                                    var attrValue = setting.Attributes["value"];
-                                    if (attrValue != null)
-                                    {
-                                        AllowPrereleaseVersions = TranslateUtils.ToBool(attrValue.Value);
-                                    }
-                                }
-                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, "VersionSettings:" + nameof(AllowDebugRecord)))
-                                {
-                                    var attrValue = setting.Attributes["value"];
-                                    if (attrValue != null)
-                                    {
-                                        AllowDebugRecord = TranslateUtils.ToBool(attrValue.Value);
+                                        IsNightlyUpdate = TranslateUtils.ToBool(attrValue.Value);
                                     }
                                 }
                             }

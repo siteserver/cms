@@ -5,13 +5,13 @@ using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages
 {
-    public class PageUpdateDatabase : BasePage
+    public class PageSyncDatabase : BasePage
     {
         protected override bool IsSinglePage => true;
 
         public static string GetRedirectUrl()
         {
-            return PageUtils.GetSiteServerUrl(nameof(PageUpdateDatabase), null);
+            return PageUtils.GetSiteServerUrl(nameof(PageSyncDatabase), null);
         }
 
         public string UpdateDatabaseApiUrl => ApiRouteSyncDatabase.GetUrl(PageUtility.InnerApiUrl);

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using SiteServer.Utils;
-using SiteServer.Utils.IO;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin.Apis;
@@ -24,18 +23,6 @@ namespace SiteServer.CMS.Plugin
         {
             private static readonly object LockObject = new object();
             private const string CacheKey = "SiteServer.CMS.Plugin.PluginCache";
-            private static readonly FileWatcherClass FileWatcher;
-
-            static PluginManagerCache()
-            {
-                FileWatcher = new FileWatcherClass(FileWatcherClass.Plugin);
-                FileWatcher.OnFileChange += FileWatcher_OnFileChange;
-            }
-
-            private static void FileWatcher_OnFileChange(object sender, EventArgs e)
-            {
-                CacheUtils.Remove(CacheKey);
-            }
 
             private static SortedList<string, PluginInfo> Load()
             {
@@ -178,7 +165,6 @@ namespace SiteServer.CMS.Plugin
             public static void Clear()
             {
                 CacheUtils.Remove(CacheKey);
-                FileWatcher.UpdateCacheFile();
             }
 
             public static SortedList<string, PluginInfo> GetPluginSortedList()

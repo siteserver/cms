@@ -24,7 +24,7 @@ namespace SiteServer.BackgroundPages
                     message = pair.Key;
                     stackTrace = pair.Value;
 
-                    LtlStackTrace.Text = $@"<script>Rollbar.error(""{StringUtils.ToJsString(message)}"", {{version: ""{StringUtils.ToJsString(SystemManager.Version) + (WebConfigUtils.AllowNightlyBuild ? "-nightly" : string.Empty)}"", stackTrace: ""{StringUtils.ToJsString(stackTrace)}""}});</script>";
+                    LtlStackTrace.Text = $@"<script>Rollbar.error(""{StringUtils.ToJsString(message)}"", {{version: ""{StringUtils.ToJsString(SystemManager.Version) + (WebConfigUtils.IsNightlyUpdate ? "-nightly" : string.Empty)}"", stackTrace: ""{StringUtils.ToJsString(stackTrace)}""}});</script>";
                 }
                 if (string.IsNullOrEmpty(message))
                 {

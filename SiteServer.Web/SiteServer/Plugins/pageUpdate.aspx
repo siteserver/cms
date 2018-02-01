@@ -36,7 +36,7 @@
             </li>
           </ul>
 
-          <div class="alert alert-danger" v-bind:style="{ display: errorMessage ? '' : 'none' }">
+          <div class="alert alert-danger" v-bind:style="{ display: errorMessage ? '' : 'none' }" style="display: none">
             {{ errorMessage }}
           </div>
 
@@ -50,18 +50,18 @@
               </div>
               <div class="panel-body">
 
-                <div v-bind:style="{ display: !packages ? '' : 'none' }" class="jumbotron text-center">
+                <div v-bind:style="{ display: !isGetVersions ? '' : 'none' }" class="jumbotron text-center">
                   <img src="../pic/animated_loading.gif" />
                   <br />
                   <br />
                   <p class="lead">正在检查插件更新，请稍后...</p>
                 </div>
 
-                <div v-bind:style="{ display: packages && packages.length == 0 ? '' : 'none' }" class="jumbotron" style="display: none">
+                <div v-bind:style="{ display: isGetVersions && packages.length == 0 ? '' : 'none' }" class="jumbotron" style="display: none">
                   <h4 class="display-5">未发现插件新版本</h4>
                 </div>
 
-                <div v-bind:style="{ display: packages && packages.length > 0 ? '' : 'none' }" class="table-responsive" style="display: none">
+                <div v-bind:style="{ display: isGetVersions && packages.length > 0 ? '' : 'none' }" class="table-responsive" style="display: none">
 
                   <div class="alert alert-success">
                     发现以下插件发布了新版本，请选中需要更新的插件后点击下一步开始升级
@@ -107,7 +107,6 @@
                           {{ package.published }}
                         </td>
                       </tr>
-
                     </tbody>
                   </table>
 
@@ -115,7 +114,7 @@
 
                   <div class="text-center">
                     <input class="btn" @click="download" v-bind:disabled="(checkedIds.length == 0)" v-bind:class="{ 'btn-primary': checkedIds.length > 0 }"
-                      type="button" value="下一步" class="">
+                      type="button" value="下一步">
                   </div>
 
                 </div>
@@ -276,15 +275,20 @@
     </html>
     <!--#include file="../inc/foot.html"-->
     <script src="../assets/vue/vue.min.js"></script>
-    <script src="../assets/apiUtils.js"></script>
-    <script>
-      var versionApi = new apiUtils.Api('<%=VersionApiUrl%>');
+    <script src="../assets/js/apiUtils.js"></script>
+    <script src="../assets/js/compareversion.js"></script>
+    <script type="text/javascript">
+
+      var versionApi = new apiUtils.Api();
       var downloadApi = new apiUtils.Api('<%=DownloadApiUrl%>');
       var updateApi = new apiUtils.Api('<%=UpdateApiUrl%>');
+      var isNightly = <%=IsNightly%>;
 
       var data = {
         step: 1,
-        packages: null,
+        isGetVersions: false,
+        packages: <%=Packages%>,
+        packageIds: '<%=PackageIds%>',
         checkedIds: [],
         isCheckAll: false,
         downloadingId: 0,
@@ -294,16 +298,36 @@
         errorMessage: null
       };
 
-      versionApi.get(null, function (err, res) {
-        if (!err && res) {
-          data.packages = res;
-        }
-      });
-
-      new Vue({
+      var $vue = new Vue({
         el: '#main',
         data: data,
         methods: {
+          version: function () {
+            var $this = this;
+
+            versionApi.get({
+              isNightly: isNightly,
+              packageIds: this.packageIds
+            }, function (err, res) {
+              if (!err && res) {
+                var packages = [];
+                for (var i = 0; i < res.length; i++) {
+                  var package = res[i];
+                  var installedPackage = $.grep($this.packages, function (e) {
+                    return e.id == package.id;
+                  });
+                  if (installedPackage.length == 1) {
+                    package.installedVersion = installedPackage[0].version;
+                    if (compareversion(package.installedVersion, package.version) == -1) {
+                      packages.push(package);
+                    }
+                  }
+                }
+                $this.packages = packages;
+                $this.isGetVersions = true;
+              }
+            }, 'packages/actions/list');
+          },
           checkAll: function () {
             this.isCheckAll = !this.isCheckAll;
             this.checkedIds = [];
@@ -388,4 +412,6 @@
           }
         }
       });
+
+      $vue.version();
     </script>

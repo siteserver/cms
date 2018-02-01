@@ -30,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SiteServer.Plugin, Version=1.2.28.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.2.28-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.2.29.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.2.29-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -449,7 +449,7 @@
     <Compile Include="Core\VCManager.cs" />
     <Compile Include="Core\VirtualRecordCount.cs" />
     <Compile Include="Core\WebUtils.cs" />
-    <Compile Include="PageUpdateDatabase.cs">
+    <Compile Include="PageSyncDatabase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageUpdateSystem.cs">

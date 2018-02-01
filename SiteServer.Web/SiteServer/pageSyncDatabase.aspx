@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.PageUpdateDatabase" %>
+﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.PageSyncDatabase" %>
   <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>

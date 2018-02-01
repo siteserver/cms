@@ -8,8 +8,8 @@ var apiUtils = {
             return decodeURIComponent(result[1]);
         };
 
-        this.apiUrl = apiUrl || 'http://cloud.siteserver.cn/api/v1';
-        // this.apiUrl = 'http://localhost:5000/api/v1';
+        this.apiUrl = apiUrl || 'http://api.siteserver.cn/v1.0';
+        // this.apiUrl = 'http://localhost:5000/v1.0';
 
         this._getURL = function(url, data, method) {
             url += ((/\?/).test(url) ? '&' : '?');
@@ -24,7 +24,7 @@ var apiUtils = {
                 }
                 url += "&" + pairs.join("&");
             }
-            return url + '&' + (new Date()).getTime();
+            return (url + '&' + (new Date()).getTime()).replace('?&', '?');
         };
 
         this.request = function(method, path, data, cb) {

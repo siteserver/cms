@@ -64,8 +64,8 @@
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=1.2.28.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.2.28-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.2.29.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.2.29-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -129,7 +129,6 @@
     <Compile Include="Controllers\Sys\Packaging\PackagingUpdateController.cs" />
     <Compile Include="Controllers\Sys\Packaging\PackagingSyncDatabaseController.cs" />
     <Compile Include="Controllers\Sys\Packaging\PackagingDownloadController.cs" />
-    <Compile Include="Controllers\Sys\Packaging\PackagingVersionController.cs" />
     <Compile Include="Controllers\Sys\Editors\UEditorController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsAddContentHitsController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsDownloadController.cs" />

@@ -50,7 +50,7 @@ namespace SiteServer.BackgroundPages
                 }
                 else if (SystemManager.IsNeedUpdate())
                 {
-                    PageUtils.Redirect(PageUpdateDatabase.GetRedirectUrl());
+                    PageUtils.Redirect(PageSyncDatabase.GetRedirectUrl());
                 }
                 else
                 {

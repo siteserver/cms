@@ -11,12 +11,12 @@
     <body>
       <form id="main" class="m-l-15 m-r-15" runat="server">
 
-        <div class="text-center" style="margin-top: 100px" v-bind:style="{ display: precentlyPackages ? 'none' : '' }">
+        <div class="text-center" style="margin-top: 100px" v-bind:style="{ display: featuredPackages ? 'none' : '' }">
           <img class="mt-3" src="../assets/layer/skin/default/xubox_loading0.gif" />
           <p class="lead mt-3 text-nowrap">载入中，请稍后...</p>
         </div>
 
-        <div v-bind:style="{ display: precentlyPackages ? '' : 'none' }" style="display: none">
+        <div v-bind:style="{ display: featuredPackages ? '' : 'none' }" style="display: none">
           <div class="card-box">
 
             <div class="row">
@@ -115,79 +115,6 @@
               </div>
             </div>
 
-            <div v-bind:style="{ display: popularPackages && !searchPackages ? '' : 'none' }">
-              <div class="page-title-box">
-                <!-- <a href="#" class="float-right">更多</a> -->
-                <h4 class="page-title">热门</h4>
-              </div>
-
-              <div class="row">
-                <div class="col-6 col-lg-4" v-for="package in popularPackages">
-                  <div class="card-box widget-user">
-                    <a v-bind:href="'pageView.aspx?pluginId=' + package.id">
-                      <img v-bind:src="package.iconUrl" class="img-responsive">
-                      <div class="wid-u-info">
-                        <h5 class="m-t-0 m-b-5">
-                          {{ package.title }}
-                          <br />
-                          <code>{{ package.id }}</code>
-                        </h5>
-                        <p class="text-muted m-b-5 font-13" v-bind:title="package.description">{{ package.description }}</p>
-                        <!-- <span title="插件安装量">
-                          <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i>
-                          <small style="font-size: 14px;">33K </small>
-                        </span>
-                        <span style="margin: 0 5px"></span>
-                        <span title="插件综合评分">
-                          <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                          <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                          <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                          <i class="ion-ios-star-half" style="color: #ffb900;font-size: 18px"></i>
-                          <i class="ion-ios-star-outline" style="color: #ffb900;font-size: 18px"></i>
-                        </span> -->
-                      </div>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div v-bind:style="{ display: precentlyPackages && !searchPackages ? '' : 'none' }">
-              <div class="page-title-box">
-                <!-- <a href="#" class="float-right">更多</a> -->
-                <h4 class="page-title">新增</h4>
-              </div>
-
-              <div class="row">
-                <div class="col-6 col-lg-4" v-for="package in precentlyPackages">
-                  <div class="card-box widget-user">
-                    <a v-bind:href="'pageView.aspx?pluginId=' + package.id">
-                      <img v-bind:src="package.iconUrl" class="img-responsive">
-                      <div class="wid-u-info">
-                        <h5 class="m-t-0 m-b-5">
-                          {{ package.title }}
-                          <br />
-                          <code>{{ package.id }}</code>
-                        </h5>
-                        <p class="text-muted m-b-5 font-13" v-bind:title="package.description">{{ package.description }}</p>
-                        <!-- <span title="插件安装量">
-                          <i class="ion-ios-cloud-download-outline" style="font-size: 18px;"></i>
-                          <small style="font-size: 14px;">33K </small>
-                        </span>
-                        <span style="margin: 0 5px"></span>
-                        <span title="插件综合评分">
-                          <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                          <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                          <i class="ion-ios-star" style="color: #ffb900;font-size: 18px"></i>
-                          <i class="ion-ios-star-half" style="color: #ffb900;font-size: 18px"></i>
-                          <i class="ion-ios-star-outline" style="color: #ffb900;font-size: 18px"></i>
-                        </span> -->
-                      </div>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -197,48 +124,27 @@
     </html>
 
     <script src="../assets/vue/vue.min.js"></script>
-    <script src="../assets/apiUtils.js"></script>
+    <script src="../assets/js/apiUtils.js"></script>
     <script>
       var api = new apiUtils.Api();
 
-      var allowNightlyBuild = <%=AllowNightlyBuild%>;
-      var allowPrereleaseVersions = <%=AllowPrereleaseVersions%>;
+      var isNightly = <%=IsNightly%>;
 
       var data = {
         searching: false,
         word: null,
         featuredPackages: null,
-        popularPackages: null,
-        precentlyPackages: null,
         searchPackages: null,
       };
 
       api.get({
-        allowNightlyBuild: allowNightlyBuild,
-        allowPrereleaseVersions: allowPrereleaseVersions
+        isNightly: isNightly,
+        $filter: "category eq 'featured'"
       }, function (err, res) {
         if (!err && res && res.length > 0) {
           data.featuredPackages = res
         }
-      }, 'packages/list/featured');
-
-      api.get({
-        allowNightlyBuild: allowNightlyBuild,
-        allowPrereleaseVersions: allowPrereleaseVersions
-      }, function (err, res) {
-        if (!err && res && res.length > 0) {
-          data.popularPackages = res
-        }
-      }, 'packages/list/popular');
-
-      api.get({
-        allowNightlyBuild: allowNightlyBuild,
-        allowPrereleaseVersions: allowPrereleaseVersions
-      }, function (err, res) {
-        if (!err && res && res.length > 0) {
-          data.precentlyPackages = res
-        }
-      }, 'packages/list/recently');
+      }, 'packages');
 
       new Vue({
         el: '#main',
@@ -248,12 +154,11 @@
             if (this.word) {
               this.searching = true;
               api.get({
-                allowNightlyBuild: allowNightlyBuild,
-                allowPrereleaseVersions: allowPrereleaseVersions
+                isNightly: isNightly
               }, function (err, res) {
                 data.searching = false;
                 data.searchPackages = res;
-              }, 'packages/search/' + this.word);
+              }, 'packages/actions/search/' + this.word);
             } else {
               this.searching = false;
               data.searchPackages = null;

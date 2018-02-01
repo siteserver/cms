@@ -12,9 +12,7 @@ namespace SiteServer.BackgroundPages.Plugins
         private string _pluginId;
         private string _returnUrl;
 
-        public string AllowNightlyBuild => WebConfigUtils.AllowNightlyBuild.ToString().ToLower();
-
-        public string AllowPrereleaseVersions => WebConfigUtils.AllowPrereleaseVersions.ToString().ToLower();
+        public string IsNightly => WebConfigUtils.IsNightlyUpdate.ToString().ToLower();
 
         public string Installed => PluginManager.IsExists(_pluginId).ToString().ToLower();
 

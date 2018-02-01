@@ -21,36 +21,36 @@ namespace SiteServer.CMS.Packaging
         private const string NuGetPackageSource = "https://packages.nuget.org/api/v2";
         private const string MyGetPackageSource = "https://www.myget.org/F/siteserver/api/v2";
 
-        public static bool FindLastPackage(string packageId, out string title, out string version, out DateTimeOffset? published, out string releaseNotes)
-        {
-            title = string.Empty;
-            version = string.Empty;
-            published = null;
-            releaseNotes = string.Empty;
+        //public static bool FindLastPackage(string packageId, out string title, out string version, out DateTimeOffset? published, out string releaseNotes)
+        //{
+        //    title = string.Empty;
+        //    version = string.Empty;
+        //    published = null;
+        //    releaseNotes = string.Empty;
 
-            try
-            {
-                var repo =
-                    PackageRepositoryFactory.Default.CreateRepository(WebConfigUtils.AllowNightlyBuild
-                        ? MyGetPackageSource
-                        : NuGetPackageSource);
+        //    try
+        //    {
+        //        var repo =
+        //            PackageRepositoryFactory.Default.CreateRepository(WebConfigUtils.AllowNightlyBuild
+        //                ? MyGetPackageSource
+        //                : NuGetPackageSource);
 
-                var package = repo.FindPackage(packageId);
+        //        var package = repo.FindPackage(packageId);
 
-                title = package.Title;
-                version = package.Version.ToString();
-                published = package.Published;
-                releaseNotes = package.ReleaseNotes;
+        //        title = package.Title;
+        //        version = package.Version.ToString();
+        //        published = package.Published;
+        //        releaseNotes = package.ReleaseNotes;
 
-                return true;
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
+        //        return true;
+        //    }
+        //    catch (Exception)
+        //    {
+        //        // ignored
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
         public static void DownloadPackage(string packageId, string version)
         {
@@ -66,17 +66,36 @@ namespace SiteServer.CMS.Packaging
                 }
             }
 
-            var repo = PackageRepositoryFactory.Default.CreateRepository(WebConfigUtils.AllowNightlyBuild
+            var repo = PackageRepositoryFactory.Default.CreateRepository(WebConfigUtils.IsNightlyUpdate
                 ? MyGetPackageSource
                 : NuGetPackageSource);
 
             var packageManager = new PackageManager(repo, packagesPath);
 
             //Download and unzip the package
-            packageManager.InstallPackage(packageId, SemanticVersion.Parse(version), true, WebConfigUtils.AllowPrereleaseVersions);
+            packageManager.InstallPackage(packageId, SemanticVersion.Parse(version), false, WebConfigUtils.IsNightlyUpdate);
 
             ZipUtils.UnpackFilesByExtension(PathUtils.Combine(directoryPath, idWithVersion + ".nupkg"),
                 directoryPath, ".nuspec");
+        }
+
+        public static Dictionary<string, string> GetDependencyPackages(PackageMetadata metadata)
+        {
+            var dict = new Dictionary<string, string>();
+
+            if (metadata != null)
+            {
+                var dependencyGroups = metadata.GetDependencyGroups();
+                foreach (var dependencyGroup in dependencyGroups)
+                {
+                    foreach (var package in dependencyGroup.Packages)
+                    {
+                        dict[package.Id] = package.VersionRange.OriginalString;
+                    }
+                }
+            }
+
+            return dict;
         }
 
         public static bool UpdatePackage(string idWithVersion, bool isSsCms, out string errorMessage)
@@ -123,6 +142,16 @@ namespace SiteServer.CMS.Packaging
 
                     DirectoryUtils.Copy(PathUtils.Combine(packagePath, "content"), pluginPath, true);
                     DirectoryUtils.Copy(dllDirectoryPath, PathUtils.Combine(pluginPath, "Bin"), true);
+
+                    var dependencyPackageDict = GetDependencyPackages(metadata);
+                    foreach (var dependencyPackageId in dependencyPackageDict.Keys)
+                    {
+                        var dependencyPackageVersion = dependencyPackageDict[dependencyPackageId];
+                        var dependencyDdlDirectoryPath =
+                            FindDllDirectoryPath(
+                                PathUtils.GetPackagesPath($"{dependencyPackageId}.{dependencyPackageVersion}"));
+                        DirectoryUtils.Copy(dependencyDdlDirectoryPath, PathUtils.Combine(pluginPath, "Bin"), true);
+                    }
 
                     var configFilelPath = PathUtils.Combine(pluginPath, $"{metadata.Id}.nuspec");
                     FileUtils.CopyFile(nuspecPath, configFilelPath, true);
@@ -220,25 +249,7 @@ namespace SiteServer.CMS.Packaging
 
             if (!StringUtils.EqualsIgnoreCase(packageId, PackageIdSsCms))
             {
-                //https://docs.microsoft.com/en-us/nuget/schema/target-frameworks#supported-frameworks
-
-                foreach (var dirName in DirectoryUtils.GetDirectoryNames(PathUtils.Combine(directoryPath, "lib")))
-                {
-                    if (StringUtils.StartsWithIgnoreCase(dirName, "net45") ||
-                        StringUtils.StartsWithIgnoreCase(dirName, "net451") ||
-                        StringUtils.StartsWithIgnoreCase(dirName, "net452") ||
-                        StringUtils.StartsWithIgnoreCase(dirName, "net46") ||
-                        StringUtils.StartsWithIgnoreCase(dirName, "net461") ||
-                        StringUtils.StartsWithIgnoreCase(dirName, "net462"))
-                    {
-                        dllDirectoryPath = PathUtils.Combine(directoryPath, "lib", dirName);
-                        break;
-                    }
-                }
-                if (string.IsNullOrEmpty(dllDirectoryPath))
-                {
-                    dllDirectoryPath = PathUtils.Combine(directoryPath, "lib");
-                }
+                dllDirectoryPath = FindDllDirectoryPath(directoryPath);
 
                 if (!FileUtils.IsFileExists(PathUtils.Combine(dllDirectoryPath, packageId + ".dll")))
                 {
@@ -248,6 +259,32 @@ namespace SiteServer.CMS.Packaging
             }
             
             return metadata;
+        }
+
+        //https://docs.microsoft.com/en-us/nuget/schema/target-frameworks#supported-frameworks
+        private static string FindDllDirectoryPath(string packageDirectoryPath)
+        {
+            var dllDirectoryPath = string.Empty;
+
+            foreach (var dirName in DirectoryUtils.GetDirectoryNames(PathUtils.Combine(packageDirectoryPath, "lib")))
+            {
+                if (StringUtils.StartsWithIgnoreCase(dirName, "net45") ||
+                    StringUtils.StartsWithIgnoreCase(dirName, "net451") ||
+                    StringUtils.StartsWithIgnoreCase(dirName, "net452") ||
+                    StringUtils.StartsWithIgnoreCase(dirName, "net46") ||
+                    StringUtils.StartsWithIgnoreCase(dirName, "net461") ||
+                    StringUtils.StartsWithIgnoreCase(dirName, "net462"))
+                {
+                    dllDirectoryPath = PathUtils.Combine(packageDirectoryPath, "lib", dirName);
+                    break;
+                }
+            }
+            if (string.IsNullOrEmpty(dllDirectoryPath))
+            {
+                dllDirectoryPath = PathUtils.Combine(packageDirectoryPath, "lib");
+            }
+
+            return dllDirectoryPath;
         }
 
         private static PackageMetadata GetPackageMetadata(string nuspecPath)

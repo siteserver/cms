@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Controls
                 }
                 else
                 {
-                    var htmlBuilder = new StringBuilder($@"
+                    var html = $@"
 <div class=""form-group form-row"">
     <label class=""col-sm-1 col-form-label text-right"">{styleInfo.DisplayName}</label>
     <div class=""col-sm-6"">
@@ -63,16 +63,20 @@ namespace SiteServer.BackgroundPages.Controls
     <div class=""col-sm-5"">
         {extra}
     </div>
-</div>");
+</div>";
 
                     if (styleInfo.InputType == InputType.Customize)
                     {
-                        var eventArgs = new ContentFormLoadEventArgs(SiteInfo.Id, ChannelId, styleInfo.AttributeName, Attributes, htmlBuilder);
+                        var eventArgs = new ContentFormLoadEventArgs(SiteInfo.Id, ChannelId, styleInfo.AttributeName, Attributes);
                         foreach (var service in PluginManager.Services)
                         {
                             try
                             {
-                                service.OnContentFormLoad(eventArgs);
+                                var serviceReturnedHtml = service.OnContentFormLoad(eventArgs);
+                                if (!string.IsNullOrEmpty(serviceReturnedHtml))
+                                {
+                                    html = serviceReturnedHtml;
+                                }
                             }
                             catch (Exception ex)
                             {
@@ -81,7 +85,7 @@ namespace SiteServer.BackgroundPages.Controls
                         }
                     }
 
-                    builder.Append(htmlBuilder);
+                    builder.Append(html);
                 }
             }
 

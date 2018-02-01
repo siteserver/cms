@@ -57,9 +57,9 @@ namespace SiteServer.CMS.Plugin.Model
 
         public event ContentFormLoadEventHandler ContentFormLoad;
 
-        public void OnContentFormLoad(ContentFormLoadEventArgs e)
+        public string OnContentFormLoad(ContentFormLoadEventArgs e)
         {
-            ContentFormLoad?.Invoke(this, e);
+            return ContentFormLoad?.Invoke(this, e);
         }
 
         public event EventHandler<ContentFormSubmitEventArgs> ContentFormSubmit;
@@ -141,9 +141,14 @@ namespace SiteServer.CMS.Plugin.Model
             return this;
         }
 
-        public IService AddContentLinks(List<HyperLink> links)
+        public IService AddContentLink(HyperLink link)
         {
-            ContentLinks = links;
+            if (ContentLinks == null)
+            {
+                ContentLinks = new List<HyperLink>();
+            }
+
+            ContentLinks.Add(link);
 
             return this;
         }

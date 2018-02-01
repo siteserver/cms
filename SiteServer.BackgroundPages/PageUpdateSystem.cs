@@ -5,7 +5,6 @@ using SiteServer.CMS.Controllers.Sys.Packaging;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
-using ApiRouteVersion = SiteServer.CMS.Controllers.Sys.Packaging.ApiRouteVersion;
 
 namespace SiteServer.BackgroundPages
 {
@@ -20,15 +19,15 @@ namespace SiteServer.BackgroundPages
             return PageUtils.GetSiteServerUrl(nameof(PageUpdateSystem), null);
         }
 
-        public string CurrentVersion => SystemManager.Version;
+        public string IsNightly => WebConfigUtils.IsNightlyUpdate.ToString().ToLower();
+
+        public string PackageId => PackageUtils.PackageIdSsCms;
+
+        public string InstalledVersion => SystemManager.Version;
 
         public string AdminUrl => PageUtils.GetAdminDirectoryUrl(string.Empty);
 
-        public string VersionApiUrl => ApiRouteVersion.GetCmsUrl(PageUtility.InnerApiUrl);
-
         public string DownloadApiUrl => ApiRouteDownload.GetUrl(PageUtility.InnerApiUrl);
-
-        public string PackageId => PackageUtils.PackageIdSsCms;
 
         public string UpdateApiUrl => ApiRouteUpdate.GetUrl(PageUtility.InnerApiUrl);
 

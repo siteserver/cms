@@ -32,7 +32,7 @@
                 {{ package.description }}
               </p>
 
-              <div class="alert alert-warning" v-bind:style="{ display: installed && installedVersion != package.version ? '' : 'none' }">
+              <div class="alert alert-warning" v-bind:style="{ display: installed && isShouldUpdate ? '' : 'none' }">
                 系统检测到插件新版本，当前版本：{{ installedVersion }}，新版本：{{ package.version }}
                 <input v-on:click="location.href='pageView.aspx?update=true';return false;" type="button" value="立即升级" class="btn btn-primary">
               </div>
@@ -118,26 +118,27 @@
   </html>
 
   <script src="../assets/vue/vue.min.js"></script>
-  <script src="../assets/apiUtils.js"></script>
+  <script src="../assets/js/apiUtils.js"></script>
+  <script src="../assets/js/compareversion.js"></script>
   <script>
     var api = new apiUtils.Api();
     var pluginId = api.getQueryStringByName('pluginId');
 
-    var allowNightlyBuild = <%=AllowNightlyBuild%>;
-    var allowPrereleaseVersions = <%=AllowPrereleaseVersions%>;
+    var isNightly = <%=IsNightly%>;
 
     var data = {
       installed: <%=Installed%>,
       installedVersion: '<%=InstalledVersion%>',
-      package: {}
+      package: {},
+      isShouldUpdate: false
     };
 
     api.get({
-      allowNightlyBuild: allowNightlyBuild,
-      allowPrereleaseVersions: allowPrereleaseVersions
+      isNightly: isNightly
     }, function (err, res) {
       if (!err && res) {
         data.package = res
+        data.isShouldUpdate = compareversion('<%=InstalledVersion%>', res.version) == -1
       }
     }, 'packages/' + pluginId);
 
