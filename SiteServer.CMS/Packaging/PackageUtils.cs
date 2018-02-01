@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using NuGet;
 using NuGet.Packaging;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
@@ -18,8 +16,8 @@ namespace SiteServer.CMS.Packaging
         public const string PackageIdSsCms = "SS.CMS";
         public const string VersionDev = "0.0.0";
 
-        private const string NuGetPackageSource = "https://packages.nuget.org/api/v2";
-        private const string MyGetPackageSource = "https://www.myget.org/F/siteserver/api/v2";
+        //private const string NuGetPackageSource = "https://packages.nuget.org/api/v2";
+        //private const string MyGetPackageSource = "https://www.myget.org/F/siteserver/api/v2";
 
         //public static bool FindLastPackage(string packageId, out string title, out string version, out DateTimeOffset? published, out string releaseNotes)
         //{
@@ -82,18 +80,30 @@ namespace SiteServer.CMS.Packaging
             }
             else
             {
-                var repo = PackageRepositoryFactory.Default.CreateRepository(WebConfigUtils.IsNightlyUpdate
-                ? MyGetPackageSource
-                : NuGetPackageSource);
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
 
-                var packageManager = new PackageManager(repo, packagesPath);
+                var localFilePath = PathUtils.Combine(directoryPath, idWithVersion + ".nupkg");
 
-                //Download and unzip the package
-                packageManager.InstallPackage(packageId, SemanticVersion.Parse(version), true, WebConfigUtils.IsNightlyUpdate);
+                WebClientUtils.SaveRemoteFileToLocal(
+                    $"http://api.siteserver.cn/downloads/package/{packageId}/{version}", localFilePath);
+
+                ZipUtils.UnpackFiles(localFilePath, directoryPath);
+
+                //var repo = PackageRepositoryFactory.Default.CreateRepository(WebConfigUtils.IsNightlyUpdate
+                //? MyGetPackageSource
+                //: NuGetPackageSource);
+
+                //var packageManager = new PackageManager(repo, packagesPath);
+
+                ////Download and unzip the package
+                //packageManager.InstallPackage(packageId, SemanticVersion.Parse(version), true, WebConfigUtils.IsNightlyUpdate);
             }
 
-            ZipUtils.UnpackFilesByExtension(PathUtils.Combine(directoryPath, idWithVersion + ".nupkg"),
-                directoryPath, ".nuspec");
+            //ZipUtils.UnpackFilesByExtension(PathUtils.Combine(directoryPath, idWithVersion + ".nupkg"),
+            //    directoryPath, ".nuspec");
         }
 
         public static Dictionary<string, string> GetDependencyPackages(PackageMetadata metadata)
@@ -317,81 +327,81 @@ namespace SiteServer.CMS.Packaging
 
         //**********************************test********************************
 
-        public static string TestGetLastPackage(bool isPreviewVersion)
-        {
-            var packageID = "Newtonsoft.Json";
+        //public static string TestGetLastPackage(bool isPreviewVersion)
+        //{
+        //    var packageID = "Newtonsoft.Json";
 
-            //Connect to the official package repository
-            IPackageRepository repo = PackageRepositoryFactory.Default.CreateRepository("https://packages.nuget.org/api/v2");
+        //    //Connect to the official package repository
+        //    IPackageRepository repo = PackageRepositoryFactory.Default.CreateRepository("https://packages.nuget.org/api/v2");
 
-            IPackage p = repo.FindPackage(packageID);
+        //    IPackage p = repo.FindPackage(packageID);
 
-            var builder = new StringBuilder();
-            builder.Append(p.GetFullName()).Append("<br />");
+        //    var builder = new StringBuilder();
+        //    builder.Append(p.GetFullName()).Append("<br />");
 
-            return builder.ToString();
-        }
+        //    return builder.ToString();
+        //}
 
-        public static string TestGetReleaseVersionList()
-        {
-            var packageID = "Newtonsoft.Json";
+        //public static string TestGetReleaseVersionList()
+        //{
+        //    var packageID = "Newtonsoft.Json";
 
-            //Connect to the official package repository
-            IPackageRepository repo = PackageRepositoryFactory.Default.CreateRepository("https://packages.nuget.org/api/v2");
+        //    //Connect to the official package repository
+        //    IPackageRepository repo = PackageRepositoryFactory.Default.CreateRepository("https://packages.nuget.org/api/v2");
 
-            //Get the list of all NuGet packages with ID 'EntityFramework'       
-            List<IPackage> packages = repo.FindPackagesById(packageID).ToList();
+        //    //Get the list of all NuGet packages with ID 'EntityFramework'       
+        //    List<IPackage> packages = repo.FindPackagesById(packageID).ToList();
 
-            //Filter the list of packages that are not Release (Stable) versions
-            packages = packages.Where(item => (item.IsReleaseVersion())).ToList();
+        //    //Filter the list of packages that are not Release (Stable) versions
+        //    packages = packages.Where(item => (item.IsReleaseVersion())).ToList();
 
-            packages.Reverse();
+        //    packages.Reverse();
 
-            //Iterate through the list and print the full name of the pre-release packages to console
-            var builder = new StringBuilder();
-            foreach (IPackage p in packages)
-            {
-                builder.Append(p.GetFullName()).Append("<br />");
-            }
+        //    //Iterate through the list and print the full name of the pre-release packages to console
+        //    var builder = new StringBuilder();
+        //    foreach (IPackage p in packages)
+        //    {
+        //        builder.Append(p.GetFullName()).Append("<br />");
+        //    }
 
-            return builder.ToString();
-        }
+        //    return builder.ToString();
+        //}
 
-        public static void TestGetAndInstall()
-        {
-            //ID of the package to be looked up
-            string packageID = "EntityFramework";
+        //public static void TestGetAndInstall()
+        //{
+        //    //ID of the package to be looked up
+        //    string packageID = "EntityFramework";
 
-            //Connect to the official package repository
-            IPackageRepository repo = PackageRepositoryFactory.Default.CreateRepository("https://packages.nuget.org/api/v2");
+        //    //Connect to the official package repository
+        //    IPackageRepository repo = PackageRepositoryFactory.Default.CreateRepository("https://packages.nuget.org/api/v2");
 
-            //Initialize the package manager
-            string path = PathUtils.GetPackagesPath();
-            PackageManager packageManager = new PackageManager(repo, path);
+        //    //Initialize the package manager
+        //    string path = PathUtils.GetPackagesPath();
+        //    PackageManager packageManager = new PackageManager(repo, path);
 
-            //Download and unzip the package
-            packageManager.InstallPackage(packageID, SemanticVersion.Parse("5.0.0"));
-        }
+        //    //Download and unzip the package
+        //    packageManager.InstallPackage(packageID, SemanticVersion.Parse("5.0.0"));
+        //}
 
-        public static string TestGet10()
-        {
-            string url = "https://www.nuget.org/api/v2/";
-            IPackageRepository repo = PackageRepositoryFactory.Default.CreateRepository(url);
-            var packages = repo
-                .GetPackages()
-                .Where(p => p.IsLatestVersion)
-                .OrderByDescending(p => p.DownloadCount)
-                .Take(10);
+        //public static string TestGet10()
+        //{
+        //    string url = "https://www.nuget.org/api/v2/";
+        //    IPackageRepository repo = PackageRepositoryFactory.Default.CreateRepository(url);
+        //    var packages = repo
+        //        .GetPackages()
+        //        .Where(p => p.IsLatestVersion)
+        //        .OrderByDescending(p => p.DownloadCount)
+        //        .Take(10);
 
-            var builder = new StringBuilder();
+        //    var builder = new StringBuilder();
 
-            foreach (IPackage package in packages)
-            {
-                builder.Append(package);
-            }
+        //    foreach (IPackage package in packages)
+        //    {
+        //        builder.Append(package);
+        //    }
 
-            return builder.ToString();
-        }
+        //    return builder.ToString();
+        //}
 
         //public static async Task<string> GetMetadata()
         //{
