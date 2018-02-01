@@ -26,6 +26,8 @@ function build(beta) {
   var version = process.env.APPVEYOR_BUILD_VERSION;
   if (beta) {
     version += '-beta';
+  } else {
+    version += '-rc1';
   }
   console.log('build SiteServer CMS started, version: ' + version);
 
