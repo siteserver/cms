@@ -66,14 +66,31 @@ namespace SiteServer.CMS.Packaging
                 }
             }
 
-            var repo = PackageRepositoryFactory.Default.CreateRepository(WebConfigUtils.IsNightlyUpdate
+            if (StringUtils.EqualsIgnoreCase(packageId, PackageIdSsCms))
+            {
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                var localFilePath = PathUtils.Combine(directoryPath, idWithVersion + ".nupkg");                
+
+                WebClientUtils.SaveRemoteFileToLocal(
+                    $"http://api.siteserver.cn/downloads/update/{version}", localFilePath);
+
+                ZipUtils.UnpackFiles(localFilePath, directoryPath);
+            }
+            else
+            {
+                var repo = PackageRepositoryFactory.Default.CreateRepository(WebConfigUtils.IsNightlyUpdate
                 ? MyGetPackageSource
                 : NuGetPackageSource);
 
-            var packageManager = new PackageManager(repo, packagesPath);
+                var packageManager = new PackageManager(repo, packagesPath);
 
-            //Download and unzip the package
-            packageManager.InstallPackage(packageId, SemanticVersion.Parse(version), false, WebConfigUtils.IsNightlyUpdate);
+                //Download and unzip the package
+                packageManager.InstallPackage(packageId, SemanticVersion.Parse(version), false, WebConfigUtils.IsNightlyUpdate);
+            }
 
             ZipUtils.UnpackFilesByExtension(PathUtils.Combine(directoryPath, idWithVersion + ".nupkg"),
                 directoryPath, ".nuspec");

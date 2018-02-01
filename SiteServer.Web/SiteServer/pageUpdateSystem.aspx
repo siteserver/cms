@@ -135,7 +135,7 @@
           </div>
 
           <!-- step 2 place -->
-          <div v-bind:style="{ display: step == 2 ? '' : 'none' }">
+          <div v-bind:style="{ display: step == 2 ? '' : 'none' }" style="display: none">
 
             <div class="jumbotron text-center">
               <img src="./pic/animated_loading.gif" />
@@ -147,7 +147,7 @@
           </div>
 
           <!-- step 3 place -->
-          <div v-bind:style="{ display: step == 3 ? '' : 'none' }">
+          <div v-bind:style="{ display: step == 3 ? '' : 'none' }" style="display: none">
 
             <div class="alert alert-success" role="alert">
               <h4 class="alert-heading">升级完成！</h4>

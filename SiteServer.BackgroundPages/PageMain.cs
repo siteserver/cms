@@ -144,7 +144,12 @@ namespace SiteServer.BackgroundPages
                 PhSite.Visible = true;
 
                 LtlCreateStatus.Text = $@"
-<a href=""javascript:;"" onclick=""{PageCreateStatus.GetOpenLayerString(_siteInfo.Id)}"">
+<script type=""text/javascript"">
+function {LayerUtils.OpenPageCreateStatusFuncName}() {{
+    {PageCreateStatus.GetOpenLayerString(_siteInfo.Id)}
+}}
+</script>
+<a href=""javascript:;"" onclick=""{LayerUtils.OpenPageCreateStatusFuncName}()"">
     <i class=""ion-wand""></i>
     <span id=""progress"" class=""badge badge-xs badge-pink"">0</span>
 </a>

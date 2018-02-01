@@ -20,7 +20,7 @@ namespace SiteServer.BackgroundPages.Account
             }
         }
 
-        public void Submit_Click(object sender, EventArgs e)
+        public override void Submit_OnClick(object sender, EventArgs e)
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 

@@ -632,7 +632,7 @@ $(document).ready(function(){{
             if (channelId > 0)
             {
                 btnAddHtml = $@"
-    <button class=""btn"" onclick=""add_{styleInfo.AttributeName}('',true)"">
+    <button class=""btn"" onclick=""add_{styleInfo.AttributeName}('',true);return false;"">
         新增
     </button>
 ";
@@ -678,24 +678,23 @@ function preview_{attributeName}(obj, index){{
   eval(cmd);
 }}
 function delete_{attributeName}(obj){{
-  $(obj).closest('tr').remove();
+  $(obj).parent().parent().parent().remove();
 }}
 var index_{attributeName} = 0;
 function add_{attributeName}(val,foucs){{
     index_{attributeName}++;
-    var html = '<div class=""clearfix""><div class=""pull-left"">';
-    html += '<input id=""{attributeName}_'+index_{attributeName}+'"" name=""{extendAttributeName}"" type=""text"" class=""form-control"" value=""'+val+'"" />&nbsp;';
-    html += '</div>';
-    html += '<div class=""pull-left btn-group"">';
-    html += '<a class=""btn"" href=""javascript:;"" onclick=""select_{attributeName}(this, '+index_{attributeName}+')"" title=""选择""><i class=""icon-th""></i></a>';
-    html += '<a class=""btn"" href=""javascript:;"" onclick=""upload_{attributeName}(this, '+index_{attributeName}+')"" title=""上传""><i class=""icon-arrow-up""></i></a>';
-    html += '<a class=""btn"" href=""javascript:;"" onclick=""cutting_{attributeName}(this, '+index_{attributeName}+')"" title=""裁切""><i class=""icon-crop""></i></a>';
-    html += '<a class=""btn"" href=""javascript:;"" onclick=""preview_{attributeName}(this, '+index_{attributeName}+')"" title=""预览""><i class=""icon-eye-open""></i></a>';
-    html += '<a class=""btn"" href=""javascript:;"" onclick=""delete_{attributeName}(this)"" title=""删除""><i class=""icon-remove""></i></a>';
-    html += '</div></div>';
-    var tr = $('.{extendAttributeName}').length == 0 ? $('#{attributeName}').closest('tr') : $('.{extendAttributeName}:last');
-    tr.after('<tr class=""{extendAttributeName}""><td>&nbsp;</td><td colspan=""3"">'+html+'</td></tr>');
+    var inputHtml = '<input id=""{attributeName}_'+index_{attributeName}+'"" name=""{extendAttributeName}"" type=""text"" class=""form-control"" value=""'+val+'"" />';
+    var btnHtml = '<div class=""btn-group btn-group-sm"">';
+    btnHtml += '<button class=""btn"" href=""javascript:;"" onclick=""select_{attributeName}(this, '+index_{attributeName}+');return false;"">选择</button>';
+    btnHtml += '<button class=""btn"" href=""javascript:;"" onclick=""upload_{attributeName}(this, '+index_{attributeName}+');return false;"">上传</button>';
+    btnHtml += '<button class=""btn"" href=""javascript:;"" onclick=""cutting_{attributeName}(this, '+index_{attributeName}+');return false;"">裁切</button>';
+    btnHtml += '<button class=""btn"" href=""javascript:;"" onclick=""preview_{attributeName}(this, '+index_{attributeName}+');return false;"">预览</button>';
+    btnHtml += '<button class=""btn"" href=""javascript:;"" onclick=""delete_{attributeName}(this);return false;"">删除</button>';
+    btnHtml += '</div>';
+    var div = $('.{extendAttributeName}').length == 0 ? $('#{attributeName}').parent().parent() : $('.{extendAttributeName}:last');
+    div.after('<div class=""form-group form-row {extendAttributeName}""><label class=""col-sm-1 col-form-label text-right""></label><div class=""col-sm-6"">' + inputHtml + '</div><div class=""col-sm-5"">' + btnHtml + '</div></div>');
     if (foucs) $('#{attributeName}_'+index_{attributeName}).focus();
+
 }}
 ");
 
@@ -724,7 +723,7 @@ function add_{attributeName}(val,foucs){{
             if (channelId > 0)
             {
                 btnAddHtml = $@"
-    <button class=""btn"" onclick=""add_{attributeName}('',true)"">
+    <button class=""btn"" onclick=""add_{attributeName}('',true);return false;"">
         新增
     </button>
 ";
@@ -761,23 +760,22 @@ function preview_{attributeName}(obj, index){{
   eval(cmd);
 }}
 function delete_{attributeName}(obj){{
-  $(obj).closest('tr').remove();
+  $(obj).parent().parent().parent().remove();
 }}
 var index_{attributeName} = 0;
 function add_{attributeName}(val,foucs){{
     index_{attributeName}++;
-    var html = '<div class=""clearfix""><div class=""pull-left"">';
-    html += '<input id=""{attributeName}_'+index_{attributeName}+'"" name=""{extendAttributeName}"" type=""text"" class=""form-control"" value=""'+val+'"" />&nbsp;';
-    html += '</div>';
-    html += '<div class=""pull-left btn-group"">';
-    html += '<a class=""btn"" href=""javascript:;"" onclick=""select_{attributeName}(this, '+index_{attributeName}+')"" title=""选择""><i class=""icon-th""></i></a>';
-    html += '<a class=""btn"" href=""javascript:;"" onclick=""upload_{attributeName}(this, '+index_{attributeName}+')"" title=""上传""><i class=""icon-arrow-up""></i></a>';
-    html += '<a class=""btn"" href=""javascript:;"" onclick=""preview_{attributeName}(this, '+index_{attributeName}+')"" title=""预览""><i class=""icon-eye-open""></i></a>';
-    html += '<a class=""btn"" href=""javascript:;"" onclick=""delete_{attributeName}(this)"" title=""删除""><i class=""icon-remove""></i></a>';
-    html += '</div></div>';
-    var tr = $('.{extendAttributeName}').length == 0 ? $('#{attributeName}').closest('tr') : $('.{extendAttributeName}:last');
-    tr.after('<tr class=""{extendAttributeName}""><td>&nbsp;</td><td colspan=""3"">'+html+'</td></tr>');
+    var inputHtml = '<input id=""{attributeName}_'+index_{attributeName}+'"" name=""{extendAttributeName}"" type=""text"" class=""form-control"" value=""'+val+'"" />';
+    var btnHtml = '<div class=""btn-group btn-group-sm"">';
+    btnHtml += '<button class=""btn"" href=""javascript:;"" onclick=""select_{attributeName}(this, '+index_{attributeName}+');return false;"">选择</button>';
+    btnHtml += '<button class=""btn"" href=""javascript:;"" onclick=""upload_{attributeName}(this, '+index_{attributeName}+');return false;"">上传</button>';
+    btnHtml += '<button class=""btn"" href=""javascript:;"" onclick=""preview_{attributeName}(this, '+index_{attributeName}+');return false;"">预览</button>';
+    btnHtml += '<button class=""btn"" href=""javascript:;"" onclick=""delete_{attributeName}(this);return false;"">删除</button>';
+    btnHtml += '</div>';
+    var div = $('.{extendAttributeName}').length == 0 ? $('#{attributeName}').parent().parent() : $('.{extendAttributeName}:last');
+    div.after('<div class=""form-group form-row {extendAttributeName}""><label class=""col-sm-1 col-form-label text-right""></label><div class=""col-sm-6"">' + inputHtml + '</div><div class=""col-sm-5"">' + btnHtml + '</div></div>');
     if (foucs) $('#{attributeName}_'+index_{attributeName}).focus();
+
 }}
 ");
 
@@ -817,7 +815,7 @@ function add_{attributeName}(val,foucs){{
             if (channelId > 0)
             {
                 btnAddHtml = $@"
-<button class=""btn"" onclick=""add_{attributeName}('',true)"">
+<button class=""btn"" onclick=""add_{attributeName}('',true);return false;"">
     新增
 </button>
 ";
@@ -857,22 +855,20 @@ function preview_{attributeName}(obj, index){{
   eval(cmd);
 }}
 function delete_{attributeName}(obj){{
-  $(obj).closest('tr').remove();
+  $(obj).parent().parent().parent().remove();
 }}
 var index_{attributeName} = 0;
 function add_{attributeName}(val,foucs){{
     index_{attributeName}++;
-    var html = '<div class=""clearfix""><div class=""pull-left"">';
-    html += '<input id=""{attributeName}_'+index_{attributeName}+'"" name=""{extendAttributeName}"" type=""text"" class=""form-control"" value=""'+val+'"" />&nbsp;';
-    html += '</div>';
-    html += '<div class=""pull-left btn-group"">';
-    html += '<a class=""btn"" href=""javascript:;"" onclick=""select_{attributeName}(this, '+index_{attributeName}+')"" title=""选择""><i class=""icon-th""></i></a>';
-    html += '<a class=""btn"" href=""javascript:;"" onclick=""upload_{attributeName}(this, '+index_{attributeName}+')"" title=""上传""><i class=""icon-arrow-up""></i></a>';
-    html += '<a class=""btn"" href=""javascript:;"" onclick=""preview_{attributeName}(this, '+index_{attributeName}+')"" title=""查看""><i class=""icon-eye-open""></i></a>';
-    html += '<a class=""btn"" href=""javascript:;"" onclick=""delete_{attributeName}(this)"" title=""删除""><i class=""icon-remove""></i></a>';
-    html += '</div></div>';
-    var tr = $('.{extendAttributeName}').length == 0 ? $('#{attributeName}').closest('tr') : $('.{extendAttributeName}:last');
-    tr.after('<tr class=""{extendAttributeName}""><td>&nbsp;</td><td colspan=""3"">'+html+'</td></tr>');
+    var inputHtml = '<input id=""{attributeName}_'+index_{attributeName}+'"" name=""{extendAttributeName}"" type=""text"" class=""form-control"" value=""'+val+'"" />';
+    var btnHtml = '<div class=""btn-group btn-group-sm"">';
+    btnHtml += '<button class=""btn"" href=""javascript:;"" onclick=""select_{attributeName}(this, '+index_{attributeName}+');return false;"">选择</button>';
+    btnHtml += '<button class=""btn"" href=""javascript:;"" onclick=""upload_{attributeName}(this, '+index_{attributeName}+');return false;"">上传</button>';
+    btnHtml += '<button class=""btn"" href=""javascript:;"" onclick=""preview_{attributeName}(this, '+index_{attributeName}+');return false;"">查看</button>';
+    btnHtml += '<button class=""btn"" href=""javascript:;"" onclick=""delete_{attributeName}(this);return false;"">删除</button>';
+    btnHtml += '</div>';
+    var div = $('.{extendAttributeName}').length == 0 ? $('#{attributeName}').parent().parent() : $('.{extendAttributeName}:last');
+    div.after('<div class=""form-group form-row {extendAttributeName}""><label class=""col-sm-1 col-form-label text-right""></label><div class=""col-sm-6"">' + inputHtml + '</div><div class=""col-sm-5"">' + btnHtml + '</div></div>');
     if (foucs) $('#{attributeName}_'+index_{attributeName}).focus();
 }}
 ");

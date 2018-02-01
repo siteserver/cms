@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Account
             TbMobile.Text = Body.AdministratorInfo.Mobile;
         }
 
-        public void Submit_Click(object sender, EventArgs e)
+        public override void Submit_OnClick(object sender, EventArgs e)
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 

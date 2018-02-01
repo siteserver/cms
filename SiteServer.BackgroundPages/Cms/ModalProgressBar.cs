@@ -128,7 +128,8 @@ namespace SiteServer.BackgroundPages.Cms
                     CreateManager.CreateChannel(SiteId, channelId);
                 }
 
-                PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将栏目放入生成队列"));
+                LayerUtils.CloseAndOpenPageCreateStatus(Page);
+                //PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将栏目放入生成队列"));
             }
             else if (Body.IsQueryExists("CreateContentsOneByOne") && Body.IsQueryExists("channelId") &&
                      Body.IsQueryExists("contentIdCollection"))
@@ -139,7 +140,8 @@ namespace SiteServer.BackgroundPages.Cms
                         contentId);
                 }
 
-                PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将内容放入生成队列"));
+                LayerUtils.CloseAndOpenPageCreateStatus(Page);
+                //PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将内容放入生成队列"));
             }
             else if (Body.IsQueryExists("CreateByTemplate") && Body.IsQueryExists("templateID"))
             {
@@ -157,7 +159,8 @@ namespace SiteServer.BackgroundPages.Cms
                         TranslateUtils.ToInt(pair[1]));
                 }
 
-                PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将文件放入生成队列"));
+                LayerUtils.CloseAndOpenPageCreateStatus(Page);
+                //PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将文件放入生成队列"));
             }
             //---------------------------------------------------------------------------------------//
             else if (Body.IsQueryExists("SiteTemplateDownload"))

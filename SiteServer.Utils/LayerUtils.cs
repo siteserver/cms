@@ -10,6 +10,8 @@ namespace SiteServer.Utils
 
         public const string CloseScript = "if (window.parent.closeWindow) window.parent.closeWindow();if (window.parent.layer) window.parent.layer.closeAll();";
 
+        public const string OpenPageCreateStatusFuncName = "openPageCreateStatus";
+
         public static string GetOpenScript(string title, string pageUrl)
         {
             return GetOpenScript(title, pageUrl, 0, 0);
@@ -144,6 +146,11 @@ namespace SiteServer.Utils
             page.Response.Clear();
             page.Response.Write($"<script>{scripts}</script>");
             page.Response.Write($"<script>{CloseScript}</script>");
+        }
+
+        public static void CloseAndOpenPageCreateStatus(Page page)
+        {
+            CloseWithoutRefresh(page, $"window.top.{OpenPageCreateStatusFuncName}();");
         }
     }
 }

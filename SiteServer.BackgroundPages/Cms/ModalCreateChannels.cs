@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            LayerUtils.CloseWithoutRefresh(Page);
+            LayerUtils.CloseAndOpenPageCreateStatus(Page);
 		}
 	}
 }
