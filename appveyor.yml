@@ -55,7 +55,7 @@
 
   deploy:
     - provider: GitHub
-      release: siteserver-v6.0.{build}-rc1
+      release: siteserver-v$(appveyor_build_version)-rc1
       description: 'SiteServer CMS'
       auth_token:
         secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
