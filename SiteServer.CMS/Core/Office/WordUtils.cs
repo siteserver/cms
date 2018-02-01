@@ -1,0 +1,138 @@
+﻿using System;
+using SiteServer.Utils;
+using Word.Plugin;
+using System.Collections.Specialized;
+using SiteServer.CMS.Model;
+
+namespace SiteServer.CMS.Core.Office
+{
+    public class WordUtils
+    {
+        public static string GetWordFilePath(string fileName)
+        {
+            return PathUtils.GetTemporaryFilesPath(fileName);
+        }
+
+        public static string Parse(int siteId, string filePath, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages)
+        {
+            if (string.IsNullOrEmpty(filePath)) return string.Empty;
+
+            var filename = PathUtils.GetFileNameWithoutExtension(filePath);
+
+            //被转换的html文档保存的位置
+            try
+            {
+                var saveFilePath = PathUtils.GetTemporaryFilesPath(filename + ".html");
+                FileUtils.DeleteFileIfExists(saveFilePath);
+                WordDntb.buildWord(filePath, saveFilePath);
+
+                var parsedContent = FileUtils.ReadText(saveFilePath, System.Text.Encoding.Default);
+                parsedContent = RegexUtils.GetInnerContent("body", parsedContent);
+
+                //try
+                //{
+                //    parsedContent = HtmlClearUtils.ClearElementAttributes(parsedContent, "p");
+                //}
+                //catch { }
+
+                if (isClearFormat)
+                {
+                    parsedContent = HtmlClearUtils.ClearFormat(parsedContent);
+                }
+
+                if (isFirstLineIndent)
+                {
+                    parsedContent = HtmlClearUtils.FirstLineIndent(parsedContent);
+                }
+
+                if (isClearFontSize)
+                {
+                    parsedContent = HtmlClearUtils.ClearFontSize(parsedContent);
+                }
+
+                if (isClearFontFamily)
+                {
+                    parsedContent = HtmlClearUtils.ClearFontFamily(parsedContent);
+                }
+
+                if (isClearImages)
+                {
+                    parsedContent = StringUtils.StripTags(parsedContent, "img");
+                }
+                else
+                {
+                    var siteInfo = SiteManager.GetSiteInfo(siteId);
+                    var imageFileNameArrayList = RegexUtils.GetOriginalImageSrcs(parsedContent);
+                    if (imageFileNameArrayList != null && imageFileNameArrayList.Count > 0)
+                    {
+                        var now = DateTime.Now;
+                        foreach (string imageFileName in imageFileNameArrayList)
+                        {
+                            now = now.AddMilliseconds(10);
+                            var imageFilePath = PathUtils.GetTemporaryFilesPath(imageFileName);
+                            var fileExtension = PathUtils.GetExtension(imageFilePath);
+                            var uploadDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, fileExtension);
+                            var uploadDirectoryUrl = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, uploadDirectoryPath, true);
+                            if (!FileUtils.IsFileExists(imageFilePath)) continue;
+
+                            var uploadFileName = PathUtility.GetUploadFileName(siteInfo, imageFilePath, now);
+                            var destFilePath = PathUtils.Combine(uploadDirectoryPath, uploadFileName);
+                            FileUtils.MoveFile(imageFilePath, destFilePath, false);
+                            parsedContent = parsedContent.Replace(imageFileName, PageUtils.Combine(uploadDirectoryUrl, uploadFileName));
+
+                            FileUtils.DeleteFileIfExists(imageFilePath);
+                        }
+                    }
+                }
+
+                FileUtils.DeleteFileIfExists(filePath);
+                FileUtils.DeleteFileIfExists(saveFilePath);
+                return parsedContent.Trim();
+            }
+            catch(Exception ex)
+            {
+                LogUtils.AddSystemErrorLog(ex);
+                return string.Empty;
+            }
+        }
+
+        public static NameValueCollection GetWordNameValueCollection(int siteId, bool isFirstLineTitle, bool isFirstLineRemove, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, int contentLevel, string fileName)
+        {
+            var formCollection = new NameValueCollection();
+            var wordContent = Parse(siteId, GetWordFilePath(fileName), isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages);
+            if (!string.IsNullOrEmpty(wordContent))
+            {
+                var title = string.Empty;
+                if (isFirstLineTitle)
+                {
+                    title = RegexUtils.GetInnerContent("p", wordContent);
+                    title = StringUtils.StripTags(title);
+                    if (!string.IsNullOrEmpty(title) && isFirstLineRemove)
+                    {
+                        wordContent = StringUtils.ReplaceFirst(title, wordContent, string.Empty);
+                    }
+                    if (!string.IsNullOrEmpty(title))
+                    {
+                        title = title.Trim();
+                        title = title.Trim('　', ' ');
+                        title = StringUtils.StripEntities(title);
+                    }
+                }
+                if (string.IsNullOrEmpty(title))
+                {
+                    title = PathUtils.GetFileNameWithoutExtension(fileName);
+                }
+                if (!string.IsNullOrEmpty(title) && title.Length > 255)
+                {
+                    title = title.Substring(0, 255);
+                }
+                formCollection[ContentAttribute.Title] = title;
+
+                wordContent = StringUtils.ReplaceFirst("<p></p>", wordContent, string.Empty);
+
+                formCollection[BackgroundContentAttribute.Content] = wordContent;
+            }
+            return formCollection;
+        }
+    }
+}

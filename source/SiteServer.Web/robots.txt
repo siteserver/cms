@@ -1,4 +1,0 @@
-User-agent: *
-Disallow: /SiteServer/
-Disallow: /SiteFiles/
-Disallow: /home/
