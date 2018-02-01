@@ -180,7 +180,9 @@
     <Compile Include="ImportExport\Components\ConfigurationIe.cs" />
     <Compile Include="ImportExport\Components\ContentGroupIe.cs" />
     <Compile Include="ImportExport\Components\RelatedFieldIe.cs" />
-    <Compile Include="ImportExport\Components\SiteContentIe.cs" />
+    <Compile Include="ImportExport\Components\ContentIe.cs" />
+    <Compile Include="ImportExport\Components\SiteIe.cs" />
+    <Compile Include="ImportExport\Components\ChannelIe.cs" />
     <Compile Include="ImportExport\Components\TableIe.cs" />
     <Compile Include="ImportExport\Components\TableStyleIe.cs" />
     <Compile Include="ImportExport\Components\TemplateIe.cs" />

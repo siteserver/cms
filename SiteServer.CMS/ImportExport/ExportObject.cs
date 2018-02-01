@@ -218,14 +218,14 @@ namespace SiteServer.CMS.ImportExport
                 }
             }
 
-            var siteContentIe = new SiteContentIe(_siteInfo, siteContentDirectoryPath);
-            foreach (int channelId in allChannelIdList)
+            var siteIe = new SiteIe(_siteInfo, siteContentDirectoryPath);
+            foreach (var channelId in allChannelIdList)
             {
                 if (!isSaveAllChannels)
                 {
                     if (!includeChannelIdArrayList.Contains(channelId)) continue;
                 }
-                siteContentIe.Export(_siteInfo.Id, channelId, isSaveContents);
+                siteIe.Export(_siteInfo.Id, channelId, isSaveContents);
             }
         }
 
@@ -257,9 +257,8 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            var siteContentIe = new SiteContentIe(_siteInfo, siteContentDirectoryPath);
             var allChannelIdList = new List<int>();
-            foreach (int channelId in channelIdList)
+            foreach (var channelId in channelIdList)
             {
                 if (!allChannelIdList.Contains(channelId))
                 {
@@ -269,9 +268,11 @@ namespace SiteServer.CMS.ImportExport
                     allChannelIdList.AddRange(childChannelIdList);
                 }
             }
-            foreach (int channelId in allChannelIdList)
+
+            var siteIe = new SiteIe(_siteInfo, siteContentDirectoryPath);
+            foreach (var channelId in allChannelIdList)
             {
-                siteContentIe.Export(_siteInfo.Id, channelId, true);
+                siteIe.Export(_siteInfo.Id, channelId, true);
             } 
              
             var imageUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _siteInfo.Additional.ImageUploadDirectoryName);
@@ -313,8 +314,8 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            var siteContentIe = new SiteContentIe(_siteInfo, siteContentDirectoryPath);
-            var isExport = siteContentIe.ExportContents(_siteInfo, channelId, contentIdArrayList, isPeriods, dateFrom, dateTo, checkedState);
+            var contentIe = new ContentIe(_siteInfo, siteContentDirectoryPath);
+            var isExport = contentIe.ExportContents(_siteInfo, channelId, contentIdArrayList, isPeriods, dateFrom, dateTo, checkedState);
             if (isExport)
             {
                 ZipUtils.PackFiles(filePath, siteContentDirectoryPath);

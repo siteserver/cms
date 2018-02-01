@@ -4,7 +4,7 @@
     only:
       - master
 
-  version: 6.0.0
+  version: 6.0.{build}
 
   assembly_info:
     patch: true
@@ -55,7 +55,7 @@
 
   deploy:
     - provider: GitHub
-      release: siteserver-v6.0.0-rc1
+      release: siteserver-v6.0.{build}-rc1
       description: 'SiteServer CMS'
       auth_token:
         secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
@@ -87,7 +87,7 @@
     file: '**\AssemblyInfo.cs'
     assembly_version: "{version}"
     assembly_file_version: "{version}"
-    assembly_informational_version: "{version}"
+    assembly_informational_version: "{version}-beta"
 
   configuration:
     - Release
