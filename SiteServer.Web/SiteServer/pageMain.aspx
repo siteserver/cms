@@ -173,10 +173,12 @@
           wheelStep: 5
         });
 
-        var api = new apiUtils.Api();
+        var versionApi = new apiUtils.Api();
+        var downloadApi = new apiUtils.Api('<%=DownloadApiUrl%>');
         var isNightly = <%=IsNightly%>;
+        var packageId = '<%=PackageId%>';
 
-        api.get({
+        versionApi.get({
           isNightly: isNightly
         }, function (err, res) {
           if (!err && res) {
@@ -184,19 +186,26 @@
 
             if (compareversion('<%=CurrentVersion%>', res.version) != -1) return;
 
-            $('#newVersion').show();
+            var major = res.version.split('.')[0];
+            var minor = res.version.split('.')[1];
+            var updatesUrl = 'http://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
+            $('#newVersionLink').attr('href', updatesUrl);
             $('#newVersionLast').html(res.version);
             $('#newVersionDate').html(res.published);
             if (res.releaseNotes) {
               $('#newVersionNotes').html(res.releaseNotes + '<br />');
             }
-            var major = res.version.split('.')[0];
-            var minor = res.version.split('.')[1];
-            var updatesUrl = 'http://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
 
-            $('#newVersionLink').attr('href', updatesUrl);
+            downloadApi.post({
+              packageId: packageId,
+              version: res.version
+            }, function (err, res) {
+              if (!err && res) {
+                $('#newVersion').show();
+              }
+            });
           }
-        }, 'packages', '<%=PackageId%>');
+        }, 'packages', packageId);
       });
     </script>
     <!--#include file="inc/foot.html"-->

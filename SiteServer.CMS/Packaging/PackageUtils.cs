@@ -123,17 +123,17 @@ namespace SiteServer.CMS.Packaging
 
                     WebConfigUtils.UpdateWebConfig(packageWebConfigPath, WebConfigUtils.IsProtectData,
                         WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory,
-                        WebConfigUtils.SecretKey);
+                        WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
 
-                    DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName),
-                        PathUtils.GetSiteFilesPath(string.Empty), true);
-                    DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName),
-                        PathUtils.GetAdminDirectoryPath(string.Empty), true);
-                    DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName),
-                        PathUtils.GetBinDirectoryPath(string.Empty), true);
-                    FileUtils.CopyFile(packageWebConfigPath,
-                        PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.WebConfigFileName),
-                        true);
+                    //DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName),
+                    //    PathUtils.GetSiteFilesPath(string.Empty), true);
+                    //DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName),
+                    //    PathUtils.GetAdminDirectoryPath(string.Empty), true);
+                    //DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName),
+                    //    PathUtils.GetBinDirectoryPath(string.Empty), true);
+                    //FileUtils.CopyFile(packageWebConfigPath,
+                    //    PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.WebConfigFileName),
+                    //    true);
                 }
                 else
                 {

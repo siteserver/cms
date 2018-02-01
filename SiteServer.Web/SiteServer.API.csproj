@@ -126,6 +126,7 @@
     <Compile Include="Controllers\Preview\PreviewController.cs" />
     <Compile Include="Controllers\Sys\Administrators\AdministratorsActionsLoginController.cs" />
     <Compile Include="Controllers\Sys\Administrators\AdministratorsSiteCheckListController.cs" />
+    <Compile Include="Controllers\Sys\Packaging\PackagingUpdateSsCmsController.cs" />
     <Compile Include="Controllers\Sys\Packaging\PackagingUpdateController.cs" />
     <Compile Include="Controllers\Sys\Packaging\PackagingSyncDatabaseController.cs" />
     <Compile Include="Controllers\Sys\Packaging\PackagingDownloadController.cs" />

@@ -44,27 +44,21 @@
               <a class="nav-link" href="javascript:;">检查更新</a>
             </li>
             <li class="nav-item" v-bind:class="{ active: step == 2 }">
-              <a class="nav-link" href="javascript:;">下载升级包</a>
-            </li>
-            <li class="nav-item" v-bind:class="{ active: step == 3 }">
               <a class="nav-link" href="javascript:;">升级系统</a>
             </li>
-            <li class="nav-item" v-bind:class="{ active: step == 4 }">
+            <li class="nav-item" v-bind:class="{ active: step == 3 }">
               <a class="nav-link" href="javascript:;">升级完成</a>
             </li>
           </ul>
 
           <div class="alert alert-danger" v-bind:style="{ display: errorMessage ? '' : 'none' }" style="display: none">
-            {{ errorMessage }}
-          </div>
-
-          <div class="alert alert-danger" v-bind:style="{ display: errorMessage ? '' : 'none' }" style="display: none">
-            您可以选择下载升级包并手动升级，请点击
+            升级遇到错误：{{ errorMessage }}
+            <br /> 您可以选择下载升级包并手动升级，请点击
             <asp:button id="BtnUpload" class="btn btn-success" Text="手动升级" runat="server"></asp:button>
           </div>
 
           <!-- step 1 place -->
-          <div v-bind:style="{ display: step == 1 ? '' : 'none' }">
+          <div v-bind:style="{ display: step == 1 && !errorMessage ? '' : 'none' }">
 
             <div class="panel panel-border panel-primary">
               <div class="panel-heading">
@@ -81,8 +75,10 @@
                 </div>
 
                 <div v-bind:style="{ display: package && !isShouldUpdate ? '' : 'none' }" class="jumbotron" style="display: none">
-                  <h4 class="display-5">当前版本已经是最新版本<a class="btn btn-success m-l-5" href="<%=AdminUrl%>">进入后台</a></h4>
-                  
+                  <h4 class="display-5">当前版本已经是最新版本
+                    <a class="btn btn-success m-l-5" href="<%=AdminUrl%>">进入后台</a>
+                  </h4>
+
                 </div>
 
                 <div v-bind:style="{ display: package && isShouldUpdate ? '' : 'none' }" class="table-responsive" style="display: none">
@@ -145,25 +141,13 @@
               <img src="./pic/animated_loading.gif" />
               <br />
               <br />
-              <p class="lead">正在下载 SiteServer CMS 升级包，可能需要几分钟，请稍后...</p>
+              <p class="lead">正在升级系统，可能需要几分钟，请稍后...</p>
             </div>
 
           </div>
 
           <!-- step 3 place -->
           <div v-bind:style="{ display: step == 3 ? '' : 'none' }">
-
-            <div class="jumbotron text-center">
-              <img src="./pic/animated_loading.gif" />
-              <br />
-              <br />
-              <p class="lead">正在升级系统，请稍后...</p>
-            </div>
-
-          </div>
-
-          <!-- step 4 place -->
-          <div v-bind:style="{ display: step == 4 ? '' : 'none' }">
 
             <div class="alert alert-success" role="alert">
               <h4 class="alert-heading">升级完成！</h4>
@@ -194,8 +178,9 @@
       var versionApi = new apiUtils.Api();
       var downloadApi = new apiUtils.Api('<%=DownloadApiUrl%>');
       var updateApi = new apiUtils.Api('<%=UpdateApiUrl%>');
-      var syncDatabaseApi = new apiUtils.Api('<%=SyncDatabaseApiUrl%>');
+      var updateSsCmsApi = new apiUtils.Api('<%=UpdateSsCmsApiUrl%>');
       var isNightly = <%=IsNightly%>;
+      var packageId = '<%=PackageId%>';
 
       var data = {
         step: 1,
@@ -224,7 +209,7 @@
                 var minor = $this.package.version.split('.')[1];
                 $this.updatesUrl = 'http://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
               }
-            }, 'packages', '<%=PackageId%>');
+            }, 'packages', packageId);
           },
           check: function () {
             this.isCheck = !this.isCheck;
@@ -235,7 +220,7 @@
             var $this = this;
 
             downloadApi.post({
-              packageId: $this.package.packageId,
+              packageId: packageId,
               version: $this.package.version
             }, function (err, res) {
               if (err) {
@@ -247,30 +232,31 @@
           },
           update: function () {
             if (!this.package) return;
-            this.step = 3;
             var $this = this;
 
             updateApi.post({
-              packageId: $this.package.packageId,
+              packageId: packageId,
               version: $this.package.version
             }, function (err, res) {
               if (err) {
                 $this.errorMessage = err.message;
               } else if (res) {
-                $this.syncDatabase();
+                $this.updateSsCms();
               }
             });
           },
-          syncDatabase: function () {
+          updateSsCms: function () {
             if (!this.package) return;
 
             var $this = this;
 
-            syncDatabaseApi.post(null, function (err, res) {
+            updateSsCmsApi.post({
+              version: $this.package.version
+            }, function (err, res) {
               if (err) {
                 $this.errorMessage = err.message;
               } else if (res) {
-                this.step = 4;
+                $this.step = 3;
               }
             });
           }

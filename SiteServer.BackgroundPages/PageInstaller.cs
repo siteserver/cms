@@ -375,7 +375,7 @@ Disallow: /SiteFiles/");
                 var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
                 var connectionString = GetConnectionString(true);
 
-                WebConfigUtils.UpdateWebConfig(isProtectData, databaseType, connectionString, "siteserver", "vEnfkn16t8aeaZKG3a4Gl9UUlzf4vgqU9xwh8ZV5");
+                WebConfigUtils.UpdateWebConfig(isProtectData, databaseType, connectionString, "siteserver", "vEnfkn16t8aeaZKG3a4Gl9UUlzf4vgqU9xwh8ZV5", false);
 
                 returnValue = true;
             }

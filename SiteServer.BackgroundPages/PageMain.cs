@@ -10,6 +10,7 @@ using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Controllers.Preview;
+using SiteServer.CMS.Controllers.Sys.Packaging;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
@@ -35,6 +36,8 @@ namespace SiteServer.BackgroundPages
         public string PackageId = PackageUtils.PackageIdSsCms;
 
         public string IsNightly => WebConfigUtils.IsNightlyUpdate.ToString().ToLower();
+
+        public string DownloadApiUrl => ApiRouteDownload.GetUrl(PageUtility.InnerApiUrl);
 
         public string CurrentVersion => SystemManager.Version;
 

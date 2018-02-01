@@ -138,13 +138,13 @@ namespace SiteServer.Utils
         }
 
         public static void UpdateWebConfig(bool isProtectData, DatabaseType databaseType, string connectionString,
-            string adminDirectory, string secretKey)
+            string adminDirectory, string secretKey, bool isNightlyUpdate)
         {
             var configPath = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
-            UpdateWebConfig(configPath, isProtectData, databaseType, connectionString, adminDirectory, secretKey);
+            UpdateWebConfig(configPath, isProtectData, databaseType, connectionString, adminDirectory, secretKey, isNightlyUpdate);
         }
 
-        public static void UpdateWebConfig(string configPath, bool isProtectData, DatabaseType databaseType, string connectionString, string adminDirectory, string secretKey)
+        public static void UpdateWebConfig(string configPath, bool isProtectData, DatabaseType databaseType, string connectionString, string adminDirectory, string secretKey, bool isNightlyUpdate)
         {
             var doc = new XmlDocument();
             doc.Load(configPath);
@@ -203,12 +203,21 @@ namespace SiteServer.Utils
                                     dirty = true;
                                 }
                             }
-                            else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(AdminDirectory)))
+                            else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(SecretKey)))
                             {
                                 var attrValue = setting.Attributes["value"];
                                 if (attrValue != null)
                                 {
-                                    attrValue.Value = adminDirectory;
+                                    attrValue.Value = secretKey;
+                                    dirty = true;
+                                }
+                            }
+                            else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(IsNightlyUpdate)))
+                            {
+                                var attrValue = setting.Attributes["value"];
+                                if (attrValue != null)
+                                {
+                                    attrValue.Value = isNightlyUpdate.ToString();
                                     dirty = true;
                                 }
                             }

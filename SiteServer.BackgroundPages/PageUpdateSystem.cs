@@ -31,7 +31,7 @@ namespace SiteServer.BackgroundPages
 
         public string UpdateApiUrl => ApiRouteUpdate.GetUrl(PageUtility.InnerApiUrl);
 
-        public string SyncDatabaseApiUrl => ApiRouteSyncDatabase.GetUrl(PageUtility.InnerApiUrl);
+        public string UpdateSsCmsApiUrl => ApiRouteUpdateSsCms.GetUrl(PageUtility.InnerApiUrl);
 
         public void Page_Load(object sender, EventArgs e)
         {
