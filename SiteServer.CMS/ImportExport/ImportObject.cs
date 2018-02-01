@@ -96,8 +96,8 @@ namespace SiteServer.CMS.ImportExport
 
         public void ImportSiteContent(string siteContentDirectoryPath, string filePath, bool isImportContents)
         {
-            var siteContentIe = new SiteContentIe(_siteInfo, siteContentDirectoryPath);
-            siteContentIe.ImportChannelsAndContents(filePath, isImportContents, false, 0);
+            var siteIe = new SiteIe(_siteInfo, siteContentDirectoryPath);
+            siteIe.ImportChannelsAndContents(filePath, isImportContents, false, 0);
         }
 
 
@@ -205,7 +205,7 @@ namespace SiteServer.CMS.ImportExport
         {
             var filePathArrayList = GetSiteContentFilePathArrayList(siteContentDirectoryPath);
 
-            var siteContentIe = new SiteContentIe(_siteInfo, siteContentDirectoryPath);
+            var siteIe = new SiteIe(_siteInfo, siteContentDirectoryPath);
 
             Hashtable levelHashtable = null;
             foreach (string filePath in filePathArrayList)
@@ -224,7 +224,7 @@ namespace SiteServer.CMS.ImportExport
                     };
                 }
 
-                var insertChannelId = siteContentIe.ImportChannelsAndContents(filePath, true, isOverride, (int)levelHashtable[level]);
+                var insertChannelId = siteIe.ImportChannelsAndContents(filePath, true, isOverride, (int)levelHashtable[level]);
                 levelHashtable[level + 1] = insertChannelId;
             }
         }
@@ -233,7 +233,7 @@ namespace SiteServer.CMS.ImportExport
         {
             var filePathArrayList = GetSiteContentFilePathArrayList(siteContentDirectoryPath);
 
-            var siteContentIe = new SiteContentIe(_siteInfo, siteContentDirectoryPath);
+            var siteIe = new SiteIe(_siteInfo, siteContentDirectoryPath);
 
             var parentOrderString = "none";
             //int parentID = 0;
@@ -245,12 +245,12 @@ namespace SiteServer.CMS.ImportExport
 
                 if (StringUtils.StartsWithIgnoreCase(orderString, parentOrderString))
                 {
-                    parentId = siteContentIe.ImportChannelsAndContents(filePath, true, isOverride, parentId);
+                    parentId = siteIe.ImportChannelsAndContents(filePath, true, isOverride, parentId);
                     parentOrderString = orderString;
                 }
                 else
                 {
-                    siteContentIe.ImportChannelsAndContents(filePath, true, isOverride, parentId);
+                    siteIe.ImportChannelsAndContents(filePath, true, isOverride, parentId);
                 }
             }
         }
@@ -493,9 +493,9 @@ namespace SiteServer.CMS.ImportExport
         {
             var filePath = PathUtils.Combine(siteContentDirectoryPath, "contents.xml");
 
-            var siteContentIe = new SiteContentIe(_siteInfo, siteContentDirectoryPath);
+            var contentIe = new ContentIe(_siteInfo, siteContentDirectoryPath);
 
-            siteContentIe.ImportContents(filePath, isOverride, nodeInfo, taxis, importStart, importCount, isChecked, checkedLevel);
+            contentIe.ImportContents(filePath, isOverride, nodeInfo, taxis, importStart, importCount, isChecked, checkedLevel);
 
             FileUtils.DeleteFileIfExists(filePath);
 

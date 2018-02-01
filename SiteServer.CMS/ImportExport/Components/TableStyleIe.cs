@@ -208,6 +208,10 @@ namespace SiteServer.CMS.ImportExport.Components
             foreach (var styleDirectoryPath in styleDirectoryPaths)
             {
                 var tableName = PathUtils.GetDirectoryName(styleDirectoryPath);
+                if (tableName == "siteserver_PublishmentSystem")
+                {
+                    tableName = DataProvider.SiteDao.TableName;
+                }
                 if (!string.IsNullOrEmpty(tableNameCollection?[tableName]))
                 {
                     tableName = tableNameCollection[tableName];

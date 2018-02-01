@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
@@ -11,14 +12,17 @@ namespace SiteServer.CMS.Core
         static SystemManager()
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var ssemblyName = assembly.GetName();
-            var assemblyVersion = ssemblyName.Version;
-            var version = assemblyVersion.ToString();
-            if (StringUtils.EndsWith(version, ".0"))
-            {
-                version = version.Substring(0, version.Length - 2);
-            }
-            Version = version;
+            Version = FileVersionInfo.GetVersionInfo(assembly.Location).ProductVersion;
+
+            
+            //var ssemblyName = assembly.GetName();
+            //var assemblyVersion = ssemblyName.Version;
+            //var version = assemblyVersion.ToString();
+            //if (StringUtils.EndsWith(version, ".0"))
+            //{
+            //    version = version.Substring(0, version.Length - 2);
+            //}
+            //Version = version;
         }
 
         public static string Version { get; }

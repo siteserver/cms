@@ -89,7 +89,7 @@ namespace SiteServer.CMS.Packaging
                 var packageManager = new PackageManager(repo, packagesPath);
 
                 //Download and unzip the package
-                packageManager.InstallPackage(packageId, SemanticVersion.Parse(version), false, WebConfigUtils.IsNightlyUpdate);
+                packageManager.InstallPackage(packageId, SemanticVersion.Parse(version), true, WebConfigUtils.IsNightlyUpdate);
             }
 
             ZipUtils.UnpackFilesByExtension(PathUtils.Combine(directoryPath, idWithVersion + ".nupkg"),
@@ -160,15 +160,15 @@ namespace SiteServer.CMS.Packaging
                     DirectoryUtils.Copy(PathUtils.Combine(packagePath, "content"), pluginPath, true);
                     DirectoryUtils.Copy(dllDirectoryPath, PathUtils.Combine(pluginPath, "Bin"), true);
 
-                    var dependencyPackageDict = GetDependencyPackages(metadata);
-                    foreach (var dependencyPackageId in dependencyPackageDict.Keys)
-                    {
-                        var dependencyPackageVersion = dependencyPackageDict[dependencyPackageId];
-                        var dependencyDdlDirectoryPath =
-                            FindDllDirectoryPath(
-                                PathUtils.GetPackagesPath($"{dependencyPackageId}.{dependencyPackageVersion}"));
-                        DirectoryUtils.Copy(dependencyDdlDirectoryPath, PathUtils.Combine(pluginPath, "Bin"), true);
-                    }
+                    //var dependencyPackageDict = GetDependencyPackages(metadata);
+                    //foreach (var dependencyPackageId in dependencyPackageDict.Keys)
+                    //{
+                    //    var dependencyPackageVersion = dependencyPackageDict[dependencyPackageId];
+                    //    var dependencyDdlDirectoryPath =
+                    //        FindDllDirectoryPath(
+                    //            PathUtils.GetPackagesPath($"{dependencyPackageId}.{dependencyPackageVersion}"));
+                    //    DirectoryUtils.Copy(dependencyDdlDirectoryPath, PathUtils.Combine(pluginPath, "Bin"), true);
+                    //}
 
                     var configFilelPath = PathUtils.Combine(pluginPath, $"{metadata.Id}.nuspec");
                     FileUtils.CopyFile(nuspecPath, configFilelPath, true);
