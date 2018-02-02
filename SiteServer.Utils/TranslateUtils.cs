@@ -1101,12 +1101,17 @@ namespace SiteServer.Utils
 
         public static string EncryptStringBySecretKey(string inputString)
         {
+            return EncryptStringBySecretKey(inputString, WebConfigUtils.SecretKey);
+        }
+
+        public static string EncryptStringBySecretKey(string inputString, string secretKey)
+        {
             if (string.IsNullOrEmpty(inputString)) return string.Empty;
 
             var encryptor = new DesEncryptor
             {
                 InputString = inputString,
-                EncryptKey = WebConfigUtils.SecretKey
+                EncryptKey = secretKey
             };
             encryptor.DesEncrypt();
 
@@ -1118,6 +1123,11 @@ namespace SiteServer.Utils
 
         public static string DecryptStringBySecretKey(string inputString)
         {
+            return DecryptStringBySecretKey(inputString, WebConfigUtils.SecretKey);
+        }
+
+        public static string DecryptStringBySecretKey(string inputString, string secretKey)
+        {
             if (string.IsNullOrEmpty(inputString)) return string.Empty;
 
             inputString = inputString.Replace("0add0", "+").Replace("0equals0", "=").Replace("0and0", "&").Replace("0question0", "?").Replace("0quote0", "'").Replace("0slash0", "/");
@@ -1125,7 +1135,7 @@ namespace SiteServer.Utils
             var encryptor = new DesEncryptor
             {
                 InputString = inputString,
-                DecryptKey = WebConfigUtils.SecretKey
+                DecryptKey = secretKey
             };
             encryptor.DesDecrypt();
 

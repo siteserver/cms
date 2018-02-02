@@ -25,8 +25,8 @@
                   <thead>
                     <tr>
                       <th>栏目名</th>
-                      <th width="300">所属栏目组</th>
-                      <th width="100">栏目索引</th>
+                      <th class"text-nowrap">所属栏目组</th>
+                      <th class="text-nowrap">栏目索引</th>
                       <th width="60">上升</th>
                       <th width="60">下降</th>
                       <th width="60">&nbsp;</th>

@@ -19,28 +19,28 @@ namespace SiteServer.BackgroundPages.Core
         private readonly string _iconPlusUrl;
 
         private readonly SiteInfo _siteInfo;
-        private readonly ChannelInfo _nodeInfo;
+        private readonly ChannelInfo _channelInfo;
         private readonly bool _enabled;
         private readonly string _administratorName;
 
-        public static NodeTreeItem CreateInstance(SiteInfo siteInfo, ChannelInfo nodeInfo, bool enabled, string administratorName)
+        public static NodeTreeItem CreateInstance(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, string administratorName)
         {
-            return new NodeTreeItem(siteInfo, nodeInfo, enabled, administratorName);
+            return new NodeTreeItem(siteInfo, channelInfo, enabled, administratorName);
         }
 
-        private NodeTreeItem(SiteInfo siteInfo, ChannelInfo nodeInfo, bool enabled, string administratorName)
+        private NodeTreeItem(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, string administratorName)
         {
             _siteInfo = siteInfo;
-            _nodeInfo = nodeInfo;
+            _channelInfo = channelInfo;
             _enabled = enabled;
             _administratorName = administratorName;
 
             var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
 
             _iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
-            if (!string.IsNullOrEmpty(nodeInfo.ContentModelPluginId))
+            if (!string.IsNullOrEmpty(channelInfo.ContentModelPluginId))
             {
-                var iconUrl = PluginManager.GetPluginIconUrl(nodeInfo.ContentModelPluginId);
+                var iconUrl = PluginManager.GetPluginIconUrl(channelInfo.ContentModelPluginId);
                 if (!string.IsNullOrEmpty(iconUrl))
                 {
                     _iconFolderUrl = iconUrl;
@@ -55,19 +55,19 @@ namespace SiteServer.BackgroundPages.Core
         public string GetItemHtml(ELoadingType loadingType, string returnUrl, NameValueCollection additional)
         {
             var htmlBuilder = new StringBuilder();
-            var parentsCount = _nodeInfo.ParentsCount;
+            var parentsCount = _channelInfo.ParentsCount;
             for (var i = 0; i < parentsCount; i++)
             {
                 htmlBuilder.Append($@"<img align=""absmiddle"" src=""{_iconEmptyUrl}"" />");
             }
 
-            if (_nodeInfo.ChildrenCount > 0)
+            if (_channelInfo.ChildrenCount > 0)
             {
                 htmlBuilder.Append(
-                    _nodeInfo.SiteId == _nodeInfo.Id
-                        ? $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_nodeInfo
+                    _channelInfo.SiteId == _channelInfo.Id
+                        ? $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_channelInfo
                             .Id}"" src=""{_iconMinusUrl}"" />"
-                        : $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_nodeInfo
+                        : $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_channelInfo
                             .Id}"" src=""{_iconPlusUrl}"" />");
             }
             else
@@ -78,8 +78,8 @@ namespace SiteServer.BackgroundPages.Core
             if (!string.IsNullOrEmpty(_iconFolderUrl))
             {
                 htmlBuilder.Append(
-                    _nodeInfo.Id > 0
-                        ? $@"<a href=""{PageRedirect.GetRedirectUrlToChannel(_nodeInfo.SiteId, _nodeInfo.Id)}"" target=""_blank"" title=""浏览页面""><img align=""absmiddle"" border=""0"" src=""{_iconFolderUrl}"" style=""max-height: 22px; max-width: 22px"" /></a>"
+                    _channelInfo.Id > 0
+                        ? $@"<a href=""{PageRedirect.GetRedirectUrlToChannel(_channelInfo.SiteId, _channelInfo.Id)}"" target=""_blank"" title=""浏览页面""><img align=""absmiddle"" border=""0"" src=""{_iconFolderUrl}"" style=""max-height: 22px; max-width: 22px"" /></a>"
                         : $@"<img align=""absmiddle"" src=""{_iconFolderUrl}"" style=""max-height: 22px; max-width: 22px"" />");
             }
 
@@ -89,19 +89,19 @@ namespace SiteServer.BackgroundPages.Core
             {
                 if (loadingType == ELoadingType.ContentTree)
                 {
-                    var linkUrl = PageContent.GetRedirectUrl(_nodeInfo.SiteId, _nodeInfo.Id);
+                    var linkUrl = PageContent.GetRedirectUrl(_channelInfo.SiteId, _channelInfo.Id);
 
                     htmlBuilder.Append(
-                        $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_nodeInfo.ChannelName}</a>");
+                        $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_channelInfo.ChannelName}</a>");
                 }
                 else if (loadingType == ELoadingType.ChannelSelect)
                 {
-                    var linkUrl = ModalChannelSelect.GetRedirectUrl(_nodeInfo.SiteId, _nodeInfo.Id);
+                    var linkUrl = ModalChannelSelect.GetRedirectUrl(_channelInfo.SiteId, _channelInfo.Id);
                     if (additional != null)
                     {
                         if (!string.IsNullOrEmpty(additional["linkUrl"]))
                         {
-                            linkUrl = additional["linkUrl"] + _nodeInfo.Id;
+                            linkUrl = additional["linkUrl"] + _channelInfo.Id;
                         }
                         else
                         {
@@ -111,38 +111,38 @@ namespace SiteServer.BackgroundPages.Core
                             }
                         }
                     }
-                    htmlBuilder.Append($"<a href='{linkUrl}'>{_nodeInfo.ChannelName}</a>");
+                    htmlBuilder.Append($"<a href='{linkUrl}'>{_channelInfo.ChannelName}</a>");
                 }
                 else
                 {
-                    if (AdminUtility.HasChannelPermissions(_administratorName, _nodeInfo.SiteId, _nodeInfo.Id, ConfigManager.Permissions.Channel.ChannelEdit))
+                    if (AdminUtility.HasChannelPermissions(_administratorName, _channelInfo.SiteId, _channelInfo.Id, ConfigManager.Permissions.Channel.ChannelEdit))
                     {
-                        var onClickUrl = ModalChannelEdit.GetOpenWindowString(_nodeInfo.SiteId, _nodeInfo.Id, returnUrl);
+                        var onClickUrl = ModalChannelEdit.GetOpenWindowString(_channelInfo.SiteId, _channelInfo.Id, returnUrl);
                         htmlBuilder.Append(
-                            $@"<a href=""javascript:;;"" onClick=""{onClickUrl}"" title=""快速编辑栏目"">{_nodeInfo.ChannelName}</a>");
+                            $@"<a href=""javascript:;;"" onClick=""{onClickUrl}"" title=""快速编辑栏目"">{_channelInfo.ChannelName}</a>");
 
                     }
                     else
                     {
-                        htmlBuilder.Append($@"<a href=""javascript:;;"">{_nodeInfo.ChannelName}</a>");
+                        htmlBuilder.Append($@"<a href=""javascript:;;"">{_channelInfo.ChannelName}</a>");
                     }
                 }
             }
             else
             {
-                htmlBuilder.Append(_nodeInfo.ChannelName);
+                htmlBuilder.Append(_channelInfo.ChannelName);
             }
 
-            if (_nodeInfo.SiteId != 0)
+            if (_channelInfo.SiteId != 0)
             {
                 htmlBuilder.Append("&nbsp;");
 
-                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(_siteInfo, _nodeInfo));
+                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(_siteInfo, _channelInfo));
 
-                if (_nodeInfo.ContentNum < 0) return htmlBuilder.ToString();
+                if (_channelInfo.ContentNum < 0) return htmlBuilder.ToString();
 
                 htmlBuilder.Append(
-                    $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({_nodeInfo.ContentNum})</span>");
+                    $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({_channelInfo.ContentNum})</span>");
             }
 
             return htmlBuilder.ToString();

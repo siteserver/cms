@@ -13,7 +13,6 @@ namespace SiteServer.CMS.Core
         {
             var assembly = Assembly.GetExecutingAssembly();
             Version = FileVersionInfo.GetVersionInfo(assembly.Location).ProductVersion;
-
             
             //var ssemblyName = assembly.GetName();
             //var assemblyVersion = ssemblyName.Version;

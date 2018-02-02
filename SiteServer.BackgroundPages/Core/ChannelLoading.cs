@@ -62,8 +62,8 @@ namespace SiteServer.BackgroundPages.Core
                 rowHtml = $@"
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
     <td>{title}</td>
-    <td>{nodeInfo.GroupNameCollection}</td>
-    <td>{nodeInfo.IndexName}</td>
+    <td class=""text-nowrap"">{nodeInfo.GroupNameCollection}</td>
+    <td class=""text-nowrap"">{nodeInfo.IndexName}</td>
     <td class=""text-center"">{upLink}</td>
     <td class=""text-center"">{downLink}</td>
     <td class=""text-center"">{editUrl}</td>

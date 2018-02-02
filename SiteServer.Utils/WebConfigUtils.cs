@@ -176,7 +176,7 @@ namespace SiteServer.Utils
                                     attrValue.Value = databaseType.Value;
                                     if (isProtectData)
                                     {
-                                        attrValue.Value = TranslateUtils.EncryptStringBySecretKey(attrValue.Value);
+                                        attrValue.Value = TranslateUtils.EncryptStringBySecretKey(attrValue.Value, secretKey);
                                     }
                                     dirty = true;
                                 }
@@ -189,7 +189,7 @@ namespace SiteServer.Utils
                                     attrValue.Value = connectionString;
                                     if (isProtectData)
                                     {
-                                        attrValue.Value = TranslateUtils.EncryptStringBySecretKey(attrValue.Value);
+                                        attrValue.Value = TranslateUtils.EncryptStringBySecretKey(attrValue.Value, secretKey);
                                     }
                                     dirty = true;
                                 }
