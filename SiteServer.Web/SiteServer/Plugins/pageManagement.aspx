@@ -260,6 +260,7 @@
     <script type="text/javascript">
       var versionApi = new apiUtils.Api();
       var isNightly = <%=IsNightly%>;
+      var version = '<%=Version%>';
 
       var data = {
         pageType: <%=PageType%>,
@@ -281,6 +282,7 @@
 
             versionApi.get({
               isNightly: isNightly,
+              version: version,
               packageIds: this.packageIds
             }, function (err, res) {
               if (!err && res) {

@@ -14,10 +14,10 @@
         <div class="card-box">
           <ul class="nav nav-pills">
             <li class="nav-item">
-              <a class="nav-link" href="pageUtilityParameter.aspx">系统参数查看</a>
+              <a class="nav-link" href="pageUtilityCache.aspx">系统缓存</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageUtilityCache.aspx">系统缓存</a>
+              <a class="nav-link" href="pageUtilityParameter.aspx">系统参数查看</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="pageUtilityEncrypt.aspx">加密字符串</a>

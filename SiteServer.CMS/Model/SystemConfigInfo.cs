@@ -163,18 +163,6 @@ namespace SiteServer.CMS.Model
             set { Set("UserPasswordRestriction", value); }
         }
 
-        public string UserRegistrationVerifyType
-        {
-            get { return GetString("UserRegistrationVerifyType", EUserVerifyTypeUtils.GetValue(EUserVerifyType.None)); }
-            set { Set("UserRegistrationVerifyType", value); }
-        }
-
-        public string UserRegistrationSmsTplId
-        {
-            get { return GetString("UserRegistrationSmsTplId", string.Empty); }
-            set { Set("UserRegistrationSmsTplId", value); }
-        }
-
         public int UserRegistrationMinMinutes
         {
             get { return GetInt("UserRegistrationMinMinutes"); }

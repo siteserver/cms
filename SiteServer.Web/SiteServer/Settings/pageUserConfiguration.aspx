@@ -47,23 +47,6 @@
           </div>
 
           <div class="form-group">
-            <label class="col-form-label">新用户注册验证</label>
-            <asp:DropDownList ID="DdlRegisterVerifyType" class="form-control" OnSelectedIndexChanged="DdlRegisterVerifyType_SelectedIndexChanged"
-              runat="server" AutoPostBack="true"></asp:DropDownList>
-            <small class="form-text text-muted">选择短信验证将向用户发送短信验证码以确认手机号码，此选项需要开启短信发送功能</small>
-          </div>
-
-          <asp:PlaceHolder ID="PhRegisterSms" runat="server">
-            <div class="form-group">
-              <label class="col-form-label">发送验证码短信模板Id
-                <asp:RequiredFieldValidator ControlToValidate="TbRegisterSmsTplId" runat="server" ErrorMessage="*" foreColor="Red"></asp:RequiredFieldValidator>
-              </label>
-              <asp:TextBox ID="TbRegisterSmsTplId" class="form-control" runat="server"></asp:TextBox>
-              <small class="form-text text-muted">需进入短信供应商模板管理界面，添加验证码类短信模板并获取模板Id</small>
-            </div>
-          </asp:PlaceHolder>
-
-          <div class="form-group">
             <label class="col-form-label">同一IP注册间隔限制
               <asp:RegularExpressionValidator runat="server" ControlToValidate="TbRegisterMinMinutesOfIpAddress" ValidationExpression="[^']+"
                 errorMessage=" *" foreColor="red" display="Dynamic" />

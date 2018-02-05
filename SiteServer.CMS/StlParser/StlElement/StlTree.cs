@@ -177,7 +177,10 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             htmlBuilder.Append("</table>");
 
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAgStlTreeNotAjax, StlTreeItemNotAjax.GetNodeTreeScript(pageInfo));
+            if (!pageInfo.BodyCodes.ContainsKey(PageInfo.Const.JsAgStlTreeNotAjax))
+            {
+                pageInfo.BodyCodes.Add(PageInfo.Const.JsAgStlTreeNotAjax, StlTreeItemNotAjax.GetNodeTreeScript(pageInfo));
+            }
 
             return htmlBuilder.ToString();
         }
@@ -566,7 +569,7 @@ var stltree_isNodeTree = {isNodeTree};
 
         private static string ParseImplAjax(PageInfo pageInfo, ContextInfo contextInfo, string channelIndex, string channelName, int upLevel, int topLevel, string groupChannel, string groupChannelNot, string title, bool isShowContentNum, bool isShowTreeLine, string currentFormatString, bool isLocal)
         {
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Jquery);
+            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
 
             var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
@@ -599,7 +602,10 @@ var stltree_isNodeTree = {isNodeTree};
 
             htmlBuilder.Append("</table>");
 
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAgStlTreeAjax, StlTreeItemAjax.GetScript(pageInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelId, channel.ParentsCount, pageInfo.PageChannelId));
+            if (!pageInfo.BodyCodes.ContainsKey(PageInfo.Const.JsAgStlTreeAjax))
+            {
+                pageInfo.BodyCodes.Add(PageInfo.Const.JsAgStlTreeAjax, StlTreeItemAjax.GetScript(pageInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelId, channel.ParentsCount, pageInfo.PageChannelId));
+            }
 
             return htmlBuilder.ToString();
         }

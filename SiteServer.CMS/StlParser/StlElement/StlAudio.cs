@@ -120,8 +120,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else
             {
-                pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Jquery);
-                pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAcMediaElement);
+                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
+                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcMediaElement);
 
                 return $@"
 <audio src=""{playUrl}"" {(isAutoPlay ? "autoplay" : string.Empty)} {(isPreLoad ? string.Empty : @"preload=""none""")} {(isLoop ? "loop" : string.Empty)}>

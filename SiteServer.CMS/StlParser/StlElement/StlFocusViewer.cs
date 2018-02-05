@@ -256,7 +256,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (StringUtils.EqualsIgnoreCase(theme, ThemeStyle2))
                 {
-                    pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAcSwfObject);
+                    pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcSwfObject);
 
                     var imageUrls = new StringCollection();
                     var navigationUrls = new StringCollection();
@@ -343,7 +343,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                 }
                 else if (StringUtils.EqualsIgnoreCase(theme, ThemeStyle3))
                 {
-                    pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAcSwfObject);
+                    pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcSwfObject);
 
                     var imageUrls = new StringCollection();
                     var navigationUrls = new StringCollection();

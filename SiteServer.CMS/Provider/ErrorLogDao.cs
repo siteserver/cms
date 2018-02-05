@@ -147,7 +147,10 @@ namespace SiteServer.CMS.Provider
                     whereString.Append(" AND ");
                 }
                 var filterKeyword = PageUtils.FilterSql(keyword);
-                whereString.Append($"(Message LIKE '%{filterKeyword}%' OR Stacktrace LIKE '%{filterKeyword}%' OR Summary LIKE '%{filterKeyword}%')");
+                var keywordId = TranslateUtils.ToInt(keyword);
+                whereString.Append(keywordId > 0
+                    ? $"Id = {keywordId}"
+                    : $"(Message LIKE '%{filterKeyword}%' OR Stacktrace LIKE '%{filterKeyword}%' OR Summary LIKE '%{filterKeyword}%')");
             }
             if (!string.IsNullOrEmpty(dateFrom))
             {

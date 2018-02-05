@@ -16,6 +16,10 @@ namespace SiteServer.BackgroundPages
 
         protected virtual bool IsSinglePage => false; // 是否为单页（即是否需要放在框架页内运行,false表示需要）
 
+        public string IsNightly => WebConfigUtils.IsNightlyUpdate.ToString().ToLower(); // 系统是否允许升级到最新的开发版本
+
+        public string Version => SystemManager.PluginVersion; // 系统采用的插件API版本号
+
         protected bool IsForbidden { get; private set; }
 
         public Request Body { get; private set; }

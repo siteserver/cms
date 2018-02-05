@@ -218,7 +218,7 @@ namespace SiteServer.CMS.StlParser.Parsers
                                     Func<PluginParseContext, string> func;
                                     if (parsers.TryGetValue(elementName, out func))
                                     {
-                                        var context = new PluginParseContext(attributes, innerXml, pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id);
+                                        var context = new PluginParseContext(attributes, innerXml, pageInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo);
                                         parsedContent = func(context);
                                     }
                                 }

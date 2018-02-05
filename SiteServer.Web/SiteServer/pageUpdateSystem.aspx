@@ -180,6 +180,7 @@
       var updateApi = new apiUtils.Api('<%=UpdateApiUrl%>');
       var updateSsCmsApi = new apiUtils.Api('<%=UpdateSsCmsApiUrl%>');
       var isNightly = <%=IsNightly%>;
+      var version = '<%=Version%>';
       var packageId = '<%=PackageId%>';
 
       var data = {
@@ -200,7 +201,8 @@
             var $this = this;
 
             versionApi.get({
-              isNightly: isNightly
+              isNightly: isNightly,
+              version: version
             }, function (err, res) {
               if (!err && res) {
                 $this.package = res;

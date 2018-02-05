@@ -69,10 +69,13 @@ namespace SiteServer.CMS.StlParser
                     StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);
                 }
 
-                if (pageInfo.PageContentId > 0 && pageInfo.SiteInfo.Additional.IsCountHits && !pageInfo.IsPageScriptsExists(PageInfo.Const.JsAdStlCountHits))
+                if (pageInfo.PageContentId > 0 && pageInfo.SiteInfo.Additional.IsCountHits && !pageInfo.BodyCodes.ContainsKey(PageInfo.Const.JsAdStlCountHits))
                 {
-                    pageInfo.AddPageEndScriptsIfNotExists(PageInfo.Const.JsAdStlCountHits, $@"
+                    if (!pageInfo.FootCodes.ContainsKey(PageInfo.Const.JsAdStlCountHits))
+                    {
+                        pageInfo.FootCodes.Add(PageInfo.Const.JsAdStlCountHits, $@"
 <script src=""{ApiRouteActionsAddContentHits.GetUrl(pageInfo.ApiUrl, pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.PageContentId)}"" type=""text/javascript""></script>");
+                    }
                 }
 
                 var isShowPageInfo = pageInfo.SiteInfo.Additional.IsCreateShowPageInfo;
@@ -90,8 +93,11 @@ namespace SiteServer.CMS.StlParser
                         var apiUrl = pageInfo.ApiUrl;
                         var ajaxUrl = ApiRouteActionsTrigger.GetUrl(apiUrl, pageInfo.SiteId, contextInfo.ChannelId,
                             contextInfo.ContentId, fileTemplateId, true);
-                        pageInfo.AddPageEndScriptsIfNotExists("CreateDoubleClick", $@"
+                        if (!pageInfo.FootCodes.ContainsKey("CreateDoubleClick"))
+                        {
+                            pageInfo.FootCodes.Add("CreateDoubleClick", $@"
 <script type=""text/javascript"" language=""javascript"">document.ondblclick=function(x){{location.href = '{ajaxUrl}&returnUrl=' + encodeURIComponent(location.search);}}</script>");
+                        }
                     }
                 }
                 else
@@ -118,7 +124,7 @@ namespace SiteServer.CMS.StlParser
                     }
                 }
 
-                var afterBodyScripts = StlParserManager.GetPageInfoScript(pageInfo, true);
+                var afterBodyScripts = StlParserManager.GetPageBodyCodes(pageInfo);
                 if (!string.IsNullOrEmpty(afterBodyScripts))
                 {
                     if (contentBuilder.ToString().IndexOf("<body", StringComparison.Ordinal) != -1 || contentBuilder.ToString().IndexOf("<BODY", StringComparison.Ordinal) != -1)
@@ -137,36 +143,18 @@ namespace SiteServer.CMS.StlParser
                     }
                 }
 
-                var beforeBodyScripts = StlParserManager.GetPageInfoScript(pageInfo, false);
-                if (!string.IsNullOrEmpty(beforeBodyScripts))
+                if (pageInfo.FootCodes.Count > 0)
                 {
-                    if (contentBuilder.ToString().IndexOf("</body>", StringComparison.Ordinal) != -1 || contentBuilder.ToString().IndexOf("</BODY>", StringComparison.Ordinal) != -1)
+                    var builder = new StringBuilder();
+                    foreach (var key in pageInfo.FootCodes.Keys)
                     {
-                        var index = contentBuilder.ToString().IndexOf("</body>", StringComparison.Ordinal);
-                        if (index == -1)
-                        {
-                            index = contentBuilder.ToString().IndexOf("</BODY>", StringComparison.Ordinal);
-                        }
-                        contentBuilder.Insert(index, StringUtils.Constants.ReturnAndNewline + beforeBodyScripts + StringUtils.Constants.ReturnAndNewline);
+                        builder.Append(pageInfo.FootCodes[key]);
                     }
-                    else
-                    {
-                        contentBuilder.Append(beforeBodyScripts);
-                    }
-                }
-
-                if (pageInfo.PageEndScriptKeys.Count > 0)
-                {
-                    var endScriptBuilder = new StringBuilder();
-                    foreach (string scriptKey in pageInfo.PageEndScriptKeys)
-                    {
-                        endScriptBuilder.Append(pageInfo.GetPageEndScripts(scriptKey));
-                    }
-                    endScriptBuilder.Append(StringUtils.Constants.ReturnAndNewline);
+                    builder.Append(StringUtils.Constants.ReturnAndNewline);
 
                     //contentBuilder.Append(endScriptBuilder.ToString());
                     //StringUtils.InsertBeforeOrAppend(new string[] { "</body>", "</BODY>" }, contentBuilder, endScriptBuilder.ToString());
-                    StringUtils.InsertAfterOrAppend(new[] { "</html>", "</html>" }, contentBuilder, endScriptBuilder.ToString());
+                    StringUtils.InsertAfterOrAppend(new[] { "</html>", "</html>" }, contentBuilder, builder.ToString());
                 }
             }
 

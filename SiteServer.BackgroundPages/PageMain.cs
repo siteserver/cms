@@ -35,8 +35,6 @@ namespace SiteServer.BackgroundPages
 
         public string PackageId = PackageUtils.PackageIdSsCms;
 
-        public string IsNightly => WebConfigUtils.IsNightlyUpdate.ToString().ToLower();
-
         public string DownloadApiUrl => ApiRouteDownload.GetUrl(PageUtility.InnerApiUrl);
 
         public string CurrentVersion => SystemManager.Version;

@@ -235,7 +235,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 videoUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, videoUrl, pageInfo.IsLocal);
                 imageUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, imageUrl, pageInfo.IsLocal);
 
-                pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAcVideoJs);
+                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcVideoJs);
 
                 parsedContent =
                     $@"<video class=""video-js vjs-default-skin"" src=""{videoUrl}"" width=""{width}"" height=""{height}"" {(isAutoPlay

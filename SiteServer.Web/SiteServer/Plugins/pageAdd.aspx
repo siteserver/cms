@@ -127,8 +127,8 @@
     <script src="../assets/js/apiUtils.js"></script>
     <script>
       var api = new apiUtils.Api();
-
       var isNightly = <%=IsNightly%>;
+      var version = '<%=Version%>';
 
       var data = {
         searching: false,
@@ -139,6 +139,7 @@
 
       api.get({
         isNightly: isNightly,
+        version: version,
         $filter: "category eq 'featured'"
       }, function (err, res) {
         if (!err && res && res.length > 0) {

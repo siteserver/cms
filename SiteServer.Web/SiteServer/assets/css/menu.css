@@ -282,7 +282,7 @@ body.fixed-left .side-menu.left {
   color: #00b19d;
 }
 #sidebar-menu ul ul a {
-  color: #75767B;
+  color: #55565d;
   display: block;
   padding: 10px 10px 10px 45px;
 }
@@ -866,7 +866,7 @@ body.fixed-left .side-menu.left {
 }
 #topnav .navigation-menu > li > a {
   display: block;
-  color: #B0DDCE;
+  color: #fff;
   font-weight: 500;
   font-size: 14px;
   -webkit-transition: all .3s ease;
@@ -897,7 +897,7 @@ body.fixed-left .side-menu.left {
 #topnav .navigation-menu > li > a i {
   font-size: 18px;
   margin-right: 5px;
-  color: #B0DDCE;
+  color: #fff;
 }
 #topnav .navigation-menu > li > a:hover,
 #topnav .navigation-menu > li > a:focus {

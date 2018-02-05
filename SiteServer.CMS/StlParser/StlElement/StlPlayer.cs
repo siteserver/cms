@@ -442,7 +442,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         if (StringUtils.EqualsIgnoreCase(playBy, PlayByFlowPlayer))
                         {
                             var ajaxElementId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
-                            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAcFlowPlayer);
+                            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcFlowPlayer);
 
                             var swfUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.FlowPlayer.Swf);
                             parsedContent = $@"
@@ -458,7 +458,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         else if (StringUtils.EqualsIgnoreCase(playBy, PlayByJwPlayer))
                         {
-                            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAcJwPlayer6);
+                            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcJwPlayer6);
                             var ajaxElementId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
                             parsedContent = $@"
 <div id='{ajaxElementId}'></div>

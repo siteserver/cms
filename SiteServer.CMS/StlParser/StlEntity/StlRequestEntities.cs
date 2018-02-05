@@ -56,7 +56,10 @@ $(function(){{
 </script>
 ");
 
-                pageInfo.AddPageEndScriptsIfNotExists(functionName, builder.ToString());
+                if (!pageInfo.FootCodes.ContainsKey(functionName))
+                {
+                    pageInfo.FootCodes.Add(functionName, builder.ToString());
+                }
             }
             catch
             {

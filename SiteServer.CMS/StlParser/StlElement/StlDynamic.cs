@@ -51,7 +51,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string templateContent, bool isPageRefresh)
         {
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.StlClient);
+            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.StlClient);
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
 

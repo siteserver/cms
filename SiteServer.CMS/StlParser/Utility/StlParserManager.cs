@@ -27,10 +27,9 @@ namespace SiteServer.CMS.StlParser.Utility
             StlElementParser.ReplaceStlElements(parsedBuilder, pageInfo, contextInfo);
             StlEntityParser.ReplaceStlEntities(parsedBuilder, pageInfo, contextInfo);
 
-            var pageAfterBodyScripts = GetPageInfoScript(pageInfo, true);
-            var pageBeforeBodyScripts = GetPageInfoScript(pageInfo, false);
+            var pageAfterBodyScripts = GetPageBodyCodes(pageInfo);
 
-            return pageAfterBodyScripts + parsedBuilder + pageBeforeBodyScripts;
+            return pageAfterBodyScripts + parsedBuilder;
         }
 
         public static void ParseTemplateContent(StringBuilder parsedBuilder, PageInfo pageInfo, ContextInfo contextInfo)
@@ -190,9 +189,9 @@ namespace SiteServer.CMS.StlParser.Utility
             builder.Append(
                 $@"<script>var $pageInfo = {{siteId : {pageInfo.SiteId}, channelId : {pageInfo.PageChannelId}, contentId : {pageInfo.PageContentId}, siteUrl : ""{pageInfo.SiteInfo.Additional.WebUrl.TrimEnd('/')}"", currentUrl : ""{StlUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal)}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{pageInfo.ApiUrl.TrimEnd('/')}""}};</script>");
 
-            foreach (string key in pageInfo.PageHeadScriptKeys)
+            foreach (var key in pageInfo.HeadCodes.Keys)
             {
-                var js = pageInfo.GetPageHeadScripts(key);
+                var js = pageInfo.HeadCodes[key];
                 if (!string.IsNullOrEmpty(js))
                 {
                     builder.Append(js);
@@ -202,23 +201,13 @@ namespace SiteServer.CMS.StlParser.Utility
             return builder.ToString();
         }
 
-        public static string GetPageInfoScript(PageInfo pageInfo, bool isAfterBody)
+        public static string GetPageBodyCodes(PageInfo pageInfo)
         {
             var scriptBuilder = new StringBuilder();
 
-            if (isAfterBody)
+            foreach (var key in pageInfo.BodyCodes.Keys)
             {
-                foreach (string key in pageInfo.PageAfterBodyScriptKeys)
-                {
-                    scriptBuilder.Append(pageInfo.GetPageScripts(key, true));
-                }
-            }
-            else
-            {
-                foreach (string key in pageInfo.PageBeforeBodyScriptKeys)
-                {
-                    scriptBuilder.Append(pageInfo.GetPageScripts(key, false));
-                }
+                scriptBuilder.Append(pageInfo.BodyCodes[key]);
             }
 
             return scriptBuilder.ToString();

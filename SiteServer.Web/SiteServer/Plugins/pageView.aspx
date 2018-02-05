@@ -122,9 +122,9 @@
   <script src="../assets/js/compareversion.js"></script>
   <script>
     var api = new apiUtils.Api();
-    var pluginId = api.getQueryStringByName('pluginId');
-
     var isNightly = <%=IsNightly%>;
+    var version = '<%=Version%>';
+    var pluginId = api.getQueryStringByName('pluginId');
 
     var data = {
       installed: <%=Installed%>,
@@ -134,7 +134,8 @@
     };
 
     api.get({
-      isNightly: isNightly
+      isNightly: isNightly,
+      version: version
     }, function (err, res) {
       if (!err && res) {
         data.package = res

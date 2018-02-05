@@ -193,7 +193,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {
-                    pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAcSwfObject);
+                    pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcSwfObject);
 
                     picUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, picUrl, pageInfo.IsLocal);
 

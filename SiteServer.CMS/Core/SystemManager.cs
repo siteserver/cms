@@ -11,9 +11,9 @@ namespace SiteServer.CMS.Core
     {
         static SystemManager()
         {
-            var assembly = Assembly.GetExecutingAssembly();
-            Version = FileVersionInfo.GetVersionInfo(assembly.Location).ProductVersion;
-            
+            Version = FileVersionInfo.GetVersionInfo(PathUtils.GetBinDirectoryPath("SiteServer.CMS.dll")).ProductVersion;
+            PluginVersion = FileVersionInfo.GetVersionInfo(PathUtils.GetBinDirectoryPath("SiteServer.Plugin.dll")).ProductVersion;
+
             //var ssemblyName = assembly.GetName();
             //var assemblyVersion = ssemblyName.Version;
             //var version = assemblyVersion.ToString();
@@ -25,6 +25,8 @@ namespace SiteServer.CMS.Core
         }
 
         public static string Version { get; }
+
+        public static string PluginVersion { get; }
 
         public static void InstallDatabase(string adminName, string adminPassword)
         {

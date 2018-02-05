@@ -370,7 +370,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string TestTypeDynamic(PageInfo pageInfo, ContextInfo contextInfo, string testType, string testValue, string testOperate, string successTemplateString, string failureTemplateString)
         {
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.StlClient);
+            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.StlClient);
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
 

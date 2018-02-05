@@ -46,8 +46,8 @@
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.2.0\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.2.33.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.2.33-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -86,7 +86,6 @@
     <Compile Include="Base64Encoder.cs" />
     <Compile Include="CacheUtils.cs" />
     <Compile Include="CompareUtils.cs" />
-    <Compile Include="ComputerUtils.cs" />
     <Compile Include="ControlUtils.cs" />
     <Compile Include="ConvertHelper.cs" />
     <Compile Include="CookieUtils.cs" />
@@ -127,7 +126,6 @@
     <Compile Include="Enumerations\EUserBindingType.cs" />
     <Compile Include="Enumerations\EUserLockType.cs" />
     <Compile Include="Enumerations\EUserPasswordRestriction.cs" />
-    <Compile Include="Enumerations\EUserVerifyType.cs" />
     <Compile Include="Enumerations\EVoteItemType.cs" />
     <Compile Include="Enumerations\EVoteRestrictType.cs" />
     <Compile Include="Enumerations\EVoteType.cs" />

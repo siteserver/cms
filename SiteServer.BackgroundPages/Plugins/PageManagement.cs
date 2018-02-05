@@ -39,8 +39,6 @@ namespace SiteServer.BackgroundPages.Plugins
         public int CountDisabled { get; set; }
         public int CountError { get; set; }
 
-        public string IsNightly => WebConfigUtils.IsNightlyUpdate.ToString().ToLower();
-
         public string Packages
         {
             get

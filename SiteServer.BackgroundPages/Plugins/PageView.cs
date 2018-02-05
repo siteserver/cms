@@ -12,8 +12,6 @@ namespace SiteServer.BackgroundPages.Plugins
         private string _pluginId;
         private string _returnUrl;
 
-        public string IsNightly => WebConfigUtils.IsNightlyUpdate.ToString().ToLower();
-
         public string Installed => PluginManager.IsExists(_pluginId).ToString().ToLower();
 
         public string InstalledVersion

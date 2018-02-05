@@ -283,6 +283,7 @@
       var downloadApi = new apiUtils.Api('<%=DownloadApiUrl%>');
       var updateApi = new apiUtils.Api('<%=UpdateApiUrl%>');
       var isNightly = <%=IsNightly%>;
+      var version = '<%=Version%>';
 
       var data = {
         step: 1,
@@ -307,6 +308,7 @@
 
             versionApi.get({
               isNightly: isNightly,
+              version: version,
               packageIds: this.packageIds
             }, function (err, res) {
               if (!err && res) {

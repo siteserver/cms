@@ -154,7 +154,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             {
                                 var keyCode = isNextContent ? 39 : 37;
                                 var scriptContent = new StringBuilder();
-                                pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Jquery);
+                                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
                                 scriptContent.Append($@"<script language=""javascript"" type=""text/javascript""> 
       $(document).keydown(function(event){{
         if(event.keyCode=={keyCode}){{location = '{url}';}}
@@ -162,7 +162,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 </script> 
 ");
                                 var nextOrPrevious = isNextContent ? "nextContent" : "previousContent";
-                                pageInfo.SetPageScripts(nextOrPrevious, scriptContent.ToString(), true);
+
+                                pageInfo.BodyCodes[nextOrPrevious] = scriptContent.ToString();
                             }
 
                             if (string.IsNullOrEmpty(contextInfo.InnerXml))

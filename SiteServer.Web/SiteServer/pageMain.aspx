@@ -173,13 +173,17 @@
           wheelStep: 5
         });
 
+        if ('<%=CurrentVersion%>' == '0.0.0-dev') return;
+
         var versionApi = new apiUtils.Api();
         var downloadApi = new apiUtils.Api('<%=DownloadApiUrl%>');
         var isNightly = <%=IsNightly%>;
+        var version = '<%=Version%>';
         var packageId = '<%=PackageId%>';
 
         versionApi.get({
-          isNightly: isNightly
+          isNightly: isNightly,
+          version: version
         }, function (err, res) {
           if (!err && res) {
             if (!res || !res.version) return;

@@ -160,7 +160,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 no = TemplateManager.GetContentByFilePath(SiteFilesAssets.Search.NoTemplatePath);
             }
 
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Jquery);
+            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
             var apiUrl = ApiRouteActionsSearch.GetUrl(pageInfo.ApiUrl);

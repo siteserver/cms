@@ -9,13 +9,11 @@ namespace SiteServer.CMS.StlParser.Model
 {
     public class PageInfo
     {
-        private readonly SortedDictionary<string, string> _pageHeadScripts;
+        public SortedDictionary<string, string> HeadCodes { get; }
 
-        private readonly SortedDictionary<string, string> _pageAfterBodyScripts;
+        public SortedDictionary<string, string> BodyCodes { get; }
 
-        private readonly SortedDictionary<string, string> _pageBeforeBodyScripts;
-
-        private readonly SortedDictionary<string, string> _pageEndScripts;
+        public SortedDictionary<string, string> FootCodes { get; }
 
         public SiteInfo SiteInfo { get; private set; }
 
@@ -59,10 +57,6 @@ namespace SiteServer.CMS.StlParser.Model
             }
         }
 
-        public ICollection PageAfterBodyScriptKeys => _pageAfterBodyScripts.Keys;
-
-        public ICollection PageBeforeBodyScriptKeys => _pageBeforeBodyScripts.Keys;
-
         public PageInfo(int pageChannelId, int pageContentId, SiteInfo siteInfo, TemplateInfo templateInfo)
         {
             TemplateInfo = templateInfo;
@@ -70,10 +64,9 @@ namespace SiteServer.CMS.StlParser.Model
             PageChannelId = pageChannelId;
             PageContentId = pageContentId;
             IsLocal = false;
-            _pageAfterBodyScripts = new SortedDictionary<string, string>();
-            _pageBeforeBodyScripts = new SortedDictionary<string, string>();
-            _pageEndScripts = new SortedDictionary<string, string>();
-            _pageHeadScripts = new SortedDictionary<string, string>();
+            HeadCodes = new SortedDictionary<string, string>();
+            BodyCodes = new SortedDictionary<string, string>();
+            FootCodes = new SortedDictionary<string, string>();
             SiteInfo = siteInfo;
             UserInfo = null;
             _uniqueId = 1;
@@ -99,143 +92,28 @@ namespace SiteServer.CMS.StlParser.Model
             contextInfo.ContentId = pageContentId;
         }
 
-        public bool IsPageScriptsExists(string pageJsName)
+        public void AddPageBodyCodeIfNotExists(string pageJsName)
         {
-            return IsPageScriptsExists(pageJsName, true);
-        }
-
-        public bool IsPageScriptsExists(string pageJsName, bool isAfterBody)
-        {
-            return isAfterBody ? _pageAfterBodyScripts.ContainsKey(pageJsName) : _pageBeforeBodyScripts.ContainsKey(pageJsName);
-        }
-
-        public void AddPageScriptsIfNotExists(string pageJsName)
-        {
-            AddPageScriptsIfNotExists(pageJsName, true);
-        }
-
-        public void AddPageScriptsIfNotExists(string pageJsName, bool isAfterBody)
-        {
-            if (isAfterBody)
+            if (!BodyCodes.ContainsKey(pageJsName))
             {
-                if (!_pageAfterBodyScripts.ContainsKey(pageJsName))
-                {
-                    _pageAfterBodyScripts.Add(pageJsName, GetJsCode(pageJsName));
-                }
-            }
-            else
-            {
-                if (!_pageBeforeBodyScripts.ContainsKey(pageJsName))
-                {
-                    _pageBeforeBodyScripts.Add(pageJsName, GetJsCode(pageJsName));
-                }
+                BodyCodes.Add(pageJsName, GetJsCode(pageJsName));
             }
         }
 
-        public void AddPageScriptsIfNotExists(string pageJsName, string value)
+        public void AddPageAfterHtmlCodeIfNotExists(string pageJsName)
         {
-            AddPageScriptsIfNotExists(pageJsName, value, true);
-        }
-
-        public void AddPageScriptsIfNotExists(string pageJsName, string value, bool isAfterBody)
-        {
-            if (isAfterBody)
+            if (!FootCodes.ContainsKey(pageJsName))
             {
-                if (!_pageAfterBodyScripts.ContainsKey(pageJsName))
-                {
-                    _pageAfterBodyScripts.Add(pageJsName, value);
-                }
-            }
-            else
-            {
-                if (!_pageBeforeBodyScripts.ContainsKey(pageJsName))
-                {
-                    _pageBeforeBodyScripts.Add(pageJsName, value);
-                }
+                FootCodes.Add(pageJsName, GetJsCode(pageJsName));
             }
         }
 
-        public void SetPageScripts(string pageJsName, string value, bool isAfterBody)
+        public void AddPageHeadCodeIfNotExists(string pageJsName)
         {
-            if (isAfterBody)
+            if (!HeadCodes.ContainsKey(pageJsName))
             {
-                _pageAfterBodyScripts[pageJsName] = value;
+                HeadCodes.Add(pageJsName, GetJsCode(pageJsName));
             }
-            else
-            {
-                _pageBeforeBodyScripts[pageJsName] = value;
-            }
-        }
-
-        public string GetPageScripts(string pageJsName, bool isAfterBody)
-        {
-            return isAfterBody ? _pageAfterBodyScripts[pageJsName] : _pageBeforeBodyScripts[pageJsName];
-        }
-
-        public ICollection PageEndScriptKeys => _pageEndScripts.Keys;
-
-        public bool IsPageEndScriptsExists(string pageJsName)
-        {
-            return _pageEndScripts.ContainsKey(pageJsName);
-        }
-
-        public void AddPageEndScriptsIfNotExists(string pageJsName)
-        {
-            if (!_pageEndScripts.ContainsKey(pageJsName))
-            {
-                _pageEndScripts.Add(pageJsName, GetJsCode(pageJsName));
-            }
-        }
-
-        public void AddPageEndScriptsIfNotExists(string pageJsName, string value)
-        {
-            if (!_pageEndScripts.ContainsKey(pageJsName))
-            {
-                _pageEndScripts.Add(pageJsName, value);
-            }
-        }
-
-        public void SetPageEndScripts(string pageJsName, string value)
-        {
-            _pageEndScripts[pageJsName] = value;
-        }
-
-        public string GetPageEndScripts(string pageJsName)
-        {
-            return _pageEndScripts[pageJsName];
-        }
-
-        public ICollection PageHeadScriptKeys => _pageHeadScripts.Keys;
-
-        public bool IsPageHeadScriptsExists(string pageJsName)
-        {
-            return _pageHeadScripts.ContainsKey(pageJsName);
-        }
-
-        public void AddPageHeadScriptsIfNotExists(string pageJsName)
-        {
-            if (!_pageHeadScripts.ContainsKey(pageJsName))
-            {
-                _pageHeadScripts.Add(pageJsName, GetJsCode(pageJsName));
-            }
-        }
-
-        public void AddPageHeadScriptsIfNotExists(string pageJsName, string value)
-        {
-            if (!_pageHeadScripts.ContainsKey(pageJsName))
-            {
-                _pageHeadScripts.Add(pageJsName, value);
-            }
-        }
-
-        public void SetPageHeadScripts(string pageJsName, string value)
-        {
-            _pageHeadScripts[pageJsName] = value;
-        }
-
-        public string GetPageHeadScripts(string pageJsName)
-        {
-            return _pageHeadScripts[pageJsName];
         }
 
         /// <summary>
@@ -245,21 +123,26 @@ namespace SiteServer.CMS.StlParser.Model
         /// <param name="lastPageInfo"></param>
         public void AddLastPageScript(PageInfo lastPageInfo)
         {
-            foreach (string key in lastPageInfo.PageAfterBodyScriptKeys)
+            foreach (var key in lastPageInfo.BodyCodes.Keys)
             {
-                AddPageScriptsIfNotExists(key, lastPageInfo.GetPageScripts(key, true), true);
+                if (!BodyCodes.ContainsKey(key))
+                {
+                    BodyCodes.Add(key, lastPageInfo.BodyCodes[key]);
+                }
             }
-            foreach (string key in lastPageInfo.PageBeforeBodyScriptKeys)
+            foreach (var key in lastPageInfo.FootCodes.Keys)
             {
-                AddPageScriptsIfNotExists(key, lastPageInfo.GetPageScripts(key, false), false);
+                if (!FootCodes.ContainsKey(key))
+                {
+                    FootCodes.Add(key, lastPageInfo.FootCodes[key]);
+                }
             }
-            foreach (string key in lastPageInfo.PageEndScriptKeys)
+            foreach (var key in lastPageInfo.HeadCodes.Keys)
             {
-                AddPageEndScriptsIfNotExists(key, lastPageInfo.GetPageEndScripts(key));
-            }
-            foreach (string key in lastPageInfo.PageHeadScriptKeys)
-            {
-                AddPageHeadScriptsIfNotExists(key, lastPageInfo.GetPageHeadScripts(key));
+                if (!HeadCodes.ContainsKey(key))
+                {
+                    HeadCodes.Add(key, lastPageInfo.HeadCodes[key]);
+                }
             }
         }
 
@@ -270,21 +153,17 @@ namespace SiteServer.CMS.StlParser.Model
         /// <param name="lastPageInfo"></param>
         public void ClearLastPageScript(PageInfo lastPageInfo)
         {
-            foreach (string key in lastPageInfo.PageAfterBodyScriptKeys)
+            foreach (var key in lastPageInfo.BodyCodes.Keys)
             {
-                _pageAfterBodyScripts.Remove(key);
+                BodyCodes.Remove(key);
             }
-            foreach (string key in lastPageInfo.PageBeforeBodyScriptKeys)
+            foreach (var key in lastPageInfo.FootCodes.Keys)
             {
-                _pageBeforeBodyScripts.Remove(key);
+                FootCodes.Remove(key);
             }
-            foreach (string key in lastPageInfo.PageEndScriptKeys)
+            foreach (var key in lastPageInfo.HeadCodes.Keys)
             {
-                _pageEndScripts.Remove(key);
-            }
-            foreach (string key in lastPageInfo.PageHeadScriptKeys)
-            {
-                _pageHeadScripts.Remove(key);
+                HeadCodes.Remove(key);
             }
         }
 
@@ -293,10 +172,9 @@ namespace SiteServer.CMS.StlParser.Model
         /// </summary>
         public void ClearLastPageScript()
         {
-            _pageAfterBodyScripts.Clear();
-            _pageBeforeBodyScripts.Clear();
-            _pageEndScripts.Clear();
-            _pageHeadScripts.Clear();
+            HeadCodes.Clear();
+            BodyCodes.Clear();
+            FootCodes.Clear();
         }
 
         public class Const

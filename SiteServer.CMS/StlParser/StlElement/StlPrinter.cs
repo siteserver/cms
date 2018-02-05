@@ -69,7 +69,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             var jsUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, pageInfo.TemplateInfo.Charset == ECharset.gb2312 ? SiteFilesAssets.Print.JsGb2312 : SiteFilesAssets.Print.JsUtf8);
 
             var iconUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Print.IconUrl);
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAfStlPrinter, $@"
+            if (!pageInfo.BodyCodes.ContainsKey(PageInfo.Const.JsAfStlPrinter))
+            {
+                pageInfo.BodyCodes.Add(PageInfo.Const.JsAfStlPrinter, $@"
 <script language=""JavaScript"" type=""text/javascript"">
 function stlLoadPrintJsCallBack()
 {{
@@ -134,6 +136,7 @@ function stlLoadPrintJs()
 }}	
 </script>
 ");
+            }
 
             if (string.IsNullOrEmpty(contextInfo.InnerXml))
             {

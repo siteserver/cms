@@ -19,8 +19,6 @@ namespace SiteServer.BackgroundPages
             return PageUtils.GetSiteServerUrl(nameof(PageUpdateSystem), null);
         }
 
-        public string IsNightly => WebConfigUtils.IsNightlyUpdate.ToString().ToLower();
-
         public string PackageId => PackageUtils.PackageIdSsCms;
 
         public string InstalledVersion => SystemManager.Version;

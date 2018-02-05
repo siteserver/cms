@@ -180,7 +180,10 @@ if (uniqueID_isMar){{
 </script>";
             }
 
-            pageInfo.AddPageEndScriptsIfNotExists(ElementName + uniqueId, scripts.Replace("uniqueID", uniqueId));
+            if (!pageInfo.FootCodes.ContainsKey(ElementName + uniqueId))
+            {
+                pageInfo.FootCodes.Add(ElementName + uniqueId, scripts.Replace("uniqueID", uniqueId));
+            }
 
             return topHtml.Replace("uniqueID", uniqueId) + scrollHtml + bottomHtml.Replace("uniqueID", uniqueId);
         }

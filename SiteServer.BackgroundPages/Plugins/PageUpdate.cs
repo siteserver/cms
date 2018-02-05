@@ -17,8 +17,6 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public string AdminUrl => PageUtils.GetAdminDirectoryUrl(string.Empty);
 
-        public string IsNightly => WebConfigUtils.IsNightlyUpdate.ToString().ToLower();
-
         public string Packages
         {
             get
