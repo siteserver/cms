@@ -187,14 +187,14 @@ namespace SiteServer.CMS.StlParser.Utility
             var builder = new StringBuilder();
 
             builder.Append(
-                $@"<script>var $pageInfo = {{siteId : {pageInfo.SiteId}, channelId : {pageInfo.PageChannelId}, contentId : {pageInfo.PageContentId}, siteUrl : ""{pageInfo.SiteInfo.Additional.WebUrl.TrimEnd('/')}"", currentUrl : ""{StlUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal)}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{pageInfo.ApiUrl.TrimEnd('/')}""}};</script>");
+                $@"<script>var $pageInfo = {{siteId : {pageInfo.SiteId}, channelId : {pageInfo.PageChannelId}, contentId : {pageInfo.PageContentId}, siteUrl : ""{pageInfo.SiteInfo.Additional.WebUrl.TrimEnd('/')}"", currentUrl : ""{StlUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal)}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{pageInfo.ApiUrl.TrimEnd('/')}""}};</script>").AppendLine();
 
             foreach (var key in pageInfo.HeadCodes.Keys)
             {
                 var js = pageInfo.HeadCodes[key];
                 if (!string.IsNullOrEmpty(js))
                 {
-                    builder.Append(js);
+                    builder.Append(js).AppendLine();
                 }
             }
 

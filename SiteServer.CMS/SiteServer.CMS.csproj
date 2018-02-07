@@ -359,6 +359,7 @@
     <Compile Include="StlParser\StlElement\StlContainer.cs" />
     <Compile Include="StlParser\StlElement\StlContent.cs" />
     <Compile Include="StlParser\StlElement\StlContents.cs" />
+    <Compile Include="StlParser\StlElement\StlCode.cs" />
     <Compile Include="StlParser\StlElement\StlCount.cs" />
     <Compile Include="StlParser\StlElement\StlDynamic.cs" />
     <Compile Include="StlParser\StlElement\StlEach.cs" />

@@ -50,6 +50,7 @@ namespace SiteServer.CMS.StlParser.Parsers
             {StlAudio.ElementName.ToLower(), StlAudio.Parse},
             {StlChannel.ElementName.ToLower(), StlChannel.Parse},
             {StlChannels.ElementName.ToLower(), StlChannels.Parse},
+            {StlCode.ElementName.ToLower(), StlCode.Parse},
             {StlContainer.ElementName.ToLower(), StlContainer.Parse},
             {StlContent.ElementName.ToLower(), StlContent.Parse},
             {StlContents.ElementName.ToLower(), StlContents.Parse},

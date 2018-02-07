@@ -156,6 +156,8 @@ namespace SiteServer.BackgroundPages.Plugins
         public void BtnReload_Click(object sender, EventArgs e)
         {
             PluginManager.ClearCache();
+            CacheUtils.ClearAll();
+            CacheDbUtils.Clear();
 
             AddScript(AlertUtils.Success("插件重新加载成功", "插件重新加载成功，系统需要重载页面", "重新载入", "window.top.location.reload();"));
         }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net;
+using System.Net.Http;
 using System.Web.Http;
 using SiteServer.CMS.Controllers;
 using SiteServer.CMS.Core;
@@ -18,8 +20,7 @@ namespace SiteServer.API.Controllers
                 var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
-                var retval = service.OnApiGet(new ApiEventArgs(request, null, null));
-                return retval == null ? (IHttpActionResult) NotFound() : Ok(retval);
+                return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, null, null)));
             }
             catch (Exception ex)
             {
@@ -36,8 +37,7 @@ namespace SiteServer.API.Controllers
                 var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
-                var retval = service.OnApiGet(new ApiEventArgs(request, name, null));
-                return retval == null ? (IHttpActionResult)NotFound() : Ok(retval);
+                return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, name, null)));
             }
             catch (Exception ex)
             {
@@ -54,8 +54,7 @@ namespace SiteServer.API.Controllers
                 var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
-                var retval = service.OnApiGet(new ApiEventArgs(request, name, id));
-                return retval == null ? (IHttpActionResult)NotFound() : Ok(retval);
+                return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, name, id)));
             }
             catch (Exception ex)
             {
@@ -72,8 +71,7 @@ namespace SiteServer.API.Controllers
                 var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
-                var retval = service.OnApiPost(new ApiEventArgs(request, null, null));
-                return retval == null ? (IHttpActionResult)NotFound() : Ok(retval);
+                return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, null, null)));
             }
             catch (Exception ex)
             {
@@ -90,8 +88,7 @@ namespace SiteServer.API.Controllers
                 var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
-                var retval = service.OnApiPost(new ApiEventArgs(request, name, null));
-                return retval == null ? (IHttpActionResult)NotFound() : Ok(retval);
+                return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, name, null)));
             }
             catch (Exception ex)
             {
@@ -108,8 +105,7 @@ namespace SiteServer.API.Controllers
                 var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
-                var retval = service.OnApiPost(new ApiEventArgs(request, name, id));
-                return retval == null ? (IHttpActionResult)NotFound() : Ok(retval);
+                return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, name, id)));
             }
             catch (Exception ex)
             {
@@ -126,8 +122,7 @@ namespace SiteServer.API.Controllers
                 var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
-                var retval = service.OnApiPut(new ApiEventArgs(request, null, null));
-                return retval == null ? (IHttpActionResult)NotFound() : Ok(retval);
+                return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, null, null)));
             }
             catch (Exception ex)
             {
@@ -144,8 +139,7 @@ namespace SiteServer.API.Controllers
                 var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
-                var retval = service.OnApiPut(new ApiEventArgs(request, name, null));
-                return retval == null ? (IHttpActionResult)NotFound() : Ok(retval);
+                return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, name, null)));
             }
             catch (Exception ex)
             {
@@ -162,8 +156,7 @@ namespace SiteServer.API.Controllers
                 var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
-                var retval = service.OnApiPut(new ApiEventArgs(request, name, id));
-                return retval == null ? (IHttpActionResult)NotFound() : Ok(retval);
+                return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, name, id)));
             }
             catch (Exception ex)
             {
@@ -180,8 +173,7 @@ namespace SiteServer.API.Controllers
                 var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
-                var retval = service.OnApiDelete(new ApiEventArgs(request, null, null));
-                return retval == null ? (IHttpActionResult)NotFound() : Ok(retval);
+                return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, null, null)));
             }
             catch (Exception ex)
             {
@@ -198,8 +190,7 @@ namespace SiteServer.API.Controllers
                 var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
-                var retval = service.OnApiDelete(new ApiEventArgs(request, name, null));
-                return retval == null ? (IHttpActionResult)NotFound() : Ok(retval);
+                return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, name, null)));
             }
             catch (Exception ex)
             {
@@ -216,14 +207,33 @@ namespace SiteServer.API.Controllers
                 var request = new Request();
                 var service = PluginManager.GetService(pluginId);
 
-                var retval = service.OnApiDelete(new ApiEventArgs(request, name, id));
-                return retval == null ? (IHttpActionResult)NotFound() : Ok(retval);
+                return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, name, id)));
             }
             catch (Exception ex)
             {
                 LogUtils.AddPluginErrorLog(pluginId, ex);
                 return BadRequest(ex.Message);
             }
-        }        
+        }
+
+        private IHttpActionResult GetHttpActionResult(object retval)
+        {
+            if (retval == null)
+            {
+                return NotFound();
+            }
+
+            switch (retval.GetType().Name)
+            {
+                case nameof(String):
+                    return Content(HttpStatusCode.OK, (string)retval);
+                case nameof(IHttpActionResult):
+                    return (IHttpActionResult)retval;
+                case nameof(HttpResponseMessage):
+                    return ResponseMessage((HttpResponseMessage)retval);
+                default:
+                    return Ok(retval);
+            }
+        }
     }
 }

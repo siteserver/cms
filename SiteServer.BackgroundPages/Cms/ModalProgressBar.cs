@@ -147,7 +147,8 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 CreateManager.CreateFile(SiteId, Body.GetQueryInt("templateID"));
 
-                PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将文件放入生成队列"));
+                LayerUtils.CloseAndOpenPageCreateStatus(Page);
+                //PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将文件放入生成队列"));
             }
             else if (Body.IsQueryExists("CreateByIDsCollection") && Body.IsQueryExists("IDsCollection"))
             {

@@ -39,6 +39,10 @@ namespace SiteServer.CMS.StlParser.Model
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlChannels), stlAttribute)
                     },
                     {
+                        StlCode.ElementName,
+                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlCode), stlAttribute)
+                    },
+                    {
                         StlContainer.ElementName,
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlContainer), stlAttribute)
                     },
@@ -208,6 +212,7 @@ namespace SiteServer.CMS.StlParser.Model
                 {StlAudio.ElementName, StlAudio.AttributeList},
                 {StlChannel.ElementName, StlChannel.AttributeList},
                 {StlChannels.ElementName, StlChannels.AttributeList},
+                {StlCode.ElementName, StlCode.AttributeList},
                 {StlContainer.ElementName, StlContainer.AttributeList},
                 {StlContent.ElementName, StlContent.AttributeList},
                 {StlContents.ElementName, StlContents.AttributeList},

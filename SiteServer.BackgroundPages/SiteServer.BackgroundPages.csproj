@@ -225,9 +225,6 @@
     <Compile Include="Cms\ModalTextEditorInsertVideo.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalTipMessage.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\ModalUploadFile.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
