@@ -103,11 +103,6 @@
 
   skip_tags: true
 
-  notifications:
-    - provider: GitHubPullRequest
-      on_build_success: true
-      on_build_failure: true
-
   cache:
     - packages -> **\packages.config
 
@@ -151,6 +146,9 @@
       artifact: /.*\.nupkg/
 
   notifications:
+    - provider: GitHubPullRequest
+      on_build_success: true
+      on_build_failure: true
 
     - provider: Webhook
       url: http://api.siteserver.cn/v1.0/packages/SS.CMS?isNightly=true
