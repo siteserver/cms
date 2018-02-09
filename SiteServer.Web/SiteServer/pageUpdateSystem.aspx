@@ -238,7 +238,8 @@
 
             updateApi.post({
               packageId: packageId,
-              version: $this.package.version
+              version: $this.package.version,
+              packageType: "SsCms"
             }, function (err, res) {
               if (err) {
                 $this.errorMessage = err.message;

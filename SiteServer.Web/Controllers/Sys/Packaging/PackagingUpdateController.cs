@@ -2,6 +2,7 @@
 using SiteServer.CMS.Controllers.Sys.Packaging;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys.Packaging
 {
@@ -21,6 +22,10 @@ namespace SiteServer.API.Controllers.Sys.Packaging
             var packageId = request.GetPostString("packageId");
             var version = request.GetPostString("version");
             var packageType = request.GetPostString("packageType");
+            if (StringUtils.EqualsIgnoreCase(packageId, PackageUtils.PackageIdSsCms))
+            {
+                packageType = PackageType.SsCms.Value;
+            }
 
             string errorMessage;
             var idWithVersion = $"{packageId}.{version}";
