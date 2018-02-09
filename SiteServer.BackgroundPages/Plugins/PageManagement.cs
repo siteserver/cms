@@ -87,6 +87,9 @@ namespace SiteServer.BackgroundPages.Plugins
                 PluginManager.Delete(pluginId);
                 Body.AddAdminLog("删除插件", $"插件:{pluginId}");
 
+                CacheUtils.ClearAll();
+                CacheDbUtils.Clear();
+
                 AddScript(AlertUtils.Success("插件删除成功", "插件删除成功，系统需要重载页面", "重新载入", "window.top.location.reload();"));
             }
             if (Body.IsQueryExists("enable"))
@@ -96,6 +99,9 @@ namespace SiteServer.BackgroundPages.Plugins
                 PluginManager.UpdateDisabled(pluginId, false);
                 Body.AddAdminLog("启用插件", $"插件:{pluginId}");
 
+                CacheUtils.ClearAll();
+                CacheDbUtils.Clear();
+
                 AddScript(AlertUtils.Success("插件启用成功", "插件启用成功，系统需要重载页面", "重新载入", "window.top.location.reload();"));
             }
             else if (Body.IsQueryExists("disable"))
@@ -104,6 +110,9 @@ namespace SiteServer.BackgroundPages.Plugins
 
                 PluginManager.UpdateDisabled(pluginId, true);
                 Body.AddAdminLog("禁用插件", $"插件:{pluginId}");
+
+                CacheUtils.ClearAll();
+                CacheDbUtils.Clear();
 
                 AddScript(AlertUtils.Success("插件禁用成功", "插件禁用成功，系统需要重载页面", "重新载入", "window.top.location.reload();"));
             }
@@ -155,7 +164,6 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public void BtnReload_Click(object sender, EventArgs e)
         {
-            PluginManager.ClearCache();
             CacheUtils.ClearAll();
             CacheDbUtils.Clear();
 

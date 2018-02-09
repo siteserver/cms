@@ -1,19 +1,21 @@
 ﻿using SiteServer.CMS.Core;
+using SiteServer.CMS.Packaging;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Model
 {
     public class PluginInfo
     {
-        public PluginInfo(string id, string errorMessage)
+        public PluginInfo(string directoryName, string errorMessage)
         {
-            Id = id;
+            Id = directoryName;
             ErrorMessage = errorMessage;
         }
 
-        public PluginInfo(PluginService service, PluginBase plugin, long initTime)
+        public PluginInfo(PackageMetadata metadata, PluginService service, PluginBase plugin, long initTime)
         {
             Id = plugin.Id;
+            Metadata = metadata;
             Plugin = plugin;
             Service = service;
             InitTime = initTime;
@@ -27,6 +29,8 @@ namespace SiteServer.CMS.Plugin.Model
         }
 
         public string Id { get; }
+
+        public PackageMetadata Metadata { get; }
 
         public PluginBase Plugin { get; }
 

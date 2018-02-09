@@ -58,6 +58,8 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public string UpdateApiUrl => ApiRouteUpdate.GetUrl(PageUtility.InnerApiUrl);
 
+        public string ClearCacheApiUrl => ApiRouteClearCache.GetUrl(PageUtility.InnerApiUrl);
+
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;

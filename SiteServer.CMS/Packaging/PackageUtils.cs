@@ -125,7 +125,7 @@ namespace SiteServer.CMS.Packaging
             return dict;
         }
 
-        public static bool UpdatePackage(string idWithVersion, bool isSsCms, out string errorMessage)
+        public static bool UpdatePackage(string idWithVersion, PackageType packageType, out string errorMessage)
         {
             try
             {
@@ -139,7 +139,7 @@ namespace SiteServer.CMS.Packaging
                     return false;
                 }
 
-                if (isSsCms)
+                if (packageType == PackageType.SsCms)
                 {
                     var packageWebConfigPath = PathUtils.Combine(packagePath, WebConfigUtils.WebConfigFileName);
                     if (!FileUtils.IsFileExists(packageWebConfigPath))
@@ -162,7 +162,7 @@ namespace SiteServer.CMS.Packaging
                     //    PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.WebConfigFileName),
                     //    true);
                 }
-                else
+                else if (packageType == PackageType.Plugin)
                 {
                     var pluginPath = PathUtils.GetPluginPath(metadata.Id);
                     DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);
@@ -184,6 +184,15 @@ namespace SiteServer.CMS.Packaging
                     FileUtils.CopyFile(nuspecPath, configFilelPath, true);
 
                     PluginManager.ClearCache();
+                }
+                else if (packageType == PackageType.Library)
+                {
+                    var sourceDllPath = PathUtils.Combine(dllDirectoryPath, $"{metadata.Id}.dll");
+                    var destDllPath = PathUtils.GetBinDirectoryPath($"{metadata.Id}.dll");
+                    if (FileUtils.IsFileExists(sourceDllPath) && !FileUtils.IsFileExists(destDllPath))
+                    {
+                        FileUtils.CopyFile(sourceDllPath, destDllPath, false);
+                    }
                 }
             }
             catch (Exception ex)

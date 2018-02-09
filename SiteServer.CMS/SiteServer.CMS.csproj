@@ -98,6 +98,7 @@
     <Compile Include="Controllers\Preview\ApiRoutePreview.cs" />
     <Compile Include="Controllers\Sys\Administrators\ApiRouteActionsLogin.cs" />
     <Compile Include="Controllers\Sys\Administrators\ApiRouteSiteCheckList.cs" />
+    <Compile Include="Controllers\Sys\Packaging\ApiRouteClearCache.cs" />
     <Compile Include="Controllers\Sys\Packaging\ApiRouteUpdateSsCms.cs" />
     <Compile Include="Controllers\Sys\Packaging\ApiRouteUpdate.cs" />
     <Compile Include="Controllers\Sys\Packaging\ApiRouteSyncDatabase.cs" />
@@ -261,6 +262,7 @@
     <Compile Include="Model\UserLogInfo.cs" />
     <Compile Include="Packaging\PackageMetadata.cs" />
     <Compile Include="Packaging\PackageMetadataStrings.cs" />
+    <Compile Include="Packaging\PackageType.cs" />
     <Compile Include="Packaging\PackageUtils.cs" />
     <Compile Include="Plugin\Apis\AdminApi.cs" />
     <Compile Include="Plugin\Apis\ChannelApi.cs" />

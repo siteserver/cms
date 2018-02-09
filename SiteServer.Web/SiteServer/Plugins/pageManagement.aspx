@@ -36,7 +36,7 @@
                 <li class="nav-item" v-bind:class="{ active: pageType == 4 }" v-bind:style="{ display: countUpdate > 0 ? '' : 'none' }" style="display: none">
                   <a class="nav-link" href="javascript:;" @click="pageType = 4">
                     发现新版本
-                    <span class="badge badge-success" v-bind:style="{ color: (pageType == 4 ? '#fff' : '') }">{{ countError }}</span>
+                    <span class="badge badge-warning" v-bind:style="{ color: (pageType == 4 ? '#fff' : '') }">{{ countUpdate }}</span>
                   </a>
                 </li>
               </ul>

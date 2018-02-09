@@ -129,7 +129,7 @@ namespace SiteServer.CMS.Plugin
             }
 
             // TODO: 增加SINGLETON约束
-            private static PluginInfo ActiveAndAdd(IMetadata metadata, Type type)
+            private static PluginInfo ActiveAndAdd(PackageMetadata metadata, Type type)
             {
                 if (metadata == null || type == null) return null;
 
@@ -159,7 +159,7 @@ namespace SiteServer.CMS.Plugin
                 PluginContentTableManager.SyncContentTable(service);
                 PluginDatabaseTableManager.SyncTable(service);
 
-                return new PluginInfo(service, plugin, s.ElapsedMilliseconds);
+                return new PluginInfo(metadata, service, plugin, s.ElapsedMilliseconds);
             }
 
             public static void Clear()
@@ -299,6 +299,16 @@ namespace SiteServer.CMS.Plugin
             }
 
             return retval;
+        }
+
+        public static List<string> PackagesIdAndVersionList
+        {
+            get
+            {
+                var packagesPath = PathUtils.GetPackagesPath();
+                DirectoryUtils.CreateDirectoryIfNotExists(packagesPath);
+                return DirectoryUtils.GetDirectoryNames(packagesPath).ToList();
+            }
         }
 
         public static PluginBase GetPlugin(string pluginId)

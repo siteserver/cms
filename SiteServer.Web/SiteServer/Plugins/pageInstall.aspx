@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Plugins.PageUpdate" %>
+﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Plugins.PageInstall" %>
   <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
@@ -13,26 +13,23 @@
 
         <div class="card-box">
           <h4 class="header-title m-t-0">
-            插件升级向导
+            插件安装向导
           </h4>
           <p class="text-muted m-b-25 font-13">
-            欢迎来到插件升级向导！
+            欢迎来到插件安装向导！
           </p>
 
           <ctrl:alerts runat="server" />
 
           <ul class="nav nav-pills nav-fill bg-muted m-b-20">
             <li class="nav-item" v-bind:class="{ active: step == 1 }">
-              <a class="nav-link" href="javascript:;">检查更新</a>
+              <a class="nav-link" href="javascript:;">下载安装包</a>
             </li>
             <li class="nav-item" v-bind:class="{ active: step == 2 }">
-              <a class="nav-link" href="javascript:;">下载升级包</a>
+              <a class="nav-link" href="javascript:;">安装插件</a>
             </li>
             <li class="nav-item" v-bind:class="{ active: step == 3 }">
-              <a class="nav-link" href="javascript:;">升级插件</a>
-            </li>
-            <li class="nav-item" v-bind:class="{ active: step == 4 }">
-              <a class="nav-link" href="javascript:;">升级完成</a>
+              <a class="nav-link" href="javascript:;">安装完成</a>
             </li>
           </ul>
 
@@ -45,8 +42,8 @@
 
             <div class="panel panel-border panel-primary">
               <div class="panel-heading">
-                <h3 class="panel-title">检查更新</h3>
-                <p class="panel-sub-title font-13 text-muted">检查插件新版本</p>
+                <h3 class="panel-title">下载安装包</h3>
+                <p class="panel-sub-title font-13 text-muted">系统正在下载插件安装包，可能需要几分钟，请稍后...</p>
               </div>
               <div class="panel-body">
 
@@ -54,101 +51,24 @@
                   <img src="../pic/animated_loading.gif" />
                   <br />
                   <br />
-                  <p class="lead">正在检查插件更新，请稍后...</p>
+                  <p class="lead">正在检查安装包版本，请稍后...</p>
                 </div>
 
-                <div v-bind:style="{ display: isGetVersions && packages.length == 0 ? '' : 'none' }" class="jumbotron" style="display: none">
-                  <h4 class="display-5">未发现插件新版本</h4>
-                </div>
-
-                <div v-bind:style="{ display: isGetVersions && packages.length > 0 ? '' : 'none' }" class="table-responsive" style="display: none">
-
-                  <div class="alert alert-success">
-                    发现以下插件发布了新版本，请选中需要更新的插件后点击下一步开始升级
-                  </div>
+                <div class="table-responsive" v-bind:style="{ display: isGetVersions ? '' : 'none' }">
 
                   <table class="table tablesaw table-hover m-0">
                     <thead>
                       <tr class="thead">
-                        <th class="text-center checkbox checkbox-primary text-nowrap">
-                          <input type="checkbox" id="all" value="all" @change='checkAll()' />
-                          <label for="all">全选</label>
-                        </th>
-                        <th class="text-nowrap">插件Id</th>
-                        <th class="text-nowrap">插件名称</th>
-                        <th class="text-nowrap">已安装版本</th>
-                        <th class="text-nowrap">新版本</th>
-                        <th>更新说明</th>
-                        <th class="text-center text-nowrap">发布时间</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="package in packages">
-                        <td class="text-center checkbox checkbox-primary text-nowrap">
-                          <input type="checkbox" v-bind:id="package.id" v-bind:value="package.id" v-model="checkedIds" />
-                          <label v-bind:for="package.id">选中</label>
-                        </td>
-                        <td class="text-nowrap">
-                          {{ package.id }}
-                        </td>
-                        <td class="text-nowrap">
-                          {{ package.title }}
-                        </td>
-                        <td class="text-nowrap">
-                          {{ package.installedVersion }}
-                        </td>
-                        <td class="text-nowrap">
-                          {{ package.version }}
-                        </td>
-                        <td>
-                          {{ package.releaseNotes }}
-                        </td>
-                        <td class="text-center text-nowrap">
-                          {{ package.published }}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-
-                  <hr />
-
-                  <div class="text-center">
-                    <input class="btn" @click="download" v-bind:disabled="(checkedIds.length == 0)" v-bind:class="{ 'btn-primary': checkedIds.length > 0 }"
-                      type="button" value="下一步">
-                  </div>
-
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- step 2 place -->
-          <div v-bind:style="{ display: step == 2 ? '' : 'none' }">
-
-            <div class="panel panel-border panel-primary">
-              <div class="panel-heading">
-                <h3 class="panel-title">下载升级包</h3>
-                <p class="panel-sub-title font-13 text-muted">系统正在下载插件升级包，可能需要几分钟，请稍后...</p>
-              </div>
-              <div class="panel-body">
-
-                <div class="table-responsive">
-
-                  <table class="table tablesaw table-hover m-0">
-                    <thead>
-                      <tr class="thead">
-                        <th class="text-nowrap">插件Id</th>
-                        <th class="text-nowrap">插件名称</th>
-                        <th class="text-nowrap">已安装版本</th>
-                        <th class="text-nowrap">新版本</th>
-                        <th>更新说明</th>
+                        <th class="text-nowrap">Id</th>
+                        <th class="text-nowrap">名称</th>
+                        <th class="text-nowrap">版本</th>
+                        <th>简介</th>
                         <th class="text-center text-nowrap">发布时间</th>
                         <th class="text-center text-nowrap">状态</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="package in packages" v-bind:style="{ display: checkedIds.indexOf(package.id) !== -1 ? '' : 'none' }">
+                      <tr v-for="package in packages">
                         <td class="text-nowrap">
                           {{ package.id }}
                         </td>
@@ -156,13 +76,10 @@
                           {{ package.title }}
                         </td>
                         <td class="text-nowrap">
-                          {{ package.installedVersion }}
-                        </td>
-                        <td class="text-nowrap">
                           {{ package.version }}
                         </td>
                         <td>
-                          {{ package.releaseNotes }}
+                          {{ package.description }}
                         </td>
                         <td class="text-center text-nowrap">
                           {{ package.published }}
@@ -189,13 +106,13 @@
 
           </div>
 
-          <!-- step 3 place -->
-          <div v-bind:style="{ display: step == 3 ? '' : 'none' }">
+          <!-- step 2 place -->
+          <div v-bind:style="{ display: step == 2 ? '' : 'none' }">
 
             <div class="panel panel-border panel-primary">
               <div class="panel-heading">
-                <h3 class="panel-title">升级插件</h3>
-                <p class="panel-sub-title font-13 text-muted">系统正在升级插件，请稍后...</p>
+                <h3 class="panel-title">安装插件</h3>
+                <p class="panel-sub-title font-13 text-muted">系统正在安装插件，请稍后...</p>
               </div>
               <div class="panel-body">
 
@@ -204,17 +121,16 @@
                   <table class="table tablesaw table-hover m-0">
                     <thead>
                       <tr class="thead">
-                        <th class="text-nowrap">插件Id</th>
-                        <th class="text-nowrap">插件名称</th>
-                        <th class="text-nowrap">已安装版本</th>
-                        <th class="text-nowrap">新版本</th>
-                        <th>更新说明</th>
+                        <th class="text-nowrap">Id</th>
+                        <th class="text-nowrap">名称</th>
+                        <th class="text-nowrap">版本</th>
+                        <th>简介</th>
                         <th class="text-center text-nowrap">发布时间</th>
                         <th class="text-center text-nowrap">状态</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="package in packages" v-bind:style="{ display: checkedIds.indexOf(package.id) !== -1 ? '' : 'none' }">
+                      <tr v-for="package in packages">
                         <td class="text-nowrap">
                           {{ package.id }}
                         </td>
@@ -222,26 +138,23 @@
                           {{ package.title }}
                         </td>
                         <td class="text-nowrap">
-                          {{ package.installedVersion }}
-                        </td>
-                        <td class="text-nowrap">
                           {{ package.version }}
                         </td>
                         <td>
-                          {{ package.releaseNotes }}
+                          {{ package.description }}
                         </td>
                         <td class="text-center text-nowrap">
                           {{ package.published }}
                         </td>
                         <td class="text-center text-nowrap font-13 text-muted">
                           <div class="text-success" v-bind:style="{ display: updatedIds.indexOf(package.id) !== -1 && updatingId != package.id ? '' : 'none' }">
-                            升级完成
+                            安装完成
                           </div>
                           <div v-bind:style="{ display:updatingId == package.id ? '' : 'none' }">
-                            <img src="../pic/animated_loading.gif" />升级中...
+                            <img src="../pic/animated_loading.gif" />安装中...
                           </div>
                           <div v-bind:style="{ display: updatedIds.indexOf(package.id) == -1 && updatingId != package.id ? '' : 'none' }">
-                            等待升级
+                            等待安装
                           </div>
                         </td>
                       </tr>
@@ -255,13 +168,13 @@
 
           </div>
 
-          <!-- step 4 place -->
-          <div v-bind:style="{ display: step == 4 ? '' : 'none' }">
+          <!-- step 3 place -->
+          <div v-bind:style="{ display: step == 3 ? '' : 'none' }">
 
             <div class="alert alert-success" role="alert">
-              <h4 class="alert-heading">升级完成！</h4>
+              <h4 class="alert-heading">安装完成！</h4>
               <p>
-                恭喜，您已经完成了插件的升级，页面将在3秒之后重新载入...
+                恭喜，您已经完成了插件的安装，页面将在3秒之后重新载入...
               </p>
             </div>
 
@@ -278,7 +191,7 @@
     <script src="../assets/js/apiUtils.js"></script>
     <script src="../assets/js/compareversion.js"></script>
     <script type="text/javascript">
-      var versionApi = new apiUtils.Api();
+      var api = new apiUtils.Api();
       var downloadApi = new apiUtils.Api('<%=DownloadApiUrl%>');
       var updateApi = new apiUtils.Api('<%=UpdateApiUrl%>');
       var clearCacheApi = new apiUtils.Api('<%=ClearCacheApiUrl%>');
@@ -288,10 +201,10 @@
       var data = {
         step: 1,
         isGetVersions: false,
-        packages: <%=Packages%>,
-        packageIds: '<%=PackageIds%>',
-        checkedIds: [],
-        isCheckAll: false,
+        packageId: '<%=PackageId%>',
+        installedPackages: <%=PackagesIdAndVersionList%>,
+        package: {},
+        packages: [],
         downloadingId: 0,
         downloadIds: [],
         updatingId: 0,
@@ -303,50 +216,73 @@
         el: '#main',
         data: data,
         methods: {
-          version: function () {
+          getPackage: function () {
             var $this = this;
 
-            versionApi.get({
+            api.get({
               isNightly: isNightly,
-              version: version,
-              $filter: "id in '" + this.packageIds + "'"
+              version: version
             }, function (err, res) {
               if (!err && res) {
-                var packages = [];
-                for (var i = 0; i < res.length; i++) {
-                  var package = res[i];
+                $this.package = res;
+                $this.packages.push(res);
+                var packageIds = [];
+                for (var i = 0; i < res.pluginReferences.length; i++) {
+                  var reference = res.pluginReferences[i];
                   var installedPackage = $.grep($this.packages, function (e) {
-                    return e.id == package.id;
+                    return e.id == reference.id;
                   });
-                  if (installedPackage.length == 1) {
-                    package.installedVersion = installedPackage[0].version;
-                    if (compareversion(package.installedVersion, package.version) == -1) {
-                      packages.push(package);
-                    }
+                  if (installedPackage.length == 0) {
+                    packageIds.push(reference.id);
                   }
                 }
-                $this.packages = packages;
+                for (var i = 0; i < res.packageReferences.length; i++) {
+                  var reference = res.packageReferences[i];
+                  var installedPackage = $.grep($this.packages, function (e) {
+                    return e.id == reference.id;
+                  });
+                  if (installedPackage.length == 0) {
+                    packageIds.push(reference.id);
+                  }
+                }
+                $this.getPackages(packageIds);
+              }
+            }, 'packages/' + this.packageId);
+          },
+          getPackages: function (packageIds) {
+            var $this = this;
+
+            if (packageIds.length == 0) {
+              $this.isGetVersions = true;
+              $this.download();
+              return;
+            }
+
+            api.get({
+              isNightly: isNightly,
+              version: version,
+              $filter: "id in '" + packageIds.join(",") + "'"
+            }, function (err, res) {
+              if (!err && res) {
+                for (var i = 0; i < res.length; i++) {
+                  var package = res[i];
+                  for (var j = 0; j < $this.installedPackages.length; j++) {
+                    var installedPackage = $this.installedPackages[j];
+                    if (installedPackage === (package.id + '.' + package.version)) {
+                      $this.downloadIds.push(package.id);
+                      break;
+                    }
+                  }
+                  $this.packages.push(package);
+                }
                 $this.isGetVersions = true;
+                $this.download();
               }
             }, 'packages');
           },
-          checkAll: function () {
-            this.isCheckAll = !this.isCheckAll;
-            this.checkedIds = [];
-            if (this.isCheckAll) {
-              for (var i = 0; i < this.packages.length; i++) {
-                this.checkedIds.push(this.packages[i].id);
-              }
-            }
-          },
           download: function () {
-            if (this.checkedIds.length == 0) return;
-
-            this.step = 2;
-
             for (var i = 0; i < this.packages.length; i++) {
-              if (this.downloadIds.indexOf(this.packages[i].id) == -1 && this.checkedIds.indexOf(this.packages[i]
-                  .id) !== -1) {
+              if (this.downloadIds.indexOf(this.packages[i].id) == -1) {
                 this.downloadingId = this.packages[i].id;
                 this.downloadPackage(this.packages[i].id, this.packages[i].version)
                 return;
@@ -372,15 +308,12 @@
             });
           },
           update: function () {
-            if (this.checkedIds.length == 0) return;
-
-            this.step = 3;
+            this.step = 2;
 
             for (var i = 0; i < this.packages.length; i++) {
-              if (this.updatedIds.indexOf(this.packages[i].id) == -1 && this.checkedIds.indexOf(this.packages[i].id) !==
-                -1) {
+              if (this.updatedIds.indexOf(this.packages[i].id) == -1) {
                 this.updatingId = this.packages[i].id;
-                this.updatePackage(this.packages[i].id, this.packages[i].version, this.packages[i].packageType)
+                this.updatePackage(this.packages[i].id, this.packages[i].version, this.packages[i].packageType);
                 return;
               }
             }
@@ -405,12 +338,12 @@
             });
           },
           clearCache: function() {
-            this.step = 4;
-
+            this.step = 3;
+            
             clearCacheApi.post(null, function(err, res){
               if (err) {
                 $this.errorMessage = err.message;
-              } else {                
+              } else {
                 setTimeout(function () {
                   window.top.location.reload();
                 }, 3000);
@@ -420,5 +353,5 @@
         }
       });
 
-      $vue.version();
+      $vue.getPackage();
     </script>

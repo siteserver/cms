@@ -67,7 +67,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 ZipUtils.UnpackFiles(localFilePath, directoryPath);
 
                 string errorMessage;
-                if (!PackageUtils.UpdatePackage(idAndVersion, false, out errorMessage))
+                if (!PackageUtils.UpdatePackage(idAndVersion, PackageType.Plugin, out errorMessage))
                 {
                     FailMessage($"手动安装插件失败：{errorMessage}");
                     return;
@@ -91,7 +91,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 }
 
                 var idWithVersion = $"{TbPluginId.Text}.{TbVersion.Text}";
-                if (!PackageUtils.UpdatePackage(idWithVersion, false, out errorMessage))
+                if (!PackageUtils.UpdatePackage(idWithVersion, PackageType.Plugin, out errorMessage))
                 {
                     FailMessage($"手动安装插件失败：{errorMessage}");
                     return;

@@ -58,13 +58,10 @@
             <h4 class="page-title">插件详情</h4>
           </div>
 
-          <p class="text-muted font-13 m-b-25">
-
-          </p>
-          <table class="table m-0">
+          <table class="table m-0 m-t-25">
             <tbody>
               <tr>
-                <th scope="row">发行说明</th>
+                <th scope="row">版本发行说明</th>
                 <td>{{ package.releaseNotes }}</td>
               </tr>
               <tr>
@@ -111,6 +108,39 @@
           </table>
         </div>
 
+        <div class="card-box" v-if="(package.pluginReferences && package.pluginReferences.length > 0) || (package.packageReferences && package.packageReferences.length > 0)">
+          <div class="page-title-box">
+            <h4 class="page-title">
+              依赖项
+            </h4>
+          </div>
+
+          <p class="text-muted font-13 m-b-25">
+            此插件依赖的类库以及其他插件
+          </p>
+          <table class="table m-0">
+            <thead>
+              <tr>
+                <th>依赖项</th>
+                <th>版本</th>
+                <th>类型</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="reference in package.pluginReferences">
+                <td>{{ reference.id }}</td>
+                <td>{{ reference.version }}</td>
+                <td>插件</td>
+              </tr>
+              <tr v-for="reference in package.packageReferences">
+                <td>{{ reference.id }}</td>
+                <td>{{ reference.version }}</td>
+                <td>类库</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
       </div>
     </form>
   </body>
@@ -138,8 +168,8 @@
       version: version
     }, function (err, res) {
       if (!err && res) {
-        data.package = res
-        data.isShouldUpdate = compareversion('<%=InstalledVersion%>', res.version) == -1
+        data.package = res;
+        data.isShouldUpdate = compareversion('<%=InstalledVersion%>', res.version) == -1;
       }
     }, 'packages/' + pluginId);
 

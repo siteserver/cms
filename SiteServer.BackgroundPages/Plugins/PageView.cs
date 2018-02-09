@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Packaging;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
 
@@ -41,23 +40,24 @@ namespace SiteServer.BackgroundPages.Plugins
 
             if (Body.IsQueryExists("install"))
             {
-                var version = Body.GetQueryString("version");
+                PageUtils.Redirect(PageInstall.GetRedirectUrl(_pluginId));
+                //var version = Body.GetQueryString("version");
 
-                string errorMessage;
+                //string errorMessage;
 
-                PackageUtils.DownloadPackage(_pluginId, version);
+                //PackageUtils.DownloadPackage(_pluginId, version);
 
-                var idWithVersion = $"{_pluginId}.{version}";
-                if (!PackageUtils.UpdatePackage(idWithVersion, false, out errorMessage))
-                {
-                    FailMessage(errorMessage);
-                    return;
-                }
+                //var idWithVersion = $"{_pluginId}.{version}";
+                //if (!PackageUtils.UpdatePackage(idWithVersion, false, out errorMessage))
+                //{
+                //    FailMessage(errorMessage);
+                //    return;
+                //}
 
-                PluginManager.ClearCache();
-                Body.AddAdminLog("安装插件", $"插件:{_pluginId}");
+                //PluginManager.ClearCache();
+                //Body.AddAdminLog("安装插件", $"插件:{_pluginId}");
 
-                AddScript(AlertUtils.Success("插件安装成功", "插件安装成功，系统需要重载页面", "重新载入", "window.top.location.reload();"));
+                //AddScript(AlertUtils.Success("插件安装成功", "插件安装成功，系统需要重载页面", "重新载入", "window.top.location.reload();"));
             }
             else if (Body.IsQueryExists("update"))
             {

@@ -12,7 +12,7 @@
     <copyright>Copyright © SiteServer CMS 2018</copyright>
     <tags>SiteServer CMS</tags>
     <releaseNotes>
-      该更新通过自动升级来解决漏洞，修复BUG，建议系统管理员更新
+      插件功能增强，插件依赖项检测与安装、BUG修复
     </releaseNotes>
   </metadata>
 </package>
