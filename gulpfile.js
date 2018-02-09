@@ -27,7 +27,7 @@ function build(beta) {
   if (beta) {
     version += '-beta';
   } else {
-    version += '-rc1';
+    version += '-rc2';
   }
   console.log('build SiteServer CMS started, version: ' + version);
 
