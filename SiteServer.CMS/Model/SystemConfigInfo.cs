@@ -1,10 +1,9 @@
-﻿using SiteServer.Plugin;
-using SiteServer.Utils;
+﻿using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Model
 {
-    public class SystemConfigInfo : ExtendedAttributes, ISystemConfigInfo
+    public class SystemConfigInfo : ExtendedAttributes
     {
         public SystemConfigInfo(string settings) : base(settings)
         {
