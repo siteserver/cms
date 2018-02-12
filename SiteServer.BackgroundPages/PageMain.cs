@@ -345,12 +345,6 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             {
                 if (!ProductPermissionsManager.Current.IsConsoleAdministrator && !TabManager.IsValid(tab, permissionList)) continue;
 
-                var target = string.Empty;
-                if (!string.IsNullOrEmpty(tab.Target))
-                {
-                    target = tab.Target;
-                }
-
                 var tabs = TabManager.GetTabList(tab.Id, 0);
                 var tabsBuilder = new StringBuilder();
                 foreach (var parent in tabs)
@@ -359,13 +353,14 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
 
                     var hasChildren = parent.Children != null && parent.Children.Length > 0;
 
-                    var url = parent.HasHref ? PageUtils.GetLoadingUrl(parent.Href) : "javascript:;";
+                    var parentUrl = !string.IsNullOrEmpty(parent.Href) ? PageUtils.GetLoadingUrl(parent.Href) : "javascript:;";
+                    var parentTarget = !string.IsNullOrEmpty(parent.Target) ? parent.Target : "right";
 
                     if (hasChildren)
                     {
                         tabsBuilder.Append($@"
 <li class=""has-submenu"">
-    <a href=""{url}"" target=""right"">{parent.Text}</a>
+    <a href=""{parentUrl}"" target=""{parentTarget}"">{parent.Text}</a>
     <ul class=""submenu"">
 ");
 
@@ -384,13 +379,16 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
                     else
                     {
                         tabsBuilder.Append(
-                            $@"<li><a href=""{url}"" target=""right"">{parent.Text}</a></li>");
+                            $@"<li><a href=""{parentUrl}"" target=""{parentTarget}"">{parent.Text}</a></li>");
                     }
                 }
 
+                var url = !string.IsNullOrEmpty(tab.Href) ? PageUtils.ParseNavigationUrl(tab.Href) : "javascript:;";
+                var target = !string.IsNullOrEmpty(tab.Target) ? tab.Target : "right";
+
                 builder.Append(
                     $@"<li class=""has-submenu"">
-                        <a href=""{(!string.IsNullOrEmpty(tab.Href) ? PageUtils.ParseNavigationUrl(tab.Href) : "javascript:;")}"" target=""{target}""><i class=""{tab.IconClass ?? "ion-ios-more"}""></i>{tab.Text}</a>
+                        <a href=""{url}"" target=""{target}""><i class=""{tab.IconClass ?? "ion-ios-more"}""></i>{tab.Text}</a>
                         <ul class=""submenu"">
                             {tabsBuilder}
                         </ul>

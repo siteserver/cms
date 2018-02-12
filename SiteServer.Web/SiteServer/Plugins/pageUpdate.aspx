@@ -138,17 +138,28 @@
                   <table class="table tablesaw table-hover m-0">
                     <thead>
                       <tr class="thead">
+                        <th class="text-center text-nowrap">状态</th>
                         <th class="text-nowrap">插件Id</th>
                         <th class="text-nowrap">插件名称</th>
                         <th class="text-nowrap">已安装版本</th>
                         <th class="text-nowrap">新版本</th>
                         <th>更新说明</th>
                         <th class="text-center text-nowrap">发布时间</th>
-                        <th class="text-center text-nowrap">状态</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr v-for="package in packages" v-bind:style="{ display: checkedIds.indexOf(package.id) !== -1 ? '' : 'none' }">
+                        <td class="text-center text-nowrap font-13 text-muted">
+                          <div class="text-success" v-bind:style="{ display: downloadIds.indexOf(package.id) !== -1 && downloadingId != package.id ? '' : 'none' }">
+                            下载完成
+                          </div>
+                          <div v-bind:style="{ display:downloadingId == package.id ? '' : 'none' }">
+                            <img src="../pic/animated_loading.gif" />下载中...
+                          </div>
+                          <div v-bind:style="{ display: downloadIds.indexOf(package.id) == -1 && downloadingId != package.id ? '' : 'none' }">
+                            等待下载
+                          </div>
+                        </td>
                         <td class="text-nowrap">
                           {{ package.id }}
                         </td>
@@ -166,17 +177,6 @@
                         </td>
                         <td class="text-center text-nowrap">
                           {{ package.published }}
-                        </td>
-                        <td class="text-center text-nowrap font-13 text-muted">
-                          <div class="text-success" v-bind:style="{ display: downloadIds.indexOf(package.id) !== -1 && downloadingId != package.id ? '' : 'none' }">
-                            下载完成
-                          </div>
-                          <div v-bind:style="{ display:downloadingId == package.id ? '' : 'none' }">
-                            <img src="../pic/animated_loading.gif" />下载中...
-                          </div>
-                          <div v-bind:style="{ display: downloadIds.indexOf(package.id) == -1 && downloadingId != package.id ? '' : 'none' }">
-                            等待下载
-                          </div>
                         </td>
                       </tr>
 
@@ -204,17 +204,28 @@
                   <table class="table tablesaw table-hover m-0">
                     <thead>
                       <tr class="thead">
+                        <th class="text-center text-nowrap">状态</th>
                         <th class="text-nowrap">插件Id</th>
                         <th class="text-nowrap">插件名称</th>
                         <th class="text-nowrap">已安装版本</th>
                         <th class="text-nowrap">新版本</th>
                         <th>更新说明</th>
                         <th class="text-center text-nowrap">发布时间</th>
-                        <th class="text-center text-nowrap">状态</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr v-for="package in packages" v-bind:style="{ display: checkedIds.indexOf(package.id) !== -1 ? '' : 'none' }">
+                        <td class="text-center text-nowrap font-13 text-muted">
+                          <div class="text-success" v-bind:style="{ display: updatedIds.indexOf(package.id) !== -1 && updatingId != package.id ? '' : 'none' }">
+                            升级完成
+                          </div>
+                          <div v-bind:style="{ display:updatingId == package.id ? '' : 'none' }">
+                            <img src="../pic/animated_loading.gif" />升级中...
+                          </div>
+                          <div v-bind:style="{ display: updatedIds.indexOf(package.id) == -1 && updatingId != package.id ? '' : 'none' }">
+                            等待升级
+                          </div>
+                        </td>
                         <td class="text-nowrap">
                           {{ package.id }}
                         </td>
@@ -232,17 +243,6 @@
                         </td>
                         <td class="text-center text-nowrap">
                           {{ package.published }}
-                        </td>
-                        <td class="text-center text-nowrap font-13 text-muted">
-                          <div class="text-success" v-bind:style="{ display: updatedIds.indexOf(package.id) !== -1 && updatingId != package.id ? '' : 'none' }">
-                            升级完成
-                          </div>
-                          <div v-bind:style="{ display:updatingId == package.id ? '' : 'none' }">
-                            <img src="../pic/animated_loading.gif" />升级中...
-                          </div>
-                          <div v-bind:style="{ display: updatedIds.indexOf(package.id) == -1 && updatingId != package.id ? '' : 'none' }">
-                            等待升级
-                          </div>
                         </td>
                       </tr>
 
@@ -404,13 +404,13 @@
               }
             });
           },
-          clearCache: function() {
+          clearCache: function () {
             this.step = 4;
 
-            clearCacheApi.post(null, function(err, res){
+            clearCacheApi.post(null, function (err, res) {
               if (err) {
                 $this.errorMessage = err.message;
-              } else {                
+              } else {
                 setTimeout(function () {
                   window.top.location.reload();
                 }, 3000);

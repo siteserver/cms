@@ -6,9 +6,17 @@ namespace SiteServer.CMS.Plugin.Model
 {
     public class PluginInfo
     {
-        public PluginInfo(string directoryName, string errorMessage)
+        public PluginInfo(string directoryName, PackageMetadata metadata, string errorMessage)
         {
-            Id = directoryName;
+            if (metadata != null)
+            {
+                Id = metadata.Id;
+                Metadata = metadata;
+            }
+            else
+            {
+                Id = directoryName;
+            }
             ErrorMessage = errorMessage;
         }
 

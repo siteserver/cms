@@ -65,12 +65,13 @@ namespace SiteServer.CMS.Plugin
 
             private static PluginInfo ActivePlugin(string directoryName)
             {
+                PackageMetadata metadata = null;
                 string errorMessage;
 
                 try
                 {
                     string dllDirectoryPath;
-                    var metadata = PackageUtils.GetPackageMetadataFromPlugins(directoryName, out dllDirectoryPath, out errorMessage);
+                    metadata = PackageUtils.GetPackageMetadataFromPlugins(directoryName, out dllDirectoryPath, out errorMessage);
                     if (metadata != null)
                     {
                         //foreach (var filePath in DirectoryUtils.GetFilePaths(DirectoryUtils.GetDirectoryPath(metadata.ExecuteFilePath)))
@@ -102,7 +103,7 @@ namespace SiteServer.CMS.Plugin
                     LogUtils.AddSystemErrorLog(ex, $"插件加载：{directoryName}");
                 }
 
-                return new PluginInfo(directoryName, errorMessage);
+                return new PluginInfo(directoryName, metadata, errorMessage);
             }
 
             private static void CopyDllsToBin(string pluginId, string pluginDllDirectoryPath)
@@ -288,9 +289,9 @@ namespace SiteServer.CMS.Plugin
             foreach (var pluginId in dict.Keys)
             {
                 var pluginInfo = dict[pluginId];
-                if (pluginInfo.Plugin != null)
+                if (pluginInfo.Metadata != null)
                 {
-                    retval[pluginId] = pluginInfo.Plugin.Version;
+                    retval[pluginId] = pluginInfo.Metadata.Version;
                 }
                 else
                 {

@@ -29,6 +29,7 @@
 
   cache:
     - packages -> **\packages.config
+    - node_modules                        # local npm modules
 
   before_build:
     - nuget restore siteserver.sln
@@ -105,6 +106,7 @@
 
   cache:
     - packages -> **\packages.config
+    - node_modules                        # local npm modules
 
   before_build:
     - nuget restore siteserver.sln

@@ -1,5 +1,6 @@
 bin/
 obj/
+home/
 SiteFiles/BackupFiles/
 SiteFiles/Plugins/
 SiteFiles/packages/
