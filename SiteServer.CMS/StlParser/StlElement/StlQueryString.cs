@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+锘縰sing System.Collections.Generic;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "SQL查询语句", Description = "通过 stl:queryString 标签在模板中定义SQL查询语句")]
+    [Stl(Usage = "SQL鏌ヨ璇彞", Description = "閫氳繃 stl:queryString 鏍囩鍦ㄦā鏉夸腑瀹氫箟SQL鏌ヨ璇彞")]
     public class StlQueryString
 	{
         public const string ElementName = "stl:queryString";

@@ -1,9 +1,9 @@
-using SiteServer.CMS.StlParser.Model;
+锘縰sing SiteServer.CMS.StlParser.Model;
 using System.Collections.Generic;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "失败模板", Description = "通过 stl:no 标签在模板中显示失败模板")]
+    [Stl(Usage = "澶辫触妯℃澘", Description = "閫氳繃 stl:no 鏍囩鍦ㄦā鏉夸腑鏄剧ず澶辫触妯℃澘")]
     public sealed class StlNo
     {
         public const string ElementName = "stl:no";

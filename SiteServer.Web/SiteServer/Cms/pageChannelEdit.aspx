@@ -51,10 +51,9 @@
           <asp:PlaceHolder id="PhContentRelatedPluginIds" runat="server">
             <div class="form-group form-row">
               <label class="col-sm-2 col-form-label text-right">内容关联插件</label>
-              <div class="col-sm-4">
+              <div class="col-sm-10">
                 <asp:CheckBoxList ID="CblContentRelatedPluginIds" CssClass="checkbox checkbox-primary" RepeatDirection="Horizontal" runat="server"></asp:CheckBoxList>
               </div>
-              <div class="col-sm-6"></div>
             </div>
           </asp:PlaceHolder>
 

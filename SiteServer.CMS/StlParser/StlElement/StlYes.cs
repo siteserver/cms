@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+锘縰sing System.Collections.Generic;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "成功模板", Description = "通过 stl:yes 标签在模板中显示成功模板")]
+    [Stl(Usage = "鎴愬姛妯℃澘", Description = "閫氳繃 stl:yes 鏍囩鍦ㄦā鏉夸腑鏄剧ず鎴愬姛妯℃澘")]
     public sealed class StlYes
     {
         public const string ElementName = "stl:yes";
