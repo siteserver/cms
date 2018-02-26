@@ -27,7 +27,7 @@ namespace SiteServer.CMS.StlParser.Model
             _contentInfo = contextInfo._contentInfo;
 
             IsInnerElement = contextInfo.IsInnerElement;
-            IsCurlyBrace = contextInfo.IsCurlyBrace;
+            IsStlEntity = contextInfo.IsStlEntity;
             PageItemIndex = contextInfo.PageItemIndex;
             ItemContainer = contextInfo.ItemContainer;
             ContainerClientId = contextInfo.ContainerClientId;
@@ -89,7 +89,7 @@ namespace SiteServer.CMS.StlParser.Model
 
         public bool IsInnerElement { get; set; }
 
-        public bool IsCurlyBrace { get; set; }
+        public bool IsStlEntity { get; set; }
 
         public int PageItemIndex { get; set; }
 

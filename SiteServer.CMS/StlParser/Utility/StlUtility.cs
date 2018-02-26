@@ -1,9 +1,9 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.StlEntity;
@@ -50,7 +50,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var templateInfo = TemplateManager.GetTemplateInfo(siteId, templateId);
             //TemplateManager.GetTemplateInfo(siteID, channelID, templateType);
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var pageInfo = new PageInfo(channelId, contentId, siteInfo, templateInfo)
+            var pageInfo = new PageInfo(channelId, contentId, siteInfo, templateInfo, new Dictionary<string, object>())
             {
                 UniqueId = 1000,
                 UserInfo = userInfo

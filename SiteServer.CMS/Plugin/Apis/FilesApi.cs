@@ -35,11 +35,11 @@ namespace SiteServer.CMS.Plugin.Apis
             FileUtility.AddWaterMark(siteInfo, filePath);
         }
 
-        public string GetUploadFilePath(int siteId, string relatedPath)
+        public string GetUploadFilePath(int siteId, string fileName)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, PathUtils.GetExtension(relatedPath));
-            var localFileName = PathUtility.GetUploadFileName(siteInfo, relatedPath);
+            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, PathUtils.GetExtension(fileName));
+            var localFileName = PathUtility.GetUploadFileName(siteInfo, fileName);
             return PathUtils.Combine(localDirectoryPath, localFileName);
         }
 

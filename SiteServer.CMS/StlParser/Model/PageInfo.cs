@@ -43,6 +43,8 @@ namespace SiteServer.CMS.StlParser.Model
 
         public Stack EachItems { get; }
 
+        public Dictionary<string, object> PluginItems { get; }
+
         private int _uniqueId;
 
         public int UniqueId
@@ -57,7 +59,12 @@ namespace SiteServer.CMS.StlParser.Model
             }
         }
 
-        public PageInfo(int pageChannelId, int pageContentId, SiteInfo siteInfo, TemplateInfo templateInfo)
+        public PageInfo Clone()
+        {
+            return new PageInfo(PageChannelId, PageContentId, SiteInfo, TemplateInfo, PluginItems);
+        }
+
+        public PageInfo(int pageChannelId, int pageContentId, SiteInfo siteInfo, TemplateInfo templateInfo, Dictionary<string, object> pluginItems)
         {
             TemplateInfo = templateInfo;
             SiteId = siteInfo.Id;
@@ -78,6 +85,8 @@ namespace SiteServer.CMS.StlParser.Model
             SqlItems = new Stack(5);
             SiteItems = new Stack(5);
             EachItems = new Stack(5);
+
+            PluginItems = pluginItems;
         }
 
         public void ChangeSite(SiteInfo siteInfo, int pageChannelId, int pageContentId, ContextInfo contextInfo)

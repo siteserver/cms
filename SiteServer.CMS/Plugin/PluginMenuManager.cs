@@ -69,7 +69,6 @@ namespace SiteServer.CMS.Plugin
             }
             var url = PageUtils.AddQueryString(PageUtils.GetPluginDirectoryUrl(pluginId, href), new NameValueCollection
             {
-                {"apiUrl", PageUtils.AddProtocolToUrl(PageUtility.OuterApiUrl)},
                 {"v", StringUtils.GetRandomInt(1, 1000).ToString()}
             });
             if (siteId > 0)
@@ -90,7 +89,6 @@ namespace SiteServer.CMS.Plugin
             }
             return PageUtils.AddQueryString(PageUtils.GetPluginDirectoryUrl(pluginId, href), new NameValueCollection
             {
-                {"apiUrl", PageUtils.AddProtocolToUrl(PageUtility.OuterApiUrl)},
                 {"siteId", siteId.ToString()},
                 {"channelId", channelId.ToString()},
                 {"contentId", contentId.ToString()},

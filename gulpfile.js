@@ -5,6 +5,8 @@ var rename = require("gulp-rename");
 var replace = require('gulp-replace');
 var zip = require('gulp-zip');
 var argv = require('yargs').argv;
+var fs = require('fs');
+var path = require('path');
 
 function min(src, dest) {
   var g = gulp.src(src);
@@ -22,6 +24,29 @@ function min(src, dest) {
   }
 }
 
+function getDependencies() {
+  var str = '';
+
+  var dirs = fs.readdirSync('./packages').filter(function (file) {
+    return fs.statSync('./packages/'+file).isDirectory();
+  });
+  for (var dir of dirs) {
+    var items = dir.split('.');
+    var index = 0;
+    for (var i = 0; i < items.length; i++) {
+      var isNumber = !isNaN(parseFloat(items[i])) && isFinite(items[i]);
+      if (isNumber) {
+        index = i;
+        break;
+      }
+    }
+    var id = items.slice(0, index).join('.');
+    var version = items.slice(index).join('.');
+    str += '<dependency id="' + id + '" version="' + version + '" />';
+  }
+  str = '<dependencies>' + str + '</dependencies>';
+}
+
 function build(beta) {
   var version = process.env.APPVEYOR_BUILD_VERSION;
   if (beta) {
@@ -32,7 +57,8 @@ function build(beta) {
   console.log('build SiteServer CMS started, version: ' + version);
 
   //nuspec
-  gulp.src('./SS.CMS.nuspec').pipe(replace('$version$', version)).pipe(gulp.dest('./build'));
+  var dependencies = getDependencies();
+  gulp.src('./SS.CMS.nuspec').pipe(replace('$version$', version)).pipe(replace('</metadata>', dependencies + '</metadata>')).pipe(gulp.dest('./build'));
 
   //bin
   gulp.src(['./SiteServer.Web/bin/*.dll']).pipe(gulp.dest('./build/bin'));

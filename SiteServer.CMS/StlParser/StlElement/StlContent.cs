@@ -318,7 +318,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         var sbParsedContent = new StringBuilder();
                         //第一条
-                        sbParsedContent.Append(contextInfo.IsCurlyBrace
+                        sbParsedContent.Append(contextInfo.IsStlEntity
                             ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo,
                                 contentInfo.GetString(BackgroundContentAttribute.ImageUrl), pageInfo.IsLocal)
                             : InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo,
@@ -332,7 +332,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
                             {
                                 var newExtendValue = extendValue;
-                                sbParsedContent.Append(contextInfo.IsCurlyBrace
+                                sbParsedContent.Append(contextInfo.IsStlEntity
                                     ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, newExtendValue, pageInfo.IsLocal)
                                     : InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo,
                                         newExtendValue, contextInfo.Attributes, false));
@@ -346,7 +346,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var num = TranslateUtils.ToInt(no, 0);
                         if (num <= 1)
                         {
-                            parsedContent = contextInfo.IsCurlyBrace ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl), pageInfo.IsLocal) : InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl), contextInfo.Attributes, false);
+                            parsedContent = contextInfo.IsStlEntity ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl), pageInfo.IsLocal) : InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl), contextInfo.Attributes, false);
                         }
                         else
                         {
@@ -360,7 +360,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                     var newExtendValue = extendValue;
                                     if (index == num)
                                     {
-                                        parsedContent = contextInfo.IsCurlyBrace ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, newExtendValue, pageInfo.IsLocal) : InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo, newExtendValue, contextInfo.Attributes, false);
+                                        parsedContent = contextInfo.IsStlEntity ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, newExtendValue, pageInfo.IsLocal) : InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo, newExtendValue, contextInfo.Attributes, false);
                                         break;
                                     }
                                     index++;
@@ -375,7 +375,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         var sbParsedContent = new StringBuilder();
                         //第一条
-                        sbParsedContent.Append(InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.VideoUrl), contextInfo.Attributes, contextInfo.IsCurlyBrace));
+                        sbParsedContent.Append(InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.VideoUrl), contextInfo.Attributes, contextInfo.IsStlEntity));
 
                         //第n条
                         var extendAttributeName = ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.VideoUrl);
@@ -385,7 +385,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
                             {
 
-                                sbParsedContent.Append(InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, extendValue, contextInfo.Attributes, contextInfo.IsCurlyBrace));
+                                sbParsedContent.Append(InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, extendValue, contextInfo.Attributes, contextInfo.IsStlEntity));
 
                             }
                         }
@@ -397,7 +397,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var num = TranslateUtils.ToInt(no, 0);
                         if (num <= 1)
                         {
-                            parsedContent = InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.VideoUrl), contextInfo.Attributes, contextInfo.IsCurlyBrace);
+                            parsedContent = InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.VideoUrl), contextInfo.Attributes, contextInfo.IsStlEntity);
                         }
                         else
                         {
@@ -410,7 +410,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 {
                                     if (index == num)
                                     {
-                                        parsedContent = InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, extendValue, contextInfo.Attributes, contextInfo.IsCurlyBrace);
+                                        parsedContent = InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, extendValue, contextInfo.Attributes, contextInfo.IsStlEntity);
                                         break;
                                     }
                                     index++;
@@ -426,7 +426,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     if (no == "all")
                     {
                         var sbParsedContent = new StringBuilder();
-                        if (contextInfo.IsCurlyBrace)
+                        if (contextInfo.IsStlEntity)
                         {
                             //第一条
                             sbParsedContent.Append(contentInfo.GetString(BackgroundContentAttribute.FileUrl));
@@ -464,7 +464,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     else
                     {
                         var num = TranslateUtils.ToInt(no, 0);
-                        if (contextInfo.IsCurlyBrace)
+                        if (contextInfo.IsStlEntity)
                         {
                             if (num <= 1)
                             {

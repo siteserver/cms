@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using SiteServer.Utils;
@@ -93,7 +94,7 @@ namespace SiteServer.CMS.StlParser
                 ? TemplateManager.GetIndexPageTemplateInfo(siteId)
                 : TemplateManager.GetChannelTemplateInfo(siteId, channelId);
             var filePath = PathUtility.GetChannelPageFilePath(siteInfo, channelId, 0);
-            var pageInfo = new PageInfo(channelId, 0, siteInfo, templateInfo);
+            var pageInfo = new PageInfo(channelId, 0, siteInfo, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo)
             {
                 ContextType = EContextType.Channel
@@ -121,7 +122,7 @@ namespace SiteServer.CMS.StlParser
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = new PageInfo(pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.SiteInfo, pageInfo.TemplateInfo);
+                    var thePageInfo = pageInfo.Clone();
                     var index = contentAttributeHtml.IndexOf(ContentUtility.PagePlaceHolder, StringComparison.Ordinal);
                     var length = index == -1 ? contentAttributeHtml.Length : index;
                     var pagedContentAttributeHtml = contentAttributeHtml.Substring(0, length);
@@ -152,8 +153,7 @@ namespace SiteServer.CMS.StlParser
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = new PageInfo(pageInfo.PageChannelId, pageInfo.PageContentId,
-                        pageInfo.SiteInfo, pageInfo.TemplateInfo);
+                    var thePageInfo = pageInfo.Clone();
                     var pageHtml = pageContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, true);
                     var pagedBuilder =
                         new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
@@ -185,7 +185,7 @@ namespace SiteServer.CMS.StlParser
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = new PageInfo(pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.SiteInfo, pageInfo.TemplateInfo);
+                    var thePageInfo = pageInfo.Clone();
                     var pageHtml = pageChannelsElementParser.Parse(currentPageIndex, pageCount);
                     var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
@@ -209,7 +209,7 @@ namespace SiteServer.CMS.StlParser
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = new PageInfo(pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.SiteInfo, pageInfo.TemplateInfo);
+                    var thePageInfo = pageInfo.Clone();
                     var pageHtml = pageSqlContentsElementParser.Parse(currentPageIndex, pageCount);
                     var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
@@ -277,7 +277,7 @@ namespace SiteServer.CMS.StlParser
             }
 
             var templateInfo = TemplateManager.GetContentTemplateInfo(siteInfo.Id, channelId);
-            var pageInfo = new PageInfo(channelId, contentId, siteInfo, templateInfo);
+            var pageInfo = new PageInfo(channelId, contentId, siteInfo, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo)
             {
                 ContextType = EContextType.Content,
@@ -304,7 +304,7 @@ namespace SiteServer.CMS.StlParser
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = new PageInfo(pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.SiteInfo, pageInfo.TemplateInfo);
+                    var thePageInfo = pageInfo.Clone();
 
                     var index = pageContentHtml.IndexOf(ContentUtility.PagePlaceHolder, StringComparison.Ordinal);
                     var length = index == -1 ? pageContentHtml.Length : index;
@@ -336,7 +336,7 @@ namespace SiteServer.CMS.StlParser
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = new PageInfo(pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.SiteInfo, pageInfo.TemplateInfo);
+                    var thePageInfo = pageInfo.Clone();
                     var pageHtml = pageContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, true);
                     var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
@@ -360,7 +360,7 @@ namespace SiteServer.CMS.StlParser
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = new PageInfo(pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.SiteInfo, pageInfo.TemplateInfo);
+                    var thePageInfo = pageInfo.Clone();
                     var pageHtml = pageChannelsElementParser.Parse(currentPageIndex, pageCount);
                     var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
@@ -384,7 +384,7 @@ namespace SiteServer.CMS.StlParser
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = new PageInfo(pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.SiteInfo, pageInfo.TemplateInfo);
+                    var thePageInfo = pageInfo.Clone();
                     var pageHtml = pageSqlContentsElementParser.Parse(currentPageIndex, pageCount);
                     var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
@@ -409,7 +409,7 @@ namespace SiteServer.CMS.StlParser
             {
                 return;
             }
-            var pageInfo = new PageInfo(siteId, 0, siteInfo, templateInfo);
+            var pageInfo = new PageInfo(siteId, 0, siteInfo, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo);
             var filePath = PathUtility.MapPath(siteInfo, templateInfo.CreatedFileFullName);
 

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Xml;
 using SiteServer.Utils;
@@ -448,7 +447,7 @@ namespace SiteServer.CMS.StlParser.Utility
             node = node.FirstChild;
 
             var templateInfo = TemplateManager.GetTemplateInfo(siteInfo.Id, templateId);
-            var pageInfo = new PageInfo(siteInfo.Id, 0, siteInfo, templateInfo);
+            var pageInfo = new PageInfo(siteInfo.Id, 0, siteInfo, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo);
 
             if (node?.Name == null) return null;

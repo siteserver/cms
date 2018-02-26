@@ -89,7 +89,7 @@ namespace SiteServer.CMS.Model
         public ValidateType ValidateType
         {
             get { return ValidateTypeUtils.GetEnumType(GetString("ValidateType")); }
-            set { Set("ValidateType", value.Value); }
+            set { Set("ValidateType", value != null ? value.Value : ValidateType.None.Value); }
         }
 
         public string RegExp

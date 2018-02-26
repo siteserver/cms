@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Web;
 using System.Web.Http;
@@ -50,7 +51,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
 
                 var templateInfo = new TemplateInfo(0, siteId, string.Empty, TemplateType.FileTemplate, string.Empty, string.Empty, string.Empty, ECharset.utf_8, false);
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                var pageInfo = new PageInfo(siteId, 0, siteInfo, templateInfo)
+                var pageInfo = new PageInfo(siteId, 0, siteInfo, templateInfo, new Dictionary<string, object>())
                 {
                     UserInfo = request.UserInfo
                 };

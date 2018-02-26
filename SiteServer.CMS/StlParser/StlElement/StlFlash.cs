@@ -175,7 +175,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             // 如果是实体标签则返回空
-            if (contextInfo.IsCurlyBrace)
+            if (contextInfo.IsStlEntity)
             {
                 return picUrl;
             }

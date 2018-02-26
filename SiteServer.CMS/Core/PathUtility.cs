@@ -185,11 +185,6 @@ namespace SiteServer.CMS.Core
 
         public static string GetUploadFileName(SiteInfo siteInfo, string filePath)
         {
-            return GetUploadFileName(siteInfo, filePath, DateTime.Now);
-        }
-
-        public static string GetUploadFileName(SiteInfo siteInfo, string filePath, DateTime now)
-        {
             var fileExtension = PathUtils.GetExtension(filePath);
 
             var isUploadChangeFileName = siteInfo.Additional.IsFileUploadChangeFileName;
@@ -202,16 +197,16 @@ namespace SiteServer.CMS.Core
                 isUploadChangeFileName = siteInfo.Additional.IsVideoUploadChangeFileName;
             }
 
-            return GetUploadFileName(siteInfo, filePath, now, isUploadChangeFileName);
+            return GetUploadFileName(siteInfo, filePath, isUploadChangeFileName);
         }
 
-        public static string GetUploadFileName(SiteInfo siteInfo, string filePath, DateTime now, bool isUploadChangeFileName)
+        public static string GetUploadFileName(SiteInfo siteInfo, string filePath, bool isUploadChangeFileName)
         {
             string retval;
 
             if (isUploadChangeFileName)
             {
-                string strDateTime = $"{now.Day}{now.Hour}{now.Minute}{now.Second}{now.Millisecond}";
+                var strDateTime = StringUtils.GetShortGuid(false);
                 retval = $"{strDateTime}{PathUtils.GetExtension(filePath)}";
             }
             else
@@ -224,13 +219,13 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static string GetUploadSpecialName(SiteInfo siteInfo, string filePath, DateTime now, bool isUploadChangeFileName)
+        public static string GetUploadSpecialName(SiteInfo siteInfo, string filePath, bool isUploadChangeFileName)
         {
             string retval;
 
             if (isUploadChangeFileName)
             {
-                string strDateTime = $"{now.Day}{now.Hour}{now.Minute}{now.Second}{now.Millisecond}";
+                string strDateTime = StringUtils.GetShortGuid(false);
                 retval = $"{strDateTime}{PathUtils.GetExtension(filePath)}";
             }
             else
@@ -243,13 +238,13 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static string GetUploadAdvImageName(SiteInfo siteInfo, string filePath, DateTime now, bool isUploadChangeFileName)
+        public static string GetUploadAdvImageName(SiteInfo siteInfo, string filePath, bool isUploadChangeFileName)
         {
             string retval;
 
             if (isUploadChangeFileName)
             {
-                string strDateTime = $"{now.Day}{now.Hour}{now.Minute}{now.Second}{now.Millisecond}";
+                string strDateTime = StringUtils.GetShortGuid(false);
                 retval = $"{strDateTime}{PathUtils.GetExtension(filePath)}";
             }
             else

@@ -6,35 +6,48 @@ namespace SiteServer.CMS.Plugin.Model
 {
     public class PluginParseContext: IParseContext
     {
-        public PluginParseContext(Dictionary<string, string> stlElementAttributes, string stlElementInnerXml, PageInfo pageInfo, int channelId, int contentId, IContentInfo contentInfo)
+        public PluginParseContext(Dictionary<string, string> stlAttributes, string stlInnerXml, PageInfo pageInfo, ContextInfo contextInfo)
         {
-            StlElementAttributes = stlElementAttributes;
-            StlElementInnerXml = stlElementInnerXml;
-            SiteId = pageInfo.SiteId;
-            ChannelId = channelId;
-            ContentId = contentId;
-            ContentInfo = contentInfo;
+            SiteId = contextInfo.SiteInfo.Id;
+            ChannelId = contextInfo.ChannelId;
+            ContentId = contextInfo.ContentId;
+            ContentInfo = contextInfo.ContentInfo;
             TemplateType = pageInfo.TemplateInfo.TemplateType;
             TemplateId = pageInfo.TemplateInfo.Id;
 
-            HeadCodes = pageInfo.HeadCodes;
-            BodyCodes = pageInfo.BodyCodes;
-            FootCodes = pageInfo.FootCodes;
+            StlPageHead = pageInfo.HeadCodes;
+            StlPageBody = pageInfo.BodyCodes;
+            StlPageFoot = pageInfo.FootCodes;
+            StlAttributes = stlAttributes;
+            StlInnerXml = stlInnerXml;
+            StlItems = pageInfo.PluginItems;
+            IsStlEntity = contextInfo.IsStlEntity;
         }
 
-        public Dictionary<string, string> StlElementAttributes { get; set; }
-        public string StlElementInnerXml { get; set; }
         public int SiteId  { get; set; }
+
         public int ChannelId  { get; set; }
+
         public int ContentId { get; set; }
+
         public IContentInfo ContentInfo { get; set; }
+
         public TemplateType TemplateType { get; set; }
+
         public int TemplateId { get; set; }
 
-        public SortedDictionary<string, string> HeadCodes { get; }
+        public SortedDictionary<string, string> StlPageHead { get; }
 
-        public SortedDictionary<string, string> BodyCodes { get; }
+        public SortedDictionary<string, string> StlPageBody { get; }
 
-        public SortedDictionary<string, string> FootCodes { get; }
+        public SortedDictionary<string, string> StlPageFoot { get; }
+
+        public Dictionary<string, string> StlAttributes { get; set; }
+
+        public string StlInnerXml { get; set; }
+
+        public Dictionary<string, object> StlItems { get; }
+
+        public bool IsStlEntity { get; }
     }
 }

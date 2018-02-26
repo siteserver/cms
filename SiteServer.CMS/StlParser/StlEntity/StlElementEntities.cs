@@ -20,7 +20,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
         {
             var parsedContent = string.Empty;
 
-            contextInfo.IsCurlyBrace = true;
+            contextInfo.IsStlEntity = true;
             try
             {
                 var stlElement = StlParserUtility.HtmlToXml($"<{stlEntity.Trim(' ', '{', '}')} />");
@@ -33,7 +33,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
             {
                 // ignored
             }
-            contextInfo.IsCurlyBrace = false;
+            contextInfo.IsStlEntity = false;
 
             return parsedContent;
         }

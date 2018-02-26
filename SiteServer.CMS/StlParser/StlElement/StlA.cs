@@ -229,7 +229,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             // 如果是实体标签，则只返回url
-            if (contextInfo.IsCurlyBrace)
+            if (contextInfo.IsStlEntity)
             {
                 return stlAnchor.HRef;
             }

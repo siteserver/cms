@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
@@ -29,7 +30,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
 
                 var nodeInfo = ChannelManager.GetChannelInfo(siteId, pageChannelId);
                 var templateInfo = TemplateManager.GetTemplateInfo(siteId, templateId);
-                var pageInfo = new PageInfo(nodeInfo.Id, 0, siteInfo, templateInfo)
+                var pageInfo = new PageInfo(nodeInfo.Id, 0, siteInfo, templateInfo, new Dictionary<string, object>())
                 {
                     UserInfo = request.UserInfo
                 };

@@ -114,7 +114,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             playUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, playUrl, pageInfo.IsLocal);
 
             // 如果是实体标签，则只返回数字
-            if (contextInfo.IsCurlyBrace)
+            if (contextInfo.IsStlEntity)
             {
                 return playUrl;
             }

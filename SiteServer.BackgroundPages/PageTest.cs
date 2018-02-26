@@ -1,7 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Packaging;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages
 {
@@ -11,6 +12,7 @@ namespace SiteServer.BackgroundPages
 
         public void Page_Load(object sender, EventArgs e)
         {
+            LtlContent.Text = PathUtils.GetFileName("web.config");
             //var list = PackageUtils.GetDependencyGroups("SS.Payment.1.1.5-beta");
             //foreach (var str in list)
             //{

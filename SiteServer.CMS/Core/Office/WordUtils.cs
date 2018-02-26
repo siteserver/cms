@@ -65,17 +65,15 @@ namespace SiteServer.CMS.Core.Office
                     var imageFileNameArrayList = RegexUtils.GetOriginalImageSrcs(parsedContent);
                     if (imageFileNameArrayList != null && imageFileNameArrayList.Count > 0)
                     {
-                        var now = DateTime.Now;
-                        foreach (string imageFileName in imageFileNameArrayList)
+                        foreach (var imageFileName in imageFileNameArrayList)
                         {
-                            now = now.AddMilliseconds(10);
                             var imageFilePath = PathUtils.GetTemporaryFilesPath(imageFileName);
                             var fileExtension = PathUtils.GetExtension(imageFilePath);
                             var uploadDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, fileExtension);
                             var uploadDirectoryUrl = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, uploadDirectoryPath, true);
                             if (!FileUtils.IsFileExists(imageFilePath)) continue;
 
-                            var uploadFileName = PathUtility.GetUploadFileName(siteInfo, imageFilePath, now);
+                            var uploadFileName = PathUtility.GetUploadFileName(siteInfo, imageFilePath);
                             var destFilePath = PathUtils.Combine(uploadDirectoryPath, uploadFileName);
                             FileUtils.MoveFile(imageFilePath, destFilePath, false);
                             parsedContent = parsedContent.Replace(imageFileName, PageUtils.Combine(uploadDirectoryUrl, uploadFileName));

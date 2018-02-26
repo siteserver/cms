@@ -19,7 +19,7 @@ namespace SiteServer.CMS.StlParser.Utility
         public static string ParsePreviewContent(SiteInfo siteInfo, string content)
         {
             var templateInfo = new TemplateInfo();
-            var pageInfo = new PageInfo(siteInfo.Id, 0, siteInfo, templateInfo);
+            var pageInfo = new PageInfo(siteInfo.Id, 0, siteInfo, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo);
 
             var parsedBuilder = new StringBuilder(content);
@@ -48,7 +48,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
             var builder = new StringBuilder(template);
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var pageInfo = new PageInfo(channelId, contentId, siteInfo, null);
+            var pageInfo = new PageInfo(channelId, contentId, siteInfo, null, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo);
             ParseTemplateContent(builder, pageInfo, contextInfo);
             return builder.ToString();
@@ -83,7 +83,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 Id = context.TemplateId,
                 TemplateType = context.TemplateType
             };
-            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, siteInfo, templateInfo);
+            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, siteInfo, templateInfo, context.StlItems);
             var contextInfo = new ContextInfo(pageInfo);
             ParseInnerContent(builder, pageInfo, contextInfo);
             return builder.ToString();
