@@ -45,6 +45,7 @@ function getDependencies() {
     str += '<dependency id="' + id + '" version="' + version + '" />';
   }
   str = '<dependencies>' + str + '</dependencies>';
+  return str;
 }
 
 function build(beta) {
