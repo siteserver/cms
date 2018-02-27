@@ -204,19 +204,13 @@ namespace SiteServer.CMS.Packaging
             return true;
         }
 
-        public static PackageMetadata GetPackageMetadataFromPlugins(string directoryName, out string dllDirectoryPath, out string errorMessage)
+        public static PackageMetadata GetPackageMetadataFromPlugins(string directoryName, out string errorMessage)
         {
-            dllDirectoryPath = string.Empty;
+            
             var nuspecPath = PathUtils.GetPluginNuspecPath(directoryName);
             if (!File.Exists(nuspecPath))
             {
                 errorMessage = $"插件配置文件 {directoryName}.nuspec 不存在";
-                return null;
-            }
-            dllDirectoryPath = PathUtils.GetPluginDllDirectoryPath(directoryName);
-            if (string.IsNullOrEmpty(dllDirectoryPath))
-            {
-                errorMessage = $"插件可执行文件 {directoryName}.dll 不存在";
                 return null;
             }
 
@@ -231,7 +225,7 @@ namespace SiteServer.CMS.Packaging
                 return null;
             }
 
-            if (string.IsNullOrEmpty(metadata.Id))
+            if (string.IsNullOrEmpty(metadata?.Id))
             {
                 errorMessage = "插件配置文件不正确";
                 return null;

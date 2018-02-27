@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if(!IsPostBack)
             {
-                VerifySitePermissions(ConfigManager.Permissions.WebSite.ContentTrash);
+                VerifySitePermissions(ConfigManager.Permissions.WebSite.Content);
 
                 if (Body.IsQueryExists("IsDeleteAll"))
                 {

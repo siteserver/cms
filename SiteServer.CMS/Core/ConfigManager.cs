@@ -35,7 +35,7 @@ namespace SiteServer.CMS.Core
             {
                 private WebSite() { }
 
-                public const string ContentTrash = "cms_contentTrash";                  //内容回收站
+                public const string Content = "cms_content";                            //信息管理
                 public const string Template = "cms_template";                          //显示管理
                 public const string Configration = "cms_configration";                  //设置管理
                 public const string Create = "cms_create";                              //生成管理

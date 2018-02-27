@@ -18,25 +18,27 @@
                 <li class="nav-item" v-bind:class="{ active: pageType == 1 }">
                   <a class="nav-link" href="javascript:;" @click="pageType = 1">
                     已启用
-                    <span class="badge badge-secondary" v-bind:class="{ 'badge-light': pageType == 1 }">{{ countEnabled }}</span>
+                    <span class="badge badge-secondary" v-bind:class="{ 'badge-light': pageType == 1 }">{{ enabledPackages.length }}</span>
                   </a>
                 </li>
                 <li class="nav-item" v-bind:class="{ active: pageType == 2 }">
                   <a class="nav-link" href="javascript:;" @click="pageType = 2">
                     已禁用
-                    <span class="badge badge-secondary" v-bind:class="{ 'badge-light': pageType == 2 }">{{ countDisabled }}</span>
+                    <span class="badge badge-secondary" v-bind:class="{ 'badge-light': pageType == 2 }">{{ disabledPackages.length }}</span>
                   </a>
                 </li>
-                <li class="nav-item" v-bind:class="{ active: pageType == 3 }" v-bind:style="{ display: countError > 0 ? '' : 'none' }" style="display: none">
+                <li class="nav-item" v-bind:class="{ active: pageType == 3 }" v-bind:style="{ display: errorPackages.length > 0 ? '' : 'none' }"
+                  style="display: none">
                   <a class="nav-link" href="javascript:;" @click="pageType = 3">
                     运行错误
-                    <span class="badge badge-danger" v-bind:style="{ color: (pageType == 3 ? '#fff' : '') }">{{ countError }}</span>
+                    <span class="badge badge-danger" v-bind:style="{ color: (pageType == 3 ? '#fff' : '') }">{{ errorPackages.length }}</span>
                   </a>
                 </li>
-                <li class="nav-item" v-bind:class="{ active: pageType == 4 }" v-bind:style="{ display: countUpdate > 0 ? '' : 'none' }" style="display: none">
+                <li class="nav-item" v-bind:class="{ active: pageType == 4 }" v-bind:style="{ display: updatePackages.length > 0 ? '' : 'none' }"
+                  style="display: none">
                   <a class="nav-link" href="javascript:;" @click="pageType = 4">
                     发现新版本
-                    <span class="badge badge-warning" v-bind:style="{ color: (pageType == 4 ? '#fff' : '') }">{{ countUpdate }}</span>
+                    <span class="badge badge-warning" v-bind:style="{ color: (pageType == 4 ? '#fff' : '') }">{{ updatePackages.length }}</span>
                   </a>
                 </li>
               </ul>
@@ -68,36 +70,34 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <asp:Repeater ID="RptEnabled" runat="server">
-                      <itemtemplate>
-                        <tr>
-                          <td class="text-center align-middle text-nowrap">
-                            <asp:Literal ID="ltlLogo" runat="server"></asp:Literal>
-                          </td>
-                          <td class="align-middle text-nowrap">
-                            <asp:Literal ID="ltlPluginId" runat="server"></asp:Literal>
-                          </td>
-                          <td class="align-middle text-nowrap">
-                            <asp:Literal ID="ltlPluginName" runat="server"></asp:Literal>
-                          </td>
-                          <td class="align-middle text-nowrap">
-                            <asp:Literal ID="ltlVersion" runat="server"></asp:Literal>
-                          </td>
-                          <td class="align-middle text-nowrap">
-                            <asp:Literal ID="ltlOwners" runat="server"></asp:Literal>
-                          </td>
-                          <td class="align-middle">
-                            <asp:Literal ID="ltlDescription" runat="server"></asp:Literal>
-                          </td>
-                          <td class="text-center align-middle text-nowrap">
-                            <asp:Literal ID="ltlInitTime" runat="server"></asp:Literal>
-                          </td>
-                          <td class="text-center align-middle text-nowrap">
-                            <asp:Literal ID="ltlCmd" runat="server"></asp:Literal>
-                          </td>
-                        </tr>
-                      </itemtemplate>
-                    </asp:Repeater>
+                    <tr v-for="package in enabledPackages">
+                      <td class="text-center text-nowrap">
+                        <img v-bind:src="package.metadata.iconUrl" width="48" height="48">
+                      </td>
+                      <td class="text-nowrap">
+                        <a v-bind:href="'pageview.aspx?pluginId=' + package.id + '&returnUrl=pageManagement.aspx'">{{ package.id }}</a>
+                      </td>
+                      <td class="text-nowrap">
+                        {{ package.metadata.title }}
+                      </td>
+                      <td class="text-nowrap">
+                        {{ package.metadata.version }}
+                      </td>
+                      <td class="text-nowrap">
+                        {{ package.metadata.owners }}
+                      </td>
+                      <td>
+                        {{ package.metadata.description }}
+                      </td>
+                      <td class="text-center text-nowrap">
+                        {{ package.initTime }}毫秒
+                      </td>
+                      <td class="text-center text-nowrap">
+                        <a href="javascript:;" @click="enablePackage(package)">{{ package.isDisabled ? '启用' : '禁用' }}</a>
+                        &nbsp;&nbsp;
+                        <a href="javascript:;" @click="deletePackage(package)">删除插件</a>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
 
@@ -122,36 +122,34 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <asp:Repeater ID="RptDisabled" runat="server">
-                      <itemtemplate>
-                        <tr>
-                          <td class="text-center align-middle text-nowrap">
-                            <asp:Literal ID="ltlLogo" runat="server"></asp:Literal>
-                          </td>
-                          <td class="align-middle text-nowrap">
-                            <asp:Literal ID="ltlPluginId" runat="server"></asp:Literal>
-                          </td>
-                          <td class="align-middle text-nowrap">
-                            <asp:Literal ID="ltlPluginName" runat="server"></asp:Literal>
-                          </td>
-                          <td class="align-middle text-nowrap">
-                            <asp:Literal ID="ltlVersion" runat="server"></asp:Literal>
-                          </td>
-                          <td class="align-middle text-nowrap">
-                            <asp:Literal ID="ltlOwners" runat="server"></asp:Literal>
-                          </td>
-                          <td class="align-middle">
-                            <asp:Literal ID="ltlDescription" runat="server"></asp:Literal>
-                          </td>
-                          <td class="text-center align-middle text-nowrap">
-                            <asp:Literal ID="ltlInitTime" runat="server"></asp:Literal>
-                          </td>
-                          <td class="text-center align-middle text-nowrap">
-                            <asp:Literal ID="ltlCmd" runat="server"></asp:Literal>
-                          </td>
-                        </tr>
-                      </itemtemplate>
-                    </asp:Repeater>
+                    <tr v-for="package in disabledPackages">
+                      <td class="text-center text-nowrap">
+                        <img v-bind:src="package.metadata.iconUrl" width="48" height="48">
+                      </td>
+                      <td class="text-nowrap">
+                        <a v-bind:href="'pageview.aspx?pluginId=' + package.id + '&returnUrl=pageManagement.aspx'">{{ package.id }}</a>
+                      </td>
+                      <td class="text-nowrap">
+                        {{ package.metadata.title }}
+                      </td>
+                      <td class="text-nowrap">
+                        {{ package.metadata.version }}
+                      </td>
+                      <td class="text-nowrap">
+                        {{ package.metadata.owners }}
+                      </td>
+                      <td>
+                        {{ package.metadata.description }}
+                      </td>
+                      <td class="text-center text-nowrap">
+                        {{ package.initTime }}毫秒
+                      </td>
+                      <td class="text-center text-nowrap">
+                        <a href="javascript:;" @click="enablePackage(package)">{{ package.isDisabled ? '启用' : '禁用' }}</a>
+                        &nbsp;&nbsp;
+                        <a href="javascript:;" @click="deletePackage(package)">删除插件</a>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
 
@@ -171,21 +169,17 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <asp:Repeater ID="RptError" runat="server">
-                      <itemtemplate>
-                        <tr>
-                          <td>
-                            <asp:Literal ID="ltlPluginId" runat="server"></asp:Literal>
-                          </td>
-                          <td>
-                            <asp:Literal ID="ltlErrorMessage" runat="server"></asp:Literal>
-                          </td>
-                          <td class="text-center">
-                            <asp:Literal ID="ltlCmd" runat="server"></asp:Literal>
-                          </td>
-                        </tr>
-                      </itemtemplate>
-                    </asp:Repeater>
+                    <tr v-for="package in errorPackages">
+                      <td class="text-nowrap">
+                        <a v-bind:href="'pageview.aspx?pluginId=' + package.id + '&returnUrl=pageManagement.aspx'">{{ package.id }}</a>
+                      </td>
+                      <td class="text-nowrap">
+                        {{ package.errorMessage }}
+                      </td>
+                      <td class="text-center text-nowrap">
+                        <a href="javascript:;" @click="deletePackage(package)">删除插件</a>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
 
@@ -205,45 +199,47 @@
                   <table class="table tablesaw table-hover m-0">
                     <thead>
                       <tr class="thead">
+                        <th class="text-nowrap">LOGO</th>
                         <th class="text-nowrap">插件Id</th>
                         <th class="text-nowrap">插件名称</th>
                         <th class="text-nowrap">已安装版本</th>
                         <th class="text-nowrap">新版本</th>
                         <th>更新说明</th>
                         <th class="text-center text-nowrap">发布时间</th>
+                        <th class="text-center text-nowrap"></th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="package in packages">
-                        <td class="text-nowrap">
-                          {{ package.id }}
+                      <tr v-for="package in updatePackages">
+                        <td class="text-center text-nowrap">
+                          <img v-bind:src="package.updatePackage.iconUrl" width="48" height="48">
                         </td>
                         <td class="text-nowrap">
-                          {{ package.title }}
+                          <a v-bind:href="'pageview.aspx?pluginId=' + package.id + '&returnUrl=pageManagement.aspx'">{{ package.id }}</a>
                         </td>
                         <td class="text-nowrap">
-                          {{ package.installedVersion }}
+                          {{ package.updatePackage.title }}
                         </td>
                         <td class="text-nowrap">
-                          {{ package.version }}
+                          {{ package.metadata ? package.metadata.version : '' }}
+                        </td>
+                        <td class="text-nowrap">
+                          {{ package.updatePackage.version }}
                         </td>
                         <td>
-                          {{ package.releaseNotes }}
+                          {{ package.updatePackage.releaseNotes }}
                         </td>
                         <td class="text-center text-nowrap">
-                          {{ package.published }}
+                          {{ package.updatePackage.published }}
+                        </td>
+                        <td class="text-center text-nowrap">
+                          <a v-bind:href="'pageInstall.aspx?type=update&packageId=' + package.id" class="btn btn-warning btn-md">升级插件</a>
                         </td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
               </div>
-            </div>
-
-            <hr />
-
-            <div class="text-center">
-              <a href="pageUpdate.aspx" class="btn btn-primary btn-md">升级插件</a>
             </div>
 
           </div>
@@ -263,15 +259,29 @@
       var version = '<%=Version%>';
 
       var data = {
-        pageType: <%=PageType%>,
-        countEnabled: <%=CountEnabled%>,
-        countDisabled: <%=CountDisabled%>,
-        countError: <%=CountError%>,
-        countUpdate: 0,
+        pageType: 1,
         isGetVersions: false,
-        packages: <%=Packages%>,
-        packageIds: '<%=PackageIds%>'
+        allPackages: <%=Packages%>,
+        enabledPackages: [],
+        disabledPackages: [],
+        errorPackages: [],
+        updatePackages: [],
+        packageIds: '<%=PackageIds%>',
+        referencePackageIds: []
       };
+
+      for (var i = 0; i < data.allPackages.length; i++) {
+        var package = data.allPackages[i];
+        if (package.isRunnable && package.metadata) {
+          if (package.isDisabled) {
+            data.disabledPackages.push(package);
+          } else {
+            data.enabledPackages.push(package);
+          }
+        } else {
+          data.errorPackages.push(package);
+        }
+      }
 
       var $vue = new Vue({
         el: '#main',
@@ -283,27 +293,102 @@
             versionApi.get({
               isNightly: isNightly,
               version: version,
-              packageIds: this.packageIds
+              $filter: "id in '" + this.packageIds + "'"
             }, function (err, res) {
               if (!err && res) {
-                var packages = [];
                 for (var i = 0; i < res.length; i++) {
                   var package = res[i];
-                  var installedPackage = $.grep($this.packages, function (e) {
+
+                  for (var j = 0; j < package.pluginReferences.length; j++) {
+                    var reference = package.pluginReferences[j];
+                    var installedPackages = $.grep($this.allPackages, function (e) {
+                      return e.id == reference.id;
+                    });
+                    if (installedPackages.length > 0) {
+                      $this.referencePackageIds.push(reference.id);
+                    }
+                  }
+
+                  var installedPackages = $.grep($this.allPackages, function (e) {
                     return e.id == package.id;
                   });
-                  if (installedPackage.length == 1) {
-                    package.installedVersion = installedPackage[0].version;
-                    if (compareversion(package.installedVersion, package.version) == -1) {
-                      packages.push(package);
-                      $this.countUpdate++;
+                  if (installedPackages.length == 1) {
+                    var installedPackage = installedPackages[0];
+                    installedPackage.updatePackage = package;
+
+                    if (installedPackage.metadata && installedPackage.metadata.version) {
+                      if (compareversion(installedPackage.metadata.version, package.version) == -1) {
+                        $this.updatePackages.push(installedPackage);
+                      }
+                    } else {
+                      $this.updatePackages.push(installedPackage);
                     }
                   }
                 }
-                $this.packages = packages;
                 $this.isGetVersions = true;
               }
-            }, 'packages/actions/list');
+            }, 'packages');
+          },
+          enablePackage: function (package) {
+            var text = package.isDisabled ? '启用' : '禁用';
+            var isReference = this.referencePackageIds.indexOf(package.id) !== -1;
+            if (isReference) {
+              return swal("无法" + text, "存在其他插件依赖此插件，需要删除依赖插件后才能进行" + text + "操作", "error");
+            }
+            swal({
+                title: text + '插件',
+                text: '此操作将会禁用“' + package.id + '”，确认吗？',
+                icon: 'warning',
+                buttons: {
+                  cancel: {
+                    text: '取 消',
+                    visible: true,
+                    className: 'btn'
+                  },
+                  confirm: {
+                    text: package.isDisabled ? '启 用' : '禁 用',
+                    visible: true,
+                    className: 'btn btn-danger'
+                  }
+                }
+              })
+              .then(function (isConfirm) {
+                if (isConfirm) {
+                  if (package.isDisabled) {
+                    location.href = 'pageManagement.aspx?enable=True&pluginId=' + package.id;
+                  } else {
+                    location.href = 'pageManagement.aspx?disable=True&pluginId=' + package.id;
+                  }
+                }
+              });
+          },
+          deletePackage: function (package) {
+            var isReference = this.referencePackageIds.indexOf(package.id) !== -1;
+            if (isReference) {
+              return swal("无法删除", "存在其他插件依赖此插件，需要删除依赖插件后才能进行删除操作", "error");
+            }
+            swal({
+                title: '删除插件',
+                text: '此操作将会删除“' + package.id + '”，确认吗？',
+                icon: 'warning',
+                buttons: {
+                  cancel: {
+                    text: '取 消',
+                    visible: true,
+                    className: 'btn'
+                  },
+                  confirm: {
+                    text: '确认删除',
+                    visible: true,
+                    className: 'btn btn-danger'
+                  }
+                }
+              })
+              .then(function (isConfirm) {
+                if (isConfirm) {
+                  location.href = 'pageManagement.aspx?delete=True&pluginId=' + package.id;
+                }
+              });
           }
         }
       });

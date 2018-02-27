@@ -132,12 +132,7 @@ namespace SiteServer.BackgroundPages
                     return;
                 }
 
-                LtlTopMenus.Text = GetTopMenuSitesHtml();
-                LtlTopMenus.Text += GetTopMenuLinksHtml();
-                if (_permissions.IsConsoleAdministrator || _permissions.PermissionList.Count > 0)
-                {
-                    LtlTopMenus.Text += GetTopMenusHtml();
-                }
+                LtlTopMenus.Text = GetTopMenuSitesHtml() + GetTopMenuLinksHtml() + GetTopMenusHtml();
 
                 PhSite.Visible = true;
 

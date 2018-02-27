@@ -67,7 +67,7 @@
               <label class="col-form-label">站点权限设置
                 <small class="form-text text-muted">
                   点击网站进入站点权限设置界面
-                  <span class="bg-secondary" style="color: #fff; padding: 5px;">无权管理此网站</span>
+                  <span class="bg-light" style="padding: 5px;">无权管理此网站</span>
                   <span class="bg-primary" style="color: #fff; padding: 5px;">有权管理此网站</span>
                 </small>
               </label>

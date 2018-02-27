@@ -111,21 +111,21 @@ namespace SiteServer.CMS.StlParser
 <!-- {pageInfo.TemplateInfo.RelatedFileName}({TemplateTypeUtils.GetText(pageInfo.TemplateInfo.TemplateType)}) -->");
                 }
 
-                var headScripts = StlParserManager.GetPageInfoHeadScript(pageInfo, contextInfo);
-                if (!string.IsNullOrEmpty(headScripts))
+                var headCodesHtml = pageInfo.HeadCodesHtml;
+                if (!string.IsNullOrEmpty(headCodesHtml))
                 {
                     if (contentBuilder.ToString().IndexOf("</head>", StringComparison.Ordinal) != -1 || contentBuilder.ToString().IndexOf("</HEAD>", StringComparison.Ordinal) != -1)
                     {
-                        StringUtils.InsertBefore(new[] { "</head>", "</HEAD>" }, contentBuilder, headScripts);
+                        StringUtils.InsertBefore(new[] { "</head>", "</HEAD>" }, contentBuilder, headCodesHtml);
                     }
                     else
                     {
-                        contentBuilder.Insert(0, headScripts);
+                        contentBuilder.Insert(0, headCodesHtml);
                     }
                 }
 
-                var afterBodyScripts = StlParserManager.GetPageBodyCodes(pageInfo);
-                if (!string.IsNullOrEmpty(afterBodyScripts))
+                var bodyCodesHtml = pageInfo.BodyCodesHtml;
+                if (!string.IsNullOrEmpty(bodyCodesHtml))
                 {
                     if (contentBuilder.ToString().IndexOf("<body", StringComparison.Ordinal) != -1 || contentBuilder.ToString().IndexOf("<BODY", StringComparison.Ordinal) != -1)
                     {
@@ -135,26 +135,18 @@ namespace SiteServer.CMS.StlParser
                             index = contentBuilder.ToString().IndexOf("<BODY", StringComparison.Ordinal);
                         }
                         index = contentBuilder.ToString().IndexOf(">", index, StringComparison.Ordinal);
-                        contentBuilder.Insert(index + 1, StringUtils.Constants.ReturnAndNewline + afterBodyScripts + StringUtils.Constants.ReturnAndNewline);
+                        contentBuilder.Insert(index + 1, StringUtils.Constants.ReturnAndNewline + bodyCodesHtml + StringUtils.Constants.ReturnAndNewline);
                     }
                     else
                     {
-                        contentBuilder.Insert(0, afterBodyScripts);
+                        contentBuilder.Insert(0, bodyCodesHtml);
                     }
                 }
 
-                if (pageInfo.FootCodes.Count > 0)
+                var footCodesHtml = pageInfo.FootCodesHtml;
+                if (!string.IsNullOrEmpty(footCodesHtml))
                 {
-                    var builder = new StringBuilder();
-                    foreach (var key in pageInfo.FootCodes.Keys)
-                    {
-                        builder.Append(pageInfo.FootCodes[key]);
-                    }
-                    builder.Append(StringUtils.Constants.ReturnAndNewline);
-
-                    //contentBuilder.Append(endScriptBuilder.ToString());
-                    //StringUtils.InsertBeforeOrAppend(new string[] { "</body>", "</BODY>" }, contentBuilder, endScriptBuilder.ToString());
-                    StringUtils.InsertAfterOrAppend(new[] { "</html>", "</html>" }, contentBuilder, builder.ToString());
+                    contentBuilder.Append(footCodesHtml + StringUtils.Constants.ReturnAndNewline);
                 }
             }
 

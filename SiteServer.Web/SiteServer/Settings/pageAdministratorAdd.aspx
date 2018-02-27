@@ -40,11 +40,6 @@
           <p class="text-muted font-13 m-b-25"></p>
 
           <div class="form-group">
-            <label class="col-form-label">所属部门</label>
-            <asp:DropDownList ID="DdlDepartmentId" class="form-control" runat="server"></asp:DropDownList>
-          </div>
-
-          <div class="form-group">
             <label class="col-form-label">账号
               <asp:RequiredFieldValidator ControlToValidate="TbUserName" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
               />
@@ -83,6 +78,11 @@
               <asp:TextBox TextMode="Password" ID="TbConfirmPassword" class="form-control" runat="server" />
             </div>
           </asp:PlaceHolder>
+
+          <div class="form-group">
+            <label class="col-form-label">所属部门</label>
+            <asp:DropDownList ID="DdlDepartmentId" class="form-control" runat="server"></asp:DropDownList>
+          </div>
 
           <div class="form-group">
             <label class="col-form-label">所在区域</label>

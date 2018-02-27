@@ -1,4 +1,5 @@
-﻿using SiteServer.CMS.Core;
+﻿using Newtonsoft.Json;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
 using SiteServer.Plugin;
 
@@ -17,6 +18,7 @@ namespace SiteServer.CMS.Plugin.Model
             {
                 Id = directoryName;
             }
+            IsRunnable = false;
             ErrorMessage = errorMessage;
         }
 
@@ -32,6 +34,7 @@ namespace SiteServer.CMS.Plugin.Model
             int taxis;
             DataProvider.PluginDao.SetIsDisabledAndTaxis(Id, out isDisabled, out taxis);
 
+            IsRunnable = plugin != null;
             IsDisabled = isDisabled;
             Taxis = taxis;
         }
@@ -40,13 +43,17 @@ namespace SiteServer.CMS.Plugin.Model
 
         public PackageMetadata Metadata { get; }
 
+        [JsonIgnore]
         public PluginBase Plugin { get; }
 
+        [JsonIgnore]
         public PluginService Service { get; }
 
         public long InitTime { get; }
 
         public string ErrorMessage { get; }
+
+        public bool IsRunnable { get; set; }
 
         public bool IsDisabled { get; set; }
 

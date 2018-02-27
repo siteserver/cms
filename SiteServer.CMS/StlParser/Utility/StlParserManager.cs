@@ -16,22 +16,6 @@ namespace SiteServer.CMS.StlParser.Utility
         {
         }
 
-        public static string ParsePreviewContent(SiteInfo siteInfo, string content)
-        {
-            var templateInfo = new TemplateInfo();
-            var pageInfo = new PageInfo(siteInfo.Id, 0, siteInfo, templateInfo, new Dictionary<string, object>());
-            var contextInfo = new ContextInfo(pageInfo);
-
-            var parsedBuilder = new StringBuilder(content);
-
-            StlElementParser.ReplaceStlElements(parsedBuilder, pageInfo, contextInfo);
-            StlEntityParser.ReplaceStlEntities(parsedBuilder, pageInfo, contextInfo);
-
-            var pageAfterBodyScripts = GetPageBodyCodes(pageInfo);
-
-            return pageAfterBodyScripts + parsedBuilder;
-        }
-
         public static void ParseTemplateContent(StringBuilder parsedBuilder, PageInfo pageInfo, ContextInfo contextInfo)
         {
             var isInnerElement = contextInfo.IsInnerElement;
@@ -42,16 +26,22 @@ namespace SiteServer.CMS.StlParser.Utility
             contextInfo.IsInnerElement = isInnerElement;
         }
 
-        public static string ParseTemplateContent(string template, int siteId, int channelId, int contentId)
+        public static string ParseTemplatePreview(SiteInfo siteInfo, TemplateType templateType, int channelId, int contentId, string template)
         {
             if (string.IsNullOrEmpty(template)) return string.Empty;
 
-            var builder = new StringBuilder(template);
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var pageInfo = new PageInfo(channelId, contentId, siteInfo, null, new Dictionary<string, object>());
+            var templateInfo = new TemplateInfo
+            {
+                TemplateType = templateType
+            };
+            var pageInfo = new PageInfo(channelId, contentId, siteInfo, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo);
-            ParseTemplateContent(builder, pageInfo, contextInfo);
-            return builder.ToString();
+
+            var parsedBuilder = new StringBuilder(template);
+            
+            ParseTemplateContent(parsedBuilder, pageInfo, contextInfo);
+
+            return pageInfo.HeadCodesHtml + pageInfo.BodyCodesHtml + parsedBuilder + pageInfo.FootCodesHtml;
         }
 
         public static void ParseInnerContent(StringBuilder builder, PageInfo pageInfo, ContextInfo contextInfo)
@@ -180,37 +170,6 @@ namespace SiteServer.CMS.StlParser.Utility
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
             }
-        }
-
-        public static string GetPageInfoHeadScript(PageInfo pageInfo, ContextInfo contextInfo)
-        {
-            var builder = new StringBuilder();
-
-            builder.Append(
-                $@"<script>var $pageInfo = {{siteId : {pageInfo.SiteId}, channelId : {pageInfo.PageChannelId}, contentId : {pageInfo.PageContentId}, siteUrl : ""{pageInfo.SiteInfo.Additional.WebUrl.TrimEnd('/')}"", currentUrl : ""{StlUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal)}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{pageInfo.ApiUrl.TrimEnd('/')}""}};</script>").AppendLine();
-
-            foreach (var key in pageInfo.HeadCodes.Keys)
-            {
-                var js = pageInfo.HeadCodes[key];
-                if (!string.IsNullOrEmpty(js))
-                {
-                    builder.Append(js).AppendLine();
-                }
-            }
-
-            return builder.ToString();
-        }
-
-        public static string GetPageBodyCodes(PageInfo pageInfo)
-        {
-            var scriptBuilder = new StringBuilder();
-
-            foreach (var key in pageInfo.BodyCodes.Keys)
-            {
-                scriptBuilder.Append(pageInfo.BodyCodes[key]);
-            }
-
-            return scriptBuilder.ToString();
         }
     }
 }

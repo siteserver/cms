@@ -40,28 +40,11 @@ namespace SiteServer.BackgroundPages.Plugins
 
             if (Body.IsQueryExists("install"))
             {
-                PageUtils.Redirect(PageInstall.GetRedirectUrl(_pluginId));
-                //var version = Body.GetQueryString("version");
-
-                //string errorMessage;
-
-                //PackageUtils.DownloadPackage(_pluginId, version);
-
-                //var idWithVersion = $"{_pluginId}.{version}";
-                //if (!PackageUtils.UpdatePackage(idWithVersion, false, out errorMessage))
-                //{
-                //    FailMessage(errorMessage);
-                //    return;
-                //}
-
-                //PluginManager.ClearCache();
-                //Body.AddAdminLog("安装插件", $"插件:{_pluginId}");
-
-                //AddScript(AlertUtils.Success("插件安装成功", "插件安装成功，系统需要重载页面", "重新载入", "window.top.location.reload();"));
+                PageUtils.Redirect(PageInstall.GetRedirectUrl(false, _pluginId));
             }
             else if (Body.IsQueryExists("update"))
             {
-                PageUtils.Redirect(PageUpdate.GetRedirectUrl());
+                PageUtils.Redirect(PageInstall.GetRedirectUrl(true, _pluginId));
             }
 
             if (Page.IsPostBack) return;

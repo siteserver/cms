@@ -13,23 +13,23 @@
 
         <div class="card-box">
           <h4 class="header-title m-t-0">
-            插件安装向导
+            插件{{ type }}向导
           </h4>
           <p class="text-muted m-b-25 font-13">
-            欢迎来到插件安装向导！
+            欢迎来到插件{{ type }}向导！
           </p>
 
           <ctrl:alerts runat="server" />
 
           <ul class="nav nav-pills nav-fill bg-muted m-b-20">
             <li class="nav-item" v-bind:class="{ active: step == 1 }">
-              <a class="nav-link" href="javascript:;">下载安装包</a>
+              <a class="nav-link" href="javascript:;">下载{{ type }}包</a>
             </li>
             <li class="nav-item" v-bind:class="{ active: step == 2 }">
-              <a class="nav-link" href="javascript:;">安装插件</a>
+              <a class="nav-link" href="javascript:;">{{ type }}插件</a>
             </li>
             <li class="nav-item" v-bind:class="{ active: step == 3 }">
-              <a class="nav-link" href="javascript:;">安装完成</a>
+              <a class="nav-link" href="javascript:;">{{ type }}完成</a>
             </li>
           </ul>
 
@@ -42,8 +42,8 @@
 
             <div class="panel panel-border panel-primary">
               <div class="panel-heading">
-                <h3 class="panel-title">下载安装包</h3>
-                <p class="panel-sub-title font-13 text-muted">系统正在下载插件安装包，可能需要几分钟，请稍后...</p>
+                <h3 class="panel-title">下载{{ type }}包</h3>
+                <p class="panel-sub-title font-13 text-muted">系统正在下载插件{{ type }}包，可能需要几分钟，请稍后...</p>
               </div>
               <div class="panel-body">
 
@@ -51,7 +51,7 @@
                   <img src="../pic/animated_loading.gif" />
                   <br />
                   <br />
-                  <p class="lead">正在检查安装包版本，请稍后...</p>
+                  <p class="lead">正在检查{{ type }}包版本，请稍后...</p>
                 </div>
 
                 <div class="table-responsive" v-bind:style="{ display: isGetVersions ? '' : 'none' }">
@@ -111,8 +111,8 @@
 
             <div class="panel panel-border panel-primary">
               <div class="panel-heading">
-                <h3 class="panel-title">安装插件</h3>
-                <p class="panel-sub-title font-13 text-muted">系统正在安装插件，请稍后...</p>
+                <h3 class="panel-title">{{ type }}插件</h3>
+                <p class="panel-sub-title font-13 text-muted">系统正在{{ type }}插件，请稍后...</p>
               </div>
               <div class="panel-body">
 
@@ -133,13 +133,13 @@
                       <tr v-for="package in packages">
                         <td class="text-center text-nowrap font-13 text-muted">
                           <div class="text-success" v-bind:style="{ display: updatedIds.indexOf(package.id) !== -1 && updatingId != package.id ? '' : 'none' }">
-                            安装完成
+                            {{ type }}完成
                           </div>
                           <div v-bind:style="{ display:updatingId == package.id ? '' : 'none' }">
-                            <img src="../pic/animated_loading.gif" />安装中...
+                            <img src="../pic/animated_loading.gif" />{{ type }}中...
                           </div>
                           <div v-bind:style="{ display: updatedIds.indexOf(package.id) == -1 && updatingId != package.id ? '' : 'none' }">
-                            等待安装
+                            等待{{ type }}
                           </div>
                         </td>
                         <td class="text-nowrap">
@@ -172,9 +172,9 @@
           <div v-bind:style="{ display: step == 3 ? '' : 'none' }">
 
             <div class="alert alert-success" role="alert">
-              <h4 class="alert-heading">安装完成！</h4>
+              <h4 class="alert-heading">{{ type }}完成！</h4>
               <p>
-                恭喜，您已经完成了插件的安装，页面将在3秒之后重新载入...
+                恭喜，您已经完成了插件的{{ type }}，页面将在3秒之后重新载入...
               </p>
             </div>
 
@@ -199,6 +199,7 @@
       var version = '<%=Version%>';
 
       var data = {
+        type: '<%=Type%>',
         step: 1,
         isGetVersions: false,
         packageId: '<%=PackageId%>',

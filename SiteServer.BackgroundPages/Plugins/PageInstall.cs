@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiteServer.CMS.Controllers.Sys.Packaging;
 using SiteServer.CMS.Core;
@@ -10,10 +9,16 @@ namespace SiteServer.BackgroundPages.Plugins
 {
     public class PageInstall : BasePage
     {
-        public static string GetRedirectUrl(string packageId)
+        public static string GetRedirectUrl(bool isUpdate, string packageId)
         {
-            return PageUtils.GetPluginsUrl(nameof(PageInstall), new NameValueCollection { { "packageId", packageId } });
+            return PageUtils.GetPluginsUrl(nameof(PageInstall), new NameValueCollection
+            {
+                { "type", isUpdate ? "update" : "install" },
+                { "packageId", packageId }
+            });
         }
+
+        public string Type => Body.GetQueryString("type") == "update" ? "升级" : "安装";
 
         public string AdminUrl => PageUtils.GetAdminDirectoryUrl(string.Empty);
 

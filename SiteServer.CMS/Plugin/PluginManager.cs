@@ -70,32 +70,35 @@ namespace SiteServer.CMS.Plugin
 
                 try
                 {
-                    string dllDirectoryPath;
-                    metadata = PackageUtils.GetPackageMetadataFromPlugins(directoryName, out dllDirectoryPath, out errorMessage);
-                    if (metadata != null)
+                    metadata = PackageUtils.GetPackageMetadataFromPlugins(directoryName, out errorMessage);
+
+                    var dllDirectoryPath = PathUtils.GetPluginDllDirectoryPath(directoryName);
+                    if (string.IsNullOrEmpty(dllDirectoryPath))
                     {
-                        //foreach (var filePath in DirectoryUtils.GetFilePaths(DirectoryUtils.GetDirectoryPath(metadata.ExecuteFilePath)))
-                        //{
-
-                        //    if (!StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(filePath), ".dll")) continue;
-                        //    var fileName = PathUtils.GetFileName(filePath);
-                        //    if (StringUtils.EqualsIgnoreCase(fileName, PathUtils.GetFileName(metadata.ExecuteFilePath))) continue;
-                        //    if (FileUtils.IsFileExists(PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "Bin", fileName))) continue;
-                        //    Assembly.Load(File.ReadAllBytes(filePath));
-                        //}
-                        //var assembly = Assembly.Load(File.ReadAllBytes(metadata.ExecuteFilePath));
-
-                        //metadata.GetDependencyGroups()
-
-                        CopyDllsToBin(metadata.Id, dllDirectoryPath);
-                        
-                        //var assembly = Assembly.Load(File.ReadAllBytes(PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "Bin", PathUtils.GetFileName(metadata.ExecuteFilePath))));
-                        var assembly = Assembly.Load(metadata.Id);  // load the dll from bin directory
-
-                        var type = assembly.GetTypes().First(o => o.IsClass && !o.IsAbstract && o.IsSubclassOf(typeof(PluginBase)));
-
-                        return ActiveAndAdd(metadata, type);
+                        throw new Exception($"插件可执行文件 {directoryName}.dll 不存在");
                     }
+
+                    //foreach (var filePath in DirectoryUtils.GetFilePaths(DirectoryUtils.GetDirectoryPath(metadata.ExecuteFilePath)))
+                    //{
+
+                    //    if (!StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(filePath), ".dll")) continue;
+                    //    var fileName = PathUtils.GetFileName(filePath);
+                    //    if (StringUtils.EqualsIgnoreCase(fileName, PathUtils.GetFileName(metadata.ExecuteFilePath))) continue;
+                    //    if (FileUtils.IsFileExists(PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "Bin", fileName))) continue;
+                    //    Assembly.Load(File.ReadAllBytes(filePath));
+                    //}
+                    //var assembly = Assembly.Load(File.ReadAllBytes(metadata.ExecuteFilePath));
+
+                    //metadata.GetDependencyGroups()
+
+                    CopyDllsToBin(metadata.Id, dllDirectoryPath);
+
+                    //var assembly = Assembly.Load(File.ReadAllBytes(PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "Bin", PathUtils.GetFileName(metadata.ExecuteFilePath))));
+                    var assembly = Assembly.Load(metadata.Id);  // load the dll from bin directory
+
+                    var type = assembly.GetTypes().First(o => o.IsClass && !o.IsAbstract && o.IsSubclassOf(typeof(PluginBase)));
+
+                    return ActiveAndAdd(metadata, type);
                 }
                 catch (Exception ex)
                 {
@@ -220,15 +223,6 @@ namespace SiteServer.CMS.Plugin
             {
                 var dict = PluginManagerCache.GetPluginSortedList();
                 return dict.Values.Where(pluginInfo => pluginInfo.Plugin != null).ToList();
-            }
-        }
-
-        public static List<PluginInfo> PluginInfoListNotRunnable
-        {
-            get
-            {
-                var dict = PluginManagerCache.GetPluginSortedList();
-                return dict.Values.Where(pluginInfo => pluginInfo.Plugin == null).ToList();
             }
         }
 

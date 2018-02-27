@@ -52,15 +52,15 @@ namespace SiteServer.BackgroundPages.Settings
             foreach (var siteId in allSiteIdList)
             {
                 var psInfo = SiteManager.GetSiteInfo(siteId);
-                var className = "bg-secondary";
+                var className = "bg-light";
                 if (managedSiteIdList.Contains(siteId))
                 {
-                    className = "bg-primary";
+                    className = "bg-primary text-white";
                 }
 
                 var pageUrl = PageAdminPermissionAdd.GetRedirectUrl(siteId, Body.GetQueryString("RoleName"));
                 string content = $@"
-<div onclick=""location.href = '{pageUrl}'"" class=""card text-white {className} mb-3 ml-3 float-left"" style=""max-width: 18rem;cursor: pointer;"">
+<div onclick=""location.href = '{pageUrl}'"" class=""card {className} mb-3 ml-3 float-left"" style=""max-width: 18rem;cursor: pointer;"">
     <div class=""card-header"">{psInfo.SiteName}</div>
     <div class=""card-body"">
         <p class=""card-text"">文件夹：{psInfo.SiteDir}</p>

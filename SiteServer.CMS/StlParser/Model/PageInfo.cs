@@ -4,6 +4,8 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
+using System.Text;
+using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -364,6 +366,49 @@ wnd_frame.src=url;}}
                     $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.TwCn.Js)}"" charset=""{SiteFilesAssets.TwCn.Charset}"" type=""text/javascript""></script>";
             }
             return retval;
+        }
+
+        public string HeadCodesHtml
+        {
+            get
+            {
+                var builder = new StringBuilder();
+
+                builder.Append(
+                $@"<script>var $pageInfo = {{siteId : {SiteId}, channelId : {PageChannelId}, contentId : {PageContentId}, siteUrl : ""{SiteInfo.Additional.WebUrl.TrimEnd('/')}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{ApiUrl.TrimEnd('/')}""}};</script>").AppendLine();
+
+                foreach (var key in HeadCodes.Keys)
+                {
+                    builder.Append(HeadCodes[key]);
+                }
+                return builder.ToString();
+            }
+        }
+
+        public string BodyCodesHtml
+        {
+            get
+            {
+                var builder = new StringBuilder();
+                foreach (var key in BodyCodes.Keys)
+                {
+                    builder.Append(BodyCodes[key]);
+                }
+                return builder.ToString();
+            }   
+        }
+
+        public string FootCodesHtml
+        {
+            get
+            {
+                var builder = new StringBuilder();
+                foreach (var key in FootCodes.Keys)
+                {
+                    builder.Append(FootCodes[key]);
+                }
+                return builder.ToString();
+            }
         }
     }
 }

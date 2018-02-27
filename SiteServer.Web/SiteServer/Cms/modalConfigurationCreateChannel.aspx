@@ -29,7 +29,7 @@
         <hr />
 
         <div class="text-right mr-1">
-          <asp:Button class="btn btn-primary m-l-5" ID="BtnCheck" Text="审 核" OnClick="Submit_OnClick" runat="server" />
+          <asp:Button class="btn btn-primary m-l-5" ID="BtnCheck" Text="确 定" OnClick="Submit_OnClick" runat="server" />
           <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
         </div>
 

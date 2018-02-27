@@ -83,7 +83,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            TbCode.Text = LtlPreview.Text = StlParserManager.ParseTemplateContent(TbTemplate.Text, SiteId, channelId, contentId);
+            TbCode.Text = LtlPreview.Text = StlParserManager.ParseTemplatePreview(SiteInfo, templateType, channelId, contentId, TbTemplate.Text);
 
             LtlPreview.Text += "<script>$('#linkCode').click();</script>";
         }

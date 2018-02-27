@@ -455,9 +455,6 @@
     <Compile Include="Plugins\PageInstall.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Plugins\PageUpdate.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="PageDefault.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -501,9 +498,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Plugins\ModalManualInstall.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Plugins\ModalTaxis.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Plugins\PageAdd.cs">
