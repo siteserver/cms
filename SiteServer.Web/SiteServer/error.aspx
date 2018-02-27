@@ -14,7 +14,7 @@
     <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/responsive.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/ionicons.min.css" rel="stylesheet" type="text/css" />
-    <link href="images/siteserver_icon.png" rel="icon" type="image/png">
+    <link href="assets/icons/favicon.png" rel="icon" type="image/png">
     <script>
       var _rollbarConfig = {
           accessToken: "dbe9566872e941cf984f4525ba67622d",

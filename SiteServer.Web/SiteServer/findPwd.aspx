@@ -23,7 +23,7 @@
 			<div class="yunMain">
 				<div class="yunTop">
 					<a class="yunLogo" href="http://www.siteserver.cn">
-						<img src="pic/login/siteserver.png" />
+						<img src="assets/icons/logo.png" />
 					</a>
 				</div>
 				<div class="yunItmName">

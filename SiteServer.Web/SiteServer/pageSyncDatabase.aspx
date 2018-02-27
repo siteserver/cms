@@ -7,7 +7,7 @@
       <meta charset="utf-8">
       <title>SiteServer CMS 数据库升级向导</title>
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <link href="./images/siteserver_icon.png" rel="icon" type="image/png">
+      <link href="./assets/icons/favicon.png" rel="icon" type="image/png">
       <link href="./assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
       <link href="./assets/css/core.css" rel="stylesheet" type="text/css" />
       <link href="./assets/css/components.css" rel="stylesheet" type="text/css" />

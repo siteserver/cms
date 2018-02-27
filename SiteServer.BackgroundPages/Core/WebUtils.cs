@@ -142,13 +142,13 @@ namespace SiteServer.BackgroundPages.Core
             if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ContentAdd) && nodeInfo.Additional.IsContentAddable)
             {
                 builder.Append($@"
-<a href=""{GetContentAddAddUrl(siteInfo.Id, nodeInfo, pageUrl)}"" class=""btn btn-primary"">
+<a href=""{GetContentAddAddUrl(siteInfo.Id, nodeInfo, pageUrl)}"" class=""btn btn-light text-secondary"">
     <i class=""ion-plus""></i>
     添加
 </a>");
 
                 builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalUploadWord.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, StringUtils.ValueToUrl(pageUrl))}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalUploadWord.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, StringUtils.ValueToUrl(pageUrl))}"">
     导入Word
 </a>");
             }
@@ -156,7 +156,7 @@ namespace SiteServer.BackgroundPages.Core
             if (nodeInfo.ContentNum > 0 && AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ContentDelete))
             {
                 builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{PageContentDelete.GetRedirectClickStringForSingleChannel(siteInfo.Id, nodeInfo.Id, false, pageUrl)}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{PageContentDelete.GetRedirectClickStringForSingleChannel(siteInfo.Id, nodeInfo.Id, false, pageUrl)}"">
     <i class=""ion-trash-a""></i>
     删 除
 </a>");
@@ -167,12 +167,12 @@ namespace SiteServer.BackgroundPages.Core
                 if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ContentEdit))
                 {
                     builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalContentAttributes.GetOpenWindowString(siteInfo.Id, nodeInfo.Id)}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalContentAttributes.GetOpenWindowString(siteInfo.Id, nodeInfo.Id)}"">
     <i class=""ion-flag""></i>
     属性
 </a>");
                     builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalAddToGroup.GetOpenWindowStringToContent(siteInfo.Id, nodeInfo.Id)}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalAddToGroup.GetOpenWindowStringToContent(siteInfo.Id, nodeInfo.Id)}"">
     内容组
 </a>");
                 }
@@ -181,28 +181,28 @@ namespace SiteServer.BackgroundPages.Core
                     var redirectUrl = PageContentTranslate.GetRedirectUrl(siteInfo.Id, nodeInfo.Id, pageUrl);
                     var clickString = PageUtils.GetRedirectStringWithCheckBoxValue(redirectUrl, "contentIdCollection", "contentIdCollection", "请选择需要转移的内容！");
                     builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{clickString}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{clickString}"">
     转 移
 </a>");
                 }
                 if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ContentEdit))
                 {
                     builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalContentTaxis.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, pageUrl)}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalContentTaxis.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, pageUrl)}"">
     排 序
 </a>");
                 }
                 if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ContentCheck))
                 {
                     builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalContentCheck.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, pageUrl)}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalContentCheck.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, pageUrl)}"">
     审 核
 </a>");
                 }
                 if (AdminUtility.HasSitePermissions(administratorName, siteInfo.Id, ConfigManager.Permissions.WebSite.Create) || AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.CreatePage))
                 {
                     builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateContentsOneByOne(siteInfo.Id, nodeInfo.Id)}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateContentsOneByOne(siteInfo.Id, nodeInfo.Id)}"">
     <i class=""ion-wand""></i>
     生 成
 </a>");
@@ -212,7 +212,7 @@ namespace SiteServer.BackgroundPages.Core
             if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ChannelEdit))
             {
                 builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalSelectColumns.GetOpenWindowStringToContent(siteInfo.Id, nodeInfo.Id, true)}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalSelectColumns.GetOpenWindowStringToContent(siteInfo.Id, nodeInfo.Id, true)}"">
     <i class=""ion-ios-list-outline""></i>
     显示项
 </a>");
@@ -221,7 +221,7 @@ namespace SiteServer.BackgroundPages.Core
             if (nodeInfo.ContentNum > 0)
             {
                 builder.Append(@"
-<a href=""javascript:;;"" class=""btn btn-primary"" onClick=""$('#contentSearch').toggle(); return false"">
+<a href=""javascript:;;"" class=""btn btn-light text-secondary text-secondary"" onClick=""$('#contentSearch').toggle(); return false"">
     <i class=""ion-search""></i>
     查找
 </a>");

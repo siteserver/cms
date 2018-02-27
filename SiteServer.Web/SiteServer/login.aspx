@@ -16,7 +16,7 @@
       });
     </script>
     <link href="css/login.css" rel="stylesheet" type="text/css" />
-    <link href="images/siteserver_icon.png" rel="icon" type="image/png">
+    <link href="assets/icons/favicon.png" rel="icon" type="image/png">
   </head>
 
   <body class="yunBg">
@@ -24,7 +24,7 @@
       <div class="yunMain">
         <div class="yunTop">
           <a class="yunLogo" href="http://www.siteserver.cn">
-            <img src="pic/login/siteserver.png" />
+            <img src="assets/icons/logo.png" />
           </a>
         </div>
         <div class="yunItmName">

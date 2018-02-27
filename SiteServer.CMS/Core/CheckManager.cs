@@ -133,7 +133,7 @@ namespace SiteServer.CMS.Core
 
 	        public static string GetLevelName(int level, SiteInfo siteInfo)
 	        {
-	            var retval = String.Empty;
+	            var retval = string.Empty;
 	            if (level == CaoGao)
 	            {
 	                retval = "草稿";

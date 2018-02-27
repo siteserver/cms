@@ -26,7 +26,7 @@
             </div>
 
             <div class="btn-group ml-1">
-              <button type="button" class="btn btn-primary dropdown-toggle" onclick="$('#dropdown-more').toggle();return false;">
+              <button type="button" class="btn btn-light text-secondary dropdown-toggle" onclick="$('#dropdown-more').toggle();return false;">
                 更多
                 <span class="caret"></span>
               </button>

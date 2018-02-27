@@ -13,7 +13,7 @@
       <link href="assets/css/pages.css" rel="stylesheet" type="text/css" />
       <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
       <link href="assets/css/ionicons.min.css" rel="stylesheet" type="text/css" />
-      <link href="images/siteserver_icon.png" rel="icon" type="image/png">
+      <link href="assets/icons/favicon.png" rel="icon" type="image/png">
     </head>
 
     <body class="fixed-left widescreen">
@@ -22,8 +22,7 @@
           <div class="topbar-main">
             <div class="logo">
               <a href="http://www.siteserver.cn" target="_blank" class="logo">
-                <img src="images/siteserver.png" />
-                <!-- <img src="assets/icons/logo.png" /> -->
+                <img src="assets/icons/logo.png" />
               </a>
               <a href="javascript:;" class="toggle" id="top-toggle">
                 <i class="icon-arrow-left"></i>

@@ -118,7 +118,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var isChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
 
-            var contentInfoArrayListToCheck = new List<ContentInfo>();
+            var contentInfoListToCheck = new List<ContentInfo>();
             var idsDictionaryToCheck = new Dictionary<int, List<int>>();
             foreach (var channelId in _idsDictionary.Keys)
             {
@@ -136,7 +136,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         if (CheckManager.IsCheckable(SiteInfo, contentInfo.ChannelId, contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                         {
-                            contentInfoArrayListToCheck.Add(contentInfo);
+                            contentInfoListToCheck.Add(contentInfo);
                             contentIdListToCheck.Add(contentId);
                         }
 
@@ -155,7 +155,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            if (contentInfoArrayListToCheck.Count == 0)
+            if (contentInfoListToCheck.Count == 0)
             {
                 LayerUtils.CloseWithoutRefresh(Page, "alert('您的审核权限不足，无法审核所选内容！');");
             }

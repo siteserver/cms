@@ -32,13 +32,17 @@ namespace SiteServer.CMS.Model
             set { Set("PageSize", value.ToString()); }
         }
 
-        public bool IsCheckContentLevel {
-            get { return GetBool("IsCheckContentLevel", true); }
+        public bool IsCheckContentLevel
+        {
+            get { return GetBool("IsCheckContentLevel"); }
             set { Set("IsCheckContentLevel", value.ToString()); }
         }
 
         public int CheckContentLevel {
-            get { return GetInt("CheckContentLevel"); }
+            get
+            {
+                return IsCheckContentLevel ? GetInt("CheckContentLevel") : 1;
+            }
             set { Set("CheckContentLevel", value.ToString()); }
         }
 
