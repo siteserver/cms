@@ -46,6 +46,8 @@ namespace SiteServer.CMS.StlParser.Utility
 
         public static void ParseInnerContent(StringBuilder builder, PageInfo pageInfo, ContextInfo contextInfo)
         {
+            if (builder == null || builder.Length == 0) return;
+
             var isInnerElement = contextInfo.IsInnerElement;
             contextInfo.IsInnerElement = true;
             StlElementParser.ReplaceStlElements(builder, pageInfo, contextInfo);

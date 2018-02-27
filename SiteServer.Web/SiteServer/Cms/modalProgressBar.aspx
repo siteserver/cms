@@ -49,8 +49,8 @@
           <div id="theMeter">
             <div id="progressBarText" style="font-weight: bold; padding: 5px;">任务完成:
               <span id="prgressBarPercetage">0</span>%</div>
-            <div id="progressBarBox" style="width: 350px; height: 20px; border: 1px inset; background: #eee;">
-              <div id="progressBarBoxContent" style="width: 0; height: 20px; border-right: 1px solid #444; background: #00b19d;"></div>
+            <div id="progressBarBox" style="width: 350px; height: 20px; background: #eee;">
+              <div id="progressBarBoxContent" style="width: 0; height: 20px; background: #00b19d;"></div>
             </div>
           </div>
         </div>

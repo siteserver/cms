@@ -9,6 +9,7 @@ using SiteServer.Utils.ThirdParty.Sgml;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
@@ -581,6 +582,38 @@ stl: {stlContent}
             return $@"<{stlElementName} {TranslateUtils.ToAttributesString(attributes)}>
 {innerContent}
 </{stlElementName}>";
+        }
+
+        public static string GetStlCurrentUrl(SiteInfo siteInfo, int channelId, int contentId, IContentInfo contentInfo, TemplateType templateType, int templateId, bool isLocal)
+        {
+            var currentUrl = string.Empty;
+            if (templateType == TemplateType.IndexPageTemplate)
+            {
+                currentUrl = siteInfo.Additional.WebUrl;
+            }
+            else if (templateType == TemplateType.ContentTemplate)
+            {
+                if (contentInfo == null)
+                {
+                    var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                    currentUrl = PageUtility.GetContentUrl(siteInfo, nodeInfo, contentId, isLocal);
+                }
+                else
+                {
+                    currentUrl = PageUtility.GetContentUrl(siteInfo, contentInfo, isLocal);
+                }
+            }
+            else if (templateType == TemplateType.ChannelTemplate)
+            {
+                currentUrl = PageUtility.GetChannelUrl(siteInfo, ChannelManager.GetChannelInfo(siteInfo.Id, channelId), isLocal);
+            }
+            else if (templateType == TemplateType.FileTemplate)
+            {
+                currentUrl = PageUtility.GetFileUrl(siteInfo, templateId, isLocal);
+            }
+            //currentUrl是当前页面的地址，前后台分离的时候，不允许带上protocol
+            //return PageUtils.AddProtocolToUrl(currentUrl);
+            return currentUrl;
         }
     }
 }

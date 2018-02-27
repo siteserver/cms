@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 CacheUtils.ClearAll();
                 CacheDbUtils.Clear();
 
-                AddScript(AlertUtils.Success("插件删除成功", "插件删除成功，系统需要重载页面", "重新载入", "window.top.location.reload();"));
+                AddScript(AlertUtils.Success("插件删除成功", "插件删除成功，系统需要重载页面", "重新载入", "window.top.location.reload(true);"));
             }
             if (Body.IsQueryExists("enable"))
             {
@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 CacheUtils.ClearAll();
                 CacheDbUtils.Clear();
 
-                AddScript(AlertUtils.Success("插件启用成功", "插件启用成功，系统需要重载页面", "重新载入", "window.top.location.reload();"));
+                AddScript(AlertUtils.Success("插件启用成功", "插件启用成功，系统需要重载页面", "重新载入", "window.top.location.reload(true);"));
             }
             else if (Body.IsQueryExists("disable"))
             {
@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 CacheUtils.ClearAll();
                 CacheDbUtils.Clear();
 
-                AddScript(AlertUtils.Success("插件禁用成功", "插件禁用成功，系统需要重载页面", "重新载入", "window.top.location.reload();"));
+                AddScript(AlertUtils.Success("插件禁用成功", "插件禁用成功，系统需要重载页面", "重新载入", "window.top.location.reload(true);"));
             }
 
             if (Page.IsPostBack) return;
@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Plugins
             CacheUtils.ClearAll();
             CacheDbUtils.Clear();
 
-            AddScript(AlertUtils.Success("插件重新加载成功", "插件重新加载成功，系统需要重载页面", "重新载入", "window.top.location.reload();"));
+            AddScript(AlertUtils.Success("插件重新加载成功", "插件重新加载成功，系统需要重载页面", "重新载入", "window.top.location.reload(true);"));
         }
 
 //        private void RptRunnable_ItemDataBound(object sender, RepeaterItemEventArgs e)

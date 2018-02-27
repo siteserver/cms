@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Core
             string url;
             var title = ContentUtility.FormatTitle(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString), contentInfo.Title);
 
-            var displayString = contentInfo.IsTop ? $"<span style='color:#ff0000;text-decoration:none' title='醒目'>{title}</span>" : title;
+            var displayString = contentInfo.IsColor ? $"<span style='color:#ff0000;text-decoration:none' title='醒目'>{title}</span>" : title;
 
             if (contentInfo.ChannelId < 0)
             {

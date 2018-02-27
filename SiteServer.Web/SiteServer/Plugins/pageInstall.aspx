@@ -346,7 +346,7 @@
                 $this.errorMessage = err.message;
               } else {
                 setTimeout(function () {
-                  window.top.location.reload();
+                  window.top.location.reload(true);
                 }, 3000);
               }
             });

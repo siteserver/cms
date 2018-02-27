@@ -134,6 +134,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 StringUtils.EqualsIgnoreCase(testType, TypeIsAdministratorLoggin) ||
                 StringUtils.EqualsIgnoreCase(testType, TypeIsUserOrAdministratorLoggin))
             {
+                StlParserManager.ParseInnerContent(new StringBuilder(successTemplateString), pageInfo, contextInfo);
+                StlParserManager.ParseInnerContent(new StringBuilder(failureTemplateString), pageInfo, contextInfo);
+
                 return TestTypeDynamic(pageInfo, contextInfo, testType, testValue, testOperate, successTemplateString,
                     failureTemplateString);
             }
@@ -381,7 +384,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 return string.Empty;
             }
 
-            var pageUrl = StlUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
+            var pageUrl = StlParserUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
 
             var ifApiUrl = ApiRouteActionsIf.GetUrl(pageInfo.ApiUrl);
             var ifApiParms = ApiRouteActionsIf.GetParameters(pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, pageInfo.TemplateInfo.Id, ajaxDivId, pageUrl, testType, testValue, testOperate, successTemplateString, failureTemplateString);

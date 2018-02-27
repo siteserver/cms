@@ -51,7 +51,7 @@ namespace SiteServer.CMS.Plugin.Apis
         public string GetCurrentUrl(IParseContext context)
         {
             var siteInfo = SiteManager.GetSiteInfo(context.SiteId);
-            return StlUtility.GetStlCurrentUrl(siteInfo, context.ChannelId, context.ContentId,
+            return StlParserUtility.GetStlCurrentUrl(siteInfo, context.ChannelId, context.ContentId,
                 context.ContentInfo, context.TemplateType, context.TemplateId, false);
         }
     }

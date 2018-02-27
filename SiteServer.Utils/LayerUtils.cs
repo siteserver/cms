@@ -112,14 +112,14 @@ namespace SiteServer.Utils
         public static void Close(Page page)
         {
             page.Response.Clear();
-            page.Response.Write($"<script>window.parent.location.reload(false);{CloseScript}</script>");
+            page.Response.Write($"<script>window.parent.location.reload(true);{CloseScript}</script>");
         }
 
         public static void Close(Page page, string scripts)
         {
             page.Response.Clear();
             page.Response.Write($"<script>{scripts}</script>");
-            page.Response.Write($"<script>window.parent.location.reload(false);{CloseScript}</script>");
+            page.Response.Write($"<script>window.parent.location.reload(true);{CloseScript}</script>");
         }
 
         public static void CloseAndRedirect(Page page, string redirectUrl)

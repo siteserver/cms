@@ -4,7 +4,6 @@ using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.StlElement;
-using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.API.Controllers.Sys.Stl
 {
@@ -46,7 +45,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
 
                 return Ok(new
                 {
-                    Html = StlUtility.ParseDynamicContent(siteId, channelId, contentId, templateId, false, isSuccess ? successTemplate : failureTemplate, pageUrl, 0, ajaxDivId, null, request.UserInfo)
+                    Html = StlDynamic.ParseDynamicContent(siteId, channelId, contentId, templateId, false, isSuccess ? successTemplate : failureTemplate, pageUrl, 0, ajaxDivId, null, request.UserInfo)
                 });
             }
             catch(Exception ex)

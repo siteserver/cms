@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
+using SiteServer.CMS.StlParser.StlEntity;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -62,8 +66,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 return string.Empty;
             }
 
+            StlParserManager.ParseInnerContent(new StringBuilder(templateContent), pageInfo, contextInfo);
+
             var apiUrl = ApiRouteActionsDynamic.GetUrl(pageInfo.ApiUrl);
-            var currentPageUrl = StlUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
+            var currentPageUrl = StlParserUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
             currentPageUrl = PageUtils.AddQuestionOrAndToUrl(currentPageUrl);
             var apiParameters = ApiRouteActionsDynamic.GetParameters(pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, pageInfo.TemplateInfo.Id, currentPageUrl, ajaxDivId, isPageRefresh, templateContent);
 
@@ -96,6 +102,119 @@ function {functionName}(pageNum)
         {
             stlElement = StringUtils.ReplaceIgnoreCase(stlElement, "isdynamic=\"true\"", string.Empty);
             return ParseImpl(pageInfo, contextInfo, stlElement, false);
+        }
+
+        public static string ParseDynamicContent(int siteId, int channelId, int contentId, int templateId, bool isPageRefresh, string templateContent, string pageUrl, int pageIndex, string ajaxDivId, NameValueCollection queryString, IUserInfo userInfo)
+        {
+            var templateInfo = TemplateManager.GetTemplateInfo(siteId, templateId);
+            //TemplateManager.GetTemplateInfo(siteID, channelID, templateType);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var pageInfo = new PageInfo(channelId, contentId, siteInfo, templateInfo, new Dictionary<string, object>())
+            {
+                UniqueId = 1000,
+                UserInfo = userInfo
+            };
+            var contextInfo = new ContextInfo(pageInfo);
+
+            templateContent = StlRequestEntities.ParseRequestEntities(queryString, templateContent);
+            var contentBuilder = new StringBuilder(templateContent);
+            var stlElementList = StlParserUtility.GetStlElementList(contentBuilder.ToString());
+
+            //如果标签中存在<stl:pageContents>
+            if (StlParserUtility.IsStlElementExists(StlPageContents.ElementName, stlElementList))
+            {
+                var stlElement = StlParserUtility.GetStlElement(StlPageContents.ElementName, stlElementList);
+                var stlPageContentsElement = stlElement;
+                var stlPageContentsElementReplaceString = stlElement;
+
+                var pageContentsElementParser = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, true);
+                int totalNum;
+                var pageCount = pageContentsElementParser.GetPageCount(out totalNum);
+
+                for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
+                {
+                    if (currentPageIndex == pageIndex)
+                    {
+                        var pageHtml = pageContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, false);
+                        contentBuilder.Replace(stlPageContentsElementReplaceString, pageHtml);
+
+                        StlParserManager.ReplacePageElementsInDynamicPage(contentBuilder, pageInfo, stlElementList, pageUrl, pageInfo.PageChannelId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+
+                        break;
+                    }
+                }
+            }
+            //如果标签中存在<stl:pageChannels>
+            else if (StlParserUtility.IsStlElementExists(StlPageChannels.ElementName, stlElementList))
+            {
+                var stlElement = StlParserUtility.GetStlElement(StlPageChannels.ElementName, stlElementList);
+                var stlPageChannelsElement = stlElement;
+                var stlPageChannelsElementReplaceString = stlElement;
+
+                var pageChannelsElementParser = new StlPageChannels(stlPageChannelsElement, pageInfo, contextInfo, true);
+                int totalNum;
+                var pageCount = pageChannelsElementParser.GetPageCount(out totalNum);
+
+                for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
+                {
+                    if (currentPageIndex == pageIndex)
+                    {
+                        var pageHtml = pageChannelsElementParser.Parse(currentPageIndex, pageCount);
+                        contentBuilder.Replace(stlPageChannelsElementReplaceString, pageHtml);
+
+                        StlParserManager.ReplacePageElementsInDynamicPage(contentBuilder, pageInfo, stlElementList, pageUrl, pageInfo.PageChannelId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+
+                        break;
+                    }
+                }
+            }
+            //如果标签中存在<stl:pageSqlContents>
+            else if (StlParserUtility.IsStlElementExists(StlPageSqlContents.ElementName, stlElementList))
+            {
+                var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlElementList);
+                var stlPageSqlContentsElement = stlElement;
+                var stlPageSqlContentsElementReplaceString = stlElement;
+
+                var pageSqlContentsElementParser = new StlPageSqlContents(stlPageSqlContentsElement, pageInfo, contextInfo, true);
+                int totalNum;
+                var pageCount = pageSqlContentsElementParser.GetPageCount(out totalNum);
+
+                for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
+                {
+                    if (currentPageIndex == pageIndex)
+                    {
+                        var pageHtml = pageSqlContentsElementParser.Parse(currentPageIndex, pageCount);
+                        contentBuilder.Replace(stlPageSqlContentsElementReplaceString, pageHtml);
+
+                        StlParserManager.ReplacePageElementsInDynamicPage(contentBuilder, pageInfo, stlElementList, pageUrl, pageInfo.PageChannelId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+
+                        break;
+                    }
+                }
+            }
+
+            else if (StlParserUtility.IsStlElementExists(StlPageItems.ElementName, stlElementList))
+            {
+                var pageCount = TranslateUtils.ToInt(queryString["pageCount"]);
+                var totalNum = TranslateUtils.ToInt(queryString["totalNum"]);
+                var pageContentsAjaxDivId = queryString["pageContentsAjaxDivId"];
+
+                for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
+                {
+                    if (currentPageIndex == pageIndex)
+                    {
+                        StlParserManager.ReplacePageElementsInDynamicPage(contentBuilder, pageInfo, stlElementList, pageUrl, pageInfo.PageChannelId, currentPageIndex, pageCount, totalNum, isPageRefresh, pageContentsAjaxDivId);
+
+                        break;
+                    }
+                }
+            }
+
+            StlParserManager.ParseInnerContent(contentBuilder, pageInfo, contextInfo);
+
+            //var parsedContent = StlParserUtility.GetBackHtml(contentBuilder.ToString(), pageInfo);
+            //return pageInfo.HeadCodesHtml + pageInfo.BodyCodesHtml + parsedContent + pageInfo.FootCodesHtml;
+            return StlParserUtility.GetBackHtml(contentBuilder.ToString(), pageInfo);
         }
     }
 }

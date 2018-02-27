@@ -42,7 +42,7 @@ function selectRows(layer, bcheck) {
 				var cb = $(layer.childNodes[i]);
 				var tr = cb.closest('tr');
 				if (!tr.hasClass("thead")) {
-					cb.is(':checked') ? tr.addClass('unread') : tr.removeClass('unread');
+					cb.is(':checked') ? tr.addClass('table-active') : tr.removeClass('table-active');
 				}
 			}
 		}
@@ -54,8 +54,8 @@ function chkSelect(e) {
 	var el = this;
 	if (el.getElementsByTagName('input') && el.getElementsByTagName('input').length > 0) {
 		if ($(el).hasClass('thead')) return;
-		el.className = (el.className == 'unread' ? '' : 'unread');
-		el.getElementsByTagName('input')[0].checked = (el.className == 'unread');
+		el.className = (el.className == 'table-active' ? '' : 'table-active');
+		el.getElementsByTagName('input')[0].checked = (el.className == 'table-active');
 	}
 }
 
@@ -199,7 +199,7 @@ var _goto = function (url) {
     window.location.href = url;
 };
 
-function _refresh() { window.location.reload(false);}
+function _refresh() { window.location.reload(true);}
 
 function _setCookie(name, value, hoursToExpire)
 {

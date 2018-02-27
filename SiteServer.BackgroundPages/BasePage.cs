@@ -90,7 +90,7 @@ setTimeout(function() {{
         {
             _scripts += @"
 setTimeout(function() {{
-    window.top.location.reload();
+    window.top.location.reload(true);
 }}, 1500);
 ";
         }

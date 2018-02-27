@@ -8,7 +8,7 @@ function stlInit(url_ss, site_id, site_url){
 	stl_site_url = site_url;
 }
 
-function stlRefresh() { window.location.reload( false );}
+function stlRefresh() { window.location.reload(true);}
 
 function _random()
 {

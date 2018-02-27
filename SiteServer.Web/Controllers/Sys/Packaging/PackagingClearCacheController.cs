@@ -21,7 +21,7 @@ namespace SiteServer.API.Controllers.Sys.Packaging
             CacheUtils.ClearAll();
             CacheDbUtils.Clear();
 
-            return Ok();
+            return Ok(new {});
         }
     }
 }

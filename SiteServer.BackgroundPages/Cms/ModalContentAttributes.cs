@@ -20,7 +20,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         private int _channelId;
         private string _tableName;
-        private List<int> _idArrayList;
+        private List<int> _idList;
 
         public static string GetOpenWindowString(int siteId, int channelId)
         {
@@ -46,7 +46,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             _channelId = Body.GetQueryInt("channelId");
             _tableName = ChannelManager.GetTableName(SiteInfo, _channelId);
-            _idArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("contentIdCollection"));
+            _idList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("contentIdCollection"));
 		}
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -59,7 +59,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (CbIsRecommend.Checked || CbIsHot.Checked || CbIsColor.Checked || CbIsTop.Checked)
                     {
-                        foreach (var contentId in _idArrayList)
+                        foreach (var contentId in _idList)
                         {
                             var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, contentId);
                             if (contentInfo != null)
@@ -93,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (CbIsRecommend.Checked || CbIsHot.Checked || CbIsColor.Checked || CbIsTop.Checked)
                     {
-                        foreach (var contentId in _idArrayList)
+                        foreach (var contentId in _idList)
                         {
                             var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, contentId);
                             if (contentInfo != null)
@@ -127,7 +127,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     var hits = TranslateUtils.ToInt(TbHits.Text);
 
-                    foreach (var contentId in _idArrayList)
+                    foreach (var contentId in _idList)
                     {
                         DataProvider.ContentDao.SetValue(_tableName, contentId, ContentAttribute.Hits, hits.ToString());
                     }

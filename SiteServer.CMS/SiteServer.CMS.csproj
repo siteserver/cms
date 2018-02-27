@@ -419,7 +419,6 @@
     <Compile Include="StlParser\Utility\StlParserUtility.cs" />
     <Compile Include="StlParser\Utility\StlScriptUtility.cs" />
     <Compile Include="StlParser\Utility\StlTemplateManager.cs" />
-    <Compile Include="StlParser\Utility\StlUtility.cs" />
     <Compile Include="StlParser\Utility\TemplateUtility.cs" />
     <Compile Include="UEditor\Config.cs" />
     <Compile Include="UEditor\ConfigHandler.cs" />
