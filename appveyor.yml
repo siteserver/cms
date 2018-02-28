@@ -11,7 +11,7 @@
     file: '**\AssemblyInfo.cs'
     assembly_version: "{version}"
     assembly_file_version: "{version}"
-    assembly_informational_version: "{version}-rc2"
+    assembly_informational_version: "{version}"
 
   configuration:
     - Release
@@ -51,7 +51,7 @@
 
   deploy:
     - provider: GitHub
-      release: siteserver-v$(appveyor_build_version)-rc2
+      release: siteserver-v$(appveyor_build_version)
       description: 'SiteServer CMS'
       auth_token:
         secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10

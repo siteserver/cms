@@ -45,9 +45,9 @@
           <div class="col-9">
             <asp:DropDownList ID="DdlExportType" AutoPostBack="true" OnSelectedIndexChanged="DdlExportType_SelectedIndexChanged" runat="server"
               class="form-control">
-              <asp:ListItem Text="导出压缩包" Value="ContentZip"></asp:ListItem>
+              <asp:ListItem Text="导出压缩包" Value="ContentZip" Selected="true"></asp:ListItem>
               <asp:ListItem Text="导出Access" Value="ContentAccess"></asp:ListItem>
-              <asp:ListItem Text="导出Excel" Value="ContentExcel" Selected="true"></asp:ListItem>
+              <asp:ListItem Text="导出Excel" Value="ContentExcel"></asp:ListItem>
             </asp:DropDownList>
           </div>
           <div class="col-1"></div>

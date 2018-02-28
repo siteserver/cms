@@ -203,12 +203,12 @@ namespace SiteServer.CMS.ImportExport
 
         public void ImportChannelsAndContentsFromZip(int parentId, string siteContentDirectoryPath, bool isOverride)
         {
-            var filePathArrayList = GetSiteContentFilePathArrayList(siteContentDirectoryPath);
+            var filePathList = GetSiteContentFilePathList(siteContentDirectoryPath);
 
             var siteIe = new SiteIe(_siteInfo, siteContentDirectoryPath);
 
             Hashtable levelHashtable = null;
-            foreach (string filePath in filePathArrayList)
+            foreach (var filePath in filePathList)
             {
                 var firstIndex = filePath.LastIndexOf(PathUtils.SeparatorChar) + 1;
                 var lastIndex = filePath.LastIndexOf(".", StringComparison.Ordinal);
@@ -231,13 +231,13 @@ namespace SiteServer.CMS.ImportExport
 
         public void ImportChannelsAndContents(int parentId, string siteContentDirectoryPath, bool isOverride)
         {
-            var filePathArrayList = GetSiteContentFilePathArrayList(siteContentDirectoryPath);
+            var filePathList = GetSiteContentFilePathList(siteContentDirectoryPath);
 
             var siteIe = new SiteIe(_siteInfo, siteContentDirectoryPath);
 
             var parentOrderString = "none";
             //int parentID = 0;
-            foreach (string filePath in filePathArrayList)
+            foreach (var filePath in filePathList)
             {
                 var firstIndex = filePath.LastIndexOf(PathUtils.SeparatorChar) + 1;
                 var lastIndex = filePath.LastIndexOf(".", StringComparison.Ordinal);
@@ -343,8 +343,8 @@ namespace SiteServer.CMS.ImportExport
 
         public void ImportContentsByCsvFile(int channelId, string csvFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
-            var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, channelId);
-            var contentInfoList = ExcelObject.GetContentsByCsvFile(csvFilePath, _siteInfo, nodeInfo);
+            var channelInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, channelId);
+            var contentInfoList = ExcelObject.GetContentsByCsvFile(csvFilePath, _siteInfo, channelInfo);
             contentInfoList.Reverse();
 
             if (importStart > 1 || importCount > 0)
@@ -380,7 +380,7 @@ namespace SiteServer.CMS.ImportExport
                 contentInfoList = theList;
             }
 
-            var tableName = ChannelManager.GetTableName(_siteInfo, nodeInfo);
+            var tableName = ChannelManager.GetTableName(_siteInfo, channelInfo);
 
             foreach (var contentInfo in contentInfoList)
             {
@@ -388,10 +388,10 @@ namespace SiteServer.CMS.ImportExport
                 contentInfo.CheckedLevel = checkedLevel;
                 if (isOverride)
                 {
-                    var existsIDs = DataProvider.ContentDao.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
-                    if (existsIDs.Count > 0)
+                    var existsIds = DataProvider.ContentDao.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
+                    if (existsIds.Count > 0)
                     {
-                        foreach (int id in existsIDs)
+                        foreach (var id in existsIds)
                         {
                             contentInfo.Id = id;
                             DataProvider.ContentDao.Update(tableName, _siteInfo, contentInfo);
@@ -547,10 +547,10 @@ namespace SiteServer.CMS.ImportExport
         //    }
         //}
 
-        public static ArrayList GetSiteContentFilePathArrayList(string siteContentDirectoryPath)
+        public static IList<string> GetSiteContentFilePathList(string siteContentDirectoryPath)
         {
             var filePaths = DirectoryUtils.GetFilePaths(siteContentDirectoryPath);
-            var filePathSortedList = new SortedList();
+            var filePathSortedList = new SortedList<string, string>();
             foreach (var filePath in filePaths)
             {
                 var keyBuilder = new StringBuilder();
@@ -572,8 +572,7 @@ namespace SiteServer.CMS.ImportExport
                 if (keyBuilder.Length > 0) keyBuilder.Remove(keyBuilder.Length - 1, 1);
                 filePathSortedList.Add(keyBuilder.ToString(), filePath);
             }
-            var filePathArrayList = new ArrayList(filePathSortedList.Values);
-            return filePathArrayList;
+            return filePathSortedList.Values;
         }
 
     }

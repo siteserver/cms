@@ -139,9 +139,9 @@ namespace SiteServer.CMS.Core
 
                 importObject.ImportConfiguration(configurationFilePath);
 
-                var filePathArrayList = ImportObject.GetSiteContentFilePathArrayList(siteContentDirectoryPath);
+                var filePathList = ImportObject.GetSiteContentFilePathList(siteContentDirectoryPath);
 
-                foreach (string filePath in filePathArrayList)
+                foreach (var filePath in filePathList)
                 {
                     importObject.ImportSiteContent(siteContentDirectoryPath, filePath, isImportContents);
                 }

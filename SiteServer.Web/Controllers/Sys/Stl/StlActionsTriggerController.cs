@@ -1,4 +1,5 @@
 ﻿using System.Collections.Specialized;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using SiteServer.Utils;
@@ -14,7 +15,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
     {
         [HttpGet]
         [Route(ApiRouteActionsTrigger.Route)]
-        public async void Main()
+        public async Task Main()
         {
             var request = new Request();
 

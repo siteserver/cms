@@ -49,10 +49,10 @@
 
           <asp:PlaceHolder id="PhChooseSiteTemplate" runat="server">
 
-            <p class="text-muted font-13 m-b-25">
+            <div class="alert alert-warning">
               整站替换将改变现有网站，请谨慎使用，您选择的站点为
               <asp:Literal ID="LtlSiteName" runat="server"></asp:Literal>
-            </p>
+            </div>
 
             <input type="hidden" id="HihSiteTemplateDir" value="" runat="server" />
 
@@ -102,10 +102,10 @@
 
           <asp:PlaceHolder id="PhCreateSiteParameters" runat="server" Visible="false">
 
-            <p class="text-muted font-13 m-b-25">
+            <div class="alert alert-warning">
               整站替换将改变现有网站，请谨慎使用，您选择的站点模板为
               <asp:Literal ID="LtlSiteTemplateName" runat="server"></asp:Literal>
-            </p>
+            </div>
 
             <div class="form-group">
               <label class="col-form-label">清除站点栏目及内容</label>

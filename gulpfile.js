@@ -52,8 +52,6 @@ function build(beta) {
   var version = process.env.APPVEYOR_BUILD_VERSION;
   if (beta) {
     version += '-beta';
-  } else {
-    version += '-rc2';
   }
   console.log('build SiteServer CMS started, version: ' + version);
 
@@ -71,7 +69,6 @@ function build(beta) {
   min('./SiteServer.Web/SiteServer/**/*', './build/SiteServer');
   //SiteServer.Web/*
   min('./SiteServer.Web/安装向导.html', './build');
-  gulp.src('./SiteServer.Web/robots.txt').pipe(gulp.dest('./build'));
   gulp.src('./SiteServer.Web/Web.Release.config').pipe(rename('Web.config')).pipe(gulp.dest('./build'));
 
   console.log('build SiteServer CMS successed!');

@@ -81,8 +81,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             var stateType = Body.IsQueryExists("state") ? ETriStateUtils.GetEnumType(Body.GetQueryString("state")) : ETriState.All;
             var searchType = Body.IsQueryExists("searchType") ? Body.GetQueryString("searchType") : ContentAttribute.Title;
-            var dateFrom = Body.IsQueryExists("dateFrom") ? Body.GetQueryString("dateFrom") : DateUtils.GetDateString(DateTime.Now.AddMonths(-1));
-            var dateTo = Body.IsQueryExists("dateTo") ? Body.GetQueryString("dateTo") : DateUtils.GetDateString(DateTime.Now);
+            var dateFrom = Body.IsQueryExists("dateFrom") ? Body.GetQueryString("dateFrom") : string.Empty;
+            var dateTo = Body.IsQueryExists("dateTo") ? Body.GetQueryString("dateTo") : string.Empty;
             var isDuplicate = Body.IsQueryExists("isDuplicate") && Body.GetQueryBool("isDuplicate");
             var keyword = Body.IsQueryExists("keyword") ? Body.GetQueryString("keyword") : string.Empty;
 

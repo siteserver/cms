@@ -245,13 +245,8 @@ namespace SiteServer.CMS.Core
                 },
                 new TableStyleInfo
                 {
-                    AttributeName = ContentAttribute.Hits,
-                    DisplayName = "点击量"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.Tags,
-                    DisplayName = "标签"
+                    AttributeName = ContentAttribute.Title,
+                    DisplayName = "标题"
                 },
                 new TableStyleInfo
                 {
@@ -262,6 +257,21 @@ namespace SiteServer.CMS.Core
                 {
                     AttributeName = ContentAttribute.AddDate,
                     DisplayName = "添加时间"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.Hits,
+                    DisplayName = "点击量"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.GroupNameCollection,
+                    DisplayName = "组别"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.Tags,
+                    DisplayName = "标签"
                 }
             };
 

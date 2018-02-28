@@ -162,14 +162,16 @@
         return img;
       }
 
-      var weightedLink = null;
-
-      function fontWeightLink(element) {
-        if (weightedLink != null) {
-          weightedLink.style.fontWeight = 'normal';
-        }
-        element.style.fontWeight = 'bold';
-        weightedLink = element;
+      var activeTrElement = null;
+      function fontWeightLink(element){
+          if (activeTrElement)
+          {
+              activeTrElement.setAttribute('class', '');
+          }
+          activeTrElement = getTrElement(element);
+          if (activeTrElement) {
+              activeTrElement.setAttribute('class', 'table-active');
+          }
       }
 
       function displayChildren(img) {

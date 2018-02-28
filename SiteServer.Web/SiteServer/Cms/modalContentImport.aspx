@@ -33,8 +33,8 @@
           <label class="col-3 text-right col-form-label">导入类型</label>
           <div id="import" class="col-5">
             <asp:DropDownList class="form-control" ID="DdlImportType" runat="server">
-              <asp:ListItem Text="导入压缩包" Value="ContentZip"></asp:ListItem>
-              <asp:ListItem Text="导入Access" Value="ContentAccess" Selected="true"></asp:ListItem>
+              <asp:ListItem Text="导入压缩包" Value="ContentZip" Selected="true"></asp:ListItem>
+              <asp:ListItem Text="导入Access" Value="ContentAccess"></asp:ListItem>
               <asp:ListItem Text="导入Excel" Value="ContentExcel"></asp:ListItem>
               <asp:ListItem Text="导入TXT压缩包" Value="ContentTxtZip"></asp:ListItem>
             </asp:DropDownList>

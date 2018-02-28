@@ -191,15 +191,16 @@ function getImgClickableElementByTr(element){
 	return img;
 }
 
-var weightedLink = null;
-
+var activeTrElement = null;
 function fontWeightLink(element){
-    if (weightedLink != null)
+    if (activeTrElement)
     {
-        weightedLink.style.fontWeight = 'normal';
+        activeTrElement.setAttribute('class', '');
     }
-    element.style.fontWeight = 'bold';
-    weightedLink = element;
+    activeTrElement = getTrElement(element);
+    if (activeTrElement) {
+        activeTrElement.setAttribute('class', 'table-active');
+    }
 }
 
 var completedChannelId = null;
