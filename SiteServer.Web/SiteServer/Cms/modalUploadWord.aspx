@@ -6,82 +6,9 @@
 		<head>
 			<meta charset="utf-8">
 			<!--#include file="../inc/head.html"-->
-			<script type="text/javascript" src="../assets/swfUpload/swfupload.js"></script>
-			<script type="text/javascript" src="../assets/swfUpload/handlers.js"></script>
+
 			<script type="text/javascript">
-				function add_form() {
-					var $count = $('#File_Count');
-					var count = parseInt($count.val());
-					count = count + 1;
-					var $el = $("<div id='File_" + count + "'>" + $('#File_0').html().replace(/_0/g, '_' + count) + "</div>");
-					$el.insertBefore($count);
-					$('#File_Count').val(count);
-				}
-
-				function remove_form(divID) {
-					$(divID).remove();
-				}
-
-				function uploadSuccess(file, response) {
-					try {
-						if (response) {
-							response = eval("(" + response + ")");
-
-							if (response.success == 'true') {
-								add_form();
-								var $count = $('#File_Count');
-								var index = parseInt($count.val());
-								$("#fileName_" + index).val(response.fileName);
-								$("#divFileName_" + index).html(response.fileName);
-							} else {
-								alert(response.message);
-							}
-						}
-					} catch (ex) {
-						this.debug(ex);
-					}
-				}
-
-				var swfu;
 				$(document).ready(function () {
-					swfu = new SWFUpload({
-						// Backend Settings
-						upload_url: "<%=GetUploadWordMultipleUrl()%>",
-
-						// File Upload Settings
-						file_size_limit: "20 MB",
-						file_types: "*.doc;*.docx",
-						file_types_description: "Word Files",
-						file_upload_limit: 0, // Zero means unlimited
-
-						// Event Handler Settings - these functions as defined in Handlers.js
-						//  The handlers are not part of SWFUpload but are part of my website and control how
-						//  my website reacts to the SWFUpload events.
-						swfupload_preload_handler: preLoad,
-						swfupload_load_failed_handler: loadFailed,
-						file_queue_error_handler: fileQueueError,
-						file_dialog_complete_handler: fileDialogComplete,
-						upload_error_handler: uploadError,
-						upload_success_handler: uploadSuccess,
-						upload_complete_handler: uploadComplete,
-
-						// Button settings
-						button_image_url: "../assets/swfUpload/button.png",
-						button_placeholder_id: "swfUploadPlaceholder",
-						button_width: 114,
-						button_height: 22,
-						button_text: '» 批量导入Word',
-						button_text_top_padding: 1,
-						button_text_left_padding: 10,
-
-						// Flash Settings
-						flash_url: "../assets/swfUpload/swfupload.swf", // Relative to this file
-						flash9_url: "../assets/swfUpload/swfupload_FP9.swf", // Relative to this file
-
-						// Debug Settings
-						debug: false
-					});
-
 					$('#CbIsFirstLineTitle').click(function (e) {
 						if (!$("#CbIsFirstLineTitle").attr("checked")) {
 							$("#CbIsFirstLineRemove").removeAttr("checked");
@@ -95,14 +22,31 @@
 			<form runat="server">
 				<ctrl:alerts runat="server" />
 
-				<input id="File_Count" type="hidden" name="File_Count" value="0" />
+				<input id="HihFileNames" type="hidden" runat="server" />
 
-				<div class="form-group form-row">
-					<label class="col-1 text-right col-form-label"></label>
-					<div class="col-10">
-						<span id="swfUploadPlaceholder"></span>
+				<div id="drop-area" style="height: 200px; line-height: 200px; text-align: center; font-size: 18px; color: #777; border: 2px dashed #0000004d;
+						background: #fff;	border-radius: 6px; cursor: pointer; margin-bottom: 20px">
+					点击批量上传Word文件或者将Word文件拖拽到此区域
+				</div>
+
+				<div id="main" class="row">
+
+					<div class="col-sm-4 col-lg-3 col-xs-12" v-for="(file, index) in files">
+
+						<div class="card m-b-20">
+
+							<div class="card-body">
+								<p class="card-text">
+									{{ file.fileName }}
+									<br /> 大小：{{ Math.round(file.length/1024) + ' KB' }}
+								</p>
+								<a @click="del(file)" href="javascript:;" class="card-link text-danger">删 除</a>
+							</div>
+
+						</div>
+
 					</div>
-					<div class="col-1 help-block"></div>
+
 				</div>
 
 				<div class="form-group form-row">
@@ -130,18 +74,6 @@
 					<div class="col-1 help-block"></div>
 				</div>
 
-				<div class="form-group form-row" id="File_0" style="display:none">
-					<label class="col-2 text-right col-form-label">
-						<input type="hidden" id="fileName_0" name="fileName_0" value="" />
-					</label>
-					<div class="col-9">
-						<div id="divFileName_0"></div>
-					</div>
-					<div class="col-1 help-block">
-						<a href="javascript:void(0);" onClick="remove_form('#File_0');">删除</a>
-					</div>
-				</div>
-
 				<hr />
 
 				<div class="text-right mr-1">
@@ -154,3 +86,88 @@
 
 		</html>
 		<!--#include file="../inc/foot.html"-->
+
+		<script type="text/javascript" src="../assets/vue/vue.min.js"></script>
+		<script type="text/javascript" src="../assets/web-uploader/js/Q.js"></script>
+		<script type="text/javascript" src="../assets/web-uploader/js/Q.Uploader.js"></script>
+		<script type="text/javascript">
+			var data = {
+				op: '',
+				file: null,
+				indexOld: 0,
+				indexNew: 0,
+				files: []
+			};
+
+			var $vue = new Vue({
+				el: '#main',
+				data: data,
+				methods: {
+					upload: function (file) {
+						if (file && file.fileName) {
+							this.files.push(file);
+						}
+						$('#HihFileNames').val(this.getFileNames().join(','));
+					},
+					del: function (file) {
+						this.files.splice(this.files.indexOf(file), 1);
+						$('#HihFileNames').val(this.getFileNames().join(','));
+					},
+					getFileNames: function () {
+						var arr = [];
+						for (var i = 0; i < this.files.length; i++) {
+							arr.push(this.files[i].fileName);
+						}
+						return arr;
+					}
+				}
+			});
+
+			var E = Q.event,
+				Uploader = Q.Uploader;
+
+			var boxDropArea = document.getElementById("drop-area");
+
+			var uploader = new Uploader({
+				url: '<%=UploadUrl%>',
+				target: document.getElementById("drop-area"),
+				allows: ".doc,.docx",
+				on: {
+					add: function (task) {
+						if (task.disabled) return alert("允许上传的文件格式为：" + this.ops.allows);
+					},
+					complete: function (task) {
+						var json = task.json;
+						if (!json || json.ret != 1) return alert("上传失败！");
+
+						console.log(json);
+
+						$vue.upload(json);
+					}
+				}
+			});
+
+			function set_drag_drop() {
+				//若浏览器不支持html5上传，则禁止拖拽上传
+				if (!Uploader.support.html5 || !uploader.html5) {
+					boxDropArea.innerHTML = "点击批量上传Word文件";
+					return;
+				}
+
+				//阻止浏览器默认拖放行为
+				E.add(boxDropArea, "dragleave", E.stop);
+				E.add(boxDropArea, "dragenter", E.stop);
+				E.add(boxDropArea, "dragover", E.stop);
+
+				E.add(boxDropArea, "drop", function (e) {
+					E.stop(e);
+
+					//获取文件对象
+					var files = e.dataTransfer.files;
+
+					uploader.addList(files);
+				});
+			}
+
+			set_drag_drop();
+		</script>

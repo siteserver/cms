@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -13,6 +13,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalUploadWord : BasePageCms
     {
+        public HtmlInputHidden HihFileNames;
         public CheckBox CbIsFirstLineTitle;
         public CheckBox CbIsFirstLineRemove;
         public CheckBox CbIsClearFormat;
@@ -32,13 +33,10 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     {"channelId", channelId.ToString()},
                     {"returnUrl", returnUrl}
-                }), 600, 400);
+                }), 700, 550);
         }
 
-        public string GetUploadWordMultipleUrl()
-        {
-            return AjaxUploadService.GetUploadWordMultipleUrl(SiteId);
-        }
+        public string UploadUrl => WebHandlerUploadWord.GetRedirectUrl(SiteId);
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -61,24 +59,27 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var fileCount = TranslateUtils.ToInt(Request.Form["File_Count"]);
-            if (fileCount == 1)
+            var fileNames = TranslateUtils.StringCollectionToStringList(HihFileNames.Value);
+            if (fileNames.Count == 1)
             {
-                var fileName = Request.Form["fileName_1"];
-                var redirectUrl = WebUtils.GetContentAddUploadWordUrl(SiteId, _channelInfo, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue), fileName, _returnUrl);
-                LayerUtils.CloseAndRedirect(Page, redirectUrl);
+                var fileName = fileNames[0];
+                if (!string.IsNullOrEmpty(fileName))
+                {
+                    var redirectUrl = WebUtils.GetContentAddUploadWordUrl(SiteId, _channelInfo, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue), fileName, _returnUrl);
+                    LayerUtils.CloseAndRedirect(Page, redirectUrl);
+                }
 
                 return;
             }
-            if (fileCount > 1)
+
+            if (fileNames.Count > 1)
             {
                 var tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
                 var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelInfo.Id);
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
 
-                for (var index = 1; index <= fileCount; index++)
+                foreach (var fileName in fileNames)
                 {
-                    var fileName = Request.Form["fileName_" + index];
                     if (!string.IsNullOrEmpty(fileName))
                     {
                         var formCollection = WordUtils.GetWordNameValueCollection(SiteId, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, TranslateUtils.ToInt(DdlContentLevel.SelectedValue), fileName);
@@ -99,6 +100,8 @@ namespace SiteServer.BackgroundPages.Cms
                             contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
                             contentInfo.IsChecked = contentInfo.CheckedLevel >= SiteInfo.Additional.CheckContentLevel;
 
+                            contentInfo.Title = formCollection[ContentAttribute.Title];
+
                             contentInfo.Id = DataProvider.ContentDao.Insert(tableName, SiteInfo, contentInfo);
 
                             if (contentInfo.IsChecked)
@@ -112,5 +115,61 @@ namespace SiteServer.BackgroundPages.Cms
 
             LayerUtils.Close(Page);
         }
+
+        //public override void Submit_OnClick(object sender, EventArgs e)
+        //{
+        //    if (!Page.IsPostBack || !Page.IsValid) return;
+
+        //    var fileCount = TranslateUtils.ToInt(Request.Form["File_Count"]);
+        //    if (fileCount == 1)
+        //    {
+        //        var fileName = Request.Form["fileName_1"];
+        //        var redirectUrl = WebUtils.GetContentAddUploadWordUrl(SiteId, _channelInfo, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue), fileName, _returnUrl);
+        //        LayerUtils.CloseAndRedirect(Page, redirectUrl);
+
+        //        return;
+        //    }
+        //    if (fileCount > 1)
+        //    {
+        //        var tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
+        //        var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelInfo.Id);
+        //        var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
+
+        //        for (var index = 1; index <= fileCount; index++)
+        //        {
+        //            var fileName = Request.Form["fileName_" + index];
+        //            if (!string.IsNullOrEmpty(fileName))
+        //            {
+        //                var formCollection = WordUtils.GetWordNameValueCollection(SiteId, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, TranslateUtils.ToInt(DdlContentLevel.SelectedValue), fileName);
+
+        //                if (!string.IsNullOrEmpty(formCollection[ContentAttribute.Title]))
+        //                {
+        //                    var contentInfo = new ContentInfo();
+
+        //                    BackgroundInputTypeParser.SaveAttributes(contentInfo, SiteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributesLowercase);
+
+        //                    contentInfo.ChannelId = _channelInfo.Id;
+        //                    contentInfo.SiteId = SiteId;
+        //                    contentInfo.AddUserName = Body.AdminName;
+        //                    contentInfo.AddDate = DateTime.Now;
+        //                    contentInfo.LastEditUserName = contentInfo.AddUserName;
+        //                    contentInfo.LastEditDate = contentInfo.AddDate;
+
+        //                    contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
+        //                    contentInfo.IsChecked = contentInfo.CheckedLevel >= SiteInfo.Additional.CheckContentLevel;
+
+        //                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, SiteInfo, contentInfo);
+
+        //                    if (contentInfo.IsChecked)
+        //                    {
+        //                        CreateManager.CreateContentAndTrigger(SiteId, _channelInfo.Id, contentInfo.Id);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    LayerUtils.Close(Page);
+        //}
     }
 }

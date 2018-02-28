@@ -845,6 +845,13 @@ namespace SiteServer.Utils
             return AddQueryString(GetAdminDirectoryUrl($"cms/{className.ToLower()}.aspx?siteId={siteId}"), queryString);
         }
 
+        public static string GetCmsWebHandlerUrl(int siteId, string className, NameValueCollection queryString)
+        {
+            queryString = queryString ?? new NameValueCollection();
+            queryString.Remove("siteId");
+            return AddQueryString(GetAdminDirectoryUrl($"cms/{className.ToLower()}.ashx?siteId={siteId}"), queryString);
+        }
+
         public static string GetAjaxUrl(string className, NameValueCollection queryString)
         {
             return AddQueryString(GetAdminDirectoryUrl(Combine("ajax", className.ToLower() + ".aspx")), queryString);

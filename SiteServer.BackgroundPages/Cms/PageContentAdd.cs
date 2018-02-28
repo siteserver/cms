@@ -182,6 +182,8 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
 
                         var formCollection = WordUtils.GetWordNameValueCollection(SiteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, contentLevel, fileName);
                         attributes.Load(formCollection);
+
+                        TbTitle.Text = formCollection[ContentAttribute.Title];
                     }
 
                     AcAttributes.Attributes = attributes;

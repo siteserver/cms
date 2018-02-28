@@ -34,7 +34,7 @@
 
               <div class="alert alert-warning" v-bind:style="{ display: installed && isShouldUpdate ? '' : 'none' }">
                 系统检测到插件新版本，当前版本：{{ installedVersion }}，新版本：{{ package.version }}
-                <input v-on:click="location.href='pageView.aspx?update=true';return false;" type="button" value="立即升级" class="btn btn-primary">
+                <input v-on:click="location.href='pageView.aspx?update=true&pluginId=' + package.id;return false;" type="button" value="立即升级" class="btn btn-primary">
               </div>
 
               <div>

@@ -28,15 +28,6 @@ namespace SiteServer.BackgroundPages.Ajax
             });
         }
 
-        public static string GetUploadWordMultipleUrl(int siteId)
-        {
-            return PageUtils.GetAjaxUrl(nameof(AjaxUploadService), new NameValueCollection
-            {
-                {"siteID", siteId.ToString()},
-                {"isWordSwfUpload", true.ToString()}
-            });
-        }
-
         public void Page_Load(object sender, EventArgs e)
         {
             var jsonAttributes = new NameValueCollection();
@@ -70,15 +61,6 @@ namespace SiteServer.BackgroundPages.Ajax
                 jsonAttributes.Add("smallUrl", smallUrl);
                 jsonAttributes.Add("middleUrl", middleUrl);
                 jsonAttributes.Add("largeUrl", largeUrl);
-            }
-            else if (TranslateUtils.ToBool(Request.QueryString["isWordSwfUpload"]))
-            {
-                string message;
-                string fileName;
-                var success = UploadWordSwfUpload(out message, out fileName);
-                jsonAttributes.Add("success", success.ToString().ToLower());
-                jsonAttributes.Add("message", message);
-                jsonAttributes.Add("fileName", fileName);
             }
             else if (TranslateUtils.ToBool(Request.QueryString["isResume"]))
             {
@@ -196,32 +178,6 @@ namespace SiteServer.BackgroundPages.Ajax
                     return true;
                 }
                 message = "您必须上传图片文件！";
-            }
-            catch (Exception ex)
-            {
-                message = ex.Message;
-            }
-            return false;
-        }
-
-        public bool UploadWordSwfUpload(out string message, out string fileName)
-        {
-            message = fileName = string.Empty;
-
-            if (Request.Files["Filedata"] == null) return false;
-            var postedFile = Request.Files["Filedata"];
-
-            try
-            {
-                fileName = postedFile.FileName;
-                var extendName = fileName.Substring(fileName.LastIndexOf(".", StringComparison.Ordinal)).ToLower();
-                if (extendName == ".doc" || extendName == ".docx")
-                {
-                    var filePath = WordUtils.GetWordFilePath(fileName);
-                    postedFile.SaveAs(filePath);
-                    return true;
-                }
-                message = "请选择Word文件上传！";
             }
             catch (Exception ex)
             {
