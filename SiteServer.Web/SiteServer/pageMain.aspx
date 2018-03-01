@@ -213,4 +213,3 @@
       });
     </script>
     <!--#include file="inc/foot.html"-->
-    <script src="assets/segment/product.min.js" type="text/javascript"></script>
