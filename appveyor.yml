@@ -98,6 +98,7 @@
     TreatWarningsAsErrors: false
 
   install:
+    - set PATH=%ProgramFiles(x86)%\MSBuild\15.0\Bin;%PATH%
     - ps: Install-Product node $env:nodejs_version
     - npm install gulp -g
     - npm install
