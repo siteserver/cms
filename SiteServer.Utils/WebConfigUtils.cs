@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
 using System.Xml;
 using SiteServer.Plugin;
 
@@ -14,7 +15,20 @@ namespace SiteServer.Utils
 
         public static bool IsProtectData { get; private set; }
         public static DatabaseType DatabaseType { get; private set; }
-        public static string ConnectionString { get; private set; }
+
+        private static string _connectionString;
+
+        public static string ConnectionStringUserId { get; private set; }
+
+        public static string ConnectionString
+        {
+            get { return _connectionString; }
+            private set
+            {
+                _connectionString = value;
+                ConnectionStringUserId = SqlUtils.GetConnectionStringUserId(_connectionString);
+            }
+        }
 
         public static string AdminDirectory { get; private set; }
         public static string SecretKey { get; private set; }

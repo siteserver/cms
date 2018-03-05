@@ -363,7 +363,8 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
                         {
                             foreach (var childTab in parent.Children)
                             {
-                                tabsBuilder.Append($@"<li><a href=""{PageUtils.GetLoadingUrl(childTab.Href)}"" target=""right"">{childTab.Text}</a></li>");
+                                var childTarget = !string.IsNullOrEmpty(childTab.Target) ? childTab.Target : "right";
+                                tabsBuilder.Append($@"<li><a href=""{PageUtils.GetLoadingUrl(childTab.Href)}"" target=""{childTarget}"">{childTab.Text}</a></li>");
                             }
                         }
 

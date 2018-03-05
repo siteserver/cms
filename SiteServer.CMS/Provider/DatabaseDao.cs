@@ -615,7 +615,7 @@ SELECT * FROM (
                 }
                 else
                 {
-                    exists = GetIntResult($"select count(*) from all_objects where object_type = 'TABLE' and object_name = '{tableName}'") == 1;
+                    exists = GetIntResult($"SELECT COUNT(*) FROM ALL_OBJECTS WHERE OBJECT_TYPE = 'TABLE' AND OWNER = '{WebConfigUtils.ConnectionStringUserId.ToUpper()}' and OBJECT_NAME = '{tableName}'") == 1;
                 }
             }
             catch
@@ -1079,7 +1079,7 @@ SELECT * FROM (
         {
             var list = new List<TableColumnInfo>();
             var sqlString =
-                $"SELECT COLUMN_NAME, DATA_TYPE, DATA_PRECISION, DATA_SCALE, CHAR_LENGTH, DATA_DEFAULT FROM all_tab_cols WHERE table_name = '{tableName.ToUpper()}' ORDER BY COLUMN_ID";
+                $"SELECT COLUMN_NAME, DATA_TYPE, DATA_PRECISION, DATA_SCALE, CHAR_LENGTH, DATA_DEFAULT FROM all_tab_cols WHERE OWNER = '{SqlUtils.GetConnectionStringUserId(connectionString).ToUpper()}' and table_name = '{tableName.ToUpper()}' ORDER BY COLUMN_ID";
             using (var rdr = ExecuteReader(connectionString, sqlString))
             {
                 while (rdr.Read())
@@ -1581,7 +1581,7 @@ FROM (SELECT TOP {totalNum} *
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                sqlList.Add($"ALTER TABLE [{tableName}] DROP COLUMN [{attributeName}]");
+                sqlList.Add($"ALTER TABLE {tableName} DROP COLUMN {attributeName}");
             }
 
             return sqlList;

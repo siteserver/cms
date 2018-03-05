@@ -913,6 +913,19 @@ SELECT * FROM (
             return $"{attributeName} varchar({length})";
         }
 
+        public static string GetConnectionStringUserId(string connectionString)
+        {
+            try
+            {
+                var csb = new SqlConnectionStringBuilder(connectionString);
+                return csb.UserID;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
         public static string ToOracleColumnString(DataType type, string attributeName, int length)
         {
             if (type == DataType.Boolean)

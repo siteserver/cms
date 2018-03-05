@@ -126,7 +126,7 @@
       function updateDatabase() {
         $.ajax({
           url: "<%=UpdateDatabaseApiUrl%>",
-          type: "GET",
+          type: "POST",
           success: function (data) {
             $('#phStep2').hide();
             $('#phStep3').show();
