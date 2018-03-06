@@ -15,6 +15,7 @@ namespace SiteServer.Utils
     public static class SqlUtils
     {
         public const string Asterisk = "*";
+        public const string OracleEmptyValue = "_EMPTY_";
 
         public static string GetConnectionString(DatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string database)
         {
@@ -187,49 +188,71 @@ namespace SiteServer.Utils
             }
         }
 
-        public static IDbDataParameter GetIDbDataParameter(string parameterName, DataType dataType, int size)
+        public static IDbDataParameter GetIDbDataParameter(string parameterName, DataType dataType, int size, object value)
         {
             IDbDataParameter parameter = null;
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (size == 0)
             {
-                parameter = new MySqlParameter(parameterName, ToMySqlDbType(dataType), size);
+                if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+                {
+                    parameter = new MySqlParameter(parameterName, ToMySqlDbType(dataType))
+                    {
+                        Value = value
+                    };
+                }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+                {
+                    parameter = new SqlParameter(parameterName, ToSqlServerDbType(dataType))
+                    {
+                        Value = value
+                    };
+                }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+                {
+                    parameter = new NpgsqlParameter(parameterName, ToNpgsqlDbType(dataType))
+                    {
+                        Value = value
+                    };
+                }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+                {
+                    parameter = new OracleParameter(parameterName, ToOracleDbType(dataType))
+                    {
+                        Value = ToOracleDbValue(dataType, value)
+                    };
+                }
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else
             {
-                parameter = new SqlParameter(parameterName, ToSqlServerDbType(dataType), size);
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            {
-                parameter = new NpgsqlParameter(parameterName, ToNpgsqlDbType(dataType), size);
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-            {
-                parameter = new OracleParameter(parameterName, ToOracleDbType(dataType), size);
-            }
-
-            return parameter;
-        }
-
-        public static IDbDataParameter GetIDbDataParameter(string parameterName, DataType dataType)
-        {
-            IDbDataParameter parameter = null;
-
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-            {
-                parameter = new MySqlParameter(parameterName, ToMySqlDbType(dataType));
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-            {
-                parameter = new SqlParameter(parameterName, ToSqlServerDbType(dataType));
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            {
-                parameter = new NpgsqlParameter(parameterName, ToNpgsqlDbType(dataType));
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-            {
-                parameter = new OracleParameter(parameterName, ToOracleDbType(dataType));
+                if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+                {
+                    parameter = new MySqlParameter(parameterName, ToMySqlDbType(dataType), size)
+                    {
+                        Value = value
+                    };
+                }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+                {
+                    parameter = new SqlParameter(parameterName, ToSqlServerDbType(dataType), size)
+                    {
+                        Value = value
+                    };
+                }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+                {
+                    parameter = new NpgsqlParameter(parameterName, ToNpgsqlDbType(dataType), size)
+                    {
+                        Value = value
+                    };
+                }
+                else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+                {
+                    parameter = new OracleParameter(parameterName, ToOracleDbType(dataType), size)
+                    {
+                        Value = ToOracleDbValue(dataType, value)
+                    };
+                }
             }
 
             return parameter;
@@ -811,6 +834,16 @@ SELECT * FROM (
                 return NpgsqlDbType.Text;
             }
             return NpgsqlDbType.Varchar;
+        }
+
+        public static object ToOracleDbValue(DataType dataType, object value)
+        {
+            // Oracle internally changes empty string to NULL values. Oracle simply won't let insert an empty string. So we replace string.Empty value to placeholder _EMPTY_
+            if ((dataType == DataType.Text || dataType == DataType.VarChar) && value != null && value.ToString() == string.Empty)
+            {
+                return OracleEmptyValue;
+            }
+            return value;
         }
 
         public static OracleDbType ToOracleDbType(DataType type)

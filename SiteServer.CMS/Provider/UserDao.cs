@@ -532,7 +532,7 @@ namespace SiteServer.CMS.Provider
             try
             {
                 ExecuteNonQuery(sqlString, updateParms);
-                LogUtils.AddUserLog(userName, EUserActionType.UpdatePassword, string.Empty);
+                LogUtils.AddUserLog(userName, "修改密码", string.Empty);
                 isSuccess = true;
             }
             catch
@@ -1343,7 +1343,7 @@ namespace SiteServer.CMS.Provider
 
             if (!CheckPassword(password, userInfo.Password, EPasswordFormatUtils.GetEnumType(userInfo.PasswordFormat), userInfo.PasswordSalt))
             {
-                LogUtils.AddUserLog(userInfo.UserName, EUserActionType.LoginFailed, "用户登录失败");
+                LogUtils.AddUserLog(userInfo.UserName, "用户登录失败", "帐号或密码错误");
                 errorMessage = "帐号或密码错误";
                 return false;
             }

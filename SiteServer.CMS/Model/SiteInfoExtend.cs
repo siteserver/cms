@@ -291,20 +291,6 @@ namespace SiteServer.CMS.Model
             set { Set("CreateStaticContentAddDate", DateUtils.GetDateString(value)); }
         }
 
-        /****************显示项设置********************/
-
-        public string ChannelDisplayAttributes
-        {
-            get { return GetString("ChannelDisplayAttributes", string.Empty); }
-            set { Set("ChannelDisplayAttributes", value); }
-        }
-
-        public string ChannelEditAttributes
-        {
-            get { return GetString("ChannelEditAttributes", string.Empty); }
-            set { Set("ChannelEditAttributes", value); }
-        }
-
         /****************跨站转发设置********************/
 
         public bool IsCrossSiteTransChecked

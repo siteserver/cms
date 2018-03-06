@@ -212,7 +212,7 @@ namespace SiteServer.BackgroundPages.Core
             if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, nodeInfo.Id, ConfigManager.Permissions.Channel.ChannelEdit))
             {
                 builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalSelectColumns.GetOpenWindowStringToContent(siteInfo.Id, nodeInfo.Id, true)}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalSelectColumns.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, true)}"">
     <i class=""ion-ios-list-outline""></i>
     显示项
 </a>");

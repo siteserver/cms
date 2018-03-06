@@ -125,7 +125,6 @@
     <Compile Include="Enumerations\ETimeFormatType.cs" />
     <Compile Include="Enumerations\ETriState.cs" />
     <Compile Include="Enumerations\EUploadType.cs" />
-    <Compile Include="Enumerations\EUserActionType.cs" />
     <Compile Include="Enumerations\EUserBindingType.cs" />
     <Compile Include="Enumerations\EUserLockType.cs" />
     <Compile Include="Enumerations\EUserPasswordRestriction.cs" />

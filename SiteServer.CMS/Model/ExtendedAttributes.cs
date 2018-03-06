@@ -5,6 +5,7 @@ using System.Data;
 using System.Text;
 using System.Web.UI;
 using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Model
 {
@@ -54,6 +55,10 @@ namespace SiteServer.CMS.Model
             {
                 var name = rdr.GetName(i);
                 var value = Convert.ToString(rdr.GetValue(i));
+                if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && value == SqlUtils.OracleEmptyValue)
+                {
+                    value = string.Empty;
+                }
                 Set(name, value);
             }
         }
@@ -99,6 +104,10 @@ namespace SiteServer.CMS.Model
                     if (obj is string)
                     {
                         returnValue = _dataNvc[name] = obj as string;
+                        if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && returnValue == SqlUtils.OracleEmptyValue)
+                        {
+                            returnValue = string.Empty;
+                        }
                     }
                     else
                     {
@@ -222,6 +231,10 @@ namespace SiteServer.CMS.Model
                     if (obj is string)
                     {
                         returnValue = _dataNvc[name] = obj as string;
+                        if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && returnValue == SqlUtils.OracleEmptyValue)
+                        {
+                            returnValue = string.Empty;
+                        }
                     }
                     else
                     {

@@ -17,7 +17,6 @@ namespace SiteServer.BackgroundPages.Cms
         public Button BtnAddChannel2;
         public PlaceHolder PhChannelEdit;
         public Button BtnAddToGroup;
-        public Button BtnSelectEditColumns;
         public PlaceHolder PhTranslate;
         public Button BtnTranslate;
         public PlaceHolder PhImport;
@@ -91,8 +90,6 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var showPopWinString = ModalAddToGroup.GetOpenWindowStringToChannel(SiteId);
                 BtnAddToGroup.Attributes.Add("onclick", showPopWinString);
-
-                BtnSelectEditColumns.Attributes.Add("onclick", ModalSelectColumns.GetOpenWindowStringToChannel(SiteId, false));
             }
 
             PhTranslate.Visible = HasChannelPermissionsIgnoreChannelId(ConfigManager.Permissions.Channel.ChannelTranslate);

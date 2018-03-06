@@ -53,7 +53,6 @@
           </asp:PlaceHolder>
           <asp:PlaceHolder id="PhChannelEdit" runat="server">
             <asp:Button class="btn m-r-5" id="BtnAddToGroup" Text="设置栏目组" runat="server" />
-            <asp:Button class="btn m-r-5" id="BtnSelectEditColumns" Text="编辑项" runat="server" />
           </asp:PlaceHolder>
           <asp:PlaceHolder id="PhTranslate" runat="server">
             <asp:Button class="btn m-r-5" id="BtnTranslate" Text="转 移" runat="server" />

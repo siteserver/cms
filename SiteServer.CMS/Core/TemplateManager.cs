@@ -91,7 +91,11 @@ namespace SiteServer.CMS.Core
                 }
             }
 
-            return info;
+            return info ?? new TemplateInfo
+            {
+                SiteId = siteId,
+                TemplateType = templateType
+            };
         }
 
         public static int GetDefaultTemplateId(int siteId, TemplateType templateType)

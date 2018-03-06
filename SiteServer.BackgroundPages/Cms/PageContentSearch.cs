@@ -132,7 +132,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var showPopWinString = ModalAddToGroup.GetOpenWindowStringToContentForMultiChannels(SiteId);
                 BtnAddToGroup.Attributes.Add("onclick", showPopWinString);
 
-                showPopWinString = ModalSelectColumns.GetOpenWindowStringToContent(SiteId, _channelId, true);
+                showPopWinString = ModalSelectColumns.GetOpenWindowString(SiteId, _channelId, true);
                 BtnSelect.Attributes.Add("onclick", showPopWinString);
 
                 if (AdminUtility.HasChannelPermissions(Body.AdminName, SiteId, SiteId, ConfigManager.Permissions.Channel.ContentCheck))

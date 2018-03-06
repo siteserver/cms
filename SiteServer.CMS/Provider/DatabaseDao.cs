@@ -1049,7 +1049,7 @@ SELECT * FROM (
                     var cmd = new OracleCommand
                     {
                         CommandType = CommandType.Text,
-                        CommandText = $"SELECT DATA_DEFAULT FROM all_tab_cols WHERE table_name = '{tableName.ToUpper()}' AND column_name = '{idColumnName.ToUpper()}'",
+                        CommandText = $"SELECT DATA_DEFAULT FROM all_tab_cols WHERE OWNER = '{WebConfigUtils.ConnectionStringUserId.ToUpper()}' and table_name = '{tableName.ToUpper()}' AND column_name = '{idColumnName.ToUpper()}'",
                         Connection = conn,
                         InitialLONGFetchSize = -1
                     };
@@ -1077,9 +1077,12 @@ SELECT * FROM (
 
         private List<TableColumnInfo> GetOracleColumnsLowercase(string connectionString, string tableName)
         {
+            var owner = SqlUtils.GetConnectionStringUserId(connectionString).ToUpper();
+            tableName = tableName.ToUpper();
+
             var list = new List<TableColumnInfo>();
             var sqlString =
-                $"SELECT COLUMN_NAME, DATA_TYPE, DATA_PRECISION, DATA_SCALE, CHAR_LENGTH, DATA_DEFAULT FROM all_tab_cols WHERE OWNER = '{SqlUtils.GetConnectionStringUserId(connectionString).ToUpper()}' and table_name = '{tableName.ToUpper()}' ORDER BY COLUMN_ID";
+                $"SELECT COLUMN_NAME, DATA_TYPE, DATA_PRECISION, DATA_SCALE, CHAR_LENGTH, DATA_DEFAULT FROM all_tab_cols WHERE OWNER = '{owner}' and table_name = '{tableName}' and user_generated = 'YES' ORDER BY COLUMN_ID";
             using (var rdr = ExecuteReader(connectionString, sqlString))
             {
                 while (rdr.Read())
@@ -1112,7 +1115,7 @@ SELECT * FROM (
             sqlString =
                 $@"select distinct cu.column_name from all_cons_columns cu inner join all_constraints au 
 on cu.constraint_name = au.constraint_name
-and au.constraint_type = 'P' and cu.table_name = '{tableName.ToUpper()}'";
+and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tableName}'";
 
             using (var rdr = ExecuteReader(connectionString, sqlString))
             {

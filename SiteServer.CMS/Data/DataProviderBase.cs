@@ -35,37 +35,37 @@ namespace SiteServer.CMS.Data
 
         protected IDbDataParameter GetParameter(string parameterName, DataType dataType, int value)
         {
-            return GetParameterInner(parameterName, dataType, 0, value);
+            return SqlUtils.GetIDbDataParameter(parameterName, dataType, 0, value);
         }
 
         protected IDbDataParameter GetParameter(string parameterName, DataType dataType, bool value)
         {
-            return GetParameterInner(parameterName, dataType, 0, value);
+            return SqlUtils.GetIDbDataParameter(parameterName, dataType, 0, value);
         }
 
         protected IDbDataParameter GetParameter(string parameterName, DataType dataType, decimal value)
         {
-            return GetParameterInner(parameterName, dataType, 0, value);
+            return SqlUtils.GetIDbDataParameter(parameterName, dataType, 0, value);
         }
 
         protected IDbDataParameter GetParameter(string parameterName, DataType dataType, DateTime value)
         {
-            return GetParameterInner(parameterName, dataType, 0, value);
+            return SqlUtils.GetIDbDataParameter(parameterName, dataType, 0, value);
         }
 
         protected IDbDataParameter GetParameter(string parameterName, DataType dataType, string value)
         {
-            return GetParameterInner(parameterName, dataType, 0, value);
+            return SqlUtils.GetIDbDataParameter(parameterName, dataType, 0, value);
         }
 
         protected IDbDataParameter GetParameter(string parameterName, DataType dataType, int size, string value)
         {
-            return GetParameterInner(parameterName, dataType, size, value);
+            return SqlUtils.GetIDbDataParameter(parameterName, dataType, size, value);
         }
 
         protected IDbDataParameter GetParameter(string parameterName, DataType dataType, int size, decimal value)
         {
-            return GetParameterInner(parameterName, dataType, size, value);
+            return SqlUtils.GetIDbDataParameter(parameterName, dataType, size, value);
         }
 
         protected List<IDataParameter> GetInParameterList(string parameterName, DataType dataType, int dataLength, ICollection valueCollection, out string parameterNameList)
@@ -95,23 +95,6 @@ namespace SiteServer.CMS.Data
 
             return parameterList;
         }
-
-        private static IDbDataParameter GetParameterInner(string parameterName, DataType dataType, int size, object value)
-        {
-            if (size == 0)
-            {
-                var parameter = SqlUtils.GetIDbDataParameter(parameterName, dataType);
-                parameter.Value = value;
-                return parameter;
-            }
-            else
-            {
-                var parameter = SqlUtils.GetIDbDataParameter(parameterName, dataType, size);
-                parameter.Value = value;
-                return parameter;
-            }
-        }
-
 
         protected IDataReader ExecuteReader(string commandText, params IDataParameter[] commandParameters)
         {
@@ -261,6 +244,10 @@ namespace SiteServer.CMS.Data
             if (!string.IsNullOrEmpty(value))
             {
                 value = PageUtils.UnFilterSql(value);
+            }
+            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && value == SqlUtils.OracleEmptyValue)
+            {
+                value = string.Empty;
             }
             return value;
         }

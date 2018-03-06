@@ -6,7 +6,6 @@ using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -116,7 +115,7 @@ namespace SiteServer.BackgroundPages.Settings
             ltlUserName.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(UserLogInfo.UserName));
             ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, nameof(UserLogInfo.AddDate)));
             ltlIpAddress.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(UserLogInfo.IpAddress));
-            ltlAction.Text = EUserActionTypeUtils.GetText(EUserActionTypeUtils.GetEnumType(SqlUtils.EvalString(e.Item.DataItem, nameof(UserLogInfo.Action))));
+            ltlAction.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(UserLogInfo.Action));
             ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(UserLogInfo.Summary));
         }
 

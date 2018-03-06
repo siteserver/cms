@@ -96,7 +96,7 @@ namespace SiteServer.CMS.Data
             if (value == null)
             {
                 parameter.DbType = DbType.String;
-                parameter.Value = string.Empty;
+                parameter.Value = null;
             }
             else if (value is DateTime)
             {
@@ -121,7 +121,8 @@ namespace SiteServer.CMS.Data
             else if (value is string)
             {
                 parameter.DbType = DbType.String;
-                parameter.Value = (string)value;
+                parameter.Value = SqlUtils.ToOracleDbValue(DataType.VarChar, value);
+                //parameter.Value = (string)value;
             }
             else if (value is bool)
             {
@@ -131,7 +132,8 @@ namespace SiteServer.CMS.Data
             else
             {
                 parameter.DbType = DbType.String;
-                parameter.Value = value.ToString();
+                parameter.Value = SqlUtils.ToOracleDbValue(DataType.VarChar, value.ToString());
+                //parameter.Value = value.ToString();
             }
 
             return parameter;
@@ -276,7 +278,12 @@ namespace SiteServer.CMS.Data
         public string GetString(IDataReader rdr, int i)
         {
             if (i < 0 || i >= rdr.FieldCount) return string.Empty;
-            return rdr.IsDBNull(i) ? string.Empty : rdr.GetString(i);
+            var retval = rdr.IsDBNull(i) ? string.Empty : rdr.GetString(i);
+            if (retval == SqlUtils.OracleEmptyValue)
+            {
+                retval = string.Empty;
+            }
+            return retval;
         }
 
         public bool GetBoolean(IDataReader rdr, int i)

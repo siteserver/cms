@@ -198,11 +198,10 @@
 
           <div class="form-group form-row">
             <label class="col-sm-2 col-form-label text-right">栏目组</label>
-            <div class="col-sm-4">
+            <div class="col-sm-10">
               <asp:CheckBoxList CssClass="checkbox checkbox-primary" ID="CblNodeGroupNameCollection" DataTextField="GroupName" DataValueField="GroupName"
                 RepeatDirection="Horizontal" RepeatColumns="5" runat="server" />
             </div>
-            <div class="col-sm-6"></div>
           </div>
 
           <hr />

@@ -67,12 +67,7 @@ namespace SiteServer.CMS.Core
 
         public static void AddUserLoginLog(string userName)
         {
-            AddUserLog(userName, EUserActionType.Login, string.Empty);
-        }
-
-        public static void AddUserLog(string userName, EUserActionType actionType, string summary)
-        {
-            AddUserLog(userName, EUserActionTypeUtils.GetText(actionType), summary);
+            AddUserLog(userName, "用户登录", string.Empty);
         }
 
         public static void AddUserLog(string userName, string actionType, string summary)
