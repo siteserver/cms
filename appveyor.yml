@@ -5,6 +5,7 @@
       - master
 
   version: 6.0.{build}
+  image: Visual Studio 2017
 
   assembly_info:
     patch: true
