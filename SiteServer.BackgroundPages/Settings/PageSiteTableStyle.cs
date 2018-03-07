@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Settings
                 if (TableStyleManager.IsExists(0, _tableName, attributeName))
                 {
                     TableStyleManager.Delete(0, _tableName, attributeName);
-                    Body.AddAdminLog("É¾³ıÊı¾İ±íµ¥ÑùÊ½", $"±íµ¥:{_tableName},×Ö¶Î:{attributeName}");
+                    Body.AddAdminLog("åˆ é™¤æ•°æ®è¡¨å•æ ·å¼", $"è¡¨å•:{_tableName},å­—æ®µ:{attributeName}");
                     SuccessDeleteMessage();
                 }
             }
@@ -93,16 +93,16 @@ namespace SiteServer.BackgroundPages.Settings
 
             ltlDisplayName.Text = styleInfo.DisplayName;
             ltlInputType.Text = InputTypeUtils.GetText(styleInfo.InputType);
-            ltlFieldType.Text = TableMetadataManager.IsAttributeNameExists(_tableName, styleInfo.AttributeName) ? $"ÕæÊµ {TableMetadataManager.GetTableMetadataDataType(_tableName, styleInfo.AttributeName)}" : "ĞéÄâ×Ö¶Î";
+            ltlFieldType.Text = TableMetadataManager.IsAttributeNameExists(_tableName, styleInfo.AttributeName) ? $"çœŸå® {TableMetadataManager.GetTableMetadataDataType(_tableName, styleInfo.AttributeName)}" : "è™šæ‹Ÿå­—æ®µ";
 
             ltlValidate.Text = TableStyleManager.GetValidateInfo(styleInfo);
 
             var showPopWinString = ModalTableStyleAdd.GetOpenWindowString(0, styleInfo.Id, new List<int>{0}, _tableName, styleInfo.AttributeName, _redirectUrl);
-            var editText = styleInfo.Id != 0 ? "ĞŞ¸Ä" : "Ìí¼Ó";
+            var editText = styleInfo.Id != 0 ? "ä¿®æ”¹" : "æ·»åŠ ";
             ltlEditStyle.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">{editText}</a>";
 
             showPopWinString = ModalTableStyleValidateAdd.GetOpenWindowString(0, styleInfo.Id, new List<int> { 0 }, _tableName, styleInfo.AttributeName, _redirectUrl);
-            ltlEditValidate.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">ÉèÖÃ</a>";
+            ltlEditValidate.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">è®¾ç½®</a>";
 
             ltlTaxis.Text = styleInfo.Taxis.ToString();
 
@@ -114,7 +114,7 @@ namespace SiteServer.BackgroundPages.Settings
                     {"tableName", _tableName},
                     {"DeleteStyle", true.ToString()},
                     {"AttributeName", styleInfo.AttributeName}
-                })}"" onClick=""javascript:return confirm('´Ë²Ù×÷½«É¾³ı¶ÔÓ¦ÏÔÊ¾ÑùÊ½£¬È·ÈÏÂğ£¿');"">É¾³ı</a>";
+                })}"" onClick=""javascript:return confirm('æ­¤æ“ä½œå°†åˆ é™¤å¯¹åº”æ˜¾ç¤ºæ ·å¼ï¼Œç¡®è®¤å—ï¼Ÿ');"">åˆ é™¤</a>";
         }
 
         public void Return_OnClick(object sender, EventArgs e)

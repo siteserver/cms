@@ -26,7 +26,6 @@ namespace SiteServer.CMS.StlParser.StlElement
 		public const string AttributePlayUrl = "playUrl";
         public const string AttributeImageUrl = "imageUrl";
         public const string AttributePlayBy = "playBy";
-        public const string AttributeStretching = "stretching";
 		public const string AttributeWidth = "width";
 		public const string AttributeHeight = "height";
         public const string AttributeIsAutoPlay = "isAutoPlay";
@@ -42,7 +41,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributePlayUrl, "视频地址"},
             {AttributeImageUrl, "图片地址"},
             {AttributePlayBy, StringUtils.SortedListToAttributeValueString("指定播放器", PlayByList)},
-            {AttributeStretching, "拉伸"},
             {AttributeWidth, "宽度"},
             {AttributeHeight, "高度"},
             {AttributeIsAutoPlay, "是否自动播放"}
@@ -68,7 +66,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             var topLevel = -1;
             var type = BackgroundContentAttribute.VideoUrl;
             var playUrl = string.Empty;
-            var stretching = string.Empty;
             var imageUrl = string.Empty;
             var playBy = string.Empty;
             var width = 450;
@@ -123,7 +120,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributePlayUrl))
+                else if (StringUtils.EqualsIgnoreCase(name, AttributePlayUrl) || StringUtils.EqualsIgnoreCase(name, "src"))
                 {
                     playUrl = value;
                 }
@@ -135,10 +132,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     playBy = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeStretching))
-                {
-                    stretching = value;
-                }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeWidth))
                 {
                     width = TranslateUtils.ToInt(value, width);
@@ -147,16 +140,16 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     height = TranslateUtils.ToInt(value, height);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsAutoPlay))
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsAutoPlay) || StringUtils.EqualsIgnoreCase(name, "play"))
                 {
                     isAutoPlay = TranslateUtils.ToBool(value, true);
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, playUrl, imageUrl, playBy, stretching, width, height, type, isAutoPlay);
+            return ParseImpl(pageInfo, contextInfo, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, playUrl, imageUrl, playBy, width, height, type, isAutoPlay);
 		}
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string playUrl, string imageUrl, string playBy, string stretching, int width, int height, string type, bool isAutoPlay)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string playUrl, string imageUrl, string playBy, int width, int height, string type, bool isAutoPlay)
         {
             var parsedContent = string.Empty;
 
@@ -439,24 +432,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     else
                     {
-                        if (StringUtils.EqualsIgnoreCase(playBy, PlayByFlowPlayer))
-                        {
-                            var ajaxElementId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
-                            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcFlowPlayer);
-
-                            var swfUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.FlowPlayer.Swf);
-                            parsedContent = $@"
-<a href=""{playUrl}"" style=""display:block;width:{width}px;height:{height}px;"" id=""player_{ajaxElementId}""></a>
-<script language=""javascript"">
-    flowplayer(""player_{ajaxElementId}"", ""{swfUrl}"", {{
-        clip:  {{
-            autoPlay: {isAutoPlay.ToString().ToLower()}
-        }}
-    }});
-</script>
-";
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(playBy, PlayByJwPlayer))
+                        if (StringUtils.EqualsIgnoreCase(playBy, PlayByJwPlayer))
                         {
                             pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcJwPlayer6);
                             var ajaxElementId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
@@ -475,13 +451,19 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         else
                         {
-                            var additional = string.Empty;
-                            if (!string.IsNullOrEmpty(stretching))
-                            {
-                                additional = "&stretching=" + stretching;
-                            }
+                            var ajaxElementId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
+                            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcFlowPlayer);
+
+                            var swfUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.FlowPlayer.Swf);
                             parsedContent = $@"
-<embed src=""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over{additional}&autostart={isAutoPlay.ToString().ToLower()}&image={imageUrl}&file={playUrl}"" width=""{width}"" height=""{height}""/>
+<a href=""{playUrl}"" style=""display:block;width:{width}px;height:{height}px;"" id=""player_{ajaxElementId}""></a>
+<script language=""javascript"">
+    flowplayer(""player_{ajaxElementId}"", ""{swfUrl}"", {{
+        clip:  {{
+            autoPlay: {isAutoPlay.ToString().ToLower()}
+        }}
+    }});
+</script>
 ";
                         }
                     }

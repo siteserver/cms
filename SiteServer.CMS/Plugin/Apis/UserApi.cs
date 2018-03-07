@@ -15,22 +15,50 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public IUserInfo GetUserInfoByUserId(int userId)
         {
-            return DataProvider.UserDao.GetUserInfo(userId);
+            var userInfo = DataProvider.UserDao.GetUserInfo(userId);
+            if (userInfo != null)
+            {
+                userInfo.Password = string.Empty;
+                userInfo.PasswordFormat = string.Empty;
+                userInfo.PasswordSalt = string.Empty;
+            }
+            return userInfo;
         }
 
         public IUserInfo GetUserInfoByUserName(string userName)
         {
-            return DataProvider.UserDao.GetUserInfoByUserName(userName);
+            var userInfo = DataProvider.UserDao.GetUserInfoByUserName(userName);
+            if (userInfo != null)
+            {
+                userInfo.Password = string.Empty;
+                userInfo.PasswordFormat = string.Empty;
+                userInfo.PasswordSalt = string.Empty;
+            }
+            return userInfo;
         }
 
         public IUserInfo GetUserInfoByEmail(string email)
         {
-            return DataProvider.UserDao.GetUserInfoByEmail(email);
+            var userInfo =  DataProvider.UserDao.GetUserInfoByEmail(email);
+            if (userInfo != null)
+            {
+                userInfo.Password = string.Empty;
+                userInfo.PasswordFormat = string.Empty;
+                userInfo.PasswordSalt = string.Empty;
+            }
+            return userInfo;
         }
 
         public IUserInfo GetUserInfoByMobile(string mobile)
         {
-            return DataProvider.UserDao.GetUserInfoByMobile(mobile);
+            var userInfo = DataProvider.UserDao.GetUserInfoByMobile(mobile);
+            if (userInfo != null)
+            {
+                userInfo.Password = string.Empty;
+                userInfo.PasswordFormat = string.Empty;
+                userInfo.PasswordSalt = string.Empty;
+            }
+            return userInfo;
         }
 
         public string GetMobileByAccount(string account)

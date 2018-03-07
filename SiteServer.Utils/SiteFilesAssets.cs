@@ -150,7 +150,7 @@ namespace SiteServer.Utils
         {
             public const string Js = "flashes/mediaelement/mediaelement-and-player.min.js";
             public const string Css = "flashes/mediaelement/mediaelementplayer.min.css";
-            public const string Swf = "flashes/mediaelement/flashmediaelement.swf";
+            public const string Swf = "flashes/mediaelement/mediaelement-flash-audio.swf";
         }
 
         public class AudioJs

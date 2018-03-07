@@ -44,11 +44,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributePlayUrl))
+                else if (StringUtils.EqualsIgnoreCase(name, AttributePlayUrl) || StringUtils.EqualsIgnoreCase(name, "src"))
                 {
                     playUrl = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsAutoPlay))
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsAutoPlay) || StringUtils.EqualsIgnoreCase(name, "play"))
                 {
                     isAutoPlay = TranslateUtils.ToBool(value, false);
                 }
@@ -56,7 +56,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     isPreLoad = TranslateUtils.ToBool(value, true);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsLoop))
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsLoop) || StringUtils.EqualsIgnoreCase(name, "loop"))
                 {
                     isLoop = TranslateUtils.ToBool(value, false);
                 }
@@ -124,13 +124,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                 pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcMediaElement);
 
                 return $@"
-<audio src=""{playUrl}"" {(isAutoPlay ? "autoplay" : string.Empty)} {(isPreLoad ? string.Empty : @"preload=""none""")} {(isLoop ? "loop" : string.Empty)}>
+<audio class=""mejs__player"" src=""{playUrl}"" {(isAutoPlay ? "autoplay" : string.Empty)} {(isPreLoad ? string.Empty : @"preload=""none""")} {(isLoop ? "loop" : string.Empty)}>
     <object width=""460"" height=""40"" type=""application/x-shockwave-flash"" data=""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.MediaElement.Swf)}"">
         <param name=""movie"" value=""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.MediaElement.Swf)}"" />
         <param name=""flashvars"" value=""controls=true&file={playUrl}"" />
     </object>
 </audio>
-<script>$('audio').mediaelementplayer();</script>
 ";
             }
         }

@@ -15,7 +15,7 @@ namespace SiteServer.Utils
             {
                 Value = TranslateUtils.EncryptStringBySecretKey(value),
                 Expires = expires,
-                HttpOnly = true
+                HttpOnly = false
             };
 
             //防止通过js获取到cookie
