@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Data;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
@@ -171,9 +172,9 @@ namespace SiteServer.CMS.Provider
             return sortedlist;
         }
 
-        public Dictionary<int, List<string>> GetChannelPermissionSortedList(string[] roles)
+        public Dictionary<string, List<string>> GetChannelPermissionSortedList(string[] roles)
         {
-            var sortedlist = new Dictionary<int, List<string>>();
+            var dict = new Dictionary<string, List<string>>();
 
             foreach (var roleName in roles)
             {
@@ -184,10 +185,20 @@ namespace SiteServer.CMS.Provider
                     foreach (var channelIdStr in channelIdStrList)
                     {
                         var channelId = TranslateUtils.ToInt(channelIdStr);
-                        var list = new List<string>();
-                        if (sortedlist.ContainsKey(channelId))
+                        List<string> list = null;
+
+                        foreach (var dictKey in dict.Keys)
                         {
-                            list = sortedlist[channelId];
+                            if (dictKey == ProductAdministratorWithPermissions.GetChannelPermissionDictKey(systemPermissionsInfo.SiteId, channelId))
+                            {
+                                list = dict[dictKey];
+                                break;
+                            }
+                        }
+                        if (list == null)
+                        {
+                            list = new List<string>();
+                            dict.Add(ProductAdministratorWithPermissions.GetChannelPermissionDictKey(systemPermissionsInfo.SiteId, channelId), list);
                         }
 
                         var channelPermissionList = TranslateUtils.StringCollectionToStringList(systemPermissionsInfo.ChannelPermissions);
@@ -195,12 +206,11 @@ namespace SiteServer.CMS.Provider
                         {
                             if (!list.Contains(channelPermission)) list.Add(channelPermission);
                         }
-                        sortedlist[channelId] = list;
                     }
                 }
             }
 
-            return sortedlist;
+            return dict;
         }
 
         public List<string> GetChannelPermissionListIgnoreChannelId(string[] roles)

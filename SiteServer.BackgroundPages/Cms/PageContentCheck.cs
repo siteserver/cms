@@ -100,7 +100,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
             var tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
-            var channelIdList = DataProvider.ChannelDao.GetIdListByScopeType(nodeInfo.Id, nodeInfo.ChildrenCount, EScopeType.All, string.Empty, string.Empty, nodeInfo.ContentModelPluginId);
+            var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, EScopeType.All, string.Empty, string.Empty, nodeInfo.ContentModelPluginId);
             var list = new List<int>();
             if (permissions.IsSystemAdministrator)
             {

@@ -3,6 +3,7 @@ using System.Web.UI;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core.Security;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages
 {

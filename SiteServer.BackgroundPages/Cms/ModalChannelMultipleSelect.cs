@@ -8,6 +8,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -121,9 +122,11 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     ["linkUrl"] = GetRedirectUrl(_targetSiteId, string.Empty)
                 };
-                ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteManager.GetSiteInfo(_targetSiteId), ELoadingType.ChannelSelect, additional));
+                ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteManager.GetSiteInfo(_targetSiteId), string.Empty, ELoadingType.ChannelSelect, additional));
 
-                RptChannel.DataSource = DataProvider.ChannelDao.GetIdListByParentId(_targetSiteId, _targetSiteId);
+                var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, EScopeType.Children, string.Empty, string.Empty, string.Empty);
+
+                RptChannel.DataSource = channelIdList;
                 RptChannel.ItemDataBound += RptChannel_ItemDataBound;
                 RptChannel.DataBind();
             }
@@ -135,7 +138,7 @@ namespace SiteServer.BackgroundPages.Cms
             var enabled = IsOwningChannelId(channelId);
             if (!enabled)
             {
-                if (!IsHasChildOwningChannelId(channelId)) e.Item.Visible = false;
+                if (!IsDescendantOwningChannelId(channelId)) e.Item.Visible = false;
             }
             var nodeInfo = ChannelManager.GetChannelInfo(_targetSiteId, channelId);
 

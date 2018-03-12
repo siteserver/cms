@@ -11,7 +11,7 @@ using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Core
 {
-    public class NodeTreeItem
+    public class ChannelTreeItem
     {
         private readonly string _iconFolderUrl;
         private readonly string _iconEmptyUrl;
@@ -23,12 +23,12 @@ namespace SiteServer.BackgroundPages.Core
         private readonly bool _enabled;
         private readonly string _administratorName;
 
-        public static NodeTreeItem CreateInstance(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, string administratorName)
+        public static ChannelTreeItem CreateInstance(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, string administratorName)
         {
-            return new NodeTreeItem(siteInfo, channelInfo, enabled, administratorName);
+            return new ChannelTreeItem(siteInfo, channelInfo, enabled, administratorName);
         }
 
-        private NodeTreeItem(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, string administratorName)
+        private ChannelTreeItem(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, string administratorName)
         {
             _siteInfo = siteInfo;
             _channelInfo = channelInfo;
@@ -90,6 +90,13 @@ namespace SiteServer.BackgroundPages.Core
                 if (loadingType == ELoadingType.ContentTree)
                 {
                     var linkUrl = PageContent.GetRedirectUrl(_channelInfo.SiteId, _channelInfo.Id);
+                    if (!string.IsNullOrEmpty(additional?["linkUrl"]))
+                    {
+                        linkUrl = PageUtils.AddQueryStringIfNotExists(additional["linkUrl"], new NameValueCollection
+                        {
+                            ["channelId"] = _channelInfo.Id.ToString()
+                        });
+                    }
 
                     htmlBuilder.Append(
                         $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_channelInfo.ChannelName}</a>");
@@ -130,7 +137,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             else
             {
-                htmlBuilder.Append(_channelInfo.ChannelName);
+                htmlBuilder.Append($"<span>{_channelInfo.ChannelName}</span>");
             }
 
             if (_channelInfo.SiteId != 0)
@@ -148,7 +155,7 @@ namespace SiteServer.BackgroundPages.Core
             return htmlBuilder.ToString();
         }
 
-        public static string GetScript(SiteInfo siteInfo, ELoadingType loadingType, NameValueCollection additional)
+        public static string GetScript(SiteInfo siteInfo, ELoadingType loadingType, string contentModelPluginId, NameValueCollection additional)
         {
             var script = @"
 <script language=""JavaScript"">
@@ -272,7 +279,7 @@ function displayChildren(img){
             script += $@"
 function loadingChannels(tr, img, div, channelId){{
     var url = '{AjaxOtherService.GetGetLoadingChannelsUrl()}';
-    var pars = '{AjaxOtherService.GetGetLoadingChannelsParameters(siteInfo.Id, loadingType, additional)}&parentID=' + channelId;
+    var pars = '{AjaxOtherService.GetGetLoadingChannelsParameters(siteInfo.Id, contentModelPluginId, loadingType, additional)}&parentID=' + channelId;
 
     jQuery.post(url, pars, function(data, textStatus)
     {{

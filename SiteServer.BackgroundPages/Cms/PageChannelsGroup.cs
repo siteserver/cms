@@ -4,6 +4,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -33,7 +34,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             LtlChannelGroupName.Text = "栏目组：" + _nodeGroupName;
 
-            RptContents.DataSource = DataProvider.ChannelDao.GetIdListByGroupName(SiteId, _nodeGroupName);
+            var channelInfo = ChannelManager.GetChannelInfo(SiteId, SiteId);
+            RptContents.DataSource = ChannelManager.GetChannelIdList(channelInfo, EScopeType.All, _nodeGroupName, string.Empty, string.Empty);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }

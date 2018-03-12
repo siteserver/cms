@@ -4,6 +4,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys.Stl

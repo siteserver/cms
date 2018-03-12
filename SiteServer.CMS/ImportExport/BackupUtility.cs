@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.ImportExport
 {
@@ -24,7 +25,8 @@ namespace SiteServer.CMS.ImportExport
         {
             var exportObject = new ExportObject(siteId);
 
-            var channelIdList = DataProvider.ChannelDao.GetIdListByParentId(siteId, siteId);
+            var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, siteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
+
             exportObject.ExportChannels(channelIdList, filePath);  
         }
 
@@ -84,7 +86,7 @@ namespace SiteServer.CMS.ImportExport
 
             if (isDeleteChannels)
             {
-                var channelIdList = DataProvider.ChannelDao.GetIdListByParentId(siteId, siteId);
+                var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, siteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
                 foreach (var channelId in channelIdList)
                 {
                     DataProvider.ChannelDao.Delete(siteId, channelId);

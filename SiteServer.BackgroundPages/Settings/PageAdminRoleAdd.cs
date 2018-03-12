@@ -136,9 +136,10 @@ namespace SiteServer.BackgroundPages.Settings
                 var allSiteIdList = new List<int>();
                 foreach (var itemForPsid in ProductPermissionsManager.Current.WebsitePermissionDict.Keys)
                 {
-                    if (ProductPermissionsManager.Current.ChannelPermissionDict.ContainsKey(itemForPsid) && ProductPermissionsManager.Current.WebsitePermissionDict.ContainsKey(itemForPsid))
+                    var dictKey = ProductAdministratorWithPermissions.GetChannelPermissionDictKey(itemForPsid, itemForPsid);
+                    if (ProductPermissionsManager.Current.ChannelPermissionDict.ContainsKey(dictKey) && ProductPermissionsManager.Current.WebsitePermissionDict.ContainsKey(itemForPsid))
                     {
-                        var listOne = ProductPermissionsManager.Current.ChannelPermissionDict[itemForPsid];
+                        var listOne = ProductPermissionsManager.Current.ChannelPermissionDict[dictKey];
                         var listTwo = ProductPermissionsManager.Current.WebsitePermissionDict[itemForPsid];
                         if (listOne != null && listOne.Count > 0 || listTwo != null && listTwo.Count > 0)
                         {

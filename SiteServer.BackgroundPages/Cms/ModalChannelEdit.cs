@@ -130,7 +130,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 foreach (ListItem item in CblNodeGroupNameCollection.Items)
                 {
-                    item.Selected = CompareUtils.Contains(nodeInfo.GroupNameCollection, item.Value);
+                    item.Selected = StringUtils.In(nodeInfo.GroupNameCollection, item.Value);
                 }
                 if (PhFilePath.Visible)
                 {

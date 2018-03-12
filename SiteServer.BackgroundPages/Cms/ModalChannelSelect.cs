@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -98,7 +99,7 @@ namespace SiteServer.BackgroundPages.Cms
                         {"itemIndex", _itemIndex.ToString()}
                     });
                     LtlSite.Text = $"<a href='{linkUrl}'>{nodeInfo.ChannelName}</a>";
-                    ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, ELoadingType.ChannelSelect, null));
+                    ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, string.Empty, ELoadingType.ChannelSelect, null));
                     BindGrid();
                 }
 			}
@@ -106,7 +107,8 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BindGrid()
         {
-            RptChannel.DataSource = DataProvider.ChannelDao.GetIdListByParentId(SiteId, SiteId);
+            var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, SiteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
+            RptChannel.DataSource = channelIdList;
             RptChannel.ItemDataBound += rptChannel_ItemDataBound;
             RptChannel.DataBind();
         }
@@ -117,7 +119,7 @@ namespace SiteServer.BackgroundPages.Cms
             var enabled = IsOwningChannelId(channelId);
             if (!enabled)
             {
-                if (!IsHasChildOwningChannelId(channelId)) e.Item.Visible = false;
+                if (!IsDescendantOwningChannelId(channelId)) e.Item.Visible = false;
             }
             var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 

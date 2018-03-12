@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -362,6 +364,28 @@ namespace SiteServer.Utils
                 if (builder.Length > 0) builder.Remove(0, 1);
             }
             return string.Concat(url, builder.ToString());
+        }
+
+        public static string AddQueryStringIfNotExists(string url, NameValueCollection queryString)
+        {
+            if (queryString == null || url == null || queryString.Count == 0)
+                return url;
+
+            var index = url.IndexOf("?", StringComparison.Ordinal);
+            if (index != -1)
+            {
+                var query = TranslateUtils.ToNameValueCollection(url.Substring(index).Trim('?', '&'), '&');
+
+                foreach (string key in query.Keys)
+                {
+                    if (queryString[key] != null)
+                    {
+                        queryString.Remove(key);
+                    }
+                }
+            }
+
+            return AddQueryString(url, queryString);
         }
 
         public static string RemoveQueryString(string url, string queryString)

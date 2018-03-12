@@ -11,26 +11,18 @@ namespace SiteServer.Utils
 
         public static void SetCookie(string name, string value, DateTime expires)
         {
-            var myCookie = new HttpCookie(name)
+            SetCookie(new HttpCookie(name)
             {
-                Value = TranslateUtils.EncryptStringBySecretKey(value),
-                Expires = expires,
-                HttpOnly = false
-            };
-
-            //防止通过js获取到cookie
-            if (HttpContext.Current.Request.Url.Scheme.Equals("https"))
-            {
-                myCookie.Secure = true;//通过https传递cookie
-            }
-
-            HttpContext.Current.Response.Cookies.Add(myCookie);
+                Value = value,
+                Expires = expires
+            });
         }
 
         public static void SetCookie(HttpCookie cookie)
         {
             cookie.Value = TranslateUtils.EncryptStringBySecretKey(cookie.Value);
-            cookie.HttpOnly = true;//防止通过js获取到cookie
+            cookie.HttpOnly = false;
+
             if (HttpContext.Current.Request.Url.Scheme.Equals("https"))
             {
                 cookie.Secure = true;//通过https传递cookie

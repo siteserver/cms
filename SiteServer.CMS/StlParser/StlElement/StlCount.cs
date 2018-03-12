@@ -110,7 +110,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
 
                 //var channelIdList = DataProvider.ChannelDao.GetIdListByScopeType(nodeInfo.ChannelId, nodeInfo.ChildrenCount, scope, string.Empty, string.Empty);
-                var channelIdList = Node.GetIdListByScopeType(nodeInfo.Id, nodeInfo.ChildrenCount, scope, string.Empty, string.Empty);
+                var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, scope, string.Empty, string.Empty, string.Empty);
                 foreach (var theChannelId in channelIdList)
                 {
                     var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, theChannelId);

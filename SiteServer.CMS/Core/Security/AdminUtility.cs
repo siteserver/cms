@@ -1,5 +1,8 @@
+using System;
 using SiteServer.Utils;
 using System.Collections.Generic;
+using SiteServer.CMS.Plugin;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.Security
 {
@@ -66,7 +69,8 @@ namespace SiteServer.CMS.Core.Security
             {
                 return true;
             }
-            if (ProductPermissionsManager.Current.ChannelPermissionDict.ContainsKey(channelId) && HasChannelPermissions(administratorName, ProductPermissionsManager.Current.ChannelPermissionDict[channelId], channelPermissions))
+            var dictKey = ProductAdministratorWithPermissions.GetChannelPermissionDictKey(siteId, channelId);
+            if (ProductPermissionsManager.Current.ChannelPermissionDict.ContainsKey(dictKey) && HasChannelPermissions(administratorName, ProductPermissionsManager.Current.ChannelPermissionDict[dictKey], channelPermissions))
             {
                 return true;
             }
@@ -114,14 +118,16 @@ namespace SiteServer.CMS.Core.Security
             return false;
         }
 
-        public static bool IsHasChildOwningChannelId(string administratorName, int channelId)
+        public static bool IsDescendantOwningChannelId(string administratorName, int siteId, int channelId)
         {
             var permissions = PermissionsManager.GetPermissions(administratorName);
             if (permissions.IsSystemAdministrator)
             {
                 return true;
             }
-            var channelIdList = DataProvider.ChannelDao.GetIdListForDescendant(channelId);
+
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var channelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
             foreach (var theChannelId in channelIdList)
             {
                 if (IsOwningChannelId(administratorName, theChannelId))

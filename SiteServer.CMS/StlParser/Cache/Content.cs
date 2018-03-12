@@ -334,7 +334,8 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<string>(cacheKey);
                 if (retval == null)
                 {
-                    var channelIdList = Node.GetIdListByScopeType(channelId, scopeType, groupChannel, groupChannelNot);
+                    var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                    var channelIdList = ChannelManager.GetChannelIdList(channelInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
                     retval = DataProvider.ContentDao.GetStlSqlStringChecked(channelIdList, tableName, siteId, channelId, startNum,
                     totalNum, orderByString, whereString, scopeType, groupChannel, groupChannelNot, isNoDup);
                     StlCacheUtils.SetCache(cacheKey, retval);

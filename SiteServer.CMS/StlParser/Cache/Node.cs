@@ -56,26 +56,6 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static List<int> GetIdListByScopeType(int channelId, int childrenCount, EScopeType scope, string group, string groupNot)
-        {
-            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Node), nameof(GetIdListByScopeType),
-                       channelId.ToString(), childrenCount.ToString(), EScopeTypeUtils.GetValue(scope), group, groupNot);
-            var retval = StlCacheUtils.GetCache<List<int>>(cacheKey);
-            if (retval != null) return retval;
-
-            lock (LockObject)
-            {
-                retval = StlCacheUtils.GetCache<List<int>>(cacheKey);
-                if (retval == null)
-                {
-                    retval = DataProvider.ChannelDao.GetIdListByScopeType(channelId, childrenCount, scope, group, groupNot, string.Empty);
-                    StlCacheUtils.SetCache(cacheKey, retval);
-                }
-            }
-
-            return retval;
-        }
-
         public static DataSet GetStlDataSourceBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Node), nameof(GetStlDataSourceBySiteId),
@@ -193,26 +173,6 @@ namespace SiteServer.CMS.StlParser.Cache
                 {
                     retval = DataProvider.ChannelDao.GetWhereString(siteId, groupContent, groupContentNot,
                     isImageExists, isImage, where);
-                    StlCacheUtils.SetCache(cacheKey, retval);
-                }
-            }
-
-            return retval;
-        }
-
-        public static List<int> GetIdListByScopeType(int channelId, EScopeType scopeType, string groupChannel, string groupChannelNot)
-        {
-            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Node), nameof(GetIdListByScopeType),
-                       channelId.ToString(), EScopeTypeUtils.GetValue(scopeType), groupChannel, groupChannelNot);
-            var retval = StlCacheUtils.GetCache<List<int>>(cacheKey);
-            if (retval != null) return retval;
-
-            lock (LockObject)
-            {
-                retval = StlCacheUtils.GetCache<List<int>>(cacheKey);
-                if (retval == null)
-                {
-                    retval = DataProvider.ChannelDao.GetIdListByScopeType(channelId, scopeType, groupChannel, groupChannelNot);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }

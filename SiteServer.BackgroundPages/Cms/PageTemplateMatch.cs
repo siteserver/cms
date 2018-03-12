@@ -129,7 +129,7 @@ namespace SiteServer.BackgroundPages.Cms
             LbChannelId.Items.Clear();
             LbChannelTemplateId.Items.Clear();
             LbContentTemplateId.Items.Clear();
-			var channelIdList = DataProvider.ChannelDao.GetIdListBySiteId(SiteId);
+			var channelIdList = ChannelManager.GetChannelIdList(SiteId);
             var nodeCount = channelIdList.Count;
 			_isLastNodeArray = new bool[nodeCount];
             foreach (var theChannelId in channelIdList)
@@ -377,8 +377,8 @@ namespace SiteServer.BackgroundPages.Cms
 		            continue;
 		        }
 		        var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdminName);
-		        var childChannelIdArrayList = DataProvider.ChannelDao.GetIdListForDescendant(channelId);
-		        foreach (var childChannelId in childChannelIdArrayList)
+		        var childChannelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, channelId), EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
+		        foreach (var childChannelId in childChannelIdList)
 		        {
 		            TemplateManager.UpdateChannelTemplateId(SiteId, childChannelId, insertedTemplateId);
 		            //DataProvider.BackgroundNodeDAO.UpdateChannelTemplateID(childChannelId, insertedTemplateID);
@@ -465,8 +465,8 @@ namespace SiteServer.BackgroundPages.Cms
 		            continue;
 		        }
 		        var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdminName);
-		        var childChannelIdList = DataProvider.ChannelDao.GetIdListForDescendant(channelId);
-		        foreach (var childChannelId in childChannelIdList)
+                var childChannelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, channelId), EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
+                foreach (var childChannelId in childChannelIdList)
 		        {
 		            TemplateManager.UpdateContentTemplateId(SiteId, childChannelId, insertedTemplateId);
 		            //DataProvider.BackgroundNodeDAO.UpdateContentTemplateID(childChannelId, insertedTemplateID);

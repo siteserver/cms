@@ -67,13 +67,14 @@ namespace SiteServer.CMS.Plugin
             {
                 return href;
             }
-            var url = PageUtils.AddQueryString(PageUtils.GetPluginDirectoryUrl(pluginId, href), new NameValueCollection
+
+            var url = PageUtils.AddQueryStringIfNotExists(PageUtils.GetPluginDirectoryUrl(pluginId, href), new NameValueCollection
             {
                 {"v", StringUtils.GetRandomInt(1, 1000).ToString()}
             });
             if (siteId > 0)
             {
-                url = PageUtils.AddQueryString(url, new NameValueCollection
+                url = PageUtils.AddQueryStringIfNotExists(url, new NameValueCollection
                 {
                     {"siteId", siteId.ToString()}
                 });
@@ -87,7 +88,7 @@ namespace SiteServer.CMS.Plugin
             {
                 return href;
             }
-            return PageUtils.AddQueryString(PageUtils.GetPluginDirectoryUrl(pluginId, href), new NameValueCollection
+            return PageUtils.AddQueryStringIfNotExists(PageUtils.GetPluginDirectoryUrl(pluginId, href), new NameValueCollection
             {
                 {"siteId", siteId.ToString()},
                 {"channelId", channelId.ToString()},

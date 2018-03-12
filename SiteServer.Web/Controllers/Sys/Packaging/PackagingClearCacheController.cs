@@ -1,6 +1,7 @@
 ﻿using System.Web.Http;
 using SiteServer.CMS.Controllers.Sys.Packaging;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys.Packaging

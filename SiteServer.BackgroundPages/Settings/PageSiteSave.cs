@@ -128,7 +128,7 @@ namespace SiteServer.BackgroundPages.Settings
             var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
 
             htmlBuilder.Append("<span id='ChannelSelectControl'>");
-            var channelIdList = DataProvider.ChannelDao.GetIdListBySiteId(SiteId);
+            var channelIdList = ChannelManager.GetChannelIdList(SiteId);
             var isLastNodeArray = new bool[channelIdList.Count];
             foreach (var channelId in channelIdList)
             {

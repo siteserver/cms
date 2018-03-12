@@ -71,10 +71,15 @@ namespace SiteServer.Utils
             return Regex.IsMatch(val, formatDate) || Regex.IsMatch(val, formatDateTime);
         }
 
-        public static bool In(string text, string inText)
+        public static bool In(string strCollection, int inInt)
         {
-            if (string.IsNullOrEmpty(text)) return false;
-            return text == inText || text.StartsWith(inText + ",") || text.EndsWith("," + inText) || text.IndexOf("," + inText + ",", StringComparison.Ordinal) != -1;
+            return In(strCollection, inInt.ToString());
+        }
+
+        public static bool In(string strCollection, string inStr)
+        {
+            if (string.IsNullOrEmpty(strCollection)) return false;
+            return strCollection == inStr || strCollection.StartsWith(inStr + ",") || strCollection.EndsWith("," + inStr) || strCollection.IndexOf("," + inStr + ",", StringComparison.Ordinal) != -1;
         }
 
         public static bool Contains(string text, string inner)

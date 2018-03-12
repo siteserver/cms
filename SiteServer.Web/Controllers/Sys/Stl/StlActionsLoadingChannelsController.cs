@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.StlElement;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys.Stl
 {
@@ -30,7 +31,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
                 var currentChannelId = TranslateUtils.ToInt(form["currentChannelId"]);
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                var channelIdList = DataProvider.ChannelDao.GetIdListByParentId(siteId, parentId);
+                var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, parentId == 0 ? siteId : parentId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
 
                 foreach (var channelId in channelIdList)
                 {

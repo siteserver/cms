@@ -282,7 +282,7 @@
     <Compile Include="Plugin\Model\PluginInfo.cs" />
     <Compile Include="Plugin\Model\PluginParseContext.cs" />
     <Compile Include="Plugin\Model\PluginService.cs" />
-    <Compile Include="Core\Request.cs" />
+    <Compile Include="Plugin\Request.cs" />
     <Compile Include="Plugin\PluginContentManager.cs" />
     <Compile Include="Plugin\PluginContentTableManager.cs" />
     <Compile Include="Plugin\PluginDatabaseTableManager.cs" />

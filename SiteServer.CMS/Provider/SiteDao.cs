@@ -100,7 +100,7 @@ namespace SiteServer.CMS.Provider
         public void Delete(int siteId)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var list = DataProvider.ChannelDao.GetIdListBySiteId(siteId);
+            var list = ChannelManager.GetChannelIdList(siteId);
             DataProvider.TableStyleDao.Delete(list, siteInfo.TableName);
 
             DataProvider.TagDao.DeleteTags(siteId);

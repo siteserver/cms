@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.CMS.UEditor
 {

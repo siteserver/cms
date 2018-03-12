@@ -27,9 +27,9 @@ namespace SiteServer.BackgroundPages
             return AdminUtility.IsOwningChannelId(Body.AdminName, channelId);
         }
 
-        public bool IsHasChildOwningChannelId(int channelId)
+        public bool IsDescendantOwningChannelId(int channelId)
         {
-            return AdminUtility.IsHasChildOwningChannelId(Body.AdminName, channelId);
+            return AdminUtility.IsDescendantOwningChannelId(Body.AdminName, SiteId, channelId);
         }
 
         private int _siteId = -1;

@@ -425,7 +425,7 @@
     <Compile Include="Controls\Help.cs" />
     <Compile Include="Controls\Message.cs" />
     <Compile Include="Controls\NavigationTree.cs" />
-    <Compile Include="Controls\NodeTree.cs" />
+    <Compile Include="Controls\ChannelTree.cs" />
     <Compile Include="Controls\NoTagText.cs" />
     <Compile Include="Controls\Script.cs" />
     <Compile Include="Controls\SqlCountPager.cs" />
@@ -443,7 +443,7 @@
     <Compile Include="Core\DepartmentTreeItem.cs" />
     <Compile Include="Core\NavigationTreeItem.cs" />
     <Compile Include="Core\NodeNaviTreeItem.cs" />
-    <Compile Include="Core\NodeTreeItem.cs" />
+    <Compile Include="Core\ChannelTreeItem.cs" />
     <Compile Include="Core\PagerStyle.cs" />
     <Compile Include="Core\PagingMode.cs" />
     <Compile Include="Core\SortMode.cs" />

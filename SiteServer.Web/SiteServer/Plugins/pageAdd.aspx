@@ -9,7 +9,7 @@
     </head>
 
     <body>
-      <form id="main" class="m-l-15 m-r-15" runat="server">
+      <form id="main" defaultbutton="BtnSearch" class="m-l-15 m-r-15" runat="server">
 
         <div class="text-center" style="margin-top: 100px" v-bind:style="{ display: featuredPackages ? 'none' : '' }">
           <img class="mt-3" src="../assets/layer/skin/default/xubox_loading0.gif" />
@@ -27,7 +27,7 @@
                     <input v-model="word" type="text" placeholder="请输入关键字..." class="form-control" style="width: 400px">
                   </div>
 
-                  <input type="button" value="搜索插件" v-on:click="search" class="btn btn-success m-l-10 btn-md">
+                  <asp:Button id="BtnSearch" text="搜索插件" onClientClick="$vue.search();return false;" class="btn btn-success m-l-10 btn-md" runat="server" />
                 </div>
               </div>
               <div class="col-4">
@@ -147,7 +147,7 @@
         }
       }, 'packages');
 
-      new Vue({
+      var $vue = new Vue({
         el: '#main',
         data: data,
         methods: {

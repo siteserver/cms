@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Core
     {
         public static string GetChannelRowHtml(SiteInfo siteInfo, ChannelInfo nodeInfo, bool enabled, ELoadingType loadingType, NameValueCollection additional, string administratorName)
         {
-            var nodeTreeItem = NodeTreeItem.CreateInstance(siteInfo, nodeInfo, enabled, administratorName);
+            var nodeTreeItem = ChannelTreeItem.CreateInstance(siteInfo, nodeInfo, enabled, administratorName);
             var title = nodeTreeItem.GetItemHtml(loadingType, PageChannel.GetRedirectUrl(siteInfo.Id, nodeInfo.Id), additional);
 
             var rowHtml = string.Empty;
@@ -181,9 +181,9 @@ namespace SiteServer.BackgroundPages.Core
             return rowHtml;
         }
 
-        public static string GetScript(SiteInfo siteInfo, ELoadingType loadingType, NameValueCollection additional)
+        public static string GetScript(SiteInfo siteInfo, string contentModelPluginId, ELoadingType loadingType, NameValueCollection additional)
         {
-            return NodeTreeItem.GetScript(siteInfo, loadingType, additional);
+            return ChannelTreeItem.GetScript(siteInfo, loadingType, contentModelPluginId, additional);
         }
 
         public static string GetScriptOnLoad(int siteId, int currentChannelId)
@@ -202,7 +202,7 @@ namespace SiteServer.BackgroundPages.Core
             {
                 path = nodeInfo.ParentsPath.Substring(nodeInfo.ParentsPath.IndexOf(",", StringComparison.Ordinal) + 1) + "," + currentChannelId;
             }
-            return NodeTreeItem.GetScriptOnLoad(path);
+            return ChannelTreeItem.GetScriptOnLoad(path);
         }
     }
 }

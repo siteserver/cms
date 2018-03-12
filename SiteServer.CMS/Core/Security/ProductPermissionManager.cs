@@ -1,3 +1,5 @@
+using SiteServer.CMS.Plugin;
+
 namespace SiteServer.CMS.Core.Security
 {
 	public class ProductPermissionsManager

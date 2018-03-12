@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             var channelId = Body.GetQueryInt("channelId", SiteId);
-            var channelIdList = DataProvider.ChannelDao.GetIdListBySiteId(SiteId);
+            var channelIdList = ChannelManager.GetChannelIdList(SiteId);
             var nodeCount = channelIdList.Count;
             _isLastNodeArray = new bool[nodeCount];
             foreach (var theChannelId in channelIdList)

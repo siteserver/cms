@@ -5,7 +5,6 @@ using SiteServer.Utils;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -136,7 +135,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             htmlBuilder.Append(@"<table border=""0"" cellpadding=""0"" cellspacing=""0"" style=""width:100%;"">");
 
             //var theChannelIdList = DataProvider.ChannelDao.GetIdListByScopeType(channel.ChannelId, channel.ChildrenCount, EScopeType.All, groupChannel, groupChannelNot);
-            var theChannelIdList = Node.GetIdListByScopeType(channel.Id, channel.ChildrenCount, EScopeType.All, groupChannel, groupChannelNot);
+            var theChannelIdList = ChannelManager.GetChannelIdList(channel, EScopeType.All, groupChannel, groupChannelNot, string.Empty);
             var isLastNodeArray = new bool[theChannelIdList.Count];
             var channelIdList = new List<int>();
 
@@ -584,7 +583,7 @@ var stltree_isNodeTree = {isNodeTree};
             htmlBuilder.Append(@"<table border=""0"" cellpadding=""0"" cellspacing=""0"" style=""width:100%;"">");
 
             //var theChannelIdList = DataProvider.ChannelDao.GetIdListByScopeType(channel.ChannelId, channel.ChildrenCount, EScopeType.SelfAndChildren, groupChannel, groupChannelNot);
-            var theChannelIdList = Node.GetIdListByScopeType(channel.Id, channel.ChildrenCount, EScopeType.SelfAndChildren, groupChannel, groupChannelNot);
+            var theChannelIdList = ChannelManager.GetChannelIdList(channel, EScopeType.SelfAndChildren, groupChannel, groupChannelNot, string.Empty);
 
             foreach (var theChannelId in theChannelIdList)
             {

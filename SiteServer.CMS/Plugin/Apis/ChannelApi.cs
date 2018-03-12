@@ -5,6 +5,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
@@ -37,12 +38,12 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public List<int> GetChannelIdList(int siteId)
         {
-            return DataProvider.ChannelDao.GetIdListBySiteId(siteId);
+            return ChannelManager.GetChannelIdList(siteId);
         }
 
         public List<int> GetChannelIdList(int siteId, int parentId)
         {
-            return DataProvider.ChannelDao.GetIdListByParentId(siteId, parentId);
+            return ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, parentId == 0 ? siteId : parentId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
         }
 
         public List<int> GetChannelIdList(int siteId, string adminName)
@@ -52,7 +53,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
             if (AdminManager.HasChannelPermissionIsConsoleAdministrator(adminName) || AdminManager.HasChannelPermissionIsSystemAdministrator(adminName))//如果是超级管理员或站点管理员
             {
-                channelIdList = DataProvider.ChannelDao.GetIdListBySiteId(siteId);
+                channelIdList = ChannelManager.GetChannelIdList(siteId);
             }
             else
             {
@@ -60,7 +61,8 @@ namespace SiteServer.CMS.Plugin.Apis
                 ICollection channelIdCollection = ps.ChannelPermissionDict.Keys;
                 foreach (int channelId in channelIdCollection)
                 {
-                    var allChannelIdList = DataProvider.ChannelDao.GetIdListForDescendant(channelId);
+                    var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                    var allChannelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
                     allChannelIdList.Insert(0, channelId);
 
                     foreach (var ownChannelId in allChannelIdList)

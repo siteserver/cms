@@ -47,7 +47,7 @@
 				</div>
 				<table class="table table-sm table-hover">
 					<tbody>
-						<ctrl:NodeTree runat="server"></ctrl:NodeTree>
+						<ctrl:ChannelTree runat="server"></ctrl:ChannelTree>
 					</tbody>
 				</table>
 			</form>

@@ -181,7 +181,7 @@ namespace SiteServer.CMS.Provider
 
         private const string SqlSelectByTaxis = "SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues FROM siteserver_Channel WHERE ParentId = @ParentId ORDER BY Taxis";
 
-        private const string SqlSelectByParentIdAndContentModelPluginId = "SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues FROM siteserver_Channel WHERE (SiteId = @SiteId OR Id = @SiteId) AND ContentModelPluginId = @ContentModelPluginId";
+        //private const string SqlSelectByParentIdAndContentModelPluginId = "SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues FROM siteserver_Channel WHERE (SiteId = @SiteId OR Id = @SiteId) AND ContentModelPluginId = @ContentModelPluginId";
 
         private const string SqlSelectGroupNameCollection = "SELECT GroupNameCollection FROM siteserver_Channel WHERE Id = @Id";
 
@@ -864,7 +864,7 @@ namespace SiteServer.CMS.Provider
 
         public void UpdateContentNum(SiteInfo siteInfo)
         {
-            var idList = GetIdListBySiteId(siteInfo.Id);
+            var idList = ChannelManager.GetChannelIdList(siteInfo.Id);
             foreach (var channelId in idList)
             {
                 UpdateContentNum(siteInfo, channelId, false);
@@ -924,7 +924,7 @@ namespace SiteServer.CMS.Provider
             var idList = new List<int>();
             if (channelInfo.ChildrenCount > 0)
             {
-                idList = DataProvider.ChannelDao.GetIdListForDescendant(channelId);
+                idList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
             }
             idList.Add(channelId);
 
@@ -988,8 +988,7 @@ namespace SiteServer.CMS.Provider
             {
                 if (rdr.Read())
                 {
-                    var i = 0;
-                    channelInfo = new ChannelInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ELinkTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
+                    channelInfo = GetChannelInfo(rdr);
                 }
                 rdr.Close();
             }
@@ -1012,8 +1011,7 @@ namespace SiteServer.CMS.Provider
             {
                 if (rdr.Read())
                 {
-                    var i = 0;
-                    channelInfo = new ChannelInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ELinkTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
+                    channelInfo = GetChannelInfo(rdr);
                 }
                 rdr.Close();
             }
@@ -1036,34 +1034,32 @@ namespace SiteServer.CMS.Provider
             {
                 if (rdr.Read())
                 {
-                    var i = 0;
-                    channelInfo = new ChannelInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ELinkTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
+                    channelInfo = GetChannelInfo(rdr);
                 }
                 rdr.Close();
             }
             return channelInfo;
         }
 
-        public ChannelInfo GetChannelInfoByParentId(int siteId, int parentId, string contentModelPluginId)
-        {
-            ChannelInfo channelInfo = null;
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmSiteId, DataType.Integer, siteId),
-                GetParameter(ParmParentId, DataType.Integer, parentId),
-                GetParameter(ParmContentModelPluginId, DataType.VarChar, 50, contentModelPluginId)
-            };
-            using (var rdr = ExecuteReader(SqlSelectByParentIdAndContentModelPluginId, parms))
-            {
-                if (rdr.Read())
-                {
-                    var i = 0;
-                    channelInfo = new ChannelInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ELinkTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
-                }
-                rdr.Close();
-            }
-            return channelInfo;
-        }
+        //public ChannelInfo GetChannelInfoByParentId(int siteId, int parentId, string contentModelPluginId)
+        //{
+        //    ChannelInfo channelInfo = null;
+        //    var parms = new IDataParameter[]
+        //    {
+        //        GetParameter(ParmSiteId, DataType.Integer, siteId),
+        //        GetParameter(ParmParentId, DataType.Integer, parentId),
+        //        GetParameter(ParmContentModelPluginId, DataType.VarChar, 50, contentModelPluginId)
+        //    };
+        //    using (var rdr = ExecuteReader(SqlSelectByParentIdAndContentModelPluginId, parms))
+        //    {
+        //        if (rdr.Read())
+        //        {
+        //            channelInfo = GetChannelInfo(rdr);
+        //        }
+        //        rdr.Close();
+        //    }
+        //    return channelInfo;
+        //}
 
         public int GetIdByParentIdAndChannelName(int siteId, int parentId, string channelName, bool recursive)
         {
@@ -1190,23 +1186,23 @@ ORDER BY Taxis";
             return retval;
         }
 
-        public List<int> GetIdListByGroupName(int siteId, string groupName)
-        {
-            var idList = new List<int>();
-            string sqlString =
-                $"SELECT Id FROM siteserver_Channel WHERE SiteId={siteId} AND (GroupNameCollection LIKE '{PageUtils.FilterSql(groupName)},%' OR GroupNameCollection LIKE '%,{PageUtils.FilterSql(groupName)}' OR GroupNameCollection LIKE '%,{PageUtils.FilterSql(groupName)},%' OR GroupNameCollection='{PageUtils.FilterSql(groupName)}') ORDER By Id";
+        //public List<int> GetIdListByGroupName(int siteId, string groupName)
+        //{
+        //    var idList = new List<int>();
+        //    string sqlString =
+        //        $"SELECT Id FROM siteserver_Channel WHERE SiteId={siteId} AND (GroupNameCollection LIKE '{PageUtils.FilterSql(groupName)},%' OR GroupNameCollection LIKE '%,{PageUtils.FilterSql(groupName)}' OR GroupNameCollection LIKE '%,{PageUtils.FilterSql(groupName)},%' OR GroupNameCollection='{PageUtils.FilterSql(groupName)}') ORDER By Id";
 
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    idList.Add(GetInt(rdr, 0));
-                }
-                rdr.Close();
-            }
+        //    using (var rdr = ExecuteReader(sqlString))
+        //    {
+        //        while (rdr.Read())
+        //        {
+        //            idList.Add(GetInt(rdr, 0));
+        //        }
+        //        rdr.Close();
+        //    }
 
-            return idList;
-        }
+        //    return idList;
+        //}
 
         public int GetOrderInSibling(int channelId, int parentId)
         {
@@ -1450,23 +1446,6 @@ ORDER BY Taxis";
             ChannelManager.RemoveCache(channelId);
         }
 
-        public List<int> GetIdList()
-        {
-            var list = new List<int>();
-            const string sqlString = "SELECT Id FROM siteserver_Channel";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetInt(rdr, 0));
-                }
-                rdr.Close();
-            }
-
-            return list;
-        }
-
         public List<int> GetIdListByTotalNum(List<int> channelIdList, int totalNum, string orderByString, string whereString)
         {
             if (channelIdList == null || channelIdList.Count == 0)
@@ -1507,240 +1486,240 @@ WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereS
             return list;
         }
 
-        public List<int> GetIdListByScopeType(int channelId, EScopeType scopeType, string group, string groupNot)
-        {
-            var list = new List<int>();
-            string sqlString = null;
-            var groupWhereString = GetGroupWhereString(group, groupNot);
-            if (scopeType == EScopeType.All)
-            {
-                sqlString = $@"SELECT Id
-FROM siteserver_Channel 
-WHERE ((Id = {channelId}) OR
-      (ParentId = {channelId}) OR
-      (ParentsPath = '{channelId}') OR
-      (ParentsPath LIKE '{channelId},%') OR
-      (ParentsPath LIKE '%,{channelId},%') OR
-      (ParentsPath LIKE '%,{channelId}')) {groupWhereString}
-ORDER BY Taxis";
-            }
-            else if (scopeType == EScopeType.Self)
-            {
-                list.Add(channelId);
-                return list;
-            }
-            else if (scopeType == EScopeType.Children)
-            {
-                sqlString = $@"SELECT Id
-FROM siteserver_Channel 
-WHERE (ParentId = {channelId}) {groupWhereString}
-ORDER BY Taxis";
-            }
-            else if (scopeType == EScopeType.Descendant)
-            {
-                sqlString = $@"SELECT Id
-FROM siteserver_Channel 
-WHERE ((ParentId = {channelId}) OR
-      (ParentsPath = '{channelId}') OR
-      (ParentsPath LIKE '{channelId},%') OR
-      (ParentsPath LIKE '%,{channelId},%') OR
-      (ParentsPath LIKE '%,{channelId}')) {groupWhereString}
-ORDER BY Taxis";
-            }
-            else if (scopeType == EScopeType.SelfAndChildren)
-            {
-                sqlString = $@"SELECT Id
-FROM siteserver_Channel 
-WHERE ((Id = {channelId}) OR
-      (ParentId = {channelId})) {groupWhereString}
-ORDER BY Taxis";
-            }
+//        public List<int> GetIdListByScopeType(int channelId, EScopeType scopeType, string group, string groupNot)
+//        {
+//            var list = new List<int>();
+//            string sqlString = null;
+//            var groupWhereString = GetGroupWhereString(group, groupNot);
+//            if (scopeType == EScopeType.All)
+//            {
+//                sqlString = $@"SELECT Id
+//FROM siteserver_Channel 
+//WHERE ((Id = {channelId}) OR
+//      (ParentId = {channelId}) OR
+//      (ParentsPath = '{channelId}') OR
+//      (ParentsPath LIKE '{channelId},%') OR
+//      (ParentsPath LIKE '%,{channelId},%') OR
+//      (ParentsPath LIKE '%,{channelId}')) {groupWhereString}
+//ORDER BY Taxis";
+//            }
+//            else if (scopeType == EScopeType.Self)
+//            {
+//                list.Add(channelId);
+//                return list;
+//            }
+//            else if (scopeType == EScopeType.Children)
+//            {
+//                sqlString = $@"SELECT Id
+//FROM siteserver_Channel 
+//WHERE (ParentId = {channelId}) {groupWhereString}
+//ORDER BY Taxis";
+//            }
+//            else if (scopeType == EScopeType.Descendant)
+//            {
+//                sqlString = $@"SELECT Id
+//FROM siteserver_Channel 
+//WHERE ((ParentId = {channelId}) OR
+//      (ParentsPath = '{channelId}') OR
+//      (ParentsPath LIKE '{channelId},%') OR
+//      (ParentsPath LIKE '%,{channelId},%') OR
+//      (ParentsPath LIKE '%,{channelId}')) {groupWhereString}
+//ORDER BY Taxis";
+//            }
+//            else if (scopeType == EScopeType.SelfAndChildren)
+//            {
+//                sqlString = $@"SELECT Id
+//FROM siteserver_Channel 
+//WHERE ((Id = {channelId}) OR
+//      (ParentId = {channelId})) {groupWhereString}
+//ORDER BY Taxis";
+//            }
 
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetInt(rdr, 0));
-                }
-                rdr.Close();
-            }
+//            using (var rdr = ExecuteReader(sqlString))
+//            {
+//                while (rdr.Read())
+//                {
+//                    list.Add(GetInt(rdr, 0));
+//                }
+//                rdr.Close();
+//            }
 
-            return list;
-        }
+//            return list;
+//        }
 
-        public List<int> GetIdListByScopeType(int channelId, int childrenCount, EScopeType scopeType, string group, string groupNot, string contentModelPluginId)
-        {
-            if (channelId <= 0) return new List<int>();
+//        public List<int> GetIdListByScopeType(ChannelInfo channelInfo, EScopeType scopeType, string group, string groupNot, string contentModelPluginId)
+//        {
+//            if (channelInfo == null || channelInfo.Id <= 0) return new List<int>();
 
-            var list = new List<int>();
+//            var list = new List<int>();
 
-            if (childrenCount == 0)
-            {
-                if (scopeType != EScopeType.Children && scopeType != EScopeType.Descendant)
-                {
-                    list.Add(channelId);
-                }
+//            if (scopeType == EScopeType.Self)
+//            {
+//                list.Add(channelInfo.Id);
+//                return list;
+//            }
+//            if (channelInfo.ChildrenCount == 0)
+//            {
+//                if (scopeType != EScopeType.Children && scopeType != EScopeType.Descendant)
+//                {
+//                    list.Add(channelInfo.Id);
+//                }
 
-                return list;
-            }
+//                return list;
+//            }
 
-            string sqlString = null;
-            var whereString = GetGroupWhereString(group, groupNot);
-            if (!string.IsNullOrEmpty(contentModelPluginId))
-            {
-                whereString += $" AND ContentModelPluginId = '{contentModelPluginId}'";
-            }
-            if (scopeType == EScopeType.All)
-            {
-                sqlString = $@"SELECT Id
-FROM siteserver_Channel 
-WHERE ((Id = {channelId}) OR
-      (ParentId = {channelId}) OR
-      (ParentsPath = '{channelId}') OR
-      (ParentsPath LIKE '{channelId},%') OR
-      (ParentsPath LIKE '%,{channelId},%') OR
-      (ParentsPath LIKE '%,{channelId}')) {whereString}
-ORDER BY Taxis";
-            }
-            else if (scopeType == EScopeType.Self)
-            {
-                list.Add(channelId);
-                return list;
-            }
-            else if (scopeType == EScopeType.Children)
-            {
-                sqlString = $@"SELECT Id
-FROM siteserver_Channel 
-WHERE (ParentId = {channelId}) {whereString}
-ORDER BY Taxis";
-            }
-            else if (scopeType == EScopeType.Descendant)
-            {
-                sqlString = $@"SELECT Id
-FROM siteserver_Channel 
-WHERE ((ParentId = {channelId}) OR
-      (ParentsPath = '{channelId}') OR
-      (ParentsPath LIKE '{channelId},%') OR
-      (ParentsPath LIKE '%,{channelId},%') OR
-      (ParentsPath LIKE '%,{channelId}')) {whereString}
-ORDER BY Taxis";
-            }
-            else if (scopeType == EScopeType.SelfAndChildren)
-            {
-                sqlString = $@"SELECT Id
-FROM siteserver_Channel 
-WHERE ((Id = {channelId}) OR
-      (ParentId = {channelId})) {whereString}
-ORDER BY Taxis";
-            }
+//            string sqlString = null;
+//            var whereString = GetGroupWhereString(group, groupNot);
+//            if (!string.IsNullOrEmpty(contentModelPluginId))
+//            {
+//                whereString += $" AND ContentModelPluginId = '{contentModelPluginId}'";
+//            }
 
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetInt(rdr, 0));
-                }
-                rdr.Close();
-            }
+//            if (scopeType == EScopeType.All)
+//            {
+//                sqlString = $@"SELECT Id
+//FROM siteserver_Channel 
+//WHERE ((Id = {channelInfo.Id}) OR
+//      (ParentId = {channelInfo.Id}) OR
+//      (ParentsPath = '{channelInfo.Id}') OR
+//      (ParentsPath LIKE '{channelInfo.Id},%') OR
+//      (ParentsPath LIKE '%,{channelInfo.Id},%') OR
+//      (ParentsPath LIKE '%,{channelInfo.Id}')) {whereString}
+//ORDER BY Taxis";
+//            }
+//            else if (scopeType == EScopeType.Children)
+//            {
+//                sqlString = $@"SELECT Id
+//FROM siteserver_Channel 
+//WHERE (ParentId = {channelInfo.Id}) {whereString}
+//ORDER BY Taxis";
+//            }
+//            else if (scopeType == EScopeType.Descendant)
+//            {
+//                sqlString = $@"SELECT Id
+//FROM siteserver_Channel 
+//WHERE ((ParentId = {channelInfo.Id}) OR
+//      (ParentsPath = '{channelInfo.Id}') OR
+//      (ParentsPath LIKE '{channelInfo.Id},%') OR
+//      (ParentsPath LIKE '%,{channelInfo.Id},%') OR
+//      (ParentsPath LIKE '%,{channelInfo.Id}')) {whereString}
+//ORDER BY Taxis";
+//            }
+//            else if (scopeType == EScopeType.SelfAndChildren)
+//            {
+//                sqlString = $@"SELECT Id
+//FROM siteserver_Channel 
+//WHERE ((Id = {channelInfo.Id}) OR
+//      (ParentId = {channelInfo.Id})) {whereString}
+//ORDER BY Taxis";
+//            }
 
-            return list;
-        }
+//            using (var rdr = ExecuteReader(sqlString))
+//            {
+//                while (rdr.Read())
+//                {
+//                    list.Add(GetInt(rdr, 0));
+//                }
+//                rdr.Close();
+//            }
 
-        public List<int> GetIdListForDescendant(int channelId)
-        {
-            string sqlString = $@"SELECT Id
-FROM siteserver_Channel
-WHERE (ParentsPath LIKE '{channelId},%') OR
-      (ParentsPath LIKE '%,{channelId},%') OR
-      (ParentsPath LIKE '%,{channelId}') OR
-      (ParentId = {channelId})
-";
-            var list = new List<int>();
+//            return list;
+//        }
 
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetInt(rdr, 0));
-                }
-                rdr.Close();
-            }
+//        public List<int> GetIdListForDescendant(int parentId)
+//        {
+//            string sqlString = $@"SELECT Id
+//FROM siteserver_Channel
+//WHERE (ParentsPath LIKE '{parentId},%') OR
+//      (ParentsPath LIKE '%,{parentId},%') OR
+//      (ParentsPath LIKE '%,{parentId}') OR
+//      (ParentId = {parentId})
+//";
+//            var list = new List<int>();
 
-            return list;
-        }
+//            using (var rdr = ExecuteReader(sqlString))
+//            {
+//                while (rdr.Read())
+//                {
+//                    list.Add(GetInt(rdr, 0));
+//                }
+//                rdr.Close();
+//            }
 
-        public List<int> GetIdListByParentId(int siteId, int parentId)
-        {
-            string sqlString;
-            if (parentId == 0)
-            {
-                sqlString = $@"SELECT Id
-FROM siteserver_Channel
-WHERE (Id = {siteId} OR ParentId = {siteId})
-ORDER BY Taxis";
-            }
-            else
-            {
-                sqlString = $@"SELECT Id
-FROM siteserver_Channel
-WHERE (ParentId = {parentId})
-ORDER BY Taxis";
-            }
+//            return list;
+//        }
 
-            var list = new List<int>();
+//        public List<int> GetIdListByParentId(int siteId, int parentId)
+//        {
+//            string sqlString;
+//            if (parentId == 0)
+//            {
+//                sqlString = $@"SELECT Id
+//FROM siteserver_Channel
+//WHERE (Id = {siteId} OR ParentId = {siteId})
+//ORDER BY Taxis";
+//            }
+//            else
+//            {
+//                sqlString = $@"SELECT Id
+//FROM siteserver_Channel
+//WHERE (ParentId = {parentId})
+//ORDER BY Taxis";
+//            }
 
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetInt(rdr, 0));
-                }
-                rdr.Close();
-            }
+//            var list = new List<int>();
 
-            return list;
-        }
+//            using (var rdr = ExecuteReader(sqlString))
+//            {
+//                while (rdr.Read())
+//                {
+//                    list.Add(GetInt(rdr, 0));
+//                }
+//                rdr.Close();
+//            }
 
-        public List<ChannelInfo> GetChannelInfoListByParentId(int siteId, int parentId)
-        {
-            var sqlString = $@"SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues FROM siteserver_Channel 
-WHERE (SiteId={siteId} AND ParentId = {parentId})
-ORDER BY Taxis";
+//            return list;
+//        }
 
-            var list = new List<ChannelInfo>();
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var i = 0;
-                    var channelInfo = new ChannelInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ELinkTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
-                    list.Add(channelInfo);
-                }
-                rdr.Close();
-            }
+//        public List<ChannelInfo> GetChannelInfoListByParentId(int siteId, int parentId)
+//        {
+//            var sqlString = $@"SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues FROM siteserver_Channel 
+//WHERE (SiteId={siteId} AND ParentId = {parentId})
+//ORDER BY Taxis";
 
-            return list;
-        }
+//            var list = new List<ChannelInfo>();
+//            using (var rdr = ExecuteReader(sqlString))
+//            {
+//                while (rdr.Read())
+//                {
+//                    var channelInfo = GetChannelInfo(rdr);
+//                    list.Add(channelInfo);
+//                }
+//                rdr.Close();
+//            }
 
-        public List<int> GetIdListBySiteId(int siteId)
-        {
-            string sqlString = $@"SELECT Id
-FROM siteserver_Channel
-WHERE SiteId = {siteId} AND (Id = {siteId} OR ParentId > 0)
-ORDER BY Taxis";
-            var list = new List<int>();
+//            return list;
+//        }
 
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetInt(rdr, 0));
-                }
-                rdr.Close();
-            }
+//        public List<int> GetIdListBySiteId(int siteId)
+//        {
+//            string sqlString = $@"SELECT Id
+//FROM siteserver_Channel
+//WHERE SiteId = {siteId} AND (Id = {siteId} OR ParentId > 0)
+//ORDER BY Taxis";
+//            var list = new List<int>();
 
-            return list;
-        }
+//            using (var rdr = ExecuteReader(sqlString))
+//            {
+//                while (rdr.Read())
+//                {
+//                    list.Add(GetInt(rdr, 0));
+//                }
+//                rdr.Close();
+//            }
+
+//            return list;
+//        }
 
         public Dictionary<int, ChannelInfo> GetChannelInfoDictionaryBySiteId(int siteId)
         {
@@ -1755,8 +1734,7 @@ ORDER BY Taxis";
             {
                 while (rdr.Read())
                 {
-                    var i = 0;
-                    var channelInfo = new ChannelInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ELinkTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
+                    var channelInfo = GetChannelInfo(rdr);
                     dic.Add(channelInfo.Id, channelInfo);
                 }
                 rdr.Close();
@@ -1815,80 +1793,77 @@ ORDER BY Taxis";
             return ExecuteDataset(sqlSelect);
         }
 
-        public List<ChannelInfo> GetChannelInfoListBySiteId(int siteId, string whereString)
-        {
-            var list = new List<ChannelInfo>();
-            string cmd =
-                $@"SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues
-FROM siteserver_Channel 
-WHERE (SiteId = {siteId} AND (Id = {siteId} OR ParentId > 0))
-{whereString}
-ORDER BY Taxis";
+//        public List<ChannelInfo> GetChannelInfoListBySiteId(int siteId, string whereString)
+//        {
+//            var list = new List<ChannelInfo>();
+//            string cmd =
+//                $@"SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues
+//FROM siteserver_Channel 
+//WHERE (SiteId = {siteId} AND (Id = {siteId} OR ParentId > 0))
+//{whereString}
+//ORDER BY Taxis";
 
-            using (var rdr = ExecuteReader(cmd))
-            {
-                while (rdr.Read())
-                {
-                    var i = 0;
-                    var channelInfo = new ChannelInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ELinkTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
-                    list.Add(channelInfo);
-                }
-                rdr.Close();
-            }
-            return list;
-        }
+//            using (var rdr = ExecuteReader(cmd))
+//            {
+//                while (rdr.Read())
+//                {
+//                    var channelInfo = GetChannelInfo(rdr);
+//                    list.Add(channelInfo);
+//                }
+//                rdr.Close();
+//            }
+//            return list;
+//        }
 
-        public List<ChannelInfo> GetChannelInfoList(int channelId, int childrenCount, int totalNum, string whereString, EScopeType scopeType, string orderByString)
-        {
-            var idList = GetIdListByScopeType(channelId, childrenCount, scopeType, string.Empty, string.Empty, string.Empty);
-            if (idList == null || idList.Count == 0)
-            {
-                return null;
-            }
+//        public List<ChannelInfo> GetChannelInfoList(ChannelInfo channelInfo, int totalNum, string whereString, EScopeType scopeType, string orderByString)
+//        {
+//            var idList = ChannelManager.GetChannelIdList(channelInfo, scopeType, string.Empty, string.Empty, string.Empty);
+//            if (idList == null || idList.Count == 0)
+//            {
+//                return null;
+//            }
 
-            string sqlString;
-            if (totalNum > 0)
-            {
-                //                sqlString =
-                //                    $@"SELECT TOP {totalNum} Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues
-                //FROM siteserver_Channel 
-                //WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
-                //";
-                sqlString = SqlUtils.ToTopSqlString(TableName,
-                    "Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues",
-                    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)}) {whereString})",
-                    orderByString,
-                    totalNum);
-            }
-            else
-            {
-                sqlString =
-                    $@"
-SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues
-FROM siteserver_Channel 
-WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)}) {whereString}) {orderByString}
-";
-            }
+//            string sqlString;
+//            if (totalNum > 0)
+//            {
+//                //                sqlString =
+//                //                    $@"SELECT TOP {totalNum} Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues
+//                //FROM siteserver_Channel 
+//                //WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
+//                //";
+//                sqlString = SqlUtils.ToTopSqlString(TableName,
+//                    "Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues",
+//                    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)}) {whereString})",
+//                    orderByString,
+//                    totalNum);
+//            }
+//            else
+//            {
+//                sqlString =
+//                    $@"
+//SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues
+//FROM siteserver_Channel 
+//WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)}) {whereString}) {orderByString}
+//";
+//            }
 
-            var list = new List<ChannelInfo>();
+//            var list = new List<ChannelInfo>();
 
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmId, DataType.Integer, channelId)
-            };
+//            var parms = new IDataParameter[]
+//            {
+//                GetParameter(ParmId, DataType.Integer, channelInfo.Id)
+//            };
 
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                while (rdr.Read())
-                {
-                    var i = 0;
-                    var channelInfo = new ChannelInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ELinkTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
-                    list.Add(channelInfo);
-                }
-                rdr.Close();
-            }
-            return list;
-        }
+//            using (var rdr = ExecuteReader(sqlString, parms))
+//            {
+//                while (rdr.Read())
+//                {
+//                    list.Add(GetChannelInfo(rdr));
+//                }
+//                rdr.Close();
+//            }
+//            return list;
+//        }
 
         public int GetContentNumBySiteId(int siteId)
         {
@@ -1933,26 +1908,26 @@ WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)}) {whereString})
             return list;
         }
 
-        public List<int> GetIdListByChildId(int siteId, int childId, List<int> channelIdList)
-        {
-            var sqlString = $@"SELECT Id,ParentId FROM siteserver_Channel 
-WHERE (SiteId={siteId} AND Id={childId})
-ORDER BY Taxis";
+//        public List<int> GetIdListByChildId(int siteId, int childId, List<int> channelIdList)
+//        {
+//            var sqlString = $@"SELECT Id,ParentId FROM siteserver_Channel 
+//WHERE (SiteId={siteId} AND Id={childId})
+//ORDER BY Taxis";
 
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var channelId = GetInt(rdr, 0);
-                    var parentId = GetInt(rdr, 1);
-                    channelIdList.Add(channelId);
-                    GetIdListByChildId(siteId, parentId, channelIdList);
+//            using (var rdr = ExecuteReader(sqlString))
+//            {
+//                while (rdr.Read())
+//                {
+//                    var channelId = GetInt(rdr, 0);
+//                    var parentId = GetInt(rdr, 1);
+//                    channelIdList.Add(channelId);
+//                    GetIdListByChildId(siteId, parentId, channelIdList);
 
-                }
-                rdr.Close();
-            }
-            return channelIdList;
-        }
+//                }
+//                rdr.Close();
+//            }
+//            return channelIdList;
+//        }
 
         public int GetIdByChannelIdOrChannelIndexOrChannelName(int siteId, int channelId, string channelIndex, string channelName)
         {
@@ -2038,6 +2013,17 @@ ORDER BY Taxis";
             }
 
             return list;
+        }
+
+        private ChannelInfo GetChannelInfo(IDataReader rdr)
+        {
+            var i = 0;
+            return new ChannelInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++),
+                GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
+                GetBool(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++),
+                GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
+                GetString(rdr, i++), GetString(rdr, i++), ELinkTypeUtils.GetEnumType(GetString(rdr, i++)),
+                GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
         }
     }
 }

@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
 
-            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, ELoadingType.ConfigurationCrossSiteTrans, null));
+            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, string.Empty, ELoadingType.ConfigurationCrossSiteTrans, null));
 
             if (Body.IsQueryExists("CurrentChannelId"))
             {

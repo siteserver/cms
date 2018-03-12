@@ -7,8 +7,10 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -110,11 +112,12 @@ namespace SiteServer.BackgroundPages.Ajax
             });
         }
 
-        public static string GetGetLoadingChannelsParameters(int siteId, ELoadingType loadingType, NameValueCollection additional)
+        public static string GetGetLoadingChannelsParameters(int siteId, string contentModelPluginId, ELoadingType loadingType, NameValueCollection additional)
         {
             return TranslateUtils.NameValueCollectionToString(new NameValueCollection
             {
-                {"siteID", siteId.ToString() },
+                {"siteId", siteId.ToString() },
+                {"contentModelPluginId", contentModelPluginId },
                 {"loadingType", ELoadingTypeUtils.GetValue(loadingType)},
                 {"additional", TranslateUtils.EncryptStringBySecretKey(TranslateUtils.NameValueCollectionToString(additional))}
             });
@@ -154,11 +157,12 @@ namespace SiteServer.BackgroundPages.Ajax
             }
             else if (type == TypeGetLoadingChannels)
             {
-                var siteId = TranslateUtils.ToInt(Request["siteID"]);
-                var parentId = TranslateUtils.ToInt(Request["parentID"]);
+                var siteId = TranslateUtils.ToInt(Request["siteId"]);
+                var contentModelPluginId = Request["contentModelPluginId"];
+                var parentId = TranslateUtils.ToInt(Request["parentId"]);
                 var loadingType = Request["loadingType"];
                 var additional = Request["additional"];
-                retString = GetLoadingChannels(siteId, parentId, loadingType, additional, request);
+                retString = GetLoadingChannels(siteId, contentModelPluginId, parentId, loadingType, additional, request);
             }
             else if (type == TypePluginDownload)
             {
@@ -390,13 +394,16 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
-        public string GetLoadingChannels(int siteId, int parentId, string loadingType, string additional, Request request)
+        public string GetLoadingChannels(int siteId, string contentModelPluginId, int parentId, string loadingType, string additional, Request request)
         {
             var list = new List<string>();
 
             var eLoadingType = ELoadingTypeUtils.GetEnumType(loadingType);
 
-            var channelIdList = DataProvider.ChannelDao.GetIdListByParentId(siteId, parentId);
+            var channelIdList =
+                ChannelManager.GetChannelIdList(
+                    ChannelManager.GetChannelInfo(siteId, parentId == 0 ? siteId : parentId), EScopeType.Children,
+                    string.Empty, string.Empty, string.Empty);
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
 
@@ -404,17 +411,21 @@ namespace SiteServer.BackgroundPages.Ajax
 
             foreach (var channelId in channelIdList)
             {
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+
                 var enabled = AdminUtility.IsOwningChannelId(request.AdminName, channelId);
+                if (!string.IsNullOrEmpty(contentModelPluginId) &&
+                            !StringUtils.EqualsIgnoreCase(channelInfo.ContentModelPluginId, contentModelPluginId))
+                {
+                    enabled = false;
+                }
                 if (!enabled)
                 {
-                    if (!AdminUtility.IsHasChildOwningChannelId(request.AdminName, channelId))
-                    {
-                        continue;
-                    }
+                    if (!AdminUtility.IsDescendantOwningChannelId(request.AdminName, siteId, channelId)) continue;
+                    if (!IsDesendantContentModelPluginIdExists(channelInfo, contentModelPluginId)) continue;
                 }
-                var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
-                list.Add(ChannelLoading.GetChannelRowHtml(siteInfo, nodeInfo, enabled, eLoadingType, nameValueCollection, request.AdminName));
+                list.Add(ChannelLoading.GetChannelRowHtml(siteInfo, channelInfo, enabled, eLoadingType, nameValueCollection, request.AdminName));
             }
 
             //arraylist.Reverse();
@@ -425,6 +436,14 @@ namespace SiteServer.BackgroundPages.Ajax
                 builder.Append(html);
             }
             return builder.ToString();
+        }
+
+        private bool IsDesendantContentModelPluginIdExists(ChannelInfo channelInfo, string contentModelPluginId)
+        {
+            if (string.IsNullOrEmpty(contentModelPluginId)) return true;
+
+            var channelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.Descendant, string.Empty, string.Empty, contentModelPluginId);
+            return channelIdList.Count > 0;
         }
     }
 }

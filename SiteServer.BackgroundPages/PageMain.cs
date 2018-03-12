@@ -101,14 +101,13 @@ namespace SiteServer.BackgroundPages
                     }
                 }
 
-                ICollection channelIdCollection = ProductPermissionsManager.Current.ChannelPermissionDict.Keys;
-                foreach (int channelId in channelIdCollection)
+                foreach (var dictKey in ProductPermissionsManager.Current.ChannelPermissionDict.Keys)
                 {
-                    if (ChannelManager.IsAncestorOrSelf(_siteInfo.Id, _siteInfo.Id, channelId))
+                    var kvp = ProductAdministratorWithPermissions.ParseChannelPermissionDictKey(dictKey);
+                    if (kvp.Key == _siteInfo.Id)
                     {
                         showSite = true;
-                        var list = ProductPermissionsManager.Current.ChannelPermissionDict[channelId];
-                        permissionList.AddRange(list);
+                        permissionList.AddRange(ProductPermissionsManager.Current.ChannelPermissionDict[dictKey]);
                     }
                 }
 

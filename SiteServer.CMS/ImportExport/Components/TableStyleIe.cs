@@ -17,7 +17,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
 		public void ExportTableStyles(int siteId, string tableName)
 		{
-            var allRelatedIdentities = DataProvider.ChannelDao.GetIdListBySiteId(siteId);
+            var allRelatedIdentities = ChannelManager.GetChannelIdList(siteId);
             allRelatedIdentities.Insert(0, 0);
             var tableStyleInfoWithItemsDict = TableStyleManager.GetTableStyleInfoWithItemsDictinary(tableName, allRelatedIdentities);
 		    if (tableStyleInfoWithItemsDict == null || tableStyleInfoWithItemsDict.Count <= 0) return;

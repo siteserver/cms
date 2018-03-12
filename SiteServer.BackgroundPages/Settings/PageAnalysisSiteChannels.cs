@@ -91,7 +91,7 @@ namespace SiteServer.BackgroundPages.Settings
                 ["EndDate"] = TbEndDate.Text
             };
 
-            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, ELoadingType.SiteAnalysis, _additional));
+            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, string.Empty, ELoadingType.SiteAnalysis, _additional));
 
             BindGrid();
 
@@ -109,7 +109,7 @@ yArrayUpdate.push('{yValueUpdate}');";
 
         public void BindGrid()
         {
-            var channelIdList = DataProvider.ChannelDao.GetIdListByParentId(SiteId, 0);
+            var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, SiteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
             foreach (var channelId in channelIdList)
             {
                 var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
@@ -121,7 +121,7 @@ yArrayUpdate.push('{yValueUpdate}');";
                 SetYHashtable(channelId, DataProvider.ContentDao.GetCountOfContentUpdate(tableName, SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeUpdate);
             }
 
-            RptChannels.DataSource = DataProvider.ChannelDao.GetIdListByParentId(SiteId, 0);
+            RptChannels.DataSource = channelIdList;
             RptChannels.ItemDataBound += RptChannels_ItemDataBound;
             RptChannels.DataBind();
         }
@@ -134,7 +134,7 @@ yArrayUpdate.push('{yValueUpdate}');";
             var enabled = IsOwningChannelId(channelId);
             if (!enabled)
             {
-                if (!IsHasChildOwningChannelId(channelId)) e.Item.Visible = false;
+                if (!IsDescendantOwningChannelId(channelId)) e.Item.Visible = false;
             }
             var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 

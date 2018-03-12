@@ -7,7 +7,7 @@ namespace SiteServer.CMS.Core.Security
 	public class ProductAdministratorWithPermissions : AdministratorWithPermissions
 	{
 		private Dictionary<int, List<string>> _websitePermissionDict;
-		private Dictionary<int, List<string>> _channelPermissionDict;
+		private Dictionary<string, List<string>> _channelPermissionDict;
         private List<string> _channelPermissionListIgnoreChannelId;
         private List<int> _siteIdList;
         private List<int> _owningChannelIdList;
@@ -71,7 +71,17 @@ namespace SiteServer.CMS.Core.Security
 			}
 		}
 
-		public Dictionary<int, List<string>> ChannelPermissionDict
+        public static string GetChannelPermissionDictKey(int siteId, int channelId)
+        {
+            return $"{siteId}_{channelId}";
+        }
+
+	    public static KeyValuePair<int, int> ParseChannelPermissionDictKey(string dictKey)
+	    {
+	        return new KeyValuePair<int, int>(TranslateUtils.ToInt(dictKey.Split('_')[0]), TranslateUtils.ToInt(dictKey.Split('_')[1]));
+	    }
+
+        public Dictionary<string, List<string>> ChannelPermissionDict
         {
 			get
 			{
@@ -81,7 +91,7 @@ namespace SiteServer.CMS.Core.Security
                     {
                         if (CacheUtils.Get(_channelPermissionDictKey) != null)
                         {
-                            _channelPermissionDict = CacheUtils.Get(_channelPermissionDictKey) as Dictionary<int, List<string>>;
+                            _channelPermissionDict = CacheUtils.Get(_channelPermissionDictKey) as Dictionary<string, List<string>>;
                         }
                         else
                         {
@@ -93,13 +103,13 @@ namespace SiteServer.CMS.Core.Security
                                     allChannelPermissionList.Add(permission.Name);
                                 }
 
-                                _channelPermissionDict = new Dictionary<int, List<string>>();
+                                _channelPermissionDict = new Dictionary<string, List<string>>();
 
                                 if (SiteIdList.Count > 0)
                                 {
                                     foreach (var siteId in SiteIdList)
                                     {
-                                        _channelPermissionDict[siteId] = allChannelPermissionList;
+                                        _channelPermissionDict[GetChannelPermissionDictKey(siteId, siteId)] = allChannelPermissionList;
                                     }
                                 }
                             }
@@ -111,7 +121,7 @@ namespace SiteServer.CMS.Core.Security
                         }
                     }
 				}
-			    return _channelPermissionDict ?? (_channelPermissionDict = new Dictionary<int, List<string>>());
+			    return _channelPermissionDict ?? (_channelPermissionDict = new Dictionary<string, List<string>>());
 			}
 		}
 
@@ -263,10 +273,11 @@ namespace SiteServer.CMS.Core.Security
 
                             if (!permissions.IsSystemAdministrator)
                             {
-                                foreach (var channelId in ProductPermissionsManager.Current.ChannelPermissionDict.Keys)
+                                foreach (var dictKey in ProductPermissionsManager.Current.ChannelPermissionDict.Keys)
                                 {
-                                    _owningChannelIdList.Add(channelId);
-                                    _owningChannelIdList.AddRange(DataProvider.ChannelDao.GetIdListForDescendant(channelId));
+                                    var kvp = ParseChannelPermissionDictKey(dictKey);
+                                    var channelInfo = ChannelManager.GetChannelInfo(kvp.Key, kvp.Value);
+                                    _owningChannelIdList.AddRange(ChannelManager.GetChannelIdList(channelInfo, EScopeType.All, string.Empty, string.Empty, string.Empty));
                                 }
                             }
 

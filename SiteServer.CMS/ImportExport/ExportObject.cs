@@ -198,7 +198,7 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            var allChannelIdList = DataProvider.ChannelDao.GetIdListBySiteId(_siteInfo.Id);
+            var allChannelIdList = ChannelManager.GetChannelIdList(_siteInfo.Id);
 
             var includeChannelIdArrayList = new ArrayList();
             foreach (int channelId in channelIdArrayList)
@@ -264,7 +264,7 @@ namespace SiteServer.CMS.ImportExport
                 {
                     allChannelIdList.Add(channelId);
                     var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, channelId);
-                    var childChannelIdList = DataProvider.ChannelDao.GetIdListByScopeType(nodeInfo.Id, EScopeType.Descendant, string.Empty, string.Empty);
+                    var childChannelIdList = ChannelManager.GetChannelIdList(nodeInfo, EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
                     allChannelIdList.AddRange(childChannelIdList);
                 }
             }

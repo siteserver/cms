@@ -1534,7 +1534,8 @@ group by tmp.userName";
 
         public int GetCountOfContentAdd(string tableName, int siteId, int channelId, EScopeType scope, DateTime begin, DateTime end, string userName)
         {
-            var channelIdList = DataProvider.ChannelDao.GetIdListByScopeType(channelId, scope, string.Empty, string.Empty);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var channelIdList = ChannelManager.GetChannelIdList(channelInfo, scope, string.Empty, string.Empty, string.Empty);
             return GetCountOfContentAdd(tableName, siteId, channelIdList, begin, end, userName);
         }
 
@@ -1545,7 +1546,8 @@ group by tmp.userName";
 
         public int GetCountOfContentUpdate(string tableName, int siteId, int channelId, EScopeType scope, DateTime begin, DateTime end, string userName)
         {
-            var channelIdList = DataProvider.ChannelDao.GetIdListByScopeType(channelId, scope, string.Empty, string.Empty);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var channelIdList = ChannelManager.GetChannelIdList(channelInfo, scope, string.Empty, string.Empty, string.Empty);
             return GetCountOfContentUpdate(tableName, siteId, channelIdList, begin, end, userName);
         }
 
@@ -1609,8 +1611,10 @@ group by tmp.userName";
                 var channelIdList = new List<int>();
                 foreach (var theChannelId in TranslateUtils.StringCollectionToIntList(channelIds))
                 {
-                    channelIdList.Add(theChannelId);
-                    channelIdList.AddRange(DataProvider.ChannelDao.GetIdListForDescendant(theChannelId));
+                    var theSiteId = DataProvider.ChannelDao.GetSiteId(theChannelId);
+                    channelIdList.AddRange(
+                        ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(theSiteId, theChannelId),
+                            EScopeType.All, string.Empty, string.Empty, string.Empty));
                 }
                 whereBuilder.Append(channelIdList.Count == 1
                     ? $"(ChannelId = {channelIdList[0]}) "
@@ -1619,8 +1623,11 @@ group by tmp.userName";
             else if (channelId != siteId)
             {
                 whereBuilder.Append(" AND ");
-                var channelIdList = DataProvider.ChannelDao.GetIdListForDescendant(channelId);
-                channelIdList.Add(channelId);
+
+                var theSiteId = DataProvider.ChannelDao.GetSiteId(channelId);
+                var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(theSiteId, channelId),
+                            EScopeType.All, string.Empty, string.Empty, string.Empty);
+
                 whereBuilder.Append(channelIdList.Count == 1
                     ? $"(ChannelId = {channelIdList[0]}) "
                     : $"(ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)})) ");
@@ -1709,7 +1716,7 @@ group by tmp.userName";
         public string GetSqlString(string tableName, int siteId, int channelId, bool isSystemAdministrator, List<int> owningChannelIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isNoDup, bool isTrashContent)
         {
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var channelIdList = DataProvider.ChannelDao.GetIdListByScopeType(channelInfo.Id, channelInfo.ChildrenCount,
+            var channelIdList = ChannelManager.GetChannelIdList(channelInfo,
                 isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, channelInfo.ContentModelPluginId);
 
             var list = new List<int>();
@@ -1734,7 +1741,7 @@ group by tmp.userName";
         public string GetSqlString(string tableName, int siteId, int channelId, bool isSystemAdministrator, List<int> owningChannelIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isNoDup, bool isTrashContent, bool isWritingOnly, string userNameOnly)
         {
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var channelIdList = DataProvider.ChannelDao.GetIdListByScopeType(channelInfo.Id, channelInfo.ChildrenCount, isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, channelInfo.ContentModelPluginId);
+            var channelIdList = ChannelManager.GetChannelIdList(channelInfo, isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, channelInfo.ContentModelPluginId);
 
             var list = new List<int>();
             if (isSystemAdministrator)

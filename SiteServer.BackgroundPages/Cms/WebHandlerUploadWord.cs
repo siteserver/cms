@@ -3,6 +3,7 @@ using System.IO;
 using System.Web;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
+using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Cms

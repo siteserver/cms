@@ -2,6 +2,7 @@
 using SiteServer.CMS.Controllers.Sys.Packaging;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
+using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys.Packaging

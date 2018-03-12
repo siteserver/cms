@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -32,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
 			{
                 VerifySitePermissions(ConfigManager.Permissions.WebSite.Create);
 
-                ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, ELoadingType.ConfigurationCreateDetails, null));
+                ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, string.Empty, ELoadingType.ConfigurationCreateDetails, null));
 
                 if (Body.IsQueryExists("CurrentChannelId"))
                 {
@@ -50,7 +51,9 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BindGrid()
         {
-            RptContents.DataSource = DataProvider.ChannelDao.GetIdListByParentId(SiteId, 0);
+            var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, SiteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
+
+            RptContents.DataSource = channelIdList;
             RptContents.ItemDataBound += rptContents_ItemDataBound;
             RptContents.DataBind();
         }
@@ -61,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
             var enabled = IsOwningChannelId(channelId);
             if (!enabled)
             {
-                if (!IsHasChildOwningChannelId(channelId)) e.Item.Visible = false;
+                if (!IsDescendantOwningChannelId(channelId)) e.Item.Visible = false;
             }
 
             var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);

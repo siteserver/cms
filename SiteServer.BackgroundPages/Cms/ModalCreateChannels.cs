@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 if (isIncludeChildren)
                 {
-                    foreach (var childChannelId in DataProvider.ChannelDao.GetIdListForDescendant(channelId))
+                    foreach (var childChannelId in ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, channelId), EScopeType.Descendant, string.Empty, string.Empty, string.Empty))
                     {
                         CreateManager.CreateChannel(SiteId, childChannelId);
                         if (isCreateContents)

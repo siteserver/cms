@@ -5,6 +5,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Provider
 {
@@ -94,7 +95,7 @@ namespace SiteServer.CMS.Provider
 
             ExecuteNonQuery(sqlString, groupParms);
 
-		    var channelIdList = DataProvider.ChannelDao.GetIdListByGroupName(siteId, groupName);
+		    var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, siteId), EScopeType.All, groupName, string.Empty, string.Empty);
 		    foreach (var channelId in channelIdList)
 		    {
 		        var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);

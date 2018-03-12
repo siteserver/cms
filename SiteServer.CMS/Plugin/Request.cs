@@ -6,12 +6,13 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Auth;
 
-namespace SiteServer.CMS.Core
+namespace SiteServer.CMS.Plugin
 {
     public class Request : IRequest
     {

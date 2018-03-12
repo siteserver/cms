@@ -91,7 +91,7 @@ namespace SiteServer.BackgroundPages.Cms
                 channelIdStrList = TranslateUtils.StringCollectionToStringList(Body.GetQueryString("ChannelIDCollection"));
             }
 
-            var channelIdList = DataProvider.ChannelDao.GetIdListBySiteId(SiteId);
+            var channelIdList = ChannelManager.GetChannelIdList(SiteId);
             var nodeCount = channelIdList.Count;
             _isLastNodeArray = new bool[nodeCount];
             foreach (var theChannelId in channelIdList)
@@ -99,7 +99,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var enabled = IsOwningChannelId(theChannelId);
                 if (!enabled)
                 {
-                    if (!IsHasChildOwningChannelId(theChannelId)) continue;
+                    if (!IsDescendantOwningChannelId(theChannelId)) continue;
                 }
                 var nodeInfo = ChannelManager.GetChannelInfo(SiteId, theChannelId);
 
@@ -232,10 +232,12 @@ namespace SiteServer.BackgroundPages.Cms
 		            var channelIdListToTranslate = new List<int>(channelIdList);
 		            foreach (var channelId in channelIdList)
 		            {
-		                var subChannelIdArrayList = DataProvider.ChannelDao.GetIdListForDescendant(channelId);
-		                if (subChannelIdArrayList != null && subChannelIdArrayList.Count > 0)
+                        var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                        var subChannelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
+
+		                if (subChannelIdList != null && subChannelIdList.Count > 0)
 		                {
-		                    foreach (int channelIdToDelete in subChannelIdArrayList)
+		                    foreach (var channelIdToDelete in subChannelIdList)
 		                    {
 		                        if (channelIdListToTranslate.Contains(channelIdToDelete))
 		                        {
@@ -357,9 +359,17 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (insertedChannelId != 0)
                 {
-                    var orderByString = ETaxisTypeUtils.GetChannelOrderByString(ETaxisType.OrderByTaxis);
-                    var childrenNodeInfoList = DataProvider.ChannelDao.GetChannelInfoList(oldNodeInfo.Id, oldNodeInfo.ChildrenCount, 0, "", EScopeType.Children, orderByString);
-                    if (childrenNodeInfoList != null && childrenNodeInfoList.Count > 0)
+                    //var orderByString = ETaxisTypeUtils.GetChannelOrderByString(ETaxisType.OrderByTaxis);
+                    //var childrenNodeInfoList = DataProvider.ChannelDao.GetChannelInfoList(oldNodeInfo, 0, "", EScopeType.Children, orderByString);
+
+                    var channelIdList = ChannelManager.GetChannelIdList(oldNodeInfo, EScopeType.Children, string.Empty, string.Empty, string.Empty);
+                    var childrenNodeInfoList = new List<ChannelInfo>();
+                    foreach (var channelId in channelIdList)
+                    {
+                        childrenNodeInfoList.Add(ChannelManager.GetChannelInfo(oldNodeInfo.SiteId, channelId));
+                    }
+
+                    if (channelIdList.Count > 0)
                     {
                         TranslateChannelAndContent(childrenNodeInfoList, targetSiteId, insertedChannelId, translateType, isChecked, checkedLevel, nodeIndexNameList, filePathList);
                     }
@@ -418,7 +428,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             DdlChannelIdTo.Items.Clear();
 
-			var channelIdList = DataProvider.ChannelDao.GetIdListBySiteId(psId);
+			var channelIdList = ChannelManager.GetChannelIdList(psId);
             var nodeCount = channelIdList.Count;
 			_isLastNodeArray = new bool[nodeCount];
             foreach (var theChannelId in channelIdList)
