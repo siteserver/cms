@@ -120,7 +120,7 @@ namespace SiteServer.CMS.Core
             {
                 channelInfoList.Add(channelInfo);
             }
-            if (scopeType == EScopeType.All)
+            else if (scopeType == EScopeType.All)
             {
                 foreach (var nodeInfo in dic.Values)
                 {
@@ -285,13 +285,13 @@ namespace SiteServer.CMS.Core
                 {
                     imageHtml =
                         $@"<img align=""absmiddle"" title=""站点"" border=""0"" src=""{PageUtils.Combine(treeDirectoryUrl,
-                            "site.gif")}"" /></a>";
+                            "site.gif")}"" />&nbsp;";
                 }
                 else
                 {
                     imageHtml =
                         $@"<img align=""absmiddle"" title=""站点"" border=""0"" src=""{PageUtils.Combine(treeDirectoryUrl,
-                            "siteHQ.gif")}"" />";
+                            "siteHQ.gif")}"" />&nbsp;";
                 }
             }
             if (!string.IsNullOrEmpty(nodeInfo.ContentRelatedPluginIds))

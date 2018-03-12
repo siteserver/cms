@@ -21,11 +21,11 @@
             </tr>
           </thead>
           <tbody>
-            <tr treeItemLevel="2">
+            <tr treeItemLevel="1">
               <td>
-                <img align="absmiddle" style="cursor:pointer" onClick="displayChildren(this);" isAjax="false" isOpen="true" src="../assets/icons/tree/minus.gif"
+                <img align="absmiddle" style="cursor:pointer" onClick="displayChildren(this);" isAjax="false" isOpen="true" src="../assets/icons/tree/minus.png"
                 />
-                <img align="absmiddle" border="0" src="../assets/icons/tree/folder.gif" /> &nbsp;
+                <img align="absmiddle" border="0" src="../assets/icons/tree/folder.gif" />
                 <asp:Literal ID="LtlSite" runat="server"></asp:Literal>
               </td>
             </tr>

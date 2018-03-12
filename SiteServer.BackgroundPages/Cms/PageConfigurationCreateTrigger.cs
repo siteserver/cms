@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BindGrid()
         {
-            var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, SiteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
+            var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, SiteId), EScopeType.SelfAndChildren, string.Empty, string.Empty, string.Empty);
 
             RptContents.DataSource = channelIdList;
             RptContents.ItemDataBound += rptContents_ItemDataBound;

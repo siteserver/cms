@@ -122,7 +122,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             BtnExport.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToChannel(SiteId, "ChannelIDCollection", "请选择需要导出的栏目！"));
 
-            var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, SiteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
+            var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, SiteId), EScopeType.SelfAndChildren, string.Empty, string.Empty, string.Empty);
 
             RptContents.DataSource = channelIdList;
             RptContents.ItemDataBound += RptContents_ItemDataBound;

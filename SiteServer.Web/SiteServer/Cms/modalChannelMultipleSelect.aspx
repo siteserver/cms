@@ -32,9 +32,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr treeItemLevel="0">
+            <tr treeItemLevel="1">
               <td>
-                <img align="absmiddle" src="../assets/icons/tree/empty.gif" />
+                <img align="absmiddle" style="cursor:pointer" onClick="displayChildren(this);" isAjax="false" isOpen="true" src="../assets/icons/tree/minus.png"
+                />
                 <img align="absmiddle" border="0" src="../assets/icons/tree/folder.gif" />
                 <asp:Literal ID="LtlChannelName" runat="server"></asp:Literal>
               </td>
