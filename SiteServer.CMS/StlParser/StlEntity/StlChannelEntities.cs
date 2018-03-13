@@ -136,7 +136,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(DirectoryName, attributeName))//生成文件夹名称
                 {
-                    parsedContent = PathUtils.GetDirectoryName(nodeInfo.FilePath);
+                    parsedContent = PathUtils.GetDirectoryName(nodeInfo.FilePath, true);
                 }
                 else if (StringUtils.EqualsIgnoreCase(Group, attributeName))//栏目组别
                 {

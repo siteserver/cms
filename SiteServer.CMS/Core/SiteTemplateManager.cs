@@ -95,7 +95,7 @@ namespace SiteServer.CMS.Core
                     var siteTemplateInfo = Serializer.ConvertFileToObject(metadataXmlFilePath, typeof(SiteTemplateInfo)) as SiteTemplateInfo;
                     if (siteTemplateInfo != null)
                     {
-                        var directoryName = PathUtils.GetDirectoryName(siteTemplatePath);
+                        var directoryName = PathUtils.GetDirectoryName(siteTemplatePath, false);
                         siteTemplateInfo.DirectoryName = directoryName;
                         sortedlist.Add(directoryName, siteTemplateInfo);
                     }

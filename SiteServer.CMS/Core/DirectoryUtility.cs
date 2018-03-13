@@ -55,7 +55,7 @@ namespace SiteServer.CMS.Core
                 var directoryPaths = DirectoryUtils.GetDirectoryPaths(sitePath);
                 foreach (var subDirectoryPath in directoryPaths)
                 {
-                    var directoryName = PathUtils.GetDirectoryName(subDirectoryPath);
+                    var directoryName = PathUtils.GetDirectoryName(subDirectoryPath, false);
                     if (!DirectoryUtils.IsSystemDirectory(directoryName) && !siteDirList.Contains(directoryName.ToLower()))
                     {
                         DirectoryUtils.DeleteDirectoryIfExists(subDirectoryPath);
@@ -91,7 +91,7 @@ namespace SiteServer.CMS.Core
                 var directoryPaths = DirectoryUtils.GetDirectoryPaths(siteTemplatePath);
                 foreach (var subDirectoryPath in directoryPaths)
                 {
-                    var directoryName = PathUtils.GetDirectoryName(subDirectoryPath);
+                    var directoryName = PathUtils.GetDirectoryName(subDirectoryPath, false);
                     if (!DirectoryUtils.IsSystemDirectory(directoryName) && !siteDirList.Contains(directoryName.ToLower()))
                     {
                         var destDirectoryPath = PathUtils.Combine(sitePath, directoryName);

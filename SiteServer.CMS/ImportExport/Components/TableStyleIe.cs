@@ -207,7 +207,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             foreach (var styleDirectoryPath in styleDirectoryPaths)
             {
-                var tableName = PathUtils.GetDirectoryName(styleDirectoryPath);
+                var tableName = PathUtils.GetDirectoryName(styleDirectoryPath, false);
                 if (tableName == "siteserver_PublishmentSystem")
                 {
                     tableName = DataProvider.SiteDao.TableName;
@@ -220,7 +220,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 var attributeNamePaths = DirectoryUtils.GetDirectoryPaths(styleDirectoryPath);
                 foreach (var attributeNamePath in attributeNamePaths)
                 {
-                    var attributeName = PathUtils.GetDirectoryName(attributeNamePath);
+                    var attributeName = PathUtils.GetDirectoryName(attributeNamePath, false);
                     var filePaths = DirectoryUtils.GetFilePaths(attributeNamePath);
                     foreach (var filePath in filePaths)
                     {

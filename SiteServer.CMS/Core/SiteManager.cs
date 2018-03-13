@@ -359,9 +359,9 @@ namespace SiteServer.CMS.Core
                     parent = pair.Value;
                     break;
                 }
-                return PathUtils.Combine(GetSiteDir(listFromDb, parent), PathUtils.GetDirectoryName(siteInfo.SiteDir));
+                return PathUtils.Combine(GetSiteDir(listFromDb, parent), PathUtils.GetDirectoryName(siteInfo.SiteDir, false));
             }
-            return PathUtils.GetDirectoryName(siteInfo.SiteDir);
+            return PathUtils.GetDirectoryName(siteInfo.SiteDir, false);
         }
 
         public static List<ISiteInfo> GetWritingSiteInfoList(string adminUserName)

@@ -114,7 +114,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
             if (!string.IsNullOrEmpty(SiteInfo.SiteDir))
             {
-                TbSiteDir.Text = PathUtils.GetDirectoryName(SiteInfo.SiteDir);
+                TbSiteDir.Text = PathUtils.GetDirectoryName(SiteInfo.SiteDir, false);
             }
             if (SiteInfo.IsRoot)
             {
@@ -184,7 +184,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 		    if (SiteInfo.IsRoot == false)
 		    {
-		        if (!StringUtils.EqualsIgnoreCase(PathUtils.GetDirectoryName(SiteInfo.SiteDir), TbSiteDir.Text))
+		        if (!StringUtils.EqualsIgnoreCase(PathUtils.GetDirectoryName(SiteInfo.SiteDir, false), TbSiteDir.Text))
 		        {
 		            var list = DataProvider.SiteDao.GetLowerSiteDirList(SiteInfo.ParentId);
 		            if (list.IndexOf(TbSiteDir.Text.ToLower()) != -1)

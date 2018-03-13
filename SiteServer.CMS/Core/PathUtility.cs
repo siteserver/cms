@@ -307,7 +307,7 @@ namespace SiteServer.CMS.Core
                 }
             }
 
-            return PathUtils.GetDirectoryName(siteDir);
+            return string.IsNullOrWhiteSpace(siteDir) ? siteDir : PathUtils.GetDirectoryName(siteDir, false);
         }
 
         public static string GetCurrentSiteDir()

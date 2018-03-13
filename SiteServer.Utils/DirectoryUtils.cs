@@ -171,7 +171,7 @@ namespace SiteServer.Utils
             //从当前父目录中获取目录列表。 
             foreach (var srcDir in Directory.GetDirectories(srcDirectoryPath))
             {
-                var directoryName = PathUtils.GetDirectoryName(srcDir);
+                var directoryName = PathUtils.GetDirectoryName(srcDir, false);
 
                 var destDir = destDirectoryPath + directoryName;
                 //如果该目录不存在，则创建该目录。 

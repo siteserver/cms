@@ -121,9 +121,11 @@ namespace SiteServer.Utils
             return Path.GetFileNameWithoutExtension(filePath);
         }
 
-        public static string GetDirectoryName(string path)
+        public static string GetDirectoryName(string path, bool isFile)
         {
-            if (!IsDirectoryPath(path))
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
+            if (isFile)
             {
                 path = Path.GetDirectoryName(path);
             }
