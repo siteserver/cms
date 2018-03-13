@@ -1,12 +1,12 @@
-function isNull(obj){
-	if (typeof(obj) == "undefined")
-	  return true;
+function isNull(obj) {
+	if (typeof (obj) == "undefined")
+		return true;
 
 	if (obj == undefined)
-	  return true;
+		return true;
 
 	if (obj == null)
-	  return true;
+		return true;
 
 	return false;
 }
@@ -59,49 +59,46 @@ function chkSelect(e) {
 	}
 }
 
-function showImage(obj, imageID, rootUrl, siteUrl){
-    if(obj.value==""){
+function showImage(obj, imageID, rootUrl, siteUrl) {
+	if (obj.value == "") {
 		document.getElementById(imageID).setAttribute('href', '../assets/icon/empty.gif');
 		return false;
 	}
-	if(obj.value.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png$/i) != -1) {
+	if (obj.value.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png$/i) != -1) {
 		var imageUrl = obj.value;
-		if (imageUrl){
-			if (imageUrl.charAt(0) == '~'){
+		if (imageUrl) {
+			if (imageUrl.charAt(0) == '~') {
 				imageUrl = imageUrl.replace('~', rootUrl);
-			}else if (imageUrl.charAt(0) == '@'){
+			} else if (imageUrl.charAt(0) == '@') {
 				imageUrl = imageUrl.replace('@', siteUrl);
 			}
 		}
-		if(imageUrl && imageUrl.substr(0,2)=='//'){
+		if (imageUrl && imageUrl.substr(0, 2) == '//') {
 			imageUrl = imageUrl.replace('//', '/');
 		}
 		document.getElementById(imageID).setAttribute('href', imageUrl);
 	}
 }
 
-function DeleteAttachment(attributeName)
-{
+function DeleteAttachment(attributeName) {
 	document.getElementById(attributeName).value = '';
 }
 
-function SelectAttachment(attributeName, attachmentUrl, fileViewUrl)
-{
+function SelectAttachment(attributeName, attachmentUrl, fileViewUrl) {
 	document.getElementById(attributeName).value = attachmentUrl;
 }
 
-function _toggleVisible(targetID, image, imageUrl, imageCollapsedUrl)
-{
+function _toggleVisible(targetID, image, imageUrl, imageCollapsedUrl) {
 	target = _get(targetID);
 	try {
-			$('#' + targetID).toggle();
-		} catch (e) {
-			if (target.style.display == "none") {
-				target.style.display = "";
-			} else {
-				target.style.display = "none";
-			}
+		$('#' + targetID).toggle();
+	} catch (e) {
+		if (target.style.display == "none") {
+			target.style.display = "";
+		} else {
+			target.style.display = "none";
 		}
+	}
 
 	if (!_isNull(imageCollapsedUrl) && imageCollapsedUrl != "") {
 		if (target.style.display == "none") {
@@ -123,6 +120,7 @@ function _toggleTab(no, totalNum) {
 		}
 	}
 }
+
 function _checkCol(column, className, bcheck) {
 	var elements = $('#' + column + ' .' + className);
 	for (var i = 0; i < elements.length; i++) {
@@ -130,26 +128,19 @@ function _checkCol(column, className, bcheck) {
 	}
 }
 
-function _checkFormAll(isChecked)
-{
-	$(":checkbox").each(function() {
+function _checkFormAll(isChecked) {
+	$(":checkbox").each(function () {
 		$(this).attr("checked", isChecked);
-                $(this)[0].checked = isChecked;
+		$(this)[0].checked = isChecked;
 	});
 }
 
-function _checkAll(layer, bcheck)
-{
-	for(var i=0; i<layer.childNodes.length; i++)
-	{
-		if (layer.childNodes[i].childNodes.length>0)
-		{
-			_checkAll(layer.childNodes[i],bcheck);
-		}
-		else
-		{
-			if (layer.childNodes[i].type=="checkbox")
-			{
+function _checkAll(layer, bcheck) {
+	for (var i = 0; i < layer.childNodes.length; i++) {
+		if (layer.childNodes[i].childNodes.length > 0) {
+			_checkAll(layer.childNodes[i], bcheck);
+		} else {
+			if (layer.childNodes[i].type == "checkbox") {
 				layer.childNodes[i].checked = bcheck;
 			}
 		}
@@ -159,20 +150,20 @@ function _checkAll(layer, bcheck)
 function _getCheckBoxCollectionValue(checklist) {
 
 	var retval = '';
-	if (checklist){
-		if (!checklist.length){
-			if(checklist.checked){
-			    retval = encodeURI(checklist.value) + '';
+	if (checklist) {
+		if (!checklist.length) {
+			if (checklist.checked) {
+				retval = encodeURI(checklist.value) + '';
 			}
-		}else{
+		} else {
 			var hasValue = false;
-			for (var i = 0; i < checklist.length; i++){
-				if(checklist[i].checked){
+			for (var i = 0; i < checklist.length; i++) {
+				if (checklist[i].checked) {
 					hasValue = true;
 					retval += encodeURI(checklist[i].value) + ',';
 				}
 			}
-			if (hasValue){
+			if (hasValue) {
 				retval = retval.substring(0, retval.length - 1);
 			}
 		}
@@ -180,49 +171,112 @@ function _getCheckBoxCollectionValue(checklist) {
 	return retval;
 }
 
-function _alertCheckBoxCollection(checklist, alertString){
+function _alertCheckBoxCollection(checklist, alertString) {
 	var collectionValue = _getCheckBoxCollectionValue(checklist);
-	if (collectionValue.length == 0){
-		alert(alertString);
+	if (collectionValue.length == 0) {
+		swal({
+			title: alertString,
+			icon: 'warning',
+			button: '关 闭'
+		});
 		return true;
 	}
 	return false;
 }
 
-var _get = function(id)
-{
+function _confirmCheckBoxCollection(checklist, emptyAlertText, confirmAlertText, linkUrl) {
+	var collectionValue = _getCheckBoxCollectionValue(checklist);
+	if (collectionValue.length == 0) {
+		swal({
+			title: emptyAlertText,
+			icon: 'warning',
+			button: '关 闭'
+		});
+		return true;
+	}
+	
+	swal({
+		title: confirmAlertText,
+		icon: 'warning',
+		buttons: {
+			cancel: {
+				text: '取 消',
+				visible: true,
+				className: 'btn'
+			},
+			confirm: {
+				text: '确 认',
+				visible: true,
+				className: 'btn btn-danger'
+			}
+		}
+	})
+	.then(function (isConfirm) {
+		if (isConfirm) {
+			{
+				_goto(linkUrl);
+			}
+		}
+	});
+}
+
+function _confirm(confirmAlertText, linkUrl) {
+	swal({
+		title: confirmAlertText,
+		icon: 'warning',
+		buttons: {
+			cancel: {
+				text: '取 消',
+				visible: true,
+				className: 'btn'
+			},
+			confirm: {
+				text: '确 认',
+				visible: true,
+				className: 'btn btn-danger'
+			}
+		}
+	})
+	.then(function (isConfirm) {
+		if (isConfirm) {
+			{
+				_goto(linkUrl);
+			}
+		}
+	});
+}
+
+var _get = function (id) {
 	return document.getElementById(id);
 };
 
 var _goto = function (url) {
 
-    window.location.href = url;
+	window.location.href = url;
 };
 
-function _refresh() { window.location.reload(true);}
+function _refresh() {
+	window.location.reload(true);
+}
 
-function _setCookie(name, value, hoursToExpire)
-{
+function _setCookie(name, value, hoursToExpire) {
 	var expire = '';
-    if (hoursToExpire != undefined) {
-      var d = new Date();
-      d.setTime(d.getTime() + (3600000 * parseFloat(hoursToExpire)));
-      expire = '; expires=' + d.toGMTString();
-    }
+	if (hoursToExpire != undefined) {
+		var d = new Date();
+		d.setTime(d.getTime() + (3600000 * parseFloat(hoursToExpire)));
+		expire = '; expires=' + d.toGMTString();
+	}
 
-	window.document.cookie = name + "=" + escape(value) + expire +";path=/" ;
+	window.document.cookie = name + "=" + escape(value) + expire + ";path=/";
 }
 
 
-function _getCookie(name)
-{
-   var cookieString = "" + window.document.cookie;
-   var search = name + "=";
-   if (cookieString.length > 0)
-   {
+function _getCookie(name) {
+	var cookieString = "" + window.document.cookie;
+	var search = name + "=";
+	if (cookieString.length > 0) {
 		offset = cookieString.indexOf(search);
-		if (offset != -1)
-		{
+		if (offset != -1) {
 			offset += search.length;
 			end = cookieString.indexOf(";", offset);
 			if (end == -1) end = cookieString.length;
@@ -232,7 +286,7 @@ function _getCookie(name)
 	return null;
 }
 
-$(function() {
-	 $('[rel=tooltip]').tooltip && $('[rel=tooltip]').tooltip();
-	 $('.left-table tr[treeitemlevel=1]').css('font-size', '14px');
+$(function () {
+	$('[rel=tooltip]').tooltip && $('[rel=tooltip]').tooltip();
+	$('.left-table tr[treeitemlevel=1]').css('font-size', '14px');
 });

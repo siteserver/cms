@@ -1,3 +1,4 @@
+using System;
 using SiteServer.Utils;
 using System.Collections.Generic;
 using SiteServer.Utils.Enumerations;
@@ -76,10 +77,45 @@ namespace SiteServer.CMS.Core.Security
             return $"{siteId}_{channelId}";
         }
 
-	    public static KeyValuePair<int, int> ParseChannelPermissionDictKey(string dictKey)
+        public KeyValuePair<int, int> ParseChannelPermissionDictKey(string dictKey)
 	    {
+            if (string.IsNullOrEmpty(dictKey) || dictKey.IndexOf("_", StringComparison.Ordinal) == -1) return new KeyValuePair<int, int>(0, 0);
+
 	        return new KeyValuePair<int, int>(TranslateUtils.ToInt(dictKey.Split('_')[0]), TranslateUtils.ToInt(dictKey.Split('_')[1]));
 	    }
+
+        public List<int> ChannelPermissionChannelIdList
+	    {
+	        get
+	        {
+                var list = new List<int>();
+                foreach (var dictKey in ChannelPermissionDict.Keys)
+                {
+                    var kvp = ParseChannelPermissionDictKey(dictKey);
+                    if (!list.Contains(kvp.Value))
+                    {
+                        list.Add(kvp.Value);
+                    }
+                }
+                return list;
+            }
+	    }
+
+        public List<int> WebsitePermissionSiteIdList
+        {
+            get
+            {
+                var list = new List<int>();
+                foreach (var dictKey in WebsitePermissionDict.Keys)
+                {
+                    if (!list.Contains(dictKey))
+                    {
+                        list.Add(dictKey);
+                    }
+                }
+                return list;
+            }
+        }
 
         public Dictionary<string, List<string>> ChannelPermissionDict
         {

@@ -1175,16 +1175,15 @@ namespace SiteServer.Utils
                 $@"if (!_alertCheckBoxCollection(document.getElementsByName('{checkBoxClientId}'), '{emptyAlertText}')){{_goto('{redirectUrl}' + '&{checkBoxServerId}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxClientId}')));}};return false;";
         }
 
-        public static string GetRedirectStringWithCheckBoxValueAndAlert(string redirectUrl, string checkBoxServerId, string checkBoxClientId, string emptyAlertText, string alertText)
+        public static string GetRedirectStringWithCheckBoxValueAndAlert(string redirectUrl, string checkBoxServerId, string checkBoxClientId, string emptyAlertText, string confirmAlertText)
         {
             return
-                $@"if (!_alertCheckBoxCollection(document.getElementsByName('{checkBoxClientId}'), '{emptyAlertText}')){{if (confirm('{alertText}'))_goto('{redirectUrl}' + '&{checkBoxServerId}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxClientId}')));}};return false;";
-
+                $@"_confirmCheckBoxCollection(document.getElementsByName('{checkBoxClientId}'), '{emptyAlertText}', '{confirmAlertText}', '{redirectUrl}' + '&{checkBoxServerId}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxClientId}')));return false;";
         }
 
         public static string GetRedirectStringWithConfirm(string redirectUrl, string confirmString)
         {
-            return $@"if (window.confirm('{confirmString}')){{window.location.href='{redirectUrl}';}};return false;";
+            return $@"_confirm('{confirmString}', '{redirectUrl}');return false;";
         }
 
         public static string GetRedirectString(string redirectUrl)

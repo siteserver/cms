@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
@@ -58,8 +57,7 @@ namespace SiteServer.CMS.Plugin.Apis
             else
             {
                 var ps = new ProductAdministratorWithPermissions(adminName);
-                ICollection channelIdCollection = ps.ChannelPermissionDict.Keys;
-                foreach (int channelId in channelIdCollection)
+                foreach (var channelId in ps.ChannelPermissionChannelIdList)
                 {
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                     var allChannelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.Descendant, string.Empty, string.Empty, string.Empty);

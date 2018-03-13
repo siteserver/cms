@@ -103,7 +103,7 @@ namespace SiteServer.BackgroundPages
 
                 foreach (var dictKey in ProductPermissionsManager.Current.ChannelPermissionDict.Keys)
                 {
-                    var kvp = ProductAdministratorWithPermissions.ParseChannelPermissionDictKey(dictKey);
+                    var kvp = ProductPermissionsManager.Current.ParseChannelPermissionDictKey(dictKey);
                     if (kvp.Key == _siteInfo.Id)
                     {
                         showSite = true;
@@ -230,11 +230,11 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             }
             else
             {
-                ICollection channelIdCollection = ProductPermissionsManager.Current.ChannelPermissionDict.Keys;
-                ICollection siteIdCollection = ProductPermissionsManager.Current.WebsitePermissionDict.Keys;
+                var permissionSiteIdList = ProductPermissionsManager.Current.WebsitePermissionSiteIdList;
+                var permissionChannelIdList = ProductPermissionsManager.Current.ChannelPermissionChannelIdList;
                 foreach (var siteId in siteIdList)
                 {
-                    var showSite = IsShowSite(siteId, siteIdCollection, channelIdCollection);
+                    var showSite = IsShowSite(siteId, permissionSiteIdList, permissionChannelIdList);
                     if (showSite)
                     {
                         AddToMySystemInfoList(mySystemInfoList, parentWithChildren, siteId);
@@ -393,18 +393,18 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             return builder.ToString();
         }
 
-        private static bool IsShowSite(int siteId, ICollection siteIdCollection, ICollection channelIdCollection)
+        private static bool IsShowSite(int siteId, List<int> permissionSiteIdList, List<int> permissionChannelIdList)
         {
-            foreach (int psId in siteIdCollection)
+            foreach (var permissionSiteId in permissionSiteIdList)
             {
-                if (psId == siteId)
+                if (permissionSiteId == siteId)
                 {
                     return true;
                 }
             }
-            foreach (int channelId in channelIdCollection)
+            foreach (var permissionChannelId in permissionChannelIdList)
             {
-                if (ChannelManager.IsAncestorOrSelf(siteId, siteId, channelId))
+                if (ChannelManager.IsAncestorOrSelf(siteId, siteId, permissionChannelId))
                 {
                     return true;
                 }

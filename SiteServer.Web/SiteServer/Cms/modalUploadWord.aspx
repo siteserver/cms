@@ -134,13 +134,23 @@
 				allows: ".doc,.docx",
 				on: {
 					add: function (task) {
-						if (task.disabled) return alert("允许上传的文件格式为：" + this.ops.allows);
+						if (task.disabled) {
+							return swal({
+								title: "允许上传的文件格式为：" + this.ops.allows,
+								icon: 'warning',
+								button: '关 闭'
+							});
+						}
 					},
 					complete: function (task) {
 						var json = task.json;
-						if (!json || json.ret != 1) return alert("上传失败！");
-
-						console.log(json);
+						if (!json || json.ret != 1) {
+							return swal({
+								title: "上传失败！",
+								icon: 'warning',
+								button: '关 闭'
+							});
+						}
 
 						$vue.upload(json);
 					}
