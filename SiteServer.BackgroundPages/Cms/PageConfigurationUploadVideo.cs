@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
             TbVideoUploadDirectoryName.Text = SiteInfo.Additional.VideoUploadDirectoryName;
 
@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
 				{
                     DataProvider.SiteDao.Update(SiteInfo);
 
-                    Body.AddSiteLog(SiteId, "修改视频上传设置");
+                    AuthRequest.AddSiteLog(SiteId, "修改视频上传设置");
 
                     SuccessMessage("上传视频设置修改成功！");
 				}

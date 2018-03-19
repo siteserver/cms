@@ -62,11 +62,11 @@ namespace SiteServer.BackgroundPages.Settings
 
             PageUtils.CheckRequestParameter("siteId");
 
-            _exportObject = new ExportObject(SiteId);
+            _exportObject = new ExportObject(SiteId, AuthRequest.AdminName);
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
 
             if (SiteInfo.IsRoot)
             {
@@ -272,7 +272,7 @@ namespace SiteServer.BackgroundPages.Settings
             errorMessage = string.Empty;
             try
             {
-                SiteTemplateManager.ExportSiteToSiteTemplate(SiteInfo, TbSiteTemplateDir.Text);
+                SiteTemplateManager.ExportSiteToSiteTemplate(SiteInfo, TbSiteTemplateDir.Text, AuthRequest.AdminName);
 
                 return true;
             }
@@ -306,7 +306,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (SaveFiles(out errorMessage))
             {
                 BtnSaveSiteContentsNext.Visible = PhSaveSiteContents.Visible = true;
-                Body.AddAdminLog("保存站点模板", $"站点:{SiteInfo.SiteName}");
+                AuthRequest.AddAdminLog("保存站点模板", $"站点:{SiteInfo.SiteName}");
             }
             else
             {

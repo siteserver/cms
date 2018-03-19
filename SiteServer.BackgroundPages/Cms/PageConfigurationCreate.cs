@@ -31,7 +31,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Create);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Create);
 
             EBooleanUtils.AddListItems(DdlIsCreateContentIfContentChanged, "生成", "不生成");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateContentIfContentChanged, SiteInfo.Additional.IsCreateContentIfContentChanged.ToString());
@@ -101,7 +101,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             DataProvider.SiteDao.Update(SiteInfo);
 
-            Body.AddSiteLog(SiteId, "修改页面生成设置");
+            AuthRequest.AddSiteLog(SiteId, "修改页面生成设置");
 
             SuccessMessage("页面生成设置修改成功！");
         }

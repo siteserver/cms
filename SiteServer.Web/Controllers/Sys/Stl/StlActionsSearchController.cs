@@ -26,7 +26,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
         {
             try
             {
-                var request = new Request();
+                var request = new AuthRequest();
                 var form = HttpContext.Current.Request.Form;
 
                 var isAllSites = request.GetPostBool(StlSearch.AttributeIsAllSites.ToLower());

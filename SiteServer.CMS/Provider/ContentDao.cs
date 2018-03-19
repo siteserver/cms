@@ -5,7 +5,6 @@ using System.Data;
 using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Cache;
@@ -1939,9 +1938,12 @@ group by tmp.userName";
             return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public List<KeyValuePair<int, int>> GetCountListUnChecked(bool isSystemAdministrator, string administratorName, List<int> siteIdList, List<int> owningChannelIdList, string tableName)
+        public List<KeyValuePair<int, int>> GetCountListUnChecked(PermissionManager permissionManager, string tableName)
         {
             var list = new List<KeyValuePair<int, int>>();
+
+            var siteIdList = permissionManager.SiteIdList;
+            var owningChannelIdList = permissionManager.OwningChannelIdList;
 
             var siteIdArrayList = SiteManager.GetSiteIdList();
             foreach (var siteId in siteIdArrayList)
@@ -1949,7 +1951,7 @@ group by tmp.userName";
                 if (!siteIdList.Contains(siteId)) continue;
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (!isSystemAdministrator)
+                if (!permissionManager.IsSystemAdministrator)
                 {
                     //if (!owningChannelIdArrayList.Contains(psID)) continue;
                     //if (!AdminUtility.HasChannelPermissions(psID, psID, AppManager.CMS.Permission.Channel.ContentCheck)) continue;
@@ -1957,7 +1959,7 @@ group by tmp.userName";
                     var isContentCheck = false;
                     foreach (var theChannelId in owningChannelIdList)
                     {
-                        if (AdminUtility.HasChannelPermissions(administratorName, siteId, theChannelId, ConfigManager.Permissions.Channel.ContentCheck))
+                        if (permissionManager.HasChannelPermissions(siteId, theChannelId, ConfigManager.ChannelPermissions.ContentCheck))
                         {
                             isContentCheck = true;
                         }
@@ -1969,9 +1971,9 @@ group by tmp.userName";
                 }
 
                 int checkedLevel;
-                var isChecked = CheckManager.GetUserCheckLevel(administratorName, siteInfo, siteInfo.Id, out checkedLevel);
+                var isChecked = CheckManager.GetUserCheckLevel(permissionManager, siteInfo, siteInfo.Id, out checkedLevel);
                 var checkLevelList = CheckManager.LevelInt.GetCheckLevelListOfNeedCheck(siteInfo, isChecked, checkedLevel);
-                var sqlString = isSystemAdministrator ? $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (SiteId = {siteId} AND ChannelId > 0 AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}))" : $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (SiteId = {siteId} AND ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningChannelIdList)}) AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}))";
+                var sqlString = permissionManager.IsSystemAdministrator ? $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (SiteId = {siteId} AND ChannelId > 0 AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}))" : $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (SiteId = {siteId} AND ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningChannelIdList)}) AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}))";
 
                 var count = DataProvider.DatabaseDao.GetIntResult(sqlString);
                 if (count > 0)

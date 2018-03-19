@@ -37,15 +37,15 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "channelId", "contentID", "returnUrl");
 
-            _channelId = Body.GetQueryInt("channelId");
+            _channelId = AuthRequest.GetQueryInt("channelId");
             _tableName = ChannelManager.GetTableName(SiteInfo, _channelId);
-            _contentId = Body.GetQueryInt("contentID");
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("returnUrl"));
+            _contentId = AuthRequest.GetQueryInt("contentID");
+            _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
 
             var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, _contentId);
 
             int checkedLevel;
-            var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, SiteInfo, SiteId, out checkedLevel);
+            var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, SiteId, out checkedLevel);
             BtnCheck.Visible = CheckManager.IsCheckable(SiteInfo, _channelId, contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
 
             LtlTitle.Text = contentInfo.Title;

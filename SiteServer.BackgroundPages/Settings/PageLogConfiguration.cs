@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Log);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Log);
 
             EBooleanUtils.AddListItems(RblIsTimeThreshold, "启用", "不启用");
             ControlUtils.SelectSingleItem(RblIsTimeThreshold, ConfigManager.SystemConfigInfo.IsTimeThreshold.ToString());
@@ -41,7 +41,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             DataProvider.ConfigDao.Update(ConfigManager.Instance);
 
-            Body.AddAdminLog("设置日志阈值参数");
+            AuthRequest.AddAdminLog("设置日志阈值参数");
             SuccessMessage("日志设置成功");
         }
     }

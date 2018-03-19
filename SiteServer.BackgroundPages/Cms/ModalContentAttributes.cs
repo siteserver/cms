@@ -44,9 +44,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "channelId");
 
-            _channelId = Body.GetQueryInt("channelId");
+            _channelId = AuthRequest.GetQueryInt("channelId");
             _tableName = ChannelManager.GetTableName(SiteInfo, _channelId);
-            _idList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("contentIdCollection"));
+            _idList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
 		}
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
                             }
                         }
 
-                        Body.AddSiteLog(SiteId, "设置内容属性");
+                        AuthRequest.AddSiteLog(SiteId, "设置内容属性");
 
                         isChanged = true;
                     }
@@ -118,7 +118,7 @@ namespace SiteServer.BackgroundPages.Cms
                             }
                         }
 
-                        Body.AddSiteLog(SiteId, "取消内容属性");
+                        AuthRequest.AddSiteLog(SiteId, "取消内容属性");
 
                         isChanged = true;
                     }
@@ -132,7 +132,7 @@ namespace SiteServer.BackgroundPages.Cms
                         DataProvider.ContentDao.SetValue(_tableName, contentId, ContentAttribute.Hits, hits.ToString());
                     }
 
-                    Body.AddSiteLog(SiteId, "设置内容点击量");
+                    AuthRequest.AddSiteLog(SiteId, "设置内容点击量");
 
                     isChanged = true;
                 }

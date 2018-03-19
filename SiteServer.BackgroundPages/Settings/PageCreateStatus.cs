@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Settings
                 //base.BreadCrumb(AppManager.LeftMenu.ID_Utility, "生成队列", AppManager.Permission.Platform_Utility);
             }
 
-            //if (!string.IsNullOrEmpty(base.Body.GetQueryString("Cancel")))
+            //if (!string.IsNullOrEmpty(base.AuthRequest.GetQueryString("Cancel")))
             //{
             //    DataProvider.CreateTaskDAO.DeleteAll(base.SiteId);
             //}

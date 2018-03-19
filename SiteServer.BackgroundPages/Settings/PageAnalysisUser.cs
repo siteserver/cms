@@ -100,12 +100,12 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Chart);
-            LtlPageTitle.Text = $"用户增加最近{_count}{EStatictisXTypeUtils.GetText(EStatictisXTypeUtils.GetEnumType(Body.GetQueryString("XType")))}分配图表";
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Chart);
+            LtlPageTitle.Text = $"用户增加最近{_count}{EStatictisXTypeUtils.GetText(EStatictisXTypeUtils.GetEnumType(AuthRequest.GetQueryString("XType")))}分配图表";
 
             EStatictisXTypeUtils.AddListItems(DdlXType);
 
-            _xType = EStatictisXTypeUtils.GetEnumType(Body.GetQueryString("XType"));
+            _xType = EStatictisXTypeUtils.GetEnumType(AuthRequest.GetQueryString("XType"));
 
             if (Equals(_xType, EStatictisXType.Day))
             {
@@ -120,12 +120,12 @@ namespace SiteServer.BackgroundPages.Settings
                 _count = 10;
             }
 
-            TbDateFrom.Text = Body.GetQueryString("DateFrom");
-            TbDateTo.Text = Body.GetQueryString("DateTo");
+            TbDateFrom.Text = AuthRequest.GetQueryString("DateFrom");
+            TbDateTo.Text = AuthRequest.GetQueryString("DateTo");
             DdlXType.SelectedValue = EStatictisXTypeUtils.GetValue(_xType);
 
             //用户添加量统计
-            var trackingDayDict = DataProvider.UserDao.GetTrackingDictionary( TranslateUtils.ToDateTime(Body.GetQueryString("DateFrom")), TranslateUtils.ToDateTime(Body.GetQueryString("DateTo"), DateTime.Now), EStatictisXTypeUtils.GetValue(_xType));
+            var trackingDayDict = DataProvider.UserDao.GetTrackingDictionary( TranslateUtils.ToDateTime(AuthRequest.GetQueryString("DateFrom")), TranslateUtils.ToDateTime(AuthRequest.GetQueryString("DateTo"), DateTime.Now), EStatictisXTypeUtils.GetValue(_xType));
 
             var now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
             for (var i = 0; i < _count; i++)

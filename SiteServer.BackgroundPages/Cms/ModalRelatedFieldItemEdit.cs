@@ -31,10 +31,10 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _relatedFieldId = Body.GetQueryInt("RelatedFieldID");
-            _parentId = Body.GetQueryInt("ParentID");
-            _level = Body.GetQueryInt("Level");
-            _id = Body.GetQueryInt("ID");
+            _relatedFieldId = AuthRequest.GetQueryInt("RelatedFieldID");
+            _parentId = AuthRequest.GetQueryInt("ParentID");
+            _level = AuthRequest.GetQueryInt("Level");
+            _id = AuthRequest.GetQueryInt("ID");
 
             if (IsPostBack) return;
 

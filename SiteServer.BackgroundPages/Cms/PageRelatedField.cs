@@ -22,19 +22,19 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-			if (Body.IsQueryExists("Delete"))
+			if (AuthRequest.IsQueryExists("Delete"))
 			{
-                var relatedFieldId = Body.GetQueryInt("RelatedFieldID");
+                var relatedFieldId = AuthRequest.GetQueryInt("RelatedFieldID");
 
                 var relatedFieldName = DataProvider.RelatedFieldDao.GetTitle(relatedFieldId);
                 DataProvider.RelatedFieldDao.Delete(relatedFieldId);
-                Body.AddSiteLog(SiteId, "删除联动字段", $"联动字段:{relatedFieldName}");
+                AuthRequest.AddSiteLog(SiteId, "删除联动字段", $"联动字段:{relatedFieldName}");
                 SuccessDeleteMessage();
             }
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
             RptContents.DataSource = DataProvider.RelatedFieldDao.GetRelatedFieldInfoList(SiteId);
             RptContents.ItemDataBound += RptContents_ItemDataBound;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
@@ -26,7 +25,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
             ECharsetUtils.AddListItems(DdlCharset);
             ControlUtils.SelectSingleItem(DdlCharset, SiteInfo.Additional.Charset);
@@ -58,12 +57,12 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var templateContent = TemplateManager.GetTemplateContent(SiteInfo, templateInfo);
                 templateInfo.Charset = charset;
-                DataProvider.TemplateDao.Update(SiteInfo, templateInfo, templateContent, Body.AdminName);
+                DataProvider.TemplateDao.Update(SiteInfo, templateInfo, templateContent, AuthRequest.AdminName);
             }
 
             DataProvider.SiteDao.Update(SiteInfo);
 
-            Body.AddSiteLog(SiteId, "修改站点设置");
+            AuthRequest.AddSiteLog(SiteId, "修改站点设置");
 
             SuccessMessage("站点设置修改成功！");
         }

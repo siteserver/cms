@@ -41,9 +41,9 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId");
-            _uploadType = EUploadTypeUtils.GetEnumType(Body.GetQueryString("uploadType"));
-            _realtedPath = Body.GetQueryString("realtedPath");
-            _textBoxClientId = Body.GetQueryString("TextBoxClientID");
+            _uploadType = EUploadTypeUtils.GetEnumType(AuthRequest.GetQueryString("uploadType"));
+            _realtedPath = AuthRequest.GetQueryString("realtedPath");
+            _textBoxClientId = AuthRequest.GetQueryString("TextBoxClientID");
 
             if (IsPostBack) return;
 

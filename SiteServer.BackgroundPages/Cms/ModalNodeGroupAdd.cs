@@ -31,9 +31,9 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            if (Body.IsQueryExists("GroupName"))
+            if (AuthRequest.IsQueryExists("GroupName"))
             {
-                var groupName = Body.GetQueryString("GroupName");
+                var groupName = AuthRequest.GetQueryString("GroupName");
                 var nodeGroupInfo = DataProvider.ChannelGroupDao.GetGroupInfo(SiteId, groupName);
                 if (nodeGroupInfo != null)
                 {
@@ -56,12 +56,12 @@ namespace SiteServer.BackgroundPages.Cms
                 Description = TbDescription.Text
             };
 
-            if (Body.IsQueryExists("GroupName"))
+            if (AuthRequest.IsQueryExists("GroupName"))
 			{
 				try
 				{
                     DataProvider.ChannelGroupDao.Update(nodeGroupInfo);
-                    Body.AddSiteLog(SiteId, "修改栏目组", $"栏目组:{nodeGroupInfo.GroupName}");
+                    AuthRequest.AddSiteLog(SiteId, "修改栏目组", $"栏目组:{nodeGroupInfo.GroupName}");
 					isChanged = true;
                 }
 				catch(Exception ex)
@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
 					try
 					{
 						DataProvider.ChannelGroupDao.Insert(nodeGroupInfo);
-                        Body.AddSiteLog(SiteId, "添加栏目组", $"栏目组:{nodeGroupInfo.GroupName}");
+                        AuthRequest.AddSiteLog(SiteId, "添加栏目组", $"栏目组:{nodeGroupInfo.GroupName}");
 						isChanged = true;
                     }
                     catch (Exception ex)

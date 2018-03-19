@@ -31,7 +31,7 @@
     //    {
     //        if (IsForbidden) return;
 
-    //        _pluginId = Body.GetQueryString("pluginId");
+    //        _pluginId = AuthRequest.GetQueryString("pluginId");
 
     //        if (Page.IsPostBack) return;
 
@@ -190,7 +190,7 @@
 
     //        var metadata = PluginManager.UpdateDatabase(_pluginId, databaseType, connectionString);
 
-    //        Body.AddAdminLog("设置插件数据库连接", $"插件:{metadata.Title}");
+    //        AuthRequest.AddAdminLog("设置插件数据库连接", $"插件:{metadata.Title}");
     //        SuccessMessage("插件设置成功");
     //    }
 

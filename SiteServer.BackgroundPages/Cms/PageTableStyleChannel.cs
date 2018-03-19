@@ -36,25 +36,25 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             _tableName = DataProvider.ChannelDao.TableName;
-            var channelId = Body.GetQueryInt("channelId", SiteId);
+            var channelId = AuthRequest.GetQueryInt("channelId", SiteId);
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             _redirectUrl = GetRedirectUrl(SiteId, channelId);
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, channelId);
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
                 
             //删除样式
-            if (Body.IsQueryExists("DeleteStyle"))
+            if (AuthRequest.IsQueryExists("DeleteStyle"))
             {
-                var attributeName = Body.GetQueryString("AttributeName");
+                var attributeName = AuthRequest.GetQueryString("AttributeName");
                 if (TableStyleManager.IsExists(_channelInfo.Id, _tableName, attributeName))
                 {
                     try
                     {
                         TableStyleManager.Delete(_channelInfo.Id, _tableName, attributeName);
-                        Body.AddSiteLog(SiteId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
+                        AuthRequest.AddSiteLog(SiteId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
                         SuccessDeleteMessage();
                     }
                     catch (Exception ex)
@@ -64,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, Body.AdminName);
+            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissions);
             ControlUtils.SelectSingleItem(DdlChannelId, channelId.ToString());
 
             RptContents.DataSource = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);

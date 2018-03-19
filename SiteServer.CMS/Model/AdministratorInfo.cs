@@ -1,10 +1,11 @@
 using System;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Model
 {
-    public class AdministratorInfo
+    public class AdministratorInfo: IAdministratorInfo
     {
         private string _displayName;
 

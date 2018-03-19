@@ -8,7 +8,6 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.Utils.Enumerations;
 
@@ -73,7 +72,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.SiteAdd);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.SiteAdd);
 
             DataProvider.TableDao.CreateAllTableCollectionInfoIfNotExists();
 
@@ -148,8 +147,8 @@ namespace SiteServer.BackgroundPages.Settings
             }
             ControlUtils.SelectSingleItem(RblSource, ETriStateUtils.GetValue(ETriState.True));
 
-            var siteTemplateDir = Body.GetQueryString("siteTemplateDir");
-            var onlineTemplateName = Body.GetQueryString("onlineTemplateName");
+            var siteTemplateDir = AuthRequest.GetQueryString("siteTemplateDir");
+            var onlineTemplateName = AuthRequest.GetQueryString("onlineTemplateName");
 
             if (!string.IsNullOrEmpty(siteTemplateDir))
             {
@@ -438,17 +437,16 @@ namespace SiteServer.BackgroundPages.Settings
                 }
                 psInfo.Additional.Charset = DdlCharset.SelectedValue;
 
-                var theSiteId = DataProvider.ChannelDao.InsertSiteInfo(nodeInfo, psInfo, Body.AdminName);
+                var theSiteId = DataProvider.ChannelDao.InsertSiteInfo(nodeInfo, psInfo, AuthRequest.AdminName);
 
-                var permissions = PermissionsManager.GetPermissions(Body.AdminName);
-                if (permissions.IsSystemAdministrator && !permissions.IsConsoleAdministrator)
+                if (AuthRequest.AdminPermissions.IsSystemAdministrator && !AuthRequest.AdminPermissions.IsConsoleAdministrator)
                 {
-                    var siteIdList = ProductPermissionsManager.Current.SiteIdList ?? new List<int>();
+                    var siteIdList = AuthRequest.AdminPermissions.SiteIdList ?? new List<int>();
                     siteIdList.Add(theSiteId);
-                    DataProvider.AdministratorDao.UpdateSiteIdCollection(Body.AdminName, TranslateUtils.ObjectCollectionToString(siteIdList));
+                    DataProvider.AdministratorDao.UpdateSiteIdCollection(AuthRequest.AdminName, TranslateUtils.ObjectCollectionToString(siteIdList));
                 }
 
-                Body.AddAdminLog("创建新站点", $"站点名称：{PageUtils.FilterXss(TbSiteName.Text)}");
+                AuthRequest.AddAdminLog("创建新站点", $"站点名称：{PageUtils.FilterXss(TbSiteName.Text)}");
 
                 errorMessage = string.Empty;
                 return theSiteId;

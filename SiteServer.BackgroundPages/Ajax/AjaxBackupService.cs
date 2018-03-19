@@ -72,7 +72,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retval = new NameValueCollection();
-            var request = new Request();
+            var request = new AuthRequest();
 
             if (type == TypeBackup)
             {
@@ -102,6 +102,7 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;
+            var request = new AuthRequest(Request);
 
             try
             {
@@ -114,19 +115,19 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 if (eBackupType == EBackupType.Templates)
                 {
-                    BackupUtility.BackupTemplates(siteId, filePath);
+                    BackupUtility.BackupTemplates(siteId, filePath, request.AdminName);
                 }
                 else if (eBackupType == EBackupType.ChannelsAndContents)
                 {
-                    BackupUtility.BackupChannelsAndContents(siteId, filePath);
+                    BackupUtility.BackupChannelsAndContents(siteId, filePath, request.AdminName);
                 }
                 else if (eBackupType == EBackupType.Files)
                 {
-                    BackupUtility.BackupFiles(siteId, filePath);
+                    BackupUtility.BackupFiles(siteId, filePath, request.AdminName);
                 }
                 else if (eBackupType == EBackupType.Site)
                 {
-                    BackupUtility.BackupSite(siteId, filePath);
+                    BackupUtility.BackupSite(siteId, filePath, request.AdminName);
                 }
 
                 string resultString =
@@ -143,7 +144,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
-        public NameValueCollection Recovery(int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix, Request request)
+        public NameValueCollection Recovery(int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix, AuthRequest request)
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;

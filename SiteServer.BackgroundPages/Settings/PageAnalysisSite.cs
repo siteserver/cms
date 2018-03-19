@@ -51,20 +51,20 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            if (string.IsNullOrEmpty(Body.GetQueryString("startDate")))
+            if (string.IsNullOrEmpty(AuthRequest.GetQueryString("startDate")))
             {
                 _begin = DateTime.Now.AddMonths(-1);
                 _end = DateTime.Now;
             }
             else
             {
-                _begin = TranslateUtils.ToDateTime(Body.GetQueryString("startDate"));
-                _end = TranslateUtils.ToDateTime(Body.GetQueryString("endDate"));
+                _begin = TranslateUtils.ToDateTime(AuthRequest.GetQueryString("startDate"));
+                _end = TranslateUtils.ToDateTime(AuthRequest.GetQueryString("endDate"));
             }
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Chart);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Chart);
 
             DdlSiteId.Items.Add(new ListItem("<<全部站点>>", "0"));
             var siteIdList = SiteManager.GetSiteIdListOrderByLevel();

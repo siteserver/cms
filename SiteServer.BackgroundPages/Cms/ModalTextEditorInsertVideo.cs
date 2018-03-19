@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            if (Body.IsQueryExists("upload"))
+            if (AuthRequest.IsQueryExists("upload"))
             {
                 var json = JsonMapper.ToJson(Upload());
                 Response.Write(json);
@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
                 return;
             }
 
-            _attributeName = Body.GetQueryString("AttributeName");
+            _attributeName = AuthRequest.GetQueryString("AttributeName");
 
             if (IsPostBack) return;
 

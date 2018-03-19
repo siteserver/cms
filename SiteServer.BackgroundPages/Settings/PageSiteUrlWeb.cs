@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
 
             var siteList = SiteManager.GetSiteIdListOrderByLevel();
             RptContents.DataSource = siteList;

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Web.UI;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -10,6 +10,18 @@ namespace SiteServer.CMS.Plugin
 {
     public class PluginMenuManager
     {
+        private static readonly Dictionary<string, string> PluginIconClassDict = new Dictionary<string, string>();
+
+        public static string GetPluginIconClass(string pluginId)
+        {
+            string iconClass;
+            if (PluginIconClassDict.TryGetValue(pluginId, out iconClass))
+            {
+                return iconClass;
+            }
+            return string.Empty;
+        }
+
         public static Dictionary<string, Menu> GetTopMenus()
         {
             var menus = new Dictionary<string, Menu>();
@@ -20,8 +32,13 @@ namespace SiteServer.CMS.Plugin
 
                 try
                 {
-                    var metadataMenu = service.PluginMenu;
-                    var pluginMenu = GetMenu(service.PluginId, 0, metadataMenu, 0);
+                    var pluginMenu = GetMenu(service.PluginId, 0, service.PluginMenu, 0);
+
+                    if (!string.IsNullOrEmpty(pluginMenu.IconClass))
+                    {
+                        PluginIconClassDict[service.PluginId] = pluginMenu.IconClass;
+                    }
+
                     menus.Add(service.PluginId, pluginMenu);
                 }
                 catch (Exception ex)
@@ -54,6 +71,11 @@ namespace SiteServer.CMS.Plugin
                 if (metadataMenu == null) continue;
 
                 var pluginMenu = GetMenu(service.PluginId, siteId, metadataMenu, 0);
+
+                if (!string.IsNullOrEmpty(pluginMenu.IconClass))
+                {
+                    PluginIconClassDict[service.PluginId] = pluginMenu.IconClass;
+                }
 
                 menus.Add(service.PluginId, pluginMenu);
             }
@@ -138,30 +160,30 @@ namespace SiteServer.CMS.Plugin
             return menu;
         }
 
-        public static List<PermissionConfig> GetTopPermissions()
+        public static List<PermissionConfigManager.PermissionConfig> GetTopPermissions()
         {
-            var permissions = new List<PermissionConfig>();
+            var permissions = new List<PermissionConfigManager.PermissionConfig>();
 
             foreach (var service in PluginManager.Services)
             {
                 if (service.PluginMenu != null)
                 {
-                    permissions.Add(new PermissionConfig(service.PluginId, $"系统管理 -> {service.Metadata.Title}（插件）"));
+                    permissions.Add(new PermissionConfigManager.PermissionConfig(service.PluginId, $"系统管理 -> {service.Metadata.Title}（插件）"));
                 }
             }
 
             return permissions;
         }
 
-        public static List<PermissionConfig> GetSitePermissions(int siteId)
+        public static List<PermissionConfigManager.PermissionConfig> GetSitePermissions(int siteId)
         {
-            var permissions = new List<PermissionConfig>();
+            var permissions = new List<PermissionConfigManager.PermissionConfig>();
 
             foreach (var service in PluginManager.Services)
             {
                 if (service.SiteMenuFunc != null)
                 {
-                    permissions.Add(new PermissionConfig(service.PluginId, $"{service.Metadata.Title}（插件）"));
+                    permissions.Add(new PermissionConfigManager.PermissionConfig(service.PluginId, $"{service.Metadata.Title}（插件）"));
                 }
             }
 

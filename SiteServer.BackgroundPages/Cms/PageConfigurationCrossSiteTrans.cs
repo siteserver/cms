@@ -31,13 +31,13 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
             ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, string.Empty, ELoadingType.ConfigurationCrossSiteTrans, null));
 
-            if (Body.IsQueryExists("CurrentChannelId"))
+            if (AuthRequest.IsQueryExists("CurrentChannelId"))
             {
-                _currentChannelId = Body.GetQueryInt("CurrentChannelId");
+                _currentChannelId = AuthRequest.GetQueryInt("CurrentChannelId");
                 var onLoadScript = ChannelLoading.GetScriptOnLoad(SiteId, _currentChannelId);
                 if (!string.IsNullOrEmpty(onLoadScript))
                 {
@@ -59,7 +59,7 @@ namespace SiteServer.BackgroundPages.Cms
 		    {
 		        DataProvider.SiteDao.Update(SiteInfo);
 
-		        Body.AddSiteLog(SiteId, "修改默认跨站转发设置");
+		        AuthRequest.AddSiteLog(SiteId, "修改默认跨站转发设置");
 
 		        SuccessMessage("默认跨站转发设置修改成功！");
 		    }

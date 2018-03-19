@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.Utils.IO;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser.Cache;
@@ -298,8 +297,17 @@ namespace SiteServer.CMS.Core
             {
                 foreach (var service in PluginContentManager.GetContentPlugins(nodeInfo, false))
                 {
-                    imageHtml +=
-                        $@"<img align=""absmiddle"" title=""插件：{service.Metadata.Title}"" border=""0"" src=""{PluginManager.GetPluginIconUrl(service)}"" width=""18"" height=""18"" />";
+                    var iconClass = PluginMenuManager.GetPluginIconClass(service.PluginId);
+                    if (!string.IsNullOrEmpty(iconClass))
+                    {
+                        imageHtml +=
+                            $@"<i class=""{iconClass}"" title=""{service.Metadata.Title}"" style=""color: #00b19d;display: inline-block;font-size: 18px;vertical-align: middle;width: 16px;""></i>";
+                    }
+                    else
+                    {
+                        imageHtml +=
+                        $@"<img align=""absmiddle"" title=""{service.Metadata.Title}"" border=""0"" src=""{PluginManager.GetPluginIconUrl(service)}"" width=""18"" height=""18"" />";
+                    }
                 }
             }
             return imageHtml;
@@ -387,7 +395,7 @@ namespace SiteServer.CMS.Core
             return TranslateUtils.ObjectCollectionToString(nodeNameList, " > ");
         }
 
-        public static void AddListItems(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, bool isShowContentNum, string administratorName)
+        public static void AddListItems(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, bool isShowContentNum, PermissionManager permissionManager)
         {
             var list = GetChannelIdList(siteInfo.Id);
             var nodeCount = list.Count;
@@ -397,10 +405,10 @@ namespace SiteServer.CMS.Core
                 var enabled = true;
                 if (isSeeOwning)
                 {
-                    enabled = AdminUtility.IsOwningChannelId(administratorName, channelId);
+                    enabled = permissionManager.IsOwningChannelId(channelId);
                     if (!enabled)
                     {
-                        if (!AdminUtility.IsDescendantOwningChannelId(administratorName, siteInfo.Id, channelId)) continue;
+                        if (!permissionManager.IsDescendantOwningChannelId(siteInfo.Id, channelId)) continue;
                     }
                 }
                 var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
@@ -414,7 +422,7 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void AddListItems(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, bool isShowContentNum, string contentModelId, string administratorName)
+        public static void AddListItems(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, bool isShowContentNum, string contentModelId, PermissionManager permissionManager)
         {
             var list = GetChannelIdList(siteInfo.Id);
             var nodeCount = list.Count;
@@ -424,10 +432,10 @@ namespace SiteServer.CMS.Core
                 var enabled = true;
                 if (isSeeOwning)
                 {
-                    enabled = AdminUtility.IsOwningChannelId(administratorName, channelId);
+                    enabled = permissionManager.IsOwningChannelId(channelId);
                     if (!enabled)
                     {
-                        if (!AdminUtility.IsDescendantOwningChannelId(administratorName, siteInfo.Id, channelId)) continue;
+                        if (!permissionManager.IsDescendantOwningChannelId(siteInfo.Id, channelId)) continue;
                     }
                 }
                 var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
@@ -445,7 +453,7 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void AddListItemsForAddContent(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, string administratorName)
+        public static void AddListItemsForAddContent(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, PermissionManager permissionManager)
         {
             var list = GetChannelIdList(siteInfo.Id);
             var nodeCount = list.Count;
@@ -455,7 +463,7 @@ namespace SiteServer.CMS.Core
                 var enabled = true;
                 if (isSeeOwning)
                 {
-                    enabled = AdminUtility.IsOwningChannelId(administratorName, channelId);
+                    enabled = permissionManager.IsOwningChannelId(channelId);
                 }
 
                 var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
@@ -479,7 +487,7 @@ namespace SiteServer.CMS.Core
         /// 提供给触发器页面使用
         /// 使用场景：其他栏目的内容变动之后，设置某个栏目（此栏目不能添加内容）触发生成
         /// </summary>
-        public static void AddListItemsForCreateChannel(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, string administratorName)
+        public static void AddListItemsForCreateChannel(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, PermissionManager permissionManager)
         {
             var list = GetChannelIdList(siteInfo.Id);
             var nodeCount = list.Count;
@@ -489,7 +497,7 @@ namespace SiteServer.CMS.Core
                 var enabled = true;
                 if (isSeeOwning)
                 {
-                    enabled = AdminUtility.IsOwningChannelId(administratorName, channelId);
+                    enabled = permissionManager.IsOwningChannelId(channelId);
                 }
 
                 var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);

@@ -36,21 +36,21 @@ namespace SiteServer.BackgroundPages.Cms
                 }), 700, 550);
         }
 
-        public string UploadUrl => WebHandlerUploadWord.GetRedirectUrl(SiteId);
+        public string UploadUrl => ModalUploadWordHandler.GetRedirectUrl(SiteId);
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
-            var channelId = int.Parse(Body.GetQueryString("channelId"));
+            var channelId = int.Parse(AuthRequest.GetQueryString("channelId"));
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-            _returnUrl = Body.GetQueryString("ReturnUrl");
+            _returnUrl = AuthRequest.GetQueryString("ReturnUrl");
 
             if (IsPostBack) return;
 
             int checkedLevel;
-            var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, SiteInfo, SiteId, out checkedLevel);
+            var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, SiteId, out checkedLevel);
             CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, _channelInfo.Id, null, isChecked, checkedLevel);
             ControlUtils.SelectSingleItem(DdlContentLevel, CheckManager.LevelInt.CaoGao.ToString());
         }
@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                             contentInfo.ChannelId = _channelInfo.Id;
                             contentInfo.SiteId = SiteId;
-                            contentInfo.AddUserName = Body.AdminName;
+                            contentInfo.AddUserName = AuthRequest.AdminName;
                             contentInfo.AddDate = DateTime.Now;
                             contentInfo.LastEditUserName = contentInfo.AddUserName;
                             contentInfo.LastEditDate = contentInfo.AddDate;
@@ -150,7 +150,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         //                    contentInfo.ChannelId = _channelInfo.Id;
         //                    contentInfo.SiteId = SiteId;
-        //                    contentInfo.AddUserName = Body.AdminName;
+        //                    contentInfo.AddUserName = AuthRequest.AdminName;
         //                    contentInfo.AddDate = DateTime.Now;
         //                    contentInfo.LastEditUserName = contentInfo.AddUserName;
         //                    contentInfo.LastEditDate = contentInfo.AddDate;

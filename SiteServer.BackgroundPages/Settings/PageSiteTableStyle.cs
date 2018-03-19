@@ -38,20 +38,20 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            _tableName = Body.GetQueryString("tableName");
+            _tableName = AuthRequest.GetQueryString("tableName");
             _redirectUrl = GetRedirectUrl(_tableName);
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
 
-            if (Body.IsQueryExists("DeleteStyle"))
+            if (AuthRequest.IsQueryExists("DeleteStyle"))
             {
-                var attributeName = Body.GetQueryString("AttributeName");
+                var attributeName = AuthRequest.GetQueryString("AttributeName");
                 if (TableStyleManager.IsExists(0, _tableName, attributeName))
                 {
                     TableStyleManager.Delete(0, _tableName, attributeName);
-                    Body.AddAdminLog("删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
+                    AuthRequest.AddAdminLog("删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
                     SuccessDeleteMessage();
                 }
             }

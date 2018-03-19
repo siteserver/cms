@@ -33,19 +33,19 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            if (Body.IsQueryExists("Delete") && Body.IsQueryExists("AreaIDCollection"))
+            if (AuthRequest.IsQueryExists("Delete") && AuthRequest.IsQueryExists("AreaIDCollection"))
             {
-                var areaIdArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("AreaIDCollection"));
+                var areaIdArrayList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("AreaIDCollection"));
                 foreach (var areaId in areaIdArrayList)
                 {
                     DataProvider.AreaDao.Delete(areaId);
                 }
                 SuccessMessage("成功删除所选区域");
             }
-            else if (Body.IsQueryExists("AreaID") && (Body.IsQueryExists("Subtract") || Body.IsQueryExists("Add")))
+            else if (AuthRequest.IsQueryExists("AreaID") && (AuthRequest.IsQueryExists("Subtract") || AuthRequest.IsQueryExists("Add")))
             {
-                var areaId = int.Parse(Body.GetQueryString("AreaID"));
-                var isSubtract = Body.IsQueryExists("Subtract");
+                var areaId = int.Parse(AuthRequest.GetQueryString("AreaID"));
+                var isSubtract = AuthRequest.IsQueryExists("Subtract");
                 DataProvider.AreaDao.UpdateTaxis(areaId, isSubtract);
 
                 PageUtils.Redirect(GetRedirectUrl(areaId));
@@ -54,13 +54,13 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Admin);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Admin);
 
             ClientScriptRegisterClientScriptBlock("NodeTreeScript", AreaTreeItem.GetScript(EAreaLoadingType.Management, null));
 
-            if (Body.IsQueryExists("CurrentAreaID"))
+            if (AuthRequest.IsQueryExists("CurrentAreaID"))
             {
-                _currentAreaId = Body.GetQueryInt("CurrentAreaID");
+                _currentAreaId = AuthRequest.GetQueryInt("CurrentAreaID");
                 var onLoadScript = GetScriptOnLoad(_currentAreaId);
                 if (!string.IsNullOrEmpty(onLoadScript))
                 {

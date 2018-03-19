@@ -15,32 +15,32 @@ namespace SiteServer.CMS.ImportExport
         public const string UploadFolderName = "upload"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件夹目录
         public const string UploadFileName = "upload.xml"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件名
 
-        public static void BackupTemplates(int siteId, string filePath)
+        public static void BackupTemplates(int siteId, string filePath, string adminName)
         {
-            var exportObject = new ExportObject(siteId);
+            var exportObject = new ExportObject(siteId, adminName);
             exportObject.ExportTemplates(filePath);
         }
 
-        public static void BackupChannelsAndContents(int siteId, string filePath)
+        public static void BackupChannelsAndContents(int siteId, string filePath, string adminName)
         {
-            var exportObject = new ExportObject(siteId);
+            var exportObject = new ExportObject(siteId, adminName);
 
             var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, siteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
 
             exportObject.ExportChannels(channelIdList, filePath);  
         }
 
-        public static void BackupFiles(int siteId, string filePath)
+        public static void BackupFiles(int siteId, string filePath, string adminName)
         {
-            var exportObject = new ExportObject(siteId);
+            var exportObject = new ExportObject(siteId, adminName);
 
             exportObject.ExportFiles(filePath);
         }
 
 
-        public static void BackupSite(int siteId, string filePath)
+        public static void BackupSite(int siteId, string filePath, string adminName)
         {
-            var exportObject = new ExportObject(siteId);
+            var exportObject = new ExportObject(siteId, adminName);
             var siteInfo = SiteManager.GetSiteInfo(siteId);
 
             var siteTemplateDir = PathUtils.GetFileNameWithoutExtension(filePath);
@@ -68,7 +68,7 @@ namespace SiteServer.CMS.ImportExport
 
         public static void RecoverySite(int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string administratorName)
         {
-            var importObject = new ImportObject(siteId);
+            var importObject = new ImportObject(siteId, administratorName);
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
 

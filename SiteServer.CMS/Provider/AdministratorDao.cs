@@ -225,7 +225,7 @@ namespace SiteServer.CMS.Provider
             DataProvider.AreaDao.UpdateCountOfAdmin();
         }
 
-        public void Update(AdministratorInfo info)
+        public void Update(IAdministratorInfo info)
         {
             IDataParameter[] parms =
             {

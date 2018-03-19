@@ -70,13 +70,13 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId", "RelatedPath", "FileName", "IsCreate");
-            _relatedPath = Body.GetQueryString("RelatedPath").Trim('/');
+            _relatedPath = AuthRequest.GetQueryString("RelatedPath").Trim('/');
             if (!_relatedPath.StartsWith("@"))
             {
                 _relatedPath = "@/" + _relatedPath;
             }
-            _theFileName = Body.GetQueryString("FileName");
-            _isCreate = Body.GetQueryBool("IsCreate");
+            _theFileName = AuthRequest.GetQueryString("FileName");
+            _isCreate = AuthRequest.GetQueryBool("IsCreate");
             _fileCharset = ECharset.utf_8;
             if (SiteInfo != null)
             {
@@ -181,7 +181,7 @@ namespace SiteServer.BackgroundPages.Cms
                         FileUtils.WriteText(filePath, _fileCharset, content);
                     }
 
-                    Body.AddSiteLog(SiteId, "新建文件", $"文件名:{_theFileName}");
+                    AuthRequest.AddSiteLog(SiteId, "新建文件", $"文件名:{_theFileName}");
 
                     isSuccess = true;
                 }
@@ -220,7 +220,7 @@ namespace SiteServer.BackgroundPages.Cms
                             FileUtils.RemoveReadOnlyAndHiddenIfExists(filePath);
                             FileUtils.WriteText(filePath, _fileCharset, content);
                         }
-                        Body.AddSiteLog(SiteId, "编辑文件", $"文件名:{_theFileName}");
+                        AuthRequest.AddSiteLog(SiteId, "编辑文件", $"文件名:{_theFileName}");
                         isSuccess = true;
                     }
                     catch (Exception ex)

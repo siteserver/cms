@@ -38,16 +38,16 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId");
 
-            if (Body.IsQueryExists("FileName"))
+            if (AuthRequest.IsQueryExists("FileName"))
             {
-                _fileName = Body.GetQueryString("FileName");
+                _fileName = AuthRequest.GetQueryString("FileName");
                 _fileName = PathUtils.RemoveParentPath(_fileName);
             }
             _directoryPath = PathUtility.MapPath(SiteInfo, "@/js");
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
 
             LtlPageTitle.Text = string.IsNullOrEmpty(_fileName) ? "添加脚本文件" : "编辑脚本文件";
 
@@ -126,7 +126,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     FileUtils.DeleteFileIfExists(PathUtils.Combine(_directoryPath, previousFileName));
                 }
-                Body.AddSiteLog(SiteId, "修改脚本文件", $"脚本文件:{currentFileName}");
+                AuthRequest.AddSiteLog(SiteId, "修改脚本文件", $"脚本文件:{currentFileName}");
                 SuccessMessage("脚本文件修改成功！");
                 AddWaitAndRedirectScript(PageTemplateJs.GetRedirectUrl(SiteId));
             }
@@ -146,7 +146,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var charset = ECharsetUtils.GetEnumType(DdlCharset.SelectedValue);
                 FileUtils.WriteText(PathUtils.Combine(_directoryPath, currentFileName), charset, TbContent.Text);
-                Body.AddSiteLog(SiteId, "添加脚本文件", $"脚本文件:{currentFileName}");
+                AuthRequest.AddSiteLog(SiteId, "添加脚本文件", $"脚本文件:{currentFileName}");
                 SuccessMessage("脚本文件添加成功！");
                 AddWaitAndRedirectScript(PageTemplateJs.GetRedirectUrl(SiteId));
             }

@@ -5,7 +5,6 @@ using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -58,7 +57,7 @@ namespace SiteServer.BackgroundPages.Settings
                     className = "bg-primary text-white";
                 }
 
-                var pageUrl = PageAdminPermissionAdd.GetRedirectUrl(siteId, Body.GetQueryString("RoleName"));
+                var pageUrl = PageAdminPermissionAdd.GetRedirectUrl(siteId, AuthRequest.GetQueryString("RoleName"));
                 string content = $@"
 <div onclick=""location.href = '{pageUrl}'"" class=""card {className} mb-3 ml-3 float-left"" style=""max-width: 18rem;cursor: pointer;"">
     <div class=""card-header"">{psInfo.SiteName}</div>
@@ -77,14 +76,12 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            var permissioins = PermissionsManager.GetPermissions(Body.AdminName);
-
-            _theRoleName = Body.GetQueryString("RoleName");
-            _generalPermissionList = permissioins.PermissionList;
+            _theRoleName = AuthRequest.GetQueryString("RoleName");
+            _generalPermissionList = AuthRequest.AdminPermissions.PermissionList;
 
             if (IsPostBack) return;
 
-            PermissionsManager.VerifyAdministratorPermissions(Body.AdminName, ConfigManager.Permissions.Settings.Admin);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Admin);
 
             if (!string.IsNullOrEmpty(_theRoleName))
             {
@@ -92,7 +89,7 @@ namespace SiteServer.BackgroundPages.Settings
                 TbRoleName.Enabled = false;
                 TbDescription.Text = DataProvider.RoleDao.GetRoleDescription(_theRoleName);
 
-                if (Body.GetQueryString("Return") == null)
+                if (AuthRequest.GetQueryString("Return") == null)
                 {
                     var systemPermissionsInfoList = DataProvider.SitePermissionsDao.GetSystemPermissionsInfoList(_theRoleName);
                     Session[SystemPermissionsInfoListKey] = systemPermissionsInfoList;
@@ -100,7 +97,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                if (Body.GetQueryString("Return") == null)
+                if (AuthRequest.GetQueryString("Return") == null)
                 {
                     Session[SystemPermissionsInfoListKey] = new List<SitePermissionsInfo>();
                 }
@@ -134,17 +131,16 @@ namespace SiteServer.BackgroundPages.Settings
             if (psPermissionsInRolesInfoList != null)
             {
                 var allSiteIdList = new List<int>();
-                foreach (var itemForPsid in ProductPermissionsManager.Current.WebsitePermissionDict.Keys)
+                foreach (var permissionSiteId in AuthRequest.AdminPermissions.SiteIdList)
                 {
-                    var dictKey = ProductAdministratorWithPermissions.GetChannelPermissionDictKey(itemForPsid, itemForPsid);
-                    if (ProductPermissionsManager.Current.ChannelPermissionDict.ContainsKey(dictKey) && ProductPermissionsManager.Current.WebsitePermissionDict.ContainsKey(itemForPsid))
+                    if (AuthRequest.AdminPermissions.HasChannelPermissions(permissionSiteId, permissionSiteId) && AuthRequest.AdminPermissions.HasSitePermissions(permissionSiteId))
                     {
-                        var listOne = ProductPermissionsManager.Current.ChannelPermissionDict[dictKey];
-                        var listTwo = ProductPermissionsManager.Current.WebsitePermissionDict[itemForPsid];
+                        var listOne = AuthRequest.AdminPermissions.GetChannelPermissions(permissionSiteId, permissionSiteId);
+                        var listTwo = AuthRequest.AdminPermissions.GetSitePermissions(permissionSiteId);
                         if (listOne != null && listOne.Count > 0 || listTwo != null && listTwo.Count > 0)
                         {
                             PhSitePermissions.Visible = true;
-                            allSiteIdList.Add(itemForPsid);
+                            allSiteIdList.Add(permissionSiteId);
                         }
                     }
                 }
@@ -199,9 +195,9 @@ if (ss_role) {
 
                     DataProvider.SitePermissionsDao.UpdateSitePermissions(_theRoleName, sitePermissionsInRolesInfoList);
 
-                    PermissionsManager.ClearAllCache();
+                    PermissionManager.ClearAllCache();
 
-                    Body.AddAdminLog("修改管理员角色", $"角色名称:{_theRoleName}");
+                    AuthRequest.AddAdminLog("修改管理员角色", $"角色名称:{_theRoleName}");
                     SuccessMessage("角色修改成功！");
                     AddWaitAndRedirectScript(PageAdminRole.GetRedirectUrl());
                 }
@@ -223,11 +219,11 @@ if (ss_role) {
 
                     try
                     {
-                        DataProvider.SitePermissionsDao.InsertRoleAndPermissions(TbRoleName.Text, Body.AdminName, TbDescription.Text, generalPermissionList, sitePermissionsInRolesInfoList);
+                        DataProvider.SitePermissionsDao.InsertRoleAndPermissions(TbRoleName.Text, AuthRequest.AdminName, TbDescription.Text, generalPermissionList, sitePermissionsInRolesInfoList);
 
-                        PermissionsManager.ClearAllCache();
+                        PermissionManager.ClearAllCache();
 
-                        Body.AddAdminLog("新增管理员角色",
+                        AuthRequest.AddAdminLog("新增管理员角色",
                             $"角色名称:{TbRoleName.Text}");
 
                         SuccessMessage("角色添加成功！");
@@ -243,7 +239,7 @@ if (ss_role) {
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            if (Body.GetQueryString("Return") != null)
+            if (AuthRequest.GetQueryString("Return") != null)
             {
                 PageUtils.Redirect(PageAdminRole.GetRedirectUrl());
             }

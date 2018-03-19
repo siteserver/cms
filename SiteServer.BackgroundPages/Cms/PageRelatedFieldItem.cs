@@ -41,24 +41,24 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _relatedFieldId = Body.GetQueryInt("RelatedFieldID");
-            _parentId = Body.GetQueryInt("ParentID");
-            _level = Body.GetQueryInt("Level");
+            _relatedFieldId = AuthRequest.GetQueryInt("RelatedFieldID");
+            _parentId = AuthRequest.GetQueryInt("ParentID");
+            _level = AuthRequest.GetQueryInt("Level");
             _totalLevel = DataProvider.RelatedFieldDao.GetRelatedFieldInfo(_relatedFieldId).TotalLevel;
 
-            if (Body.IsQueryExists("Delete") && Body.IsQueryExists("ID"))
+            if (AuthRequest.IsQueryExists("Delete") && AuthRequest.IsQueryExists("ID"))
             {
-                var id = Body.GetQueryInt("ID");
+                var id = AuthRequest.GetQueryInt("ID");
                 DataProvider.RelatedFieldItemDao.Delete(id);
                 if (_level != _totalLevel)
                 {
                     AddScript($@"parent.location.href = '{PageRelatedFieldMain.GetRedirectUrl(SiteId, _relatedFieldId, _totalLevel)}';");
                 }
             }
-            else if ((Body.IsQueryExists("Up") || Body.IsQueryExists("Down")) && Body.IsQueryExists("ID"))
+            else if ((AuthRequest.IsQueryExists("Up") || AuthRequest.IsQueryExists("Down")) && AuthRequest.IsQueryExists("ID"))
             {
-                var id = Body.GetQueryInt("ID");
-                var isDown = Body.IsQueryExists("Down");
+                var id = AuthRequest.GetQueryInt("ID");
+                var isDown = AuthRequest.IsQueryExists("Down");
                 if (isDown)
                 {
                     DataProvider.RelatedFieldItemDao.UpdateTaxisToUp(id, _parentId);
@@ -75,7 +75,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
             //if (_totalLevel >= 5)
             //{

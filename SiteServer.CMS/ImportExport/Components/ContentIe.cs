@@ -6,7 +6,6 @@ using Atom.Core.Collections;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.ImportExport.Components
@@ -22,21 +21,21 @@ namespace SiteServer.CMS.ImportExport.Components
             _siteInfo = siteInfo;
         }
 
-        public void ImportContents(string filePath, bool isOverride, ChannelInfo nodeInfo, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel)
+        public void ImportContents(string filePath, bool isOverride, ChannelInfo nodeInfo, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel, string adminName)
         {
             if (!FileUtils.IsFileExists(filePath)) return;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
-            ImportContents(feed.Entries, nodeInfo, taxis, importStart, importCount, false, isChecked, checkedLevel, isOverride);
+            ImportContents(feed.Entries, nodeInfo, taxis, importStart, importCount, false, isChecked, checkedLevel, isOverride, adminName);
         }
 
-        public void ImportContents(AtomEntryCollection entries, ChannelInfo nodeInfo, int taxis, bool isOverride)
+        public void ImportContents(AtomEntryCollection entries, ChannelInfo nodeInfo, int taxis, bool isOverride, string adminName)
         {
-            ImportContents(entries, nodeInfo, taxis, 0, 0, true, true, 0, isOverride);
+            ImportContents(entries, nodeInfo, taxis, 0, 0, true, true, 0, isOverride, adminName);
         }
 
         // 内部消化掉错误
-        public void ImportContents(AtomEntryCollection entries, ChannelInfo nodeInfo, int taxis, int importStart, int importCount, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride)
+        public void ImportContents(AtomEntryCollection entries, ChannelInfo nodeInfo, int taxis, int importStart, int importCount, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, string adminName)
         {
             if (importStart > 1 || importCount > 0)
             {
@@ -110,7 +109,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     {
                         ChannelId= nodeInfo.Id,
                         SiteId = _siteInfo.Id,
-                        AddUserName = Request.CurrentAdministratorName,
+                        AddUserName = adminName,
                         AddDate = TranslateUtils.ToDateTime(addDate)
                     };
                     contentInfo.LastEditUserName = contentInfo.AddUserName;

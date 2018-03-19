@@ -4,7 +4,6 @@ using System.Data;
 using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
@@ -325,7 +324,7 @@ namespace SiteServer.CMS.Provider
 
             //OwningIdCache.IsChanged = true;
             ChannelManager.RemoveCache(channelInfo.SiteId);
-            ProductPermissionsManager.Current.ClearCache();
+            PermissionManager.ClearAllCache();
         }
 
 
@@ -773,7 +772,7 @@ namespace SiteServer.CMS.Provider
             return channelInfo.Id;
         }
 
-        public void Update(ChannelInfo channelInfo)
+        public void Update(IChannelInfo channelInfo)
         {
             var updateParms = new IDataParameter[]
             {
@@ -798,7 +797,7 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmContentTemplateId, DataType.Integer, channelInfo.ContentTemplateId),
                 GetParameter(ParmKeywords, DataType.VarChar, 255, channelInfo.Keywords),
                 GetParameter(ParmDescription, DataType.VarChar, 255, channelInfo.Description),
-                GetParameter(ParmExtendValues, DataType.Text, channelInfo.Additional.ToString()),
+                GetParameter(ParmExtendValues, DataType.Text, channelInfo.Attributes.ToString()),
                 GetParameter(ParmId, DataType.Integer, channelInfo.Id)
             };
 

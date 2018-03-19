@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
             TbImageUploadDirectoryName.Text = SiteInfo.Additional.ImageUploadDirectoryName;
 
@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
 		    {
 		        DataProvider.SiteDao.Update(SiteInfo);
 
-		        Body.AddSiteLog(SiteId, "修改图片上传设置");
+		        AuthRequest.AddSiteLog(SiteId, "修改图片上传设置");
 
 		        SuccessMessage("上传图片设置修改成功！");
 		    }

@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _channelId = Body.GetQueryInt("channelId", SiteId);
+            _channelId = AuthRequest.GetQueryInt("channelId", SiteId);
             if (IsPostBack) return;
 
             LoadDisplayAttributeCheckBoxList();
@@ -125,7 +125,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
             var checkedState = ETriStateUtils.GetEnumType(DdlPeriods.SelectedValue);
-            var redirectUrl = ModalExportMessage.GetRedirectUrlStringToExportContent(SiteId, _channelId, DdlExportType.SelectedValue, Body.GetQueryString("contentIdCollection"), displayAttributes, isPeriods, startDate, endDate, checkedState);
+            var redirectUrl = ModalExportMessage.GetRedirectUrlStringToExportContent(SiteId, _channelId, DdlExportType.SelectedValue, AuthRequest.GetQueryString("contentIdCollection"), displayAttributes, isPeriods, startDate, endDate, checkedState);
             PageUtils.Redirect(redirectUrl);
 		}
 	}

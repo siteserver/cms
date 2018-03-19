@@ -28,15 +28,15 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            if (Body.IsQueryExists("DeleteDirectory"))
+            if (AuthRequest.IsQueryExists("DeleteDirectory"))
             {
-                var siteTemplateDir = Body.GetQueryString("SiteTemplateDir");
+                var siteTemplateDir = AuthRequest.GetQueryString("SiteTemplateDir");
 
                 try
                 {
                     SiteTemplateManager.Instance.DeleteSiteTemplate(siteTemplateDir);
 
-                    Body.AddAdminLog("删除站点模板", $"站点模板:{siteTemplateDir}");
+                    AuthRequest.AddAdminLog("删除站点模板", $"站点模板:{siteTemplateDir}");
 
                     SuccessDeleteMessage();
                 }
@@ -45,15 +45,15 @@ namespace SiteServer.BackgroundPages.Settings
                     FailDeleteMessage(ex);
                 }
             }
-            else if (Body.IsQueryExists("DeleteZipFile"))
+            else if (AuthRequest.IsQueryExists("DeleteZipFile"))
             {
-                var fileName = Body.GetQueryString("FileName");
+                var fileName = AuthRequest.GetQueryString("FileName");
 
                 try
                 {
                     SiteTemplateManager.Instance.DeleteZipSiteTemplate(fileName);
 
-                    Body.AddAdminLog("删除未解压站点模板", $"站点模板:{fileName}");
+                    AuthRequest.AddAdminLog("删除未解压站点模板", $"站点模板:{fileName}");
 
                     SuccessDeleteMessage();
                 }
@@ -65,7 +65,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (Page.IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
 
             _sortedlist = SiteTemplateManager.Instance.GetSiteTemplateSortedList();
             var directoryList = new List<DirectoryInfo>();

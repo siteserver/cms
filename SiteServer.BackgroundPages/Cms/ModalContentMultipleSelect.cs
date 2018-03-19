@@ -8,7 +8,6 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.Utils.Enumerations;
 
@@ -45,12 +44,10 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            var permissions = PermissionsManager.GetPermissions(Body.AdminName);
-
-            _jsMethod = Body.GetQueryString("jsMethod");
+            _jsMethod = AuthRequest.GetQueryString("jsMethod");
 
             PageUtils.CheckRequestParameter("siteId");
-            var channelId = Body.GetQueryInt("channelId");
+            var channelId = AuthRequest.GetQueryInt("channelId");
             if (channelId == 0)
             {
                 channelId = SiteId;
@@ -61,16 +58,16 @@ namespace SiteServer.BackgroundPages.Cms
             _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);
 
             SpContents.ControlToPaginate = RptContents;
-            SpContents.SelectCommand = string.IsNullOrEmpty(Body.GetQueryString("channelId"))
+            SpContents.SelectCommand = string.IsNullOrEmpty(AuthRequest.GetQueryString("channelId"))
                 ? DataProvider.ContentDao.GetSqlString(_tableName, SiteId,
-                    _channelInfo.Id, permissions.IsSystemAdministrator,
-                    ProductPermissionsManager.Current.OwningChannelIdList, DdlSearchType.SelectedValue, TbKeyword.Text,
+                    _channelInfo.Id, AuthRequest.AdminPermissions.IsSystemAdministrator,
+                    AuthRequest.AdminPermissions.OwningChannelIdList, DdlSearchType.SelectedValue, TbKeyword.Text,
                     TbDateFrom.Text, TbDateTo.Text, true, ETriState.True, !CbIsDuplicate.Checked, false)
                 : DataProvider.ContentDao.GetSqlString(_tableName, SiteId,
-                    _channelInfo.Id, permissions.IsSystemAdministrator,
-                    ProductPermissionsManager.Current.OwningChannelIdList, Body.GetQueryString("SearchType"),
-                    Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true,
-                    ETriState.True, !Body.GetQueryBool("IsDuplicate"), true);
+                    _channelInfo.Id, AuthRequest.AdminPermissions.IsSystemAdministrator,
+                    AuthRequest.AdminPermissions.OwningChannelIdList, AuthRequest.GetQueryString("SearchType"),
+                    AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"), AuthRequest.GetQueryString("DateTo"), true,
+                    ETriState.True, !AuthRequest.GetQueryBool("IsDuplicate"), true);
             SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
             SpContents.SortField = ContentAttribute.Id;
             SpContents.SortMode = SortMode.DESC;
@@ -79,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, Body.AdminName);
+            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissions);
 
             if (_tableStyleInfoList != null)
             {
@@ -95,17 +92,17 @@ namespace SiteServer.BackgroundPages.Cms
             DdlSearchType.Items.Add(new ListItem("添加者", ContentAttribute.AddUserName));
             DdlSearchType.Items.Add(new ListItem("最后修改者", ContentAttribute.LastEditUserName));
 
-            if (Body.IsQueryExists("channelId"))
+            if (AuthRequest.IsQueryExists("channelId"))
             {
                 if (SiteId != _channelInfo.Id)
                 {
                     ControlUtils.SelectSingleItem(DdlChannelId, _channelInfo.Id.ToString());
                 }
-                CbIsDuplicate.Checked = Body.GetQueryBool("IsDuplicate");
-                ControlUtils.SelectSingleItem(DdlSearchType, Body.GetQueryString("SearchType"));
-                TbKeyword.Text = Body.GetQueryString("Keyword");
-                TbDateFrom.Text = Body.GetQueryString("DateFrom");
-                TbDateTo.Text = Body.GetQueryString("DateTo");
+                CbIsDuplicate.Checked = AuthRequest.GetQueryBool("IsDuplicate");
+                ControlUtils.SelectSingleItem(DdlSearchType, AuthRequest.GetQueryString("SearchType"));
+                TbKeyword.Text = AuthRequest.GetQueryString("Keyword");
+                TbDateFrom.Text = AuthRequest.GetQueryString("DateFrom");
+                TbDateTo.Text = AuthRequest.GetQueryString("DateTo");
             }
 
             SpContents.DataBind();

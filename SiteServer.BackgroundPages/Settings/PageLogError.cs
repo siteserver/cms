@@ -25,9 +25,9 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            if (Body.IsQueryExists("Delete"))
+            if (AuthRequest.IsQueryExists("Delete"))
             {
-                var list = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("IDCollection"));
+                var list = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("IDCollection"));
                 try
                 {
                     DataProvider.ErrorLogDao.Delete(list);
@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Settings
                     FailDeleteMessage(ex);
                 }
             }
-            else if (Body.IsQueryExists("DeleteAll"))
+            else if (AuthRequest.IsQueryExists("DeleteAll"))
             {
                 try
                 {
@@ -54,8 +54,8 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
-            SpContents.SelectCommand = DataProvider.ErrorLogDao.GetSelectCommend(Body.GetQueryString("PluginId"), Body.GetQueryString("Keyword"),
-                    Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"));
+            SpContents.SelectCommand = DataProvider.ErrorLogDao.GetSelectCommend(AuthRequest.GetQueryString("PluginId"), AuthRequest.GetQueryString("Keyword"),
+                    AuthRequest.GetQueryString("DateFrom"), AuthRequest.GetQueryString("DateTo"));
 
             SpContents.SortField = nameof(ErrorLogInfo.Id);
             SpContents.SortMode = SortMode.DESC;
@@ -69,14 +69,14 @@ namespace SiteServer.BackgroundPages.Settings
                 DdlPluginId.Items.Add(new ListItem(pluginInfo.Id, pluginInfo.Id));
             }
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Log);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Log);
 
-            if (Body.IsQueryExists("Keyword"))
+            if (AuthRequest.IsQueryExists("Keyword"))
             {
-                ControlUtils.SelectSingleItem(DdlPluginId, Body.GetQueryString("PluginId"));
-                TbKeyword.Text = Body.GetQueryString("Keyword");
-                TbDateFrom.Text = Body.GetQueryString("DateFrom");
-                TbDateTo.Text = Body.GetQueryString("DateTo");
+                ControlUtils.SelectSingleItem(DdlPluginId, AuthRequest.GetQueryString("PluginId"));
+                TbKeyword.Text = AuthRequest.GetQueryString("Keyword");
+                TbDateFrom.Text = AuthRequest.GetQueryString("DateFrom");
+                TbDateTo.Text = AuthRequest.GetQueryString("DateTo");
             }
 
             BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection

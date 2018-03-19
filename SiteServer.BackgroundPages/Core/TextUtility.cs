@@ -1,5 +1,4 @@
-﻿using SiteServer.CMS.Core.Security;
-using SiteServer.CMS.Model;
+﻿using SiteServer.CMS.Model;
 using System.Text;
 using SiteServer.Utils;
 using System.Collections.Generic;
@@ -120,9 +119,9 @@ namespace SiteServer.BackgroundPages.Core
             return value;
         }
 
-        public static bool IsEdit(SiteInfo siteInfo, int channelId, string administratorName)
+        public static bool IsEdit(SiteInfo siteInfo, int channelId, PermissionManager permissionManager)
         {
-            return AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.ContentEdit);
+            return permissionManager.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentEdit);
         }
 
         //public static bool IsComment(SiteInfo siteInfo, int channelId, string administratorName)

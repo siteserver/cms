@@ -4,7 +4,6 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.Utils.Enumerations;
 
@@ -41,14 +40,12 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            var permissioins = PermissionsManager.GetPermissions(Body.AdminName);
+            var departmentId = AuthRequest.GetQueryInt("departmentId");
+            var areaId = AuthRequest.GetQueryInt("areaId");
 
-            var departmentId = Body.GetQueryInt("departmentId");
-            var areaId = Body.GetQueryInt("areaId");
-
-            if (Body.IsQueryExists("Delete"))
+            if (AuthRequest.IsQueryExists("Delete"))
             {
-                var userNameCollection = Body.GetQueryString("UserNameCollection");
+                var userNameCollection = AuthRequest.GetQueryString("UserNameCollection");
                 try
                 {
                     var userNameArrayList = TranslateUtils.StringCollectionToStringList(userNameCollection);
@@ -57,7 +54,7 @@ namespace SiteServer.BackgroundPages.Settings
                         DataProvider.AdministratorDao.Delete(userName);
                     }
 
-                    Body.AddAdminLog("删除管理员", $"管理员:{userNameCollection}");
+                    AuthRequest.AddAdminLog("删除管理员", $"管理员:{userNameCollection}");
 
                     SuccessDeleteMessage();
                 }
@@ -66,15 +63,15 @@ namespace SiteServer.BackgroundPages.Settings
                     FailDeleteMessage(ex);
                 }
             }
-            else if (Body.IsQueryExists("Lock"))
+            else if (AuthRequest.IsQueryExists("Lock"))
             {
-                var userNameCollection = Body.GetQueryString("UserNameCollection");
+                var userNameCollection = AuthRequest.GetQueryString("UserNameCollection");
                 try
                 {
                     var userNameList = TranslateUtils.StringCollectionToStringList(userNameCollection);
                     DataProvider.AdministratorDao.Lock(userNameList);
 
-                    Body.AddAdminLog("锁定管理员", $"管理员:{userNameCollection}");
+                    AuthRequest.AddAdminLog("锁定管理员", $"管理员:{userNameCollection}");
 
                     SuccessMessage("成功锁定所选管理员！");
                 }
@@ -83,15 +80,15 @@ namespace SiteServer.BackgroundPages.Settings
                     FailMessage(ex, "锁定所选管理员失败！");
                 }
             }
-            else if (Body.IsQueryExists("UnLock"))
+            else if (AuthRequest.IsQueryExists("UnLock"))
             {
-                var userNameCollection = Body.GetQueryString("UserNameCollection");
+                var userNameCollection = AuthRequest.GetQueryString("UserNameCollection");
                 try
                 {
                     var userNameList = TranslateUtils.StringCollectionToStringList(userNameCollection);
                     DataProvider.AdministratorDao.UnLock(userNameList);
 
-                    Body.AddAdminLog("解除锁定管理员", $"管理员:{userNameCollection}");
+                    AuthRequest.AddAdminLog("解除锁定管理员", $"管理员:{userNameCollection}");
 
                     SuccessMessage("成功解除锁定所选管理员！");
                 }
@@ -104,19 +101,19 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
-            if (string.IsNullOrEmpty(Body.GetQueryString("pageNum")))
+            if (string.IsNullOrEmpty(AuthRequest.GetQueryString("pageNum")))
             {
                 SpContents.ItemsPerPage = TranslateUtils.ToInt(DdlPageNum.SelectedValue) == 0 ? StringUtils.Constants.PageSize : TranslateUtils.ToInt(DdlPageNum.SelectedValue);
 
-                SpContents.SelectCommand = DataProvider.AdministratorDao.GetSelectCommand(permissioins.IsConsoleAdministrator, Body.AdminName);
+                SpContents.SelectCommand = DataProvider.AdministratorDao.GetSelectCommand(AuthRequest.AdminPermissions.IsConsoleAdministrator, AuthRequest.AdminName);
                 SpContents.SortField = DataProvider.AdministratorDao.GetSortFieldName();
                 SpContents.SortMode = SortMode.ASC;
             }
             else
             {
-                SpContents.ItemsPerPage = Body.GetQueryInt("pageNum") == 0 ? StringUtils.Constants.PageSize : Body.GetQueryInt("pageNum");
-                SpContents.SelectCommand = DataProvider.AdministratorDao.GetSelectCommand(Body.GetQueryString("keyword"), Body.GetQueryString("roleName"), Body.GetQueryInt("lastActivityDate"), permissioins.IsConsoleAdministrator, Body.AdminName, Body.GetQueryInt("departmentId"), Body.GetQueryInt("areaId"));
-                SpContents.SortField = Body.GetQueryString("order");
+                SpContents.ItemsPerPage = AuthRequest.GetQueryInt("pageNum") == 0 ? StringUtils.Constants.PageSize : AuthRequest.GetQueryInt("pageNum");
+                SpContents.SelectCommand = DataProvider.AdministratorDao.GetSelectCommand(AuthRequest.GetQueryString("keyword"), AuthRequest.GetQueryString("roleName"), AuthRequest.GetQueryInt("lastActivityDate"), AuthRequest.AdminPermissions.IsConsoleAdministrator, AuthRequest.AdminName, AuthRequest.GetQueryInt("departmentId"), AuthRequest.GetQueryInt("areaId"));
+                SpContents.SortField = AuthRequest.GetQueryString("order");
                 SpContents.SortMode = StringUtils.EqualsIgnoreCase(SpContents.SortField, nameof(AdministratorInfo.UserName)) ? SortMode.ASC : SortMode.DESC;
             }
 
@@ -126,7 +123,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Admin);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Admin);
 
             var theListItem = new ListItem("全部", string.Empty)
             {
@@ -134,7 +131,7 @@ namespace SiteServer.BackgroundPages.Settings
             };
             DdlRoleName.Items.Add(theListItem);
 
-            var allRoles = permissioins.IsConsoleAdministrator ? DataProvider.RoleDao.GetAllRoles() : DataProvider.RoleDao.GetAllRolesByCreatorUserName(Body.AdminName);
+            var allRoles = AuthRequest.AdminPermissions.IsConsoleAdministrator ? DataProvider.RoleDao.GetAllRoles() : DataProvider.RoleDao.GetAllRolesByCreatorUserName(AuthRequest.AdminName);
 
             var allPredefinedRoles = EPredefinedRoleUtils.GetAllPredefinedRoleName();
             foreach (var roleName in allRoles)
@@ -176,15 +173,15 @@ namespace SiteServer.BackgroundPages.Settings
             }
             ControlUtils.SelectSingleItem(DdlAreaId, areaId.ToString());
 
-            if (Body.IsQueryExists("pageNum"))
+            if (AuthRequest.IsQueryExists("pageNum"))
             {
-                ControlUtils.SelectSingleItem(DdlRoleName, Body.GetQueryString("roleName"));
-                ControlUtils.SelectSingleItem(DdlPageNum, Body.GetQueryString("pageNum"));
-                TbKeyword.Text = Body.GetQueryString("keyword");
-                ControlUtils.SelectSingleItem(DdlDepartmentId, Body.GetQueryString("departmentId"));
-                ControlUtils.SelectSingleItem(DdlAreaId, Body.GetQueryString("areaId"));
-                ControlUtils.SelectSingleItem(DdlLastActivityDate, Body.GetQueryString("lastActivityDate"));
-                ControlUtils.SelectSingleItem(DdlOrder, Body.GetQueryString("order"));
+                ControlUtils.SelectSingleItem(DdlRoleName, AuthRequest.GetQueryString("roleName"));
+                ControlUtils.SelectSingleItem(DdlPageNum, AuthRequest.GetQueryString("pageNum"));
+                TbKeyword.Text = AuthRequest.GetQueryString("keyword");
+                ControlUtils.SelectSingleItem(DdlDepartmentId, AuthRequest.GetQueryString("departmentId"));
+                ControlUtils.SelectSingleItem(DdlAreaId, AuthRequest.GetQueryString("areaId"));
+                ControlUtils.SelectSingleItem(DdlLastActivityDate, AuthRequest.GetQueryString("lastActivityDate"));
+                ControlUtils.SelectSingleItem(DdlOrder, AuthRequest.GetQueryString("order"));
             }
 
             BtnAdd.Attributes.Add("onclick", $@"location.href='{PageAdministratorAdd.GetRedirectUrlToAdd(departmentId)}';return false;");
@@ -265,7 +262,7 @@ namespace SiteServer.BackgroundPages.Settings
             ltlEdit.Text = $@"<a href=""{urlEdit}"">修改属性</a>";
             hlChangePassword.Attributes.Add("onclick", ModalAdminPassword.GetOpenWindowString(userName));
 
-            if (Body.AdminName != userName)
+            if (AuthRequest.AdminName != userName)
             {
                 var openWindowString = ModalPermissionsSet.GetOpenWindowString(userName);
                 ltlRole.Text = $@"<a href=""javascript:;"" onclick=""{openWindowString}"">权限设置</a>";

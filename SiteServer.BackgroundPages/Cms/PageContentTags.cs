@@ -20,9 +20,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            if (Body.IsQueryExists("Delete"))
+            if (AuthRequest.IsQueryExists("Delete"))
             {
-                var tagName = Body.GetQueryString("TagName");
+                var tagName = AuthRequest.GetQueryString("TagName");
 
                 try
                 {
@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
                     DataProvider.TagDao.DeleteTag(tagName, SiteId);
-                    Body.AddSiteLog(SiteId, "删除内容标签", $"内容标签:{tagName}");
+                    AuthRequest.AddSiteLog(SiteId, "删除内容标签", $"内容标签:{tagName}");
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -58,7 +58,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
             SpContents.DataBind();
 

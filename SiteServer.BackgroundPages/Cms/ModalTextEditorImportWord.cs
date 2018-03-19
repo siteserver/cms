@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            if (Body.IsQueryExists("upload"))
+            if (AuthRequest.IsQueryExists("upload"))
             {
                 var attributes = Upload();
                 var json = JsonMapper.ToJson(attributes);
@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
                 return;
             }
 
-            _attributeName = Body.GetQueryString("AttributeName");
+            _attributeName = AuthRequest.GetQueryString("AttributeName");
 		}
 
         private Hashtable Upload()

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.Utils.IO;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 
@@ -364,18 +363,17 @@ namespace SiteServer.CMS.Core
             return PathUtils.GetDirectoryName(siteInfo.SiteDir, false);
         }
 
-        public static List<ISiteInfo> GetWritingSiteInfoList(string adminUserName)
+        public static List<ISiteInfo> GetWritingSiteInfoList(PermissionManager permissionManager)
         {
             var siteInfoList = new List<ISiteInfo>();
 
-            if (!string.IsNullOrEmpty(adminUserName))
+            if (!string.IsNullOrEmpty(permissionManager.UserName))
             {
                 var siteIdList = new List<int>();
 
-                if (AdminManager.HasChannelPermissionIsConsoleAdministrator(adminUserName) || AdminManager.HasChannelPermissionIsSystemAdministrator(adminUserName))//如果是超级管理员或站点管理员
+                if (permissionManager.IsConsoleAdministrator || permissionManager.IsSystemAdministrator)//如果是超级管理员或站点管理员
                 {
-                    var ps = new ProductAdministratorWithPermissions(adminUserName);
-                    foreach (var itemForPsid in ps.WebsitePermissionDict.Keys)
+                    foreach (var itemForPsid in permissionManager.SiteIdList)
                     {
                         if (!siteIdList.Contains(itemForPsid))
                         {
@@ -387,13 +385,11 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    var roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(adminUserName);
-                    var ps = new ProductAdministratorWithPermissions(adminUserName);
-                    foreach (var itemForPsid in ps.WebsitePermissionDict.Keys)
+                    foreach (var itemForPsid in permissionManager.SiteIdList)
                     {
                         if (!siteIdList.Contains(itemForPsid))
                         {
-                            var channelIdCollection = DataProvider.SitePermissionsDao.GetAllPermissionList(roles, itemForPsid, true);
+                            var channelIdCollection = DataProvider.SitePermissionsDao.GetAllPermissionList(permissionManager.Roles, itemForPsid, true);
                             var siteInfo = GetSiteInfo(itemForPsid);
                             if (channelIdCollection.Count > 0)
                             {

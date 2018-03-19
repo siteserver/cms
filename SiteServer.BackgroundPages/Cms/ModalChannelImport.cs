@@ -32,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            var channelId = Body.GetQueryInt("channelId", SiteId);
+            var channelId = AuthRequest.GetQueryInt("channelId", SiteId);
             var channelIdList = ChannelManager.GetChannelIdList(SiteId);
             var nodeCount = channelIdList.Count;
             _isLastNodeArray = new bool[nodeCount];
@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
                 value = (nodeInfo.Additional.IsChannelAddable) ? value : string.Empty;
                 if (!string.IsNullOrEmpty(value))
                 {
-                    if (!HasChannelPermissions(theChannelId, ConfigManager.Permissions.Channel.ChannelAdd))
+                    if (!HasChannelPermissions(theChannelId, ConfigManager.ChannelPermissions.ChannelAdd))
                     {
                         value = string.Empty;
                     }
@@ -102,10 +102,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                     HifFile.PostedFile.SaveAs(localFilePath);
 
-					var importObject = new ImportObject(SiteId);
+					var importObject = new ImportObject(SiteId, AuthRequest.AdminName);
                     importObject.ImportChannelsAndContentsByZipFile(TranslateUtils.ToInt(DdlParentChannelId.SelectedValue), localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue));
 
-                    Body.AddSiteLog(SiteId, "导入栏目");
+                    AuthRequest.AddSiteLog(SiteId, "导入栏目");
 
                     LayerUtils.Close(Page);
 				}

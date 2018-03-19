@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.User);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.User);
 
             EBooleanUtils.AddListItems(RblIsRegisterAllowed);
 
@@ -96,7 +96,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             DataProvider.ConfigDao.Update(ConfigManager.Instance);
 
-            Body.AddAdminLog("修改用户设置");
+            AuthRequest.AddAdminLog("修改用户设置");
 
             SuccessMessage("设置修改成功！");
         }

@@ -5,7 +5,6 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
@@ -54,10 +53,10 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _isSiteSelect = Body.GetQueryBool("isSiteSelect");
-            _jsMethod = Body.GetQueryString("jsMethod");
+            _isSiteSelect = AuthRequest.GetQueryBool("isSiteSelect");
+            _jsMethod = AuthRequest.GetQueryString("jsMethod");
 
-            _targetSiteId = Body.GetQueryInt("TargetSiteId");
+            _targetSiteId = AuthRequest.GetQueryInt("TargetSiteId");
             if (_targetSiteId == 0)
             {
                 _targetSiteId = SiteId;
@@ -67,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             PhSiteId.Visible = _isSiteSelect;
 
-            var siteIdList = ProductPermissionsManager.Current.SiteIdList;
+            var siteIdList = AuthRequest.AdminPermissions.SiteIdList;
 
             var mySystemInfoArrayList = new ArrayList();
             var parentWithChildren = new Hashtable();
@@ -95,7 +94,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             ControlUtils.SelectSingleItem(DdlSiteId, _targetSiteId.ToString());
 
-            var targetChannelId = Body.GetQueryInt("TargetChannelId");
+            var targetChannelId = AuthRequest.GetQueryInt("TargetChannelId");
             if (targetChannelId > 0)
             {
                 var siteName = SiteManager.GetSiteInfo(_targetSiteId).SiteName;
@@ -149,7 +148,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ["linkUrl"] = GetRedirectUrl(_targetSiteId, string.Empty)
             };
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ChannelSelect, additional, Body.AdminName);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ChannelSelect, additional, AuthRequest.AdminPermissions);
         }
 
         public void DdlSiteId_OnSelectedIndexChanged(object sender, EventArgs e)

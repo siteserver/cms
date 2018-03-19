@@ -121,9 +121,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             Page.Response.Cache.SetCacheability(HttpCacheability.NoCache);
 
-            if (Body.IsQueryExists("CreateChannelsOneByOne") && Body.IsQueryExists("ChannelIDCollection"))
+            if (AuthRequest.IsQueryExists("CreateChannelsOneByOne") && AuthRequest.IsQueryExists("ChannelIDCollection"))
             {
-                foreach (var channelId in TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection")))
+                foreach (var channelId in TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("ChannelIDCollection")))
                 {
                     CreateManager.CreateChannel(SiteId, channelId);
                 }
@@ -131,29 +131,29 @@ namespace SiteServer.BackgroundPages.Cms
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
                 //PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将栏目放入生成队列"));
             }
-            else if (Body.IsQueryExists("CreateContentsOneByOne") && Body.IsQueryExists("channelId") &&
-                     Body.IsQueryExists("contentIdCollection"))
+            else if (AuthRequest.IsQueryExists("CreateContentsOneByOne") && AuthRequest.IsQueryExists("channelId") &&
+                     AuthRequest.IsQueryExists("contentIdCollection"))
             {
-                foreach (var contentId in TranslateUtils.StringCollectionToIntList(Body.GetQueryString("contentIdCollection")))
+                foreach (var contentId in TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection")))
                 {
-                    CreateManager.CreateContent(SiteId, Body.GetQueryInt("channelId"),
+                    CreateManager.CreateContent(SiteId, AuthRequest.GetQueryInt("channelId"),
                         contentId);
                 }
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
                 //PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将内容放入生成队列"));
             }
-            else if (Body.IsQueryExists("CreateByTemplate") && Body.IsQueryExists("templateID"))
+            else if (AuthRequest.IsQueryExists("CreateByTemplate") && AuthRequest.IsQueryExists("templateID"))
             {
-                CreateManager.CreateFile(SiteId, Body.GetQueryInt("templateID"));
+                CreateManager.CreateFile(SiteId, AuthRequest.GetQueryInt("templateID"));
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
                 //PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将文件放入生成队列"));
             }
-            else if (Body.IsQueryExists("CreateByIDsCollection") && Body.IsQueryExists("IDsCollection"))
+            else if (AuthRequest.IsQueryExists("CreateByIDsCollection") && AuthRequest.IsQueryExists("IDsCollection"))
             {
                 foreach (var channelIdContentId in
-                    TranslateUtils.StringCollectionToStringCollection(Body.GetQueryString("IDsCollection")))
+                    TranslateUtils.StringCollectionToStringCollection(AuthRequest.GetQueryString("IDsCollection")))
                 {
                     var pair = channelIdContentId.Split('_');
                     CreateManager.CreateContent(SiteId, TranslateUtils.ToInt(pair[0]),
@@ -164,39 +164,39 @@ namespace SiteServer.BackgroundPages.Cms
                 //PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将文件放入生成队列"));
             }
             //---------------------------------------------------------------------------------------//
-            else if (Body.IsQueryExists("SiteTemplateDownload"))
+            else if (AuthRequest.IsQueryExists("SiteTemplateDownload"))
             {
                 var userKeyPrefix = StringUtils.Guid();
 
-                var downloadUrl = TranslateUtils.DecryptStringBySecretKey(Body.GetQueryString("DownloadUrl"));
+                var downloadUrl = TranslateUtils.DecryptStringBySecretKey(AuthRequest.GetQueryString("DownloadUrl"));
                 var directoryName = PathUtils.GetFileNameWithoutExtension(downloadUrl);
 
                 var parameters = AjaxOtherService.GetSiteTemplateDownloadParameters(downloadUrl, directoryName, userKeyPrefix);
                 LtlScripts.Text =
                     AjaxManager.RegisterProgressTaskScript(AjaxOtherService.GetSiteTemplateDownloadUrl(), parameters, userKeyPrefix, AjaxOtherService.GetCountArrayUrl());
             }
-            else if (Body.IsQueryExists("SiteTemplateZip"))
+            else if (AuthRequest.IsQueryExists("SiteTemplateZip"))
             {
                 var userKeyPrefix = StringUtils.Guid();
 
-                var parameters = AjaxOtherService.GetSiteTemplateZipParameters(Body.GetQueryString("DirectoryName"), userKeyPrefix);
+                var parameters = AjaxOtherService.GetSiteTemplateZipParameters(AuthRequest.GetQueryString("DirectoryName"), userKeyPrefix);
                 LtlScripts.Text =
                     AjaxManager.RegisterProgressTaskScript(AjaxOtherService.GetSiteTemplateZipUrl(), parameters, userKeyPrefix, AjaxOtherService.GetCountArrayUrl());
             }
-            else if (Body.IsQueryExists("SiteTemplateUnZip"))
+            else if (AuthRequest.IsQueryExists("SiteTemplateUnZip"))
             {
                 var userKeyPrefix = StringUtils.Guid();
 
-                var parameters = AjaxOtherService.GetSiteTemplateUnZipParameters(Body.GetQueryString("FileName"), userKeyPrefix);
+                var parameters = AjaxOtherService.GetSiteTemplateUnZipParameters(AuthRequest.GetQueryString("FileName"), userKeyPrefix);
                 LtlScripts.Text =
                     AjaxManager.RegisterProgressTaskScript(AjaxOtherService.GetSiteTemplateUnZipUrl(), parameters, userKeyPrefix, AjaxOtherService.GetCountArrayUrl());
             }
             //---------------------------------------------------------------------------------------//
-            else if (Body.IsQueryExists("PluginDownload"))
+            else if (AuthRequest.IsQueryExists("PluginDownload"))
             {
                 var userKeyPrefix = StringUtils.Guid();
 
-                var parameters = AjaxOtherService.GetPluginDownloadParameters(Body.GetQueryString("DownloadUrl"), userKeyPrefix);
+                var parameters = AjaxOtherService.GetPluginDownloadParameters(AuthRequest.GetQueryString("DownloadUrl"), userKeyPrefix);
                 LtlScripts.Text =
                     AjaxManager.RegisterProgressTaskScript(AjaxOtherService.GetPluginDownloadUrl(), parameters, userKeyPrefix, AjaxOtherService.GetCountArrayUrl());
             }

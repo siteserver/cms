@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId", "channelId");
-            _channelId = Body.GetQueryInt("channelId");
+            _channelId = AuthRequest.GetQueryInt("channelId");
 
             if (IsPostBack) return;
 
@@ -140,7 +140,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 CreateManager.CreateChannel(SiteId, _channelId);
 
-                Body.AddSiteLog(SiteId, _channelId, 0, "设置页面命名规则", $"栏目:{channelInfo.ChannelName}");
+                AuthRequest.AddSiteLog(SiteId, _channelId, 0, "设置页面命名规则", $"栏目:{channelInfo.ChannelName}");
 
                 isSuccess = true;
             }

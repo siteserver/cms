@@ -102,7 +102,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
 
             LbChannelTemplateId.Attributes.Add("onfocus", "$('#LbContentTemplateId option:selected').removeAttr('selected')");
             LbContentTemplateId.Attributes.Add("onfocus", "$('#LbChannelTemplateId option:selected').removeAttr('selected')");
@@ -265,12 +265,12 @@ namespace SiteServer.BackgroundPages.Cms
 			
 			if (templateId == 0)
 			{
-                Body.AddSiteLog(SiteId, "取消模板匹配", $"栏目:{GetNodeNames()}");
+                AuthRequest.AddSiteLog(SiteId, "取消模板匹配", $"栏目:{GetNodeNames()}");
 				SuccessMessage("取消匹配成功！");
 			}
 			else
 			{
-                Body.AddSiteLog(SiteId, "模板匹配", $"栏目:{GetNodeNames()}");
+                AuthRequest.AddSiteLog(SiteId, "模板匹配", $"栏目:{GetNodeNames()}");
 				SuccessMessage("模板匹配成功！");
 			}
             
@@ -336,7 +336,7 @@ namespace SiteServer.BackgroundPages.Cms
 		            {
 		                continue;
 		            }
-		            var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdminName);
+		            var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, AuthRequest.AdminName);
 		            if (nodeInfo.ParentId > 0)
 		            {
 		                TemplateManager.UpdateChannelTemplateId(SiteId, channelId, insertedTemplateId);
@@ -346,7 +346,7 @@ namespace SiteServer.BackgroundPages.Cms
 		        }
 		    }
 
-		    Body.AddSiteLog(SiteId, "生成并匹配栏目模版", $"栏目:{GetNodeNames()}");
+		    AuthRequest.AddSiteLog(SiteId, "生成并匹配栏目模版", $"栏目:{GetNodeNames()}");
 
 		    SuccessMessage("生成栏目模版并匹配成功！");
 
@@ -376,7 +376,7 @@ namespace SiteServer.BackgroundPages.Cms
 		        {
 		            continue;
 		        }
-		        var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdminName);
+		        var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, AuthRequest.AdminName);
 		        var childChannelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, channelId), EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
 		        foreach (var childChannelId in childChannelIdList)
 		        {
@@ -385,7 +385,7 @@ namespace SiteServer.BackgroundPages.Cms
 		        }
 		    }
 
-		    Body.AddSiteLog(SiteId, "生成并匹配下级栏目模版", $"栏目:{GetNodeNames()}");
+		    AuthRequest.AddSiteLog(SiteId, "生成并匹配下级栏目模版", $"栏目:{GetNodeNames()}");
 
 		    SuccessMessage("生成下级栏目模版并匹配成功！");
 
@@ -428,13 +428,13 @@ namespace SiteServer.BackgroundPages.Cms
 		            {
 		                continue;
 		            }
-		            var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdminName);
+		            var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, AuthRequest.AdminName);
 		            TemplateManager.UpdateContentTemplateId(SiteId, channelId, insertedTemplateId);
 		            //DataProvider.BackgroundNodeDAO.UpdateContentTemplateID(channelId, insertedTemplateID);
 		        }
 		    }
 
-		    Body.AddSiteLog(SiteId, "生成并匹配内容模版", $"栏目:{GetNodeNames()}");
+		    AuthRequest.AddSiteLog(SiteId, "生成并匹配内容模版", $"栏目:{GetNodeNames()}");
 					
 		    SuccessMessage("生成内容模版并匹配成功！");
                     
@@ -464,7 +464,7 @@ namespace SiteServer.BackgroundPages.Cms
 		        {
 		            continue;
 		        }
-		        var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdminName);
+		        var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, AuthRequest.AdminName);
                 var childChannelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, channelId), EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
                 foreach (var childChannelId in childChannelIdList)
 		        {
@@ -473,7 +473,7 @@ namespace SiteServer.BackgroundPages.Cms
 		        }
 		    }
 
-		    Body.AddSiteLog(SiteId, "生成并匹配下级内容模版", $"栏目:{GetNodeNames()}");
+		    AuthRequest.AddSiteLog(SiteId, "生成并匹配下级内容模版", $"栏目:{GetNodeNames()}");
 					
 		    SuccessMessage("生成下级内容模版并匹配成功！");
                     

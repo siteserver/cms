@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "ChannelIDCollection");
 
-            _channelIdCollection = Body.GetQueryString("ChannelIDCollection");
+            _channelIdCollection = AuthRequest.GetQueryString("ChannelIDCollection");
 		}
 
         public override void Submit_OnClick(object sender, EventArgs e)

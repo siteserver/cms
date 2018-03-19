@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Create);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Create);
 
             var listitem = new ListItem("所有选中的栏目", "All");
             DdlScope.Items.Add(listitem);
@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
             listitem = new ListItem("2小时内更新的内容", "2Hour");
             DdlScope.Items.Add(listitem);
 
-            ChannelManager.AddListItems(LbChannelIdList.Items, SiteInfo, false, true, Body.AdminName);
+            ChannelManager.AddListItems(LbChannelIdList.Items, SiteInfo, false, true, AuthRequest.AdminPermissions);
             BtnDeleteAll.Attributes.Add("onclick", "return confirm(\"此操作将删除所有已生成的内容页面，确定吗？\");");
         }
 

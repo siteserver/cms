@@ -14,7 +14,8 @@ namespace SiteServer.CMS.UEditor
         private static bool noCache = true;
         private static JObject BuildItems()
         {
-            if (string.IsNullOrEmpty(Request.CurrentAdministratorName)) return new JObject();
+            var request = new AuthRequest();
+            if (!request.IsAdminLoggin) return new JObject();
 
                 var json = @"/* 前后端通信相关的配置,注释只允许使用多行方式 */
 {

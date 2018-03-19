@@ -168,18 +168,18 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static bool HasChannelPermissionIsConsoleAdministrator(string userName)
-        {
-            var roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(userName);
+        //public static bool HasChannelPermissionIsConsoleAdministrator(string userName)
+        //{
+        //    var roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(userName);
 
-            return EPredefinedRoleUtils.IsConsoleAdministrator(roles);
-        }
+        //    return EPredefinedRoleUtils.IsConsoleAdministrator(roles);
+        //}
 
-        public static bool HasChannelPermissionIsSystemAdministrator(string userName)
-        {
-            var roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(userName);
+        //public static bool HasChannelPermissionIsSystemAdministrator(string userName)
+        //{
+        //    var roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(userName);
 
-            return EPredefinedRoleUtils.IsSystemAdministrator(roles);
-        }
+        //    return EPredefinedRoleUtils.IsSystemAdministrator(roles);
+        //}
     }
 }

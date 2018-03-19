@@ -49,8 +49,8 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
-            _isDeleteFromTrash = Body.GetQueryBool("IsDeleteFromTrash");
+            _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
+            _isDeleteFromTrash = AuthRequest.GetQueryBool("IsDeleteFromTrash");
             _idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
 
             //if (this.channelId > 0)
@@ -79,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
             //{
             //    ContentInfo contentInfo = DataProvider.ContentDAO.GetContentInfo(this.tableStyle, this.tableName, this.contentID);
 
-            //    if (contentInfo == null || !string.Equals(Body.AdminName, contentInfo.AddUserName))
+            //    if (contentInfo == null || !string.Equals(AuthRequest.AdminName, contentInfo.AddUserName))
             //    {
             //        if (!base.HasChannelPermissions(Math.Abs(this.channelId), AppManager.CMS.Permission.Channel.ContentDelete))
             //        {
@@ -147,12 +147,12 @@ namespace SiteServer.BackgroundPages.Cms
                         {
                             var contentId = contentIdList[0];
                             var contentTitle = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
-                            Body.AddSiteLog(SiteId, channelId, contentId, "删除内容",
+                            AuthRequest.AddSiteLog(SiteId, channelId, contentId, "删除内容",
                                 $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, channelId)},内容标题:{contentTitle}");
                         }
                         else
                         {
-                            Body.AddSiteLog(SiteId, "批量删除内容",
+                            AuthRequest.AddSiteLog(SiteId, "批量删除内容",
                                 $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, channelId)},内容条数:{contentIdList.Count}");
                         }
 
@@ -177,7 +177,7 @@ namespace SiteServer.BackgroundPages.Cms
                         SuccessMessage("成功从回收站清空内容！");
                         DataProvider.ContentDao.DeleteContents(SiteId, tableName, contentIdList, channelId);
 
-                        Body.AddSiteLog(SiteId, "从回收站清空内容", $"内容条数:{contentIdList.Count}");
+                        AuthRequest.AddSiteLog(SiteId, "从回收站清空内容", $"内容条数:{contentIdList.Count}");
                     }
                 }
 

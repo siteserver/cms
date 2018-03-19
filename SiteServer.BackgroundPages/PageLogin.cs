@@ -31,9 +31,9 @@ namespace SiteServer.BackgroundPages
 
                 PhFindPassword.Visible = ConfigManager.SystemConfigInfo.IsAdminFindPassword;
 
-                if (Body.IsQueryExists("error")) // 如果url参数error不为空，则把错误信息显示到页面上
+                if (AuthRequest.IsQueryExists("error")) // 如果url参数error不为空，则把错误信息显示到页面上
                 {
-                    LtlMessage.Text = GetMessageHtml(Body.GetQueryString("error"));
+                    LtlMessage.Text = GetMessageHtml(AuthRequest.GetQueryString("error"));
                 }
 
                 SystemManager.DetermineRedirectToInstaller(); // 判断是否需要安装，如果需要则转到安装页面。
@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages
             }
 
             DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLogin(userName); // 记录最后登录时间、失败次数清零
-            Body.AdminLogin(userName); // 写Cookie并记录管理员操作日志
+            AuthRequest.AdminLogin(userName); // 写Cookie并记录管理员操作日志
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty)); // 跳转到登录成功的后台页
         }
 

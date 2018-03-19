@@ -55,9 +55,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _isProtocol = Body.GetQueryBool("isProtocol");
-            _jsMethod = Body.GetQueryString("jsMethod");
-            _itemIndex = Body.GetQueryInt("itemIndex");
+            _isProtocol = AuthRequest.GetQueryBool("isProtocol");
+            _jsMethod = AuthRequest.GetQueryString("jsMethod");
+            _itemIndex = AuthRequest.GetQueryInt("itemIndex");
 
             _additional.Add("isProtocol", _isProtocol.ToString());
             _additional.Add("jsMethod", _jsMethod);
@@ -65,9 +65,9 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                if (Body.IsQueryExists("channelId"))
+                if (AuthRequest.IsQueryExists("channelId"))
                 {
-                    var channelId = Body.GetQueryInt("channelId");
+                    var channelId = AuthRequest.GetQueryInt("channelId");
                     var nodeNames = ChannelManager.GetChannelNameNavigation(SiteId, channelId);
 
                     if (!string.IsNullOrEmpty(_jsMethod))
@@ -125,7 +125,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ChannelSelect, _additional, Body.AdminName);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ChannelSelect, _additional, AuthRequest.AdminPermissions);
         }
 	}
 }

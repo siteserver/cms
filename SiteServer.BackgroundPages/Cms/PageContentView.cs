@@ -51,11 +51,11 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "channelId", "ID", "ReturnUrl");
 
-            _channelId = Body.GetQueryInt("channelId");
+            _channelId = AuthRequest.GetQueryInt("channelId");
             var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
             _tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
-            _contentId = Body.GetQueryInt("ID");
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
+            _contentId = AuthRequest.GetQueryInt("ID");
+            _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
 
@@ -110,7 +110,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var referenceNodeInfo = ChannelManager.GetChannelInfo(referenceContentInfo.SiteId, referenceContentInfo.ChannelId);
                     var addEditUrl =
                         WebUtils.GetContentAddEditUrl(referenceSiteInfo.Id,
-                            referenceNodeInfo, _contentInfo.ReferenceId, Body.GetQueryString("ReturnUrl"));
+                            referenceNodeInfo, _contentInfo.ReferenceId, AuthRequest.GetQueryString("ReturnUrl"));
 
                     LtlScripts.Text += $@"
 <div class=""tips"">此内容为对内容 （站点：{referenceSiteInfo.SiteName},栏目：{referenceNodeInfo.ChannelName}）“<a href=""{pageUrl}"" target=""_blank"">{_contentInfo.Title}</a>”（<a href=""{addEditUrl}"">编辑</a>） 的引用，内容链接将和原始内容链接一致</div>";

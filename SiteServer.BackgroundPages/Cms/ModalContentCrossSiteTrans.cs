@@ -29,8 +29,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "channelId", "contentIdCollection");
 
-            _channelId = Body.GetQueryInt("channelId");
-            _contentIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("contentIdCollection"));
+            _channelId = AuthRequest.GetQueryInt("channelId");
+            _contentIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
 
             if (IsPostBack) return;
 
@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
         public void DdlSiteId_SelectedIndexChanged(object sender, EventArgs e)
         {
             var psId = int.Parse(DdlSiteId.SelectedValue);
-            CrossSiteTransUtility.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, ChannelManager.GetChannelInfo(SiteId, _channelId), Body.AdminName);
+            CrossSiteTransUtility.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, ChannelManager.GetChannelInfo(SiteId, _channelId), AuthRequest.AdminPermissions);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -80,7 +80,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                Body.AddSiteLog(SiteId, _channelId, 0, "跨站转发", string.Empty);
+                AuthRequest.AddSiteLog(SiteId, _channelId, 0, "跨站转发", string.Empty);
 
                 SuccessMessage("内容转发成功，请选择后续操作。");
             }

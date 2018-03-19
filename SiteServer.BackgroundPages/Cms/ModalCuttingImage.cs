@@ -38,8 +38,8 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId");
-            _textBoxClientId = Body.GetQueryString("TextBoxClientID");
-            _imageUrl = Body.GetQueryString("imageUrl");
+            _textBoxClientId = AuthRequest.GetQueryString("TextBoxClientID");
+            _imageUrl = AuthRequest.GetQueryString("imageUrl");
 
             if (IsPostBack) return;
 

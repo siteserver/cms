@@ -24,9 +24,9 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            if (Body.IsQueryExists("Delete") && Body.IsQueryExists("KeywordID"))
+            if (AuthRequest.IsQueryExists("Delete") && AuthRequest.IsQueryExists("KeywordID"))
             {
-                var keywordId = Body.GetQueryInt("KeywordID");
+                var keywordId = AuthRequest.GetQueryInt("KeywordID");
                 try
                 {
                     DataProvider.KeywordDao.Delete(keywordId);
@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
 
             SpContents.DataBind();
             BtnAdd.Attributes.Add("onclick", ModalKeywordAdd.GetOpenWindowStringToAdd());

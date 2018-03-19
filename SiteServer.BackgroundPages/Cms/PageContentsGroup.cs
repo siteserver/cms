@@ -33,14 +33,14 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            var siteId = Body.GetQueryInt("siteId");
-            _contentGroupName = Body.GetQueryString("contentGroupName");
+            var siteId = AuthRequest.GetQueryInt("siteId");
+            _contentGroupName = AuthRequest.GetQueryString("contentGroupName");
             _nodeInfo = ChannelManager.GetChannelInfo(siteId, siteId);
             _tableName = ChannelManager.GetTableName(SiteInfo, _nodeInfo);
 
-            if (Body.IsQueryExists("remove"))
+            if (AuthRequest.IsQueryExists("remove"))
             {
-                var contentId = Body.GetQueryInt("contentId");
+                var contentId = AuthRequest.GetQueryInt("contentId");
 
                 var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, contentId);
                 var groupList = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(groupList);
                 DataProvider.ContentDao.Update(_tableName, SiteInfo, contentInfo);
-                Body.AddSiteLog(SiteId, "移除内容", $"内容:{contentInfo.Title}");
+                AuthRequest.AddSiteLog(SiteId, "移除内容", $"内容:{contentInfo.Title}");
                 SuccessMessage("移除成功");
                 AddWaitAndRedirectScript(PageUrl);
             }
@@ -65,7 +65,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
             LtlContentGroupName.Text = "内容组：" + _contentGroupName;
             SpContents.DataBind();
         }
@@ -89,8 +89,8 @@ namespace SiteServer.BackgroundPages.Cms
             ltlItemStatus.Text = CheckManager.GetCheckState(SiteInfo, contentInfo.IsChecked,
                 contentInfo.CheckedLevel);
 
-            if (!HasChannelPermissions(contentInfo.ChannelId, ConfigManager.Permissions.Channel.ContentEdit) &&
-                Body.AdminName != contentInfo.AddUserName) return;
+            if (!HasChannelPermissions(contentInfo.ChannelId, ConfigManager.ChannelPermissions.ContentEdit) &&
+                AuthRequest.AdminName != contentInfo.AddUserName) return;
 
             ltlItemEditUrl.Text =
                 $@"<a href=""{WebUtils.GetContentAddEditUrl(SiteId, _nodeInfo, contentInfo.Id, PageUrl)}"">编辑</a>";

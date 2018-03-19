@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId");
-            _type = Body.GetQueryString("Type");
+            _type = AuthRequest.GetQueryString("Type");
 
             if (!IsPostBack)
 			{
@@ -65,10 +65,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                         HifMyFile.PostedFile.SaveAs(localFilePath);
 
-                        var importObject = new ImportObject(SiteId);
+                        var importObject = new ImportObject(SiteId, AuthRequest.AdminName);
                         importObject.ImportRelatedFieldByZipFile(localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue));
 
-                        Body.AddSiteLog(SiteId, "导入联动字段");
+                        AuthRequest.AddSiteLog(SiteId, "导入联动字段");
 
                         LayerUtils.Close(Page);
                     }

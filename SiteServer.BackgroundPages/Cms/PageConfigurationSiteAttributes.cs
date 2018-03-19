@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
 			{
-                VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
+                VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
                 TbSiteName.Text = SiteInfo.SiteName;
 
@@ -112,7 +112,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     DataProvider.SiteDao.Update(SiteInfo);
 
-                    Body.AddSiteLog(SiteId, "修改站点设置");
+                    AuthRequest.AddSiteLog(SiteId, "修改站点设置");
 
 					SuccessMessage("站点设置修改成功！");
 				}

@@ -13,7 +13,7 @@ namespace SiteServer.BackgroundPages
         public Literal LtlUpdateDate;
         public Literal LtlLastLoginDate;
 
-        public string SiteCheckListApiUrl => ApiRouteSiteCheckList.GetUrl(PageUtility.InnerApiUrl, Body.AdminName);
+        public string SiteCheckListApiUrl => ApiRouteSiteCheckList.GetUrl(PageUtility.InnerApiUrl, AuthRequest.AdminName);
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -21,9 +21,9 @@ namespace SiteServer.BackgroundPages
 
             LtlVersionInfo.Text = SystemManager.Version == PackageUtils.VersionDev ? "dev" : SystemManager.Version;
 
-            if (Body.AdministratorInfo.LastActivityDate != DateTime.MinValue)
+            if (AuthRequest.AdminInfo.LastActivityDate != DateTime.MinValue)
             {
-                LtlLastLoginDate.Text = DateUtils.GetDateAndTimeString(Body.AdministratorInfo.LastActivityDate);
+                LtlLastLoginDate.Text = DateUtils.GetDateAndTimeString(AuthRequest.AdminInfo.LastActivityDate);
             }
 
             LtlUpdateDate.Text = DateUtils.GetDateAndTimeString(ConfigManager.Instance.UpdateDate);

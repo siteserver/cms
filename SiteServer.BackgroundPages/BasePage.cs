@@ -2,7 +2,6 @@
 using System.Web.UI;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages
@@ -23,7 +22,7 @@ namespace SiteServer.BackgroundPages
 
         protected bool IsForbidden { get; private set; }
 
-        public Request Body { get; private set; }
+        public AuthRequest AuthRequest { get; private set; }
 
         private void SetMessage(MessageUtils.Message.EMessageType messageType, Exception ex, string message)
         {
@@ -35,12 +34,23 @@ namespace SiteServer.BackgroundPages
         {
             base.OnInit(e);
 
-            Body = new Request();
+            AuthRequest = new AuthRequest(Request);
 
-            if (!IsAccessable && !Body.IsAdminLoggin) // 如果页面不能直接访问且又没有登录则直接跳登录页
+            if (!IsAccessable) // 如果页面不能直接访问且又没有登录则直接跳登录页
             {
-                IsForbidden = true;
-                PageUtils.RedirectToLoginPage();
+                if (!AuthRequest.IsAdminLoggin || AuthRequest.AdminInfo == null) // 检测管理员是否登录
+                {
+                    IsForbidden = true;
+                    PageUtils.RedirectToLoginPage();
+                    return;
+                }
+
+                if (AuthRequest.AdminInfo.IsLockedOut) // 检测管理员帐号是否被锁定
+                {
+                    IsForbidden = true;
+                    PageUtils.RedirectToLoginPage("对不起，您的账号已被锁定，无法进入系统！");
+                    return;
+                }
             }
 
             //防止csrf攻击
@@ -182,7 +192,12 @@ setTimeout(function() {{
 
         public void VerifyAdministratorPermissions(params string[] permissionArray)
         {
-            PermissionsManager.VerifyAdministratorPermissions(Body.AdminName, permissionArray);
+            if (AuthRequest.AdminPermissions.HasAdministratorPermissions(permissionArray))
+            {
+                return;
+            }
+            AuthRequest.AdminLogout();
+            PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
         }
 
         public virtual void Submit_OnClick(object sender, EventArgs e)

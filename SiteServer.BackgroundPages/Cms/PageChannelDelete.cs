@@ -32,18 +32,18 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
-            ReturnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
-            _deleteContents = Body.GetQueryBool("DeleteContents");
+            ReturnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
+            _deleteContents = AuthRequest.GetQueryBool("DeleteContents");
 
             if (IsPostBack) return;
 
-            var channelIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
+            var channelIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("ChannelIDCollection"));
             channelIdList.Sort();
             channelIdList.Reverse();
             foreach (var channelId in channelIdList)
             {
                 if (channelId == SiteId) continue;
-                if (!HasChannelPermissions(channelId, ConfigManager.Permissions.Channel.ChannelDelete)) continue;
+                if (!HasChannelPermissions(channelId, ConfigManager.ChannelPermissions.ChannelDelete)) continue;
 
                 var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
                 var displayName = nodeInfo.ChannelName;
@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                var channelIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
+                var channelIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("ChannelIDCollection"));
                 channelIdList.Sort();
                 channelIdList.Reverse();
 
@@ -89,7 +89,7 @@ namespace SiteServer.BackgroundPages.Cms
                 foreach (var channelId in channelIdList)
                 {
                     if (channelId == SiteId) continue;
-                    if (HasChannelPermissions(channelId, ConfigManager.Permissions.Channel.ChannelDelete))
+                    if (HasChannelPermissions(channelId, ConfigManager.ChannelPermissions.ChannelDelete))
                     {
                         channelIdArrayList.Add(channelId);
                     }
@@ -120,7 +120,7 @@ namespace SiteServer.BackgroundPages.Cms
                         DataProvider.ContentDao.TrashContents(SiteId, tableName, contentIdList);
                     }
 
-                    Body.AddSiteLog(SiteId, "清空栏目下的内容", $"栏目:{builder}");
+                    AuthRequest.AddSiteLog(SiteId, "清空栏目下的内容", $"栏目:{builder}");
                 }
                 else
                 {
@@ -141,7 +141,7 @@ namespace SiteServer.BackgroundPages.Cms
                         DataProvider.ChannelDao.Delete(SiteId, channelId);
                     }
 
-                    Body.AddSiteLog(SiteId, "删除栏目", $"栏目:{builder}");
+                    AuthRequest.AddSiteLog(SiteId, "删除栏目", $"栏目:{builder}");
                 }
 
                 AddWaitAndRedirectScript(ReturnUrl);

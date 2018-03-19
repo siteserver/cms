@@ -37,12 +37,12 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId");
 
-            _templateType = Body.GetQueryString("templateType");
-            _keywords = Body.GetQueryString("keywords");
+            _templateType = AuthRequest.GetQueryString("templateType");
+            _keywords = AuthRequest.GetQueryString("keywords");
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
 
             DdlTemplateType.Items.Add(new ListItem("<所有类型>", string.Empty));
             TemplateTypeUtils.AddListItems(DdlTemplateType);
@@ -50,9 +50,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             TbKeywords.Text = _keywords;
 
-            if (Body.IsQueryExists("Delete"))
+            if (AuthRequest.IsQueryExists("Delete"))
             {
-                var templateId = Body.GetQueryInt("TemplateID");
+                var templateId = AuthRequest.GetQueryInt("TemplateID");
 
                 try
                 {
@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.Cms
                     if (templateInfo != null)
                     {
                         DataProvider.TemplateDao.Delete(SiteId, templateId);
-                        Body.AddSiteLog(SiteId,
+                        AuthRequest.AddSiteLog(SiteId,
                             $"删除{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
                             $"模板名称:{templateInfo.TemplateName}");
                     }
@@ -71,9 +71,9 @@ namespace SiteServer.BackgroundPages.Cms
                     FailDeleteMessage(ex);
                 }
             }
-            else if (Body.IsQueryExists("SetDefault"))
+            else if (AuthRequest.IsQueryExists("SetDefault"))
             {
-                var templateId = Body.GetQueryInt("TemplateID");
+                var templateId = AuthRequest.GetQueryInt("TemplateID");
 			
                 try
                 {
@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
                     if (templateInfo != null)
                     {
                         DataProvider.TemplateDao.SetDefault(SiteId, templateId);
-                        Body.AddSiteLog(SiteId,
+                        AuthRequest.AddSiteLog(SiteId,
                             $"设置默认{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
                             $"模板名称:{templateInfo.TemplateName}");
                     }

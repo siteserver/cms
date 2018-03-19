@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
@@ -50,14 +49,15 @@ namespace SiteServer.CMS.Plugin.Apis
             var channelIdList = new List<int>();
             if (string.IsNullOrEmpty(adminName)) return channelIdList;
 
-            if (AdminManager.HasChannelPermissionIsConsoleAdministrator(adminName) || AdminManager.HasChannelPermissionIsSystemAdministrator(adminName))//如果是超级管理员或站点管理员
+            var permissionManager = PermissionManager.GetInstance(adminName);
+
+            if (permissionManager.IsConsoleAdministrator || permissionManager.IsSystemAdministrator)//如果是超级管理员或站点管理员
             {
                 channelIdList = ChannelManager.GetChannelIdList(siteId);
             }
             else
             {
-                var ps = new ProductAdministratorWithPermissions(adminName);
-                foreach (var channelId in ps.ChannelPermissionChannelIdList)
+                foreach (var channelId in permissionManager.ChannelPermissionChannelIdList)
                 {
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                     var allChannelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
@@ -74,6 +74,21 @@ namespace SiteServer.CMS.Plugin.Apis
                 }
             }
             return channelIdList;
+        }
+
+        public string GetChannelName(int siteId, int channelId)
+        {
+            return ChannelManager.GetChannelName(siteId, channelId);
+        }
+
+        public void Update(int siteId, IChannelInfo channelInfo)
+        {
+            DataProvider.ChannelDao.Update(channelInfo);
+        }
+
+        public void Delete(int siteId, int channelId)
+        {
+            DataProvider.ChannelDao.Delete(siteId, channelId);
         }
     }
 }

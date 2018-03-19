@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
            
 			if (!IsPostBack)
 			{
-                var templateLogId = Body.GetQueryInt("templateLogID");
+                var templateLogId = AuthRequest.GetQueryInt("templateLogID");
                 TbContent.Text = DataProvider.TemplateLogDao.GetTemplateContent(templateLogId);
 			}
 		}

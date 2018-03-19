@@ -17,7 +17,7 @@ namespace SiteServer.API.Controllers
         {
             try
             {
-                var request = new Request();
+                var request = new AuthRequest();
                 var service = PluginManager.GetService(pluginId);
 
                 return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, null, null)));
@@ -34,7 +34,7 @@ namespace SiteServer.API.Controllers
         {
             try
             {
-                var request = new Request();
+                var request = new AuthRequest();
                 var service = PluginManager.GetService(pluginId);
 
                 return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, name, null)));
@@ -51,7 +51,7 @@ namespace SiteServer.API.Controllers
         {
             try
             {
-                var request = new Request();
+                var request = new AuthRequest();
                 var service = PluginManager.GetService(pluginId);
 
                 return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, name, id)));
@@ -68,7 +68,7 @@ namespace SiteServer.API.Controllers
         {
             try
             {
-                var request = new Request();
+                var request = new AuthRequest();
                 var service = PluginManager.GetService(pluginId);
 
                 return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, null, null)));
@@ -85,7 +85,7 @@ namespace SiteServer.API.Controllers
         {
             try
             {
-                var request = new Request();
+                var request = new AuthRequest();
                 var service = PluginManager.GetService(pluginId);
 
                 return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, name, null)));
@@ -102,7 +102,7 @@ namespace SiteServer.API.Controllers
         {
             try
             {
-                var request = new Request();
+                var request = new AuthRequest();
                 var service = PluginManager.GetService(pluginId);
 
                 return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, name, id)));
@@ -119,7 +119,7 @@ namespace SiteServer.API.Controllers
         {
             try
             {
-                var request = new Request();
+                var request = new AuthRequest();
                 var service = PluginManager.GetService(pluginId);
 
                 return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, null, null)));
@@ -136,7 +136,7 @@ namespace SiteServer.API.Controllers
         {
             try
             {
-                var request = new Request();
+                var request = new AuthRequest();
                 var service = PluginManager.GetService(pluginId);
 
                 return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, name, null)));
@@ -153,7 +153,7 @@ namespace SiteServer.API.Controllers
         {
             try
             {
-                var request = new Request();
+                var request = new AuthRequest();
                 var service = PluginManager.GetService(pluginId);
 
                 return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, name, id)));
@@ -170,7 +170,7 @@ namespace SiteServer.API.Controllers
         {
             try
             {
-                var request = new Request();
+                var request = new AuthRequest();
                 var service = PluginManager.GetService(pluginId);
 
                 return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, null, null)));
@@ -187,7 +187,7 @@ namespace SiteServer.API.Controllers
         {
             try
             {
-                var request = new Request();
+                var request = new AuthRequest();
                 var service = PluginManager.GetService(pluginId);
 
                 return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, name, null)));
@@ -204,7 +204,7 @@ namespace SiteServer.API.Controllers
         {
             try
             {
-                var request = new Request();
+                var request = new AuthRequest();
                 var service = PluginManager.GetService(pluginId);
 
                 return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, name, id)));

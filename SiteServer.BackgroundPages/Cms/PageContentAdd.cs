@@ -69,9 +69,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "channelId");
 
-            var channelId = Body.GetQueryInt("channelId");
-            var contentId = Body.GetQueryInt("id");
-            ReturnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("returnUrl"));
+            var channelId = AuthRequest.GetQueryInt("channelId");
+            var contentId = AuthRequest.GetQueryInt("id");
+            ReturnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
             if (string.IsNullOrEmpty(ReturnUrl))
             {
                 ReturnUrl = PageContent.GetRedirectUrl(SiteId, channelId);
@@ -108,7 +108,7 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
 </script>
 ";
 
-                if (HasChannelPermissions(_nodeInfo.Id, ConfigManager.Permissions.Channel.ContentTranslate))
+                if (HasChannelPermissions(_nodeInfo.Id, ConfigManager.ChannelPermissions.ContentTranslate))
                 {
                     PhTranslate.Visible = true;
                     BtnTranslate.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
@@ -139,14 +139,14 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
 
                 LtlTags.Text = ContentUtility.GetTagsHtml(AjaxCmsService.GetTagsUrl(SiteId));
 
-                if (HasChannelPermissions(_nodeInfo.Id, ConfigManager.Permissions.Channel.ContentCheck))
+                if (HasChannelPermissions(_nodeInfo.Id, ConfigManager.ChannelPermissions.ContentCheck))
                 {
                     PhStatus.Visible = true;
                     int checkedLevel;
-                    var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, SiteInfo, _nodeInfo.Id, out checkedLevel);
-                    if (Body.IsQueryExists("contentLevel"))
+                    var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, _nodeInfo.Id, out checkedLevel);
+                    if (AuthRequest.IsQueryExists("contentLevel"))
                     {
-                        checkedLevel = TranslateUtils.ToIntWithNagetive(Body.GetQueryString("contentLevel"));
+                        checkedLevel = TranslateUtils.ToIntWithNagetive(AuthRequest.GetQueryString("contentLevel"));
                         if (checkedLevel != CheckManager.LevelInt.NotChange)
                         {
                             isChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
@@ -168,17 +168,17 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
                 {
                     var attributes = TableStyleManager.GetDefaultAttributes(_styleInfoList);
 
-                    if (Body.IsQueryExists("isUploadWord"))
+                    if (AuthRequest.IsQueryExists("isUploadWord"))
                     {
-                        var isFirstLineTitle = Body.GetQueryBool("isFirstLineTitle");
-                        var isFirstLineRemove = Body.GetQueryBool("isFirstLineRemove");
-                        var isClearFormat = Body.GetQueryBool("isClearFormat");
-                        var isFirstLineIndent = Body.GetQueryBool("isFirstLineIndent");
-                        var isClearFontSize = Body.GetQueryBool("isClearFontSize");
-                        var isClearFontFamily = Body.GetQueryBool("isClearFontFamily");
-                        var isClearImages = Body.GetQueryBool("isClearImages");
-                        var contentLevel = Body.GetQueryInt("contentLevel");
-                        var fileName = Body.GetQueryString("fileName");
+                        var isFirstLineTitle = AuthRequest.GetQueryBool("isFirstLineTitle");
+                        var isFirstLineRemove = AuthRequest.GetQueryBool("isFirstLineRemove");
+                        var isClearFormat = AuthRequest.GetQueryBool("isClearFormat");
+                        var isFirstLineIndent = AuthRequest.GetQueryBool("isFirstLineIndent");
+                        var isClearFontSize = AuthRequest.GetQueryBool("isClearFontSize");
+                        var isClearFontFamily = AuthRequest.GetQueryBool("isClearFontFamily");
+                        var isClearImages = AuthRequest.GetQueryBool("isClearImages");
+                        var contentLevel = AuthRequest.GetQueryInt("contentLevel");
+                        var fileName = AuthRequest.GetQueryString("fileName");
 
                         var formCollection = WordUtils.GetWordNameValueCollection(SiteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, contentLevel, fileName);
                         attributes.Load(formCollection);
@@ -223,7 +223,7 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
             {
                 AcAttributes.Attributes = new ExtendedAttributes(Request.Form);
 
-                if (Body.GetQueryBool("isPreview"))
+                if (AuthRequest.GetQueryBool("isPreview"))
                 {
                     string errorMessage;
                     var previewId = SaveContentInfo(true, out errorMessage);
@@ -244,7 +244,7 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
             string redirectUrl;
             if (!isPreview)
             {
-                contentId = Body.GetQueryInt("id");
+                contentId = AuthRequest.GetQueryInt("id");
             }
 
             if (contentId == 0)
@@ -254,7 +254,7 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
                 {
                     contentInfo.ChannelId = _nodeInfo.Id;
                     contentInfo.SiteId = SiteId;
-                    contentInfo.AddUserName = Body.AdminName;
+                    contentInfo.AddUserName = AuthRequest.AdminName;
                     contentInfo.LastEditUserName = contentInfo.AddUserName;
                     contentInfo.LastEditDate = DateTime.Now;
 
@@ -309,11 +309,11 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
                         savedContentId = DataProvider.ContentDao.Insert(_tableName, SiteInfo, contentInfo);
                         //判断是不是有审核权限
                         int checkedLevelOfUser;
-                        var isCheckedOfUser = CheckManager.GetUserCheckLevel(Body.AdminName, SiteInfo, contentInfo.ChannelId, out checkedLevelOfUser);
+                        var isCheckedOfUser = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, contentInfo.ChannelId, out checkedLevelOfUser);
                         if (CheckManager.IsCheckable(SiteInfo, contentInfo.ChannelId, contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                         {
                             //添加审核记录
-                            DataProvider.ContentDao.UpdateIsChecked(_tableName, SiteId, contentInfo.ChannelId, new List<int> { savedContentId }, 0, true, Body.AdminName, contentInfo.IsChecked, contentInfo.CheckedLevel, "");
+                            DataProvider.ContentDao.UpdateIsChecked(_tableName, SiteId, contentInfo.ChannelId, new List<int> { savedContentId }, 0, true, AuthRequest.AdminName, contentInfo.IsChecked, contentInfo.CheckedLevel, "");
                         }
 
                         TagUtils.AddTags(tagCollection, SiteId, savedContentId);
@@ -333,10 +333,10 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
                     CreateManager.CreateContentAndTrigger(SiteId, _nodeInfo.Id, contentInfo.Id);
                 }
 
-                Body.AddSiteLog(SiteId, _nodeInfo.Id, contentInfo.Id, "添加内容",
+                AuthRequest.AddSiteLog(SiteId, _nodeInfo.Id, contentInfo.Id, "添加内容",
                     $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
-                ContentUtility.Translate(SiteInfo, _nodeInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdminName);
+                ContentUtility.Translate(SiteInfo, _nodeInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName);
 
                 redirectUrl = PageContentAddAfter.GetRedirectUrl(SiteId, _nodeInfo.Id, contentInfo.Id,
                     ReturnUrl);
@@ -348,7 +348,7 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
                 {
                     var tagsLast = contentInfo.Tags;
 
-                    contentInfo.LastEditUserName = Body.AdminName;
+                    contentInfo.LastEditUserName = AuthRequest.AdminName;
                     contentInfo.LastEditDate = DateTime.Now;
 
                     BackgroundInputTypeParser.SaveAttributes(contentInfo, SiteInfo, _styleInfoList, Request.Form, ContentAttribute.AllAttributesLowercase);
@@ -397,7 +397,7 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
 
                     TagUtils.UpdateTags(tagsLast, contentInfo.Tags, tagCollection, SiteId, contentId);
 
-                    ContentUtility.Translate(SiteInfo, _nodeInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdminName);
+                    ContentUtility.Translate(SiteInfo, _nodeInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName);
 
                     //更新引用该内容的信息
                     //如果不是异步自动保存，那么需要将引用此内容的content修改
@@ -478,7 +478,7 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
                     CreateManager.CreateContentAndTrigger(SiteId, _nodeInfo.Id, contentId);
                 }
 
-                Body.AddSiteLog(SiteId, _nodeInfo.Id, contentId, "修改内容",
+                AuthRequest.AddSiteLog(SiteId, _nodeInfo.Id, contentId, "修改内容",
                     $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
                 redirectUrl = ReturnUrl;
@@ -515,9 +515,9 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
                     return false;
                 }
 
-                if (!HasChannelPermissions(_nodeInfo.Id, ConfigManager.Permissions.Channel.ContentAdd))
+                if (!HasChannelPermissions(_nodeInfo.Id, ConfigManager.ChannelPermissions.ContentAdd))
                 {
-                    if (!Body.IsAdminLoggin)
+                    if (!AuthRequest.IsAdminLoggin)
                     {
                         PageUtils.RedirectToLoginPage();
                         return false;
@@ -529,9 +529,9 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
             }
             else
             {
-                if (!HasChannelPermissions(_nodeInfo.Id, ConfigManager.Permissions.Channel.ContentEdit))
+                if (!HasChannelPermissions(_nodeInfo.Id, ConfigManager.ChannelPermissions.ContentEdit))
                 {
-                    if (!Body.IsAdminLoggin)
+                    if (!AuthRequest.IsAdminLoggin)
                     {
                         PageUtils.RedirectToLoginPage();
                         return false;

@@ -32,9 +32,9 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-				if (Body.IsQueryExists("GroupName"))
+				if (AuthRequest.IsQueryExists("GroupName"))
 				{
-                    var groupName = Body.GetQueryString("GroupName");
+                    var groupName = AuthRequest.GetQueryString("GroupName");
                     var contentGroupInfo = DataProvider.ContentGroupDao.GetContentGroupInfo(groupName, SiteId);
 					if (contentGroupInfo != null)
 					{
@@ -58,12 +58,12 @@ namespace SiteServer.BackgroundPages.Cms
                 Description = TbDescription.Text
             };
 
-            if (Body.IsQueryExists("GroupName"))
+            if (AuthRequest.IsQueryExists("GroupName"))
 			{
 				try
 				{
                     DataProvider.ContentGroupDao.Update(contentGroupInfo);
-                    Body.AddSiteLog(SiteId, "修改内容组", $"内容组:{contentGroupInfo.GroupName}");
+                    AuthRequest.AddSiteLog(SiteId, "修改内容组", $"内容组:{contentGroupInfo.GroupName}");
 					isChanged = true;
 				}
                 catch (Exception ex)
@@ -83,7 +83,7 @@ namespace SiteServer.BackgroundPages.Cms
 					try
 					{
                         DataProvider.ContentGroupDao.Insert(contentGroupInfo);
-                        Body.AddSiteLog(SiteId, "添加内容组",
+                        AuthRequest.AddSiteLog(SiteId, "添加内容组",
                             $"内容组:{contentGroupInfo.GroupName}");
 						isChanged = true;
 					}

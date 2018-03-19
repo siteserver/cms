@@ -33,9 +33,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId");
 
-            _templateId = Body.GetQueryInt("templateID");
-            _includeUrl = Body.GetQueryString("includeUrl");
-            _logId = Body.GetQueryInt("logID");
+            _templateId = AuthRequest.GetQueryInt("templateID");
+            _includeUrl = AuthRequest.GetQueryString("includeUrl");
+            _logId = AuthRequest.GetQueryInt("logID");
 
             if (IsPostBack) return;
 

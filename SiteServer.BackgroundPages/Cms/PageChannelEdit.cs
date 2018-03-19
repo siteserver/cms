@@ -61,18 +61,18 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
 
-            _channelId = Body.GetQueryInt("channelId");
-            ReturnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
+            _channelId = AuthRequest.GetQueryInt("channelId");
+            ReturnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
-            if (Body.GetQueryString("CanNotEdit") == null && Body.GetQueryString("UncheckedChannel") == null)
+            if (AuthRequest.GetQueryString("CanNotEdit") == null && AuthRequest.GetQueryString("UncheckedChannel") == null)
             {
-                if (!HasChannelPermissions(_channelId, ConfigManager.Permissions.Channel.ChannelEdit))
+                if (!HasChannelPermissions(_channelId, ConfigManager.ChannelPermissions.ChannelEdit))
                 {
                     PageUtils.RedirectToErrorPage("您没有修改栏目的权限！");
                     return;
                 }
             }
-            if (Body.IsQueryExists("CanNotEdit"))
+            if (AuthRequest.IsQueryExists("CanNotEdit"))
             {
                 BtnSubmit.Visible = false;
             }
@@ -306,7 +306,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             CreateManager.CreateChannel(SiteId, nodeInfo.Id);
 
-            Body.AddSiteLog(SiteId, "修改栏目", $"栏目:{TbNodeName.Text}");
+            AuthRequest.AddSiteLog(SiteId, "修改栏目", $"栏目:{TbNodeName.Text}");
 
             SuccessMessage("栏目修改成功！");
             PageUtils.Redirect(ReturnUrl);

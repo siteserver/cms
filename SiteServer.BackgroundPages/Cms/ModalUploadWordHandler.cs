@@ -8,16 +8,16 @@ using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-    public class WebHandlerUploadWord : IHttpHandler
+    public class ModalUploadWordHandler : IHttpHandler
     {
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsWebHandlerUrl(siteId, nameof(WebHandlerUploadWord), null);
+            return PageUtils.GetCmsWebHandlerUrl(siteId, nameof(ModalUploadWordHandler), null);
         } 
 
         public void ProcessRequest(HttpContext context)
         {
-            var body = new Request();
+            var body = new AuthRequest();
 
             if (!body.IsAdminLoggin) return;
 

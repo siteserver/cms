@@ -21,25 +21,25 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-			if (Body.IsQueryExists("Delete"))
+			if (AuthRequest.IsQueryExists("Delete"))
 			{
-                var groupName = Body.GetQueryString("GroupName");
+                var groupName = AuthRequest.GetQueryString("GroupName");
 			
 				try
 				{
                     DataProvider.ChannelGroupDao.Delete(SiteId, groupName);
 
-                    Body.AddSiteLog(SiteId, "删除栏目组", $"栏目组:{groupName}");
+                    AuthRequest.AddSiteLog(SiteId, "删除栏目组", $"栏目组:{groupName}");
 				}
 				catch(Exception ex)
 				{
                     FailDeleteMessage(ex);
 				}
 			}
-            if (Body.IsQueryExists("SetTaxis"))
+            if (AuthRequest.IsQueryExists("SetTaxis"))
             {
-                var groupName = Body.GetQueryString("GroupName");
-                var direction = Body.GetQueryString("Direction");
+                var groupName = AuthRequest.GetQueryString("GroupName");
+                var direction = AuthRequest.GetQueryString("Direction");
 
                 switch (direction.ToUpper())
                 {
@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);    
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);    
 
             RptContents.DataSource = DataProvider.ChannelGroupDao.GetGroupInfoList(SiteId);
             RptContents.ItemDataBound += RptContents_ItemDataBound;

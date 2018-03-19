@@ -58,20 +58,20 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            if (string.IsNullOrEmpty(Body.GetQueryString("StartDate")))
+            if (string.IsNullOrEmpty(AuthRequest.GetQueryString("StartDate")))
             {
                 _begin = DateTime.Now.AddMonths(-1);
                 _end = DateTime.Now;
             }
             else
             {
-                _begin = TranslateUtils.ToDateTime(Body.GetQueryString("StartDate"));
-                _end = TranslateUtils.ToDateTime(Body.GetQueryString("EndDate"));
+                _begin = TranslateUtils.ToDateTime(AuthRequest.GetQueryString("StartDate"));
+                _end = TranslateUtils.ToDateTime(AuthRequest.GetQueryString("EndDate"));
             }
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Chart);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Chart);
 
             DdlSiteId.Items.Add(new ListItem("<<全部站点>>", "0"));
             var siteIdList = SiteManager.GetSiteIdListOrderByLevel();
@@ -140,7 +140,7 @@ yArrayUpdate.push('{yValueUpdate}');";
 
             var ltlRow = (Literal)e.Item.FindControl("ltlRow");
 
-            ltlRow.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.SiteAnalysis, _additional, Body.AdminName);
+            ltlRow.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.SiteAnalysis, _additional, AuthRequest.AdminPermissions);
         }
 
         public void Analysis_OnClick(object sender, EventArgs e)

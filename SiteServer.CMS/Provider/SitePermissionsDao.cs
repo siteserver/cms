@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Data;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
@@ -189,7 +188,7 @@ namespace SiteServer.CMS.Provider
 
                         foreach (var dictKey in dict.Keys)
                         {
-                            if (dictKey == ProductAdministratorWithPermissions.GetChannelPermissionDictKey(systemPermissionsInfo.SiteId, channelId))
+                            if (dictKey == PermissionManager.GetChannelPermissionDictKey(systemPermissionsInfo.SiteId, channelId))
                             {
                                 list = dict[dictKey];
                                 break;
@@ -198,7 +197,7 @@ namespace SiteServer.CMS.Provider
                         if (list == null)
                         {
                             list = new List<string>();
-                            dict.Add(ProductAdministratorWithPermissions.GetChannelPermissionDictKey(systemPermissionsInfo.SiteId, channelId), list);
+                            dict.Add(PermissionManager.GetChannelPermissionDictKey(systemPermissionsInfo.SiteId, channelId), list);
                         }
 
                         var channelPermissionList = TranslateUtils.StringCollectionToStringList(systemPermissionsInfo.ChannelPermissions);

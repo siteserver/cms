@@ -1,4 +1,5 @@
-﻿using SiteServer.CMS.Core;
+﻿using System.Web;
+using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -11,6 +12,11 @@ namespace SiteServer.CMS.Plugin.Apis
         public PluginApi(IMetadata metadata)
         {
             _metadata = metadata;
+        }
+
+        public IRequest AuthRequest(HttpRequest httpRequest)
+        {
+            return new AuthRequest(httpRequest);
         }
 
         public string GetPluginUrl(string relatedUrl = "")

@@ -28,8 +28,8 @@ namespace SiteServer.BackgroundPages.Settings
 
 		public void Page_Load(object sender, EventArgs e)
 		{
-            _departmentId = Body.GetQueryInt("departmentID");
-            _scriptName = Body.GetQueryString("ScriptName");
+            _departmentId = AuthRequest.GetQueryInt("departmentID");
+            _scriptName = AuthRequest.GetQueryString("ScriptName");
 		    var url = PageUtils.GetSettingsUrl(nameof(ModalAdminSelect), new NameValueCollection
             {
                 {"scriptName", _scriptName}
@@ -39,14 +39,14 @@ namespace SiteServer.BackgroundPages.Settings
 			if (!IsPostBack)
 			{
                 LtlDepartment.Text = "管理员列表";
-                if (Body.IsQueryExists("UserName"))
+                if (AuthRequest.IsQueryExists("UserName"))
                 {
-                    var userName = Body.GetQueryString("UserName");
+                    var userName = AuthRequest.GetQueryString("UserName");
                     var displayName = AdminManager.GetDisplayName(userName, true);
                     string scripts = $"window.parent.{_scriptName}('{displayName}', '{userName}');";
                     LayerUtils.CloseWithoutRefresh(Page, scripts);
                 }
-                else if (Body.IsQueryExists("departmentID"))
+                else if (AuthRequest.IsQueryExists("departmentID"))
                 {
                     if (_departmentId > 0)
                     {

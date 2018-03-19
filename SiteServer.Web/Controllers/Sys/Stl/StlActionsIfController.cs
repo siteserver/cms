@@ -16,7 +16,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
         {
             try
             {
-                var request = new Request();
+                var request = new AuthRequest();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");

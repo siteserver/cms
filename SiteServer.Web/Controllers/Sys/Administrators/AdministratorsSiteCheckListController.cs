@@ -13,7 +13,7 @@ namespace SiteServer.API.Controllers.Sys.Administrators
         [HttpGet, Route(ApiRouteSiteCheckList.Route)]
         public IHttpActionResult Main(string userName)
         {
-            var request = new Request();
+            var request = new AuthRequest();
 
             if (!request.IsAdminLoggin)
             {
@@ -21,7 +21,7 @@ namespace SiteServer.API.Controllers.Sys.Administrators
             }
 
             var list = new List<object>();
-            var unCheckedList = CheckManager.GetUserCountListUnChecked(request.AdminName);
+            var unCheckedList = CheckManager.GetUserCountListUnChecked(request.AdminPermissions);
             if (unCheckedList.Count <= 0) return Ok(list);
 
             var dict = new Dictionary<int, int>();

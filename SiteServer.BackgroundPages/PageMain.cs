@@ -12,7 +12,6 @@ using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Controllers.Preview;
 using SiteServer.CMS.Controllers.Sys.Packaging;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Packaging;
 
@@ -29,7 +28,6 @@ namespace SiteServer.BackgroundPages
         private SiteInfo _siteInfo = new SiteInfo();
         private SiteInfo _hqSiteInfo;
         private readonly List<int> _addedSiteIdList = new List<int>();
-        private AdministratorWithPermissions _permissions;
 
         protected override bool IsSinglePage => true;
 
@@ -58,16 +56,14 @@ namespace SiteServer.BackgroundPages
         {
             if (IsForbidden) return;
 
-            _permissions = PermissionsManager.GetPermissions(Body.AdminName);
-
             var siteId = SiteId;
 
             if (siteId == 0)
             {
-                siteId = Body.AdministratorInfo.SiteId;
+                siteId = AuthRequest.AdminInfo.SiteId;
             }
 
-            var siteIdList = ProductPermissionsManager.Current.SiteIdList;
+            var siteIdList = AuthRequest.AdminPermissions.SiteIdList;
 
             //站点要判断是否存在，是否有权限
             if (siteId == 0 || !SiteManager.IsExists(siteId) || !siteIdList.Contains(siteId))
@@ -91,9 +87,9 @@ namespace SiteServer.BackgroundPages
                 var showSite = false;
 
                 var permissionList = new List<string>();
-                if (ProductPermissionsManager.Current.WebsitePermissionDict.ContainsKey(_siteInfo.Id))
+                if (AuthRequest.AdminPermissions.HasSitePermissions(_siteInfo.Id))
                 {
-                    var websitePermissionList = ProductPermissionsManager.Current.WebsitePermissionDict[_siteInfo.Id];
+                    var websitePermissionList = AuthRequest.AdminPermissions.GetSitePermissions(_siteInfo.Id);
                     if (websitePermissionList != null)
                     {
                         showSite = true;
@@ -101,14 +97,11 @@ namespace SiteServer.BackgroundPages
                     }
                 }
 
-                foreach (var dictKey in ProductPermissionsManager.Current.ChannelPermissionDict.Keys)
+                var channelPermissions = AuthRequest.AdminPermissions.GetChannelPermissions(_siteInfo.Id);
+                if (channelPermissions.Count > 0)
                 {
-                    var kvp = ProductPermissionsManager.Current.ParseChannelPermissionDictKey(dictKey);
-                    if (kvp.Key == _siteInfo.Id)
-                    {
-                        showSite = true;
-                        permissionList.AddRange(ProductPermissionsManager.Current.ChannelPermissionDict[dictKey]);
-                    }
+                    showSite = true;
+                    permissionList.AddRange(channelPermissions);
                 }
 
                 var siteIdHashtable = new Hashtable();
@@ -147,7 +140,7 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
 </a>
 ";
 
-                NtLeftManagement.TopId = ConfigManager.IdSite;
+                NtLeftManagement.TopId = ConfigManager.TopMenu.IdSite;
                 NtLeftManagement.SiteId = _siteInfo.Id;
                 NtLeftManagement.PermissionList = permissionList;
 
@@ -159,16 +152,16 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             }
             else
             {
-                if (_permissions.IsSystemAdministrator)
+                if (AuthRequest.AdminPermissions.IsSystemAdministrator)
                 {
                     PageUtils.Redirect(PageSiteAdd.GetRedirectUrl());
                     return;
                 }
             }
 
-            if (_siteInfo != null && _siteInfo.Id > 0 && Body.AdministratorInfo.SiteId != _siteInfo.Id)
+            if (_siteInfo != null && _siteInfo.Id > 0 && AuthRequest.AdminInfo.SiteId != _siteInfo.Id)
             {
-                DataProvider.AdministratorDao.UpdateSiteId(Body.AdminName, _siteInfo.Id);
+                DataProvider.AdministratorDao.UpdateSiteId(AuthRequest.AdminName, _siteInfo.Id);
             }
         }
 
@@ -209,9 +202,9 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
 
         private string GetTopMenuSitesHtml()
         {
-            var siteIdList = ProductPermissionsManager.Current.SiteIdList;
+            var siteIdList = AuthRequest.AdminPermissions.SiteIdList;
 
-            if (!_permissions.IsSystemAdministrator && siteIdList.Count == 0)
+            if (!AuthRequest.AdminPermissions.IsSystemAdministrator && siteIdList.Count == 0)
             {
                 return string.Empty;
             }
@@ -221,7 +214,7 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
 
             var parentWithChildren = new Dictionary<int, List<SiteInfo>>();
 
-            if (ProductPermissionsManager.Current.IsSystemAdministrator)
+            if (AuthRequest.AdminPermissions.IsSystemAdministrator)
             {
                 foreach (var siteId in siteIdList)
                 {
@@ -230,8 +223,8 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             }
             else
             {
-                var permissionSiteIdList = ProductPermissionsManager.Current.WebsitePermissionSiteIdList;
-                var permissionChannelIdList = ProductPermissionsManager.Current.ChannelPermissionChannelIdList;
+                var permissionSiteIdList = AuthRequest.AdminPermissions.SiteIdList;
+                var permissionChannelIdList = AuthRequest.AdminPermissions.ChannelPermissionChannelIdList;
                 foreach (var siteId in siteIdList)
                 {
                     var showSite = IsShowSite(siteId, permissionSiteIdList, permissionChannelIdList);
@@ -323,27 +316,27 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             }
 
             var permissionList = new List<string>();
-            if (ProductPermissionsManager.Current.WebsitePermissionDict.ContainsKey(SiteId))
+            if (AuthRequest.AdminPermissions.HasSitePermissions(SiteId))
             {
-                var websitePermissionList = ProductPermissionsManager.Current.WebsitePermissionDict[SiteId];
+                var websitePermissionList = AuthRequest.AdminPermissions.GetSitePermissions(SiteId);
                 if (websitePermissionList != null)
                 {
                     permissionList.AddRange(websitePermissionList);
                 }
             }
 
-            permissionList.AddRange(_permissions.PermissionList);
+            permissionList.AddRange(AuthRequest.AdminPermissions.PermissionList);
 
             var builder = new StringBuilder();
             foreach (var tab in topMenuTabs)
             {
-                if (!ProductPermissionsManager.Current.IsConsoleAdministrator && !TabManager.IsValid(tab, permissionList)) continue;
+                if (!AuthRequest.AdminPermissions.IsConsoleAdministrator && !TabManager.IsValid(tab, permissionList)) continue;
 
                 var tabs = TabManager.GetTabList(tab.Id, 0);
                 var tabsBuilder = new StringBuilder();
                 foreach (var parent in tabs)
                 {
-                    if (!ProductPermissionsManager.Current.IsConsoleAdministrator && !TabManager.IsValid(parent, permissionList)) continue;
+                    if (!AuthRequest.AdminPermissions.IsConsoleAdministrator && !TabManager.IsValid(parent, permissionList)) continue;
 
                     var hasChildren = parent.Children != null && parent.Children.Length > 0;
 

@@ -33,19 +33,19 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            if (Body.IsQueryExists("Delete") && Body.IsQueryExists("DepartmentIDCollection"))
+            if (AuthRequest.IsQueryExists("Delete") && AuthRequest.IsQueryExists("DepartmentIDCollection"))
             {
-                var departmentIdArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("DepartmentIDCollection"));
+                var departmentIdArrayList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("DepartmentIDCollection"));
                 foreach (var departmentId in departmentIdArrayList)
                 {
                     DataProvider.DepartmentDao.Delete(departmentId);
                 }
                 SuccessMessage("成功删除所选部门");
             }
-            else if (Body.IsQueryExists("DepartmentID") && (Body.IsQueryExists("Subtract") || Body.IsQueryExists("Add")))
+            else if (AuthRequest.IsQueryExists("DepartmentID") && (AuthRequest.IsQueryExists("Subtract") || AuthRequest.IsQueryExists("Add")))
             {
-                var departmentId = Body.GetQueryInt("DepartmentID");
-                var isSubtract = Body.IsQueryExists("Subtract");
+                var departmentId = AuthRequest.GetQueryInt("DepartmentID");
+                var isSubtract = AuthRequest.IsQueryExists("Subtract");
                 DataProvider.DepartmentDao.UpdateTaxis(departmentId, isSubtract);
 
                 PageUtils.Redirect(GetRedirectUrl(departmentId));
@@ -54,13 +54,13 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Admin);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Admin);
 
             ClientScriptRegisterClientScriptBlock("NodeTreeScript", DepartmentTreeItem.GetScript(EDepartmentLoadingType.ContentList, null));
 
-            if (Body.IsQueryExists("CurrentDepartmentID"))
+            if (AuthRequest.IsQueryExists("CurrentDepartmentID"))
             {
-                _currentDepartmentId = Body.GetQueryInt("CurrentDepartmentID");
+                _currentDepartmentId = AuthRequest.GetQueryInt("CurrentDepartmentID");
                 var onLoadScript = GetScriptOnLoad(_currentDepartmentId);
                 if (!string.IsNullOrEmpty(onLoadScript))
                 {

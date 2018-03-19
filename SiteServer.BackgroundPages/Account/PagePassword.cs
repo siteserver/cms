@@ -16,7 +16,7 @@ namespace SiteServer.BackgroundPages.Account
 
             if (!Page.IsPostBack)
             {
-                LtlUserName.Text = Body.AdminName;
+                LtlUserName.Text = AuthRequest.AdminName;
             }
         }
 
@@ -24,10 +24,12 @@ namespace SiteServer.BackgroundPages.Account
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            if (DataProvider.AdministratorDao.CheckPassword(TbCurrentPassword.Text, Body.AdministratorInfo.Password, Body.AdministratorInfo.PasswordFormat, Body.AdministratorInfo.PasswordSalt))
+            var adminInfo = DataProvider.AdministratorDao.GetByUserName(AuthRequest.AdminName);
+
+            if (DataProvider.AdministratorDao.CheckPassword(TbCurrentPassword.Text, adminInfo.Password, adminInfo.PasswordFormat, adminInfo.PasswordSalt))
             {
                 string errorMessage;
-                if (DataProvider.AdministratorDao.ChangePassword(Body.AdministratorInfo.UserName, TbNewPassword.Text, out errorMessage))
+                if (DataProvider.AdministratorDao.ChangePassword(AuthRequest.AdminName, TbNewPassword.Text, out errorMessage))
                 {
                     SuccessMessage("密码更改成功");
                 }

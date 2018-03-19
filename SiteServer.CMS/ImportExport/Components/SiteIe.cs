@@ -22,7 +22,7 @@ namespace SiteServer.CMS.ImportExport.Components
             _contentIe = new ContentIe(siteInfo, siteContentDirectoryPath);
         }
 
-        public int ImportChannelsAndContents(string filePath, bool isImportContents, bool isOverride, int theParentId)
+        public int ImportChannelsAndContents(string filePath, bool isImportContents, bool isOverride, int theParentId, string adminName)
         {
             var psChildCount = DataProvider.ChannelDao.GetCount(_siteInfo.Id);
             var indexNameList = DataProvider.ChannelDao.GetIndexNameList(_siteInfo.Id);
@@ -72,7 +72,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                 if (isImportContents)
                 {
-                    _contentIe.ImportContents(feed.Entries, nodeInfo, 0, isOverride);
+                    _contentIe.ImportContents(feed.Entries, nodeInfo, 0, isOverride, adminName);
                 }
             }
             else
@@ -109,7 +109,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                 if (isImportContents)
                 {
-                    _contentIe.ImportContents(feed.Entries, nodeInfo, 0, isOverride);
+                    _contentIe.ImportContents(feed.Entries, nodeInfo, 0, isOverride, adminName);
                 }
             }
 

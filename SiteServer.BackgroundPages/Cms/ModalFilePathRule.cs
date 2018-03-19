@@ -30,16 +30,16 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _channelId = Body.GetQueryInt("channelId");
-            _isChannel = Body.GetQueryBool("IsChannel");
-            _textBoxClientId = Body.GetQueryString("TextBoxClientID");
+            _channelId = AuthRequest.GetQueryInt("channelId");
+            _isChannel = AuthRequest.GetQueryBool("IsChannel");
+            _textBoxClientId = AuthRequest.GetQueryString("TextBoxClientID");
 
             if (IsPostBack) return;
 
             LtlRules.Text = GetRulesString();
             if (!string.IsNullOrEmpty(_textBoxClientId))
             {
-                TbRule.Text = Body.GetQueryString(_textBoxClientId);
+                TbRule.Text = AuthRequest.GetQueryString(_textBoxClientId);
             }
 
             InfoMessage(_isChannel

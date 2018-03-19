@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
 
             LtlSiteName.Text = SiteInfo.SiteName;
 
@@ -48,7 +48,7 @@ namespace SiteServer.BackgroundPages.Settings
                 SuccessMessage("成功删除站点，相关文件未被删除！");
             }
 
-            if (Body.AdministratorInfo.SiteId != SiteId)
+            if (AuthRequest.AdminInfo.SiteId != SiteId)
             {
                 AddWaitAndRedirectScript(PageSite.GetRedirectUrl());
             }
@@ -58,7 +58,7 @@ namespace SiteServer.BackgroundPages.Settings
                     $@"setTimeout(""window.top.location.href='{PageMain.GetRedirectUrl()}'"", 1500);");
             }
 
-            Body.AddAdminLog("删除站点", $"站点:{SiteInfo.SiteName}");
+            AuthRequest.AddAdminLog("删除站点", $"站点:{SiteInfo.SiteName}");
 
             DataProvider.SiteDao.Delete(SiteId);
         }

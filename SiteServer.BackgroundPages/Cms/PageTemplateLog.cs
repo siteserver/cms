@@ -29,9 +29,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _templateId = Body.GetQueryInt("templateID");
+            _templateId = AuthRequest.GetQueryInt("templateID");
 
-            if (Body.IsQueryExists("Delete"))
+            if (AuthRequest.IsQueryExists("Delete"))
             {
                 var arraylist = TranslateUtils.StringCollectionToIntList(Request.QueryString["IDCollection"]);
                 try
@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
 
             BtnDelete.Attributes.Add("onclick",
                 PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(

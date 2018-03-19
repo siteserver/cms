@@ -25,8 +25,8 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                var relatedFieldId = Body.GetQueryInt("RelatedFieldID");
-                var totalLevel = Body.GetQueryInt("TotalLevel");
+                var relatedFieldId = AuthRequest.GetQueryInt("RelatedFieldID");
+                var totalLevel = AuthRequest.GetQueryInt("TotalLevel");
                 var cols = "100%";
                 if (totalLevel == 2)
                 {

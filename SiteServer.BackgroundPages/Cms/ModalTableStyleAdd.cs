@@ -69,15 +69,15 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _tableStyleId = Body.GetQueryInt("TableStyleID");
-            _relatedIdentities = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("RelatedIdentities"));
+            _tableStyleId = AuthRequest.GetQueryInt("TableStyleID");
+            _relatedIdentities = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("RelatedIdentities"));
             if (_relatedIdentities.Count == 0)
             {
                 _relatedIdentities.Add(0);
             }
-            _tableName = Body.GetQueryString("TableName");
-            _attributeName = Body.GetQueryString("AttributeName");
-            _redirectUrl = StringUtils.ValueFromUrl(Body.GetQueryString("RedirectUrl"));
+            _tableName = AuthRequest.GetQueryString("TableName");
+            _attributeName = AuthRequest.GetQueryString("AttributeName");
+            _redirectUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("RedirectUrl"));
 
             _styleInfo = _tableStyleId != 0 ? DataProvider.TableStyleDao.GetTableStyleInfo(_tableStyleId) : TableStyleManager.GetTableStyleInfo(_tableName, _attributeName, _relatedIdentities);
 
@@ -355,11 +355,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (SiteId > 0)
                 {
-                    Body.AddSiteLog(SiteId, "修改表单显示样式", $"字段名:{_styleInfo.AttributeName}");
+                    AuthRequest.AddSiteLog(SiteId, "修改表单显示样式", $"字段名:{_styleInfo.AttributeName}");
                 }
                 else
                 {
-                    Body.AddAdminLog("修改表单显示样式", $"字段名:{_styleInfo.AttributeName}");
+                    AuthRequest.AddAdminLog("修改表单显示样式", $"字段名:{_styleInfo.AttributeName}");
                 }
                 isChanged = true;
             }
@@ -451,11 +451,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (SiteId > 0)
                 {
-                    Body.AddSiteLog(SiteId, "添加表单显示样式", $"字段名:{_styleInfo.AttributeName}");
+                    AuthRequest.AddSiteLog(SiteId, "添加表单显示样式", $"字段名:{_styleInfo.AttributeName}");
                 }
                 else
                 {
-                    Body.AddAdminLog("添加表单显示样式", $"字段名:{_styleInfo.AttributeName}");
+                    AuthRequest.AddAdminLog("添加表单显示样式", $"字段名:{_styleInfo.AttributeName}");
                 }
 
                 isChanged = true;

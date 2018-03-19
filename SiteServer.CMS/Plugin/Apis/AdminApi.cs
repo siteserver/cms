@@ -1,5 +1,4 @@
 ﻿using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Apis
@@ -22,7 +21,7 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             get
             {
-                var request = new Request();
+                var request = new AuthRequest();
                 return request.AdminName;
             }
         }
@@ -31,27 +30,27 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             get
             {
-                var request = new Request();
-                return PermissionsManager.HasAdministratorPermissions(request.AdminName, _metadata.Id);
+                var request = new AuthRequest();
+                return request.AdminPermissions.HasAdministratorPermissions(_metadata.Id);
             }
         }
 
         public bool IsSiteAuthorized(int siteId)
         {
-            var request = new Request();
-            return PermissionsManager.HasAdministratorPermissions(request.AdminName, _metadata.Id + siteId);
+            var request = new AuthRequest();
+            return request.AdminPermissions.HasAdministratorPermissions(_metadata.Id + siteId);
         }
 
         public bool HasSitePermissions(int siteId, params string[] sitePermissions)
         {
-            var request = new Request();
-            return AdminUtility.HasSitePermissions(request.AdminName, siteId, sitePermissions);
+            var request = new AuthRequest();
+            return request.AdminPermissions.HasSitePermissions(siteId, sitePermissions);
         }
 
         public bool HasChannelPermissions(int siteId, int channelId, params string[] channelPermissions)
         {
-            var request = new Request();
-            return AdminUtility.HasChannelPermissions(request.AdminName, siteId, channelId, channelPermissions);
+            var request = new AuthRequest();
+            return request.AdminPermissions.HasChannelPermissions(siteId, channelId, channelPermissions);
         }
     }
 }

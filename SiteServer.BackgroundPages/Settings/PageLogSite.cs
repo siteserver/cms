@@ -32,19 +32,19 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
-            SpContents.SelectCommand = !Body.IsQueryExists("LogType")
+            SpContents.SelectCommand = !AuthRequest.IsQueryExists("LogType")
                 ? DataProvider.SiteLogDao.GetSelectCommend()
-                : DataProvider.SiteLogDao.GetSelectCommend(SiteId, Body.GetQueryString("LogType"),
-                    Body.GetQueryString("UserName"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"),
-                    Body.GetQueryString("DateTo"));
+                : DataProvider.SiteLogDao.GetSelectCommend(SiteId, AuthRequest.GetQueryString("LogType"),
+                    AuthRequest.GetQueryString("UserName"), AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"),
+                    AuthRequest.GetQueryString("DateTo"));
 
             SpContents.SortField = nameof(SiteLogInfo.Id);
             SpContents.SortMode = SortMode.DESC;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
-            if (Body.IsQueryExists("Delete"))
+            if (AuthRequest.IsQueryExists("Delete"))
             {
-                var arraylist = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("IDCollection"));
+                var arraylist = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("IDCollection"));
                 try
                 {
                     DataProvider.SiteLogDao.Delete(arraylist);
@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Settings
                     FailDeleteMessage(ex);
                 }
             }
-            else if (Body.IsQueryExists("DeleteAll"))
+            else if (AuthRequest.IsQueryExists("DeleteAll"))
             {
                 try
                 {
@@ -70,7 +70,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Log);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Log);
 
             if (SiteId == 0)
             {
@@ -89,14 +89,14 @@ namespace SiteServer.BackgroundPages.Settings
             DdlLogType.Items.Add(new ListItem("栏目相关记录", "Channel"));
             DdlLogType.Items.Add(new ListItem("内容相关记录", "Content"));
 
-            if (Body.IsQueryExists("LogType"))
+            if (AuthRequest.IsQueryExists("LogType"))
             {
                 ControlUtils.SelectSingleItem(DdlSiteId, SiteId.ToString());
-                ControlUtils.SelectSingleItem(DdlLogType, Body.GetQueryString("LogType"));
-                TbUserName.Text = Body.GetQueryString("UserName");
-                TbKeyword.Text = Body.GetQueryString("Keyword");
-                TbDateFrom.Text = Body.GetQueryString("DateFrom");
-                TbDateTo.Text = Body.GetQueryString("DateTo");
+                ControlUtils.SelectSingleItem(DdlLogType, AuthRequest.GetQueryString("LogType"));
+                TbUserName.Text = AuthRequest.GetQueryString("UserName");
+                TbKeyword.Text = AuthRequest.GetQueryString("Keyword");
+                TbDateFrom.Text = AuthRequest.GetQueryString("DateFrom");
+                TbDateTo.Text = AuthRequest.GetQueryString("DateTo");
             }
 
             BtnDelete.Attributes.Add("onclick",

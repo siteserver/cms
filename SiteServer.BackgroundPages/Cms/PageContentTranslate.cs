@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
 			PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
+            _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
             //if (!base.HasChannelPermissions(this.channelId, AppManager.CMS.Permission.Channel.ContentTranslate))
             //{
             //    PageUtils.RedirectToErrorPage("您没有此栏目的内容转移权限！");
@@ -111,9 +111,9 @@ namespace SiteServer.BackgroundPages.Cms
                             {
                                 foreach (var contentId in contentIdArrayList)
                                 {
-                                    ContentUtility.Translate(SiteInfo, channelId, contentId, Request.Form["translateCollection"], translateType, Body.AdminName);
+                                    ContentUtility.Translate(SiteInfo, channelId, contentId, Request.Form["translateCollection"], translateType, AuthRequest.AdminName);
 
-                                    Body.AddSiteLog(SiteInfo.Id, channelId, contentId, "转移内容", string.Empty);
+                                    AuthRequest.AddSiteLog(SiteInfo.Id, channelId, contentId, "转移内容", string.Empty);
                                 }
                             }
                         }

@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId", "channelId");
-            _channelId = Body.GetQueryInt("channelId");
+            _channelId = AuthRequest.GetQueryInt("channelId");
 
 			if (!IsPostBack)
 			{
@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateChannelIfContentChanged, nodeInfo.Additional.IsCreateChannelIfContentChanged.ToString());
 
                 //NodeManager.AddListItemsForAddContent(this.channelIdCollection.Items, base.SiteInfo, false);
-                ChannelManager.AddListItemsForCreateChannel(LbChannelId.Items, SiteInfo, false, Body.AdminName);
+                ChannelManager.AddListItemsForCreateChannel(LbChannelId.Items, SiteInfo, false, AuthRequest.AdminPermissions);
                 ControlUtils.SelectMultiItems(LbChannelId, TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.CreateChannelIDsIfContentChanged));
 			}
 		}
@@ -57,7 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 DataProvider.ChannelDao.Update(nodeInfo);
 
-                Body.AddSiteLog(SiteId, _channelId, 0, "设置栏目变动生成页面", $"栏目:{nodeInfo.ChannelName}");
+                AuthRequest.AddSiteLog(SiteId, _channelId, 0, "设置栏目变动生成页面", $"栏目:{nodeInfo.ChannelName}");
                 isSuccess = true;
             }
             catch (Exception ex)

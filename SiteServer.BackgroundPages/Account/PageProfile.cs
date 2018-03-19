@@ -17,21 +17,21 @@ namespace SiteServer.BackgroundPages.Account
 
             if (Page.IsPostBack) return;
 
-            LtlUserName.Text = Body.AdministratorInfo.UserName;
-            TbDisplayName.Text = Body.AdministratorInfo.DisplayName;
-            TbEmail.Text = Body.AdministratorInfo.Email;
-            TbMobile.Text = Body.AdministratorInfo.Mobile;
+            LtlUserName.Text = AuthRequest.AdminInfo.UserName;
+            TbDisplayName.Text = AuthRequest.AdminInfo.DisplayName;
+            TbEmail.Text = AuthRequest.AdminInfo.Email;
+            TbMobile.Text = AuthRequest.AdminInfo.Mobile;
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            Body.AdministratorInfo.DisplayName = TbDisplayName.Text;
-            Body.AdministratorInfo.Email = TbEmail.Text;
-            Body.AdministratorInfo.Mobile = TbMobile.Text;
+            AuthRequest.AdminInfo.DisplayName = TbDisplayName.Text;
+            AuthRequest.AdminInfo.Email = TbEmail.Text;
+            AuthRequest.AdminInfo.Mobile = TbMobile.Text;
 
-            DataProvider.AdministratorDao.Update(Body.AdministratorInfo);
+            DataProvider.AdministratorDao.Update(AuthRequest.AdminInfo);
 
             SuccessMessage("资料更改成功");
         }

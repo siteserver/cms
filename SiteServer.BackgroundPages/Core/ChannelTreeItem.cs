@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 
@@ -13,7 +12,8 @@ namespace SiteServer.BackgroundPages.Core
 {
     public class ChannelTreeItem
     {
-        private readonly string _iconFolderUrl;
+        private readonly string _contentModelIconUrl;
+        private readonly string _contentModelIconClass;
         private readonly string _iconEmptyUrl;
         private readonly string _iconMinusUrl;
         private readonly string _iconPlusUrl;
@@ -21,35 +21,38 @@ namespace SiteServer.BackgroundPages.Core
         private readonly SiteInfo _siteInfo;
         private readonly ChannelInfo _channelInfo;
         private readonly bool _enabled;
-        private readonly string _administratorName;
+        private readonly PermissionManager _permissionManager;
 
-        public static ChannelTreeItem CreateInstance(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, string administratorName)
+        public static ChannelTreeItem CreateInstance(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, PermissionManager permissionManager)
         {
-            return new ChannelTreeItem(siteInfo, channelInfo, enabled, administratorName);
+            return new ChannelTreeItem(siteInfo, channelInfo, enabled, permissionManager);
         }
 
-        private ChannelTreeItem(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, string administratorName)
+        private ChannelTreeItem(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, PermissionManager permissionManager)
         {
             _siteInfo = siteInfo;
             _channelInfo = channelInfo;
             _enabled = enabled;
-            _administratorName = administratorName;
+            _permissionManager = permissionManager;
 
             var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
-
-            _iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
-            if (!string.IsNullOrEmpty(channelInfo.ContentModelPluginId))
-            {
-                var iconUrl = PluginManager.GetPluginIconUrl(channelInfo.ContentModelPluginId);
-                if (!string.IsNullOrEmpty(iconUrl))
-                {
-                    _iconFolderUrl = iconUrl;
-                }
-            }
-
+            _contentModelIconUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
             _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
             _iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");
             _iconPlusUrl = PageUtils.Combine(treeDirectoryUrl, "plus.png");
+
+            if (!string.IsNullOrEmpty(channelInfo.ContentModelPluginId))
+            {
+                _contentModelIconClass = PluginMenuManager.GetPluginIconClass(channelInfo.ContentModelPluginId);
+                if (string.IsNullOrEmpty(_contentModelIconClass))
+                {
+                    var iconUrl = PluginManager.GetPluginIconUrl(channelInfo.ContentModelPluginId);
+                    if (!string.IsNullOrEmpty(iconUrl))
+                    {
+                        _contentModelIconUrl = iconUrl;
+                    }
+                }
+            }
         }
 
         public string GetItemHtml(ELoadingType loadingType, string returnUrl, NameValueCollection additional)
@@ -75,14 +78,16 @@ namespace SiteServer.BackgroundPages.Core
                 htmlBuilder.Append($@"<img align=""absmiddle"" src=""{_iconEmptyUrl}"" />");
             }
 
-            if (!string.IsNullOrEmpty(_iconFolderUrl))
+            var contentModelIconHtml = !string.IsNullOrEmpty(_contentModelIconClass)
+                ? $@"<i class=""{_contentModelIconClass}"" style=""color: #00b19d;display: inline-block;font-size: 18px;vertical-align: middle;width: 16px;""></i>"
+                : $@"<img align=""absmiddle"" src=""{_contentModelIconUrl}"" style=""max-height: 22px; max-width: 22px"" />";
+
+            if (_channelInfo.Id > 0)
             {
-                htmlBuilder.Append(
-                    _channelInfo.Id > 0
-                        ? $@"<a href=""{PageRedirect.GetRedirectUrlToChannel(_channelInfo.SiteId, _channelInfo.Id)}"" target=""_blank"" title=""浏览页面""><img align=""absmiddle"" border=""0"" src=""{_iconFolderUrl}"" style=""max-height: 22px; max-width: 22px"" /></a>"
-                        : $@"<img align=""absmiddle"" src=""{_iconFolderUrl}"" style=""max-height: 22px; max-width: 22px"" />");
+                contentModelIconHtml = $@"<a href=""{PageRedirect.GetRedirectUrlToChannel(_channelInfo.SiteId, _channelInfo.Id)}"" target=""_blank"" title=""浏览页面"">{contentModelIconHtml}</a>";
             }
 
+            htmlBuilder.Append(contentModelIconHtml);
             htmlBuilder.Append("&nbsp;");
 
             if (_enabled)
@@ -122,7 +127,7 @@ namespace SiteServer.BackgroundPages.Core
                 }
                 else
                 {
-                    if (AdminUtility.HasChannelPermissions(_administratorName, _channelInfo.SiteId, _channelInfo.Id, ConfigManager.Permissions.Channel.ChannelEdit))
+                    if (_permissionManager.HasChannelPermissions(_channelInfo.SiteId, _channelInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit))
                     {
                         var onClickUrl = ModalChannelEdit.GetOpenWindowString(_channelInfo.SiteId, _channelInfo.Id, returnUrl);
                         htmlBuilder.Append(

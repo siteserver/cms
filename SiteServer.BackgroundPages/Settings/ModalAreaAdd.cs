@@ -38,8 +38,8 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            _areaId = Body.GetQueryInt("AreaID");
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
+            _areaId = AuthRequest.GetQueryInt("AreaID");
+            _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
             if (string.IsNullOrEmpty(_returnUrl))
             {
                 _returnUrl = PageAdminArea.GetRedirectUrl(0);
@@ -121,7 +121,7 @@ namespace SiteServer.BackgroundPages.Settings
                     DataProvider.AreaDao.Update(areaInfo);
                 }
 
-                Body.AddAdminLog("维护区域信息");
+                AuthRequest.AddAdminLog("维护区域信息");
 
                 SuccessMessage("区域设置成功！");
                 isChanged = true;

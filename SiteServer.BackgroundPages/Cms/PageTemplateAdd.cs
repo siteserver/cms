@@ -64,10 +64,10 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("siteId");
 
             TemplateInfo templateInfo = null;
-            if (Body.GetQueryInt("TemplateID") > 0)
+            if (AuthRequest.GetQueryInt("TemplateID") > 0)
             {
-                var templateId = Body.GetQueryInt("TemplateID");
-                _isCopy = Body.GetQueryBool("IsCopy");
+                var templateId = AuthRequest.GetQueryInt("TemplateID");
+                _isCopy = AuthRequest.GetQueryBool("IsCopy");
                 templateInfo = TemplateManager.GetTemplateInfo(SiteId, templateId);
                 if (templateInfo != null)
                 {
@@ -90,11 +90,11 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
 
             LtlTemplateType.Text = TemplateTypeUtils.GetText(_templateType);
 
-            LtlPageTitle.Text = Body.GetQueryInt("TemplateID") > 0 ? "编辑模板" : "添加模板";
+            LtlPageTitle.Text = AuthRequest.GetQueryInt("TemplateID") > 0 ? "编辑模板" : "添加模板";
 
             var isCodeMirror = SiteInfo.Additional.ConfigTemplateIsCodeMirror;
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
@@ -104,7 +104,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             ECharsetUtils.AddListItems(DdlCharset);
 
-            if (Body.GetQueryInt("TemplateID") > 0)
+            if (AuthRequest.GetQueryInt("TemplateID") > 0)
             {
                 if (templateInfo == null) return;
 
@@ -126,9 +126,9 @@ namespace SiteServer.BackgroundPages.Cms
 <button class=""btn"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateByTemplate(SiteId, templateInfo.Id)}"">生成页面</button>
 <button class=""btn"" onclick=""{ModalTemplateRestore.GetOpenWindowString(SiteId, templateInfo.Id, string.Empty)}"">还原历史版本</button>";
 
-                    if (Body.GetQueryInt("TemplateLogID") > 0)
+                    if (AuthRequest.GetQueryInt("TemplateLogID") > 0)
                     {
-                        var templateLogId = Body.GetQueryInt("TemplateLogID");
+                        var templateLogId = AuthRequest.GetQueryInt("TemplateLogID");
                         if (templateLogId > 0)
                         {
                             TbContent.Text = DataProvider.TemplateLogDao.GetTemplateContent(templateLogId);
@@ -148,7 +148,7 @@ namespace SiteServer.BackgroundPages.Cms
                 TbCreatedFileFullName.Text = _templateType == TemplateType.ChannelTemplate ? "index" : "@/";
                 ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, SiteInfo.Additional.Charset);
                 ControlUtils.SelectSingleItem(DdlCreatedFileExtName, EFileSystemTypeUtils.GetValue(EFileSystemType.Html));
-                HihTemplateType.Value = Body.GetQueryString("TemplateType");
+                HihTemplateType.Value = AuthRequest.GetQueryString("TemplateType");
             }
         }
 
@@ -182,9 +182,9 @@ namespace SiteServer.BackgroundPages.Cms
                 TbCreatedFileFullName.Text = TbCreatedFileFullName.Text.Replace("/", string.Empty);
 		    }
 
-		    if (Body.GetQueryInt("TemplateID") > 0 && _isCopy == false)
+		    if (AuthRequest.GetQueryInt("TemplateID") > 0 && _isCopy == false)
 		    {
-		        var templateId = Body.GetQueryInt("TemplateID");
+		        var templateId = AuthRequest.GetQueryInt("TemplateID");
 		        var templateInfo = TemplateManager.GetTemplateInfo(SiteId, templateId);
 		        if (templateInfo.TemplateName != TbTemplateName.Text)
 		        {
@@ -229,14 +229,14 @@ namespace SiteServer.BackgroundPages.Cms
 		        templateInfo.CreatedFileFullName = TbCreatedFileFullName.Text + DdlCreatedFileExtName.SelectedValue;
 		        templateInfo.Charset = ECharsetUtils.GetEnumType(DdlCharset.SelectedValue);
 
-		        DataProvider.TemplateDao.Update(SiteInfo, templateInfo, TbContent.Text, Body.AdminName);
+		        DataProvider.TemplateDao.Update(SiteInfo, templateInfo, TbContent.Text, AuthRequest.AdminName);
 		        if (previousTemplateInfo != null)
 		        {
 		            FileUtils.DeleteFileIfExists(TemplateManager.GetTemplateFilePath(SiteInfo, previousTemplateInfo));
 		        }
 		        CreatePages(templateInfo);
 
-		        Body.AddSiteLog(SiteId,
+		        AuthRequest.AddSiteLog(SiteId,
 		            $"修改{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
 		            $"模板名称:{templateInfo.TemplateName}");
 
@@ -269,9 +269,9 @@ namespace SiteServer.BackgroundPages.Cms
 		            IsDefault = false
 		        };
 
-		        templateInfo.Id = DataProvider.TemplateDao.Insert(templateInfo, TbContent.Text, Body.AdminName);
+		        templateInfo.Id = DataProvider.TemplateDao.Insert(templateInfo, TbContent.Text, AuthRequest.AdminName);
 		        CreatePages(templateInfo);
-		        Body.AddSiteLog(SiteId,
+		        AuthRequest.AddSiteLog(SiteId,
 		            $"添加{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
 		            $"模板名称:{templateInfo.TemplateName}");
 		        SuccessMessage("模板添加成功！");

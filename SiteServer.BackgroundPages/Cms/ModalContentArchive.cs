@@ -28,9 +28,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl", "contentIdCollection");
 
-            _channelId = Body.GetQueryInt("channelId");
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
-            _contentIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("contentIdCollection"));
+            _channelId = AuthRequest.GetQueryInt("channelId");
+            _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
+            _contentIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
 		}
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -50,7 +50,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             CreateManager.CreateContentTrigger(SiteId, _channelId);
 
-            Body.AddSiteLog(SiteId, _channelId, 0, "归档内容", string.Empty);
+            AuthRequest.AddSiteLog(SiteId, _channelId, 0, "归档内容", string.Empty);
 
             LayerUtils.CloseAndRedirect(Page, _returnUrl);
 		}

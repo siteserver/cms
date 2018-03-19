@@ -113,14 +113,14 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Chart);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Chart);
 
-            LtlPageTitle1.Text = $"管理员登录最近{_count}{EStatictisXTypeUtils.GetText(EStatictisXTypeUtils.GetEnumType(Body.GetQueryString("XType")))}分配图表（按日期统计）";
-            LtlPageTitle2.Text = $"管理员登录最近{_count}{EStatictisXTypeUtils.GetText(EStatictisXTypeUtils.GetEnumType(Body.GetQueryString("XType")))}分配图表（按管理员统计）";
+            LtlPageTitle1.Text = $"管理员登录最近{_count}{EStatictisXTypeUtils.GetText(EStatictisXTypeUtils.GetEnumType(AuthRequest.GetQueryString("XType")))}分配图表（按日期统计）";
+            LtlPageTitle2.Text = $"管理员登录最近{_count}{EStatictisXTypeUtils.GetText(EStatictisXTypeUtils.GetEnumType(AuthRequest.GetQueryString("XType")))}分配图表（按管理员统计）";
 
             EStatictisXTypeUtils.AddListItems(DdlXType);
 
-            _xType = EStatictisXTypeUtils.GetEnumType(Body.GetQueryString("XType"));
+            _xType = EStatictisXTypeUtils.GetEnumType(AuthRequest.GetQueryString("XType"));
 
             if (Equals(_xType, EStatictisXType.Day))
             {
@@ -136,15 +136,15 @@ namespace SiteServer.BackgroundPages.Settings
             }
 
 
-            TbDateFrom.Text = Body.GetQueryString("DateFrom");
-            TbDateTo.Text = Body.GetQueryString("DateTo");
+            TbDateFrom.Text = AuthRequest.GetQueryString("DateFrom");
+            TbDateTo.Text = AuthRequest.GetQueryString("DateTo");
             DdlXType.SelectedValue = EStatictisXTypeUtils.GetValue(_xType);
 
             //管理员登录量统计，按照日期
-            var trackingDayDictionary = DataProvider.LogDao.GetAdminLoginDictionaryByDate(TranslateUtils.ToDateTime(Body.GetQueryString("DateFrom")), TranslateUtils.ToDateTime(Body.GetQueryString("DateTo"), DateTime.Now), EStatictisXTypeUtils.GetValue(_xType), LogInfo.AdminLogin);
+            var trackingDayDictionary = DataProvider.LogDao.GetAdminLoginDictionaryByDate(TranslateUtils.ToDateTime(AuthRequest.GetQueryString("DateFrom")), TranslateUtils.ToDateTime(AuthRequest.GetQueryString("DateTo"), DateTime.Now), EStatictisXTypeUtils.GetValue(_xType), LogInfo.AdminLogin);
 
             //管理员登录量统计，按照用户名
-            var adminNumDictionaryName = DataProvider.LogDao.GetAdminLoginDictionaryByName(TranslateUtils.ToDateTime(Body.GetQueryString("DateFrom")), TranslateUtils.ToDateTime(Body.GetQueryString("DateTo"), DateTime.Now), LogInfo.AdminLogin);
+            var adminNumDictionaryName = DataProvider.LogDao.GetAdminLoginDictionaryByName(TranslateUtils.ToDateTime(AuthRequest.GetQueryString("DateFrom")), TranslateUtils.ToDateTime(AuthRequest.GetQueryString("DateTo"), DateTime.Now), LogInfo.AdminLogin);
 
             var now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
             for (var i = 0; i < _count; i++)

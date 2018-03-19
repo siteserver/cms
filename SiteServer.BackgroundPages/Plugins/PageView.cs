@@ -35,21 +35,21 @@ namespace SiteServer.BackgroundPages.Plugins
         {
             if (IsForbidden) return;
 
-            _pluginId = Body.GetQueryString("pluginId");
-            _returnUrl = Body.GetQueryString("returnUrl");
+            _pluginId = AuthRequest.GetQueryString("pluginId");
+            _returnUrl = AuthRequest.GetQueryString("returnUrl");
 
-            if (Body.IsQueryExists("install"))
+            if (AuthRequest.IsQueryExists("install"))
             {
                 PageUtils.Redirect(PageInstall.GetRedirectUrl(false, _pluginId));
             }
-            else if (Body.IsQueryExists("update"))
+            else if (AuthRequest.IsQueryExists("update"))
             {
                 PageUtils.Redirect(PageInstall.GetRedirectUrl(true, _pluginId));
             }
 
             if (Page.IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Plugins.Add, ConfigManager.Permissions.Plugins.Management);
+            VerifyAdministratorPermissions(ConfigManager.PluginsPermissions.Add, ConfigManager.PluginsPermissions.Management);
         }
 
         public void Return_Click(object sender, EventArgs e)

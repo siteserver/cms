@@ -11,7 +11,7 @@ namespace SiteServer.API.Controllers.Sys.Packaging
         [HttpPost, Route(ApiRouteSyncDatabase.Route)]
         public IHttpActionResult Main()
         {
-            var request = new Request();
+            var request = new AuthRequest();
 
             if (!request.IsAdminLoggin)
             {

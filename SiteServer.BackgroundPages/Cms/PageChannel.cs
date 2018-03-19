@@ -48,15 +48,15 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId");
 
-            if (Body.IsQueryExists("channelId") && (Body.IsQueryExists("Subtract") || Body.IsQueryExists("Add")))
+            if (AuthRequest.IsQueryExists("channelId") && (AuthRequest.IsQueryExists("Subtract") || AuthRequest.IsQueryExists("Add")))
             {
-                var channelId = Body.GetQueryInt("channelId");
+                var channelId = AuthRequest.GetQueryInt("channelId");
                 if (SiteId != channelId)
                 {
-                    var isSubtract = Body.IsQueryExists("Subtract");
+                    var isSubtract = AuthRequest.IsQueryExists("Subtract");
                     DataProvider.ChannelDao.UpdateTaxis(SiteId, channelId, isSubtract);
 
-                    Body.AddSiteLog(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"),
+                    AuthRequest.AddSiteLog(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"),
                         $"栏目:{ChannelManager.GetChannelName(SiteId, channelId)}");
 
                     PageUtils.Redirect(GetRedirectUrl(SiteId, channelId));
@@ -68,9 +68,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, string.Empty, ELoadingType.Channel, null));
 
-            if (Body.IsQueryExists("CurrentChannelId"))
+            if (AuthRequest.IsQueryExists("CurrentChannelId"))
             {
-                _currentChannelId = Body.GetQueryInt("CurrentChannelId");
+                _currentChannelId = AuthRequest.GetQueryInt("CurrentChannelId");
                 var onLoadScript = ChannelLoading.GetScriptOnLoad(SiteId, _currentChannelId);
                 if (!string.IsNullOrEmpty(onLoadScript))
                 {
@@ -78,7 +78,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            PhAddChannel.Visible = HasChannelPermissionsIgnoreChannelId(ConfigManager.Permissions.Channel.ChannelAdd);
+            PhAddChannel.Visible = HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.ChannelAdd);
             if (PhAddChannel.Visible)
             {
                 BtnAddChannel1.Attributes.Add("onclick", ModalChannelsAdd.GetOpenWindowString(SiteId, SiteId, GetRedirectUrl(SiteId, SiteId)));
@@ -86,14 +86,14 @@ namespace SiteServer.BackgroundPages.Cms
                     $"location.href='{PageChannelAdd.GetRedirectUrl(SiteId, SiteId, GetRedirectUrl(SiteId, 0))}';return false;");
             }
 
-            PhChannelEdit.Visible = HasChannelPermissionsIgnoreChannelId(ConfigManager.Permissions.Channel.ChannelEdit);
+            PhChannelEdit.Visible = HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.ChannelEdit);
             if (PhChannelEdit.Visible)
             {
                 var showPopWinString = ModalAddToGroup.GetOpenWindowStringToChannel(SiteId);
                 BtnAddToGroup.Attributes.Add("onclick", showPopWinString);
             }
 
-            PhTranslate.Visible = HasChannelPermissionsIgnoreChannelId(ConfigManager.Permissions.Channel.ChannelTranslate);
+            PhTranslate.Visible = HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.ChannelTranslate);
             if (PhTranslate.Visible)
             {
                 BtnTranslate.Attributes.Add("onclick",
@@ -103,13 +103,13 @@ namespace SiteServer.BackgroundPages.Cms
                         "ChannelIDCollection", "请选择需要转移的栏目！"));
             }
 
-            PhDelete.Visible = HasChannelPermissionsIgnoreChannelId(ConfigManager.Permissions.Channel.ChannelDelete);
+            PhDelete.Visible = HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.ChannelDelete);
             if (PhDelete.Visible)
             {
                 BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValue(PageChannelDelete.GetRedirectUrl(SiteId, GetRedirectUrl(SiteId, SiteId)), "ChannelIDCollection", "ChannelIDCollection", "请选择需要删除的栏目！"));
             }
 
-            PhCreate.Visible = HasSitePermissions(ConfigManager.Permissions.WebSite.Create) || HasChannelPermissionsIgnoreChannelId(ConfigManager.Permissions.Channel.CreatePage);
+            PhCreate.Visible = HasSitePermissions(ConfigManager.WebSitePermissions.Create) || HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.CreatePage);
             if (PhCreate.Visible)
             {
                 BtnCreate.Attributes.Add("onclick", ModalCreateChannels.GetOpenWindowString(SiteId));
@@ -141,7 +141,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.Channel, null, Body.AdminName);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.Channel, null, AuthRequest.AdminPermissions);
         }
     }
 }

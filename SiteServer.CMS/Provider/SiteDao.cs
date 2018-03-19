@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
@@ -113,7 +112,7 @@ namespace SiteServer.CMS.Provider
 
             SiteManager.ClearCache();
             ChannelManager.RemoveCache(siteId);
-            ProductPermissionsManager.Current.ClearCache();
+            PermissionManager.ClearAllCache();
         }
 
 

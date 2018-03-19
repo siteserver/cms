@@ -77,9 +77,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "RootPath", "CurrentRootPath", "HiddenClientID");
 			
-			_rootPath = Body.GetQueryString("RootPath").TrimEnd('/');
-			_currentRootPath = Body.GetQueryString("CurrentRootPath");
-            _hiddenClientId = Body.GetQueryString("HiddenClientID");
+			_rootPath = AuthRequest.GetQueryString("RootPath").TrimEnd('/');
+			_currentRootPath = AuthRequest.GetQueryString("CurrentRootPath");
+            _hiddenClientId = AuthRequest.GetQueryString("HiddenClientID");
 
             if (string.IsNullOrEmpty(_currentRootPath))
             {
@@ -106,9 +106,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             DdlListType.Items.Add(new ListItem("显示缩略图", "Image"));
             DdlListType.Items.Add(new ListItem("显示详细信息", "List"));
-            if (Body.IsQueryExists("ListType"))
+            if (AuthRequest.IsQueryExists("ListType"))
             {
-                ControlUtils.SelectSingleItem(DdlListType, Body.GetQueryString("ListType"));
+                ControlUtils.SelectSingleItem(DdlListType, AuthRequest.GetQueryString("ListType"));
             }
 
             var previousUrls = Session["PreviousUrls"] as ArrayList ?? new ArrayList();
@@ -204,7 +204,7 @@ namespace SiteServer.BackgroundPages.Cms
 		private void FillFileSystems(bool isReload)
 		{
 			const string cookieName = "SiteServer.BackgroundPages.Cms.Modal.SelectAttachment";
-			var isSetCookie = Body.IsQueryExists("ListType");
+			var isSetCookie = AuthRequest.IsQueryExists("ListType");
 			if (!isSetCookie)
 			{
 				var cookieExists = false;
@@ -227,7 +227,7 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 			else
 			{
-                CookieUtils.SetCookie(cookieName, Body.GetQueryString("ListType"), DateTime.MaxValue);
+                CookieUtils.SetCookie(cookieName, AuthRequest.GetQueryString("ListType"), DateTime.MaxValue);
 			}
 			if (DdlListType.SelectedValue == "List")
 			{

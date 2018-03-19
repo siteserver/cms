@@ -28,7 +28,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            var userName = Body.GetQueryString("UserName");
+            var userName = AuthRequest.GetQueryString("UserName");
             var adminInfo = DataProvider.AdministratorDao.GetByUserName(userName);
             LtlUserName.Text = adminInfo.UserName;
             LtlDisplayName.Text = adminInfo.DisplayName;

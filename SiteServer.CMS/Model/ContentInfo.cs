@@ -9,32 +9,7 @@ namespace SiteServer.CMS.Model
 	{
 		public ContentInfo()
 		{
-			Id = 0;
-            ChannelId = 0;
-			SiteId = 0;
-			AddUserName = string.Empty;
-			LastEditUserName = string.Empty;
-            WritingUserName = string.Empty;
-            LastEditDate = DateTime.Now;
-            Taxis = 0;
-            GroupNameCollection = string.Empty;
-            Tags = string.Empty;
-            SourceId = 0;
-            ReferenceId = 0;
-			IsChecked = false;
-            CheckedLevel = 0;
-            Hits = 0;
-            HitsByDay = 0;
-            HitsByWeek = 0;
-            HitsByMonth = 0;
-            LastHitsDate = DateTime.Now;
-            Title = string.Empty;
-            IsTop = false;
-            IsRecommend = false;
-            IsHot = false;
-            IsColor = false;
-		    LinkUrl = string.Empty;
-            AddDate = DateTime.Now;
+			
 		}
 
         public ContentInfo(object dataItem) : base(dataItem)

@@ -9,10 +9,12 @@ namespace SiteServer.CMS.ImportExport.Components
 	internal class TableStyleIe
 	{
 		private readonly string _directoryPath;
+	    private readonly string _adminName;
 
-        public TableStyleIe(string directoryPath)
+        public TableStyleIe(string directoryPath, string adminName)
 		{
 			_directoryPath = directoryPath;
+		    _adminName = adminName;
 		}
 
 		public void ExportTableStyles(int siteId, string tableName)
@@ -200,7 +202,7 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			if (!DirectoryUtils.IsDirectoryExists(_directoryPath)) return;
 
-            var importObject = new ImportObject(siteId);
+            var importObject = new ImportObject(siteId, _adminName);
             var tableNameCollection = importObject.GetTableNameCache();
 
 			var styleDirectoryPaths = DirectoryUtils.GetDirectoryPaths(_directoryPath);

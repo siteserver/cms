@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Settings
 	        //    return;
 	        //}
 
-	        Body.AddAdminLog($"手动升级 SiteServer CMS 版本：{TbVersion.Text}");
+	        AuthRequest.AddAdminLog($"手动升级 SiteServer CMS 版本：{TbVersion.Text}");
 
 	        LayerUtils.CloseAndRedirect(Page, PageManagement.GetRedirectUrl());
 	    }
@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 	        ZipUtils.UnpackFiles(localFilePath, directoryPath);
 
-	        Body.AddAdminLog("手动升级 SiteServer CMS 版本：" + idAndVersion);
+	        AuthRequest.AddAdminLog("手动升级 SiteServer CMS 版本：" + idAndVersion);
 
 	        LayerUtils.CloseAndRedirect(Page, PageManagement.GetRedirectUrl());
 	    }

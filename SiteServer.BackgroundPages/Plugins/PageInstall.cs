@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Plugins
             });
         }
 
-        public string Type => Body.GetQueryString("type") == "update" ? "升级" : "安装";
+        public string Type => AuthRequest.GetQueryString("type") == "update" ? "升级" : "安装";
 
         public string AdminUrl => PageUtils.GetAdminDirectoryUrl(string.Empty);
 
@@ -36,11 +36,11 @@ namespace SiteServer.BackgroundPages.Plugins
         {
             if (IsForbidden) return;
 
-            PackageId = Body.GetQueryString("packageId");
+            PackageId = AuthRequest.GetQueryString("packageId");
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Plugins.Add, ConfigManager.Permissions.Plugins.Management);
+            VerifyAdministratorPermissions(ConfigManager.PluginsPermissions.Add, ConfigManager.PluginsPermissions.Management);
         }
     }
 }

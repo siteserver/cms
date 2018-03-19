@@ -34,8 +34,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SiteServer.Plugin, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.4.0\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.4.45.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.4.45-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -241,6 +241,9 @@
     <Compile Include="Cms\ModalUploadVideo.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Cms\ModalTextEditorInsertImage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Cms\ModalUploadWord.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -415,7 +418,8 @@
     <Compile Include="Cms\PageTemplateReference.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\WebHandlerUploadWord.cs" />
+    <Compile Include="Cms\ModalTextEditorInsertImageHandler.cs" />
+    <Compile Include="Cms\ModalUploadWordHandler.cs" />
     <Compile Include="Controls\Alerts.cs" />
     <Compile Include="Controls\AuxiliaryControl.cs" />
     <Compile Include="Controls\ChannelAuxiliaryControl.cs" />

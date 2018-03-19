@@ -16,16 +16,13 @@
       <link href="assets/icons/favicon.png" rel="icon" type="image/png">
     </head>
 
-    <body class="fixed-left widescreen">
+    <body class="fixed-left widescreen" style="background-color: #eee">
       <div id="wrapper">
         <header id="topnav">
           <div class="topbar-main">
             <div class="logo">
               <a href="http://www.siteserver.cn" target="_blank" class="logo">
                 <img src="assets/icons/logo.png" />
-              </a>
-              <a href="javascript:;" class="toggle" id="top-toggle">
-                <i class="icon-arrow-left"></i>
               </a>
             </div>
             <ul class="navigation-menu">
@@ -82,7 +79,14 @@
           </div>
         </header>
 
-        <div class="left side-menu">
+        <a id="btnLeftMenu" href="javascript:;" onclick="openMenu()" class="position-fixed" style="z-index: 9;display: block;margin-top: 8px; margin-left: 10px;">
+          <i class="ion-navicon" style="font-size: 28px;color: #565b5e;"></i>
+        </a>
+
+        <div id="leftMenu" class="left side-menu">
+          <a href="javascript:;" class="position-fixed" onclick="closeMenu()" style="z-index: 9;margin-top: 8px;margin-left: 165px;">
+            <i class="ion-navicon" style="font-size: 28px;color: #565b5e;"></i>
+          </a>
           <div class="sidebar-inner slimscrollleft">
             <div id="sidebar-menu">
               <ul>
@@ -116,6 +120,10 @@
     <script src="assets/js/compareversion.js"></script>
 
     <script type="text/javascript">
+      if (window.top != self) {
+        window.top.location = self.location;
+      }
+
       var siteId = <%=SiteId%>;
       var create = $.connection.createHub;
 
@@ -133,22 +141,40 @@
         create.server.execute(siteId);
       });
 
-      window.onresize = function (event) {
-        $('#frmMain').height($(window).height() - 62);
-        $('#frmMain').width($(window).width() - 200);
-      };
-
       function redirect(url) {
         $('#right').src = url;
       }
 
-      if (window.top != self) {
-        window.top.location = self.location;
+      var contentMargin = 200;
+
+      window.onresize = function (event) {
+        $('#frmMain').height($(window).height() - 62);
+        $('#frmMain').width($(window).width() - contentMargin);
+        $('#content').css({
+          marginLeft: contentMargin + "px"
+        });
+        if (contentMargin === 200) {
+          $('#btnLeftMenu').hide();
+          $("#leftMenu").show();
+        } else {
+          $('#btnLeftMenu').show();
+          $("#leftMenu").hide();
+        }
+      };
+
+      function openMenu() {
+        contentMargin = 200;
+        onresize();
+      }
+
+      function closeMenu() {
+        contentMargin = 40;
+        onresize();
       }
 
       $(document).ready(function () {
-        $('#frmMain').height($(window).height() - 62);
-        $('#frmMain').width($(window).width() - 200);
+
+        onresize();
 
         $('.waves-primary').click(function () {
           if ($(this).hasClass('subdrop')) {

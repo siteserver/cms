@@ -19,7 +19,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
             var isSuccess = false;
             try
             {
-                var request = new Request();
+                var request = new AuthRequest();
 
                 if (!string.IsNullOrEmpty(request.GetQueryString("siteId")) && !string.IsNullOrEmpty(request.GetQueryString("fileUrl")) && string.IsNullOrEmpty(request.GetQueryString("contentId")))
                 {

@@ -129,7 +129,7 @@ namespace SiteServer.CMS.Core
                 var configurationFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
                 var siteContentDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteContent);
 
-                var importObject = new ImportObject(siteId);
+                var importObject = new ImportObject(siteId, administratorName);
 
                 importObject.ImportFiles(siteTemplatePath, true);
 
@@ -157,9 +157,9 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void ExportSiteToSiteTemplate(SiteInfo siteInfo, string siteTemplateDir)
+        public static void ExportSiteToSiteTemplate(SiteInfo siteInfo, string siteTemplateDir, string adminName)
         {
-            var exportObject = new ExportObject(siteInfo.Id);
+            var exportObject = new ExportObject(siteInfo.Id, adminName);
 
             var siteTemplatePath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
 

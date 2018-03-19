@@ -46,15 +46,15 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _tableStyleId = Body.GetQueryInt("TableStyleID");
-            _relatedIdentities = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("RelatedIdentities"));
+            _tableStyleId = AuthRequest.GetQueryInt("TableStyleID");
+            _relatedIdentities = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("RelatedIdentities"));
             if (_relatedIdentities.Count == 0)
             {
                 _relatedIdentities.Add(0);
             }
-            _tableName = Body.GetQueryString("TableName");
-            _attributeName = Body.GetQueryString("AttributeName");
-            _redirectUrl = StringUtils.ValueFromUrl(Body.GetQueryString("RedirectUrl"));
+            _tableName = AuthRequest.GetQueryString("TableName");
+            _attributeName = AuthRequest.GetQueryString("AttributeName");
+            _redirectUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("RedirectUrl"));
 
             _styleInfo = _tableStyleId != 0
                 ? DataProvider.TableStyleDao.GetTableStyleInfo(_tableStyleId)
@@ -127,12 +127,12 @@ namespace SiteServer.BackgroundPages.Cms
                 if (_styleInfo.Id > 0)
                 {
                     TableStyleManager.Update(_styleInfo);
-                    Body.AddSiteLog(SiteId, "修改表单验证", $"字段:{_styleInfo.AttributeName}");
+                    AuthRequest.AddSiteLog(SiteId, "修改表单验证", $"字段:{_styleInfo.AttributeName}");
                 }
                 else
                 {
                     TableStyleManager.Insert(_styleInfo);
-                    Body.AddSiteLog(SiteId, "新增表单验证", $"字段:{_styleInfo.AttributeName}");
+                    AuthRequest.AddSiteLog(SiteId, "新增表单验证", $"字段:{_styleInfo.AttributeName}");
                 }
                 isChanged = true;
             }

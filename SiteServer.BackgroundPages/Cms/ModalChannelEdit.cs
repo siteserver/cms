@@ -67,15 +67,15 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
-            _channelId = Body.GetQueryInt("channelId");
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
+            _channelId = AuthRequest.GetQueryInt("channelId");
+            _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
             CacAttributes.SiteInfo = SiteInfo;
             CacAttributes.ChannelId = _channelId;
 
             if (!IsPostBack)
             {
-                if (!HasChannelPermissions(_channelId, ConfigManager.Permissions.Channel.ChannelEdit))
+                if (!HasChannelPermissions(_channelId, ConfigManager.ChannelPermissions.ChannelEdit))
                 {
                     PageUtils.RedirectToErrorPage("您没有修改栏目的权限！");
                     return;
@@ -260,7 +260,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 DataProvider.ChannelDao.Update(nodeInfo);
 
-                Body.AddSiteLog(SiteId, _channelId, 0, "修改栏目", $"栏目:{nodeInfo.ChannelName}");
+                AuthRequest.AddSiteLog(SiteId, _channelId, 0, "修改栏目", $"栏目:{nodeInfo.ChannelName}");
 
                 isChanged = true;
             }

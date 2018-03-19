@@ -26,21 +26,21 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            if (Body.IsQueryExists("Delete"))
+            if (AuthRequest.IsQueryExists("Delete"))
             {
-                var userIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("UserIDCollection"));
+                var userIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("UserIDCollection"));
                 foreach (var userId in userIdList)
                 {
                     DataProvider.UserDao.Delete(userId);
                 }
 
-                Body.AddAdminLog("删除用户", string.Empty);
+                AuthRequest.AddAdminLog("删除用户", string.Empty);
 
                 SuccessDeleteMessage();
             }
-            else if (Body.IsQueryExists("Check"))
+            else if (AuthRequest.IsQueryExists("Check"))
             {
-                var userIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("UserIDCollection"));
+                var userIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("UserIDCollection"));
                 DataProvider.UserDao.Check(userIdList);
 
                 SuccessCheckMessage();
@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.User);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.User);
 
             SpContents.DataBind();
 

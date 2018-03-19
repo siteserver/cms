@@ -27,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "CurrentRootPath");
 
-			_currentRootPath = Body.GetQueryString("CurrentRootPath").TrimEnd('/');
+			_currentRootPath = AuthRequest.GetQueryString("CurrentRootPath").TrimEnd('/');
 			_directoryPath = PathUtility.MapPath(SiteInfo, _currentRootPath);
 		}
 
@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             DirectoryUtils.CreateDirectoryIfNotExists(path);
-            Body.AddSiteLog(SiteId, "新建文件夹", $"文件夹:{TbDirectoryName.Text}");
+            AuthRequest.AddSiteLog(SiteId, "新建文件夹", $"文件夹:{TbDirectoryName.Text}");
             LayerUtils.Close(Page);
         }
 	}

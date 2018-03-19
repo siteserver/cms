@@ -63,8 +63,8 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
-            _channelId = Body.GetQueryInt("channelId");
-            ReturnUrl = StringUtils.ValueFromUrl(PageUtils.FilterSqlAndXss(Body.GetQueryString("ReturnUrl")));
+            _channelId = AuthRequest.GetQueryInt("channelId");
+            ReturnUrl = StringUtils.ValueFromUrl(PageUtils.FilterSqlAndXss(AuthRequest.GetQueryString("ReturnUrl")));
             //if (!base.HasChannelPermissions(this.channelId, AppManager.CMS.Permission.Channel.ChannelAdd))
             //{
             //    PageUtils.RedirectToErrorPage("您没有添加栏目的权限！");
@@ -83,7 +83,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                ChannelManager.AddListItems(DdlParentChannelId.Items, SiteInfo, true, true, Body.AdminName);
+                ChannelManager.AddListItems(DdlParentChannelId.Items, SiteInfo, true, true, AuthRequest.AdminPermissions);
                 ControlUtils.SelectSingleItem(DdlParentChannelId, _channelId.ToString());
 
                 DdlContentModelPluginId.Items.Add(new ListItem("<默认>", string.Empty));
@@ -154,7 +154,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 theChannelId = _channelId;
             }
-            PageUtils.Redirect(GetRedirectUrl(SiteId, theChannelId, Body.GetQueryString("ReturnUrl")));
+            PageUtils.Redirect(GetRedirectUrl(SiteId, theChannelId, AuthRequest.GetQueryString("ReturnUrl")));
         }
 
         public string PreviewImageSrc
@@ -187,7 +187,7 @@ namespace SiteServer.BackgroundPages.Cms
             int insertChannelId;
             try
             {
-                var channelId = Body.GetQueryInt("ChannelId");
+                var channelId = AuthRequest.GetQueryInt("ChannelId");
                 var nodeInfo = new ChannelInfo
                 {
                     ParentId = channelId,
@@ -309,7 +309,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             CreateManager.CreateChannel(SiteId, insertChannelId);
 
-            Body.AddSiteLog(SiteId, "添加栏目", $"栏目:{TbNodeName.Text}");
+            AuthRequest.AddSiteLog(SiteId, "添加栏目", $"栏目:{TbNodeName.Text}");
 
             SuccessMessage("栏目添加成功！");
             AddWaitAndRedirectScript(ReturnUrl);

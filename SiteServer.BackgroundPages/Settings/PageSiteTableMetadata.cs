@@ -38,23 +38,23 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("ENName");
-            _showSqlTable = Body.IsQueryExists("ShowCrateDBCommand");
+            _showSqlTable = AuthRequest.IsQueryExists("ShowCrateDBCommand");
 
-            _tableName = Body.GetQueryString("ENName").Trim();
+            _tableName = AuthRequest.GetQueryString("ENName").Trim();
             _redirectUrl = GetRedirectUrl(_tableName);
 
             var tableInfo = DataProvider.TableDao.GetTableCollectionInfo(_tableName);
 
-            if (Body.IsQueryExists("Delete"))
+            if (AuthRequest.IsQueryExists("Delete"))
             {
-                var tableMetadataId = Body.GetQueryInt("TableMetadataID");
+                var tableMetadataId = AuthRequest.GetQueryInt("TableMetadataID");
 
                 try
                 {
                     var tableMetadataInfo = DataProvider.TableMetadataDao.GetTableMetadataInfo(tableMetadataId);
                     DataProvider.TableMetadataDao.Delete(tableMetadataId);
 
-                    Body.AddAdminLog("删除辅助表字段", $"辅助表:{_tableName},字段名:{tableMetadataInfo.AttributeName}");
+                    AuthRequest.AddAdminLog("删除辅助表字段", $"辅助表:{_tableName},字段名:{tableMetadataInfo.AttributeName}");
 
                     SuccessDeleteMessage();
                     PageUtils.Redirect(_redirectUrl);
@@ -64,16 +64,16 @@ namespace SiteServer.BackgroundPages.Settings
                     FailDeleteMessage(ex);
                 }
             }
-            else if (Body.IsQueryExists("DeleteStyle"))//删除样式
+            else if (AuthRequest.IsQueryExists("DeleteStyle"))//删除样式
             {
-                var attributeName = Body.GetQueryString("AttributeName");
+                var attributeName = AuthRequest.GetQueryString("AttributeName");
                 if (TableStyleManager.IsExists(0, _tableName, attributeName))
                 {
                     try
                     {
                         TableStyleManager.Delete(0, _tableName, attributeName);
 
-                        Body.AddAdminLog("删除辅助表字段样式", $"辅助表:{_tableName},字段名:{attributeName}");
+                        AuthRequest.AddAdminLog("删除辅助表字段样式", $"辅助表:{_tableName},字段名:{attributeName}");
 
                         SuccessDeleteMessage();
                         PageUtils.Redirect(_redirectUrl);
@@ -84,14 +84,14 @@ namespace SiteServer.BackgroundPages.Settings
                     }
                 }
             }
-            else if (Body.IsQueryExists("CreateDB"))
+            else if (AuthRequest.IsQueryExists("CreateDB"))
             {
                 try
                 {
                     DataProvider.TableDao.CreateDbTable(_tableName);
                     tableInfo.IsChangedAfterCreatedInDb = false;
 
-                    Body.AddAdminLog("创建辅助表", $"辅助表:{_tableName}");
+                    AuthRequest.AddAdminLog("创建辅助表", $"辅助表:{_tableName}");
 
                     SuccessMessage("辅助表创建成功！");
                     PageUtils.Redirect(_redirectUrl);
@@ -104,14 +104,14 @@ namespace SiteServer.BackgroundPages.Settings
                     _showSqlTable = true;
                 }
             }
-            else if (Body.IsQueryExists("DeleteDB"))
+            else if (AuthRequest.IsQueryExists("DeleteDB"))
             {
                 try
                 {
                     DataProvider.TableDao.DeleteDbTable(_tableName);
                     tableInfo.IsChangedAfterCreatedInDb = false;
 
-                    Body.AddAdminLog("删除辅助表", $"辅助表:{_tableName}");
+                    AuthRequest.AddAdminLog("删除辅助表", $"辅助表:{_tableName}");
 
                     SuccessMessage("辅助表删除成功！");
                     PageUtils.Redirect(_redirectUrl);
@@ -122,7 +122,7 @@ namespace SiteServer.BackgroundPages.Settings
                     FailMessage(ex, "<br>辅助表删除失败，失败原因为：" + ex.Message + "<br>");
                 }
             }
-            else if (Body.IsQueryExists("ReCreateDB"))
+            else if (AuthRequest.IsQueryExists("ReCreateDB"))
             {
                 try
                 {
@@ -130,7 +130,7 @@ namespace SiteServer.BackgroundPages.Settings
                     DataProvider.ChannelDao.UpdateContentNumToZero(_tableName);
                     tableInfo.IsChangedAfterCreatedInDb = false;
 
-                    Body.AddAdminLog("重建辅助表", $"辅助表:{_tableName}");
+                    AuthRequest.AddAdminLog("重建辅助表", $"辅助表:{_tableName}");
 
                     SuccessMessage("辅助表重建成功！");
                     PageUtils.Redirect(_redirectUrl);
@@ -144,15 +144,15 @@ namespace SiteServer.BackgroundPages.Settings
                     _showSqlTable = true;
                 }
             }
-            else if (Body.IsQueryExists("ShowCrateDBCommand"))
+            else if (AuthRequest.IsQueryExists("ShowCrateDBCommand"))
             {
                 var sqlString = DataProvider.ContentDao.GetCreateTableCollectionInfoSqlString(_tableName);
                 LtlSqlString.Text = sqlString.Replace("\r\n", "<br>").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
             }
-            else if (Body.IsQueryExists("SetTaxis"))
+            else if (AuthRequest.IsQueryExists("SetTaxis"))
             {
-                var direction = Body.GetQueryString("Direction");
-                var tableMetadataId = Body.GetQueryInt("TableMetadataId");
+                var direction = AuthRequest.GetQueryString("Direction");
+                var tableMetadataId = AuthRequest.GetQueryInt("TableMetadataId");
                 switch (direction.ToUpper())
                 {
                     case "UP":
@@ -174,7 +174,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
 
             RptContents.DataSource = DataProvider.TableMetadataDao.GetDataSource(_tableName);
             RptContents.ItemDataBound += RptContents_ItemDataBound;

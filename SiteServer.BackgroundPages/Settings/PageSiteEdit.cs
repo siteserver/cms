@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
 
             if (SiteInfo.IsRoot)
             {
@@ -225,7 +225,7 @@ namespace SiteServer.BackgroundPages.Settings
                 DataProvider.ChannelDao.UpdateContentNum(SiteInfo);
             }
 
-            Body.AddAdminLog("修改站点属性", $"站点:{SiteInfo.SiteName}");
+            AuthRequest.AddAdminLog("修改站点属性", $"站点:{SiteInfo.SiteName}");
 
             SuccessMessage("站点修改成功！");
             AddWaitAndRedirectScript(PageSite.GetRedirectUrl());

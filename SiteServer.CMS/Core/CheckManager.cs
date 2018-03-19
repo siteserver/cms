@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.Core
@@ -1048,10 +1047,9 @@ namespace SiteServer.CMS.Core
 	        return false;
 	    }
 
-	    public static KeyValuePair<bool, int> GetUserCheckLevel(string administratorName, SiteInfo siteInfo, int channelId)
+	    public static KeyValuePair<bool, int> GetUserCheckLevel(PermissionManager permissionManager, SiteInfo siteInfo, int channelId)
         {
-            var permissions = PermissionsManager.GetPermissions(administratorName);
-            if (permissions.IsSystemAdministrator)
+            if (permissionManager.IsSystemAdministrator)
             {
                 return new KeyValuePair<bool, int>(true, siteInfo.Additional.CheckContentLevel);
             }
@@ -1060,18 +1058,18 @@ namespace SiteServer.CMS.Core
             var checkedLevel = 0;
             if (siteInfo.Additional.IsCheckContentLevel == false)
             {
-                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.ContentCheck))
+                if (permissionManager.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentCheck))
                 {
                     isChecked = true;
                 }
             }
             else
             {
-                if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.ContentCheckLevel5))
+                if (permissionManager.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel5))
                 {
                     isChecked = true;
                 }
-                else if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.ContentCheckLevel4))
+                else if (permissionManager.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel4))
                 {
                     if (siteInfo.Additional.CheckContentLevel <= 4)
                     {
@@ -1082,7 +1080,7 @@ namespace SiteServer.CMS.Core
                         checkedLevel = 4;
                     }
                 }
-                else if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.ContentCheckLevel3))
+                else if (permissionManager.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel3))
                 {
                     if (siteInfo.Additional.CheckContentLevel <= 3)
                     {
@@ -1093,7 +1091,7 @@ namespace SiteServer.CMS.Core
                         checkedLevel = 3;
                     }
                 }
-                else if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.ContentCheckLevel2))
+                else if (permissionManager.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel2))
                 {
                     if (siteInfo.Additional.CheckContentLevel <= 2)
                     {
@@ -1104,7 +1102,7 @@ namespace SiteServer.CMS.Core
                         checkedLevel = 2;
                     }
                 }
-                else if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.ContentCheckLevel1))
+                else if (permissionManager.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel1))
                 {
                     if (siteInfo.Additional.CheckContentLevel <= 1)
                     {
@@ -1123,11 +1121,11 @@ namespace SiteServer.CMS.Core
             return new KeyValuePair<bool, int>(isChecked, checkedLevel);
         }
 
-        public static bool GetUserCheckLevel(string administratorName, SiteInfo siteInfo, int channelId, out int userCheckedLevel)
+        public static bool GetUserCheckLevel(PermissionManager permissionManager, SiteInfo siteInfo, int channelId, out int userCheckedLevel)
         {
             var checkContentLevel = siteInfo.Additional.CheckContentLevel;
 
-            var pair = GetUserCheckLevel(administratorName, siteInfo, channelId);
+            var pair = GetUserCheckLevel(permissionManager, siteInfo, channelId);
             var isChecked = pair.Key;
             var checkedLevel = pair.Value;
             if (isChecked)
@@ -1138,7 +1136,7 @@ namespace SiteServer.CMS.Core
             return isChecked;
         }
 
-        public static List<KeyValuePair<int, int>> GetUserCountListUnChecked(string administratorName)
+        public static List<KeyValuePair<int, int>> GetUserCountListUnChecked(PermissionManager permissionManager)
         {
             var list = new List<KeyValuePair<int, int>>();
 
@@ -1146,16 +1144,15 @@ namespace SiteServer.CMS.Core
 
             foreach (var tableName in tableNameList)
             {
-                list.AddRange(GetUserCountListUnChecked(administratorName, tableName));
+                list.AddRange(GetUserCountListUnChecked(permissionManager, tableName));
             }
 
             return list;
         }
 
-        private static List<KeyValuePair<int, int>> GetUserCountListUnChecked(string administratorName, string tableName)
+        private static List<KeyValuePair<int, int>> GetUserCountListUnChecked(PermissionManager permissionManager, string tableName)
         {
-            var permissions = PermissionsManager.GetPermissions(administratorName);
-            return DataProvider.ContentDao.GetCountListUnChecked(permissions.IsSystemAdministrator, administratorName, ProductPermissionsManager.Current.SiteIdList, ProductPermissionsManager.Current.OwningChannelIdList, tableName);
+            return DataProvider.ContentDao.GetCountListUnChecked(permissionManager, tableName);
         }
 	}
 }

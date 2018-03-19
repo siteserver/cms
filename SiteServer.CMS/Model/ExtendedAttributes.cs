@@ -85,18 +85,12 @@ namespace SiteServer.CMS.Model
             }
         }
 
-        public string GetString(string name, string defaultValue)
-        {
-            var v = GetString(name);
-            return string.IsNullOrEmpty(v) ? defaultValue : v;
-        }
-
-        public string GetString(string name)
+        public string Get(string name)
         {
             name = name.ToLower();
             var returnValue = _dataNvc[name];
 
-            if (returnValue == null && _dataObj != null)
+            if (string.IsNullOrEmpty(returnValue) && _dataObj != null)
             {
                 var obj = Utils.Eval(_dataObj, name);
                 if (obj != null)
@@ -116,86 +110,45 @@ namespace SiteServer.CMS.Model
                 }
             }
 
-            if (!string.IsNullOrEmpty(returnValue))
-            {
-                returnValue = Utils.UnFilterSql(returnValue);
-            }
+            return returnValue;
+        }
 
-            return returnValue ?? string.Empty;
+        public string GetString(string name, string defaultValue = "")
+        {
+            var value = Get(name);
+            if (!string.IsNullOrEmpty(value))
+            {
+                value = Utils.UnFilterSql(value);
+            }
+            return string.IsNullOrEmpty(value) ? defaultValue : value;
         }
 
         public bool GetBool(string name, bool defaultValue = false)
         {
             name = name.ToLower();
-            var b = GetString(name);
-            if (b == null || b.Trim().Length == 0)
-                return defaultValue;
-            try
-            {
-                return bool.Parse(b);
-            }
-            catch
-            {
-                // ignored
-            }
-            return defaultValue;
+            var value = Get(name);
+            return string.IsNullOrWhiteSpace(value) ? defaultValue : TranslateUtils.ToBool(value, defaultValue);
         }
 
         public int GetInt(string name, int defaultValue = 0)
         {
             name = name.ToLower();
-            var i = GetString(name);
-            if (i == null || i.Trim().Length == 0)
-                return defaultValue;
-
-            var retval = defaultValue;
-            try
-            {
-                retval = int.Parse(i);
-            }
-            catch
-            {
-                // ignored
-            }
-            return retval;
+            var value = Get(name);
+            return string.IsNullOrWhiteSpace(value) ? defaultValue : TranslateUtils.ToInt(value, defaultValue);
         }
 
         public decimal GetDecimal(string name, decimal defaultValue = 0)
         {
             name = name.ToLower();
-            var i = GetString(name);
-            if (i == null || i.Trim().Length == 0)
-                return defaultValue;
-
-            var retval = defaultValue;
-            try
-            {
-                retval = decimal.Parse(i);
-            }
-            catch
-            {
-                // ignored
-            }
-            return retval;
+            var value = Get(name);
+            return string.IsNullOrWhiteSpace(value) ? defaultValue : TranslateUtils.ToDecimalWithNagetive(value, defaultValue);
         }
 
         public DateTime GetDateTime(string name, DateTime defaultValue)
         {
             name = name.ToLower();
-            var d = GetString(name);
-            if (d == null || d.Trim().Length == 0)
-                return defaultValue;
-
-            var retval = defaultValue;
-            try
-            {
-                retval = DateTime.Parse(d);
-            }
-            catch
-            {
-                // ignored
-            }
-            return retval;
+            var value = Get(name);
+            return string.IsNullOrWhiteSpace(value) ? defaultValue : TranslateUtils.ToDateTime(value, defaultValue);
         }
 
         public void Remove(string name)
@@ -204,7 +157,7 @@ namespace SiteServer.CMS.Model
             _dataNvc.Remove(name);
         }
 
-        public void Set(string name, string value)
+        public void Set(string name, object value)
         {
             name = name.ToLower();
 
@@ -214,7 +167,7 @@ namespace SiteServer.CMS.Model
             }
             else
             {
-                _dataNvc[name] = value;
+                _dataNvc[name] = value.ToString();
             }
         }
 

@@ -47,9 +47,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            if (Body.IsQueryExists("RelatedFieldID"))
+            if (AuthRequest.IsQueryExists("RelatedFieldID"))
             {
-                var relatedFieldId = Body.GetQueryInt("RelatedFieldID");
+                var relatedFieldId = AuthRequest.GetQueryInt("RelatedFieldID");
                 var relatedFieldInfo = DataProvider.RelatedFieldDao.GetRelatedFieldInfo(relatedFieldId);
                 if (relatedFieldInfo != null)
                 {
@@ -131,13 +131,13 @@ namespace SiteServer.BackgroundPages.Cms
             };
             relatedFieldInfo.Suffixes = TranslateUtils.ObjectCollectionToString(suffix);
 				
-			if (Body.IsQueryExists("RelatedFieldID"))
+			if (AuthRequest.IsQueryExists("RelatedFieldID"))
 			{
 				try
 				{
-                    relatedFieldInfo.Id = Body.GetQueryInt("RelatedFieldID");
+                    relatedFieldInfo.Id = AuthRequest.GetQueryInt("RelatedFieldID");
                     DataProvider.RelatedFieldDao.Update(relatedFieldInfo);
-                    Body.AddSiteLog(SiteId, "修改联动字段", $"联动字段:{relatedFieldInfo.Title}");
+                    AuthRequest.AddSiteLog(SiteId, "修改联动字段", $"联动字段:{relatedFieldInfo.Title}");
 					isChanged = true;
 				}
 				catch(Exception ex)
@@ -157,7 +157,7 @@ namespace SiteServer.BackgroundPages.Cms
 					try
 					{
                         DataProvider.RelatedFieldDao.Insert(relatedFieldInfo);
-                        Body.AddSiteLog(SiteId, "添加联动字段", $"联动字段:{relatedFieldInfo.Title}");
+                        AuthRequest.AddSiteLog(SiteId, "添加联动字段", $"联动字段:{relatedFieldInfo.Title}");
 						isChanged = true;
 					}
 					catch(Exception ex)

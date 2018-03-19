@@ -36,12 +36,12 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId");
-            _currentRootPath = Body.GetQueryString("CurrentRootPath");
+            _currentRootPath = AuthRequest.GetQueryString("CurrentRootPath");
             if (!string.IsNullOrEmpty(_currentRootPath) && !_currentRootPath.StartsWith("@"))
             {
                 _currentRootPath = "@/" + _currentRootPath;
             }
-            _textBoxClientId = Body.GetQueryString("TextBoxClientID");
+            _textBoxClientId = AuthRequest.GetQueryString("TextBoxClientID");
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)

@@ -14,7 +14,7 @@ namespace SiteServer.API.Controllers.Sys.Administrators
         {
             try
             {
-                var request = new Request();
+                var request = new AuthRequest();
                 var account = request.GetPostString("account");
                 var password = request.GetPostString("password");
                 if (string.IsNullOrEmpty(account) || string.IsNullOrEmpty(password))

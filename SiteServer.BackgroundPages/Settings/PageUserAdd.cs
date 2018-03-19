@@ -44,12 +44,12 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            _userId = Body.GetQueryInt("userID");
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("returnUrl"));
+            _userId = AuthRequest.GetQueryInt("userID");
+            _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.User);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.User);
 
             LtlPageTitle.Text = _userId == 0 ? "添加用户" : "编辑用户";
 
@@ -106,7 +106,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 if (isCreated)
                 {
-                    Body.AddAdminLog("添加用户",
+                    AuthRequest.AddAdminLog("添加用户",
                         $"用户:{TbUserName.Text}");
 
                     SuccessMessage("用户添加成功，可以继续添加！");
@@ -127,7 +127,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 DataProvider.UserDao.Update(userInfo);
 
-                Body.AddAdminLog("修改用户",
+                AuthRequest.AddAdminLog("修改用户",
                     $"用户:{TbUserName.Text}");
 
                 SuccessMessage("用户修改成功！");

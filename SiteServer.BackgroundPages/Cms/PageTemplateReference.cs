@@ -21,7 +21,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
 
             var elementsDictionary = StlAll.StlElements.GetElementsNameDictionary();
             var attributesDictionary = StlAll.StlElements.ElementsAttributesDictionary;

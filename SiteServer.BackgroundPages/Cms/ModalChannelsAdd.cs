@@ -51,8 +51,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
 
-            var channelId = Body.GetQueryInt("channelId");
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
+            var channelId = AuthRequest.GetQueryInt("channelId");
+            _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
             if (IsPostBack) return;
 
@@ -174,7 +174,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                Body.AddSiteLog(SiteId, parentChannelId, 0, "快速添加栏目", $"父栏目:{ChannelManager.GetChannelName(SiteId, parentChannelId)},栏目:{TbNodeNames.Text.Replace('\n', ',')}");
+                AuthRequest.AddSiteLog(SiteId, parentChannelId, 0, "快速添加栏目", $"父栏目:{ChannelManager.GetChannelName(SiteId, parentChannelId)},栏目:{TbNodeNames.Text.Replace('\n', ',')}");
 
                 isChanged = true;
             }

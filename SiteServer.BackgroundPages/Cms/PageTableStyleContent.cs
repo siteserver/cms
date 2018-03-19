@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            var channelId = Body.GetQueryInt("channelId", SiteId);
+            var channelId = AuthRequest.GetQueryInt("channelId", SiteId);
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             _tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
             _redirectUrl = GetRedirectUrl(SiteId, channelId);
@@ -43,18 +43,18 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
             //删除样式
-            if (Body.IsQueryExists("DeleteStyle"))
+            if (AuthRequest.IsQueryExists("DeleteStyle"))
             {
-                var attributeName = Body.GetQueryString("AttributeName");
+                var attributeName = AuthRequest.GetQueryString("AttributeName");
                 if (TableStyleManager.IsExists(_channelInfo.Id, _tableName, attributeName))
                 {
                     try
                     {
                         TableStyleManager.Delete(_channelInfo.Id, _tableName, attributeName);
-                        Body.AddSiteLog(SiteId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
+                        AuthRequest.AddSiteLog(SiteId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
                         SuccessDeleteMessage();
                     }
                     catch (Exception ex)
@@ -66,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             InfoMessage(
                 $"在此编辑内容模型字段,子栏目默认继承父栏目字段设置; 辅助表:{DataProvider.TableDao.GetDisplayName(_tableName)}({_tableName})");
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, Body.AdminName);
+            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissions);
             ControlUtils.SelectSingleItem(DdlChannelId, channelId.ToString());
 
             RptContents.DataSource = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);

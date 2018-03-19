@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            _keywordId = Body.GetQueryInt("KeywordID");
+            _keywordId = AuthRequest.GetQueryInt("KeywordID");
 
             if (IsPostBack) return;
 

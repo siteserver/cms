@@ -28,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl")).Replace("&DateFrom=&SearchType=&Keyword=&taxisByAddDate=", "");
+            _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl")).Replace("&DateFrom=&SearchType=&Keyword=&taxisByAddDate=", "");
             if (IsPostBack) return;
 
             var listItem = new ListItem("内容Id", ContentAttribute.Id) {Selected = true};
@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var channelId = Body.GetQueryInt("channelId");
+            var channelId = AuthRequest.GetQueryInt("channelId");
             var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             _tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
 

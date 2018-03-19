@@ -42,8 +42,8 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            _departmentId = Body.GetQueryInt("DepartmentID");
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
+            _departmentId = AuthRequest.GetQueryInt("DepartmentID");
+            _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
             if (string.IsNullOrEmpty(_returnUrl))
             {
                 _returnUrl = PageAdminDepartment.GetRedirectUrl(0);
@@ -131,7 +131,7 @@ namespace SiteServer.BackgroundPages.Settings
                     DataProvider.DepartmentDao.Update(departmentInfo);
                 }
 
-                Body.AddAdminLog("维护部门信息");
+                AuthRequest.AddAdminLog("维护部门信息");
 
                 SuccessMessage("部门设置成功！");
                 isChanged = true;

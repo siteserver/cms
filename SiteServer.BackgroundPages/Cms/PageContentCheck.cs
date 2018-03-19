@@ -6,7 +6,6 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils.Enumerations;
@@ -46,9 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId");
-            _channelId = Body.IsQueryExists("ChannelId") ? Body.GetQueryInt("ChannelId") : SiteId;
-
-            var permissions = PermissionsManager.GetPermissions(Body.AdminName);
+            _channelId = AuthRequest.IsQueryExists("ChannelId") ? AuthRequest.GetQueryInt("ChannelId") : SiteId;
 
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
             _nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
@@ -57,16 +54,16 @@ namespace SiteServer.BackgroundPages.Cms
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplay(SiteId, _channelId));
             _attributesOfDisplayStyleInfoList = ContentUtility.GetColumnTableStyleInfoList(SiteInfo, _styleInfoList);
             _pluginLinks = PluginContentManager.GetContentLinks(_nodeInfo);
-            _isEdit = TextUtility.IsEdit(SiteInfo, _channelId, Body.AdminName);
+            _isEdit = TextUtility.IsEdit(SiteInfo, _channelId, AuthRequest.AdminPermissions);
 
             if (IsPostBack) return;
 
             var checkedLevel = 5;
             var isChecked = true;
-            foreach (var owningChannelId in ProductPermissionsManager.Current.OwningChannelIdList)
+            foreach (var owningChannelId in AuthRequest.AdminPermissions.OwningChannelIdList)
             {
                 int checkedLevelByChannelId;
-                var isCheckedByChannelId = CheckManager.GetUserCheckLevel(Body.AdminName, SiteInfo, owningChannelId, out checkedLevelByChannelId);
+                var isCheckedByChannelId = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, owningChannelId, out checkedLevelByChannelId);
                 if (checkedLevel > checkedLevelByChannelId)
                 {
                     checkedLevel = checkedLevelByChannelId;
@@ -77,18 +74,18 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, true, true, Body.AdminName);
+            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, true, true, AuthRequest.AdminPermissions);
             CheckManager.LoadContentLevelToList(DdlState, SiteInfo, SiteId, isChecked, checkedLevel);
             var checkLevelList = new List<int>();
 
-            if (!string.IsNullOrEmpty(Body.GetQueryString("channelId")))
+            if (!string.IsNullOrEmpty(AuthRequest.GetQueryString("channelId")))
             {
-                ControlUtils.SelectSingleItem(DdlChannelId, Body.GetQueryString("channelId"));
+                ControlUtils.SelectSingleItem(DdlChannelId, AuthRequest.GetQueryString("channelId"));
             }
-            if (!string.IsNullOrEmpty(Body.GetQueryString("state")))
+            if (!string.IsNullOrEmpty(AuthRequest.GetQueryString("state")))
             {
-                ControlUtils.SelectSingleItem(DdlState, Body.GetQueryString("state"));
-                checkLevelList.Add(Body.GetQueryInt("state"));
+                ControlUtils.SelectSingleItem(DdlState, AuthRequest.GetQueryString("state"));
+                checkLevelList.Add(AuthRequest.GetQueryInt("state"));
             }
             else
             {
@@ -102,16 +99,16 @@ namespace SiteServer.BackgroundPages.Cms
             var tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
             var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, EScopeType.All, string.Empty, string.Empty, nodeInfo.ContentModelPluginId);
             var list = new List<int>();
-            if (permissions.IsSystemAdministrator)
+            if (AuthRequest.AdminPermissions.IsSystemAdministrator)
             {
                 list = channelIdList;
             }
             else
             {
                 var owningChannelIdList = new List<int>();
-                foreach (var owningChannelId in ProductPermissionsManager.Current.OwningChannelIdList)
+                foreach (var owningChannelId in AuthRequest.AdminPermissions.OwningChannelIdList)
                 {
-                    if (AdminUtility.HasChannelPermissions(Body.AdminName, SiteId, owningChannelId, ConfigManager.Permissions.Channel.ContentCheck))
+                    if (HasChannelPermissions(owningChannelId, ConfigManager.ChannelPermissions.ContentCheck))
                     {
                         owningChannelIdList.Add(owningChannelId);
                     }
@@ -138,7 +135,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             LtlColumnsHead.Text = TextUtility.GetColumnsHeadHtml(_styleInfoList, _attributesOfDisplay, SiteInfo);
 
-            if (!HasChannelPermissions(SiteId, ConfigManager.Permissions.Channel.ContentDelete))
+            if (!HasChannelPermissions(SiteId, ConfigManager.ChannelPermissions.ContentDelete))
             {
                 BtnDelete.Visible = false;
             }
@@ -176,7 +173,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlStatus.Text =
                 $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{ModalCheckState.GetOpenWindowString(SiteId, contentInfo, PageUrl)}"">{CheckManager.GetCheckState(SiteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
 
-            ltlCommands.Text = TextUtility.GetCommandsHtml(SiteInfo, _pluginLinks, contentInfo, PageUrl, Body.AdminName, _isEdit);
+            ltlCommands.Text = TextUtility.GetCommandsHtml(SiteInfo, _pluginLinks, contentInfo, PageUrl, AuthRequest.AdminName, _isEdit);
 
             ltlSelect.Text = $@"<input type=""checkbox"" name=""IDsCollection"" value=""{contentInfo.ChannelId}_{contentInfo.Id}"" />";
         }

@@ -31,7 +31,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
 
             LtlSiteName.Text = SiteInfo.SiteName;
 
@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Settings
             SiteInfo.Additional.AssetsDir = TbAssetsDir.Text;
 
             DataProvider.SiteDao.Update(SiteInfo);
-            Body.AddSiteLog(SiteId, "修改资源文件访问地址");
+            AuthRequest.AddSiteLog(SiteId, "修改资源文件访问地址");
 
             SuccessMessage("资源文件访问地址修改成功！");
             AddWaitAndRedirectScript(PageSiteUrlAssets.GetRedirectUrl());

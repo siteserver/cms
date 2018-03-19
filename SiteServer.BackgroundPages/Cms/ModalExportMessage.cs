@@ -85,7 +85,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _exportType = Body.GetQueryString("ExportType");
+            _exportType = AuthRequest.GetQueryString("ExportType");
 
             if (!IsPostBack)
             {
@@ -95,50 +95,50 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (_exportType == ExportTypeRelatedField)
                     {
-                        var relatedFieldId = Body.GetQueryInt("RelatedFieldID");
+                        var relatedFieldId = AuthRequest.GetQueryInt("RelatedFieldID");
                         fileName = ExportRelatedField(relatedFieldId);
                     }
                     else if (_exportType == ExportTypeContentZip)
                     {
-                        var channelId = Body.GetQueryInt("channelId");
-                        var contentIdCollection = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("contentIdCollection"));
-                        var isPeriods = Body.GetQueryBool("isPeriods");
-                        var startDate = Body.GetQueryString("startDate");
-                        var endDate = Body.GetQueryString("endDate");
-                        var checkedState = ETriStateUtils.GetEnumType(Body.GetQueryString("checkedState"));
+                        var channelId = AuthRequest.GetQueryInt("channelId");
+                        var contentIdCollection = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
+                        var isPeriods = AuthRequest.GetQueryBool("isPeriods");
+                        var startDate = AuthRequest.GetQueryString("startDate");
+                        var endDate = AuthRequest.GetQueryString("endDate");
+                        var checkedState = ETriStateUtils.GetEnumType(AuthRequest.GetQueryString("checkedState"));
                         isExport = ExportContentZip(channelId, contentIdCollection, isPeriods, startDate, endDate, checkedState, out fileName);
                     }
                     else if (_exportType == ExportTypeContentAccess)
                     {
-                        var channelId = Body.GetQueryInt("channelId");
-                        var contentIdCollection = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("contentIdCollection"));
-                        var displayAttributes = TranslateUtils.StringCollectionToStringList(Body.GetQueryString("DisplayAttributes"));
-                        var isPeriods = Body.GetQueryBool("isPeriods");
-                        var startDate = Body.GetQueryString("startDate");
-                        var endDate = Body.GetQueryString("endDate");
-                        var checkedState = ETriStateUtils.GetEnumType(Body.GetQueryString("checkedState"));
+                        var channelId = AuthRequest.GetQueryInt("channelId");
+                        var contentIdCollection = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
+                        var displayAttributes = TranslateUtils.StringCollectionToStringList(AuthRequest.GetQueryString("DisplayAttributes"));
+                        var isPeriods = AuthRequest.GetQueryBool("isPeriods");
+                        var startDate = AuthRequest.GetQueryString("startDate");
+                        var endDate = AuthRequest.GetQueryString("endDate");
+                        var checkedState = ETriStateUtils.GetEnumType(AuthRequest.GetQueryString("checkedState"));
                         isExport = ExportContentAccess(channelId, contentIdCollection, displayAttributes, isPeriods, startDate, endDate, checkedState, out fileName);
                     }
                     else if (_exportType == ExportTypeContentExcel)
                     {
-                        var channelId = Body.GetQueryInt("channelId");
-                        var contentIdCollection = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("contentIdCollection"));
-                        var displayAttributes = TranslateUtils.StringCollectionToStringList(Body.GetQueryString("DisplayAttributes"));
-                        var isPeriods = Body.GetQueryBool("isPeriods");
-                        var startDate = Body.GetQueryString("startDate");
-                        var endDate = Body.GetQueryString("endDate");
-                        var checkedState = ETriStateUtils.GetEnumType(Body.GetQueryString("checkedState"));
+                        var channelId = AuthRequest.GetQueryInt("channelId");
+                        var contentIdCollection = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
+                        var displayAttributes = TranslateUtils.StringCollectionToStringList(AuthRequest.GetQueryString("DisplayAttributes"));
+                        var isPeriods = AuthRequest.GetQueryBool("isPeriods");
+                        var startDate = AuthRequest.GetQueryString("startDate");
+                        var endDate = AuthRequest.GetQueryString("endDate");
+                        var checkedState = ETriStateUtils.GetEnumType(AuthRequest.GetQueryString("checkedState"));
                         ExportContentExcel(channelId, contentIdCollection, displayAttributes, isPeriods, startDate, endDate, checkedState, out fileName);
                     }
                     else if (_exportType == ExportTypeChannel)
                     {
-                        var channelIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
+                        var channelIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("ChannelIDCollection"));
                         fileName = ExportChannel(channelIdList);
                     }
                     else if (_exportType == ExportTypeSingleTableStyle)
                     {
-                        var tableName = Body.GetQueryString("TableName");
-                        var relatedIdentity = Body.GetQueryInt("RelatedIdentity");
+                        var tableName = AuthRequest.GetQueryString("TableName");
+                        var relatedIdentity = AuthRequest.GetQueryInt("RelatedIdentity");
                         fileName = ExportSingleTableStyle(tableName, relatedIdentity);
                     }
 
@@ -166,7 +166,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         private string ExportRelatedField(int relatedFieldId)
         {
-            var exportObject = new ExportObject(SiteId);
+            var exportObject = new ExportObject(SiteId, AuthRequest.AdminName);
             return exportObject.ExportRelatedField(relatedFieldId);
         }
 
@@ -175,7 +175,7 @@ namespace SiteServer.BackgroundPages.Cms
             var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             fileName = $"{nodeInfo.ChannelName}.zip";
             var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-            var exportObject = new ExportObject(SiteId);
+            var exportObject = new ExportObject(SiteId, AuthRequest.AdminName);
             return exportObject.ExportContents(filePath, channelId, contentIdArrayList, isPeriods, dateFrom, dateTo, checkedState);
         }
 
@@ -198,13 +198,13 @@ namespace SiteServer.BackgroundPages.Cms
 
         private string ExportChannel(List<int> channelIdList)
         {
-            var exportObject = new ExportObject(SiteId);
+            var exportObject = new ExportObject(SiteId, AuthRequest.AdminName);
             return exportObject.ExportChannels(channelIdList);
         }
 
         private string ExportSingleTableStyle(string tableName, int relatedIdentity)
         {
-            var exportObject = new ExportObject(SiteId);
+            var exportObject = new ExportObject(SiteId, AuthRequest.AdminName);
             return exportObject.ExportSingleTableStyle(tableName, relatedIdentity);
         }
     }

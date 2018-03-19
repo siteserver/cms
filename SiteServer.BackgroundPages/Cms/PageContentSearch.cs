@@ -6,7 +6,6 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils.Enumerations;
@@ -56,18 +55,16 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            var permissions = PermissionsManager.GetPermissions(Body.AdminName);
-
             PageUtils.CheckRequestParameter("SiteId");
-            _channelId = Body.IsQueryExists("ChannelId") ? Body.GetQueryInt("ChannelId") : SiteId;
+            _channelId = AuthRequest.IsQueryExists("ChannelId") ? AuthRequest.GetQueryInt("ChannelId") : SiteId;
 
-            _isWritingOnly = Body.GetQueryBool("isWritingOnly");
+            _isWritingOnly = AuthRequest.GetQueryBool("isWritingOnly");
 
             var administratorName = string.Empty;
-            _isSelfOnly = Body.GetQueryBool("isSelfOnly");
+            _isSelfOnly = AuthRequest.GetQueryBool("isSelfOnly");
             if (!_isSelfOnly)
             {
-                administratorName = AdminUtility.IsViewContentOnlySelf(Body.AdminName, SiteId, _channelId) ? Body.AdminName : string.Empty;
+                administratorName = AuthRequest.AdminPermissions.IsViewContentOnlySelf(SiteId, _channelId) ? AuthRequest.AdminName : string.Empty;
             }
 
             _nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
@@ -77,17 +74,17 @@ namespace SiteServer.BackgroundPages.Cms
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplay(SiteId, _channelId));
             _attributesOfDisplayStyleInfoList = ContentUtility.GetColumnTableStyleInfoList(SiteInfo, _styleInfoList);
             _pluginLinks = PluginContentManager.GetContentLinks(_nodeInfo);
-            _isEdit = TextUtility.IsEdit(SiteInfo, _channelId, Body.AdminName);
+            _isEdit = TextUtility.IsEdit(SiteInfo, _channelId, AuthRequest.AdminPermissions);
 
-            var stateType = Body.IsQueryExists("state") ? ETriStateUtils.GetEnumType(Body.GetQueryString("state")) : ETriState.All;
-            var searchType = Body.IsQueryExists("searchType") ? Body.GetQueryString("searchType") : ContentAttribute.Title;
-            var dateFrom = Body.IsQueryExists("dateFrom") ? Body.GetQueryString("dateFrom") : string.Empty;
-            var dateTo = Body.IsQueryExists("dateTo") ? Body.GetQueryString("dateTo") : string.Empty;
-            var isDuplicate = Body.IsQueryExists("isDuplicate") && Body.GetQueryBool("isDuplicate");
-            var keyword = Body.IsQueryExists("keyword") ? Body.GetQueryString("keyword") : string.Empty;
+            var stateType = AuthRequest.IsQueryExists("state") ? ETriStateUtils.GetEnumType(AuthRequest.GetQueryString("state")) : ETriState.All;
+            var searchType = AuthRequest.IsQueryExists("searchType") ? AuthRequest.GetQueryString("searchType") : ContentAttribute.Title;
+            var dateFrom = AuthRequest.IsQueryExists("dateFrom") ? AuthRequest.GetQueryString("dateFrom") : string.Empty;
+            var dateTo = AuthRequest.IsQueryExists("dateTo") ? AuthRequest.GetQueryString("dateTo") : string.Empty;
+            var isDuplicate = AuthRequest.IsQueryExists("isDuplicate") && AuthRequest.GetQueryBool("isDuplicate");
+            var keyword = AuthRequest.IsQueryExists("keyword") ? AuthRequest.GetQueryString("keyword") : string.Empty;
 
             SpContents.ControlToPaginate = RptContents;
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(tableName, SiteId, _channelId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningChannelIdList, searchType, keyword, dateFrom, dateTo, true, stateType, !isDuplicate, false, _isWritingOnly, administratorName);
+            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(tableName, SiteId, _channelId, AuthRequest.AdminPermissions.IsSystemAdministrator, AuthRequest.AdminPermissions.OwningChannelIdList, searchType, keyword, dateFrom, dateTo, true, stateType, !isDuplicate, false, _isWritingOnly, administratorName);
             SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
             SpContents.SortField = ContentAttribute.Id;
             SpContents.SortMode = SortMode.DESC;
@@ -96,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, true, true, Body.AdminName);
+                ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, true, true, AuthRequest.AdminPermissions);
 
                 DdlSearchType.Items.Add(new ListItem("标题", ContentAttribute.Title));
                 if (_styleInfoList != null)
@@ -120,7 +117,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     ControlUtils.SelectSingleItem(DdlChannelId, _channelId.ToString());
                 }
-                ControlUtils.SelectSingleItem(DdlState, Body.GetQueryString("State"));
+                ControlUtils.SelectSingleItem(DdlState, AuthRequest.GetQueryString("State"));
                 CbIsDuplicate.Checked = isDuplicate;
                 ControlUtils.SelectSingleItem(DdlSearchType, searchType);
                 TbKeyword.Text = keyword;
@@ -135,7 +132,7 @@ namespace SiteServer.BackgroundPages.Cms
                 showPopWinString = ModalSelectColumns.GetOpenWindowString(SiteId, _channelId, true);
                 BtnSelect.Attributes.Add("onclick", showPopWinString);
 
-                if (AdminUtility.HasChannelPermissions(Body.AdminName, SiteId, SiteId, ConfigManager.Permissions.Channel.ContentCheck))
+                if (HasChannelPermissions(SiteId, ConfigManager.ChannelPermissions.ContentCheck))
                 {
                     showPopWinString = ModalContentCheck.GetOpenWindowStringForMultiChannels(SiteId, PageUrl);
                     BtnCheck.Attributes.Add("onclick", showPopWinString);
@@ -148,8 +145,8 @@ namespace SiteServer.BackgroundPages.Cms
                 LtlColumnsHead.Text = TextUtility.GetColumnsHeadHtml(_styleInfoList, _attributesOfDisplay, SiteInfo);
             }
 
-            if (!HasChannelPermissions(_channelId, ConfigManager.Permissions.Channel.ContentAdd)) BtnAddContent.Visible = false;
-            if (!HasChannelPermissions(_channelId, ConfigManager.Permissions.Channel.ContentTranslate))
+            if (!HasChannelPermissions(_channelId, ConfigManager.ChannelPermissions.ContentAdd)) BtnAddContent.Visible = false;
+            if (!HasChannelPermissions(_channelId, ConfigManager.ChannelPermissions.ContentTranslate))
             {
                 BtnTranslate.Visible = false;
             }
@@ -158,7 +155,7 @@ namespace SiteServer.BackgroundPages.Cms
                 BtnTranslate.Attributes.Add("onclick", PageContentTranslate.GetRedirectClickStringForMultiChannels(SiteId, PageUrl));
             }
 
-            if (!HasChannelPermissions(_channelId, ConfigManager.Permissions.Channel.ContentDelete))
+            if (!HasChannelPermissions(_channelId, ConfigManager.ChannelPermissions.ContentDelete))
             {
                 BtnDelete.Visible = false;
             }
@@ -197,7 +194,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlStatus.Text =
                 $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{ModalCheckState.GetOpenWindowString(SiteId, contentInfo, PageUrl)}"">{CheckManager.GetCheckState(SiteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
 
-            ltlCommands.Text = TextUtility.GetCommandsHtml(SiteInfo, _pluginLinks, contentInfo, PageUrl, Body.AdminName, _isEdit);
+            ltlCommands.Text = TextUtility.GetCommandsHtml(SiteInfo, _pluginLinks, contentInfo, PageUrl, AuthRequest.AdminName, _isEdit);
 
             ltlSelect.Text = $@"<input type=""checkbox"" name=""IDsCollection"" value=""{contentInfo.ChannelId}_{contentInfo.Id}"" />";
         }

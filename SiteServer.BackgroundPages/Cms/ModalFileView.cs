@@ -114,24 +114,24 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId");
-            if (Body.IsQueryExists("TextBoxID"))
+            if (AuthRequest.IsQueryExists("TextBoxID"))
             {
-                var textBoxId = Body.GetQueryString("TextBoxID");
-                var virtualUrl = Body.GetQueryString(textBoxId);
+                var textBoxId = AuthRequest.GetQueryString("TextBoxID");
+                var virtualUrl = AuthRequest.GetQueryString(textBoxId);
                 _filePath = PathUtility.MapPath(SiteInfo, virtualUrl);
                 _relatedPath = PageUtils.RemoveFileNameFromUrl(virtualUrl);
                 _fileName = PathUtils.GetFileName(_filePath);
             }
             else
             {
-                _relatedPath = Body.GetQueryString("RelatedPath").Trim('/');
-                _hiddenClientId = Body.GetQueryString("HiddenClientID");
+                _relatedPath = AuthRequest.GetQueryString("RelatedPath").Trim('/');
+                _hiddenClientId = AuthRequest.GetQueryString("HiddenClientID");
                 if (!_relatedPath.StartsWith("~") && !_relatedPath.StartsWith("@"))
                 {
                     _relatedPath = "@/" + _relatedPath;
                 }
-                _fileName = Body.GetQueryString("FileName");
-                _updateName = Body.GetQueryString("UpdateName");
+                _fileName = AuthRequest.GetQueryString("FileName");
+                _updateName = AuthRequest.GetQueryString("UpdateName");
                 if (!string.IsNullOrEmpty(_updateName))
                 {
                     _fileName = _updateName;
@@ -149,7 +149,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var fileInfo = new FileInfo(_filePath);
             var fileType = EFileSystemTypeUtils.GetEnumType(fileInfo.Extension);
-            LtlFileName.Text = Body.IsQueryExists("UpdateName") ? Body.GetQueryString("UpdateName") : fileInfo.Name;
+            LtlFileName.Text = AuthRequest.IsQueryExists("UpdateName") ? AuthRequest.GetQueryString("UpdateName") : fileInfo.Name;
             LtlFileType.Text = EFileSystemTypeUtils.GetText(fileType);
             LtlFilePath.Text = Path.GetDirectoryName(_filePath);
             LtlFileSize.Text = TranslateUtils.GetKbSize(fileInfo.Length) + " KB";

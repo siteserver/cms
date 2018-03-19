@@ -27,14 +27,14 @@ namespace SiteServer.BackgroundPages.Cms
 
             _directoryPath = PathUtility.MapPath(SiteInfo, "@/include");
 
-            if (Body.IsQueryExists("Delete"))
+            if (AuthRequest.IsQueryExists("Delete"))
             {
-                var fileName = Body.GetQueryString("FileName");
+                var fileName = AuthRequest.GetQueryString("FileName");
 
                 try
                 {
                     FileUtils.DeleteFileIfExists(PathUtils.Combine(_directoryPath, fileName));
-                    Body.AddSiteLog(SiteId, "删除包含文件", $"包含文件:{fileName}");
+                    AuthRequest.AddSiteLog(SiteId, "删除包含文件", $"包含文件:{fileName}");
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Template);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
 
             DirectoryUtils.CreateDirectoryIfNotExists(_directoryPath);
             var fileNames = DirectoryUtils.GetFileNames(_directoryPath);

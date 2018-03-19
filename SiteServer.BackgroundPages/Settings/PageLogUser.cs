@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
-            SpContents.SelectCommand = !Body.IsQueryExists("Keyword") ? DataProvider.UserLogDao.GetSelectCommend() : DataProvider.UserLogDao.GetSelectCommend(Body.GetQueryString("UserName"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"));
+            SpContents.SelectCommand = !AuthRequest.IsQueryExists("Keyword") ? DataProvider.UserLogDao.GetSelectCommend() : DataProvider.UserLogDao.GetSelectCommend(AuthRequest.GetQueryString("UserName"), AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"), AuthRequest.GetQueryString("DateTo"));
 
             SpContents.SortField = nameof(UserLogInfo.Id);
             SpContents.SortMode = SortMode.DESC;
@@ -37,28 +37,28 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Log);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Log);
 
-            if (Body.IsQueryExists("Keyword"))
+            if (AuthRequest.IsQueryExists("Keyword"))
             {
-                TbUserName.Text = Body.GetQueryString("UserName");
-                TbKeyword.Text = Body.GetQueryString("Keyword");
-                TbDateFrom.Text = Body.GetQueryString("DateFrom");
-                TbDateTo.Text = Body.GetQueryString("DateTo");
+                TbUserName.Text = AuthRequest.GetQueryString("UserName");
+                TbKeyword.Text = AuthRequest.GetQueryString("Keyword");
+                TbDateFrom.Text = AuthRequest.GetQueryString("DateFrom");
+                TbDateTo.Text = AuthRequest.GetQueryString("DateTo");
             }
 
-            if (Body.IsQueryExists("Delete"))
+            if (AuthRequest.IsQueryExists("Delete"))
             {
-                var list = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("IDCollection"));
+                var list = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("IDCollection"));
                 DataProvider.UserLogDao.Delete(list);
                 SuccessDeleteMessage();
             }
-            else if (Body.IsQueryExists("DeleteAll"))
+            else if (AuthRequest.IsQueryExists("DeleteAll"))
             {
                 DataProvider.UserLogDao.DeleteAll();
                 SuccessDeleteMessage();
             }
-            else if (Body.IsQueryExists("Setting"))
+            else if (AuthRequest.IsQueryExists("Setting"))
             {
                 ConfigManager.SystemConfigInfo.IsLogUser = !ConfigManager.SystemConfigInfo.IsLogUser;
                 DataProvider.ConfigDao.Update(ConfigManager.Instance);

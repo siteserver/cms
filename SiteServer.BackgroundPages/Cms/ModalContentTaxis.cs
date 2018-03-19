@@ -35,9 +35,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl", "contentIdCollection");
 
-            _channelId = Body.GetQueryInt("channelId");
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
-            _contentIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("contentIdCollection"));
+            _channelId = AuthRequest.GetQueryInt("channelId");
+            _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
+            _contentIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
             _tableName = ChannelManager.GetTableName(SiteInfo, _channelId);
 
             if (IsPostBack) return;
@@ -87,7 +87,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             CreateManager.CreateContentTrigger(SiteId, _channelId);
 
-            Body.AddSiteLog(SiteId, _channelId, 0, "对内容排序", string.Empty);
+            AuthRequest.AddSiteLog(SiteId, _channelId, 0, "对内容排序", string.Empty);
 
             LayerUtils.CloseAndRedirect(Page, _returnUrl);
         }

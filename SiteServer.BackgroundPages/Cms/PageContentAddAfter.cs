@@ -42,9 +42,9 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
 			PageUtils.CheckRequestParameter("siteId", "channelId", "ContentID", "ReturnUrl");
-			var channelId = Body.GetQueryInt("channelId");
-            _contentId = Body.GetQueryInt("ContentID");
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
+			var channelId = AuthRequest.GetQueryInt("channelId");
+            _contentId = AuthRequest.GetQueryInt("ContentID");
+            _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 
@@ -72,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
             var after = (EContentAddAfter)TranslateUtils.ToEnum(typeof(EContentAddAfter), RblOperation.SelectedValue, EContentAddAfter.ContinueAdd);
             if (after == EContentAddAfter.ContinueAdd)
             {
-                PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo, Body.GetQueryString("ReturnUrl")));
+                PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo, AuthRequest.GetQueryString("ReturnUrl")));
             }
             else if (after == EContentAddAfter.ManageContents)
             {
@@ -93,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
         public void DdlSiteId_SelectedIndexChanged(object sender, EventArgs e)
         {
             var psId = int.Parse(DdlSiteId.SelectedValue);
-            CrossSiteTransUtility.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, _channelInfo, Body.AdminName);
+            CrossSiteTransUtility.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, _channelInfo, AuthRequest.AdminPermissions);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -114,7 +114,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                Body.AddSiteLog(SiteId, _channelInfo.Id, _contentId, "内容跨站转发", $"转发到站点:{targetSiteInfo.SiteName}");
+                AuthRequest.AddSiteLog(SiteId, _channelInfo.Id, _contentId, "内容跨站转发", $"转发到站点:{targetSiteInfo.SiteName}");
 
                 SuccessMessage("内容跨站转发成功，请选择后续操作。");
                 RblOperation.Items.Clear();

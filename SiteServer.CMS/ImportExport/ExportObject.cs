@@ -14,11 +14,13 @@ namespace SiteServer.CMS.ImportExport
     {
         private readonly SiteInfo _siteInfo;
         private readonly string _sitePath;
+        private readonly string _adminName;
 
-        public ExportObject(int siteId)
+        public ExportObject(int siteId, string adminName)
         {
             _siteInfo = SiteManager.GetSiteInfo(siteId);
             _sitePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, _siteInfo.SiteDir);
+            _adminName = adminName;
         }
 
         /// <summary>
@@ -174,7 +176,7 @@ namespace SiteServer.CMS.ImportExport
         {
             DirectoryUtils.CreateDirectoryIfNotExists(tableDirectoryPath);
             var tableIe = new TableIe(tableDirectoryPath);
-            var styleIe = new TableStyleIe(tableDirectoryPath);
+            var styleIe = new TableStyleIe(tableDirectoryPath, _adminName);
 
             var siteInfo = SiteManager.GetSiteInfo(_siteInfo.Id);
             var tableNameList = SiteManager.GetTableNameList(siteInfo);

@@ -32,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
             EBooleanUtils.AddListItems(DdlIsSaveImageInTextEditor, "保存", "不保存");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsSaveImageInTextEditor, SiteInfo.Additional.IsSaveImageInTextEditor.ToString());
@@ -114,7 +114,7 @@ namespace SiteServer.BackgroundPages.Cms
                 DataProvider.ContentDao.UpdateAutoPageContent(SiteInfo.TableName, SiteInfo);
             }
 
-            Body.AddSiteLog(SiteId, "修改内容设置");
+            AuthRequest.AddSiteLog(SiteId, "修改内容设置");
 
             SuccessMessage("内容设置修改成功！");
         }

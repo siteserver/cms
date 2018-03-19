@@ -29,9 +29,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _relatedFieldId = Body.GetQueryInt("RelatedFieldID");
-            _parentId = Body.GetQueryInt("ParentID");
-            _level = Body.GetQueryInt("Level");
+            _relatedFieldId = AuthRequest.GetQueryInt("RelatedFieldID");
+            _parentId = AuthRequest.GetQueryInt("ParentID");
+            _level = AuthRequest.GetQueryInt("Level");
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)

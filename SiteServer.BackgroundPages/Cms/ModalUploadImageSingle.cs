@@ -50,13 +50,13 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId");
-            _currentRootPath = Body.GetQueryString("CurrentRootPath");
+            _currentRootPath = AuthRequest.GetQueryString("CurrentRootPath");
             if (!string.IsNullOrEmpty(_currentRootPath) && !_currentRootPath.StartsWith("@"))
             {
                 _currentRootPath = "@/" + _currentRootPath;
             }
-            _textBoxClientId = Body.GetQueryString("TextBoxClientID");
-            _isNeedWaterMark = Body.GetQueryBool("IsNeedWaterMark", true);
+            _textBoxClientId = AuthRequest.GetQueryString("TextBoxClientID");
+            _isNeedWaterMark = AuthRequest.GetQueryBool("IsNeedWaterMark", true);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)

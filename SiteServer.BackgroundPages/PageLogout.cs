@@ -13,7 +13,7 @@ namespace SiteServer.BackgroundPages
 
             var redirectUrl = PageUtils.GetAdminDirectoryUrl("login.aspx");
 
-            Body.AdminLogout();
+            AuthRequest.AdminLogout();
             PageUtils.Redirect(PageUtils.ParseNavigationUrl(redirectUrl));
         }
     }

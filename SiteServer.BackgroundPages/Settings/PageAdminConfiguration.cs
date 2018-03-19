@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Admin);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Admin);
 
             TbLoginUserNameMinLength.Text = ConfigManager.SystemConfigInfo.AdminUserNameMinLength.ToString();
             TbLoginPasswordMinLength.Text = ConfigManager.SystemConfigInfo.AdminPasswordMinLength.ToString();
@@ -99,7 +99,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 DataProvider.ConfigDao.Update(ConfigManager.Instance);
 
-                Body.AddAdminLog("管理员设置");
+                AuthRequest.AddAdminLog("管理员设置");
                 SuccessMessage("管理员设置成功");
             }
             catch (Exception ex)

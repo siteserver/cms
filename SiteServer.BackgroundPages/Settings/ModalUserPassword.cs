@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            _userName = Body.GetQueryString("userName");
+            _userName = AuthRequest.GetQueryString("userName");
 
             if (IsPostBack) return;
 

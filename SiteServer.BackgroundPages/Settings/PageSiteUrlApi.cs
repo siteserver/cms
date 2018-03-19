@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
 
             EBooleanUtils.AddListItems(RblIsSeparatedApi, "API独立部署", "API与CMS部署在一起");
             ControlUtils.SelectSingleItem(RblIsSeparatedApi, ConfigManager.SystemConfigInfo.IsSeparatedApi.ToString());
@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             DataProvider.ConfigDao.Update(ConfigManager.Instance);
 
-            Body.AddAdminLog("修改API访问地址");
+            AuthRequest.AddAdminLog("修改API访问地址");
             SuccessUpdateMessage();
         }
     }

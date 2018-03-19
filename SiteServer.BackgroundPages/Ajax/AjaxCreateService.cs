@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retval = new NameValueCollection();
-            var request = new Request();
+            var request = new AuthRequest();
 
             if (type == TypeGetCountArray)
             {

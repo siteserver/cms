@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
             EBooleanUtils.AddListItems(DdlIsWaterMark);
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsWaterMark, SiteInfo.Additional.IsWaterMark.ToString());
@@ -130,7 +130,7 @@ namespace SiteServer.BackgroundPages.Cms
 		    try
 		    {
 		        DataProvider.SiteDao.Update(SiteInfo);
-		        Body.AddSiteLog(SiteId, "修改图片水印设置");
+		        AuthRequest.AddSiteLog(SiteId, "修改图片水印设置");
 		        SuccessMessage("图片水印设置修改成功！");
 		    }
 		    catch(Exception ex)

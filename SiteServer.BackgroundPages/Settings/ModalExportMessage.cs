@@ -27,7 +27,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            _exportType = Body.GetQueryString("ExportType");
+            _exportType = AuthRequest.GetQueryString("ExportType");
 
             if (!IsPostBack)
             {
@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     if (_exportType == ExportTypeSingleTableStyle)
                     {
-                        var tableName = Body.GetQueryString("TableName");
+                        var tableName = AuthRequest.GetQueryString("TableName");
                         fileName = ExportSingleTableStyle(tableName);
                     }
 

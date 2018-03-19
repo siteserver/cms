@@ -1,7 +1,7 @@
 ﻿using System.Collections.Specialized;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages
 {
@@ -9,27 +9,27 @@ namespace SiteServer.BackgroundPages
 	{
         public bool HasChannelPermissions(int channelId, params string[] channelPermissionArray)
         {
-            return AdminUtility.HasChannelPermissions(Body.AdminName, SiteId, channelId, channelPermissionArray);
+            return AuthRequest.AdminPermissions.HasChannelPermissions(SiteId, channelId, channelPermissionArray);
         }
 
         public bool HasChannelPermissionsIgnoreChannelId(params string[] channelPermissionArray)
         {
-            return AdminUtility.HasChannelPermissionsIgnoreChannelId(Body.AdminName, channelPermissionArray);
+            return AuthRequest.AdminPermissions.HasChannelPermissionsIgnoreChannelId(channelPermissionArray);
         }
 
         public bool HasSitePermissions(params string[] websitePermissionArray)
         {
-            return AdminUtility.HasSitePermissions(Body.AdminName, SiteId, websitePermissionArray);
+            return AuthRequest.AdminPermissions.HasSitePermissions(SiteId, websitePermissionArray);
         }
 
         public bool IsOwningChannelId(int channelId)
         {
-            return AdminUtility.IsOwningChannelId(Body.AdminName, channelId);
+            return AuthRequest.AdminPermissions.IsOwningChannelId(channelId);
         }
 
         public bool IsDescendantOwningChannelId(int channelId)
         {
-            return AdminUtility.IsDescendantOwningChannelId(Body.AdminName, SiteId, channelId);
+            return AuthRequest.AdminPermissions.IsDescendantOwningChannelId(SiteId, channelId);
         }
 
         private int _siteId = -1;
@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages
             {
                 if (_siteId == -1)
                 {
-                    _siteId = Body.GetQueryInt("siteId");
+                    _siteId = AuthRequest.GetQueryInt("siteId");
                 }
                 return _siteId;
             }
@@ -57,9 +57,24 @@ namespace SiteServer.BackgroundPages
 	        }
 	    }
 
-	    public void VerifySitePermissions(string permission)
-	    {
-            AdminUtility.VerifySitePermissions(Body.AdminName, SiteId, permission);
+        public void VerifySitePermissions(params string[] sitePermissions)
+        {
+            if (AuthRequest.AdminPermissions.HasSitePermissions(SiteId, sitePermissions))
+            {
+                return;
+            }
+            AuthRequest.AdminLogout();
+            PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
+        }
+
+        public void VerifyChannelPermissions(int channelId, params string[] channelPermissions)
+        {
+            if (HasChannelPermissions(channelId, channelPermissions))
+            {
+                return;
+            }
+            AuthRequest.AdminLogout();
+            PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
         }
 
         private NameValueCollection _attributes;

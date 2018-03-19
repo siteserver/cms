@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _tagName = Body.GetQueryString("TagName");
+            _tagName = AuthRequest.GetQueryString("TagName");
 
             if (IsPostBack) return;
 
@@ -94,7 +94,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    Body.AddSiteLog(SiteId, "修改内容标签", $"内容标签:{TbTags.Text}");
+                    AuthRequest.AddSiteLog(SiteId, "修改内容标签", $"内容标签:{TbTags.Text}");
 
 					isChanged = true;
 				}
@@ -109,7 +109,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
                     TagUtils.AddTags(tagCollection, SiteId, 0);
-                    Body.AddSiteLog(SiteId, "添加内容标签", $"内容标签:{TbTags.Text}");
+                    AuthRequest.AddSiteLog(SiteId, "添加内容标签", $"内容标签:{TbTags.Text}");
                     isChanged = true;
                 }
                 catch(Exception ex)

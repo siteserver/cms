@@ -34,36 +34,36 @@ namespace SiteServer.BackgroundPages.Plugins
         {
             if (IsForbidden) return;
 
-            if (Body.IsQueryExists("delete"))
+            if (AuthRequest.IsQueryExists("delete"))
             {
-                var pluginId = Body.GetQueryString("pluginId");
+                var pluginId = AuthRequest.GetQueryString("pluginId");
 
                 PluginManager.Delete(pluginId);
-                Body.AddAdminLog("删除插件", $"插件:{pluginId}");
+                AuthRequest.AddAdminLog("删除插件", $"插件:{pluginId}");
 
                 CacheUtils.ClearAll();
                 CacheDbUtils.Clear();
 
                 AddScript(AlertUtils.Success("插件删除成功", "插件删除成功，系统需要重载页面", "重新载入", "window.top.location.reload(true);"));
             }
-            if (Body.IsQueryExists("enable"))
+            if (AuthRequest.IsQueryExists("enable"))
             {
-                var pluginId = Body.GetQueryString("pluginId");
+                var pluginId = AuthRequest.GetQueryString("pluginId");
 
                 PluginManager.UpdateDisabled(pluginId, false);
-                Body.AddAdminLog("启用插件", $"插件:{pluginId}");
+                AuthRequest.AddAdminLog("启用插件", $"插件:{pluginId}");
 
                 CacheUtils.ClearAll();
                 CacheDbUtils.Clear();
 
                 AddScript(AlertUtils.Success("插件启用成功", "插件启用成功，系统需要重载页面", "重新载入", "window.top.location.reload(true);"));
             }
-            else if (Body.IsQueryExists("disable"))
+            else if (AuthRequest.IsQueryExists("disable"))
             {
-                var pluginId = Body.GetQueryString("pluginId");
+                var pluginId = AuthRequest.GetQueryString("pluginId");
 
                 PluginManager.UpdateDisabled(pluginId, true);
-                Body.AddAdminLog("禁用插件", $"插件:{pluginId}");
+                AuthRequest.AddAdminLog("禁用插件", $"插件:{pluginId}");
 
                 CacheUtils.ClearAll();
                 CacheDbUtils.Clear();
@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
             if (Page.IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Plugins.Management);
+            VerifyAdministratorPermissions(ConfigManager.PluginsPermissions.Management);
         }
 
         public void BtnReload_Click(object sender, EventArgs e)

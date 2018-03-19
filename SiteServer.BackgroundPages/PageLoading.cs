@@ -9,7 +9,7 @@ namespace SiteServer.BackgroundPages
 
         public string GetRedirectUrl()
         {
-            return TranslateUtils.DecryptStringBySecretKey(Body.GetQueryString("redirectUrl"));
+            return TranslateUtils.DecryptStringBySecretKey(AuthRequest.GetQueryString("redirectUrl"));
         }
     }
 }

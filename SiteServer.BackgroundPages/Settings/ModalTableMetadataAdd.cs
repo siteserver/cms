@@ -40,15 +40,15 @@ namespace SiteServer.BackgroundPages.Settings
 
             PageUtils.CheckRequestParameter("TableName");
 
-            _tableName = Body.GetQueryString("TableName");
+            _tableName = AuthRequest.GetQueryString("TableName");
 
             if (IsPostBack) return;
 
             DataTypeUtils.AddListItems(DdlDataType);
 
-            if (Body.IsQueryExists("TableMetadataID"))
+            if (AuthRequest.IsQueryExists("TableMetadataID"))
             {
-                var tableMetadataId = Body.GetQueryInt("TableMetadataID");
+                var tableMetadataId = AuthRequest.GetQueryInt("TableMetadataID");
                 var info = DataProvider.TableMetadataDao.GetTableMetadataInfo(tableMetadataId);
                 if (info != null)
                 {
@@ -69,9 +69,9 @@ namespace SiteServer.BackgroundPages.Settings
         {
             var isChanged = false;
 
-            if (Body.IsQueryExists("TableMetadataID"))
+            if (AuthRequest.IsQueryExists("TableMetadataID"))
             {
-                var tableMetadataId = Body.GetQueryInt("TableMetadataID");
+                var tableMetadataId = AuthRequest.GetQueryInt("TableMetadataID");
 
                 var info = DataProvider.TableMetadataDao.GetTableMetadataInfo(tableMetadataId);
                 info.TableName = _tableName;
@@ -93,7 +93,7 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     DataProvider.TableMetadataDao.Update(info);
 
-                    Body.AddAdminLog("修改辅助表字段",
+                    AuthRequest.AddAdminLog("修改辅助表字段",
                         $"辅助表:{_tableName},字段名:{info.AttributeName}");
 
                     isChanged = true;
@@ -141,7 +141,7 @@ namespace SiteServer.BackgroundPages.Settings
                     {
                         DataProvider.TableMetadataDao.Insert(info);
 
-                        Body.AddAdminLog("添加辅助表字段",
+                        AuthRequest.AddAdminLog("添加辅助表字段",
                             $"辅助表:{_tableName},字段名:{info.AttributeName}");
 
                         isChanged = true;

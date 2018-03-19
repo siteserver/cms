@@ -3,7 +3,6 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -26,11 +25,11 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _nodeGroupName = Body.GetQueryString("nodeGroupName");
+            _nodeGroupName = AuthRequest.GetQueryString("nodeGroupName");
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
             LtlChannelGroupName.Text = "栏目组：" + _nodeGroupName;
 
@@ -63,7 +62,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsOwningChannelId(channelId))
             {
-                if (AdminUtility.HasChannelPermissions(Body.AdminName, nodeInfo.SiteId, nodeInfo.Id, ConfigManager.Permissions.Channel.ChannelEdit))
+                if (HasChannelPermissions(nodeInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit))
                 {
                     ltlItemChannelName.Text = $@"<a href=""javascript:;"" onclick=""{ModalChannelEdit.GetOpenWindowString(nodeInfo.SiteId, nodeInfo.Id, GetRedirectUrl(nodeInfo.SiteId, _nodeGroupName))}"">{ltlItemChannelName.Text}</a>";
                 }

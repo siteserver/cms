@@ -62,7 +62,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
+            _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
             _idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
 
@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Cms
                 foreach (var channelId in _idsDictionary.Keys)
                 {
                     int checkedLevelByChannelId;
-                    var isCheckedByChannelId = CheckManager.GetUserCheckLevel(Body.AdminName, SiteInfo, channelId, out checkedLevelByChannelId);
+                    var isCheckedByChannelId = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, channelId, out checkedLevelByChannelId);
                     if (checkedLevel > checkedLevelByChannelId)
                     {
                         checkedLevel = checkedLevelByChannelId;
@@ -108,7 +108,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var listItem = new ListItem("<保持原栏目不变>", "0");
                 DdlTranslateChannelId.Items.Add(listItem);
 
-                ChannelManager.AddListItemsForAddContent(DdlTranslateChannelId.Items, SiteInfo, true, Body.AdminName);
+                ChannelManager.AddListItemsForAddContent(DdlTranslateChannelId.Items, SiteInfo, true, AuthRequest.AdminPermissions);
             }
         }
 
@@ -127,7 +127,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentIdListToCheck = new List<int>();
 
                 int checkedLevelOfUser;
-                var isCheckedOfUser = CheckManager.GetUserCheckLevel(Body.AdminName, SiteInfo, channelId, out checkedLevelOfUser);
+                var isCheckedOfUser = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, channelId, out checkedLevelOfUser);
 
                 foreach (var contentId in contentIdList)
                 {
@@ -169,7 +169,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
                         var contentIdList = idsDictionaryToCheck[channelId];
-                        DataProvider.ContentDao.UpdateIsChecked(tableName, SiteId, channelId, contentIdList, translateChannelId, true, Body.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
+                        DataProvider.ContentDao.UpdateIsChecked(tableName, SiteId, channelId, contentIdList, translateChannelId, true, AuthRequest.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
 
                         DataProvider.ChannelDao.UpdateContentNum(SiteInfo, channelId, true);
                     }
@@ -179,7 +179,7 @@ namespace SiteServer.BackgroundPages.Cms
                         DataProvider.ChannelDao.UpdateContentNum(SiteInfo, translateChannelId, true);
                     }
 
-                    Body.AddSiteLog(SiteId, SiteId, 0, "设置内容状态为" + DdlCheckType.SelectedItem.Text, TbCheckReasons.Text);
+                    AuthRequest.AddSiteLog(SiteId, SiteId, 0, "设置内容状态为" + DdlCheckType.SelectedItem.Text, TbCheckReasons.Text);
 
                     if (isChecked)
                     {

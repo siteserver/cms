@@ -55,9 +55,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "RootPath", "CurrentRootPath", "TextBoxClientID");
 
-            _rootPath = Body.GetQueryString("RootPath").TrimEnd('/');
-            _currentRootPath = Body.GetQueryString("CurrentRootPath");
-            _textBoxClientId = Body.GetQueryString("TextBoxClientID");
+            _rootPath = AuthRequest.GetQueryString("RootPath").TrimEnd('/');
+            _currentRootPath = AuthRequest.GetQueryString("CurrentRootPath");
+            _textBoxClientId = AuthRequest.GetQueryString("TextBoxClientID");
 
             if (string.IsNullOrEmpty(_currentRootPath))
             {

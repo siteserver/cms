@@ -50,9 +50,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId");
 
-            if (Body.IsQueryExists("isContent"))
+            if (AuthRequest.IsQueryExists("isContent"))
             {
-                _isContent = Body.GetQueryBool("isContent");
+                _isContent = AuthRequest.GetQueryBool("isContent");
             }
             if (_isContent)
             {
@@ -62,7 +62,7 @@ namespace SiteServer.BackgroundPages.Cms
             else
             {
                 BtnAddGroup.Text = " 新建栏目组";
-                _channelIdArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
+                _channelIdArrayList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("ChannelIDCollection"));
             }
             if (!IsPostBack)
             {
@@ -122,7 +122,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    Body.AddSiteLog(SiteId, "添加内容到内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNameList)}");
+                    AuthRequest.AddSiteLog(SiteId, "添加内容到内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNameList)}");
 
                     isChanged = true;
                 }
@@ -140,7 +140,7 @@ namespace SiteServer.BackgroundPages.Cms
                         DataProvider.ChannelDao.AddGroupNameList(SiteId, channelId, groupNameList);
                     }
 
-                    Body.AddSiteLog(SiteId, "添加栏目到栏目组", $"栏目组:{TranslateUtils.ObjectCollectionToString(groupNameList)}");
+                    AuthRequest.AddSiteLog(SiteId, "添加栏目到栏目组", $"栏目组:{TranslateUtils.ObjectCollectionToString(groupNameList)}");
 
                     isChanged = true;
                 }

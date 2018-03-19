@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
+                VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
                 TbFileUploadDirectoryName.Text = SiteInfo.Additional.FileUploadDirectoryName;
 
@@ -77,7 +77,7 @@ namespace SiteServer.BackgroundPages.Cms
 				{
                     DataProvider.SiteDao.Update(SiteInfo);
 
-                    Body.AddSiteLog(SiteId, "修改附件上传设置");
+                    AuthRequest.AddSiteLog(SiteId, "修改附件上传设置");
 
                     SuccessMessage("上传附件设置修改成功！");
 				}

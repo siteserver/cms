@@ -32,11 +32,11 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            _tableName = Body.GetQueryString("tableName");
+            _tableName = AuthRequest.GetQueryString("tableName");
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
 
             if (!string.IsNullOrEmpty(_tableName))
             {
@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 DataProvider.TableDao.Update(info);
 
-                Body.AddAdminLog("修改辅助表", $"辅助表:{_tableName}");
+                AuthRequest.AddAdminLog("修改辅助表", $"辅助表:{_tableName}");
 
                 SuccessMessage("辅助表修改成功！");
                 LayerUtils.Close(Page);
@@ -90,7 +90,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                     DataProvider.TableDao.Insert(info, DataProvider.TableMetadataDao.GetDefaultTableMetadataInfoList(info.TableName));
 
-                    Body.AddAdminLog("添加辅助表", $"辅助表:{TbTableName.Text}");
+                    AuthRequest.AddAdminLog("添加辅助表", $"辅助表:{TbTableName.Text}");
 
                     SuccessMessage("辅助表添加成功！");
                     LayerUtils.Close(Page);

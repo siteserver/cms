@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
 
             LtlSiteName.Text = SiteInfo.SiteName;
 
@@ -132,7 +132,7 @@ namespace SiteServer.BackgroundPages.Settings
             var userKeyPrefix = StringUtils.Guid();
             var siteTemplatePath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
 
-            Body.AddAdminLog("整站替换", $"站点:{SiteInfo.SiteName}");
+            AuthRequest.AddAdminLog("整站替换", $"站点:{SiteInfo.SiteName}");
 
             PageUtils.Redirect(PageProgressBar.GetRecoveryUrl(SiteId, RblIsDeleteChannels.SelectedValue, RblIsDeleteTemplates.SelectedValue, RblIsDeleteFiles.SelectedValue, false, siteTemplatePath, RblIsOverride.SelectedValue, RblIsOverride.SelectedValue, userKeyPrefix));
         }

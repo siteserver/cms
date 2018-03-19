@@ -48,27 +48,27 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _relatedIdentity = string.IsNullOrEmpty(Body.GetQueryString("RelatedIdentity")) ? SiteId : Body.GetQueryInt("RelatedIdentity");
+            _relatedIdentity = string.IsNullOrEmpty(AuthRequest.GetQueryString("RelatedIdentity")) ? SiteId : AuthRequest.GetQueryInt("RelatedIdentity");
             _tableName = DataProvider.SiteDao.TableName;
-            _itemId = Body.GetQueryInt("itemID");
+            _itemId = AuthRequest.GetQueryInt("itemID");
             _relatedIdentities = RelatedIdentities.GetRelatedIdentities(SiteId, _relatedIdentity);
             _attributeNames = TableMetadataManager.GetAttributeNameList(_tableName);
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
+            _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
             //删除样式
-            if (Body.IsQueryExists("DeleteStyle"))
+            if (AuthRequest.IsQueryExists("DeleteStyle"))
             {
-                var attributeName = Body.GetQueryString("AttributeName");
+                var attributeName = AuthRequest.GetQueryString("AttributeName");
                 if (TableStyleManager.IsExists(_relatedIdentity, _tableName, attributeName))
                 {
                     try
                     {
                         TableStyleManager.Delete(_relatedIdentity, _tableName, attributeName);
-                        Body.AddSiteLog(SiteId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
+                        AuthRequest.AddSiteLog(SiteId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
                         SuccessDeleteMessage();
                     }
                     catch (Exception ex)

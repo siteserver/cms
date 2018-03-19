@@ -37,7 +37,8 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public List<ISiteInfo> GetSiteInfoList(string adminName)
         {
-            return SiteManager.GetWritingSiteInfoList(adminName);
+            var permissionManager = PermissionManager.GetInstance(adminName);
+            return SiteManager.GetWritingSiteInfoList(permissionManager);
         }
     }
 }

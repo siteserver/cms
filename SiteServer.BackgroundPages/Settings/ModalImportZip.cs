@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Settings
 		public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
-            _type = Body.GetQueryString("type");
+            _type = AuthRequest.GetQueryString("type");
             if (Page.IsPostBack) return;
 
             EBooleanUtils.AddListItems(DdlImportType, "上传压缩包并导入", "从指定地址下载压缩包并导入");

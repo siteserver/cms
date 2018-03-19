@@ -79,9 +79,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (StringUtils.EqualsIgnoreCase(_type, TypePreviewImage))
             {
-                var siteId = Body.GetQueryInt("siteID");
+                var siteId = AuthRequest.GetQueryInt("siteID");
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                var textBoxClientId = Body.GetQueryString("textBoxClientID");
+                var textBoxClientId = AuthRequest.GetQueryString("textBoxClientID");
                 LtlHtml.Text = $@"
 <span id=""previewImage""></span>
 <script>
@@ -104,9 +104,9 @@ if(imageUrl && imageUrl.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png$/i) != -1){{
             }
             else if (StringUtils.EqualsIgnoreCase(_type, TypePreviewVideo))
             {
-                var siteId = Body.GetQueryInt("siteID");
+                var siteId = AuthRequest.GetQueryInt("siteID");
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                var textBoxClientId = Body.GetQueryString("textBoxClientID");
+                var textBoxClientId = AuthRequest.GetQueryString("textBoxClientID");
 
                 LtlHtml.Text = $@"
 <span id=""previewVideo""></span>
@@ -130,9 +130,9 @@ if (videoUrl){{
             }
             else if (StringUtils.EqualsIgnoreCase(_type, TypePreviewVideoByUrl))
             {
-                var siteId = Body.GetQueryInt("siteID");
+                var siteId = AuthRequest.GetQueryInt("siteID");
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                var videoUrl = Body.GetQueryString("videoUrl");
+                var videoUrl = AuthRequest.GetQueryString("videoUrl");
 
                 LtlHtml.Text = $@"
 <embed src=""../assets/player.swf"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart=true&file={PageUtility

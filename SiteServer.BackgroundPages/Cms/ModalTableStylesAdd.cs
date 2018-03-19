@@ -47,13 +47,13 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _relatedIdentities = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("RelatedIdentities"));
+            _relatedIdentities = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("RelatedIdentities"));
             if (_relatedIdentities.Count == 0)
             {
                 _relatedIdentities.Add(0);
             }
-            _tableName = Body.GetQueryString("TableName");
-            _redirectUrl = StringUtils.ValueFromUrl(Body.GetQueryString("RedirectUrl"));
+            _tableName = AuthRequest.GetQueryString("TableName");
+            _redirectUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("RedirectUrl"));
 
             if (!IsPostBack)
             {
@@ -209,11 +209,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (SiteId > 0)
                 {
-                    Body.AddSiteLog(SiteId, "批量添加表单显示样式", $"字段名: {TranslateUtils.ObjectCollectionToString(attributeNames)}");
+                    AuthRequest.AddSiteLog(SiteId, "批量添加表单显示样式", $"字段名: {TranslateUtils.ObjectCollectionToString(attributeNames)}");
                 }
                 else
                 {
-                    Body.AddAdminLog("批量添加表单显示样式", $"字段名: {TranslateUtils.ObjectCollectionToString(attributeNames)}");
+                    AuthRequest.AddAdminLog("批量添加表单显示样式", $"字段名: {TranslateUtils.ObjectCollectionToString(attributeNames)}");
                 }
 
                 isChanged = true;

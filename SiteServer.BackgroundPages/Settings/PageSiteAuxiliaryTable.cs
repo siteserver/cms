@@ -20,9 +20,9 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-			if (Body.IsQueryExists("Delete"))
+			if (AuthRequest.IsQueryExists("Delete"))
 			{
-                var enName = Body.GetQueryString("ENName");//辅助表
+                var enName = AuthRequest.GetQueryString("ENName");//辅助表
                 var enNameArchive = enName + "_Archive";//辅助表归档
 			
 				try
@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Settings
                     DataProvider.TableDao.DeleteCollectionTableInfoAndDbTable(enName);//删除辅助表
                     DataProvider.TableDao.DeleteCollectionTableInfoAndDbTable(enNameArchive);//删除辅助表归档
 
-                    Body.AddAdminLog("删除辅助表", $"辅助表:{enName}");
+                    AuthRequest.AddAdminLog("删除辅助表", $"辅助表:{enName}");
 
 					SuccessDeleteMessage();
 				}
@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
 
             RptContents.DataSource = DataProvider.TableDao.GetTableCollectionInfoList();
             RptContents.ItemDataBound += RptContents_ItemDataBound;

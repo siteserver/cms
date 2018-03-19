@@ -39,19 +39,19 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "RootPath");
 
-            _rootPath = Body.GetQueryString("RootPath").TrimEnd('/');
+            _rootPath = AuthRequest.GetQueryString("RootPath").TrimEnd('/');
             _directoryPath = PathUtility.MapPath(SiteInfo, _rootPath);
 
 			if (!Page.IsPostBack)
 			{
-                LtlFileName.Text = Body.GetQueryString("FileName");
+                LtlFileName.Text = AuthRequest.GetQueryString("FileName");
 			}
 		}
 
         private string RedirectUrl()
         {
-            return ModalFileView.GetRedirectUrl(SiteId, Body.GetQueryString("rootPath"),
-                Body.GetQueryString("FileName"), TbFileName.Text, Body.GetQueryString("HiddenClientID"));
+            return ModalFileView.GetRedirectUrl(SiteId, AuthRequest.GetQueryString("rootPath"),
+                AuthRequest.GetQueryString("FileName"), TbFileName.Text, AuthRequest.GetQueryString("HiddenClientID"));
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -72,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
             FileUtils.MoveFile(pathSource, path, true);
             FileUtils.DeleteFileIfExists(pathSource);
 
-            Body.AddSiteLog(SiteId, "修改文件名", $"文件名:{TbFileName.Text}");
+            AuthRequest.AddSiteLog(SiteId, "修改文件名", $"文件名:{TbFileName.Text}");
             //JsUtils.SubModal.CloseModalPageWithoutRefresh(Page);
             LayerUtils.CloseAndRedirect(Page, RedirectUrl());
         }

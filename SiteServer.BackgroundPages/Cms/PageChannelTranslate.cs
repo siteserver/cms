@@ -6,7 +6,6 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
@@ -60,9 +59,9 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
 			PageUtils.CheckRequestParameter("siteId");
-            ReturnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
+            ReturnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
-            if (!HasChannelPermissions(SiteId, ConfigManager.Permissions.Channel.ContentDelete))
+            if (!HasChannelPermissions(SiteId, ConfigManager.ChannelPermissions.ContentDelete))
 			{
                 RblIsDeleteAfterTranslate.Visible = false;
 			}
@@ -72,11 +71,11 @@ namespace SiteServer.BackgroundPages.Cms
             PhReturn.Visible = !string.IsNullOrEmpty(ReturnUrl);
             ETranslateTypeUtils.AddListItems(DdlTranslateType);
             ControlUtils.SelectSingleItem(DdlTranslateType,
-                Body.IsQueryExists("ChannelIDCollection")
+                AuthRequest.IsQueryExists("ChannelIDCollection")
                     ? ETranslateTypeUtils.GetValue(ETranslateType.All)
                     : ETranslateTypeUtils.GetValue(ETranslateType.Content));
 
-            var siteIdList = ProductPermissionsManager.Current.SiteIdList;
+            var siteIdList = AuthRequest.AdminPermissions.SiteIdList;
             foreach (var psId in siteIdList)
             {
                 var psInfo = SiteManager.GetSiteInfo(psId);
@@ -86,9 +85,9 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             var channelIdStrList = new List<string>();
-            if (Body.IsQueryExists("ChannelIDCollection"))
+            if (AuthRequest.IsQueryExists("ChannelIDCollection"))
             {
-                channelIdStrList = TranslateUtils.StringCollectionToStringList(Body.GetQueryString("ChannelIDCollection"));
+                channelIdStrList = TranslateUtils.StringCollectionToStringList(AuthRequest.GetQueryString("ChannelIDCollection"));
             }
 
             var channelIdList = ChannelManager.GetChannelIdList(SiteId);
@@ -156,7 +155,7 @@ namespace SiteServer.BackgroundPages.Cms
 		    var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
 		    bool isChecked;
 		    int checkedLevel;
-		    if (targetSiteInfo.Additional.CheckContentLevel == 0 || AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetChannelId, ConfigManager.Permissions.Channel.ContentAdd, ConfigManager.Permissions.Channel.ContentCheck))
+		    if (targetSiteInfo.Additional.CheckContentLevel == 0 || AuthRequest.AdminPermissions.HasChannelPermissions(targetSiteId, targetChannelId, ConfigManager.ChannelPermissions.ContentAdd, ConfigManager.ChannelPermissions.ContentCheck))
 		    {
 		        isChecked = true;
 		        checkedLevel = 0;
@@ -166,19 +165,19 @@ namespace SiteServer.BackgroundPages.Cms
 		        var userCheckLevel = 0;
 		        var ownHighestLevel = false;
 
-		        if (AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetChannelId, ConfigManager.Permissions.Channel.ContentCheckLevel1))
+		        if (AuthRequest.AdminPermissions.HasChannelPermissions(targetSiteId, targetChannelId, ConfigManager.ChannelPermissions.ContentCheckLevel1))
 		        {
 		            userCheckLevel = 1;
-		            if (AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetChannelId, ConfigManager.Permissions.Channel.ContentCheckLevel2))
+		            if (AuthRequest.AdminPermissions.HasChannelPermissions(targetSiteId, targetChannelId, ConfigManager.ChannelPermissions.ContentCheckLevel2))
 		            {
 		                userCheckLevel = 2;
-		                if (AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetChannelId, ConfigManager.Permissions.Channel.ContentCheckLevel3))
+		                if (AuthRequest.AdminPermissions.HasChannelPermissions(targetSiteId, targetChannelId, ConfigManager.ChannelPermissions.ContentCheckLevel3))
 		                {
 		                    userCheckLevel = 3;
-		                    if (AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetChannelId, ConfigManager.Permissions.Channel.ContentCheckLevel4))
+		                    if (AuthRequest.AdminPermissions.HasChannelPermissions(targetSiteId, targetChannelId, ConfigManager.ChannelPermissions.ContentCheckLevel4))
 		                    {
 		                        userCheckLevel = 4;
-		                        if (AdminUtility.HasChannelPermissions(Body.AdminName, targetSiteId, targetChannelId, ConfigManager.Permissions.Channel.ContentCheckLevel5))
+		                        if (AuthRequest.AdminPermissions.HasChannelPermissions(targetSiteId, targetChannelId, ConfigManager.ChannelPermissions.ContentCheckLevel5))
 		                        {
 		                            userCheckLevel = 5;
 		                        }
@@ -285,10 +284,10 @@ namespace SiteServer.BackgroundPages.Cms
 		        {
 		            builder.Length = builder.Length - 1;
 		        }
-		        Body.AddSiteLog(SiteId, "批量转移", $"栏目:{builder},转移后删除:{RblIsDeleteAfterTranslate.SelectedValue}");
+		        AuthRequest.AddSiteLog(SiteId, "批量转移", $"栏目:{builder},转移后删除:{RblIsDeleteAfterTranslate.SelectedValue}");
 
 		        SuccessMessage("批量转移成功！");
-		        PageUtils.Redirect(Body.IsQueryExists("ChannelIDCollection") ? ReturnUrl : GetRedirectUrl(SiteId));
+		        PageUtils.Redirect(AuthRequest.IsQueryExists("ChannelIDCollection") ? ReturnUrl : GetRedirectUrl(SiteId));
 		    }
 		    catch(Exception ex)
 		    {

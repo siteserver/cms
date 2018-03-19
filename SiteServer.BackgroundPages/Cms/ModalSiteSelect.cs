@@ -3,7 +3,6 @@ using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -24,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var builder = new StringBuilder();
 
-            var siteIdList = ProductPermissionsManager.Current.SiteIdList;
+            var siteIdList = AuthRequest.AdminPermissions.SiteIdList;
             foreach (var siteId in siteIdList)
             {
                 var loadingUrl = PageUtils.GetLoadingUrl(PageMain.GetRedirectUrl(siteId));

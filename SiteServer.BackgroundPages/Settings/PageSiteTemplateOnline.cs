@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (Page.IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
 
             InfoMessage($@"本页面只显示部分免费模板，更多站点模板请访问官网：<a href=""{OnlineTemplateManager.UrlHome}"" target=""_blank"">{OnlineTemplateManager.UrlHome}</a>");
 

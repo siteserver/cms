@@ -28,8 +28,8 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _tableName = Body.GetQueryString("TableName");
-            _relatedIdentity = int.Parse(Body.GetQueryString("RelatedIdentity"));
+            _tableName = AuthRequest.GetQueryString("TableName");
+            _relatedIdentity = int.Parse(AuthRequest.GetQueryString("RelatedIdentity"));
 		}
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     ImportObject.ImportTableStyleByZipFile(_tableName, _relatedIdentity, localFilePath);
 
-                    Body.AddSiteLog(SiteId, "导入表单显示样式");
+                    AuthRequest.AddSiteLog(SiteId, "导入表单显示样式");
 
                     LayerUtils.Close(Page);
 				}

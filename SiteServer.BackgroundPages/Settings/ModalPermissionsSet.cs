@@ -4,7 +4,6 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -19,7 +18,6 @@ namespace SiteServer.BackgroundPages.Settings
         public ListBox LbAssignedRoles;
 
         private string _userName = string.Empty;
-        private AdministratorWithPermissions _permissions;
 
         public static string GetOpenWindowString(string userName)
         {
@@ -34,13 +32,12 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            _userName = Body.GetQueryString("UserName");
-            _permissions = PermissionsManager.GetPermissions(Body.AdminName);
+            _userName = AuthRequest.GetQueryString("UserName");
 
             if (IsPostBack) return;
 
             var roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(_userName);
-            if (_permissions.IsConsoleAdministrator)
+            if (AuthRequest.AdminPermissions.IsConsoleAdministrator)
             {
                 DdlPredefinedRole.Items.Add(EPredefinedRoleUtils.GetListItem(EPredefinedRole.ConsoleAdministrator, false));
                 DdlPredefinedRole.Items.Add(EPredefinedRoleUtils.GetListItem(EPredefinedRole.SystemAdministrator, false));
@@ -80,7 +77,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             LbAvailableRoles.Items.Clear();
             LbAssignedRoles.Items.Clear();
-            var allRoles = _permissions.IsConsoleAdministrator ? DataProvider.RoleDao.GetAllRoles() : DataProvider.RoleDao.GetAllRolesByCreatorUserName(Body.AdminName);
+            var allRoles = AuthRequest.AdminPermissions.IsConsoleAdministrator ? DataProvider.RoleDao.GetAllRoles() : DataProvider.RoleDao.GetAllRolesByCreatorUserName(AuthRequest.AdminName);
             var userRoles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(_userName);
             var userRoleNameArrayList = new ArrayList(userRoles);
             foreach (var roleName in allRoles)
@@ -196,7 +193,7 @@ namespace SiteServer.BackgroundPages.Settings
                         ? ControlUtils.SelectedItemsValueToStringCollection(CblSiteId.Items)
                         : string.Empty);
 
-                Body.AddAdminLog("设置管理员权限", $"管理员:{_userName}");
+                AuthRequest.AddAdminLog("设置管理员权限", $"管理员:{_userName}");
 
                 SuccessMessage("权限设置成功！");
                 isChanged = true;

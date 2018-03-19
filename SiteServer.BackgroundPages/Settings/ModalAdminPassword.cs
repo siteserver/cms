@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            _userName = Body.GetQueryString("userName");
+            _userName = AuthRequest.GetQueryString("userName");
 
             if (IsPostBack) return;
 
@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.Settings
                     return;
                 }
 
-                Body.AddAdminLog("重设管理员密码", $"管理员:{_userName}");
+                AuthRequest.AddAdminLog("重设管理员密码", $"管理员:{_userName}");
 
                 SuccessMessage("重设密码成功！");
 

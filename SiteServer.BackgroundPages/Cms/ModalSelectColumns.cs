@@ -31,8 +31,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId");
 
-            _relatedIdentity = Body.GetQueryInt("RelatedIdentity");
-            _isList = Body.GetQueryBool("IsList");
+            _relatedIdentity = AuthRequest.GetQueryInt("RelatedIdentity");
+            _isList = AuthRequest.GetQueryBool("IsList");
 
             var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _relatedIdentity);
             var tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
@@ -72,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             DataProvider.ChannelDao.Update(nodeInfo);
 
-            Body.AddSiteLog(SiteId, "设置内容显示项", $"显示项:{attributesOfDisplay}");
+            AuthRequest.AddSiteLog(SiteId, "设置内容显示项", $"显示项:{attributesOfDisplay}");
 
             if (!_isList)
             {

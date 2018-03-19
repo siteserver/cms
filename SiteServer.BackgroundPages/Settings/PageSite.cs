@@ -22,11 +22,11 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            if (Body.IsQueryExists("SiteId") && (Body.IsQueryExists("Up") || Body.IsQueryExists("Down")))
+            if (AuthRequest.IsQueryExists("SiteId") && (AuthRequest.IsQueryExists("Up") || AuthRequest.IsQueryExists("Down")))
             {
-                var siteId = Body.GetQueryInt("SiteId");
+                var siteId = AuthRequest.GetQueryInt("SiteId");
 
-                if (Body.IsQueryExists("Up") && Body.GetQueryBool("Up"))
+                if (AuthRequest.IsQueryExists("Up") && AuthRequest.GetQueryBool("Up"))
                 {
                     DataProvider.SiteDao.UpdateTaxisToUp(siteId);
                 }
@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Site);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
 
             _hqSiteId = DataProvider.SiteDao.GetIdByIsRoot();
 

@@ -47,13 +47,13 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            _departmentId = Body.GetQueryInt("departmentID");
-            _areaId = Body.GetQueryInt("areaID");
-            _userName = Body.GetQueryString("userName");
+            _departmentId = AuthRequest.GetQueryInt("departmentID");
+            _areaId = AuthRequest.GetQueryInt("areaID");
+            _userName = AuthRequest.GetQueryString("userName");
 
             if (Page.IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Admin);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Admin);
 
             LtlPageTitle.Text = string.IsNullOrEmpty(_userName) ? "添加管理员" : "编辑管理员";
 
@@ -116,7 +116,7 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     UserName = TbUserName.Text.Trim(),
                     Password = TbPassword.Text,
-                    CreatorUserName = Body.AdminName,
+                    CreatorUserName = AuthRequest.AdminName,
                     DisplayName = TbDisplayName.Text,
                     Email = TbEmail.Text,
                     Mobile = TbMobile.Text,
@@ -143,7 +143,7 @@ namespace SiteServer.BackgroundPages.Settings
                     return;   
                 }
 
-                Body.AddAdminLog("添加管理员", $"管理员:{TbUserName.Text.Trim()}");
+                AuthRequest.AddAdminLog("添加管理员", $"管理员:{TbUserName.Text.Trim()}");
                 SuccessMessage("管理员添加成功！");
                 AddWaitAndRedirectScript(PageAdministrator.GetRedirectUrl());
             }
@@ -171,7 +171,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 DataProvider.AdministratorDao.Update(adminInfo);
 
-                Body.AddAdminLog("修改管理员属性", $"管理员:{TbUserName.Text.Trim()}");
+                AuthRequest.AddAdminLog("修改管理员属性", $"管理员:{TbUserName.Text.Trim()}");
                 SuccessMessage("管理员设置成功！");
                 AddWaitAndRedirectScript(PageAdministrator.GetRedirectUrl());
             }

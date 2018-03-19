@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Plugins
                     return;
                 }
 
-                Body.AddAdminLog("手动安装插件：" + idAndVersion);
+                AuthRequest.AddAdminLog("手动安装插件：" + idAndVersion);
 
                 LayerUtils.CloseAndRedirect(Page, PageManagement.GetRedirectUrl());
             }
@@ -97,7 +97,7 @@ namespace SiteServer.BackgroundPages.Plugins
                     return;
                 }
 
-                Body.AddAdminLog($"手动安装插件：{TbPluginId.Text} {TbVersion.Text}");
+                AuthRequest.AddAdminLog($"手动安装插件：{TbPluginId.Text} {TbVersion.Text}");
 
                 LayerUtils.CloseAndRedirect(Page, PageManagement.GetRedirectUrl());
             }

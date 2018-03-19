@@ -2,7 +2,6 @@
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
-using SiteServer.CMS.Core.Security;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -21,15 +20,15 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-			if (Body.IsQueryExists("Delete"))
+			if (AuthRequest.IsQueryExists("Delete"))
 			{
-				var roleName = Body.GetQueryString("RoleName");
+				var roleName = AuthRequest.GetQueryString("RoleName");
 				try
 				{
                     DataProvider.PermissionsInRolesDao.Delete(roleName);
                     DataProvider.RoleDao.DeleteRole(roleName);
 
-                    Body.AddAdminLog("删除管理员角色", $"角色名称:{roleName}");
+                    AuthRequest.AddAdminLog("删除管理员角色", $"角色名称:{roleName}");
 
 					SuccessDeleteMessage();
 				}
@@ -41,12 +40,11 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.Permissions.Settings.Admin);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Admin);
 
-            var permissioins = PermissionsManager.GetPermissions(Body.AdminName);
-            RptContents.DataSource = permissioins.IsConsoleAdministrator
+            RptContents.DataSource = AuthRequest.AdminPermissions.IsConsoleAdministrator
                 ? DataProvider.RoleDao.GetAllRoles()
-                : DataProvider.RoleDao.GetAllRolesByCreatorUserName(Body.AdminName);
+                : DataProvider.RoleDao.GetAllRolesByCreatorUserName(AuthRequest.AdminName);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 

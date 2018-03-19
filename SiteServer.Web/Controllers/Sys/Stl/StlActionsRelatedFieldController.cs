@@ -14,7 +14,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
         [HttpPost, Route(ApiRouteActionsRelatedField.Route)]
         public void Main(int siteId)
         {
-            var request = new Request();
+            var request = new AuthRequest();
 
             var callback = request.GetQueryString("callback");
             var relatedFieldId = request.GetQueryInt("relatedFieldId");

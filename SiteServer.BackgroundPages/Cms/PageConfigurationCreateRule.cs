@@ -34,13 +34,13 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.Permissions.WebSite.Create);
+            VerifySitePermissions(ConfigManager.WebSitePermissions.Create);
 
             ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, string.Empty, ELoadingType.TemplateFilePathRule, _additional));
 
-            if (Body.IsQueryExists("CurrentChannelId"))
+            if (AuthRequest.IsQueryExists("CurrentChannelId"))
             {
-                _currentChannelId = Body.GetQueryInt("CurrentChannelId");
+                _currentChannelId = AuthRequest.GetQueryInt("CurrentChannelId");
                 var onLoadScript = ChannelLoading.GetScriptOnLoad(SiteId, _currentChannelId);
                 if (!string.IsNullOrEmpty(onLoadScript))
                 {
@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.TemplateFilePathRule, _additional, Body.AdminName);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.TemplateFilePathRule, _additional, AuthRequest.AdminPermissions);
         }
 	}
 }
