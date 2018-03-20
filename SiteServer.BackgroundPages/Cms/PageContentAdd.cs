@@ -6,7 +6,6 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Controllers.Preview;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
@@ -43,6 +42,8 @@ namespace SiteServer.BackgroundPages.Cms
         private string _tableName;
 
         protected override bool IsSinglePage => true;
+
+        public string PageContentAddHandlerUrl => PageContentAddHandler.GetRedirectUrl(SiteId, AuthRequest.GetQueryInt("channelId"), AuthRequest.GetQueryInt("id"));
 
         public static string GetRedirectUrlOfAdd(int siteId, int channelId, string returnUrl)
         {
@@ -102,11 +103,6 @@ namespace SiteServer.BackgroundPages.Cms
                 var pageTitle = contentId == 0 ? "添加内容" : "编辑内容";
 
                 LtlPageTitle.Text = pageTitle;
-                LtlPageTitle.Text += $@"
-<script language=""javascript"" type=""text/javascript"">
-var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId)}?';
-</script>
-";
 
                 if (HasChannelPermissions(_nodeInfo.Id, ConfigManager.ChannelPermissions.ContentTranslate))
                 {
@@ -222,30 +218,16 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
             else
             {
                 AcAttributes.Attributes = new ExtendedAttributes(Request.Form);
-
-                if (AuthRequest.GetQueryBool("isPreview"))
-                {
-                    string errorMessage;
-                    var previewId = SaveContentInfo(true, out errorMessage);
-                    Response.Clear();
-                    Response.Write($"{{previewId:{previewId} }}");
-                    Response.Flush();
-                    Response.End();
-                }
             }
             //DataBind();
         }
 
-        private int SaveContentInfo(bool isPreview, out string errorMessage)
+        public override void Submit_OnClick(object sender, EventArgs e)
         {
-            int savedContentId;
-            errorMessage = string.Empty;
-            var contentId = 0;
+            if (!Page.IsPostBack || !Page.IsValid) return;
+
+            var contentId = AuthRequest.GetQueryInt("id");
             string redirectUrl;
-            if (!isPreview)
-            {
-                contentId = AuthRequest.GetQueryInt("id");
-            }
 
             if (contentId == 0)
             {
@@ -300,32 +282,22 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
                         }
                     }
 
-                    if (isPreview)
+                    contentInfo.Id = DataProvider.ContentDao.Insert(_tableName, SiteInfo, contentInfo);
+                    //判断是不是有审核权限
+                    int checkedLevelOfUser;
+                    var isCheckedOfUser = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, contentInfo.ChannelId, out checkedLevelOfUser);
+                    if (CheckManager.IsCheckable(SiteInfo, contentInfo.ChannelId, contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                     {
-                        savedContentId = DataProvider.ContentDao.InsertPreview(_tableName, SiteInfo, _nodeInfo, contentInfo);
-                    }
-                    else
-                    {
-                        savedContentId = DataProvider.ContentDao.Insert(_tableName, SiteInfo, contentInfo);
-                        //判断是不是有审核权限
-                        int checkedLevelOfUser;
-                        var isCheckedOfUser = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, contentInfo.ChannelId, out checkedLevelOfUser);
-                        if (CheckManager.IsCheckable(SiteInfo, contentInfo.ChannelId, contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
-                        {
-                            //添加审核记录
-                            DataProvider.ContentDao.UpdateIsChecked(_tableName, SiteId, contentInfo.ChannelId, new List<int> { savedContentId }, 0, true, AuthRequest.AdminName, contentInfo.IsChecked, contentInfo.CheckedLevel, "");
-                        }
-
-                        TagUtils.AddTags(tagCollection, SiteId, savedContentId);
+                        //添加审核记录
+                        DataProvider.ContentDao.UpdateIsChecked(_tableName, SiteId, contentInfo.ChannelId, new List<int> { contentInfo.Id }, 0, true, AuthRequest.AdminName, contentInfo.IsChecked, contentInfo.CheckedLevel, "");
                     }
 
-                    contentInfo.Id = savedContentId;
+                    TagUtils.AddTags(tagCollection, SiteId, contentInfo.Id);
                 }
                 catch (Exception ex)
                 {
                     LogUtils.AddSystemErrorLog(ex);
-                    errorMessage = $"内容添加失败：{ex.Message}";
-                    return 0;
+                    FailMessage($"内容添加失败：{ex.Message}");
                 }
 
                 if (contentInfo.IsChecked)
@@ -469,8 +441,8 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
                 catch (Exception ex)
                 {
                     LogUtils.AddSystemErrorLog(ex);
-                    errorMessage = $"内容修改失败：{ex.Message}";
-                    return 0;
+                    FailMessage($"内容修改失败：{ex.Message}");
+                    return;
                 }
 
                 if (contentInfo.IsChecked)
@@ -482,27 +454,9 @@ var previewUrl = '{ApiRoutePreview.GetContentUrl(SiteId, _nodeInfo.Id, contentId
                     $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
                 redirectUrl = ReturnUrl;
-                savedContentId = contentId;
             }
 
-            if (!isPreview)
-            {
-                PageUtils.Redirect(redirectUrl);
-            }
-
-            return savedContentId;
-        }
-
-        public override void Submit_OnClick(object sender, EventArgs e)
-        {
-            if (!Page.IsPostBack || !Page.IsValid) return;
-
-            string errorMessage;
-            var savedContentId = SaveContentInfo(false, out errorMessage);
-            if (savedContentId == 0)
-            {
-                FailMessage(errorMessage);
-            }
+            PageUtils.Redirect(redirectUrl);
         }
 
         private bool IsPermissions(int contentId)

@@ -173,6 +173,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 parsedContent = @"<script language=""javascript"" type=""text/javascript"">RunGLNL(true);</script>";
             }
+            else if (pageInfo.Parameters != null && pageInfo.Parameters.ContainsKey(type))
+            {
+                pageInfo.Parameters.TryGetValue(type, out parsedContent);
+                parsedContent = StringUtils.ParseString(InputType.Text, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+            }
             else
             {
                 if (pageInfo.SiteInfo.Additional.GetString(type) != null)

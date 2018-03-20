@@ -18,6 +18,8 @@ namespace SiteServer.CMS.StlParser.Model
 
         public SiteInfo SiteInfo { get; private set; }
 
+        public Dictionary<string, string> Parameters { get; set; }
+
         public string ApiUrl { get; }
 
         public TemplateInfo TemplateInfo { get; }
@@ -373,8 +375,8 @@ wnd_frame.src=url;}}
             {
                 var builder = new StringBuilder();
 
-                builder.Append(
-                $@"<script>var $pageInfo = {{siteId : {SiteId}, channelId : {PageChannelId}, contentId : {PageContentId}, siteUrl : ""{SiteInfo.Additional.WebUrl.TrimEnd('/')}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{ApiUrl.TrimEnd('/')}""}};</script>").AppendLine();
+                //builder.Append(
+                //$@"<script>var $pageInfo = {{siteId : {SiteId}, channelId : {PageChannelId}, contentId : {PageContentId}, siteUrl : ""{SiteInfo.Additional.WebUrl.TrimEnd('/')}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{ApiUrl.TrimEnd('/')}""}};</script>").AppendLine();
 
                 foreach (var key in HeadCodes.Keys)
                 {

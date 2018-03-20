@@ -1096,23 +1096,21 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
 
             var whereString = new StringBuilder();
-            whereString.Append($"WHERE (ChannelId = {channelId}) ");
+            whereString.Append($"WHERE {nameof(ContentAttribute.ChannelId)} = {channelId} AND {nameof(ContentAttribute.SourceId)} != {SourceManager.Preview} ");
 
             if (checkedState == ETriState.True)
             {
-                whereString.Append("AND IsChecked='True' ");
+                whereString.Append($"AND IsChecked='{true}' ");
             }
             else if (checkedState == ETriState.False)
             {
-                whereString.Append("AND IsChecked='False'");
+                whereString.Append($"AND IsChecked='{false}'");
             }
 
             if (!string.IsNullOrEmpty(userNameOnly))
             {
                 whereString.Append($" AND AddUserName = '{userNameOnly}' ");
             }
-
-            //whereString.Append(orderByString);
 
             return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString(), orderByString);
         }
@@ -2252,7 +2250,7 @@ group by tmp.userName";
             {
                 dateString += $" AND AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo).AddDays(1))} ";
             }
-            var whereString = new StringBuilder("WHERE ");
+            var whereString = new StringBuilder($"WHERE {nameof(ContentAttribute.SourceId)} != {SourceManager.Preview} AND ");
 
             if (isTrashContent)
             {

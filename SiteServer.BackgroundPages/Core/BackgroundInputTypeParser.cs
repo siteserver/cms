@@ -274,8 +274,8 @@ $('#Title').keyup(function (e) {
             value = ETextEditorTypeUtils.TranslateToHtml(value);
             value = StringUtils.HtmlEncode(value);
 
-            var controllerUrl = ApiRouteUEditor.GetUrl(PageUtility.OuterApiUrl, siteInfo.Id);
-            var editorUrl = SiteFilesAssets.GetUrl(PageUtility.OuterApiUrl, "ueditor");
+            var controllerUrl = ApiRouteUEditor.GetUrl(PageUtility.InnerApiUrl, siteInfo.Id);
+            var editorUrl = SiteFilesAssets.GetUrl(PageUtility.InnerApiUrl, "ueditor");
 
             if (pageScripts["uEditor"] == null)
             {

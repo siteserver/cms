@@ -73,6 +73,7 @@
     <Compile Include="Ajax\AjaxUploadService.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="BaseHandler.cs" />
     <Compile Include="BasePage.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -247,6 +248,7 @@
     <Compile Include="Cms\ModalUploadWord.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Cms\PageContentAddHandler.cs" />
     <Compile Include="Cms\PageChannel.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

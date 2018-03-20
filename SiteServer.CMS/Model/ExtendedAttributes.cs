@@ -134,7 +134,7 @@ namespace SiteServer.CMS.Model
         {
             name = name.ToLower();
             var value = Get(name);
-            return string.IsNullOrWhiteSpace(value) ? defaultValue : TranslateUtils.ToInt(value, defaultValue);
+            return string.IsNullOrWhiteSpace(value) ? defaultValue : TranslateUtils.ToIntWithNagetive(value, defaultValue);
         }
 
         public decimal GetDecimal(string name, decimal defaultValue = 0)
@@ -226,7 +226,7 @@ namespace SiteServer.CMS.Model
 
         public NameValueCollection ToNameValueCollection()
         {
-            return _dataNvc;
+            return new NameValueCollection(_dataNvc);
         }
 
         #region private utils

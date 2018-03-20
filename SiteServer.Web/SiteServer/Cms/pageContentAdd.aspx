@@ -6,10 +6,6 @@
     <head>
       <meta charset="utf-8">
       <!--#include file="../inc/head.html"-->
-      <script type="text/javascript" src="../assets/validate.js"></script>
-      <script type="text/javascript" src="../assets/jquery/jquery.form.js"></script>
-      <script type="text/javascript" src="../assets/jscolor/jscolor.js"></script>
-      <script type="text/javascript" src="js/contentAdd.js"></script>
     </head>
 
     <body>
@@ -142,7 +138,7 @@
           <div class="text-center">
             <asp:Button class="btn btn-primary m-r-5" itemIndex="1" ID="BtnSubmit" Text="确 定" OnClick="Submit_OnClick" runat="server"
             />
-            <input class="btn btn-success m-r-5" type="button" onClick="previewSave();" value="预 览" />
+            <input class="btn btn-success m-r-5" type="button" onClick="preview();" value="预 览" />
             <input class="btn" type="button" onclick="location.href='<%=ReturnUrl%>';return false;" value="返 回" />
             <small class="form-text text-muted m-t-5">
               提示：按CTRL+回车可以快速提交
@@ -157,3 +153,71 @@
 
     </html>
     <!--#include file="../inc/foot.html"-->
+
+    <script type="text/javascript" src="../assets/validate.js"></script>
+    <script type="text/javascript" src="../assets/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="../assets/jscolor/jscolor.js"></script>
+    <script>
+      function translateNodeAdd(name, value) {
+        $('#translateContainer').append("<span id='translate_" + value + "' class='label label-primary p-1'>" + name +
+          "&nbsp;<i class='ion-android-close' style='cursor:pointer' onClick=\"translateNodeRemove('" + value +
+          "')\"></i>&nbsp;</span>&nbsp;&nbsp;");
+        $('#translateCollection').val(value + ',' + $('#translateCollection').val());
+        $('#translateType').show();
+      }
+
+      function translateNodeRemove(value) {
+        $('#translate_' + value).remove();
+        var val = '';
+        var values = $('#translateCollection').val().split(",");
+        for (i = 0; i < values.length; i++) {
+          if (values[i] && value != values[i]) {
+            val = values[i] + ',';
+          }
+        }
+        $('#translateCollection').val(val);
+        if (val == '') {
+          $('#translateType').hide();
+        }
+      }
+
+      $(document).keypress(function (e) {
+        if (e.ctrlKey && e.which == 13 || e.which == 10) {
+          e.preventDefault();
+          $("#BtnSubmit").click();
+        } else if (e.shiftKey && e.which == 13 || e.which == 10) {
+          e.preventDefault();
+          $("#BtnSubmit").click();
+        }
+      });
+
+      var isPreviewSaving = false;
+
+      function preview() {
+        if (!$('#TbTitle').val()) return;
+        if (isPreviewSaving) return;
+
+        isPreviewSaving = true;
+        var options = {
+          beforeSubmit: function () {
+            return true;
+          },
+          url: '<%=PageContentAddHandlerUrl%>',
+          type: 'POST',
+          dataType: 'json',
+          success: function (data) {
+            isPreviewSaving = false;
+            if (data && data.previewUrl) {
+              window.open(data.previewUrl);
+            }
+          }
+        };
+
+        if (UE) {
+          $.each(UE.instants, function (index, editor) {
+            editor.sync();
+          });
+        }
+        $('#myForm').ajaxSubmit(options);
+      }
+    </script>

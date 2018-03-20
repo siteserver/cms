@@ -17,11 +17,30 @@ SiteServer CMS 是.NET平台CMS系统的创始者，能够以最低的成本、�
 └─SiteServer.Web                  API 源文件及aspx页面
 ```
 
+## 生成安装包
+
+```code
+一、Visual Studio 切换解决方案配置到Release，编译
+二、安装NodeJs
+三、打开命令行，运行 npm install gulp -g
+四、命令行，转到根目录，运行 npm install
+五、命令行，运行 gulp release
+六、命令行，运行 gulp zip
+```
+
+结束后会在根目录看到siteserver_install.zip，这就是安装包了。
+以上步骤是第一次生成安装包所需要执行的操作，如果已经生成过安装包：
+
+```code
+一、命令行，转到根目录，运行 gulp release
+二、命令行，运行 gulp zip
+```
+
 ## 贡献代码
 
 代码贡献有很多形式，从提交问题，撰写文档，到提交代码，我们欢迎任何形式的贡献！
 
-项目编译需要使用 Visual Studio 2017，你可以从这里下载[Visual Studio Community 2017](https://www.visualstudio.com/downloads/)
+项目编译需要使用 Visual Studio 2017，你可以从这里下载 [Visual Studio Community 2017](https://www.visualstudio.com/downloads/)
 
 - 1、Fork
 - 2、创建您的特性分支 (`git checkout -b my-new-feature`)

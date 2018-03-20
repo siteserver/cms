@@ -117,6 +117,10 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 {
                     parsedContent = pageInfo.SiteInfo.Additional.GetString(attributeName.Substring(4));
                 }
+                else if (pageInfo.Parameters != null && pageInfo.Parameters.ContainsKey(attributeName))
+                {
+                    pageInfo.Parameters.TryGetValue(attributeName, out parsedContent);
+                }
                 else
                 {
                     if (pageInfo.SiteInfo.Additional.ContainsKey(attributeName))

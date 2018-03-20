@@ -25,6 +25,15 @@ namespace SiteServer.CMS.Controllers.Preview
             return GetUrl(siteId, channelId, contentId, 0);
         }
 
+        public static string GetContentPreviewUrl(int siteId, int channelId, int contentId, int previewId)
+        {
+            if (contentId == 0)
+            {
+                contentId = previewId;
+            }
+            return $"{GetUrl(siteId, channelId, contentId, 0)}?isPreview=true&previewId={previewId}";
+        }
+
         public static string GetFileUrl(int siteId, int fileTemplateId)
         {
             return GetUrl(siteId, 0, 0, fileTemplateId);
