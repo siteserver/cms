@@ -285,8 +285,3 @@ function _getCookie(name) {
 	}
 	return null;
 }
-
-$(function () {
-	$('[rel=tooltip]').tooltip && $('[rel=tooltip]').tooltip();
-	$('.left-table tr[treeitemlevel=1]').css('font-size', '14px');
-});

@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using SiteServer.CMS.Controllers;
+using SiteServer.CMS.Api;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;

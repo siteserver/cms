@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
+using SiteServer.CMS.Api;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -34,19 +34,21 @@ namespace SiteServer.BackgroundPages.Settings
 
         public string SiteUrl => PageRedirect.GetRedirectUrl(SiteId);
 
-        public void Page_Load(object sender, EventArgs e)
-        {
-            if (IsForbidden) return;
+        public string SignalrHubsUrl = ApiManager.SignalrHubsUrl;
 
-            if (!IsPostBack)
-            {
-                //base.BreadCrumb(AppManager.LeftMenu.ID_Utility, "生成队列", AppManager.Permission.Platform_Utility);
-            }
+        //public void Page_Load(object sender, EventArgs e)
+        //{
+        //    if (IsForbidden) return;
 
-            //if (!string.IsNullOrEmpty(base.AuthRequest.GetQueryString("Cancel")))
-            //{
-            //    DataProvider.CreateTaskDAO.DeleteAll(base.SiteId);
-            //}
-        }
+        //    if (!IsPostBack)
+        //    {
+        //        base.BreadCrumb(AppManager.LeftMenu.ID_Utility, "生成队列", AppManager.Permission.Platform_Utility);
+        //    }
+
+        //    if (!string.IsNullOrEmpty(base.AuthRequest.GetQueryString("Cancel")))
+        //    {
+        //        DataProvider.CreateTaskDAO.DeleteAll(base.SiteId);
+        //    }
+        //}
     }
 }

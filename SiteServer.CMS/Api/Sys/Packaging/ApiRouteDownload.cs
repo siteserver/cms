@@ -1,10 +1,10 @@
 ﻿using SiteServer.Utils;
 
-namespace SiteServer.CMS.Controllers.Sys.Packaging
+namespace SiteServer.CMS.Api.Sys.Packaging
 {
-    public class ApiRouteSyncDatabase
+    public class ApiRouteDownload
     {
-        public const string Route = "sys/packaging/sync/database";
+        public const string Route = "sys/packaging/download";
 
         public static string GetUrl(string apiUrl)
         {

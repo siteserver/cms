@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using SiteServer.BackgroundPages.Settings;
-using SiteServer.CMS.Controllers.Sys.Packaging;
+using SiteServer.CMS.Api;
+using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
@@ -25,11 +26,11 @@ namespace SiteServer.BackgroundPages
 
         public string AdminUrl => PageUtils.GetAdminDirectoryUrl(string.Empty);
 
-        public string DownloadApiUrl => ApiRouteDownload.GetUrl(PageUtility.InnerApiUrl);
+        public string DownloadApiUrl => ApiRouteDownload.GetUrl(ApiManager.InnerApiUrl);
 
-        public string UpdateApiUrl => ApiRouteUpdate.GetUrl(PageUtility.InnerApiUrl);
+        public string UpdateApiUrl => ApiRouteUpdate.GetUrl(ApiManager.InnerApiUrl);
 
-        public string UpdateSsCmsApiUrl => ApiRouteUpdateSsCms.GetUrl(PageUtility.InnerApiUrl);
+        public string UpdateSsCmsApiUrl => ApiRouteUpdateSsCms.GetUrl(ApiManager.InnerApiUrl);
 
         public void Page_Load(object sender, EventArgs e)
         {

@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Api;
+using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
-using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.ImportExport;
@@ -146,7 +147,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         var link = new HyperLink();
                         var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                        link.NavigateUrl = ApiRouteActionsDownload.GetUrl(PageUtility.InnerApiUrl, filePath);
+                        link.NavigateUrl = ApiRouteActionsDownload.GetUrl(ApiManager.InnerApiUrl, filePath);
                         link.Text = "下载";
                         var successMessage = "成功导出文件！&nbsp;&nbsp;" + ControlUtils.GetControlRenderHtml(link);
                         SuccessMessage(successMessage);

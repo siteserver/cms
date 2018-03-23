@@ -9,11 +9,13 @@ using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.BackgroundPages.Settings;
-using SiteServer.CMS.Controllers.Preview;
-using SiteServer.CMS.Controllers.Sys.Packaging;
+using SiteServer.CMS.Api;
+using SiteServer.CMS.Api.Preview;
+using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Packaging;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages
 {
@@ -31,9 +33,30 @@ namespace SiteServer.BackgroundPages
 
         protected override bool IsSinglePage => true;
 
-        public string PackageId = PackageUtils.PackageIdSsCms;
+        public string SignalrHubsUrl = ApiManager.SignalrHubsUrl;
 
-        public string DownloadApiUrl => ApiRouteDownload.GetUrl(PageUtility.InnerApiUrl);
+        public string PackageIdSsCms = PackageUtils.PackageIdSsCms;
+
+        public string PackageList
+        {
+            get
+            {
+                var list = new List<object>();
+                var dict = PluginManager.GetPluginIdAndVersionDict();
+                foreach (var id in dict.Keys)
+                {
+                    var version = dict[id];
+                    list.Add(new
+                    {
+                        id,
+                        version
+                    });
+                }
+                return TranslateUtils.JsonSerialize(list);
+            }
+        }
+
+        public string DownloadApiUrl => ApiRouteDownload.GetUrl(ApiManager.InnerApiUrl);
 
         public string CurrentVersion => SystemManager.Version;
 
@@ -86,7 +109,8 @@ namespace SiteServer.BackgroundPages
 
                 var showSite = false;
 
-                var permissionList = new List<string>();
+                var permissionList = new List<string>(AuthRequest.AdminPermissions.PermissionList);
+                
                 if (AuthRequest.AdminPermissions.HasSitePermissions(_siteInfo.Id))
                 {
                     var websitePermissionList = AuthRequest.AdminPermissions.GetSitePermissions(_siteInfo.Id);
@@ -277,7 +301,7 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             }
 
             return $@"<li class=""{clazz}"">
-              <a href=""javascript:;""><i class=""ion-earth""></i>{menuText}</a>
+              <a href=""javascript:;"">{menuText}</a>
               <ul class=""submenu"">
                 {builder}
               </ul>
@@ -299,7 +323,7 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
                     $@"<li><a href=""{ApiRoutePreview.GetSiteUrl(_siteInfo.Id)}"" target=""_blank"">预览站点</a></li>");
 
             return $@"<li class=""has-submenu"">
-              <a href=""javascript:;""><i class=""ion-link""></i>站点链接</a>
+              <a href=""javascript:;"">站点链接</a>
               <ul class=""submenu"">
                 {builder}
               </ul>
@@ -376,7 +400,7 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
 
                 builder.Append(
                     $@"<li class=""has-submenu"">
-                        <a href=""{url}"" target=""{target}""><i class=""{tab.IconClass ?? "ion-ios-more"}""></i>{tab.Text}</a>
+                        <a href=""{url}"" target=""{target}"">{tab.Text}</a>
                         <ul class=""submenu"">
                             {tabsBuilder}
                         </ul>

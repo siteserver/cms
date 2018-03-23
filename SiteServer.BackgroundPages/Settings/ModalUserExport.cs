@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Api;
+using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
-using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.Utils.Enumerations;
@@ -44,7 +45,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 var link = new HyperLink
                 {
-                    NavigateUrl = ApiRouteActionsDownload.GetUrl(PageUtility.InnerApiUrl, filePath),
+                    NavigateUrl = ApiRouteActionsDownload.GetUrl(ApiManager.InnerApiUrl, filePath),
                     Text = "下载"
                 };
                 var successMessage = "成功导出文件！&nbsp;&nbsp;" + ControlUtils.GetControlRenderHtml(link);

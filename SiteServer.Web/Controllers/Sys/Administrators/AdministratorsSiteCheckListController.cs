@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.CMS.Controllers.Sys.Administrators;
+using SiteServer.CMS.Api.Sys.Administrators;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
 

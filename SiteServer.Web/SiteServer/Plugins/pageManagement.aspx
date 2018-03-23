@@ -259,7 +259,7 @@
       var version = '<%=Version%>';
 
       var data = {
-        pageType: 1,
+        pageType: <%=PageType%> === 0 ? 1 : <%=PageType%>,
         isGetVersions: false,
         allPackages: <%=Packages%>,
         enabledPackages: [],
@@ -295,38 +295,38 @@
               version: version,
               $filter: "id in '" + this.packageIds + "'"
             }, function (err, res) {
-              if (!err && res) {
-                for (var i = 0; i < res.length; i++) {
-                  var package = res[i];
+              if (err || !res) return;
 
-                  for (var j = 0; j < package.pluginReferences.length; j++) {
-                    var reference = package.pluginReferences[j];
-                    var installedPackages = $.grep($this.allPackages, function (e) {
-                      return e.id == reference.id;
-                    });
-                    if (installedPackages.length > 0) {
-                      $this.referencePackageIds.push(reference.id);
-                    }
-                  }
+              for (var i = 0; i < res.length; i++) {
+                var package = res[i];
 
+                for (var j = 0; j < package.pluginReferences.length; j++) {
+                  var reference = package.pluginReferences[j];
                   var installedPackages = $.grep($this.allPackages, function (e) {
-                    return e.id == package.id;
+                    return e.id == reference.id;
                   });
-                  if (installedPackages.length == 1) {
-                    var installedPackage = installedPackages[0];
-                    installedPackage.updatePackage = package;
-
-                    if (installedPackage.metadata && installedPackage.metadata.version) {
-                      if (compareversion(installedPackage.metadata.version, package.version) == -1) {
-                        $this.updatePackages.push(installedPackage);
-                      }
-                    } else {
-                      $this.updatePackages.push(installedPackage);
-                    }
+                  if (installedPackages.length > 0) {
+                    $this.referencePackageIds.push(reference.id);
                   }
                 }
-                $this.isGetVersions = true;
+
+                var installedPackages = $.grep($this.allPackages, function (e) {
+                  return e.id == package.id;
+                });
+                if (installedPackages.length == 1) {
+                  var installedPackage = installedPackages[0];
+                  installedPackage.updatePackage = package;
+
+                  if (installedPackage.metadata && installedPackage.metadata.version) {
+                    if (compareversion(installedPackage.metadata.version, package.version) == -1) {
+                      $this.updatePackages.push(installedPackage);
+                    }
+                  } else {
+                    $this.updatePackages.push(installedPackage);
+                  }
+                }
               }
+              $this.isGetVersions = true;
             }, 'packages');
           },
           enablePackage: function (package) {

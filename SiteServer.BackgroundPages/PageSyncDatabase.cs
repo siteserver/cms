@@ -1,5 +1,6 @@
 ﻿using System;
-using SiteServer.CMS.Controllers.Sys.Packaging;
+using SiteServer.CMS.Api;
+using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
@@ -14,7 +15,7 @@ namespace SiteServer.BackgroundPages
             return PageUtils.GetSiteServerUrl(nameof(PageSyncDatabase), null);
         }
 
-        public string UpdateDatabaseApiUrl => ApiRouteSyncDatabase.GetUrl(PageUtility.InnerApiUrl);
+        public string UpdateDatabaseApiUrl => ApiRouteSyncDatabase.GetUrl(ApiManager.InnerApiUrl);
 
         public string AdminUrl => PageUtils.GetAdminDirectoryUrl(string.Empty);
 

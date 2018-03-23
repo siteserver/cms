@@ -1,4 +1,5 @@
 ﻿using System.Web;
+using SiteServer.CMS.Api;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -21,12 +22,12 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string GetPluginUrl(string relatedUrl = "")
         {
-            return PageUtility.GetSiteFilesUrl(PageUtility.OuterApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
+            return PageUtility.GetSiteFilesUrl(ApiManager.OuterApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
         }
 
         public string GetPluginApiUrl(string action = "", string id = "")
         {
-            return Controllers.ApiRoutePlugin.GetUrl(PageUtility.OuterApiUrl, _metadata.Id, action, id);
+            return ApiRoutePlugin.GetUrl(_metadata.Id, action, id);
         }
 
         public string GetPluginPath(string relatedPath = "")

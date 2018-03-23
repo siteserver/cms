@@ -1,10 +1,10 @@
 ﻿using SiteServer.Utils;
 
-namespace SiteServer.CMS.Controllers.Sys.Stl
+namespace SiteServer.CMS.Api.Sys.Editors
 {
-    public class ApiRouteActionsResumeAdd
+    public class ApiRouteUEditor
     {
-        public const string Route = "sys/stl/actions/resume_add/{siteId}";
+        public const string Route = "sys/editors/ueditor/{siteId}";
 
         public static string GetUrl(string apiUrl, int siteId)
         {

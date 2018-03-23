@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
-using SiteServer.CMS.Controllers.Sys.Packaging;
+using SiteServer.CMS.Api;
+using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
@@ -26,11 +27,11 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public string PackageId { get; set; }
 
-        public string DownloadApiUrl => ApiRouteDownload.GetUrl(PageUtility.InnerApiUrl);
+        public string DownloadApiUrl => ApiRouteDownload.GetUrl(ApiManager.InnerApiUrl);
 
-        public string UpdateApiUrl => ApiRouteUpdate.GetUrl(PageUtility.InnerApiUrl);
+        public string UpdateApiUrl => ApiRouteUpdate.GetUrl(ApiManager.InnerApiUrl);
 
-        public string ClearCacheApiUrl => ApiRouteClearCache.GetUrl(PageUtility.InnerApiUrl);
+        public string ClearCacheApiUrl => ApiRouteClearCache.GetUrl(ApiManager.InnerApiUrl);
 
         public void Page_Load(object sender, EventArgs e)
         {

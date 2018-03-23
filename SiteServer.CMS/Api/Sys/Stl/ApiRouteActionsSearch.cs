@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using SiteServer.Utils;
 using SiteServer.CMS.StlParser.StlElement;
+using SiteServer.Utils;
 
-namespace SiteServer.CMS.Controllers.Sys.Stl
+namespace SiteServer.CMS.Api.Sys.Stl
 {
     public class ApiRouteActionsSearch
     {

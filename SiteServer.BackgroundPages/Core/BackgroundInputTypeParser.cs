@@ -8,8 +8,9 @@ using SiteServer.BackgroundPages.Ajax;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.CMS.Controllers.Sys.Editors;
-using SiteServer.CMS.Controllers.Sys.Stl;
+using SiteServer.CMS.Api;
+using SiteServer.CMS.Api.Sys.Editors;
+using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
@@ -274,8 +275,8 @@ $('#Title').keyup(function (e) {
             value = ETextEditorTypeUtils.TranslateToHtml(value);
             value = StringUtils.HtmlEncode(value);
 
-            var controllerUrl = ApiRouteUEditor.GetUrl(PageUtility.InnerApiUrl, siteInfo.Id);
-            var editorUrl = SiteFilesAssets.GetUrl(PageUtility.InnerApiUrl, "ueditor");
+            var controllerUrl = ApiRouteUEditor.GetUrl(ApiManager.InnerApiUrl, siteInfo.Id);
+            var editorUrl = SiteFilesAssets.GetUrl(ApiManager.InnerApiUrl, "ueditor");
 
             if (pageScripts["uEditor"] == null)
             {
@@ -419,7 +420,7 @@ function getRelatedField_{fieldInfo.Id}(level){{
     var obj = $('#c_' + attributeName + '_' + (level - 1));
     var itemID = $('option:selected', obj).attr('itemID');
     if (itemID){{
-        var url = '{ApiRouteActionsRelatedField.GetUrl(PageUtility.InnerApiUrl, siteInfo.Id,
+        var url = '{ApiRouteActionsRelatedField.GetUrl(ApiManager.InnerApiUrl, siteInfo.Id,
                 styleInfo.Additional.RelatedFieldId, 0)}' + itemID;
         var values = '{values}';
         var value = (values) ? values.split(',')[level - 1] : '';

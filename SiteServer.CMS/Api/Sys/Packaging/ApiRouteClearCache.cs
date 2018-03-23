@@ -1,10 +1,10 @@
 ﻿using SiteServer.Utils;
 
-namespace SiteServer.CMS.Controllers.Sys.Packaging
+namespace SiteServer.CMS.Api.Sys.Packaging
 {
-    public class ApiRouteUpdate
+    public class ApiRouteClearCache
     {
-        public const string Route = "sys/packaging/update";
+        public const string Route = "sys/packaging/clear/cache";
 
         public static string GetUrl(string apiUrl)
         {

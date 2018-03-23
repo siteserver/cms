@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Api;
+using SiteServer.CMS.Api.Sys.Administrators;
 using SiteServer.Utils;
-using SiteServer.CMS.Controllers.Sys.Administrators;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
 
@@ -13,7 +14,7 @@ namespace SiteServer.BackgroundPages
         public Literal LtlUpdateDate;
         public Literal LtlLastLoginDate;
 
-        public string SiteCheckListApiUrl => ApiRouteSiteCheckList.GetUrl(PageUtility.InnerApiUrl, AuthRequest.AdminName);
+        public string SiteCheckListApiUrl => ApiRouteSiteCheckList.GetUrl(ApiManager.InnerApiUrl, AuthRequest.AdminName);
 
         public void Page_Load(object sender, EventArgs e)
         {

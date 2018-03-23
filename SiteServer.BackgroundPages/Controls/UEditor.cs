@@ -3,6 +3,8 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web;
 using System.Web.UI;
+using SiteServer.CMS.Api;
+using SiteServer.CMS.Api.Sys.Editors;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
 
@@ -12,8 +14,8 @@ namespace SiteServer.BackgroundPages.Controls
     {
         protected override void Render(HtmlTextWriter writer)
         {
-            var controllerUrl = CMS.Controllers.Sys.Editors.ApiRouteUEditor.GetUrl(PageUtility.InnerApiUrl, 0);
-            var editorUrl = SiteFilesAssets.GetUrl(PageUtility.InnerApiUrl, "ueditor");
+            var controllerUrl = ApiRouteUEditor.GetUrl(ApiManager.InnerApiUrl, 0);
+            var editorUrl = SiteFilesAssets.GetUrl(ApiManager.InnerApiUrl, "ueditor");
 
             if (string.IsNullOrEmpty(Height) || Height == "0")
             {

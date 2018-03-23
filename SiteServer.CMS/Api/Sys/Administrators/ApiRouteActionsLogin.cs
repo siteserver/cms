@@ -1,4 +1,4 @@
-﻿namespace SiteServer.CMS.Controllers.Sys.Administrators
+﻿namespace SiteServer.CMS.Api.Sys.Administrators
 {
     public class ApiRouteActionsLogin
     {

@@ -3,7 +3,8 @@ using System.Collections.Specialized;
 using System.Web.UI;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Controllers.Sys.Stl;
+using SiteServer.CMS.Api;
+using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model.Enumerations;
@@ -131,7 +132,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 }
 
                 string resultString =
-                    $"任务完成，备份地址：<br /><strong> {filePath} </strong>&nbsp;<a href='{ApiRouteActionsDownload.GetUrl(PageUtility.InnerApiUrl, filePath)}'><img src='{SiteServerAssets.GetIconUrl("download.gif")}' />下载</a>。";
+                    $"任务完成，备份地址：<br /><strong> {filePath} </strong>&nbsp;<a href='{ApiRouteActionsDownload.GetUrl(ApiManager.InnerApiUrl, filePath)}'><img src='{SiteServerAssets.GetIconUrl("download.gif")}' />下载</a>。";
 
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(resultString, string.Empty, string.Empty);
             }

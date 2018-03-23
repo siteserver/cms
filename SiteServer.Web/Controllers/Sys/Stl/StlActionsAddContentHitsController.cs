@@ -1,6 +1,6 @@
 ﻿using System.Web;
 using System.Web.Http;
-using SiteServer.CMS.Controllers.Sys.Stl;
+using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.API.Controllers.Sys.Stl

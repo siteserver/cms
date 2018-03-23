@@ -5,6 +5,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using System.Text;
+using SiteServer.CMS.Api;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -80,7 +81,7 @@ namespace SiteServer.CMS.StlParser.Model
             SiteInfo = siteInfo;
             UserInfo = null;
             _uniqueId = 1;
-            ApiUrl = PageUtility.OuterApiUrl;
+            ApiUrl = ApiManager.OuterApiUrl;
 
             ChannelItems = new Stack<ChannelItemInfo>(5);
             ContentItems = new Stack<ContentItemInfo>(5);

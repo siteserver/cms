@@ -1,6 +1,6 @@
 using SiteServer.Utils;
 
-namespace SiteServer.CMS.Controllers.Sys.Stl
+namespace SiteServer.CMS.Api.Sys.Stl
 {
     public class ApiRouteActionsDynamic
     {

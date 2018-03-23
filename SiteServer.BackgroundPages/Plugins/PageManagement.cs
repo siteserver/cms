@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
@@ -13,8 +14,18 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public static string GetRedirectUrl()
         {
-            return PageUtils.GetPluginsUrl(nameof(PageManagement), null);
+            return GetRedirectUrl(1);
         }
+
+        public static string GetRedirectUrl(int pageType)
+        {
+            return PageUtils.GetPluginsUrl(nameof(PageManagement), new NameValueCollection
+            {
+                {"pageType", pageType.ToString()}
+            });
+        }
+
+        public int PageType { get; private set; }
 
         public string Packages => TranslateUtils.JsonSerialize(PluginManager.AllPluginInfoList);
 
@@ -33,6 +44,8 @@ namespace SiteServer.BackgroundPages.Plugins
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
+
+            PageType = AuthRequest.GetQueryInt("pageType");
 
             if (AuthRequest.IsQueryExists("delete"))
             {

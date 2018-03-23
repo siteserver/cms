@@ -30,12 +30,12 @@ namespace SiteServer.CMS.Core
                 content = PathUtility.SaveImage(siteInfo, content);
             }
 
-            var builder = new StringBuilder(content);
-
-            if (url == "/")
+            if (string.IsNullOrEmpty(url) || url == "/")
             {
-                url = string.Empty;
+                return content;
             }
+
+            var builder = new StringBuilder(content);
 
             StringUtils.ReplaceHrefOrSrc(builder, url, "@");
 

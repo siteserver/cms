@@ -1,7 +1,7 @@
 ﻿using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using System;
-using SiteServer.CMS.Controllers.Preview;
+using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -14,10 +14,6 @@ namespace SiteServer.CMS.Core
         private PageUtility()
         {
         }
-
-        public const string InnerApiUrl = "/api";
-
-        public static string OuterApiUrl => ConfigManager.SystemConfigInfo.ApiUrl;
 
         public static string GetSiteUrl(SiteInfo siteInfo, bool isLocal)
         {

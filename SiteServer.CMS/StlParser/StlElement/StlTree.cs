@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using SiteServer.CMS.Api;
+using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
-using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
@@ -654,7 +655,7 @@ var stltree_isNodeTree = {isNodeTree};
                 _level = nodeInfo.ParentsCount - topParentsCount;
                 _currentChannelId = currentChannelId;
 
-                var treeDirectoryUrl = SiteFilesAssets.GetUrl(PageUtility.OuterApiUrl, "tree");
+                var treeDirectoryUrl = SiteFilesAssets.GetUrl(ApiManager.OuterApiUrl, "tree");
                 _iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
                 _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
                 _iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");

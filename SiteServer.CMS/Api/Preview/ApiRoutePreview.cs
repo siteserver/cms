@@ -1,7 +1,6 @@
-﻿using SiteServer.CMS.Core;
-using SiteServer.Utils;
+﻿using SiteServer.Utils;
 
-namespace SiteServer.CMS.Controllers.Preview
+namespace SiteServer.CMS.Api.Preview
 {
     public class ApiRoutePreview
     {
@@ -41,7 +40,7 @@ namespace SiteServer.CMS.Controllers.Preview
 
         private static string GetUrl(int siteId, int channelId, int contentId, int fileTemplateId)
         {
-            var apiUrl = PageUtils.Combine(PageUtility.InnerApiUrl, Route);
+            var apiUrl = ApiManager.GetInnerApiUrl(Route);
             apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             if (channelId > 0)
             {

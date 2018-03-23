@@ -17,6 +17,7 @@
     </head>
 
     <body class="fixed-left widescreen" style="background-color: #eee">
+
       <div id="wrapper">
         <header id="topnav">
           <div class="topbar-main">
@@ -25,7 +26,10 @@
                 <img src="assets/icons/logo.png" />
               </a>
             </div>
-            <ul class="navigation-menu">
+            <a href="javascript:;" class="position-fixed" onclick="toggleMenu()" style="margin-top: 10px;margin-left: 30px;">
+              <i class="ion-navicon" style="font-size: 28px;color: #fff;"></i>
+            </a>
+            <ul id="topMenus" class="navigation-menu">
               <asp:Literal id="LtlTopMenus" runat="server" />
             </ul>
             <asp:PlaceHolder id="PhSite" runat="server" visible="false">
@@ -79,14 +83,7 @@
           </div>
         </header>
 
-        <a id="btnLeftMenu" href="javascript:;" onclick="openMenu()" class="position-fixed" style="z-index: 9;display: block;margin-top: 8px; margin-left: 10px;">
-          <i class="ion-navicon" style="font-size: 28px;color: #565b5e;"></i>
-        </a>
-
         <div id="leftMenu" class="left side-menu">
-          <a href="javascript:;" class="position-fixed" onclick="closeMenu()" style="z-index: 9;margin-top: 8px;margin-left: 165px;">
-            <i class="ion-navicon" style="font-size: 28px;color: #565b5e;"></i>
-          </a>
           <div class="sidebar-inner slimscrollleft">
             <div id="sidebar-menu">
               <ul>
@@ -113,7 +110,7 @@
     <script src="assets/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
     <script src="assets/signalR/jquery.signalR-2.2.2.min.js" type="text/javascript"></script>
     <script src="assets/layer/layer.min.js" type="text/javascript"></script>
-    <script src="/signalr/hubs" type="text/javascript"></script>
+    <script src="<%=SignalrHubsUrl%>" type="text/javascript"></script>
     <script src="inc/script.js" type="text/javascript"></script>
     <script src="assets/jQuery-slimScroll/jquery.slimscroll.min.js" type="text/javascript"></script>
     <script src="assets/js/apiUtils.js"></script>
@@ -145,9 +142,19 @@
         $('#right').src = url;
       }
 
-      var contentMargin = 200;
+      var isDesktop = $(window).width() > 1010;
+      var contentMargin = isDesktop ? 200 : 0;
+      var isMenuWin = false;
 
       window.onresize = function (event) {
+        isDesktop = $(window).width() > 1010;
+        if (!isDesktop) {
+          $('#topMenus').hide();
+          $('#leftMenu').width('100%').hide();
+        } else {
+          $('#leftMenu').width(200);
+          $('#topMenus').show();
+        }
         $('#frmMain').height($(window).height() - 62);
         $('#frmMain').width($(window).width() - contentMargin);
         $('#content').css({
@@ -163,17 +170,106 @@
       };
 
       function openMenu() {
-        contentMargin = 200;
-        onresize();
+        isMenuWin = true;
+        !isDesktop && $('#leftMenu').show();
       }
 
       function closeMenu() {
-        contentMargin = 40;
-        onresize();
+        isMenuWin = false;
+        !isDesktop && $('#leftMenu').hide();
+      }
+
+      function toggleMenu() {
+        if (isDesktop) {
+          contentMargin = contentMargin === 200 ? 0 : 200;
+          onresize();
+        } else {
+          isMenuWin = !isMenuWin;
+          if (isMenuWin) {
+            openMenu();
+          } else {
+            closeMenu();
+          }
+        }
+      }
+
+      var versionApi = new apiUtils.Api();
+      var downloadApi = new apiUtils.Api('<%=DownloadApiUrl%>');
+      var isNightly = <%=IsNightly%>;
+      var version = '<%=Version%>';
+      var packageIdSsCms = '<%=PackageIdSsCms%>';
+      var packageList = <%=PackageList%>;
+      var packageIds = [packageIdSsCms];
+      for (var i = 0; i < packageList.length; i++) {
+        var package = packageList[i];
+        packageIds.push(package.id);
+      }
+      var updatePackages = 0;
+
+      function packageUpdates() {
+        // if ('<%=CurrentVersion%>' == '0.0.0-dev') return;
+
+        versionApi.get({
+          isNightly: isNightly,
+          version: version,
+          $filter: "id in '" + packageIds.join(',') + "'"
+        }, function (err, res) {
+          if (err || !res) return;
+
+          for (var i = 0; i < res.length; i++) {
+            var package = res[i];
+            if (!package || !package.version) continue;
+
+            if (package.id == packageIdSsCms) {
+              packageDownload(package);
+            } else {
+              var installedPackages = $.grep(packageList, function (e) {
+                return e.id == package.id;
+              });
+              if (installedPackages.length == 1) {
+                var installedPackage = installedPackages[0];
+                if (installedPackage.version) {
+                  if (compareversion(installedPackage.version, package.version) == -1) {
+                    updatePackages++;
+                  }
+                } else {
+                  updatePackages++;
+                }
+              }
+            }
+          }
+
+          if (updatePackages > 0) {
+            $('#updatePackagesLink').html(updatePackages);
+            $('#updatePackagesLink').show();
+          }
+        }, 'packages');
+      }
+
+      function packageDownload(package) {
+        if (compareversion('<%=CurrentVersion%>', package.version) != -1) return;
+
+        var major = package.version.split('.')[0];
+        var minor = package.version.split('.')[1];
+        var updatesUrl = 'http://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
+        $('#newVersionLink').attr('href', updatesUrl);
+        $('#newVersionLast').html(package.version);
+        $('#newVersionDate').html(package.published);
+        if (package.releaseNotes) {
+          $('#newVersionNotes').html(package.releaseNotes + '<br />');
+        }
+
+        downloadApi.post({
+          packageId: packageIdSsCms,
+          version: package.version
+        }, function (err, res) {
+          if (!err && res) {
+            $('#newVersion').show();
+          }
+        });
       }
 
       $(document).ready(function () {
-
         onresize();
 
         $('.waves-primary').click(function () {
@@ -199,43 +295,7 @@
           wheelStep: 5
         });
 
-        if ('<%=CurrentVersion%>' == '0.0.0-dev') return;
-
-        var versionApi = new apiUtils.Api();
-        var downloadApi = new apiUtils.Api('<%=DownloadApiUrl%>');
-        var isNightly = <%=IsNightly%>;
-        var version = '<%=Version%>';
-        var packageId = '<%=PackageId%>';
-
-        versionApi.get({
-          isNightly: isNightly,
-          version: version
-        }, function (err, res) {
-          if (!err && res) {
-            if (!res || !res.version) return;
-
-            if (compareversion('<%=CurrentVersion%>', res.version) != -1) return;
-
-            var major = res.version.split('.')[0];
-            var minor = res.version.split('.')[1];
-            var updatesUrl = 'http://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
-            $('#newVersionLink').attr('href', updatesUrl);
-            $('#newVersionLast').html(res.version);
-            $('#newVersionDate').html(res.published);
-            if (res.releaseNotes) {
-              $('#newVersionNotes').html(res.releaseNotes + '<br />');
-            }
-
-            downloadApi.post({
-              packageId: packageId,
-              version: res.version
-            }, function (err, res) {
-              if (!err && res) {
-                $('#newVersion').show();
-              }
-            });
-          }
-        }, 'packages', packageId);
+        packageUpdates();
       });
     </script>
     <!--#include file="inc/foot.html"-->

@@ -1,6 +1,6 @@
 ﻿using SiteServer.Utils;
 
-namespace SiteServer.CMS.Controllers
+namespace SiteServer.CMS.Api
 {
     public class ApiRoutePlugin
     {
@@ -8,9 +8,9 @@ namespace SiteServer.CMS.Controllers
         public const string RouteAction = "plugins/{pluginId}/{name}";
         public const string RouteActionAndId = "plugins/{pluginId}/{name}/{id}";
 
-        public static string GetUrl(string apiUrl, string pluginId, string name = "", string id = "")
+        public static string GetUrl(string pluginId, string name = "", string id = "")
         {
-            apiUrl = PageUtils.Combine(apiUrl, Route);
+            var apiUrl = ApiManager.GetOuterApiUrl(Route);
             apiUrl = apiUrl.Replace("{pluginId}", pluginId);
             if (!string.IsNullOrEmpty(name))
             {

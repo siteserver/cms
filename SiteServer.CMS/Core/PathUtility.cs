@@ -214,7 +214,6 @@ namespace SiteServer.CMS.Core
                 retval = PathUtils.GetFileName(filePath);
             }
 
-            retval = StringUtils.ReplaceIgnoreCase(retval, "as", string.Empty);
             retval = StringUtils.ReplaceIgnoreCase(retval, ";", string.Empty);
             return retval;
         }

@@ -1,6 +1,6 @@
 ﻿using SiteServer.Utils;
 
-namespace SiteServer.CMS.Controllers.Sys.Packaging
+namespace SiteServer.CMS.Api.Sys.Packaging
 {
     public class ApiRouteUpdateSsCms
     {

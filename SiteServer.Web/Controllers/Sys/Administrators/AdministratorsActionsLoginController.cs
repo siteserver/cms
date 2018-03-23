@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Web.Http;
-using SiteServer.CMS.Controllers.Sys.Administrators;
+using SiteServer.CMS.Api.Sys.Administrators;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
 

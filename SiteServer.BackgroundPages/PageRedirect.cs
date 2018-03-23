@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
+using SiteServer.CMS.Api.Preview;
 using SiteServer.Utils;
-using SiteServer.CMS.Controllers.Preview;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages
