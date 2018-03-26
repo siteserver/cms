@@ -1,0 +1,56 @@
+using System;
+using System.Web;
+
+namespace SiteServer.Utils
+{
+    public class CookieUtils
+    {
+        private CookieUtils()
+        {
+        }
+
+        public static void SetCookie(string name, string value, DateTime expires)
+        {
+            SetCookie(new HttpCookie(name)
+            {
+                Value = value,
+                Expires = expires
+            });
+        }
+
+        public static void SetCookie(HttpCookie cookie)
+        {
+            cookie.Value = TranslateUtils.EncryptStringBySecretKey(cookie.Value);
+            cookie.HttpOnly = false;
+
+            if (HttpContext.Current.Request.Url.Scheme.Equals("https"))
+            {
+                cookie.Secure = true;//通过https传递cookie
+            }
+            HttpContext.Current.Response.Cookies.Add(cookie);
+        }
+
+        public static string GetCookie(string name)
+        {
+            if (HttpContext.Current.Request.Cookies[name] == null) return string.Empty;
+
+            var value = HttpContext.Current.Request.Cookies[name].Value;
+            return TranslateUtils.DecryptStringBySecretKey(value);
+        }
+
+        public static bool IsExists(string name)
+        {
+            return HttpContext.Current.Request.Cookies[name] != null;
+        }
+
+        public static void Erase(string name)
+        {
+            var cookie = HttpContext.Current.Response.Cookies[name];
+            if (cookie != null)
+            {
+                cookie.Expires = DateTime.Now.AddDays(-1);
+                cookie.Values.Clear();
+            }
+        }
+    }
+}
