@@ -45,6 +45,7 @@
 .CodeMirror-wrap pre {
     word-wrap: break-word;
     white-space: pre-wrap;
+    line-height: 22px;
 }
 .CodeMirror-wrap .CodeMirror-scroll {
     overflow-x: hidden;
