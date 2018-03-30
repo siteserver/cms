@@ -1,37 +1,15 @@
+var fs = require("fs");
+var path = require("path");
 var gulp = require("gulp");
 var minify = require("gulp-minifier");
 var rimraf = require("rimraf");
 var rename = require("gulp-rename");
 var replace = require("gulp-replace");
 var zip = require("gulp-zip");
-var argv = require("yargs").argv;
-var fs = require("fs");
-var path = require("path");
 var filter = require("gulp-filter");
+var runSequence = require("run-sequence");
 
-var minFilter = filter(['**/*.css', '**/*.js'], { restore: true });
-var replaceFilter = filter(['**/*.aspx'], { restore: true });
-
-function min(src, dest, version) {
-  gulp.src(src)
-    .pipe(minFilter)
-    .pipe(
-      minify({
-        minify: true,
-        collapseWhitespace: true,
-        conservativeCollapse: true,
-        minifyJS: true,
-        minifyCSS: true,
-        minifyHTML: true
-      })
-    )
-    .pipe(minFilter.restore)
-    .pipe(replaceFilter)
-    .pipe(replace('.css"', ".css?v=" + version + '"'))
-    .pipe(replace('.js"', ".js?v=" + version + '"'))
-    .pipe(replaceFilter.restore)
-    .pipe(gulp.dest(dest));
-}
+var version = process.env.APPVEYOR_BUILD_VERSION || '0.0.0';
 
 function getDependencies() {
   var str = "";
@@ -57,45 +35,106 @@ function getDependencies() {
   return str;
 }
 
-function build(beta) {
-  var version = process.env.APPVEYOR_BUILD_VERSION;
-  if (beta) {
-    version += "-beta";
-  }
-  console.log("build SiteServer CMS started, version: " + version);
-
+gulp.task("build-nuspec", function() {
   var dependencies = getDependencies();
-  gulp
+  return gulp
     .src("./SS.CMS.nuspec")
     .pipe(replace("$version$", version))
     .pipe(replace("</metadata>", dependencies + "</metadata>"))
     .pipe(gulp.dest("./build"));
-  gulp.src(["./SiteServer.Web/bin/*.dll"]).pipe(gulp.dest("./build/bin"));
-  min(
-    "./SiteServer.Web/SiteFiles/assets/**",
-    "./build/SiteFiles/assets",
-    version
-  );
-  min("./SiteServer.Web/SiteServer/**", "./build/SiteServer", version);
+});
 
-  gulp.src("./SiteServer.Web/安装向导.html").pipe(gulp.dest("./build"));
-  gulp
+gulp.task("build-bin", function() {
+  return gulp
+    .src(["./SiteServer.Web/bin/*.dll"])
+    .pipe(gulp.dest("./build/bin"));
+});
+
+gulp.task("build-sitefiles-all", function() {
+  return gulp
+      .src("./SiteServer.Web/SiteFiles/assets/**/*")
+      .pipe(gulp.dest("./build/SiteFiles/assets"));
+});
+
+gulp.task("build-sitefiles-min", function() {
+  return gulp
+      .src(["./SiteServer.Web/SiteFiles/assets/**/*.js", "./SiteServer.Web/SiteFiles/assets/**/*.css"])
+      .pipe(
+        minify({
+          minify: true,
+          collapseWhitespace: true,
+          conservativeCollapse: true,
+          minifyJS: true,
+          minifyCSS: true,
+          minifyHTML: false,
+          ignoreFiles: ['.min.css', '.min.js']
+        })
+      )
+      .pipe(gulp.dest("./build/SiteFiles/assets"));
+});
+
+gulp.task("build-siteserver-all", function() {
+  return gulp.src("./SiteServer.Web/SiteServer/**/*").pipe(gulp.dest("./build/SiteServer"));
+});
+
+gulp.task("build-siteserver-aspx", function() {
+  return gulp
+      .src("./SiteServer.Web/SiteServer/**/*.aspx")
+      .pipe(replace('.css"', ".css?v=" + version + '"'))
+      .pipe(replace('.js"', ".js?v=" + version + '"'))
+      .pipe(gulp.dest("./build/SiteServer"));
+});
+
+gulp.task("build-siteserver-min", function() {
+  return gulp
+      .src(["./SiteServer.Web/SiteServer/**/*.js", "./SiteServer.Web/SiteServer/**/*.css"])
+      .pipe(
+        minify({
+          minify: true,
+          collapseWhitespace: true,
+          conservativeCollapse: true,
+          minifyJS: true,
+          minifyCSS: true,
+          minifyHTML: true,
+          ignoreFiles: ['.min.css', '.min.js']
+        })
+      )
+      .pipe(gulp.dest("./build/SiteServer"));
+});
+
+gulp.task("build-docs", function() {
+  return gulp.src("./SiteServer.Web/安装向导.html").pipe(gulp.dest("./build"));
+});
+
+gulp.task("build-webconfig", function() {
+  return gulp
     .src("./SiteServer.Web/Web.Release.config")
     .pipe(rename("Web.config"))
     .pipe(gulp.dest("./build"));
+});
 
-  console.log("build SiteServer CMS successed!");
-}
-
-gulp.task("release", function() {
+gulp.task("release", function(callback) {
+  console.log("build version: " + version);
   build(false);
 });
 
-gulp.task("preview", function() {
-  build(true);
+gulp.task("preview", function(callback) {
+  version += "-beta";
+  console.log("build version: " + version);
+  runSequence(
+    "build-docs",
+    "build-webconfig",
+    "build-nuspec",
+    "build-bin",
+    "build-sitefiles-all",
+    "build-sitefiles-min",
+    "build-siteserver-all",
+    "build-siteserver-aspx",
+    "build-siteserver-min"
+  );
 });
 
-gulp.task("zip", function() {
+gulp.task("zip", function(callback) {
   gulp
     .src(["./build/**/*", "!./build/SS.CMS.nuspec"])
     .pipe(zip("siteserver_install.zip"))
