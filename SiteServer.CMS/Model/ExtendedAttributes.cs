@@ -277,8 +277,17 @@ namespace SiteServer.CMS.Model
                 var retval = string.Empty;
                 if (!string.IsNullOrEmpty(value))
                 {
-                    //替换url中的换行符，update by sessionliang at 20151211
-                    retval = value.Replace("=", "_equals_").Replace("&", "_and_").Replace("?", "_question_").Replace("'", "_quote_").Replace("+", "_add_").Replace("\r", "").Replace("\n", "");
+                    retval = value.Replace("=", "_equals_").Replace("&", "_and_").Replace("?", "_question_").Replace("'", "_quote_").Replace("+", "_add_").Replace("\r", "_return_").Replace("\n", "_newline_");
+                }
+                return retval;
+            }
+
+            private static string ValueFromUrl(string value)
+            {
+                var retval = string.Empty;
+                if (!string.IsNullOrEmpty(value))
+                {
+                    retval = value.Replace("_equals_", "=").Replace("_and_", "&").Replace("_question_", "?").Replace("_quote_", "'").Replace("_add_", "+").Replace("_return_", "\r").Replace("_newline_", "\n");
                 }
                 return retval;
             }
@@ -290,16 +299,6 @@ namespace SiteServer.CMS.Model
                     separateString = separateString.Replace("/u0026", "&");
                 }
                 return ToNameValueCollection(separateString, '&');
-            }
-
-            private static string ValueFromUrl(string value)
-            {
-                var retval = string.Empty;
-                if (!string.IsNullOrEmpty(value))
-                {
-                    retval = value.Replace("_equals_", "=").Replace("_and_", "&").Replace("_question_", "?").Replace("_quote_", "'").Replace("_add_", "+");
-                }
-                return retval;
             }
 
             private static NameValueCollection ToNameValueCollection(string separateString, char seperator)

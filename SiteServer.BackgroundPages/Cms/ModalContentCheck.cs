@@ -66,50 +66,49 @@ namespace SiteServer.BackgroundPages.Cms
 
             _idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
 
-            if (!IsPostBack)
+            if (IsPostBack) return;
+
+            var titles = new StringBuilder();
+            foreach (var channelId in _idsDictionary.Keys)
             {
-                var titles = new StringBuilder();
-                foreach (var channelId in _idsDictionary.Keys)
+                var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                var contentIdList = _idsDictionary[channelId];
+                foreach (var contentId in contentIdList)
                 {
-                    var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
-                    var contentIdList = _idsDictionary[channelId];
-                    foreach (var contentId in contentIdList)
-                    {
-                        var title = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
-                        titles.Append(title + "<br />");
-                    }
+                    var title = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
+                    titles.Append(title + "<br />");
                 }
-
-                if (!string.IsNullOrEmpty(LtlTitles.Text))
-                {
-                    titles.Length -= 6;
-                }
-                LtlTitles.Text = titles.ToString();
-
-                var checkedLevel = 5;
-                var isChecked = true;
-
-                foreach (var channelId in _idsDictionary.Keys)
-                {
-                    int checkedLevelByChannelId;
-                    var isCheckedByChannelId = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, channelId, out checkedLevelByChannelId);
-                    if (checkedLevel > checkedLevelByChannelId)
-                    {
-                        checkedLevel = checkedLevelByChannelId;
-                    }
-                    if (!isCheckedByChannelId)
-                    {
-                        isChecked = false;
-                    }
-                }
-
-                CheckManager.LoadContentLevelToCheck(DdlCheckType, SiteInfo, isChecked, checkedLevel);
-
-                var listItem = new ListItem("<保持原栏目不变>", "0");
-                DdlTranslateChannelId.Items.Add(listItem);
-
-                ChannelManager.AddListItemsForAddContent(DdlTranslateChannelId.Items, SiteInfo, true, AuthRequest.AdminPermissions);
             }
+
+            if (!string.IsNullOrEmpty(LtlTitles.Text))
+            {
+                titles.Length -= 6;
+            }
+            LtlTitles.Text = titles.ToString();
+
+            var checkedLevel = 5;
+            var isChecked = true;
+
+            foreach (var channelId in _idsDictionary.Keys)
+            {
+                int checkedLevelByChannelId;
+                var isCheckedByChannelId = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, channelId, out checkedLevelByChannelId);
+                if (checkedLevel > checkedLevelByChannelId)
+                {
+                    checkedLevel = checkedLevelByChannelId;
+                }
+                if (!isCheckedByChannelId)
+                {
+                    isChecked = false;
+                }
+            }
+
+            CheckManager.LoadContentLevelToCheck(DdlCheckType, SiteInfo, isChecked, checkedLevel);
+
+            var listItem = new ListItem("<保持原栏目不变>", "0");
+            DdlTranslateChannelId.Items.Add(listItem);
+
+            ChannelManager.AddListItemsForAddContent(DdlTranslateChannelId.Items, SiteInfo, true, AuthRequest.AdminPermissions);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -142,11 +141,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                         DataProvider.ContentDao.Update(tableName, SiteInfo, contentInfo);
 
-                        if (contentInfo.IsChecked)
-                        {
-                            CreateManager.CreateContentAndTrigger(SiteId, contentInfo.ChannelId, contentId);
-                        }
-
+                        CreateManager.CreateContentAndTrigger(SiteId, contentInfo.ChannelId, contentId);
                     }
                 }
                 if (contentIdListToCheck.Count > 0)
@@ -158,51 +153,40 @@ namespace SiteServer.BackgroundPages.Cms
             if (contentInfoListToCheck.Count == 0)
             {
                 LayerUtils.CloseWithoutRefresh(Page, "alert('您的审核权限不足，无法审核所选内容！');");
+                return;
             }
-            else
+
+            var translateChannelId = TranslateUtils.ToInt(DdlTranslateChannelId.SelectedValue);
+
+            foreach (var channelId in idsDictionaryToCheck.Keys)
             {
-                try
+                var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                var contentIdList = idsDictionaryToCheck[channelId];
+                DataProvider.ContentDao.UpdateIsChecked(tableName, SiteId, channelId, contentIdList, translateChannelId, true, AuthRequest.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
+
+                DataProvider.ChannelDao.UpdateContentNum(SiteInfo, channelId, true);
+            }
+
+            if (translateChannelId > 0)
+            {
+                DataProvider.ChannelDao.UpdateContentNum(SiteInfo, translateChannelId, true);
+            }
+
+            AuthRequest.AddSiteLog(SiteId, SiteId, 0, "设置内容状态为" + DdlCheckType.SelectedItem.Text, TbCheckReasons.Text);
+
+            foreach (var channelId in idsDictionaryToCheck.Keys)
+            {
+                var contentIdList = _idsDictionary[channelId];
+                if (contentIdList != null)
                 {
-                    var translateChannelId = TranslateUtils.ToInt(DdlTranslateChannelId.SelectedValue);
-
-                    foreach (var channelId in idsDictionaryToCheck.Keys)
+                    foreach (var contentId in contentIdList)
                     {
-                        var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
-                        var contentIdList = idsDictionaryToCheck[channelId];
-                        DataProvider.ContentDao.UpdateIsChecked(tableName, SiteId, channelId, contentIdList, translateChannelId, true, AuthRequest.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
-
-                        DataProvider.ChannelDao.UpdateContentNum(SiteInfo, channelId, true);
+                        CreateManager.CreateContentAndTrigger(SiteId, channelId, contentId);
                     }
-
-                    if (translateChannelId > 0)
-                    {
-                        DataProvider.ChannelDao.UpdateContentNum(SiteInfo, translateChannelId, true);
-                    }
-
-                    AuthRequest.AddSiteLog(SiteId, SiteId, 0, "设置内容状态为" + DdlCheckType.SelectedItem.Text, TbCheckReasons.Text);
-
-                    if (isChecked)
-                    {
-                        foreach (var channelId in idsDictionaryToCheck.Keys)
-                        {
-                            var contentIdList = _idsDictionary[channelId];
-                            if (contentIdList != null)
-                            {
-                                foreach (var contentId in contentIdList)
-                                {
-                                    CreateManager.CreateContent(SiteId, channelId, contentId);
-                                }
-                            }
-                        }
-                    }
-
-                    LayerUtils.CloseAndRedirect(Page, _returnUrl);
-                }
-                catch (Exception ex)
-                {
-                    FailMessage(ex, "操作失败！");
                 }
             }
+
+            LayerUtils.CloseAndRedirect(Page, _returnUrl);
         }
     }
 }

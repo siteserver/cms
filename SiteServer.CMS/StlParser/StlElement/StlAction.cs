@@ -15,29 +15,17 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string ElementName = "stl:action";
 
         public const string AttributeType = "type";
-        public const string AttributeReturnUrl = "returnUrl";
 
         public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
-            {AttributeType, StringUtils.SortedListToAttributeValueString("动作类型", TypeList)},
-            {AttributeReturnUrl, "动作完成后的返回地址"}
+            {AttributeType, StringUtils.SortedListToAttributeValueString("动作类型", TypeList)}
         };
 
-        //public const string TypeLogin = "Login";
-        //public const string TypeRegister = "Register";
-        //public const string TypeLogout = "Logout";
-        public const string TypeAddFavorite = "AddFavorite";
-        public const string TypeSetHomePage = "SetHomePage";
         public const string TypeTranslate = "Translate";
         public const string TypeClose = "Close";
 
         public static SortedList<string, string> TypeList => new SortedList<string, string>
         {
-            //{TypeLogin, "登录"},
-            //{TypeRegister, "注册"},
-            //{TypeLogout, "退出"},
-            {TypeAddFavorite, "将页面添加至收藏夹"},
-            {TypeSetHomePage, "将页面设置为首页"},
             {TypeTranslate, "繁体/简体转换"},
             {TypeClose, "关闭页面"}
         };
@@ -54,28 +42,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                     type = value;
                 }
             }
-
-            //var ie = node.Attributes?.GetEnumerator();
-            //if (ie != null)
-            //{
-            //    while (ie.MoveNext())
-            //    {
-            //        var attr = (XmlAttribute)ie.Current;
-
-            //        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
-            //        {
-            //            type = attr.Value;
-            //        }
-            //        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeReturnUrl))
-            //        {
-            //            returnUrl = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-            //        }
-            //        else
-            //        {
-            //            attributes.Add(attr.Name, attr.Value);
-            //        }
-            //    }
-            //}
 
             return ParseImpl(pageInfo, contextInfo, type);
         }
@@ -99,80 +65,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             //计算动作开始
             if (!string.IsNullOrEmpty(type))
             {
-                //if (StringUtils.EqualsIgnoreCase(type, TypeLogin))
-                //{
-                //    if (string.IsNullOrEmpty(returnUrl))
-                //    {
-                //        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
-                //    }
-
-                //    url = HomeUtils.GetLoginUrl(pageInfo.HomeUrl, returnUrl);
-                //}
-                //else if (StringUtils.EqualsIgnoreCase(type, TypeRegister))
-                //{
-                //    if (string.IsNullOrEmpty(returnUrl))
-                //    {
-                //        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
-                //    }
-
-                //    url = HomeUtils.GetRegisterUrl(pageInfo.HomeUrl, returnUrl);
-                //}
-                //else if (StringUtils.EqualsIgnoreCase(type, TypeLogout))
-                //{
-                //    if (string.IsNullOrEmpty(returnUrl))
-                //    {
-                //        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
-                //    }
-
-                //    url = HomeUtils.GetLogoutUrl(pageInfo.HomeUrl, returnUrl);
-                //}
-                if (StringUtils.EqualsIgnoreCase(type, TypeAddFavorite))
-                {
-                    pageInfo.BodyCodes[TypeAddFavorite] = @"
-<script type=""text/javascript""> 
-    function AddFavorite(){  
-        if (document.all) {
-            window.external.addFavorite(window.location.href, document.title);
-        } 
-        else if (window.sidebar) {
-            window.sidebar.addPanel(document.title, window.location.href, """");
-        }
-    }
-</script>
-";
-                    stlAnchor.Attributes["onclick"] = "AddFavorite();";
-                }
-                else if (StringUtils.EqualsIgnoreCase(type, TypeSetHomePage))
-                {
-                    url = pageInfo.SiteInfo.Additional.WebUrl;
-                    if (!pageInfo.FootCodes.ContainsKey(TypeAddFavorite))
-                    {
-                        pageInfo.FootCodes.Add(TypeAddFavorite, $@"
-<script type=""text/javascript""> 
-    function SetHomepage(){{   
-        if (document.all) {{
-            document.body.style.behavior = 'url(#default#homepage)';
-            document.body.setHomePage(""{url}"");
-        }}
-        else if (window.sidebar) {{
-            if (window.netscape) {{
-                try {{
-                    netscape.security.PrivilegeManager.enablePrivilege(""UniversalXPConnect"");
-                 }}
-                catch(e) {{
-                    alert(""该操作被浏览器拒绝，如果想启用该功能，请在地址栏内输入 about:config,然后将项 signed.applets.codebase_principal_support 值该为true"");
-                }}
-             }}
-            var prefs = Components.classes['@mozilla.org/preferences-service;1'].getService(Components.interfaces.nsIPrefBranch);
-            prefs.setCharPref('browser.startup.homepage', ""{url}"");
-        }}
-    }}
-</script>
-");
-                    }
-                    stlAnchor.Attributes["onclick"] = "SetHomepage();";
-                }
-                else if (StringUtils.EqualsIgnoreCase(type, TypeTranslate))
+                if (StringUtils.EqualsIgnoreCase(type, TypeTranslate))
                 {
                     pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAhTranslate);
 
@@ -224,14 +117,7 @@ translateInitilization();
             }
 
             // 如果是实体标签，则只返回url
-            if (contextInfo.IsStlEntity)
-            {
-                return stlAnchor.HRef;
-            }
-            else
-            {
-                return ControlUtils.GetControlRenderHtml(stlAnchor);
-            }
+            return contextInfo.IsStlEntity ? stlAnchor.HRef : ControlUtils.GetControlRenderHtml(stlAnchor);
         }
     }
 }

@@ -135,7 +135,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         if (bool.Parse(RblRetainFiles.SelectedValue) == false)
                         {
-                            DirectoryUtility.DeleteContents(SiteInfo, channelId, contentIdList);
+                            DeleteManager.DeleteContents(SiteInfo, channelId, contentIdList);
                             SuccessMessage("成功删除内容以及生成页面！");
                         }
                         else

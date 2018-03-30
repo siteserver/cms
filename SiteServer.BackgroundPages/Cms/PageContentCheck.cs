@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
             _tableName = ChannelManager.GetTableName(SiteInfo, _nodeInfo);
             _styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplay(SiteId, _channelId));
-            _attributesOfDisplayStyleInfoList = ContentUtility.GetColumnTableStyleInfoList(SiteInfo, _styleInfoList);
+            _attributesOfDisplayStyleInfoList = ContentUtility.GetAllTableStyleInfoList(_styleInfoList);
             _pluginLinks = PluginContentManager.GetContentLinks(_nodeInfo);
             _isEdit = TextUtility.IsEdit(SiteInfo, _channelId, AuthRequest.AdminPermissions);
 

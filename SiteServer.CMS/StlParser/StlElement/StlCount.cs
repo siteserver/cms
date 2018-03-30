@@ -108,13 +108,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
 
                 var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
-
-                //var channelIdList = DataProvider.ChannelDao.GetIdListByScopeType(nodeInfo.ChannelId, nodeInfo.ChildrenCount, scope, string.Empty, string.Empty);
                 var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, scope, string.Empty, string.Empty, string.Empty);
                 foreach (var theChannelId in channelIdList)
                 {
                     var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, theChannelId);
-                    count += Content.GetCountOfContentAdd(tableName, pageInfo.SiteId, theChannelId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty);
+                    count += Content.GetCountOfContentAdd(tableName, pageInfo.SiteId, theChannelId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty, ETriState.True);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeChannels))

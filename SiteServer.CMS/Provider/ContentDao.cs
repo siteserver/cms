@@ -1529,11 +1529,11 @@ group by tmp.userName";
             return info;
         }
 
-        public int GetCountOfContentAdd(string tableName, int siteId, int channelId, EScopeType scope, DateTime begin, DateTime end, string userName)
+        public int GetCountOfContentAdd(string tableName, int siteId, int channelId, EScopeType scope, DateTime begin, DateTime end, string userName, ETriState checkedState)
         {
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             var channelIdList = ChannelManager.GetChannelIdList(channelInfo, scope, string.Empty, string.Empty, string.Empty);
-            return GetCountOfContentAdd(tableName, siteId, channelIdList, begin, end, userName);
+            return GetCountOfContentAdd(tableName, siteId, channelIdList, begin, end, userName, checkedState);
         }
 
         public List<int> GetContentIdListChecked(string tableName, int channelId, string orderByFormatString)
@@ -2502,7 +2502,7 @@ group by tmp.userName";
             return contentInfo;
         }
 
-        private int GetCountOfContentAdd(string tableName, int siteId, List<int> channelIdList, DateTime begin, DateTime end, string userName)
+        private int GetCountOfContentAdd(string tableName, int siteId, List<int> channelIdList, DateTime begin, DateTime end, string userName, ETriState checkedState)
         {
             string sqlString;
             if (string.IsNullOrEmpty(userName))
@@ -2516,6 +2516,11 @@ group by tmp.userName";
                 sqlString = channelIdList.Count == 1
                     ? $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE SiteId = {siteId} AND ChannelId = {channelIdList[0]} AND (AddDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}) AND (AddUserName = '{userName}')"
                     : $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE SiteId = {siteId} AND ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND (AddDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}) AND (AddUserName = '{userName}')";
+            }
+
+            if (checkedState != ETriState.All)
+            {
+                sqlString += $" AND {ContentAttribute.IsChecked} = '{ETriStateUtils.GetValue(checkedState)}'";
             }
 
             return DataProvider.DatabaseDao.GetIntResult(sqlString);

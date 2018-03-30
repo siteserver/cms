@@ -72,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
             _styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, _relatedIdentities);
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplay(SiteId, _channelId));
-            _attributesOfDisplayStyleInfoList = ContentUtility.GetColumnTableStyleInfoList(SiteInfo, _styleInfoList);
+            _attributesOfDisplayStyleInfoList = ContentUtility.GetAllTableStyleInfoList(_styleInfoList);
             _pluginLinks = PluginContentManager.GetContentLinks(_nodeInfo);
             _isEdit = TextUtility.IsEdit(SiteInfo, _channelId, AuthRequest.AdminPermissions);
 

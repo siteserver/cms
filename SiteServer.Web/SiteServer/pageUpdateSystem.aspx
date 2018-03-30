@@ -175,7 +175,7 @@
     <script src="assets/js/apiUtils.js"></script>
     <script src="assets/js/compareversion.js"></script>
     <script type="text/javascript">
-      var versionApi = new apiUtils.Api();
+      var ssApi = new apiUtils.Api();
       var downloadApi = new apiUtils.Api('<%=DownloadApiUrl%>');
       var updateApi = new apiUtils.Api('<%=UpdateApiUrl%>');
       var updateSsCmsApi = new apiUtils.Api('<%=UpdateSsCmsApiUrl%>');
@@ -200,17 +200,17 @@
           version: function () {
             var $this = this;
 
-            versionApi.get({
+            ssApi.get({
               isNightly: isNightly,
               version: version
             }, function (err, res) {
-              if (!err && res) {
-                $this.package = res;
-                $this.isShouldUpdate = compareversion($this.installedVersion, $this.package.version) == -1;
-                var major = $this.package.version.split('.')[0];
-                var minor = $this.package.version.split('.')[1];
-                $this.updatesUrl = 'http://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
-              }
+              if (err || !res || !res.value) return;
+
+              $this.package = res.value;
+              $this.isShouldUpdate = compareversion($this.installedVersion, $this.package.version) == -1;
+              var major = $this.package.version.split('.')[0];
+              var minor = $this.package.version.split('.')[1];
+              $this.updatesUrl = 'http://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
             }, 'packages', packageId);
           },
           check: function () {

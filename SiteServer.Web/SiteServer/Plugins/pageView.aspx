@@ -34,7 +34,8 @@
 
               <div class="alert alert-warning" v-bind:style="{ display: installed && isShouldUpdate ? '' : 'none' }">
                 系统检测到插件新版本，当前版本：{{ installedVersion }}，新版本：{{ package.version }}
-                <input v-on:click="location.href='pageView.aspx?update=true&pluginId=' + package.id;return false;" type="button" value="立即升级" class="btn btn-primary">
+                <input v-on:click="location.href='pageView.aspx?update=true&pluginId=' + package.id;return false;" type="button" value="立即升级"
+                  class="btn btn-primary">
               </div>
 
               <div>
@@ -151,26 +152,26 @@
   <script src="../assets/js/apiUtils.js"></script>
   <script src="../assets/js/compareversion.js"></script>
   <script>
-    var api = new apiUtils.Api();
+    var ssApi = new apiUtils.Api();
     var isNightly = <%=IsNightly%>;
     var version = '<%=Version%>';
-    var pluginId = api.getQueryStringByName('pluginId');
+    var pluginId = ssApi.getQueryStringByName('pluginId');
 
     var data = {
       installed: <%=Installed%>,
       installedVersion: '<%=InstalledVersion%>',
-      package: {},
+      package: <%=Package%> || {},
       isShouldUpdate: false
     };
 
-    api.get({
+    ssApi.get({
       isNightly: isNightly,
       version: version
     }, function (err, res) {
-      if (!err && res) {
-        data.package = res;
-        data.isShouldUpdate = compareversion('<%=InstalledVersion%>', res.version) == -1;
-      }
+      if (err || !res || !res.value) return;
+
+      data.package = res.value;
+      data.isShouldUpdate = compareversion('<%=InstalledVersion%>', data.package.version) == -1;
     }, 'packages/' + pluginId);
 
     new Vue({

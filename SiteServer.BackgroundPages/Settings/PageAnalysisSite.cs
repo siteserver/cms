@@ -115,7 +115,7 @@ yArrayUpdate.push('{yValueUpdate}');";
                 //x轴信息
                 SetXHashtable(key, siteInfo.SiteName);
                 //y轴信息
-                SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentAdd(siteInfo.TableName, siteInfo.Id, siteInfo.Id, EScopeType.All, _begin, _end, string.Empty), YTypeNew);
+                SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentAdd(siteInfo.TableName, siteInfo.Id, siteInfo.Id, EScopeType.All, _begin, _end, string.Empty, ETriState.All), YTypeNew);
                 SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentUpdate(siteInfo.TableName, siteInfo.Id, siteInfo.Id, EScopeType.All, _begin, _end, string.Empty), YTypeUpdate);
             }
 

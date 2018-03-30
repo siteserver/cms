@@ -191,7 +191,7 @@
     <script src="../assets/js/apiUtils.js"></script>
     <script src="../assets/js/compareversion.js"></script>
     <script type="text/javascript">
-      var api = new apiUtils.Api();
+      var ssApi = new apiUtils.Api();
       var downloadApi = new apiUtils.Api('<%=DownloadApiUrl%>');
       var updateApi = new apiUtils.Api('<%=UpdateApiUrl%>');
       var clearCacheApi = new apiUtils.Api('<%=ClearCacheApiUrl%>');
@@ -220,34 +220,36 @@
           getPackage: function () {
             var $this = this;
 
-            api.get({
+            ssApi.get({
               isNightly: isNightly,
               version: version
             }, function (err, res) {
-              if (!err && res) {
-                $this.package = res;
-                $this.packages.push(res);
-                var packageIds = [];
-                for (var i = 0; i < res.pluginReferences.length; i++) {
-                  var reference = res.pluginReferences[i];
-                  var installedPackage = $.grep($this.packages, function (e) {
-                    return e.id == reference.id;
-                  });
-                  if (installedPackage.length == 0) {
-                    packageIds.push(reference.id);
-                  }
+              if (err || !res || !res.value) return;
+
+              var package = res.value;
+
+              $this.package = package;
+              $this.packages.push(package);
+              var packageIds = [];
+              for (var i = 0; i < package.pluginReferences.length; i++) {
+                var reference = package.pluginReferences[i];
+                var installedPackage = $.grep($this.packages, function (e) {
+                  return e.id == reference.id;
+                });
+                if (installedPackage.length == 0) {
+                  packageIds.push(reference.id);
                 }
-                for (var i = 0; i < res.packageReferences.length; i++) {
-                  var reference = res.packageReferences[i];
-                  var installedPackage = $.grep($this.packages, function (e) {
-                    return e.id == reference.id;
-                  });
-                  if (installedPackage.length == 0) {
-                    packageIds.push(reference.id);
-                  }
-                }
-                $this.getPackages(packageIds);
               }
+              for (var i = 0; i < package.packageReferences.length; i++) {
+                var reference = package.packageReferences[i];
+                var installedPackage = $.grep($this.packages, function (e) {
+                  return e.id == reference.id;
+                });
+                if (installedPackage.length == 0) {
+                  packageIds.push(reference.id);
+                }
+              }
+              $this.getPackages(packageIds);
             }, 'packages/' + this.packageId);
           },
           getPackages: function (packageIds) {
@@ -259,33 +261,34 @@
               return;
             }
 
-            api.get({
+            ssApi.get({
               isNightly: isNightly,
               version: version,
               $filter: "id in '" + packageIds.join(",") + "'"
             }, function (err, res) {
-              if (!err && res) {
-                for (var i = 0; i < res.length; i++) {
-                  var package = res[i];
-                  for (var j = 0; j < $this.installedPackages.length; j++) {
-                    var installedPackage = $this.installedPackages[j];
-                    if (installedPackage === (package.id + '.' + package.version)) {
-                      $this.downloadIds.push(package.id);
-                      break;
-                    }
+              if (err || !res || !res.value) return;
+
+              for (var i = 0; i < res.value.length; i++) {
+                var package = res.value[i];
+                for (var j = 0; j < $this.installedPackages.length; j++) {
+                  var installedPackage = $this.installedPackages[j];
+                  if (installedPackage === (package.id + '.' + package.version)) {
+                    $this.downloadIds.push(package.id);
+                    break;
                   }
-                  $this.packages.push(package);
                 }
-                $this.isGetVersions = true;
-                $this.download();
+                $this.packages.push(package);
               }
+              $this.isGetVersions = true;
+              $this.download();
             }, 'packages');
           },
           download: function () {
             for (var i = 0; i < this.packages.length; i++) {
-              if (this.downloadIds.indexOf(this.packages[i].id) == -1) {
-                this.downloadingId = this.packages[i].id;
-                this.downloadPackage(this.packages[i].id, this.packages[i].version)
+              var package = this.packages[i];
+              if (this.downloadIds.indexOf(package.id) == -1) {
+                this.downloadingId = package.id;
+                this.downloadPackage(package.id, package.version)
                 return;
               }
             }
@@ -312,9 +315,10 @@
             this.step = 2;
 
             for (var i = 0; i < this.packages.length; i++) {
-              if (this.updatedIds.indexOf(this.packages[i].id) == -1) {
-                this.updatingId = this.packages[i].id;
-                this.updatePackage(this.packages[i].id, this.packages[i].version, this.packages[i].packageType);
+              var package = this.packages[i];
+              if (this.updatedIds.indexOf(package.id) == -1) {
+                this.updatingId = package.id;
+                this.updatePackage(package.id, package.version, package.packageType);
                 return;
               }
             }

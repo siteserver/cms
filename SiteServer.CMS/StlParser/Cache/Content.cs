@@ -147,11 +147,11 @@ namespace SiteServer.CMS.StlParser.Cache
         }
 
         public static int GetCountOfContentAdd(string tableName, int siteId, int channelId, EScopeType scope,
-            DateTime begin, DateTime end, string userName)
+            DateTime begin, DateTime end, string userName, ETriState checkedState)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetCountOfContentAdd),
                     siteId.ToString(), channelId.ToString(), EScopeTypeUtils.GetValue(scope),
-                    DateUtils.GetDateString(begin), DateUtils.GetDateString(end), userName);
+                    DateUtils.GetDateString(begin), DateUtils.GetDateString(end), userName, ETriStateUtils.GetValue(checkedState));
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
 
@@ -161,7 +161,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 if (retval == -1)
                 {
                     retval = DataProvider.ContentDao.GetCountOfContentAdd(tableName, siteId, channelId, scope,
-                    begin, end, userName);
+                    begin, end, userName, checkedState);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }

@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "gulpfile.js",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-minifier": "^0.1.4",
     "gulp-rename": "^1.2.2",
     "gulp-replace": "^0.5.4",
     "gulp-rev": "^7.1.2",
@@ -12,10 +15,6 @@
     "rimraf": "^2.5.4",
     "siteserver": "^1.0.2",
     "yargs": "^10.1.1"
-  },
-  "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-minifier": "^0.1.4"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

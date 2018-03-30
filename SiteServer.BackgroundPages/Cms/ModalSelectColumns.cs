@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 {"RelatedIdentity", relatedIdentity.ToString()},
                 {"IsList", isList.ToString()}
-            }), 520, 550);
+            }), 0, 550);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -41,23 +41,27 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, _relatedIdentities);
-            var columnTableStyleInfoList = ContentUtility.GetColumnTableStyleInfoList(SiteInfo, styleInfoList);
-            foreach (var styleInfo in columnTableStyleInfoList)
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetTableStyleInfoList(tableName, _relatedIdentities));
+            foreach (var styleInfo in styleInfoList)
             {
-                if (styleInfo.AttributeName == ContentAttribute.Title) continue;
-                var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
-
-                if (_isList)
+                var listitem = new ListItem($"{styleInfo.DisplayName}({styleInfo.AttributeName})", styleInfo.AttributeName);
+                if (styleInfo.AttributeName == ContentAttribute.Title)
                 {
-                    if (attributesOfDisplay.Contains(styleInfo.AttributeName))
-                    {
-                        listitem.Selected = true;
-                    }
+                    listitem.Selected = true;
                 }
                 else
                 {
-                    listitem.Selected = true;
+                    if (_isList)
+                    {
+                        if (attributesOfDisplay.Contains(styleInfo.AttributeName))
+                        {
+                            listitem.Selected = true;
+                        }
+                    }
+                    else
+                    {
+                        listitem.Selected = true;
+                    }
                 }
 
                 CblDisplayAttributes.Items.Add(listitem);

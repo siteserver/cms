@@ -1047,6 +1047,8 @@ namespace SiteServer.Utils
                 retval = retval.Replace("|", "_or_");
                 retval = retval.Replace("-", "_shortOne_");
                 retval = retval.Replace(",", "_comma_");
+                retval = retval.Replace("\r", "_return_");
+                retval = retval.Replace("\n", "_newline_");
 
                 //中文标点符号
                 retval = retval.Replace("；", "_cn_semicolon_");
@@ -1089,6 +1091,8 @@ namespace SiteServer.Utils
                 retval = retval.Replace("_or_", "|");
                 retval = retval.Replace("_shortOne_", "-");
                 retval = retval.Replace("_comma_", ",");
+                retval = retval.Replace("_return_", "\r");
+                retval = retval.Replace("_newline_", "\n");
             }
             return retval;
         }

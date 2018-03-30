@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
             ControlUtils.SelectMultiItems(LbChannelId, TranslateUtils.StringCollectionToStringList(_channelInfo.Additional.TransChannelIds));
             TbNodeNames.Text = _channelInfo.Additional.TransChannelNames;
 
-            EBooleanUtils.AddListItems(DdlIsAutomatic, "自动", "提示");
+            EBooleanUtils.AddListItems(DdlIsAutomatic, "系统自动转发", "需手动操作");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsAutomatic, _channelInfo.Additional.TransIsAutomatic.ToString());
 
             ETranslateContentTypeUtils.AddListItems(DdlTranslateDoneType, false);
@@ -181,7 +181,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (isSuccess)
             {
-                LayerUtils.CloseAndRedirect(Page, PageConfigurationCrossSiteTrans.GetRedirectUrl(SiteId, _channelInfo.Id));
+                LayerUtils.Close(Page);
             }
         }
     }

@@ -29,7 +29,7 @@
             <thead>
               <tr>
                 <th>栏目名</th>
-                <th width="300">跨站转发设置</th>
+                <th>跨站转发设置</th>
                 <th width="120"></th>
               </tr>
             </thead>

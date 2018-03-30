@@ -22,14 +22,13 @@ namespace SiteServer.CMS.Core.Office
             var relatedidentityes =
                 RelatedIdentities.GetChannelRelatedIdentities(siteInfo.Id, nodeInfo.Id);
             var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
-            var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedidentityes);
-            tableStyleInfoList = ContentUtility.GetAllTableStyleInfoList(siteInfo, tableStyleInfoList);
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetTableStyleInfoList(tableName, relatedidentityes));
 
-            foreach (var tableStyleInfo in tableStyleInfoList)
+            foreach (var styleInfo in styleInfoList)
             {
-                if (displayAttributes.Contains(tableStyleInfo.AttributeName))
+                if (displayAttributes.Contains(styleInfo.AttributeName))
                 {
-                    head.Add(tableStyleInfo.DisplayName);
+                    head.Add(styleInfo.DisplayName);
                 }
             }
 
@@ -46,11 +45,11 @@ namespace SiteServer.CMS.Core.Office
                 {
                     var row = new List<string>();
 
-                    foreach (var tableStyleInfo in tableStyleInfoList)
+                    foreach (var styleInfo in styleInfoList)
                     {
-                        if (displayAttributes.Contains(tableStyleInfo.AttributeName))
+                        if (displayAttributes.Contains(styleInfo.AttributeName))
                         {
-                            var value = contentInfo.GetString(tableStyleInfo.AttributeName);
+                            var value = contentInfo.GetString(styleInfo.AttributeName);
                             row.Add(StringUtils.StripTags(value));
                         }
                     }
@@ -119,11 +118,9 @@ namespace SiteServer.CMS.Core.Office
             var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
             // ArrayList tableStyleInfoArrayList = TableStyleManager.GetTableStyleInfoArrayList(ETableStyle.BackgroundContent, siteInfo.AuxiliaryTableForContent, relatedidentityes);
 
-            var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedidentityes);
-            tableStyleInfoList = ContentUtility.GetAllTableStyleInfoList(siteInfo, tableStyleInfoList);
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetTableStyleInfoList(tableName, relatedidentityes));
             var nameValueCollection = new NameValueCollection();
-
-            foreach (var styleInfo in tableStyleInfoList)
+            foreach (var styleInfo in styleInfoList)
             {
                 nameValueCollection[styleInfo.DisplayName] = styleInfo.AttributeName.ToLower();
             }

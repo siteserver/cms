@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Cache;
@@ -258,16 +259,17 @@ namespace SiteServer.CMS.StlParser
             { 
                 return;
             }
+            if (!contentInfo.IsChecked)
+            {
+                DeleteManager.DeleteContent(siteInfo, channelId, contentId);
+                return;
+            }
             //引用链接，不需要生成内容页；引用内容，需要生成内容页；
             if (contentInfo.ReferenceId > 0 && ETranslateContentTypeUtils.GetEnumType(contentInfo.GetString(ContentAttribute.TranslateContentType)) != ETranslateContentType.ReferenceContent)
             {
                 return;
             }
             if (!string.IsNullOrEmpty(contentInfo.GetString(ContentAttribute.LinkUrl)))
-            {
-                return;
-            }
-            if (!contentInfo.IsChecked)
             {
                 return;
             }

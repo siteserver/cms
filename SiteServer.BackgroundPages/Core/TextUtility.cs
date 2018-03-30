@@ -70,11 +70,11 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.AddDate))
             {
-                value = DateUtils.GetDateString(contentInfo.AddDate);
+                value = DateUtils.GetDateAndTimeString(contentInfo.AddDate);
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.LastEditDate))
             {
-                value = DateUtils.GetDateString(contentInfo.LastEditDate);
+                value = DateUtils.GetDateAndTimeString(contentInfo.LastEditDate);
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.SourceId))
             {
@@ -129,18 +129,16 @@ namespace SiteServer.BackgroundPages.Core
         //    return siteInfo.Additional.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.CommentCheck, ConfigManager.Permissions.Channel.CommentDelete);
         //}
 
-        public static string GetColumnsHeadHtml(List<TableStyleInfo> tableStyleInfoArrayList, StringCollection attributesOfDisplay, SiteInfo siteInfo)
+        public static string GetColumnsHeadHtml(List<TableStyleInfo> tableStyleInfoList, StringCollection attributesOfDisplay, SiteInfo siteInfo)
         {
             var builder = new StringBuilder();
 
-            var arrayList = ContentUtility.GetColumnTableStyleInfoList(siteInfo, tableStyleInfoArrayList);
-            foreach (var styleInfo in arrayList)
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(tableStyleInfoList);
+
+            foreach (var styleInfo in styleInfoList)
             {
-                if (attributesOfDisplay.Contains(styleInfo.AttributeName))
-                {
-                    builder.Append(
-                        $@"<th class=""text-nowrap"">{styleInfo.DisplayName}</th>");
-                }
+                if (!attributesOfDisplay.Contains(styleInfo.AttributeName) || styleInfo.AttributeName == ContentAttribute.Title) continue;
+                builder.Append($@"<th class=""text-nowrap"">{styleInfo.DisplayName}</th>");
             }
 
             return builder.ToString();
@@ -152,7 +150,7 @@ namespace SiteServer.BackgroundPages.Core
 
             foreach (var styleInfo in displayStyleInfoList)
             {
-                if (!attributesOfDisplay.Contains(styleInfo.AttributeName)) continue;
+                if (!attributesOfDisplay.Contains(styleInfo.AttributeName) || styleInfo.AttributeName == ContentAttribute.Title) continue;
 
                 var value = GetColumnValue(nameValueCacheDict, siteInfo, contentInfo, styleInfo);
                 builder.Append($@"<td class=""text-nowrap"">{value}</td>");

@@ -254,7 +254,7 @@
     <script src="../assets/js/apiUtils.js"></script>
     <script src="../assets/js/compareversion.js"></script>
     <script type="text/javascript">
-      var versionApi = new apiUtils.Api();
+      var ssApi = new apiUtils.Api();
       var isNightly = <%=IsNightly%>;
       var version = '<%=Version%>';
 
@@ -290,15 +290,15 @@
           version: function () {
             var $this = this;
 
-            versionApi.get({
+            ssApi.get({
               isNightly: isNightly,
               version: version,
               $filter: "id in '" + this.packageIds + "'"
             }, function (err, res) {
-              if (err || !res) return;
+              if (err || !res || !res.value) return;
 
-              for (var i = 0; i < res.length; i++) {
-                var package = res[i];
+              for (var i = 0; i < res.value.length; i++) {
+                var package = res.value[i];
 
                 for (var j = 0; j < package.pluginReferences.length; j++) {
                   var reference = package.pluginReferences[j];

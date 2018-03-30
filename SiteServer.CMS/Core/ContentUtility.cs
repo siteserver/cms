@@ -234,7 +234,7 @@ namespace SiteServer.CMS.Core
             return referenceId > 0 ? referenceId : contentId;
         }
 
-        public static List<TableStyleInfo> GetAllTableStyleInfoList(SiteInfo siteInfo, List<TableStyleInfo> tableStyleInfoList)
+        public static List<TableStyleInfo> GetAllTableStyleInfoList(List<TableStyleInfo> tableStyleInfoList)
         {
             var list = new List<TableStyleInfo>
             {
@@ -260,63 +260,79 @@ namespace SiteServer.CMS.Core
                 },
                 new TableStyleInfo
                 {
-                    AttributeName = ContentAttribute.Hits,
-                    DisplayName = "点击量"
+                    AttributeName = ContentAttribute.LastEditDate,
+                    DisplayName = "修改时间"
                 },
                 new TableStyleInfo
                 {
                     AttributeName = ContentAttribute.GroupNameCollection,
-                    DisplayName = "组别"
+                    DisplayName = "内容组"
                 },
                 new TableStyleInfo
                 {
                     AttributeName = ContentAttribute.Tags,
                     DisplayName = "标签"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.AddUserName,
+                    DisplayName = "添加人"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.LastEditUserName,
+                    DisplayName = "修改人"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.CheckUserName,
+                    DisplayName = "审核人"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.CheckCheckDate,
+                    DisplayName = "审核时间"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.CheckReasons,
+                    DisplayName = "审核原因"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.SourceId,
+                    DisplayName = "来源标识"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.Hits,
+                    DisplayName = "点击量"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.HitsByDay,
+                    DisplayName = "日点击"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.HitsByWeek,
+                    DisplayName = "周点击"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.HitsByMonth,
+                    DisplayName = "月点击"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.LastHitsDate,
+                    DisplayName = "最后点击时间"
                 }
-            };
-
-            list.AddRange(tableStyleInfoList);
-
-            return list;
-        }
-
-        public static List<TableStyleInfo> GetColumnTableStyleInfoList(SiteInfo siteInfo, List<TableStyleInfo> tableStyleInfoList)
-        {
-            var list = new List<TableStyleInfo>
-            {
-                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.AddUserName, 0, "添加者", string.Empty, true,
-                    InputType.Text, string.Empty, false, string.Empty),
-                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.LastEditUserName, 0, "修改者", string.Empty, true,
-                    InputType.Text, string.Empty, false, string.Empty),
-                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.LastEditDate, 0, "修改时间", string.Empty, true,
-                    InputType.Text, string.Empty, false, string.Empty),
-                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.CheckUserName, 0, "审核者", string.Empty, true,
-                    InputType.Text, string.Empty, false, string.Empty),
-                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.CheckCheckDate, 0, "审核时间", string.Empty, true,
-                    InputType.Text, string.Empty, false, string.Empty),
-                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.CheckReasons, 0, "审核原因", string.Empty, true,
-                    InputType.Text, string.Empty, false, string.Empty),
-                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.SourceId, 0, "来源标识", string.Empty, true,
-                    InputType.Text, string.Empty, false, string.Empty),
-                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.Tags, 0, "标签", string.Empty, true,
-                    InputType.Text, string.Empty, false, string.Empty),
-                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.GroupNameCollection, 0, "所属内容组",
-                    string.Empty, true, InputType.Text, string.Empty, false, string.Empty),
-                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.Hits, 0, "点击量", string.Empty, true,
-                    InputType.Text, string.Empty, false, string.Empty),
-                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.HitsByDay, 0, "日点击", string.Empty, true,
-                    InputType.Text, string.Empty, false, string.Empty),
-                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.HitsByWeek, 0, "周点击", string.Empty, true,
-                    InputType.Text, string.Empty, false, string.Empty),
-                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.HitsByMonth, 0, "月点击", string.Empty, true,
-                    InputType.Text, string.Empty, false, string.Empty),
-                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.LastHitsDate, 0, "最后点击时间", string.Empty, true,
-                    InputType.Text, string.Empty, false, string.Empty),
             };
 
             if (tableStyleInfoList != null)
             {
-                list.InsertRange(0, tableStyleInfoList);
+                list.InsertRange(2, tableStyleInfoList);
             }
 
             return list;
@@ -388,11 +404,11 @@ namespace SiteServer.CMS.Core
                 var targetSiteId = TranslateUtils.ToInt(translates[0]);
                 var targetChannelId = TranslateUtils.ToInt(translates[1]);
 
-                Translate(administratorName, siteInfo, channelId, contentId, targetSiteId, targetChannelId, translateType);
+                Translate(siteInfo, channelId, contentId, targetSiteId, targetChannelId, translateType, administratorName);
             }
         }
 
-        public static void Translate(string administratorName, SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, ETranslateContentType translateType)
+        public static void Translate(SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, ETranslateContentType translateType, string administratorName)
         {
             if (siteInfo == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
 
@@ -430,10 +446,7 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                if (contentInfo.IsChecked)
-                {
-                    CreateManager.CreateContentAndTrigger(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
-                }
+                CreateManager.CreateContentAndTrigger(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
             }
             else if (translateType == ETranslateContentType.Cut)
             {
@@ -472,10 +485,7 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                if (contentInfo.IsChecked)
-                {
-                    CreateManager.CreateContentAndTrigger(targetSiteInfo.Id, contentInfo.ChannelId, newContentId);
-                }
+                CreateManager.CreateContentAndTrigger(targetSiteInfo.Id, contentInfo.ChannelId, newContentId);
             }
             else if (translateType == ETranslateContentType.Reference)
             {
@@ -514,10 +524,7 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                if (contentInfo.IsChecked)
-                {
-                    CreateManager.CreateContentAndTrigger(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
-                }
+                CreateManager.CreateContentAndTrigger(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
             }
         }
 

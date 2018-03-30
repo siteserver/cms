@@ -12,7 +12,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "滚动焦点图", Description = "通过 stl:focusviewer 标签在模板中实现由 FLASH 显示的图片轮播效果")]
+    [Stl(Usage = "滚动焦点图", Description = "通过 stl:focusviewer 标签在模板中实现由 FLASH 显示的图片轮播效果", Obsolete = true)]
     public class StlFocusViewer
     {
         private StlFocusViewer() { }

@@ -75,10 +75,6 @@ namespace SiteServer.CMS.StlParser.Model
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlFlash), stlAttribute)
                     },
                     {
-                        StlFocusViewer.ElementName,
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlFocusViewer), stlAttribute)
-                    },
-                    {
                         StlIf.ElementName,
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlIf), stlAttribute)
                     },
