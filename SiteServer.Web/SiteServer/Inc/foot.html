@@ -5,7 +5,7 @@
     if (!val) {
       var i = 0;
       for (; i < Page_Validators.length; i++) {
-        
+
         if (!Page_Validators[i].isvalid) {
           $("#" + Page_Validators[i].controltovalidate).addClass("is-invalid");
         }
@@ -15,10 +15,16 @@
   }
 </script>
 <script async src="http://www.siteserver.cn/gtag.js"></script>
-<script>
+<script type="text/javascript">
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+
+  function gtag() {
+    dataLayer.push(arguments);
+  }
   gtag('js', new Date());
   gtag('config', 'UA-114651168-1');
-  gtag('event', 'visit', {'host': location.host, 'path': location.pathname});
+  gtag('event', 'visit', {
+    'event_category': location.host,
+    'event_label': location.pathname
+  });
 </script>
