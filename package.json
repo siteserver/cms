@@ -1,11 +1,12 @@
 {
-  "name": "login",
+  "name": "siteserver",
   "version": "1.0.0",
   "description": "",
   "main": "gulpfile.js",
   "dependencies": {},
   "devDependencies": {
     "gulp": "^3.9.1",
+    "gulp-filter": "^5.1.0",
     "gulp-minifier": "^0.1.4",
     "gulp-rename": "^1.2.2",
     "gulp-replace": "^0.5.4",
