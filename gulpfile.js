@@ -115,7 +115,17 @@ gulp.task("build-webconfig", function() {
 
 gulp.task("release", function(callback) {
   console.log("build version: " + version);
-  build(false);
+  runSequence(
+    "build-docs",
+    "build-webconfig",
+    "build-nuspec",
+    "build-bin",
+    "build-sitefiles-all",
+    "build-sitefiles-min",
+    "build-siteserver-all",
+    "build-siteserver-aspx",
+    "build-siteserver-min"
+  );
 });
 
 gulp.task("preview", function(callback) {

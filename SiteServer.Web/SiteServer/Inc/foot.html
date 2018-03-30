@@ -19,8 +19,6 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'UA-114651168-1', {
-    'page_location': location.href,
-    'page_path': location.pathname
-  });
+  gtag('config', 'UA-114651168-1');
+  gtag('event', 'visit', {'host': location.host, 'path': location.pathname});
 </script>
