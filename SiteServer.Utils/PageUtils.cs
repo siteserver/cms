@@ -909,12 +909,22 @@ namespace SiteServer.Utils
 
         public static void RedirectToErrorPage(int logId)
         {
-            Redirect(GetAdminDirectoryUrl($"error.aspx?logId={logId}"));
+            Redirect(GetErrorPageUrl(logId));
         }
 
         public static void RedirectToErrorPage(string message)
         {
-            Redirect(GetAdminDirectoryUrl($"error.aspx?message={TranslateUtils.EncryptStringBySecretKey(message)}"));
+            Redirect(GetErrorPageUrl(message));
+        }
+
+        public static string GetErrorPageUrl(int logId)
+        {
+            return GetAdminDirectoryUrl($"pageError.html?logId={logId}");
+        }
+
+        public static string GetErrorPageUrl(string message)
+        {
+            return GetAdminDirectoryUrl($"pageError.html?message={HttpUtility.UrlEncode(message)}");
         }
 
         public static void CheckRequestParameter(params string[] parameters)
@@ -923,7 +933,7 @@ namespace SiteServer.Utils
             {
                 if (!string.IsNullOrEmpty(parameter) && HttpContext.Current.Request.QueryString[parameter] == null)
                 {
-                    RedirectToErrorPage(MessageUtils.PageErrorParameterIsNotCorrect);
+                    Redirect(GetErrorPageUrl(MessageUtils.PageErrorParameterIsNotCorrect));
                     return;
                 }
             }

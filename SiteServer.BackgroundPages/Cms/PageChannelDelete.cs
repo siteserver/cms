@@ -151,7 +151,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 FailMessage(ex, _deleteContents ? "删除内容失败！" : "删除栏目失败！");
 
-                LogUtils.AddSystemErrorLog(ex);
+                LogUtils.AddErrorLog(ex);
             }
         }
     }

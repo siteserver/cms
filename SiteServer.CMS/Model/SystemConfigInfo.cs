@@ -36,10 +36,10 @@ namespace SiteServer.CMS.Model
             set { Set("IsLogUser", value.ToString()); }
         }
 
-        public bool IsLogTask
+        public bool IsLogError
         {
-            get { return GetBool("IsLogTask", true); }
-            set { Set("IsLogTask", value.ToString()); }
+            get { return GetBool("IsLogError", true); }
+            set { Set("IsLogError", value.ToString()); }
         }
 
         /// <summary>

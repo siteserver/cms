@@ -43,7 +43,7 @@ namespace SiteServer.CMS.Plugin
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddPluginErrorLog(service.PluginId, ex);
+                    LogUtils.AddErrorLog(service.PluginId, ex);
                 }
             }
 
@@ -65,7 +65,7 @@ namespace SiteServer.CMS.Plugin
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddPluginErrorLog(service.PluginId, ex);
+                    LogUtils.AddErrorLog(service.PluginId, ex);
                 }
 
                 if (metadataMenu == null) continue;

@@ -102,6 +102,7 @@
     <Compile Include="Api\Preview\ApiRoutePreview.cs" />
     <Compile Include="Api\Sys\Administrators\ApiRouteActionsLogin.cs" />
     <Compile Include="Api\Sys\Administrators\ApiRouteSiteCheckList.cs" />
+    <Compile Include="Api\Sys\Errors\ApiRouteError.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteClearCache.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteUpdateSsCms.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteUpdate.cs" />

@@ -80,7 +80,7 @@ namespace SiteServer.BackgroundPages.Controls
                             }
                             catch (Exception ex)
                             {
-                                LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(IService.ContentFormLoad));
+                                LogUtils.AddErrorLog(service.PluginId, ex, nameof(IService.ContentFormLoad));
                             }
                         }
                     }

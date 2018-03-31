@@ -278,7 +278,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                         catch (Exception ex)
                         {
-                            LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
+                            LogUtils.AddErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
                         }
                     }
 
@@ -296,7 +296,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddSystemErrorLog(ex);
+                    LogUtils.AddErrorLog(ex);
                     FailMessage($"内容添加失败：{ex.Message}");
                 }
 
@@ -358,7 +358,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                         catch (Exception ex)
                         {
-                            LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
+                            LogUtils.AddErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
                         }
                     }
 
@@ -437,7 +437,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddSystemErrorLog(ex);
+                    LogUtils.AddErrorLog(ex);
                     FailMessage($"内容修改失败：{ex.Message}");
                     return;
                 }

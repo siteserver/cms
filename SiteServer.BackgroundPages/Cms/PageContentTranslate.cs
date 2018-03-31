@@ -124,7 +124,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddSystemErrorLog(ex);
+                    LogUtils.AddErrorLog(ex);
                     FailMessage(ex, "内容转移失败！");
                 }
             }

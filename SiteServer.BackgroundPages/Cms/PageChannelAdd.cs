@@ -302,7 +302,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             catch (Exception ex)
             {
-                LogUtils.AddSystemErrorLog(ex);
+                LogUtils.AddErrorLog(ex);
                 FailMessage(ex, $"栏目添加失败：{ex.Message}");
                 return;
             }

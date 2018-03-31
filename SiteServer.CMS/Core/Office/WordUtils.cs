@@ -89,7 +89,7 @@ namespace SiteServer.CMS.Core.Office
             }
             catch(Exception ex)
             {
-                LogUtils.AddSystemErrorLog(ex);
+                LogUtils.AddErrorLog(ex);
                 return string.Empty;
             }
         }

@@ -57,7 +57,7 @@ namespace SiteServer.CMS.Plugin
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddSystemErrorLog(ex, "载入插件时报错");
+                    LogUtils.AddErrorLog(ex, "载入插件时报错");
                 }
 
                 return dict;
@@ -103,7 +103,7 @@ namespace SiteServer.CMS.Plugin
                 catch (Exception ex)
                 {
                     errorMessage = ex.Message;
-                    LogUtils.AddSystemErrorLog(ex, $"插件加载：{directoryName}");
+                    LogUtils.AddErrorLog(ex, $"插件加载：{directoryName}");
                 }
 
                 return new PluginInfo(directoryName, metadata, errorMessage);

@@ -113,6 +113,30 @@ namespace SiteServer.CMS.Provider
             return count;
         }
 
+        public ErrorLogInfo GetErrorLogInfo(int logId)
+        {
+            ErrorLogInfo logInfo = null;
+
+            var sqlString = $"SELECT Id, PluginId, Message, Stacktrace, Summary, AddDate FROM {TableName} WHERE Id = @Id";
+
+            var parms = new IDataParameter[]
+            {
+                GetParameter("@Id", DataType.Integer, logId)
+            };
+
+            using (var rdr = ExecuteReader(sqlString, parms))
+            {
+                if (rdr.Read())
+                {
+                    var i = 0;
+                    logInfo = new ErrorLogInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i));
+                }
+                rdr.Close();
+            }
+
+            return logInfo;
+        }
+
         public KeyValuePair<string, string> GetMessageAndStacktrace(int logId)
         {
             var pair = new KeyValuePair<string, string>();

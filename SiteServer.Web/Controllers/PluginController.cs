@@ -24,7 +24,7 @@ namespace SiteServer.API.Controllers
             }
             catch (Exception ex)
             {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
+                LogUtils.AddErrorLog(pluginId, ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -41,7 +41,7 @@ namespace SiteServer.API.Controllers
             }
             catch (Exception ex)
             {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
+                LogUtils.AddErrorLog(pluginId, ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -58,7 +58,7 @@ namespace SiteServer.API.Controllers
             }
             catch (Exception ex)
             {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
+                LogUtils.AddErrorLog(pluginId, ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -75,7 +75,7 @@ namespace SiteServer.API.Controllers
             }
             catch (Exception ex)
             {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
+                LogUtils.AddErrorLog(pluginId, ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -92,7 +92,7 @@ namespace SiteServer.API.Controllers
             }
             catch (Exception ex)
             {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
+                LogUtils.AddErrorLog(pluginId, ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -109,7 +109,7 @@ namespace SiteServer.API.Controllers
             }
             catch (Exception ex)
             {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
+                LogUtils.AddErrorLog(pluginId, ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -126,7 +126,7 @@ namespace SiteServer.API.Controllers
             }
             catch (Exception ex)
             {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
+                LogUtils.AddErrorLog(pluginId, ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -143,7 +143,7 @@ namespace SiteServer.API.Controllers
             }
             catch (Exception ex)
             {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
+                LogUtils.AddErrorLog(pluginId, ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -160,7 +160,7 @@ namespace SiteServer.API.Controllers
             }
             catch (Exception ex)
             {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
+                LogUtils.AddErrorLog(pluginId, ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -177,7 +177,7 @@ namespace SiteServer.API.Controllers
             }
             catch (Exception ex)
             {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
+                LogUtils.AddErrorLog(pluginId, ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -194,7 +194,7 @@ namespace SiteServer.API.Controllers
             }
             catch (Exception ex)
             {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
+                LogUtils.AddErrorLog(pluginId, ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -211,7 +211,7 @@ namespace SiteServer.API.Controllers
             }
             catch (Exception ex)
             {
-                LogUtils.AddPluginErrorLog(pluginId, ex);
+                LogUtils.AddErrorLog(pluginId, ex);
                 return BadRequest(ex.Message);
             }
         }

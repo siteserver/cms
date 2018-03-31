@@ -559,7 +559,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
         public static string GetStlErrorMessage(string elementName, string stlContent, Exception ex)
         {
-            LogUtils.AddSystemErrorLog(ex, StringUtils.HtmlEncode(stlContent));
+            LogUtils.AddErrorLog(ex, StringUtils.HtmlEncode(stlContent));
             return $@"
 <!--
 {elementName}

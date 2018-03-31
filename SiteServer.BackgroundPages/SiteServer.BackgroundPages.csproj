@@ -469,9 +469,6 @@
     <Compile Include="PageDefault.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="PageError.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="PageFindPwd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

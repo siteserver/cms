@@ -673,7 +673,7 @@ SELECT * FROM (
             }
             catch (Exception ex)
             {
-                LogUtils.AddPluginErrorLog(pluginId, ex, sqlBuilder.ToString());
+                LogUtils.AddErrorLog(pluginId, ex, sqlBuilder.ToString());
             }
         }
 
@@ -695,7 +695,7 @@ SELECT * FROM (
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddPluginErrorLog(pluginId, ex, sqlString);
+                    LogUtils.AddErrorLog(pluginId, ex, sqlString);
                 }
             }
 
@@ -760,7 +760,7 @@ SELECT * FROM (
             }
             catch (Exception ex)
             {
-                LogUtils.AddSystemErrorLog(ex, tableName);
+                LogUtils.AddErrorLog(ex, tableName);
             }
         }
 
@@ -786,7 +786,7 @@ SELECT * FROM (
                     }
                     catch (Exception ex)
                     {
-                        LogUtils.AddSystemErrorLog(ex, sqlString);
+                        LogUtils.AddErrorLog(ex, sqlString);
                     }
                 }
 

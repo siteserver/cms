@@ -186,7 +186,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             catch (Exception ex)
             {
-                LogUtils.AddSystemErrorLog(ex);
+                LogUtils.AddErrorLog(ex);
                 FailMessage(ex, "删除内容失败！");
             }
         }

@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
+                    LogUtils.AddErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
                 }
             }
 

@@ -71,7 +71,7 @@ namespace SiteServer.CMS.StlParser
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddSystemErrorLog(ex, "CreateContent");
+                    LogUtils.AddErrorLog(ex, "CreateContent");
                 }
             }
         }

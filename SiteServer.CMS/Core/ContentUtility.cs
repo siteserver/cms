@@ -384,7 +384,7 @@ namespace SiteServer.CMS.Core
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnContentAddCompleted));
+                    LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnContentAddCompleted));
                 }
             }
 
@@ -442,7 +442,7 @@ namespace SiteServer.CMS.Core
                     }
                     catch (Exception ex)
                     {
-                        LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
+                        LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
                     }
                 }
 
@@ -472,7 +472,7 @@ namespace SiteServer.CMS.Core
                     }
                     catch (Exception ex)
                     {
-                        LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
+                        LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
                     }
 
                     try
@@ -481,7 +481,7 @@ namespace SiteServer.CMS.Core
                     }
                     catch (Exception ex)
                     {
-                        LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnContentDeleteCompleted));
+                        LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnContentDeleteCompleted));
                     }
                 }
 
@@ -520,7 +520,7 @@ namespace SiteServer.CMS.Core
                     }
                     catch (Exception ex)
                     {
-                        LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
+                        LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
                     }
                 }
 

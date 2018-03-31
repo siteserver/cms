@@ -20,8 +20,10 @@ namespace SiteServer.BackgroundPages.Settings
         public SqlPager SpContents;
 		public Button BtnDelete;
 		public Button BtnDeleteAll;
+        public Literal LtlState;
+        public Button BtnSetting;
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -49,6 +51,12 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     FailDeleteMessage(ex);
                 }
+            }
+            else if (AuthRequest.IsQueryExists("Setting"))
+            {
+                ConfigManager.SystemConfigInfo.IsLogError = !ConfigManager.SystemConfigInfo.IsLogError;
+                DataProvider.ConfigDao.Update(ConfigManager.Instance);
+                SuccessMessage($"成功{(ConfigManager.SystemConfigInfo.IsLogError ? "启用" : "禁用")}日志记录");
             }
 
             SpContents.ControlToPaginate = RptContents;
@@ -91,6 +99,28 @@ namespace SiteServer.BackgroundPages.Settings
                         {"DeleteAll", "True"}
                     })));
 
+            if (ConfigManager.SystemConfigInfo.IsLogError)
+            {
+                BtnSetting.Text = "禁用系统错误日志";
+                BtnSetting.Attributes.Add("onclick",
+                    AlertUtils.ConfirmRedirect("禁用系统错误日志", "此操作将禁用系统错误日志记录功能，确定吗？", "禁 用",
+                        PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+                        {
+                            {"Setting", "True"}
+                        })));
+            }
+            else
+            {
+                LtlState.Text = @"<div class=""alert alert-danger m-t-10"">系统错误日志当前处于禁用状态，系统将不会记录系统错误日志！</div>";
+                BtnSetting.Text = "启用记录日志";
+                BtnSetting.Attributes.Add("onclick",
+                    AlertUtils.ConfirmRedirect("启用系统错误日志", "此操作将启用系统错误日志记录功能，确定吗？", "启 用",
+                        PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+                        {
+                            {"Setting", "True"}
+                        })));
+            }
+
             SpContents.DataBind();
         }
 
@@ -101,19 +131,16 @@ namespace SiteServer.BackgroundPages.Settings
             var id = SqlUtils.EvalInt(e.Item.DataItem, nameof(ErrorLogInfo.Id));
             var addDate = SqlUtils.EvalDateTime(e.Item.DataItem, nameof(ErrorLogInfo.AddDate));
             var message = SqlUtils.EvalString(e.Item.DataItem, nameof(ErrorLogInfo.Message));
-            var stacktrace = SqlUtils.EvalString(e.Item.DataItem, nameof(ErrorLogInfo.Stacktrace));
             var summary = SqlUtils.EvalString(e.Item.DataItem, nameof(ErrorLogInfo.Summary));
 
             var ltlId = (Literal)e.Item.FindControl("ltlId");
             var ltlAddDate = (Literal)e.Item.FindControl("ltlAddDate");
             var ltlMessage = (Literal)e.Item.FindControl("ltlMessage");
-            var ltlStacktrace = (Literal)e.Item.FindControl("ltlStacktrace");
             var ltlSummary = (Literal)e.Item.FindControl("ltlSummary");
 
-            ltlId.Text = id.ToString();
+            ltlId.Text = $@"<a href=""{PageUtils.GetErrorPageUrl(id)}"" target=""_blank"">{id}</a>";
             ltlAddDate.Text = DateUtils.GetDateAndTimeString(addDate);
             ltlMessage.Text = message;
-            ltlStacktrace.Text = stacktrace;
             ltlSummary.Text = summary;
             if (!string.IsNullOrEmpty(ltlSummary.Text))
             {

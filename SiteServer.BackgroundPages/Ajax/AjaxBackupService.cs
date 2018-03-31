@@ -139,7 +139,7 @@ namespace SiteServer.BackgroundPages.Ajax
             catch (Exception ex)
             {
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                LogUtils.AddSystemErrorLog(ex);
+                LogUtils.AddErrorLog(ex);
             }
 
             return retval;
@@ -164,7 +164,7 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 //retval = new string[] { string.Empty, ex.Message, string.Empty };
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                LogUtils.AddSystemErrorLog(ex);
+                LogUtils.AddErrorLog(ex);
             }
 
             return retval;

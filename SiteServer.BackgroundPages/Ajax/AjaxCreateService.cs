@@ -135,7 +135,7 @@ namespace SiteServer.BackgroundPages.Ajax
             catch (Exception ex)
             {
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                LogUtils.AddSystemErrorLog(ex);
+                LogUtils.AddErrorLog(ex);
             }
 
             CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
@@ -193,7 +193,7 @@ namespace SiteServer.BackgroundPages.Ajax
             catch (Exception ex)
             {
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                LogUtils.AddSystemErrorLog(ex);
+                LogUtils.AddErrorLog(ex);
             }
 
             CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
@@ -232,7 +232,7 @@ namespace SiteServer.BackgroundPages.Ajax
             catch (Exception ex)
             {
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                LogUtils.AddSystemErrorLog(ex);
+                LogUtils.AddErrorLog(ex);
             }
 
             CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
