@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using SiteServer.Utils;
 using SiteServer.Utils.IO;
@@ -11,50 +10,29 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "Rss订阅", Description = "通过 stl:rss 标签在模板中生成Rss阅读器能够浏览的Rss订阅")]
+    [StlClass(Usage = "Rss订阅", Description = "通过 stl:rss 标签在模板中生成Rss阅读器能够浏览的Rss订阅")]
     public class StlRss
     {
         private StlRss() { }
         public const string ElementName = "stl:rss";
 
-        public const string AttributeChannelIndex = "channelIndex";
-        public const string AttributeChannelName = "channelName";
-        public const string AttributeScope = "scope";
-        public const string AttributeGroupChannel = "groupChannel";
-        public const string AttributeGroupChannelNot = "groupChannelNot";
-        public const string AttributeGroupContent = "groupContent";
-        public const string AttributeGroupContentNot = "groupContentNot";
-        public const string AttributeTags = "tags";
-        public const string AttributeTitle = "title";
-        public const string AttributeDescription = "description";
-        public const string AttributeTotalNum = "totalNum";
-        public const string AttributeStartNum = "startNum";
-        public const string AttributeOrder = "order";
-        public const string AttributeIsTop = "isTop";
-        public const string AttributeIsRecommend = "isRecommend";
-        public const string AttributeIsHot = "isHot";
-        public const string AttributeIsColor = "isColor";
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeChannelIndex, "栏目索引"},
-            {AttributeChannelName, "栏目名称"},
-            {AttributeScope, "内容范围"},
-            {AttributeGroupChannel, "指定显示的栏目组"},
-            {AttributeGroupChannelNot, "指定不显示的栏目组"},
-            {AttributeGroupContent, "指定显示的内容组"},
-            {AttributeGroupContentNot, "指定不显示的内容组"},
-            {AttributeTags, "指定标签"},
-            {AttributeTitle, "Rss订阅标题"},
-            {AttributeDescription, "Rss订阅摘要"},
-            {AttributeTotalNum, "显示内容数目"},
-            {AttributeStartNum, "从第几条信息开始显示"},
-            {AttributeOrder, "排序"},
-            {AttributeIsTop, "仅显示置顶内容"},
-            {AttributeIsRecommend, "仅显示推荐内容"},
-            {AttributeIsHot, "仅显示热点内容"},
-            {AttributeIsColor, "仅显示醒目内容"}
-        };
+        private static readonly Attr ChannelIndex = new Attr("channelIndex", "栏目索引");
+        private static readonly Attr ChannelName = new Attr("channelName", "栏目名称");
+        private static readonly Attr Scope = new Attr("scope", "内容范围");
+        private static readonly Attr GroupChannel = new Attr("groupChannel", "指定显示的栏目组");
+        private static readonly Attr GroupChannelNot = new Attr("groupChannelNot", "指定不显示的栏目组");
+        private static readonly Attr GroupContent = new Attr("groupContent", "指定显示的内容组");
+        private static readonly Attr GroupContentNot = new Attr("groupContentNot", "指定不显示的内容组");
+        private static readonly Attr Tags = new Attr("tags", "指定标签");
+        private static readonly Attr Title = new Attr("title", "Rss订阅标题");
+        private static readonly Attr Description = new Attr("description", "Rss订阅摘要");
+        private static readonly Attr TotalNum = new Attr("totalNum", "显示内容数目");
+        private static readonly Attr StartNum = new Attr("startNum", "从第几条信息开始显示");
+        private static readonly Attr Order = new Attr("order", "排序");
+        private static readonly Attr IsTop = new Attr("isTop", "仅显示置顶内容");
+        private static readonly Attr IsRecommend = new Attr("isRecommend", "仅显示推荐内容");
+        private static readonly Attr IsHot = new Attr("isHot", "仅显示热点内容");
+        private static readonly Attr IsColor = new Attr("isColor", "仅显示醒目内容");
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -84,74 +62,74 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, AttributeTitle))
+                if (StringUtils.EqualsIgnoreCase(name, Title.Name))
                 {
                     title = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeDescription))
+                else if (StringUtils.EqualsIgnoreCase(name, Description.Name))
                 {
                     description = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeScope))
+                else if (StringUtils.EqualsIgnoreCase(name, Scope.Name))
                 {
                     scopeTypeString = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelIndex.Name))
                 {
                     channelIndex = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelName))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelName.Name))
                 {
                     channelName = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupChannel))
+                else if (StringUtils.EqualsIgnoreCase(name, GroupChannel.Name))
                 {
                     groupChannel = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupChannelNot))
+                else if (StringUtils.EqualsIgnoreCase(name, GroupChannelNot.Name))
                 {
                     groupChannelNot = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupContent))
+                else if (StringUtils.EqualsIgnoreCase(name, GroupContent.Name))
                 {
                     groupContent = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupContentNot))
+                else if (StringUtils.EqualsIgnoreCase(name, GroupContentNot.Name))
                 {
                     groupContentNot = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeTags))
+                else if (StringUtils.EqualsIgnoreCase(name, Tags.Name))
                 {
                     tags = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeTotalNum))
+                else if (StringUtils.EqualsIgnoreCase(name, TotalNum.Name))
                 {
                     totalNum = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeStartNum))
+                else if (StringUtils.EqualsIgnoreCase(name, StartNum.Name))
                 {
                     startNum = TranslateUtils.ToInt(value, 1);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeOrder))
+                else if (StringUtils.EqualsIgnoreCase(name, Order.Name))
                 {
                     orderByString = StlDataUtility.GetContentOrderByString(pageInfo.SiteId, value, ETaxisType.OrderByTaxisDesc);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsTop))
+                else if (StringUtils.EqualsIgnoreCase(name, IsTop.Name))
                 {
                     isTopExists = true;
                     isTop = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsRecommend))
+                else if (StringUtils.EqualsIgnoreCase(name, IsRecommend.Name))
                 {
                     isRecommendExists = true;
                     isRecommend = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsHot))
+                else if (StringUtils.EqualsIgnoreCase(name, IsHot.Name))
                 {
                     isHotExists = true;
                     isHot = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsColor))
+                else if (StringUtils.EqualsIgnoreCase(name, IsColor.Name))
                 {
                     isColorExists = true;
                     isColor = TranslateUtils.ToBool(value);

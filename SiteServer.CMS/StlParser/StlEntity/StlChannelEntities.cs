@@ -11,7 +11,7 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
-    [Stl(Usage = "栏目实体", Description = "通过 {channel.} 实体在模板中显示栏目值")]
+    [StlClass(Usage = "栏目实体", Description = "通过 {channel.} 实体在模板中显示栏目值")]
     public class StlChannelEntities
 	{
         private StlChannelEntities()

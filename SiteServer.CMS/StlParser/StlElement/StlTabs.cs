@@ -8,28 +8,18 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "页签切换", Description = "通过 stl:tabs 标签在模板中显示页签切换")]
+    [StlClass(Usage = "页签切换", Description = "通过 stl:tabs 标签在模板中显示页签切换")]
     public class StlTabs
     {
         private StlTabs() { }
         public const string ElementName = "stl:tabs";
 
-        public const string AttributeTabName = "tabName";
-        public const string AttributeIsHeader = "isHeader";
-        public const string AttributeAction = "action";
-        public const string AttributeClassActive = "classActive";
-        public const string AttributeClassNormal = "classNormal";
-        public const string AttributeCurrent = "current";
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeTabName, "页签名称"},
-            {AttributeIsHeader, "是否为页签头部"},
-            {AttributeAction, StringUtils.SortedListToAttributeValueString("页签切换方式", ActionList)},
-            {AttributeClassActive, "当前显示页签头部的CSS类"},
-            {AttributeClassNormal, "当前隐藏页签头部的CSS类"},
-            {AttributeCurrent, "当前页签"}
-        };
+        private static readonly Attr TabName = new Attr("tabName", "页签名称");
+        private static readonly Attr IsHeader = new Attr("isHeader", "是否为页签头部");
+        private static readonly Attr Action = new Attr("action", "页签切换方式");
+        private static readonly Attr ClassActive = new Attr("classActive", "当前显示页签头部的CSS类");
+        private static readonly Attr ClassNormal = new Attr("classNormal", "当前隐藏页签头部的CSS类");
+        private static readonly Attr Current = new Attr("current", "当前页签");
 
         public const string ActionClick = "Click";
         public const string ActionMouseOver = "MouseOver";
@@ -53,27 +43,27 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, AttributeTabName))
+                if (StringUtils.EqualsIgnoreCase(name, TabName.Name))
                 {
                     tabName = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsHeader))
+                else if (StringUtils.EqualsIgnoreCase(name, IsHeader.Name))
                 {
                     isHeader = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeAction))
+                else if (StringUtils.EqualsIgnoreCase(name, Action.Name))
                 {
                     action = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeClassActive))
+                else if (StringUtils.EqualsIgnoreCase(name, ClassActive.Name))
                 {
                     classActive = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeClassNormal))
+                else if (StringUtils.EqualsIgnoreCase(name, ClassNormal.Name))
                 {
                     classNormal = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeCurrent))
+                else if (StringUtils.EqualsIgnoreCase(name, Current.Name))
                 {
                     current = TranslateUtils.ToInt(value, 1);
                 }
@@ -129,6 +119,8 @@ function stl_tab_{uniqueId}(tabName, no){{
                         while (xmlIe.MoveNext())
                         {
                             var attr = (XmlAttribute)xmlIe.Current;
+                            if (attr == null) continue;
+
                             var attributeName = attr.Name.ToLower();
                             if (!StringUtils.EqualsIgnoreCase(attr.Name, "id") && !StringUtils.EqualsIgnoreCase(attr.Name, "onmouseover") && !StringUtils.EqualsIgnoreCase(attr.Name, "onclick"))
                             {

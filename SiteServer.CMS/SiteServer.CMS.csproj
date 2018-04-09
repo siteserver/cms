@@ -337,6 +337,8 @@
     <Compile Include="StlParser\Cache\Tag.cs" />
     <Compile Include="StlParser\Cache\User.cs" />
     <Compile Include="StlParser\FileSystemObjectAsync.cs" />
+    <Compile Include="StlParser\Model\AttrUtils.cs" />
+    <Compile Include="StlParser\Model\AttrType.cs" />
     <Compile Include="StlParser\Model\ChannelItemInfo.cs" />
     <Compile Include="StlParser\Model\ContentItemInfo.cs" />
     <Compile Include="StlParser\Model\ContextInfo.cs" />
@@ -350,7 +352,10 @@
     <Compile Include="StlParser\Model\PageInfo.cs" />
     <Compile Include="StlParser\Model\ParsedDataList.cs" />
     <Compile Include="StlParser\Model\StlAll.cs" />
-    <Compile Include="StlParser\Model\StlAttribute.cs" />
+    <Compile Include="StlParser\Model\Attr.cs" />
+    <Compile Include="StlParser\Model\AttrEnum.cs" />
+    <Compile Include="StlParser\Model\StlFieldAttribute.cs" />
+    <Compile Include="StlParser\Model\StlClassAttribute.cs" />
     <Compile Include="StlParser\Parser.cs" />
     <Compile Include="StlParser\Parsers\StlElementParser.cs" />
     <Compile Include="StlParser\Parsers\StlEntityParser.cs" />

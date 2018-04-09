@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -11,36 +10,22 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "显示Flash", Description = "通过 stl:flash 标签在模板中获取并显示栏目或内容的Flash")]
+    [StlClass(Usage = "显示Flash", Description = "通过 stl:flash 标签在模板中获取并显示栏目或内容的Flash")]
     public class StlFlash
     {
         private StlFlash() { }
         public const string ElementName = "stl:flash";
 
-        public const string AttributeChannelIndex = "channelIndex";
-        public const string AttributeChannelName = "channelName";
-        public const string AttributeParent = "parent";
-        public const string AttributeUpLevel = "upLevel";
-        public const string AttributeTopLevel = "topLevel";
-        public const string AttributeType = "type";
-        public const string AttributeSrc = "src";
-        public const string AttributeAltSrc = "altSrc";
-        public const string AttributeWidth = "width";
-        public const string AttributeHeight = "height";
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeChannelIndex, "栏目索引"},
-            {AttributeChannelName, "栏目名称"},
-            {AttributeParent, "显示父栏目"},
-            {AttributeUpLevel, "上级栏目的级别"},
-            {AttributeTopLevel, "从首页向下的栏目级别"},
-            {AttributeType, "指定存储flash的字段"},
-            {AttributeSrc, "显示的flash地址"},
-            {AttributeAltSrc, "当指定的flash不存在时显示的flash地址"},
-            {AttributeWidth, "宽度"},
-            {AttributeHeight, "高度"}
-        };
+        private static readonly Attr ChannelIndex = new Attr("channelIndex", "栏目索引");
+        private static readonly Attr ChannelName = new Attr("channelName", "栏目名称");
+        private static readonly Attr Parent = new Attr("parent", "显示父栏目");
+        private static readonly Attr UpLevel = new Attr("upLevel", "上级栏目的级别");
+        private static readonly Attr TopLevel = new Attr("topLevel", "从首页向下的栏目级别");
+        private static readonly Attr Type = new Attr("type", "指定存储flash的字段");
+        private static readonly Attr Src = new Attr("src", "显示的flash地址");
+        private static readonly Attr AltSrc = new Attr("altSrc", "当指定的flash不存在时显示的flash地址");
+        private static readonly Attr Width = new Attr("width", "宽度");
+        private static readonly Attr Height = new Attr("height", "高度");
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -59,7 +44,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
+                if (StringUtils.EqualsIgnoreCase(name, ChannelIndex.Name))
                 {
                     channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     if (!string.IsNullOrEmpty(channelIndex))
@@ -67,7 +52,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelName))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelName.Name))
                 {
                     channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     if (!string.IsNullOrEmpty(channelName))
@@ -75,7 +60,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeParent))
+                else if (StringUtils.EqualsIgnoreCase(name, Parent.Name))
                 {
                     if (TranslateUtils.ToBool(value))
                     {
@@ -83,7 +68,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeUpLevel))
+                else if (StringUtils.EqualsIgnoreCase(name, UpLevel.Name))
                 {
                     upLevel = TranslateUtils.ToInt(value);
                     if (upLevel > 0)
@@ -91,7 +76,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeTopLevel))
+                else if (StringUtils.EqualsIgnoreCase(name, TopLevel.Name))
                 {
                     topLevel = TranslateUtils.ToInt(value);
                     if (topLevel >= 0)
@@ -99,23 +84,23 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeType))
+                else if (StringUtils.EqualsIgnoreCase(name, Type.Name))
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeSrc))
+                else if (StringUtils.EqualsIgnoreCase(name, Src.Name))
                 {
                     src = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeAltSrc))
+                else if (StringUtils.EqualsIgnoreCase(name, AltSrc.Name))
                 {
                     altSrc = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeWidth))
+                else if (StringUtils.EqualsIgnoreCase(name, Width.Name))
                 {
                     width = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeHeight))
+                else if (StringUtils.EqualsIgnoreCase(name, Height.Name))
                 {
                     height = value;
                 }

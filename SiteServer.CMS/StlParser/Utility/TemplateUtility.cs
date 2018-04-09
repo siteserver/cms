@@ -252,40 +252,6 @@ namespace SiteServer.CMS.StlParser.Utility
             return innerBuilder.ToString();
         }
 
-        public static string GetCommentsTemplateString(string templateString, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
-        {
-            var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
-
-            var contextInfo = contextInfoRef.Clone();
-            contextInfo.ContextType = EContextType.Comment;
-            contextInfo.ItemContainer = itemContainer;
-            contextInfo.ContainerClientId = containerClientId;
-
-            var innerBuilder = new StringBuilder(templateString);
-            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-
-            DbItemContainer.PopCommentItem(pageInfo);
-
-            return innerBuilder.ToString();
-        }
-
-        //public static string GetInputContentsTemplateString(string templateString, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
-        //{
-        //    var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
-
-        //    var contextInfo = contextInfoRef.Clone();
-        //    contextInfo.ContainerClientId = containerClientId;
-        //    contextInfo.ItemContainer = itemContainer;
-        //    contextInfo.ContextType = contextType;
-
-        //    var innerBuilder = new StringBuilder(templateString);
-        //    StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-
-        //    DbItemContainer.PopInputItem(pageInfo);
-
-        //    return innerBuilder.ToString();
-        //}
-
         public static string GetSqlContentsTemplateString(string templateString, LowerNameValueCollection selectedItems, LowerNameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
         {
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);

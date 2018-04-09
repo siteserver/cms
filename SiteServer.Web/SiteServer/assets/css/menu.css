@@ -227,6 +227,7 @@ body.fixed-left .side-menu.left {
 #sidebar-menu li,
 #sidebar-menu a {
   border: 0;
+  font-family: 'Microsoft YaHei', sans-serif;
   font-weight: normal;
   line-height: 1;
   font-size: 14px;
@@ -598,6 +599,7 @@ body.fixed-left .side-menu.left {
   color: #00b19d;
 }
 #topnav .topbar-main {
+  font-family: 'Microsoft YaHei', sans-serif;
   background-color: #00b19d;
   height: 62px;
 }

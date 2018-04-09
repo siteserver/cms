@@ -12,28 +12,18 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "翻页栏目列表", Description = "通过 stl:pageChannels 标签在模板中显示翻页栏目列表")]
+    [StlClass(Usage = "翻页栏目列表", Description = "通过 stl:pageChannels 标签在模板中显示翻页栏目列表")]
     public class StlPageChannels : StlChannels
     {
         public new const string ElementName = "stl:pageChannels";
 
-        public const string AttributePageNum = "pageNum";
+        private static readonly Attr PageNum = new Attr("pageNum", "每页显示的栏目数目");
 
         private readonly string _stlPageChannelsElement;
         private readonly XmlNode _node;
         private readonly PageInfo _pageInfo;
         private readonly ContextInfo _contextInfo;
         private readonly DataSet _dataSet;
-
-        public new static SortedList<string, string> AttributeList
-        {
-            get
-            {
-                var attributes = StlChannels.AttributeList;
-                attributes.Add(AttributePageNum, "每页显示的栏目数目");
-                return attributes;
-            }
-        }
 
         public StlPageChannels(string stlPageChannelsElement, PageInfo pageInfo, ContextInfo contextInfo, bool isXmlContent)
         {
@@ -72,9 +62,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, DisplayInfo.ChannelIndex, DisplayInfo.ChannelName);
 
-            var isTotal = TranslateUtils.ToBool(DisplayInfo.Others.Get(AttributeIsTotal));
+            var isTotal = TranslateUtils.ToBool(DisplayInfo.Others.Get(IsTotal.Name));
 
-            if (TranslateUtils.ToBool(DisplayInfo.Others.Get(AttributeIsAllChildren)))
+            if (TranslateUtils.ToBool(DisplayInfo.Others.Get(IsAllChildren.Name)))
             {
                 DisplayInfo.Scope = EScopeType.Descendant;
             }

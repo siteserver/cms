@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Web.UI.WebControls;
+﻿using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
@@ -7,59 +6,33 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "站点列表", Description = "通过 stl:sites 标签在模板中显示站点列表")]
+    [StlClass(Usage = "站点列表", Description = "通过 stl:sites 标签在模板中显示站点列表")]
     public class StlSites
     {
         public const string ElementName = "stl:sites";
 
-        public const string AttributeSiteName = "siteName";
-        public const string AttributeSiteDir = "siteDir";
-        public const string AttributeTotalNum = "totalNum";
-        public const string AttributeStartNum = "startNum";
-        public const string AttributeWhere = "where";
-        public const string AttributeScope = "scope";
-        public const string AttributeOrder = "order";
-        public const string AttributeSince = "since";
-        public const string AttributeCellPadding = "cellPadding";
-        public const string AttributeCellSpacing = "cellSpacing";
-        public const string AttributeClass = "class";
-        public const string AttributeColumns = "columns";
-        public const string AttributeDirection = "direction";
-        public const string AttributeHeight = "height";
-        public const string AttributeWidth = "width";
-        public const string AttributeAlign = "align";
-        public const string AttributeItemHeight = "itemHeight";
-        public const string AttributeItemWidth = "itemWidth";
-        public const string AttributeItemAlign = "itemAlign";
-        public const string AttributeItemVerticalAlign = "itemVerticalAlign";
-        public const string AttributeItemClass = "itemClass";
-        public const string AttributeLayout = "layout";
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeSiteName, "站点名称"},
-            {AttributeSiteDir, "站点文件夹"},
-            {AttributeCellPadding, "填充"},
-            {AttributeCellSpacing, "间距"},
-            {AttributeClass, "Css类"},
-            {AttributeColumns, "列数"},
-            {AttributeDirection, "方向"},
-            {AttributeLayout, "指定列表布局方式"},
-            {AttributeHeight, "整体高度"},
-            {AttributeWidth, "整体宽度"},
-            {AttributeAlign, "整体对齐"},
-            {AttributeItemHeight, "项高度"},
-            {AttributeItemWidth, "项宽度"},
-            {AttributeItemAlign, "项水平对齐"},
-            {AttributeItemVerticalAlign, "项垂直对齐"},
-            {AttributeItemClass, "项Css类"},
-            {AttributeTotalNum, "显示内容数目"},
-            {AttributeStartNum, "从第几条信息开始显示"},
-            {AttributeWhere, "获取站点列表的条件判断"},
-            {AttributeScope, "范围"},
-            {AttributeOrder, "排序"},
-            {AttributeSince, "时间段"}
-        };
+        private static readonly Attr SiteName = new Attr("siteName", "站点名称");
+        private static readonly Attr SiteDir = new Attr("siteDir", "站点文件夹");
+        private static readonly Attr TotalNum = new Attr("totalNum", "填充");
+        private static readonly Attr StartNum = new Attr("startNum", "间距");
+        private static readonly Attr Where = new Attr("where", "Css类");
+        private static readonly Attr Scope = new Attr("scope", "列数");
+        private static readonly Attr Order = new Attr("order", "方向");
+        private static readonly Attr Since = new Attr("since", "指定列表布局方式");
+        private static readonly Attr CellPadding = new Attr("cellPadding", "整体高度");
+        private static readonly Attr CellSpacing = new Attr("cellSpacing", "整体宽度");
+        private static readonly Attr Class = new Attr("class", "整体对齐");
+        private static readonly Attr Columns = new Attr("columns", "项高度");
+        private static readonly Attr Direction = new Attr("direction", "项宽度");
+        private static readonly Attr Height = new Attr("height", "项水平对齐");
+        private static readonly Attr Width = new Attr("width", "项垂直对齐");
+        private static readonly Attr Align = new Attr("align", "项Css类");
+        private static readonly Attr ItemHeight = new Attr("itemHeight", "显示内容数目");
+        private static readonly Attr ItemWidth = new Attr("itemWidth", "从第几条信息开始显示");
+        private static readonly Attr ItemAlign = new Attr("itemAlign", "获取站点列表的条件判断");
+        private static readonly Attr ItemVerticalAlign = new Attr("itemVerticalAlign", "范围");
+        private static readonly Attr ItemClass = new Attr("itemClass", "排序");
+        private static readonly Attr Layout = new Attr("layout", "时间段");
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -72,9 +45,9 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var parsedContent = string.Empty;
 
-            var siteName = listInfo.Others.Get(AttributeSiteName);
-            var siteDir = listInfo.Others.Get(AttributeSiteDir);
-            var since = listInfo.Others.Get(AttributeSince);
+            var siteName = listInfo.Others.Get(SiteName.Name);
+            var siteDir = listInfo.Others.Get(SiteDir.Name);
+            var since = listInfo.Others.Get(Since.Name);
 
             if (listInfo.Layout == ELayout.None)
             {

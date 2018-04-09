@@ -10,12 +10,12 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "翻页数据库列表", Description = "通过 stl:pageSqlContents 标签在模板中显示能够翻页的数据库列表")]
+    [StlClass(Usage = "翻页数据库列表", Description = "通过 stl:pageSqlContents 标签在模板中显示能够翻页的数据库列表")]
     public class StlPageSqlContents : StlSqlContents
     {
         public new const string ElementName = "stl:pageSqlContents";
 
-        public const string AttributePageNum = "pageNum";
+        private static readonly Attr PageNum = new Attr("pageNum", "每页显示的内容数目");
 
         private readonly string _stlPageSqlContentsElement;
         private readonly XmlNode _node;
@@ -23,16 +23,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         private readonly PageInfo _pageInfo;
         private readonly ContextInfo _contextInfo;
         private DataSet _dataSet;
-
-        public new static SortedList<string, string> AttributeList
-        {
-            get
-            {
-                var attributes = StlSqlContents.AttributeList;
-                attributes.Add(AttributePageNum, "每页显示的内容数目");
-                return attributes;
-            }
-        }
 
         public StlPageSqlContents(string stlPageSqlContentsElement, PageInfo pageInfo, ContextInfo contextInfo, bool isXmlContent, bool isLoadData)
         {

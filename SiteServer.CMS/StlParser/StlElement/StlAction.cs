@@ -8,27 +8,20 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "执行动作", Description = "通过 stl:action 标签在模板中创建链接，点击链接后将执行相应的动作")]
+    [StlClass(Usage = "执行动作", Description = "通过 stl:action 标签在模板中创建链接，点击链接后将执行相应的动作")]
     public class StlAction
     {
         private StlAction() { }
         public const string ElementName = "stl:action";
 
-        public const string AttributeType = "type";
+        private static readonly AttrEnum TypeTranslate = new AttrEnum("Translate", "繁体/简体转换");
+        private static readonly AttrEnum TypeClose = new AttrEnum("Close", "关闭页面");
 
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
+        private static readonly Attr Type = new Attr("type", "动作类型", AttrType.Enum, new List<AttrEnum>
         {
-            {AttributeType, StringUtils.SortedListToAttributeValueString("动作类型", TypeList)}
-        };
-
-        public const string TypeTranslate = "Translate";
-        public const string TypeClose = "Close";
-
-        public static SortedList<string, string> TypeList => new SortedList<string, string>
-        {
-            {TypeTranslate, "繁体/简体转换"},
-            {TypeClose, "关闭页面"}
-        };
+            TypeTranslate,
+            TypeClose
+        });
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -37,7 +30,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             foreach (var name in contextInfo.Attributes.Keys)
             {
                 var value = contextInfo.Attributes[name];
-                if (StringUtils.EqualsIgnoreCase(name, AttributeType))
+                if (StringUtils.EqualsIgnoreCase(name, Type.Name))
                 {
                     type = value;
                 }
@@ -65,7 +58,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             //计算动作开始
             if (!string.IsNullOrEmpty(type))
             {
-                if (StringUtils.EqualsIgnoreCase(type, TypeTranslate))
+                if (StringUtils.EqualsIgnoreCase(type, TypeTranslate.Name))
                 {
                     pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAhTranslate);
 
@@ -90,7 +83,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         stlAnchor.ID = "translateLink";
                     }
 
-                    pageInfo.FootCodes[TypeTranslate] = $@"
+                    pageInfo.FootCodes[TypeTranslate.Name] = $@"
 <script type=""text/javascript""> 
 var defaultEncoding = 0;
 var translateDelay = 0;
@@ -102,7 +95,7 @@ translateInitilization();
 </script>
 ";
                 }
-                else if (StringUtils.EqualsIgnoreCase(type, TypeClose))
+                else if (StringUtils.EqualsIgnoreCase(type, TypeClose.Name))
                 {
                     url = "javascript:window.close()";
                 }

@@ -533,10 +533,6 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 dbItemIndex = contextInfo.ItemContainer.ChannelItem.ItemIndex;
             }
-            else if (contextInfo.ContextType == EContextType.Comment)
-            {
-                dbItemIndex = contextInfo.ItemContainer.CommentItem.ItemIndex;
-            }
             else if (contextInfo.ContextType == EContextType.Content)
             {
                 dbItemIndex = contextInfo.ItemContainer.ContentItem.ItemIndex;

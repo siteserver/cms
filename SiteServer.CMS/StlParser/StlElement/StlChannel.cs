@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -11,56 +10,32 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "获取栏目值", Description = "通过 stl:channel 标签在模板中显示指定栏目的属性值")]
+    [StlClass(Usage = "获取栏目值", Description = "通过 stl:channel 标签在模板中显示指定栏目的属性值")]
     public class StlChannel
     {
         private StlChannel() { }
         public const string ElementName = "stl:channel";
 
-        public const string AttributeChannelIndex = "channelIndex";
-        public const string AttributeChannelName = "channelName";
-        public const string AttributeParent = "parent";
-        public const string AttributeUpLevel = "upLevel";
-        public const string AttributeTopLevel = "topLevel";
-        public const string AttributeType = "type";
-        public const string AttributeLeftText = "leftText";
-        public const string AttributeRightText = "rightText";
-        public const string AttributeFormatString = "formatString";
-        public const string AttributeSeparator = "separator";
-        public const string AttributeStartIndex = "startIndex";
-        public const string AttributeLength = "length";
-        public const string AttributeWordNum = "wordNum";
-        public const string AttributeEllipsis = "ellipsis";
-        public const string AttributeReplace = "replace";
-        public const string AttributeTo = "to";
-        public const string AttributeIsClearTags = "isClearTags";
-        public const string AttributeIsReturnToBr = "isReturnToBr";
-        public const string AttributeIsLower = "isLower";
-        public const string AttributeIsUpper = "isUpper";
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeChannelIndex, "栏目索引"},
-            {AttributeChannelName, "栏目名称"},
-            {AttributeParent, "显示父栏目属性"},
-            {AttributeUpLevel, "上级栏目的级别"},
-            {AttributeTopLevel, "从首页向下的栏目级别"},
-            {AttributeType, "显示的类型"},
-            {AttributeLeftText, "显示在信息前的文字"},
-            {AttributeRightText, "显示在信息后的文字"},
-            {AttributeFormatString, "显示的格式"},
-            {AttributeSeparator, "显示多项时的分割字符串"},
-            {AttributeStartIndex, "字符开始位置"},
-            {AttributeLength, "指定字符长度"},
-            {AttributeWordNum, "显示字符的数目"},
-            {AttributeEllipsis, "文字超出部分显示的文字"},
-            {AttributeReplace, "需要替换的文字，可以是正则表达式"},
-            {AttributeTo, "替换replace的文字信息"},
-            {AttributeIsClearTags, "是否清除HTML标签"},
-            {AttributeIsReturnToBr, "是否将回车替换为HTML换行标签"},
-            {AttributeIsLower, "是否转换为小写"},
-            {AttributeIsUpper, "是否转换为大写"}
-        };
+        private static readonly Attr ChannelIndex = new Attr("channelIndex", "栏目索引", AttrType.Enum);
+        private static readonly Attr ChannelName = new Attr("channelName", "栏目名称", AttrType.Enum);
+        private static readonly Attr Parent = new Attr("parent", "显示父栏目属性", AttrType.Boolean);
+        private static readonly Attr UpLevel = new Attr("upLevel", "上级栏目的级别", AttrType.Integer);
+        private static readonly Attr TopLevel = new Attr("topLevel", "从首页向下的栏目级别", AttrType.Integer);
+        private static readonly Attr Type = new Attr("type", "显示的类型", AttrType.Enum);
+        private static readonly Attr LeftText = new Attr("leftText", "显示在信息前的文字");
+        private static readonly Attr RightText = new Attr("rightText", "显示在信息后的文字");
+        private static readonly Attr FormatString = new Attr("formatString", "显示的格式");
+        private static readonly Attr Separator = new Attr("separator", "显示多项时的分割字符串");
+        private static readonly Attr StartIndex = new Attr("startIndex", "字符开始位置", AttrType.Integer);
+        private static readonly Attr Length = new Attr("length", "指定字符长度", AttrType.Integer);
+        private static readonly Attr WordNum = new Attr("wordNum", "显示字符的数目", AttrType.Integer);
+        private static readonly Attr Ellipsis = new Attr("ellipsis", "文字超出部分显示的文字");
+        private static readonly Attr Replace = new Attr("replace", "需要替换的文字，可以是正则表达式");
+        private static readonly Attr To = new Attr("to", "替换replace的文字信息");
+        private static readonly Attr IsClearTags = new Attr("isClearTags", "是否清除HTML标签", AttrType.Boolean);
+        private static readonly Attr IsReturnToBr = new Attr("isReturnToBr", "是否将回车替换为HTML换行标签", AttrType.Boolean);
+        private static readonly Attr IsLower = new Attr("isLower", "是否转换为小写", AttrType.Boolean);
+        private static readonly Attr IsUpper = new Attr("isUpper", "是否转换为大写", AttrType.Boolean);
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -88,86 +63,86 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
+                if (StringUtils.EqualsIgnoreCase(name, ChannelIndex.Name))
                 {
                     channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelName))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelName.Name))
                 {
                     channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeParent))
+                else if (StringUtils.EqualsIgnoreCase(name, Parent.Name))
                 {
                     if (TranslateUtils.ToBool(value))
                     {
                         upLevel = 1;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeUpLevel))
+                else if (StringUtils.EqualsIgnoreCase(name, UpLevel.Name))
                 {
                     upLevel = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeTopLevel))
+                else if (StringUtils.EqualsIgnoreCase(name, TopLevel.Name))
                 {
                     topLevel = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeType))
+                else if (StringUtils.EqualsIgnoreCase(name, Type.Name))
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeLeftText))
+                else if (StringUtils.EqualsIgnoreCase(name, LeftText.Name))
                 {
                     leftText = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeRightText))
+                else if (StringUtils.EqualsIgnoreCase(name, RightText.Name))
                 {
                     rightText = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeFormatString))
+                else if (StringUtils.EqualsIgnoreCase(name, FormatString.Name))
                 {
                     formatString = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeSeparator))
+                else if (StringUtils.EqualsIgnoreCase(name, Separator.Name))
                 {
                     separator = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeStartIndex))
+                else if (StringUtils.EqualsIgnoreCase(name, StartIndex.Name))
                 {
                     startIndex = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeLength))
+                else if (StringUtils.EqualsIgnoreCase(name, Length.Name))
                 {
                     length = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeWordNum))
+                else if (StringUtils.EqualsIgnoreCase(name, WordNum.Name))
                 {
                     wordNum = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeEllipsis))
+                else if (StringUtils.EqualsIgnoreCase(name, Ellipsis.Name))
                 {
                     ellipsis = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeReplace))
+                else if (StringUtils.EqualsIgnoreCase(name, Replace.Name))
                 {
                     replace = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeTo))
+                else if (StringUtils.EqualsIgnoreCase(name, To.Name))
                 {
                     to = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsClearTags))
+                else if (StringUtils.EqualsIgnoreCase(name, IsClearTags.Name))
                 {
                     isClearTags = TranslateUtils.ToBool(value, false);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsReturnToBr))
+                else if (StringUtils.EqualsIgnoreCase(name, IsReturnToBr.Name))
                 {
                     isReturnToBr = TranslateUtils.ToBool(value, false);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsLower))
+                else if (StringUtils.EqualsIgnoreCase(name, IsLower.Name))
                 {
                     isLower = TranslateUtils.ToBool(value, true);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsUpper))
+                else if (StringUtils.EqualsIgnoreCase(name, IsUpper.Name))
                 {
                     isUpper = TranslateUtils.ToBool(value, true);
                 }

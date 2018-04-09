@@ -15,29 +15,18 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "翻页内容列表", Description = "通过 stl:pageContents 标签在模板中显示翻页内容列表")]
+    [StlClass(Usage = "翻页内容列表", Description = "通过 stl:pageContents 标签在模板中显示翻页内容列表")]
     public class StlPageContents : StlContents
     {
         public new const string ElementName = "stl:pageContents";
 
-        public const string AttributePageNum = "pageNum";
-        public const string AttributeMaxPage = "maxPage";
+        public static readonly Attr PageNum = new Attr("pageNum", "每页显示的内容数目");
+        public static readonly Attr MaxPage = new Attr("maxPage", "翻页中生成的静态页面最大数，剩余页面将动态获取");
 
         private readonly string _stlPageContentsElement;
         private readonly XmlNode _node;
         private readonly PageInfo _pageInfo;
         private readonly ContextInfo _contextInfo;
-
-        public new static SortedList<string, string> AttributeList
-        {
-            get
-            {
-                var attributes = StlContents.AttributeList;
-                attributes.Add(AttributePageNum, "每页显示的内容数目");
-                attributes.Add(AttributeMaxPage, "翻页中生成的静态页面最大数，剩余页面将动态获取");
-                return attributes;
-            }
-        }
 
         public StlPageContents(string stlPageContentsElement, PageInfo pageInfo, ContextInfo contextInfo, bool isXmlContent)
         {

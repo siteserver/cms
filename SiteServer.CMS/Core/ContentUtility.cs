@@ -338,6 +338,50 @@ namespace SiteServer.CMS.Core
             return list;
         }
 
+        public static List<TableStyleInfo> GetEditableTableStyleInfoList(List<TableStyleInfo> tableStyleInfoList)
+        {
+            var list = new List<TableStyleInfo>
+            {
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.Title,
+                    InputType = InputType.Text,
+                    DisplayName = "标题"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.LinkUrl,
+                    InputType = InputType.Text,
+                    DisplayName = "外部链接"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.AddDate,
+                    InputType = InputType.DateTime,
+                    DisplayName = "添加时间"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.GroupNameCollection,
+                    InputType = InputType.CheckBox,
+                    DisplayName = "内容组"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.Tags,
+                    InputType = InputType.CheckBox,
+                    DisplayName = "标签"
+                }
+            };
+
+            if (tableStyleInfoList != null)
+            {
+                list.InsertRange(2, tableStyleInfoList);
+            }
+
+            return list;
+        }
+
         public static bool AfterContentAdded(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, bool isCrossSiteTrans, bool isAutomatic)
         {
             var isTranslated = false;

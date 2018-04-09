@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
@@ -9,93 +8,50 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "内容列表", Description = "通过 stl:contents 标签在模板中显示内容列表")]
+    [StlClass(Usage = "内容列表", Description = "通过 stl:contents 标签在模板中显示内容列表")]
     public class StlContents
     {
         public const string ElementName = "stl:contents";
 
-        public const string AttributeChannelIndex = "channelIndex";
-        public const string AttributeChannelName = "channelName";
-        public const string AttributeUpLevel = "upLevel";
-        public const string AttributeTopLevel = "topLevel";
-        public const string AttributeScope = "scope";
-        public const string AttributeGroup = "group";
-        public const string AttributeGroupNot = "groupNot";
-        public const string AttributeGroupChannel = "groupChannel";
-        public const string AttributeGroupChannelNot = "groupChannelNot";
-        public const string AttributeGroupContent = "groupContent";
-        public const string AttributeGroupContentNot = "groupContentNot";
-        public const string AttributeTags = "tags";
-        public const string AttributeIsTop = "isTop";
-        public const string AttributeIsRecommend = "isRecommend";
-        public const string AttributeIsHot = "isHot";
-        public const string AttributeIsColor = "isColor";
-        public const string AttributeTotalNum = "totalNum";
-        public const string AttributeStartNum = "startNum";
-        public const string AttributeOrder = "order";
-        public const string AttributeIsImage = "isImage";
-        public const string AttributeIsVideo = "isVideo";
-        public const string AttributeIsFile = "isFile";
-        public const string AttributeIsNoDup = "isNoDup";
-        public const string AttributeIsRelatedContents = "isRelatedContents";
-        public const string AttributeWhere = "where";
-        public const string AttributeCellPadding = "cellPadding";
-        public const string AttributeCellSpacing = "cellSpacing";
-        public const string AttributeClass = "class";
-        public const string AttributeColumns = "columns";
-        public const string AttributeDirection = "direction";
-        public const string AttributeHeight = "height";
-        public const string AttributeWidth = "width";
-        public const string AttributeAlign = "align";
-        public const string AttributeItemHeight = "itemHeight";
-        public const string AttributeItemWidth = "itemWidth";
-        public const string AttributeItemAlign = "itemAlign";
-        public const string AttributeItemVerticalAlign = "itemVerticalAlign";
-        public const string AttributeItemClass = "itemClass";
-        public const string AttributeLayout = "layout";
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeChannelIndex, "栏目索引"},
-            {AttributeChannelName, "栏目名称"},
-            {AttributeUpLevel, "上级栏目的级别"},
-            {AttributeTopLevel, "从首页向下的栏目级别"},
-            {AttributeScope, "内容范围"},
-            {AttributeGroupChannel, "指定显示的栏目组"},
-            {AttributeGroupChannelNot, "指定不显示的栏目组"},
-            {AttributeGroup, "指定显示的内容组"},
-            {AttributeGroupNot, "指定不显示的内容组"},
-            {AttributeGroupContent, "指定显示的内容组"},
-            {AttributeGroupContentNot, "指定不显示的内容组"},
-            {AttributeTags, "指定标签"},
-            {AttributeIsTop, "仅显示置顶内容"},
-            {AttributeIsRecommend, "仅显示推荐内容"},
-            {AttributeIsHot, "仅显示热点内容"},
-            {AttributeIsColor, "仅显示醒目内容"},
-            {AttributeTotalNum, "显示内容数目"},
-            {AttributeStartNum, "从第几条信息开始显示"},
-            {AttributeOrder, "排序"},
-            {AttributeIsImage, "仅显示图片内容"},
-            {AttributeIsVideo, "仅显示视频内容"},
-            {AttributeIsFile, "仅显示附件内容"},
-            {AttributeIsNoDup, "不显示重复标题的内容"},
-            {AttributeIsRelatedContents, "显示相关内容列表"},
-            {AttributeWhere, "获取内容列表的条件判断"},
-            {AttributeCellPadding, "填充"},
-            {AttributeCellSpacing, "间距"},
-            {AttributeClass, "Css类"},
-            {AttributeColumns, "列数"},
-            {AttributeDirection, "方向"},
-            {AttributeLayout, "指定列表布局方式"},
-            {AttributeHeight, "整体高度"},
-            {AttributeWidth, "整体宽度"},
-            {AttributeAlign, "整体对齐"},
-            {AttributeItemHeight, "项高度"},
-            {AttributeItemWidth, "项宽度"},
-            {AttributeItemAlign, "项水平对齐"},
-            {AttributeItemVerticalAlign, "项垂直对齐"},
-            {AttributeItemClass, "项Css类"},
-        };
+        public static readonly Attr ChannelIndex = new Attr("channelIndex", "栏目索引");
+        public static readonly Attr ChannelName = new Attr("channelName", "栏目名称");
+        public static readonly Attr UpLevel = new Attr("upLevel", "上级栏目的级别");
+        public static readonly Attr TopLevel = new Attr("topLevel", "从首页向下的栏目级别");
+        public static readonly Attr Scope = new Attr("scope", "内容范围");
+        public static readonly Attr Group = new Attr("group", "指定显示的栏目组");
+        public static readonly Attr GroupNot = new Attr("groupNot", "指定不显示的栏目组");
+        public static readonly Attr GroupChannel = new Attr("groupChannel", "指定显示的内容组");
+        public static readonly Attr GroupChannelNot = new Attr("groupChannelNot", "指定不显示的内容组");
+        public static readonly Attr GroupContent = new Attr("groupContent", "指定显示的内容组");
+        public static readonly Attr GroupContentNot = new Attr("groupContentNot", "指定不显示的内容组");
+        public static readonly Attr Tags = new Attr("tags", "指定标签");
+        public static readonly Attr IsTop = new Attr("isTop", "仅显示置顶内容");
+        public static readonly Attr IsRecommend = new Attr("isRecommend", "仅显示推荐内容");
+        public static readonly Attr IsHot = new Attr("isHot", "仅显示热点内容");
+        public static readonly Attr IsColor = new Attr("isColor", "仅显示醒目内容");
+        public static readonly Attr TotalNum = new Attr("totalNum", "显示内容数目");
+        public static readonly Attr StartNum = new Attr("startNum", "从第几条信息开始显示");
+        public static readonly Attr Order = new Attr("order", "排序");
+        public static readonly Attr IsImage = new Attr("isImage", "仅显示图片内容");
+        public static readonly Attr IsVideo = new Attr("isVideo", "仅显示视频内容");
+        public static readonly Attr IsFile = new Attr("isFile", "仅显示附件内容");
+        public static readonly Attr IsNoDup = new Attr("isNoDup", "不显示重复标题的内容");
+        public static readonly Attr IsRelatedContents = new Attr("isRelatedContents", "显示相关内容列表");
+        public static readonly Attr Where = new Attr("where", "获取内容列表的条件判断");
+        public static readonly Attr CellPadding = new Attr("cellPadding", "填充");
+        public static readonly Attr CellSpacing = new Attr("cellSpacing", "间距");
+        public static readonly Attr Class = new Attr("class", "Css类");
+        public static readonly Attr Columns = new Attr("columns", "列数");
+        public static readonly Attr Direction = new Attr("direction", "方向");
+        public static readonly Attr Height = new Attr("height", "指定列表布局方式");
+        public static readonly Attr Width = new Attr("width", "整体高度");
+        public static readonly Attr Align = new Attr("align", "整体宽度");
+        public static readonly Attr ItemHeight = new Attr("itemHeight", "整体对齐");
+        public static readonly Attr ItemWidth = new Attr("itemWidth", "项高度");
+        public static readonly Attr ItemAlign = new Attr("itemAlign", "项宽度");
+        public static readonly Attr ItemVerticalAlign = new Attr("itemVerticalAlign", "项水平对齐");
+        public static readonly Attr ItemClass = new Attr("itemClass", "项垂直对齐");
+        public static readonly Attr Layout = new Attr("layout", "项Css类");
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {

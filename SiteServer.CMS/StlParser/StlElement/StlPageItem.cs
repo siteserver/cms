@@ -12,36 +12,22 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "翻页项", Description = "通过 stl:pageItem 标签在模板中显示翻页项（上一页、下一页、当前页、页跳转、页导航等）")]
+    [StlClass(Usage = "翻页项", Description = "通过 stl:pageItem 标签在模板中显示翻页项（上一页、下一页、当前页、页跳转、页导航等）")]
     public class StlPageItem
     {
         private StlPageItem() { }
         public const string ElementName = "stl:pageItem";
 
-        public const string AttributeType = "type";
-        public const string AttributeText = "text";
-        public const string AttributeLinkClass = "linkClass";
-        public const string AttributeTextClass = "textClass";
-        public const string AttributeListNum = "listNum";
-        public const string AttributeListEllipsis = "listEllipsis";
-        public const string AttributeHasLr = "hasLR";
-        public const string AttributeLStr = "lStr";
-        public const string AttributeRStr = "rStr";
-        public const string AttributeAlwaysA = "alwaysA";
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeType, StringUtils.SortedListToAttributeValueString("类型", TypeList)},
-            {AttributeText, "显示的文字"},
-            {AttributeLinkClass, "链接CSS样式"},
-            {AttributeTextClass, "文字CSS样式"},
-            {AttributeListNum, "页导航或页跳转显示链接数"},
-            {AttributeListEllipsis, "页导航或页跳转链接太多时显示的省略号"},
-            {AttributeHasLr, "页码导航是否包含左右字符"},
-            {AttributeLStr, "页面左字符"},
-            {AttributeRStr, "页面右字符"},
-            {AttributeAlwaysA, "页码总是超链接，包括无连接时"}
-        };
+        private static readonly Attr Type = new Attr("type", "类型");
+        private static readonly Attr Text = new Attr("text", "显示的文字");
+        private static readonly Attr LinkClass = new Attr("linkClass", "链接CSS样式");
+        private static readonly Attr TextClass = new Attr("textClass", "文字CSS样式");
+        private static readonly Attr ListNum = new Attr("listNum", "页导航或页跳转显示链接数");
+        private static readonly Attr ListEllipsis = new Attr("listEllipsis", "页导航或页跳转链接太多时显示的省略号");
+        private static readonly Attr HasLr = new Attr("hasLr", "页码导航是否包含左右字符");
+        private static readonly Attr LStr = new Attr("lStr", "页面左字符");
+        private static readonly Attr RStr = new Attr("rStr", "页面右字符");
+        private static readonly Attr AlwaysA = new Attr("alwaysA", "页码总是超链接，包括无连接时");
 
         public const string TypePreviousPage = "PreviousPage";				            //上一页
         public const string TypeNextPage = "NextPage";						            //下一页
@@ -97,54 +83,51 @@ namespace SiteServer.CMS.StlParser.StlElement
                     while (ie.MoveNext())
                     {
                         var attr = (XmlAttribute)ie.Current;
+                        var name = attr.Name;
 
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
+                        if (StringUtils.EqualsIgnoreCase(name, Type.Name))
                         {
                             type = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeText))
+                        else if (StringUtils.EqualsIgnoreCase(name, Text.Name))
                         {
                             text = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeListNum))
+                        else if (StringUtils.EqualsIgnoreCase(name, ListNum.Name))
                         {
                             listNum = TranslateUtils.ToInt(attr.Value, 9);
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeListEllipsis))
+                        else if (StringUtils.EqualsIgnoreCase(name, ListEllipsis.Name))
                         {
                             listEllipsis = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeLinkClass))
+                        else if (StringUtils.EqualsIgnoreCase(name, LinkClass.Name))
                         {
                             linkClass = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTextClass))
+                        else if (StringUtils.EqualsIgnoreCase(name, TextClass.Name))
                         {
                             textClass = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeHasLr))
+                        else if (StringUtils.EqualsIgnoreCase(name, HasLr.Name))
                         {
                             hasLr = TranslateUtils.ToBool(attr.Value);
                         }
-                        //else if (StringUtils.EqualsIgnoreCase(attr.Name, StlPageItem.Attribute_LRStr))
-                        //{
-                        //    lrStr = attr.Value;
-                        //}
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeLStr))
+                        else if (StringUtils.EqualsIgnoreCase(name, LStr.Name))
                         {
                             lStr = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeRStr))
+                        else if (StringUtils.EqualsIgnoreCase(name, RStr.Name))
                         {
                             rStr = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeAlwaysA))
+                        else if (StringUtils.EqualsIgnoreCase(name, AlwaysA.Name))
                         {
                             alwaysA = TranslateUtils.ToBool(attr.Value);
                         }
                         else
                         {
-                            attributes[attr.Name] = attr.Value;
+                            attributes[name] = attr.Value;
                         }
                     }
                 }
@@ -579,54 +562,51 @@ namespace SiteServer.CMS.StlParser.StlElement
                     while (ie.MoveNext())
                     {
                         var attr = (XmlAttribute)ie.Current;
+                        var name = attr.Name;
 
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
+                        if (StringUtils.EqualsIgnoreCase(name, Type.Name))
                         {
                             type = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeText))
+                        else if (StringUtils.EqualsIgnoreCase(name, Text.Name))
                         {
                             text = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeListNum))
+                        else if (StringUtils.EqualsIgnoreCase(name, ListNum.Name))
                         {
                             listNum = TranslateUtils.ToInt(attr.Value, 9);
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeListEllipsis))
+                        else if (StringUtils.EqualsIgnoreCase(name, ListEllipsis.Name))
                         {
                             listEllipsis = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeLinkClass))
+                        else if (StringUtils.EqualsIgnoreCase(name, LinkClass.Name))
                         {
                             linkClass = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTextClass))
+                        else if (StringUtils.EqualsIgnoreCase(name, TextClass.Name))
                         {
                             textClass = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeHasLr))
+                        else if (StringUtils.EqualsIgnoreCase(name, HasLr.Name))
                         {
                             hasLr = TranslateUtils.ToBool(attr.Value);
                         }
-                        //else if (StringUtils.EqualsIgnoreCase(attr.Name, StlPageItem.Attribute_LRStr))
-                        //{
-                        //    lrStr = attr.Value;
-                        //}
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeLStr))
+                        else if (StringUtils.EqualsIgnoreCase(name, LStr.Name))
                         {
                             lStr = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeRStr))
+                        else if (StringUtils.EqualsIgnoreCase(name, RStr.Name))
                         {
                             rStr = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeAlwaysA))
+                        else if (StringUtils.EqualsIgnoreCase(name, AlwaysA.Name))
                         {
                             alwaysA = TranslateUtils.ToBool(attr.Value);
                         }
                         else
                         {
-                            attributes[attr.Name] = attr.Value;
+                            attributes[name] = attr.Value;
                         }
                     }
                 }
@@ -1065,54 +1045,51 @@ namespace SiteServer.CMS.StlParser.StlElement
                     while (ie.MoveNext())
                     {
                         var attr = (XmlAttribute)ie.Current;
+                        var name = attr.Name;
 
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
+                        if (StringUtils.EqualsIgnoreCase(name, Type.Name))
                         {
                             type = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeText))
+                        else if (StringUtils.EqualsIgnoreCase(name, Text.Name))
                         {
                             text = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeListNum))
+                        else if (StringUtils.EqualsIgnoreCase(name, ListNum.Name))
                         {
                             listNum = TranslateUtils.ToInt(attr.Value, 9);
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeListEllipsis))
+                        else if (StringUtils.EqualsIgnoreCase(name, ListEllipsis.Name))
                         {
                             listEllipsis = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeLinkClass))
+                        else if (StringUtils.EqualsIgnoreCase(name, LinkClass.Name))
                         {
                             linkClass = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTextClass))
+                        else if (StringUtils.EqualsIgnoreCase(name, TextClass.Name))
                         {
                             textClass = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeHasLr))
+                        else if (StringUtils.EqualsIgnoreCase(name, HasLr.Name))
                         {
                             hasLr = TranslateUtils.ToBool(attr.Value);
                         }
-                        //else if (StringUtils.EqualsIgnoreCase(attr.Name, StlPageItem.Attribute_LRStr))
-                        //{
-                        //    lrStr = attr.Value;
-                        //}
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeLStr))
+                        else if (StringUtils.EqualsIgnoreCase(name, LStr.Name))
                         {
                             lStr = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeRStr))
+                        else if (StringUtils.EqualsIgnoreCase(name, RStr.Name))
                         {
                             rStr = attr.Value;
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeAlwaysA))
+                        else if (StringUtils.EqualsIgnoreCase(name, AlwaysA.Name))
                         {
                             alwaysA = TranslateUtils.ToBool(attr.Value);
                         }
                         else
                         {
-                            attributes[attr.Name] = attr.Value;
+                            attributes[name] = attr.Value;
                         }
                     }
                 }

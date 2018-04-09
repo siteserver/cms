@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -10,20 +9,14 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "获取站点值", Description = "通过 stl:site 标签在模板中显示站点值")]
+    [StlClass(Usage = "获取站点值", Description = "通过 stl:site 标签在模板中显示站点值")]
     public class StlSite
 	{
         private StlSite() { }
 		public const string ElementName = "stl:site";
 
-        public const string AttributeSiteName = "siteName";
-        public const string AttributeSiteDir = "siteDir";
-
-	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
-	    {
-	        {AttributeSiteName, "站点名称"},
-	        {AttributeSiteDir, "站点文件夹"}
-	    };
+        private static readonly Attr SiteName = new Attr("siteName", "站点名称");
+        private static readonly Attr SiteDir = new Attr("siteDir", "站点文件夹");
 
         //循环解析型标签
         internal static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
@@ -39,11 +32,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var value = contextInfo.Attributes[name];
 
-                    if (StringUtils.EqualsIgnoreCase(name, AttributeSiteName))
+                    if (StringUtils.EqualsIgnoreCase(name, SiteName.Name))
                     {
                         siteName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, AttributeSiteDir))
+                    else if (StringUtils.EqualsIgnoreCase(name, SiteDir.Name))
                     {
                         siteDir = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     }

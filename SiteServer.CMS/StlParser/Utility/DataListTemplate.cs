@@ -57,11 +57,6 @@ namespace SiteServer.CMS.StlParser.Utility
                 _pageInfo.ContentItems.Push(contentItem);
                 literal.Text = TemplateUtility.GetContentsItemTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
-            else if (_contextType == EContextType.Comment)
-            {
-                _pageInfo.CommentItems.Push(itemInfo);
-                literal.Text = TemplateUtility.GetCommentsTemplateString(_templateString, container.ClientID, _pageInfo, _contextType, _contextInfo);
-            }
             else if (_contextType == EContextType.SqlContent)
             {
                 _pageInfo.SqlItems.Push(itemInfo);

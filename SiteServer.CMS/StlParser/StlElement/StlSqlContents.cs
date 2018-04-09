@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Web.UI.WebControls;
+﻿using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
@@ -7,53 +6,30 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "数据库列表", Description = "通过 stl:sqlContents 标签在模板中显示数据库列表")]
+    [StlClass(Usage = "数据库列表", Description = "通过 stl:sqlContents 标签在模板中显示数据库列表")]
     public class StlSqlContents
     {
         public const string ElementName = "stl:sqlContents";
 
-        public const string AttributeConnectionStringName = "connectionStringName";
-        public const string AttributeConnectionString = "connectionString";
-        public const string AttributeTotalNum = "totalNum";
-        public const string AttributeStartNum = "startNum";
-        public const string AttributeOrder = "order";
-        public const string AttributeCellPadding = "cellPadding";
-        public const string AttributeCellSpacing = "cellSpacing";
-        public const string AttributeClass = "class";
-        public const string AttributeColumns = "columns";
-        public const string AttributeDirection = "direction";
-        public const string AttributeHeight = "height";
-        public const string AttributeWidth = "width";
-        public const string AttributeAlign = "align";
-        public const string AttributeItemHeight = "itemHeight";
-        public const string AttributeItemWidth = "itemWidth";
-        public const string AttributeItemAlign = "itemAlign";
-        public const string AttributeItemVerticalAlign = "itemVerticalAlign";
-        public const string AttributeItemClass = "itemClass";
-        public const string AttributeLayout = "layout";
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeConnectionStringName, "数据库链接字符串名称"},
-            {AttributeConnectionString, "数据库链接字符串"},
-            {AttributeCellPadding, "填充"},
-            {AttributeCellSpacing, "间距"},
-            {AttributeClass, "Css类"},
-            {AttributeColumns, "列数"},
-            {AttributeDirection, "方向"},
-            {AttributeLayout, "指定列表布局方式"},
-            {AttributeHeight, "整体高度"},
-            {AttributeWidth, "整体宽度"},
-            {AttributeAlign, "整体对齐"},
-            {AttributeItemHeight, "项高度"},
-            {AttributeItemWidth, "项宽度"},
-            {AttributeItemAlign, "项水平对齐"},
-            {AttributeItemVerticalAlign, "项垂直对齐"},
-            {AttributeItemClass, "项Css类"},
-            {AttributeTotalNum, "显示内容数目"},
-            {AttributeStartNum, "从第几条信息开始显示"},
-            {AttributeOrder, "排序"}
-        };
+        public static readonly Attr ConnectionStringName = new Attr("connectionStringName", "数据库链接字符串名称");
+        public static readonly Attr ConnectionString = new Attr("connectionString", "数据库链接字符串");
+        public static readonly Attr TotalNum = new Attr("totalNum", "填充");
+        public static readonly Attr StartNum = new Attr("startNum", "间距");
+        public static readonly Attr Order = new Attr("order", "Css类");
+        public static readonly Attr CellPadding = new Attr("cellPadding", "列数");
+        public static readonly Attr CellSpacing = new Attr("cellSpacing", "方向");
+        public static readonly Attr Class = new Attr("class", "指定列表布局方式");
+        public static readonly Attr Columns = new Attr("columns", "整体高度");
+        public static readonly Attr Direction = new Attr("direction", "整体宽度");
+        public static readonly Attr Height = new Attr("height", "整体对齐");
+        public static readonly Attr Width = new Attr("width", "项高度");
+        public static readonly Attr Align = new Attr("align", "项宽度");
+        public static readonly Attr ItemHeight = new Attr("itemHeight", "项水平对齐");
+        public static readonly Attr ItemWidth = new Attr("itemWidth", "项垂直对齐");
+        public static readonly Attr ItemAlign = new Attr("itemAlign", "项Css类");
+        public static readonly Attr ItemVerticalAlign = new Attr("itemVerticalAlign", "显示内容数目");
+        public static readonly Attr ItemClass = new Attr("itemClass", "从第几条信息开始显示");
+        public static readonly Attr Layout = new Attr("layout", "排序");
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {

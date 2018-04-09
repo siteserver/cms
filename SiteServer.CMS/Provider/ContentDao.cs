@@ -1815,7 +1815,7 @@ group by tmp.userName";
 
             if (!string.IsNullOrEmpty(tableName))
             {
-                return DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, $"{ContentAttribute.Id}, {ContentAttribute.ChannelId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}", sqlWhereString, orderByString);
+                return DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, $"{nameof(IContentInfo.Id)}, {nameof(IContentInfo.ChannelId)}, {nameof(IContentInfo.IsTop)}, {nameof(IContentInfo.AddDate)}, {nameof(IContentInfo.LastEditDate)}, {nameof(IContentInfo.Taxis)}, {nameof(IContentInfo.Hits)}, {nameof(IContentInfo.HitsByDay)}, {nameof(IContentInfo.HitsByWeek)}, {nameof(IContentInfo.HitsByMonth)}", sqlWhereString, orderByString);
             }
             return string.Empty;
         }

@@ -12,66 +12,34 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "滚动焦点图", Description = "通过 stl:focusviewer 标签在模板中实现由 FLASH 显示的图片轮播效果", Obsolete = true)]
-    public class StlFocusViewer
+    [StlClass(Usage = "滚动焦点图", Description = "通过 stl:focusviewer 标签在模板中实现由 FLASH 显示的图片轮播效果", Obsolete = true)]
+    public static class StlFocusViewer
     {
-        private StlFocusViewer() { }
         public const string ElementName = "stl:focusViewer";
 
-        public const string AttributeChannelIndex = "channelIndex";
-        public const string AttributeChannelName = "channelName";
-        public const string AttributeScope = "scope";
-        public const string AttributeGroup = "group";
-        public const string AttributeGroupNot = "groupNot";
-        public const string AttributeGroupChannel = "groupChannel";
-        public const string AttributeGroupChannelNot = "groupChannelNot";
-        public const string AttributeGroupContent = "groupContent";
-        public const string AttributeGroupContentNot = "groupContentNot";
-        public const string AttributeTags = "tags";
-        public const string AttributeOrder = "order";
-        public const string AttributeStartNum = "startNum";
-        public const string AttributeTotalNum = "totalNum";
-        public const string AttributeTitleWordNum = "titleWordNum";
-        public const string AttributeWhere = "where";
-        public const string AttributeIsTop = "isTop";
-        public const string AttributeIsRecommend = "isRecommend";
-        public const string AttributeIsHot = "isHot";
-        public const string AttributeIsColor = "isColor";
-        public const string AttributeTheme = "theme";
-        public const string AttributeWidth = "width";
-        public const string AttributeHeight = "height";
-        public const string AttributeBgColor = "bgColor";
-        public const string AttributeIsShowText = "isShowText";
-        public const string AttributeIsTopText = "isTopText";
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeChannelIndex, "栏目索引"},
-            {AttributeChannelName, "栏目名称"},
-            {AttributeScope, "范围"},
-            {AttributeGroupChannel, "指定显示的栏目组"},
-            {AttributeGroupChannelNot, "指定不显示的栏目组"},
-            {AttributeGroupContent, "指定显示的内容组"},
-            {AttributeGroupContentNot, "指定不显示的内容组"},
-            {AttributeGroup, "指定显示的内容组"},
-            {AttributeGroupNot, "指定不显示的内容组"},
-            {AttributeTags, "指定标签"},
-            {AttributeOrder, "排序"},
-            {AttributeStartNum, "从第几条信息开始显示"},
-            {AttributeTotalNum, "标题文字数量"},
-            {AttributeTitleWordNum, "标题文字数量"},
-            {AttributeWhere, "获取滚动焦点图的条件判断"},
-            {AttributeIsTop, "仅显示置顶内容"},
-            {AttributeIsRecommend, "仅显示推荐内容"},
-            {AttributeIsHot, "仅显示热点内容"},
-            {AttributeIsColor, "仅显示醒目内容"},
-            {AttributeTheme, StringUtils.SortedListToAttributeValueString("主题样式", ThemeList)},
-            {AttributeWidth, "图片宽度"},
-            {AttributeHeight, "图片高度"},
-            {AttributeBgColor, "背景色"},
-            {AttributeIsShowText, "是否显示文字标题"},
-            {AttributeIsTopText, "是否文字显示在顶端"}
-        };
+        private static readonly Attr ChannelIndex = new Attr("channelIndex", "栏目索引");
+        private static readonly Attr ChannelName = new Attr("channelName", "栏目名称");
+        private static readonly Attr Scope = new Attr("scope", "范围");
+        private static readonly Attr GroupChannel = new Attr("groupChannel", "指定显示的内容组");
+        private static readonly Attr GroupChannelNot = new Attr("groupChannelNot", "指定不显示的内容组");
+        private static readonly Attr GroupContent = new Attr("groupContent", "指定显示的内容组");
+        private static readonly Attr GroupContentNot = new Attr("groupContentNot", "指定不显示的内容组");
+        private static readonly Attr Tags = new Attr("tags", "指定标签");
+        private static readonly Attr Order = new Attr("order", "排序");
+        private static readonly Attr StartNum = new Attr("startNum", "从第几条信息开始显示");
+        private static readonly Attr TotalNum = new Attr("totalNum", "标题文字数量");
+        private static readonly Attr TitleWordNum = new Attr("titleWordNum", "标题文字数量");
+        private static readonly Attr Where = new Attr("where", "获取滚动焦点图的条件判断");
+        private static readonly Attr IsTop = new Attr("isTop", "仅显示置顶内容");
+        private static readonly Attr IsRecommend = new Attr("isRecommend", "仅显示推荐内容");
+        private static readonly Attr IsHot = new Attr("isHot", "仅显示热点内容");
+        private static readonly Attr IsColor = new Attr("isColor", "仅显示醒目内容");
+        private static readonly Attr Theme = new Attr("theme", "主题样式");
+        private static readonly Attr Width = new Attr("width", "图片宽度");
+        private static readonly Attr Height = new Attr("height", "图片高度");
+        private static readonly Attr BgColor = new Attr("bgColor", "背景色");
+        private static readonly Attr IsShowText = new Attr("isShowText", "是否显示文字标题");
+        private static readonly Attr IsTopText = new Attr("isTopText", "是否文字显示在顶端");
 
         public const string ThemeStyle1 = "Style1";
         public const string ThemeStyle2 = "Style2";
@@ -131,83 +99,83 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
+                if (StringUtils.EqualsIgnoreCase(name, ChannelIndex.Name))
                 {
                     channelIndex = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelName))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelName.Name))
                 {
                     channelName = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeScope))
+                else if (StringUtils.EqualsIgnoreCase(name, Scope.Name))
                 {
                     scopeType = EScopeTypeUtils.GetEnumType(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupChannel))
+                else if (StringUtils.EqualsIgnoreCase(name, GroupChannel.Name))
                 {
                     groupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupChannelNot))
+                else if (StringUtils.EqualsIgnoreCase(name, GroupChannelNot.Name))
                 {
                     groupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupContent))
+                else if (StringUtils.EqualsIgnoreCase(name, GroupContent.Name))
                 {
                     groupContent = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupContentNot))
+                else if (StringUtils.EqualsIgnoreCase(name, GroupContentNot.Name))
                 {
                     groupContentNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeTags))
+                else if (StringUtils.EqualsIgnoreCase(name, Tags.Name))
                 {
                     tags = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeOrder))
+                else if (StringUtils.EqualsIgnoreCase(name, Order.Name))
                 {
                     orderByString = StlDataUtility.GetContentOrderByString(pageInfo.SiteId, value, ETaxisType.OrderByTaxisDesc);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeStartNum))
+                else if (StringUtils.EqualsIgnoreCase(name, StartNum.Name))
                 {
                     startNum = TranslateUtils.ToInt(value, 1);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeTotalNum))
+                else if (StringUtils.EqualsIgnoreCase(name, TotalNum.Name))
                 {
                     totalNum = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeTitleWordNum))
+                else if (StringUtils.EqualsIgnoreCase(name, TitleWordNum.Name))
                 {
                     titleWordNum = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeWhere))
+                else if (StringUtils.EqualsIgnoreCase(name, Where.Name))
                 {
                     where = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsTop))
+                else if (StringUtils.EqualsIgnoreCase(name, IsTop.Name))
                 {
                     isTopExists = true;
                     isTop = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsRecommend))
+                else if (StringUtils.EqualsIgnoreCase(name, IsRecommend.Name))
                 {
                     isRecommendExists = true;
                     isRecommend = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsHot))
+                else if (StringUtils.EqualsIgnoreCase(name, IsHot.Name))
                 {
                     isHotExists = true;
                     isHot = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsColor))
+                else if (StringUtils.EqualsIgnoreCase(name, IsColor.Name))
                 {
                     isColorExists = true;
                     isColor = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeTheme))
+                else if (StringUtils.EqualsIgnoreCase(name, Theme.Name))
                 {
                     theme = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeWidth))
+                else if (StringUtils.EqualsIgnoreCase(name, Width.Name))
                 {
                     if (StringUtils.EndsWithIgnoreCase(value, "px"))
                     {
@@ -215,7 +183,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     imageWidth = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeHeight))
+                else if (StringUtils.EqualsIgnoreCase(name, Height.Name))
                 {
                     if (StringUtils.EndsWithIgnoreCase(value, "px"))
                     {
@@ -223,15 +191,15 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     imageHeight = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeBgColor))
+                else if (StringUtils.EqualsIgnoreCase(name, BgColor.Name))
                 {
                     bgColor = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsShowText))
+                else if (StringUtils.EqualsIgnoreCase(name, IsShowText.Name))
                 {
                     isShowText = TranslateUtils.ToBool(value, true);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsTopText))
+                else if (StringUtils.EqualsIgnoreCase(name, IsTopText.Name))
                 {
                     isTopText = value;
                 }

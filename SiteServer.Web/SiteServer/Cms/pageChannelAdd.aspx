@@ -64,11 +64,12 @@
           </asp:PlaceHolder>
 
           <div class="form-group form-row">
-            <label class="col-sm-2 col-form-label text-right">栏目链接</label>
+            <label class="col-sm-2 col-form-label text-right">外部链接</label>
             <div class="col-sm-4">
               <asp:TextBox ID="TbLinkUrl" class="form-control" runat="server" />
             </div>
             <div class="col-sm-6">
+              <small class="form-text text-muted">设置后链接将指向此地址</small>
               <asp:RegularExpressionValidator runat="server" ControlToValidate="TbLinkUrl" ValidationExpression="[^']+" ErrorMessage=" *"
                 ForeColor="red" Display="Dynamic" />
             </div>

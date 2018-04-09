@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -6,7 +7,6 @@ namespace SiteServer.CMS.StlParser.Model
 	{
         Content,
         Channel,
-        Comment,
         Each,
         SqlContent,
         Site,
@@ -24,10 +24,6 @@ namespace SiteServer.CMS.StlParser.Model
 		    if (type == EContextType.Channel)
 		    {
 		        return "Channel";
-		    }
-		    if (type == EContextType.Comment)
-		    {
-		        return "Comment";
 		    }
 		    if (type == EContextType.Each)
 		    {
@@ -60,10 +56,6 @@ namespace SiteServer.CMS.StlParser.Model
             else if (Equals(EContextType.Channel, typeStr))
 			{
                 retval = EContextType.Channel;
-            }
-            else if (Equals(EContextType.Comment, typeStr))
-            {
-                retval = EContextType.Comment;
             }
             else if (Equals(EContextType.Each, typeStr))
             {
