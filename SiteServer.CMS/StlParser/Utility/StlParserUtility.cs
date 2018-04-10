@@ -13,7 +13,7 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
-    public class StlParserUtility
+    public static class StlParserUtility
     {
         public const string OrderDefault = "Default";								//默认排序
         public const string OrderBack = "Back";								//默认排序的相反方向
@@ -29,7 +29,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
         private const string XmlDeclaration = "<?xml version='1.0'?>";
 
-        private const string XmlNamespaceStart = "<stl:document xmlns=\"http://www.siteserver.cn/stl\" xmlns:stl=\"http://www.siteserver.cn/stl\" xmlns:STL=\"http://www.siteserver.cn/stl\" xmlns:sTL=\"http://www.siteserver.cn/stl\" xmlns:stL=\"http://www.siteserver.cn/stl\" xmlns:sTl=\"http://www.siteserver.cn/stl\" xmlns:Stl=\"http://www.siteserver.cn/stl\" xmlns:StL=\"http://www.siteserver.cn/stl\" xmlns:asp=\"http://www.siteserver.cn/stl\" xmlns:ext=\"http://www.siteserver.cn/stl\">";
+        private const string XmlNamespaceStart = "<stl:document xmlns=\"http://www.siteserver.cn/stl\" xmlns:stl=\"http://www.siteserver.cn/stl\" xmlns:STL=\"http://www.siteserver.cn/stl\" xmlns:sTL=\"http://www.siteserver.cn/stl\" xmlns:stL=\"http://www.siteserver.cn/stl\" xmlns:sTl=\"http://www.siteserver.cn/stl\" xmlns:Stl=\"http://www.siteserver.cn/stl\" xmlns:StL=\"http://www.siteserver.cn/stl\" xmlns:asp=\"http://www.siteserver.cn/stl\" xmlns:ext=\"http://www.siteserver.cn/stl\" xmlns:v-bind=\"http://www.siteserver.cn/stl\" xmlns:v-on=\"http://www.siteserver.cn/stl\">";
 
         private const string XmlNamespaceEnd = "</stl:document>";
 
@@ -46,7 +46,7 @@ namespace SiteServer.CMS.StlParser.Utility
         //  (?(LEVEL)(?!))
         //</stl:\1[^>]*>
         //", ((RegexOptions.Singleline | RegexOptions.IgnoreCase) | RegexOptions.IgnorePatternWhitespace) | RegexOptions.Compiled);
-        public static Regex RegexStlElement = new Regex(@"
+        public static readonly Regex RegexStlElement = new Regex(@"
 <stl:(\w+?)[^>]*>
   (?>
       <stl:\1[^>]*> (?<LEVEL>)
@@ -72,8 +72,10 @@ namespace SiteServer.CMS.StlParser.Utility
         {
             var xmlDocument = new XmlDocument
             {
-                PreserveWhitespace = true
+                PreserveWhitespace = true,
+                Prefix = ""
             };
+
             try
             {
                 if (isXmlContent)
@@ -111,6 +113,8 @@ namespace SiteServer.CMS.StlParser.Utility
             content = content.Replace(" xmlns:stl=\"http://www.siteserver.cn/stl\"", string.Empty);
             content = content.Replace(" xmlns:asp=\"http://www.siteserver.cn/stl\"", string.Empty);
             content = content.Replace("&amp;#", "&#");
+            content = content.Replace(" hexadecimal-value-0x40", " @");//vuejs shorthand @click
+            content = content.Replace(" hexadecimal-value-0x3a", " :");//vuejs shorthand :href
             if (pageInfo?.TemplateInfo == null) return content;
 
             content = content.Replace("<![CDATA[", string.Empty);
@@ -142,6 +146,8 @@ namespace SiteServer.CMS.StlParser.Utility
 
             html = StringUtils.ReplaceIgnoreCase(html, "<br>", "<br />");
             html = StringUtils.ReplaceIgnoreCase(html, "&#", "&amp;#");
+            html = html.Replace(" @", " hexadecimal-value-0x40");//vuejs shorthand @click
+            html = html.Replace(" :", " hexadecimal-value-0x3a");//vuejs shorthand :href
             //strInputHtml = StringUtils.ReplaceNewline(strInputHtml, NEWLINE_REPLACEMENT);
             var reader = new SgmlReader
             {
@@ -156,6 +162,7 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 w.WriteNode(reader, true);
             }
+
             w.Flush();
             w.Close();
             var xml = sw.ToString();
