@@ -1,11 +1,7 @@
 ﻿namespace SiteServer.Utils
 {
-    public class AlertUtils
+    public static class AlertUtils
     {
-        private AlertUtils()
-        {
-        }
-
         public static string Error(string title, string text)
         {
             var script = $@"
@@ -21,7 +17,7 @@ swal({{
 
         public static string Success(string title, string text)
         {
-            return Success(title, text, "关 闭", null);
+            return Success(title, text, "关 闭", string.Empty);
         }
 
         public static string Success(string title, string text, string button, string scripts)

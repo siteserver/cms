@@ -120,6 +120,8 @@
   after_build:
     - gulp preview
     - nuget pack build/SS.CMS.nuspec
+    - nuget pack SiteServer.Utils/SiteServer.Utils.nuspec
+    - nuget pack SiteServer.CMS/SiteServer.CMS.nuspec
     - gulp zip
 
   artifacts:

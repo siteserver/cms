@@ -354,6 +354,7 @@
     <Compile Include="StlParser\Model\StlAll.cs" />
     <Compile Include="StlParser\Model\Attr.cs" />
     <Compile Include="StlParser\Model\AttrEnum.cs" />
+    <Compile Include="StlParser\Model\StlListBase.cs" />
     <Compile Include="StlParser\Model\StlFieldAttribute.cs" />
     <Compile Include="StlParser\Model\StlClassAttribute.cs" />
     <Compile Include="StlParser\Parser.cs" />

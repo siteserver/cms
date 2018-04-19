@@ -207,7 +207,7 @@
       var updatePackages = 0;
 
       function packageUpdates() {
-        // if ('<%=CurrentVersion%>' == '0.0.0-dev') return;
+        if ('<%=CurrentVersion%>' == '0.0.0-dev') return;
 
         ssApi.get({
           isNightly: isNightly,

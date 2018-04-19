@@ -7,9 +7,6 @@ namespace SiteServer.CMS.Model
         [StlField(Description = "栏目Id")]
         public const string Id = nameof(ChannelInfo.Id);
 
-        [StlField(Description = "栏目名称")]
-        public const string ChannelName = nameof(ChannelInfo.ChannelName);
-
         [StlField(Description = "站点Id")]
         public const string SiteId = nameof(ChannelInfo.SiteId);
 
@@ -88,11 +85,17 @@ namespace SiteServer.CMS.Model
         [StlField(Description = "栏目名称")]
         public const string Title = nameof(Title);
 
+        [StlField(Description = "栏目名称")]
+        public const string ChannelName = nameof(ChannelInfo.ChannelName);
+
         [StlField(Description = "栏目索引")]
         public const string ChannelIndex = nameof(ChannelIndex);
 
         [StlField(Description = "栏目正文（翻页）")]
         public const string PageContent = nameof(PageContent);
+
+        [StlField(Description = "顺序")]
+        public const string ItemIndex = nameof(ItemIndex);
 
         [StlField(Description = "下级栏目数")]
         public const string CountOfChannels = nameof(CountOfChannels);
@@ -102,5 +105,9 @@ namespace SiteServer.CMS.Model
 
         [StlField(Description = "包含图片内容数")]
         public const string CountOfImageContents = nameof(CountOfImageContents);
+
+        
+
+        
     }
 }

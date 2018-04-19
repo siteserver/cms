@@ -41,13 +41,9 @@
                       <th>模板名称 </th>
                       <th>模板文件 </th>
                       <th>生成文件名</th>
-                      <th width="100" class="text-center">使用次数</th>
-                      <th width="100" class="text-center">模板类型</th>
-                      <th width="80" class="text-center"></th>
-                      <th width="80" class="text-center"></th>
-                      <th width="80" class="text-center"></th>
-                      <th width="80" class="text-center"></th>
-                      <th width="80" class="text-center"></th>
+                      <th class="text-center">使用次数</th>
+                      <th class="text-center">模板类型</th>
+                      <th class="text-center"></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -69,19 +65,11 @@
                           <td class="text-center">
                             <asp:Literal ID="ltlTemplateType" runat="server"></asp:Literal>
                           </td>
-                          <td class="text-center">
+                          <td>
                             <asp:Literal ID="ltlDefaultUrl" runat="server"></asp:Literal>
-                          </td>
-                          <td class="text-center">
                             <asp:Literal ID="ltlCopyUrl" runat="server"></asp:Literal>
-                          </td>
-                          <td class="text-center">
                             <asp:Literal ID="ltlLogUrl" runat="server"></asp:Literal>
-                          </td>
-                          <td class="text-center">
                             <asp:Literal ID="ltlCreateUrl" runat="server"></asp:Literal>
-                          </td>
-                          <td class="text-center">
                             <asp:Literal ID="ltlDeleteUrl" runat="server"></asp:Literal>
                           </td>
                         </tr>

@@ -4,14 +4,14 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
 {
-    public class LogUtils
+    public static class LogUtils
     {
         private static int AddErrorLog(ErrorLogInfo logInfo)
         {
-            if (!ConfigManager.SystemConfigInfo.IsLogError) return 0;
-
             try
             {
+                if (!ConfigManager.SystemConfigInfo.IsLogError) return 0;
+
                 if (ConfigManager.SystemConfigInfo.IsTimeThreshold)
                 {
                     DataProvider.ErrorLogDao.Delete(ConfigManager.SystemConfigInfo.TimeThreshold);
