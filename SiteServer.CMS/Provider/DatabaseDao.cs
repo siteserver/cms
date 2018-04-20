@@ -1150,9 +1150,11 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
                     {
                         continue;
                     }
-                    var dataType = SqlUtils.ToDataType(DatabaseType.SqlServer, rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
+
+                    var dataTypeName = rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1);
+                    var dataType = SqlUtils.ToDataType(DatabaseType.SqlServer, dataTypeName);
                     var length = Convert.ToInt32(rdr.GetValue(2));
-                    if (dataType == DataType.VarChar)
+                    if (dataType == DataType.VarChar && dataTypeName == "nvarchar")
                     {
                         length = Convert.ToInt32(length / 2);
                     }
