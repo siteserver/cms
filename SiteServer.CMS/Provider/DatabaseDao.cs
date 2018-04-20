@@ -1639,6 +1639,8 @@ FROM (SELECT TOP {totalNum} *
                 var sqlString =
                     SqlUtils.GetAddColumnsSqlString(tableName, $"{identityColumnName} {SqlUtils.GetAutoIncrementDataType()}");
                 DataProvider.DatabaseDao.ExecuteSql(sqlString);
+
+                columns.Insert(0, new TableColumnInfo(identityColumnName, DataType.Integer, 0, false, true));
             }
 
             return identityColumnName;
