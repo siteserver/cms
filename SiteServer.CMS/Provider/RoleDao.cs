@@ -3,6 +3,7 @@ using System.Data;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Provider
 {
@@ -125,7 +126,9 @@ namespace SiteServer.CMS.Provider
 
         public void InsertRole(string roleName, string creatorUserName, string description)
         {
-            var sqlString = "INSERT INTO siteserver_Role (RoleName, CreatorUserName, Description) VALUES (@RoleName, @CreatorUserName, @Description)";
+            if (EPredefinedRoleUtils.IsPredefinedRole(roleName)) return;
+
+            const string sqlString = "INSERT INTO siteserver_Role (RoleName, CreatorUserName, Description) VALUES (@RoleName, @CreatorUserName, @Description)";
 
             var parms = new IDataParameter[]
 			{

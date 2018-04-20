@@ -34,8 +34,6 @@ namespace SiteServer.CMS.Core
 
             if (!string.IsNullOrEmpty(adminName) && !string.IsNullOrEmpty(adminPassword))
             {
-                RoleManager.CreatePredefinedRolesIfNotExists();
-
                 var administratorInfo = new AdministratorInfo
                 {
                     UserName = adminName,

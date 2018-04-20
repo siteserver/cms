@@ -4,22 +4,8 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
-    public class RoleManager
+    public static class RoleManager
     {
-        private RoleManager() { }
-
-        public static void CreatePredefinedRolesIfNotExists()
-        {
-            var allPredefinedRoles = EPredefinedRoleUtils.GetAllPredefinedRole();
-            foreach (var enumRole in allPredefinedRoles)
-            {
-                if (!DataProvider.RoleDao.IsRoleExists(EPredefinedRoleUtils.GetValue(enumRole)))
-                {
-                    DataProvider.RoleDao.InsertRole(EPredefinedRoleUtils.GetValue(enumRole), string.Empty, EPredefinedRoleUtils.GetText(enumRole));
-                }
-            }
-        }
-
         public static void DeleteCookie()
         {
             var current = HttpContext.Current;
