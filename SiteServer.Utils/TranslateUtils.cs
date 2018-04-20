@@ -10,6 +10,7 @@ using System.Linq;
 using SiteServer.Utils.Auth;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace SiteServer.Utils
@@ -1097,6 +1098,13 @@ namespace SiteServer.Utils
             {
                 return default(T);
             }
+        }
+
+        public static Dictionary<string, object> JsonGetDictionaryIgnorecase(JObject json)
+        {
+            var d = new Dictionary<string, object>(json.ToObject<IDictionary<string, object>>(), StringComparer.CurrentCultureIgnoreCase);
+
+            return d;
         }
 
         public static string EncryptStringBySecretKey(string inputString)

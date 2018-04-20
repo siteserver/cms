@@ -4,8 +4,11 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Linq;
 using System.Text;
+using Dapper;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json.Linq;
 using Npgsql;
 using Oracle.ManagedDataAccess.Client;
 using SiteServer.CMS.Core;
@@ -13,6 +16,7 @@ using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Provider
 {
@@ -895,7 +899,7 @@ SELECT * FROM (
             }
 
             string sqlString =
-                $"select name, id from [{databaseName}].dbo.sysobjects where type in ('U','V') and category<>2 Order By Name";
+                $"select name, id from [{databaseName}]..sysobjects where type = 'U' and category<>2 Order By Name";
 
             var dict = new Dictionary<string, int>();
 
@@ -915,79 +919,6 @@ SELECT * FROM (
 
             return dict;
         }
-
-        //public string GetTableId(string connectionString, string databaseName, string tableName)
-        //{
-        //    if (WebConfigUtils.DatabaseType == DatabaseType.MySql) return tableName;
-
-        //    if (string.IsNullOrEmpty(connectionString))
-        //    {
-        //        connectionString = ConnectionString;
-        //    }
-
-        //    var tableId = SqlUtils.Cache_GetTableIDCache(databaseName, tableName);
-
-        //    if (string.IsNullOrEmpty(tableId))
-        //    {
-        //        string sqlString =
-        //            $"select id from [{databaseName}].dbo.sysobjects where type in ('U','V') and category<>2 and name='{tableName}'";
-
-        //        using (var rdr = ExecuteReader(connectionString, sqlString))
-        //        {
-        //            if (rdr.Read())
-        //            {
-        //                tableId = GetString(rdr, 0);
-        //                SqlUtils.Cache_CacheTableID(databaseName, tableName, tableId);
-        //            }
-        //            rdr.Close();
-        //        }
-        //    }
-
-        //    return tableId;
-        //}
-
-        //public string GetTableName(string databaseName, string tableId)
-        //{
-        //    if (WebConfigUtils.DatabaseType == DatabaseType.MySql) return tableId;
-
-        //    var tableName = string.Empty;
-        //    string cmd =
-        //        $"select O.name from [{databaseName}].dbo.sysobjects O, [{databaseName}].dbo.sysusers U where O.id={tableId} and U.uid=O.uid";
-
-        //    using (var rdr = ExecuteReader(cmd))
-        //    {
-        //        if (rdr.Read())
-        //        {
-        //            tableName = GetString(rdr, 0);
-        //        }
-        //        rdr.Close();
-        //    }
-        //    return tableName;
-        //}
-
-        //public string GetTableName(string connectionString, string databaseName, string tableId)
-        //{
-        //    if (WebConfigUtils.DatabaseType == DatabaseType.MySql) return tableId;
-
-        //    if (string.IsNullOrEmpty(connectionString))
-        //    {
-        //        connectionString = ConnectionString;
-        //    }
-
-        //    var tableName = string.Empty;
-        //    string sqlString =
-        //        $"select O.name from [{databaseName}].dbo.sysobjects O, [{databaseName}].dbo.sysusers U where O.id={tableId} and U.uid=O.uid";
-
-        //    using (var rdr = ExecuteReader(connectionString, sqlString))
-        //    {
-        //        if (rdr.Read())
-        //        {
-        //            tableName = GetString(rdr, 0);
-        //        }
-        //        rdr.Close();
-        //    }
-        //    return tableName;
-        //}
 
         public string GetSqlServerDefaultConstraintName(string tableName, string columnName)
         {
@@ -1195,8 +1126,8 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
 
             var isIdentityExist = false;
             var tableId = string.Empty;
-            string sqlStringTableId =
-                $"select id from [{databaseName}].dbo.sysobjects where type in ('U','V') and category<>2 and name='{tableName}'";
+            var sqlStringTableId =
+                $"select id from [{databaseName}]..sysobjects where type = 'U' and category<>2 and name='{tableName}'";
 
             using (var rdr = ExecuteReader(connectionString, sqlStringTableId))
             {
@@ -1208,7 +1139,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
             }
 
             string sqlString =
-                $"select C.name, T.name, C.length, C.colstat, case when C.autoval is null then 0 else 1 end, SC.text, (select CForgin.name from [{databaseName}].dbo.sysreferences Sr,[{databaseName}].dbo.sysobjects O,[{databaseName}].dbo.syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1), (select O.name from [{databaseName}].dbo.sysreferences Sr,[{databaseName}].dbo.sysobjects O,[{databaseName}].dbo.syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1), (select Sr.rkeyid from [{databaseName}].dbo.sysreferences Sr,[{databaseName}].dbo.sysobjects O,[{databaseName}].dbo.syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1) from [{databaseName}].dbo.systypes T, [{databaseName}].dbo.syscolumns C left join [{databaseName}].dbo.syscomments SC on C.cdefault=SC.id where C.id={tableId} and C.xtype=T.xusertype order by C.colid";
+                $"select C.name, T.name, C.length, C.colstat, case when C.autoval is null then 0 else 1 end, SC.text, (select CForgin.name from [{databaseName}]..sysreferences Sr,[{databaseName}]..sysobjects O,[{databaseName}]..syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1), (select O.name from [{databaseName}]..sysreferences Sr,[{databaseName}]..sysobjects O,[{databaseName}]..syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1), (select Sr.rkeyid from [{databaseName}]..sysreferences Sr,[{databaseName}]..sysobjects O,[{databaseName}]..syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1) from [{databaseName}]..systypes T, [{databaseName}]..syscolumns C left join [{databaseName}]..syscomments SC on C.cdefault=SC.id where C.id={tableId} and C.xtype=T.xusertype order by C.colid";
 
             using (var rdr = ExecuteReader(connectionString, sqlString))
             {
@@ -1588,6 +1519,286 @@ FROM (SELECT TOP {totalNum} *
             }
 
             return sqlList;
+        }
+
+        public List<string> GetTableNameList()
+        {
+            var list = new List<string>();
+
+            var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                var sqlString = $"SELECT table_name FROM information_schema.tables WHERE table_schema='{databaseName}' ORDER BY table_name";
+
+                using (var rdr = ExecuteReader(sqlString))
+                {
+                    while (rdr.Read())
+                    {
+                        var name = GetString(rdr, 0);
+                        if (!string.IsNullOrEmpty(name))
+                        {
+                            list.Add(name);
+                        }
+                    }
+                    rdr.Close();
+                }
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                var sqlString =
+                    $"SELECT name FROM [{databaseName}]..sysobjects WHERE type = 'U' AND category<>2 ORDER BY Name";
+
+                using (var rdr = ExecuteReader(sqlString))
+                {
+                    while (rdr.Read())
+                    {
+                        var name = GetString(rdr, 0);
+                        if (!string.IsNullOrEmpty(name))
+                        {
+                            list.Add(name);
+                        }
+                    }
+                    rdr.Close();
+                }
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                var sqlString =
+                    $"SELECT table_name FROM information_schema.tables WHERE table_catalog = '{databaseName}' AND table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema')";
+
+                using (var rdr = ExecuteReader(sqlString))
+                {
+                    while (rdr.Read())
+                    {
+                        var name = GetString(rdr, 0);
+                        if (!string.IsNullOrEmpty(name))
+                        {
+                            list.Add(name);
+                        }
+                    }
+                    rdr.Close();
+                }
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                const string sqlString = "select TABLE_NAME from user_tables";
+
+                using (var rdr = ExecuteReader(sqlString))
+                {
+                    while (rdr.Read())
+                    {
+                        var name = GetString(rdr, 0);
+                        if (!string.IsNullOrEmpty(name))
+                        {
+                            list.Add(name);
+                        }
+                    }
+                    rdr.Close();
+                }
+            }
+
+            return list;
+        }
+
+        public int GetCount(string tableName)
+        {
+            return GetIntResult($"select count(*) from {tableName}");
+        }
+
+        public IEnumerable<dynamic> GetObjects(string tableName)
+        {
+            IEnumerable<dynamic> objects;
+            var sqlString = $"select * from {tableName}";
+
+            using (var connection = DataProvider.DataApi.GetConnection(WebConfigUtils.ConnectionString))
+            {
+                connection.Open();
+
+                objects = connection.Query(sqlString, null, null, false).ToList();
+            }
+
+            return objects;
+        }
+
+        public string AddIdentityColumnIdIfNotExists(string tableName, List<TableColumnInfo> columns)
+        {
+            var identityColumnName = string.Empty;
+            foreach (var column in columns)
+            {
+                if (column.IsIdentity || StringUtils.EqualsIgnoreCase(column.ColumnName, "id"))
+                {
+                    identityColumnName = column.ColumnName;
+                    break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(identityColumnName))
+            {
+                identityColumnName = "Id";
+                var sqlString =
+                    SqlUtils.GetAddColumnsSqlString(tableName, $"{identityColumnName} {SqlUtils.GetAutoIncrementDataType()}");
+                DataProvider.DatabaseDao.ExecuteSql(sqlString);
+            }
+
+            return identityColumnName;
+        }
+
+        public IEnumerable<dynamic> GetPageObjects(string tableName, string identityColumnName, int offset, int limit)
+        {
+            IEnumerable<dynamic> objects;
+            var sqlString = GetPageSqlString(tableName, "*", string.Empty, identityColumnName, false, offset, limit);
+
+            using (var connection = DataProvider.DataApi.GetConnection(WebConfigUtils.ConnectionString))
+            {
+                connection.Open();
+
+                objects = connection.Query(sqlString, null, null, false).ToList();
+            }
+
+            return objects;
+        }
+
+        public void SyncJObjects(string tableName, List<JObject> items, List<TableColumnInfo> tableColumns)
+        {
+            var names = new StringBuilder();
+            var values = new StringBuilder();
+            foreach (var tableColumn in tableColumns)
+            {
+                names.Append($"{tableColumn.ColumnName},");
+                values.Append($"@{tableColumn.ColumnName},");
+            }
+
+            names.Length -= 1;
+            values.Length -= 1;
+
+            foreach (var item in items)
+            {
+                var sqlString = $@"INSERT INTO {tableName} ({names}) VALUES ({values})";
+                if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+                {
+                    sqlString = $@"
+SET IDENTITY_INSERT {tableName} ON
+{sqlString}
+SET IDENTITY_INSERT {tableName} OFF
+";
+                }
+                var parameters = new List<IDataParameter>();
+                var dict = TranslateUtils.JsonGetDictionaryIgnorecase(item);
+
+                foreach (var tableColumn in tableColumns)
+                {
+                    object val;
+                    dict.TryGetValue(tableColumn.ColumnName, out val);
+
+                    if (tableColumn.DataType == DataType.Integer)
+                    {
+                        if (val == null) val = 0;
+                        parameters.Add(GetParameter($"@{tableColumn.ColumnName}", tableColumn.DataType, Convert.ToInt32(val)));
+                    }
+                    else if (tableColumn.DataType == DataType.Decimal)
+                    {
+                        if (val == null) val = 0;
+                        parameters.Add(GetParameter($"@{tableColumn.ColumnName}", tableColumn.DataType, Convert.ToDecimal(val)));
+                    }
+                    else if (tableColumn.DataType == DataType.Boolean)
+                    {
+                        if (val == null) val = false;
+                        parameters.Add(GetParameter($"@{tableColumn.ColumnName}", tableColumn.DataType, Convert.ToBoolean(val)));
+                    }
+                    else if (tableColumn.DataType == DataType.DateTime)
+                    {
+                        if (val == null) val = DateTime.Now;
+                        parameters.Add(GetParameter($"@{tableColumn.ColumnName}", tableColumn.DataType, Convert.ToDateTime(val)));
+                    }
+                    else
+                    {
+                        parameters.Add(GetParameter($"@{tableColumn.ColumnName}", tableColumn.DataType, Convert.ToString(val)));
+                    }
+                }
+
+                ExecuteNonQuery(sqlString, parameters.ToArray());
+            }
+
+            //            if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            //            {
+            //                foreach (var tableColumnInfo in tableColumns)
+            //                {
+            //                    if (tableColumnInfo.IsIdentity)
+            //                    {
+            //                        ExecuteNonQuery($@"
+            //SELECT setval(pg_get_serial_sequence('{tableName}', '{tableColumnInfo.ColumnName}'),(SELECT MAX({tableColumnInfo.ColumnName}) FROM {tableName}))");
+            //                    }
+            //                }
+            //            }
+        }
+
+        private ETriState _sqlServerVersionState = ETriState.All;
+
+        public bool IsSqlServer2012
+        {
+            get
+            {
+                if (_sqlServerVersionState != ETriState.All) return _sqlServerVersionState == ETriState.True;
+
+                if (WebConfigUtils.DatabaseType != DatabaseType.SqlServer)
+                {
+                    _sqlServerVersionState = ETriState.False;
+                }
+
+                try
+                {
+                    var version =
+                        TranslateUtils.ToDecimal(
+                            GetString("select left(cast(serverproperty('productversion') as varchar), 4)"));
+                    _sqlServerVersionState = version >= 11 ? ETriState.True : ETriState.False;
+                }
+                catch
+                {
+                    _sqlServerVersionState = ETriState.False;
+                }
+
+                return _sqlServerVersionState == ETriState.True;
+            }
+        }
+
+        public string GetPageSqlString(string tableName, string returnColumnNames, string whereSqlString, string orderColumnName, bool isDesc, int offset, int limit)
+        {
+            var retval = string.Empty;
+
+            var orderByString = $"ORDER BY {orderColumnName} {(isDesc ? "DESC" : "ASC")}";
+            var orderByStringReverse = $"ORDER BY {orderColumnName} {(isDesc ? "ASC" : "DESC")}";
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                retval = $@"SELECT {returnColumnNames} FROM {tableName} {whereSqlString} {orderByString} LIMIT {limit} OFFSET {offset}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                if (IsSqlServer2012)
+                {
+                    retval = $"SELECT {returnColumnNames} FROM {tableName} {whereSqlString} {orderByString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
+                }
+                else
+                {
+                    retval = $@"
+SELECT * FROM (
+    SELECT TOP {limit} * FROM (
+        SELECT TOP {limit + offset} {returnColumnNames} FROM {tableName} {whereSqlString} {orderByString}
+    ) AS t1 {orderByStringReverse}
+) AS t2 {orderByString}";
+                }
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"SELECT {returnColumnNames} FROM {tableName} {whereSqlString} {orderByString} LIMIT {limit} OFFSET {offset}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"SELECT {returnColumnNames} FROM {tableName} {whereSqlString} {orderByString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
+            }
+
+            return retval;
         }
     }
 }

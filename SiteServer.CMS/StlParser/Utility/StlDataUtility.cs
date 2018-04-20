@@ -301,8 +301,6 @@ namespace SiteServer.CMS.StlParser.Utility
             var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
             var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
 
-
-
             var sqlWhereString = ChannelManager.IsContentModelPlugin(siteInfo, nodeInfo)
                 ? Content.GetStlWhereString(siteInfo.Id, groupContent, groupContentNot,
                     tags, isTopExists, isTop, where)
