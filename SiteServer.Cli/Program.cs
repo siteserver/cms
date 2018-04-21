@@ -69,7 +69,7 @@ namespace SiteServer.Cli
             catch (Exception ex)
             {
                 CliUtils.PrintError(ex.Message);
-                FileUtils.WriteText(PathUtils.Combine(CliUtils.PhysicalApplicationPath, "log.txt"), Encoding.UTF8, $"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                FileUtils.WriteText(PathUtils.Combine(CliUtils.PhysicalApplicationPath, "error.log"), Encoding.UTF8, $"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
             }
         }
     }

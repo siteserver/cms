@@ -1,5 +1,12 @@
 *.zip
 build/
+backup/
+update/
+*.exe
+*.exe.config
+Web.Backup.config
+Web.Restore.config
+Web.RestoreUpdate.config
 .vscode/
 
 ## Ignore Visual Studio temporary files, build results, and
