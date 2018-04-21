@@ -64,13 +64,13 @@ namespace SiteServer.CMS.Core
         public static ContentGroupDao ContentGroupDao => _contentGroupDao ?? (_contentGroupDao = new ContentGroupDao());
 
         private static CountDao _countDao;
-        internal static CountDao CountDao => _countDao ?? (_countDao = new CountDao());
+        public static CountDao CountDao => _countDao ?? (_countDao = new CountDao());
 
         private static DatabaseDao _databaseDao;
         public static DatabaseDao DatabaseDao => _databaseDao ?? (_databaseDao = new DatabaseDao());
 
         private static DbCacheDao _dbCacheDao;
-        internal static DbCacheDao DbCacheDao => _dbCacheDao ?? (_dbCacheDao = new DbCacheDao());
+        public static DbCacheDao DbCacheDao => _dbCacheDao ?? (_dbCacheDao = new DbCacheDao());
 
         private static DepartmentDao _departmentDao;
         public static DepartmentDao DepartmentDao => _departmentDao ?? (_departmentDao = new DepartmentDao());

@@ -126,15 +126,18 @@
     - path: siteserver_install.zip
       name: siteserver_install
 
+    - path: siteserver.exe
+      name: siteserver.exe
+
     - path: '*.nupkg'
 
   deploy:
     - provider: GitHub
-      release: siteserver-v$(appveyor_build_version)-preview
+      release: siteserver-v$(appveyor_build_version)-beta
       description: 'SiteServer CMS'
       auth_token:
         secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
-      artifact: /.*\.zip/
+      artifact: /.*\.[zip|exe]/
       draft: false
       prerelease: false
       on:

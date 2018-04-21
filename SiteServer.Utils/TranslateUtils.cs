@@ -1102,9 +1102,7 @@ namespace SiteServer.Utils
 
         public static Dictionary<string, object> JsonGetDictionaryIgnorecase(JObject json)
         {
-            var d = new Dictionary<string, object>(json.ToObject<IDictionary<string, object>>(), StringComparer.CurrentCultureIgnoreCase);
-
-            return d;
+            return new Dictionary<string, object>(json.ToObject<IDictionary<string, object>>(), StringComparer.CurrentCultureIgnoreCase);
         }
 
         public static string EncryptStringBySecretKey(string inputString)
