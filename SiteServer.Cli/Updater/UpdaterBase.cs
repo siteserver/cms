@@ -15,6 +15,6 @@ namespace SiteServer.Cli.Updater
 
         protected string NewFolderName { get; }
 
-        public abstract KeyValuePair<string, TableInfo> UpdateTableInfo(string oldTableName, TableInfo oldTableInfo);
+        public abstract KeyValuePair<string, TableInfo> UpdateTableInfo(string oldTableName, TableInfo oldTableInfo, List<string> contentTableNameList);
     }
 }

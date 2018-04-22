@@ -414,6 +414,8 @@ pre {
   -webkit-border-radius: 3px;
   border-radius: 3px;
 }
+.dropdown-item.active, .dropdown-item:active,
+.page-item.active .page-link,
 .pagination > .active > a,
 .pagination > .active > span,
 .pagination > .active > a:hover,

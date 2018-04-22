@@ -59,6 +59,8 @@ namespace SiteServer.Cli.Updater.Model364
 
     public partial class SiteserverPublishmentSystem
     {
+        public const string TableName = "siteserver_PublishmentSystem";
+
         public static readonly string NewTableName = DataProvider.SiteDao.TableName;
 
         public static readonly List<TableColumnInfo> NewColumns = DataProvider.SiteDao.TableColumns;

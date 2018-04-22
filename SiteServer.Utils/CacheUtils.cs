@@ -24,6 +24,8 @@ namespace SiteServer.Utils
 
         public static void ClearAll()
         {
+            if (Cache == null) return;
+
             var cacheEnum = Cache.GetEnumerator();
             var keys = new List<string>();
             while (cacheEnum.MoveNext())
@@ -47,6 +49,8 @@ namespace SiteServer.Utils
 
         public static void RemoveByPattern(string pattern)
         {
+            if (Cache == null) return;
+
             var cacheEnum = Cache.GetEnumerator();
             var regex = new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
             while (cacheEnum.MoveNext())
@@ -64,7 +68,7 @@ namespace SiteServer.Utils
         /// <param name="key"></param>
         public static void Remove(string key)
         {
-            Cache.Remove(key);
+            Cache?.Remove(key);
         }
 
         public static void Insert(string key, object obj)
@@ -94,6 +98,8 @@ namespace SiteServer.Utils
 
         private static void InnerInsert(string key, object obj, string filePath, TimeSpan timeSpan)
         {
+            if (Cache == null) return;
+
             if (string.IsNullOrEmpty(key)) return;
 
             Cache.Remove(key);
@@ -105,12 +111,12 @@ namespace SiteServer.Utils
 
         public static bool IsCache(string key)
         {
-            return Cache.Get(key) != null;
+            return Cache?.Get(key) != null;
         }
 
         public static object Get(string key)
         {
-            return Cache.Get(key);
+            return Cache?.Get(key);
         }
 
         public static int GetInt(string key, int notFound)
@@ -135,7 +141,7 @@ namespace SiteServer.Utils
 
         public static T Get<T>(string key) where T : class
         {
-            return Cache.Get(key) as T;
+            return Cache?.Get(key) as T;
         }
 
         public static List<string> AllKeys
@@ -143,6 +149,8 @@ namespace SiteServer.Utils
             get
             {
                 var keys = new List<string>();
+
+                if (Cache == null) return keys;
 
                 var cacheEnum = Cache.GetEnumerator();
                 while (cacheEnum.MoveNext())
@@ -154,6 +162,6 @@ namespace SiteServer.Utils
             }
         }
 
-        public static int Count => Cache.Count;
+        public static int Count => Cache?.Count ?? 0;
     }
 }

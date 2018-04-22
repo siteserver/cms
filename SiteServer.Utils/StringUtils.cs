@@ -93,6 +93,20 @@ namespace SiteServer.Utils
             return text.ToLower().IndexOf(inner.ToLower(), StringComparison.Ordinal) >= 0;
         }
 
+        public static bool ContainsIgnoreCase(List<string> list, string str)
+        {
+            if (list == null || list.Count == 0) return false;
+            foreach (var item in list)
+            {
+                if (EqualsIgnoreCase(item, str))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static string Trim(string text)
         {
             return string.IsNullOrEmpty(text) ? string.Empty : text.Trim();

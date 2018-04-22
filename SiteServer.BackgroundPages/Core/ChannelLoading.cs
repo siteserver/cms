@@ -10,7 +10,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Core
 {
-    public class ChannelLoading
+    public static class ChannelLoading
     {
         public static string GetChannelRowHtml(SiteInfo siteInfo, ChannelInfo nodeInfo, bool enabled, ELoadingType loadingType, NameValueCollection additional, PermissionManager permissionManager)
         {

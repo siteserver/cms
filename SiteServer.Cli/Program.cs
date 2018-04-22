@@ -68,8 +68,8 @@ namespace SiteServer.Cli
             }
             catch (Exception ex)
             {
-                CliUtils.PrintError(ex.Message);
-                FileUtils.WriteText(PathUtils.Combine(CliUtils.PhysicalApplicationPath, "error.log"), Encoding.UTF8, $"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                CliUtils.PrintError(ex);
+                CliUtils.LogErrors(new List<Exception> {ex});
             }
         }
     }

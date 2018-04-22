@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Utils;
 
 namespace SiteServer.Cli.Updater.Model364
 {
-    public partial class CmsContent
+    public partial class SiteServerContent
     {
         [JsonProperty("id")]
         public long Id { get; set; }
@@ -114,11 +115,32 @@ namespace SiteServer.Cli.Updater.Model364
         public DateTimeOffset AddDate { get; set; }
     }
 
-    public partial class CmsContent
+    public partial class SiteServerContent
     {
         public static readonly string NewTableName = null;
 
-        public static readonly List<TableColumnInfo> NewColumns = DataProvider.ContentDao.TableColumns;
+        public static List<TableColumnInfo> GetNewColumns(List<TableColumnInfo> oldColumns)
+        {
+            var columns = new List<TableColumnInfo>();
+            foreach (var tableColumnInfo in oldColumns)
+            {
+                if (StringUtils.EqualsIgnoreCase(tableColumnInfo.ColumnName, nameof(NodeId)))
+                {
+                    tableColumnInfo.ColumnName = nameof(ContentInfo.ChannelId);
+                }
+                else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.ColumnName, nameof(PublishmentSystemId)))
+                {
+                    tableColumnInfo.ColumnName = nameof(ContentInfo.SiteId);
+                }
+                else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.ColumnName, nameof(ContentGroupNameCollection)))
+                {
+                    tableColumnInfo.ColumnName = nameof(ContentInfo.GroupNameCollection);
+                }
+                columns.Add(tableColumnInfo);
+            }
+
+            return columns;
+        }
 
         public static readonly Dictionary<string, string> ConvertDict =
             new Dictionary<string, string>

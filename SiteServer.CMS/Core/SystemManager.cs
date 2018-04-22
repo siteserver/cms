@@ -1,18 +1,24 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Reflection;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
-    public class SystemManager
+    public static class SystemManager
     {
         static SystemManager()
         {
-            Version = FileVersionInfo.GetVersionInfo(PathUtils.GetBinDirectoryPath("SiteServer.CMS.dll")).ProductVersion;
-            PluginVersion = FileVersionInfo.GetVersionInfo(PathUtils.GetBinDirectoryPath("SiteServer.Plugin.dll")).ProductVersion;
+            try
+            {
+                Version = FileVersionInfo.GetVersionInfo(PathUtils.GetBinDirectoryPath("SiteServer.CMS.dll")).ProductVersion;
+                PluginVersion = FileVersionInfo.GetVersionInfo(PathUtils.GetBinDirectoryPath("SiteServer.Plugin.dll")).ProductVersion;
+            }
+            catch
+            {
+                // ignored
+            }
 
             //var ssemblyName = assembly.GetName();
             //var assemblyVersion = ssemblyName.Version;
@@ -61,6 +67,19 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     DataProvider.DatabaseDao.AlterSystemTable(provider.TableName, provider.TableColumns);
+                }
+            }
+
+            var tableNameList = DataProvider.TableDao.GetTableNameListCreatedInDb();
+            foreach (var tableName in tableNameList)
+            {
+                if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+                {
+                    DataProvider.DatabaseDao.CreateSystemTable(tableName, DataProvider.ContentDao.TableColumns);
+                }
+                else
+                {
+                    DataProvider.DatabaseDao.AlterSystemTable(tableName, DataProvider.ContentDao.TableColumns);
                 }
             }
 

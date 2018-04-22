@@ -288,7 +288,7 @@ $('#Title').keyup(function (e) {
             extraBuilder.Append($@"
 <script type=""text/javascript"">
 $(function(){{
-  UE.getEditor('{attributeName}', {{allowDivTransToP: false}});
+  UE.getEditor('{attributeName}', {ETextEditorTypeUtils.ConfigValues});
   $('#{attributeName}').show();
 }});
 </script>");

@@ -67,6 +67,8 @@ namespace SiteServer.Cli.Commands
             CliUtils.PrintRow("Import Table Name", "Total Count");
             CliUtils.PrintLine();
 
+            var exceptions = new List<Exception>();
+
             foreach (var tableName in tableNames)
             {
                 var metadataFilePath = CliUtils.GetTableMetadataFilePath(_folderName, tableName);
@@ -89,7 +91,7 @@ namespace SiteServer.Cli.Commands
                 foreach (var fileName in tableInfo.RowFiles)
                 {
                     var objects = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(CliUtils.GetTableContentFilePath(_folderName, tableName, fileName), Encoding.UTF8));
-                    DataProvider.DatabaseDao.SyncJObjects(tableName, objects, tableInfo.Columns);
+                    exceptions.AddRange(DataProvider.DatabaseDao.SyncJObjects(tableName, objects, tableInfo.Columns));
                 }
 
                 //foreach (var item in objects)
@@ -125,6 +127,10 @@ namespace SiteServer.Cli.Commands
                 //}
 
             }
+
+            SystemManager.SyncDatabase();
+
+            CliUtils.LogErrors(exceptions);
 
             CliUtils.PrintLine();
             Console.WriteLine("Well done! Thanks for Using SiteServer Cli Tool");

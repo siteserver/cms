@@ -4,14 +4,16 @@ namespace SiteServer.Utils.Enumerations
 {
     public class ETextEditorTypeUtils
     {
+        public const string ConfigValues = "{allowDivTransToP: false, maximumWords:99999999}";
+
         public static string GetInsertHtmlScript(string attributeName, string html)
         {
             html = html.Replace("\"", "'");
-            string script = $@"UE.getEditor(""{attributeName}"", {{allowDivTransToP: false}}).execCommand(""insertHTML"",""{html}"");";
+            string script = $@"UE.getEditor(""{attributeName}"", {ConfigValues}).execCommand(""insertHTML"",""{html}"");";
             if (!string.IsNullOrEmpty(html))
             {
                 html = html.Replace(@"""", @"\""");
-                script = $@"UE.getEditor(""{attributeName}"", {{allowDivTransToP: false}}).execCommand(""insertHTML"",""{html}"");";
+                script = $@"UE.getEditor(""{attributeName}"", {ConfigValues}).execCommand(""insertHTML"",""{html}"");";
             }
             return script;
         }
@@ -29,13 +31,13 @@ namespace SiteServer.Utils.Enumerations
                 if (width > 0 && height > 0)
                 {
                     script =
-                        $@"UE.getEditor(""{attributeName}"", {{allowDivTransToP: false}}).execCommand(""insertVideo"",{{url: ""{playUrl}"",width: {width},height: {height},isAutoPlay: ""{isAutoPlay
+                        $@"UE.getEditor(""{attributeName}"", {ConfigValues}).execCommand(""insertVideo"",{{url: ""{playUrl}"",width: {width},height: {height},isAutoPlay: ""{isAutoPlay
                             .ToString().ToLower()}""}});";
                 }
                 else
                 {
                     script =
-                        $@"UE.getEditor(""{attributeName}"", {{allowDivTransToP: false}}).execCommand(""insertVideo"",{{url: ""{playUrl}"",isAutoPlay: ""{isAutoPlay
+                        $@"UE.getEditor(""{attributeName}"", {ConfigValues}).execCommand(""insertVideo"",{{url: ""{playUrl}"",isAutoPlay: ""{isAutoPlay
                             .ToString().ToLower()}""}});";
                 }
             }
@@ -48,7 +50,7 @@ namespace SiteServer.Utils.Enumerations
             if (!string.IsNullOrEmpty(playUrl))
             {
                 script =
-                    $@"UE.getEditor(""{attributeName}"", {{allowDivTransToP: false}}).execCommand(""music"",{{url: ""{playUrl}"",isAutoPlay: ""{isAutoPlay
+                    $@"UE.getEditor(""{attributeName}"", {ConfigValues}).execCommand(""music"",{{url: ""{playUrl}"",isAutoPlay: ""{isAutoPlay
                         .ToString().ToLower()}""}});";
             }
             return script;
@@ -56,19 +58,19 @@ namespace SiteServer.Utils.Enumerations
 
         public static string GetPureTextScript(string attributeName)
         {
-            string script = $@"UE.getEditor(""{attributeName}"", {{allowDivTransToP: false}}).getContentTxt();";
+            string script = $@"UE.getEditor(""{attributeName}"", {ConfigValues}).getContentTxt();";
             return script;
         }
 
         public static string GetContentScript(string attributeName)
         {
-            string script = $@"UE.getEditor(""{attributeName}"", {{allowDivTransToP: false}}).getContent();";
+            string script = $@"UE.getEditor(""{attributeName}"", {ConfigValues}).getContent();";
             return script;
         }
 
         public static string GetSetContentScript(string attributeName, string contentWithoutQuote)
         {
-            string script = $@"UE.getEditor(""{attributeName}"", {{allowDivTransToP: false}}).setContent({contentWithoutQuote});";
+            string script = $@"UE.getEditor(""{attributeName}"", {ConfigValues}).setContent({contentWithoutQuote});";
             return script;
         }
 

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using NDesk.Options;
 using SiteServer.Utils;
 
@@ -50,9 +52,9 @@ namespace SiteServer.Cli.Core
                 options.Parse(args);
                 return true;
             }
-            catch (OptionException e)
+            catch (OptionException ex)
             {
-                PrintError(e.Message);
+                PrintError(ex);
                 return false;
             }
         }
@@ -75,10 +77,25 @@ namespace SiteServer.Cli.Core
             Console.WriteLine(row);
         }
 
-        public static void PrintError(string errorMessage)
+        public static void PrintError(Exception ex)
         {
-            Console.Error.WriteLine($"error: {errorMessage}");
+            Console.Error.WriteLine($"error: {StringUtils.RemoveNewline(ex.Message)}");
             Console.Error.WriteLine("Try '--help' for more information.");
+        }
+
+        public static void LogErrors(List<Exception> exceptions)
+        {
+            var builder = new StringBuilder();
+            if (exceptions != null && exceptions.Count > 0)
+            {
+                foreach (var exception in exceptions)
+                {
+                    builder.Append($"Message: {exception.Message}");
+                    builder.Append($"StackTrace: {exception.StackTrace}");
+                    builder.AppendLine();
+                }
+            }
+            FileUtils.WriteText(PathUtils.Combine(CliUtils.PhysicalApplicationPath, "error.log"), Encoding.UTF8, builder.ToString());
         }
     }
 }

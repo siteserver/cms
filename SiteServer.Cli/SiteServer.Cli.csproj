@@ -125,10 +125,7 @@
     <Compile Include="Updater\Model364\BairongUserMessage.cs" />
     <Compile Include="Updater\Model364\BairongUsers.cs" />
     <Compile Include="Updater\Model364\BairongUserType.cs" />
-    <Compile Include="Updater\Model364\CmsContent.cs" />
-    <Compile Include="Updater\Model364\CmsContentCustom.cs" />
-    <Compile Include="Updater\Model364\CmsContentJob.cs" />
-    <Compile Include="Updater\Model364\CmsContentVote.cs" />
+    <Compile Include="Updater\Model364\SiteServerContent.cs" />
     <Compile Include="Updater\Model364\SiteserverAd.cs" />
     <Compile Include="Updater\Model364\SiteserverAdvertisement.cs" />
     <Compile Include="Updater\Model364\SiteserverComment.cs" />

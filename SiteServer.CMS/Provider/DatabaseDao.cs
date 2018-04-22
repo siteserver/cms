@@ -1651,7 +1651,7 @@ FROM (SELECT TOP {totalNum} *
         public IEnumerable<dynamic> GetPageObjects(string tableName, string identityColumnName, int offset, int limit)
         {
             IEnumerable<dynamic> objects;
-            var sqlString = GetPageSqlString(tableName, "*", string.Empty, identityColumnName, false, offset, limit);
+            var sqlString = GetPageSqlString(tableName, "*", string.Empty, $"ORDER BY {identityColumnName}", offset, limit);
 
             using (var connection = DataProvider.DataApi.GetConnection(WebConfigUtils.ConnectionString))
             {
@@ -1663,8 +1663,10 @@ FROM (SELECT TOP {totalNum} *
             return objects;
         }
 
-        public void SyncJObjects(string tableName, List<JObject> items, List<TableColumnInfo> tableColumns)
+        public List<Exception> SyncJObjects(string tableName, List<JObject> items, List<TableColumnInfo> tableColumns)
         {
+            var exceptions = new List<Exception>();
+
             var names = new StringBuilder();
             var values = new StringBuilder();
             foreach (var tableColumn in tableColumns)
@@ -1676,10 +1678,12 @@ FROM (SELECT TOP {totalNum} *
             names.Length -= 1;
             values.Length -= 1;
 
+            var isIdentityColumn = !StringUtils.EqualsIgnoreCase(tableName, DataProvider.SiteDao.TableName);
+
             foreach (var item in items)
             {
                 var sqlString = $@"INSERT INTO {tableName} ({names}) VALUES ({values})";
-                if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+                if (isIdentityColumn && WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
                 {
                     sqlString = $@"
 SET IDENTITY_INSERT {tableName} ON
@@ -1721,8 +1725,17 @@ SET IDENTITY_INSERT {tableName} OFF
                     }
                 }
 
-                ExecuteNonQuery(sqlString, parameters.ToArray());
+                try
+                {
+                    ExecuteNonQuery(sqlString, parameters.ToArray());
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
+                }
             }
+
+            return exceptions;
 
             //            if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             //            {
@@ -1766,40 +1779,60 @@ SET IDENTITY_INSERT {tableName} OFF
             }
         }
 
-        public string GetPageSqlString(string tableName, string returnColumnNames, string whereSqlString, string orderColumnName, bool isDesc, int offset, int limit)
+        public int GetPageTotalCount(string tableName, string whereSqlString)
+        {
+            return GetIntResult($@"SELECT COUNT(*) FROM {tableName} {whereSqlString}");
+        }
+
+        public string GetPageSqlString(string tableName, string returnColumnNames, string whereSqlString, string orderSqlString, int offset, int limit)
         {
             var retval = string.Empty;
 
-            var orderByString = $"ORDER BY {orderColumnName} {(isDesc ? "DESC" : "ASC")}";
-            var orderByStringReverse = $"ORDER BY {orderColumnName} {(isDesc ? "ASC" : "DESC")}";
-
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $@"SELECT {returnColumnNames} FROM {tableName} {whereSqlString} {orderByString} LIMIT {limit} OFFSET {offset}";
+                retval = $@"SELECT {returnColumnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
                 if (IsSqlServer2012)
                 {
-                    retval = $"SELECT {returnColumnNames} FROM {tableName} {whereSqlString} {orderByString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
+                    retval = $"SELECT {returnColumnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
                 }
                 else
                 {
+                    var orderSqlStringReverse = string.Empty;
+                    var orders = TranslateUtils.StringCollectionToStringList(orderSqlString);
+                    foreach (var order in orders)
+                    {
+                        if (StringUtils.ContainsIgnoreCase(order, " ASC"))
+                        {
+                            orderSqlStringReverse += StringUtils.ReplaceIgnoreCase(order, " ASC", " DESC");
+                        }
+                        else if (StringUtils.ContainsIgnoreCase(order, " DESC"))
+                        {
+                            orderSqlStringReverse += StringUtils.ReplaceIgnoreCase(order, " DESC", " ASC");
+                        }
+                        else
+                        {
+                            orderSqlStringReverse += order + " DESC";
+                        }
+                    }
+
                     retval = $@"
 SELECT * FROM (
     SELECT TOP {limit} * FROM (
-        SELECT TOP {limit + offset} {returnColumnNames} FROM {tableName} {whereSqlString} {orderByString}
-    ) AS t1 {orderByStringReverse}
-) AS t2 {orderByString}";
+        SELECT TOP {limit + offset} {returnColumnNames} FROM {tableName} {whereSqlString} {orderSqlString}
+    ) AS t1 {orderSqlStringReverse}
+) AS t2 {orderSqlString}";
                 }
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"SELECT {returnColumnNames} FROM {tableName} {whereSqlString} {orderByString} LIMIT {limit} OFFSET {offset}";
+                retval = $"SELECT {returnColumnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"SELECT {returnColumnNames} FROM {tableName} {whereSqlString} {orderByString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
+                retval = $"SELECT {returnColumnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
             }
 
             return retval;

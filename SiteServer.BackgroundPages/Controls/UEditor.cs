@@ -7,6 +7,7 @@ using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Editors;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -34,7 +35,7 @@ namespace SiteServer.BackgroundPages.Controls
 <textarea id=""{ClientID}"" name=""{ClientID}"" style=""display:none"">{HttpUtility.HtmlEncode(Text)}</textarea>
 <script type=""text/javascript"">
 $(function(){{
-  UE.getEditor('{ClientID}', {{allowDivTransToP: false}});
+  UE.getEditor('{ClientID}', {ETextEditorTypeUtils.ConfigValues});
   $('#{ClientID}').show();
 }});
 </script>");

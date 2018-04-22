@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using NDesk.Options;
+using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
 using SiteServer.Cli.Updater;
+using SiteServer.Cli.Updater.Model364;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli.Commands
@@ -11,7 +13,7 @@ namespace SiteServer.Cli.Commands
     public static class UpdateManager
     {
         public const string CommandName = "update";
-        public const string Folder = "update";
+        private const string Folder = "update";
 
         private static bool _isHelp;
         private static string _folderName = "backup";
@@ -87,6 +89,31 @@ namespace SiteServer.Cli.Commands
             CliUtils.PrintRow("Old Table Name", "New Table Name", "Total Count");
             CliUtils.PrintLine();
 
+            var contentTableNameList = new List<string>();
+            var siteMetadataFilePath = CliUtils.GetTableMetadataFilePath(_folderName, "siteserver_PublishmentSystem");
+            if (FileUtils.IsFileExists(siteMetadataFilePath))
+            {
+                var siteTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(siteMetadataFilePath, Encoding.UTF8));
+                foreach (var fileName in siteTableInfo.RowFiles)
+                {
+                    var filePath = CliUtils.GetTableContentFilePath(_folderName, "siteserver_PublishmentSystem", fileName);
+                    var rows = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(filePath, Encoding.UTF8));
+                    foreach (var row in rows)
+                    {
+                        var dict = TranslateUtils.JsonGetDictionaryIgnorecase(row);
+                        object obj;
+                        if (dict.TryGetValue(nameof(SiteserverPublishmentSystem.AuxiliaryTableForContent),
+                            out obj))
+                        {
+                            if (obj != null)
+                            {
+                                contentTableNameList.Add(obj.ToString());
+                            }
+                        }
+                    }
+                }
+            }
+
             foreach (var oldTableName in oldTableNames)
             {
                 var oldMetadataFilePath = CliUtils.GetTableMetadataFilePath(_folderName, oldTableName);
@@ -95,7 +122,7 @@ namespace SiteServer.Cli.Commands
 
                 var oldTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(oldMetadataFilePath, Encoding.UTF8));
 
-                var kvp = updater.UpdateTableInfo(oldTableName, oldTableInfo);
+                var kvp = updater.UpdateTableInfo(oldTableName, oldTableInfo, contentTableNameList);
                 var newTableName = kvp.Key;
                 var newTableInfo = kvp.Value;
 

@@ -248,6 +248,9 @@
     <Compile Include="Cms\ModalUploadWord.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Cms\PageContents.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Cms\PageContentAddHandler.cs" />
     <Compile Include="Cms\PageChannel.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -435,6 +438,7 @@
     <Compile Include="Controls\NoTagText.cs" />
     <Compile Include="Controls\Script.cs" />
     <Compile Include="Controls\SqlCountPager.cs" />
+    <Compile Include="Controls\Pager.cs" />
     <Compile Include="Controls\SqlPager.cs" />
     <Compile Include="Controls\Style.cs" />
     <Compile Include="Controls\TextEditorBase.cs" />
