@@ -5,7 +5,7 @@ using NDesk.Options;
 using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
 using SiteServer.Cli.Updater;
-using SiteServer.Cli.Updater.Model364;
+using SiteServer.Cli.Updater.Model36;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli.Commands
@@ -16,12 +16,12 @@ namespace SiteServer.Cli.Commands
         private const string Folder = "update";
 
         private static bool _isHelp;
-        private static string _folderName = "backup";
+        private static string _directory;
         private static string _version;
 
         private static readonly OptionSet Options = new OptionSet() {
-            { "f|folder=", "the backup {folder} name.",
-                v => _folderName = !string.IsNullOrEmpty(v) ? v : "backup" },
+            { "d|directory=", "the update {directory} name.",
+                v => _directory = v },
             { "v|version=", "the {version} to update.",
                 v => _version = v },
             { "h|help",  "show this message and exit",
@@ -51,38 +51,38 @@ namespace SiteServer.Cli.Commands
                 return;
             }
 
-            UpdaterBase updater = null;
-            if (_version == Updater364.Version)
+            if (string.IsNullOrEmpty(_directory))
             {
-                updater = new Updater364(_folderName, Folder);
+                _directory = $"backup/{DateTime.Now:yyyy-MM-dd}";
+            }
+
+            var oldTreeInfo = new TreeInfo(_directory);
+            var newTreeInfo = new TreeInfo(Folder);
+
+            if (!DirectoryUtils.IsDirectoryExists(oldTreeInfo.DirectoryPath))
+            {
+                CliUtils.PrintError($"Error, Directory {oldTreeInfo.DirectoryPath} Not Exists");
+                return;
+            }
+            DirectoryUtils.CreateDirectoryIfNotExists(newTreeInfo.DirectoryPath);
+
+            UpdaterBase updater = null;
+            if (_version == Updater36.Version)
+            {
+                updater = new Updater36(oldTreeInfo, newTreeInfo);
             }
             if (updater == null)
             {
-                Console.WriteLine($"Error, The currently supported update versions are {Updater364.Version}");
+                Console.WriteLine($"Error, The currently supported update versions are {Updater36.Version}");
                 return;
             }
 
             var newVersion = "latest";
 
-            Console.WriteLine($"Old Version: {_version}");
-            Console.WriteLine($"New Version: {newVersion}");
+            Console.WriteLine($"Old Version: {_version}, Old Directory: {oldTreeInfo.DirectoryPath}");
+            Console.WriteLine($"New Version: {newVersion}, New Directory: {newTreeInfo.DirectoryPath}");
 
-            if (!DirectoryUtils.IsDirectoryExists(CliUtils.GetBackupDirectoryPath(_folderName)))
-            {
-                Console.WriteLine("Error, Directory Not Exists");
-                return;
-            }
-
-            var oldTablesFilePath = CliUtils.GetTablesFilePath(_folderName);
-            if (!FileUtils.IsFileExists(oldTablesFilePath))
-            {
-                Console.WriteLine("Error, File _tables.json Not Exists");
-                return;
-            }
-
-            DirectoryUtils.DeleteDirectoryIfExists(CliUtils.GetBackupDirectoryPath(Folder));
-
-            var oldTableNames = TranslateUtils.JsonDeserialize<List<string>>(FileUtils.ReadText(oldTablesFilePath, Encoding.UTF8));
+            var oldTableNames = TranslateUtils.JsonDeserialize<List<string>>(FileUtils.ReadText(oldTreeInfo.TablesFilePath, Encoding.UTF8));
             var newTableNames = new List<string>();
 
             CliUtils.PrintLine();
@@ -90,13 +90,13 @@ namespace SiteServer.Cli.Commands
             CliUtils.PrintLine();
 
             var contentTableNameList = new List<string>();
-            var siteMetadataFilePath = CliUtils.GetTableMetadataFilePath(_folderName, "siteserver_PublishmentSystem");
+            var siteMetadataFilePath = oldTreeInfo.GetTableMetadataFilePath("siteserver_PublishmentSystem");
             if (FileUtils.IsFileExists(siteMetadataFilePath))
             {
                 var siteTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(siteMetadataFilePath, Encoding.UTF8));
                 foreach (var fileName in siteTableInfo.RowFiles)
                 {
-                    var filePath = CliUtils.GetTableContentFilePath(_folderName, "siteserver_PublishmentSystem", fileName);
+                    var filePath = oldTreeInfo.GetTableContentFilePath("siteserver_PublishmentSystem", fileName);
                     var rows = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(filePath, Encoding.UTF8));
                     foreach (var row in rows)
                     {
@@ -116,7 +116,7 @@ namespace SiteServer.Cli.Commands
 
             foreach (var oldTableName in oldTableNames)
             {
-                var oldMetadataFilePath = CliUtils.GetTableMetadataFilePath(_folderName, oldTableName);
+                var oldMetadataFilePath = oldTreeInfo.GetTableMetadataFilePath(oldTableName);
 
                 if (!FileUtils.IsFileExists(oldMetadataFilePath)) continue;
 
@@ -130,7 +130,7 @@ namespace SiteServer.Cli.Commands
 
                 newTableNames.Add(newTableName);
 
-                FileUtils.WriteText(CliUtils.GetTableMetadataFilePath(Folder, newTableName), Encoding.UTF8, TranslateUtils.JsonSerialize(newTableInfo));
+                FileUtils.WriteText(newTreeInfo.GetTableMetadataFilePath(newTableName), Encoding.UTF8, TranslateUtils.JsonSerialize(newTableInfo));
 
                 //DataProvider.DatabaseDao.CreateSystemTable(tableName, tableInfo.Columns);
 
@@ -145,7 +145,7 @@ namespace SiteServer.Cli.Commands
 
             }
 
-            FileUtils.WriteText(CliUtils.GetTablesFilePath(Folder), Encoding.UTF8, TranslateUtils.JsonSerialize(newTableNames));
+            FileUtils.WriteText(newTreeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newTableNames));
 
             CliUtils.PrintLine();
             Console.WriteLine("Well done! Thanks for Using SiteServer Cli Tool");

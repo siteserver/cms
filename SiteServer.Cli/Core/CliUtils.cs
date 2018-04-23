@@ -8,30 +8,9 @@ namespace SiteServer.Cli.Core
 {
     public static class CliUtils
     {
-        private const string DirectoryDatabase = "Database";
-        private const string DirectoryFiles = "Files";
+        public const int PageSize = 500;
 
-        public static readonly string PhysicalApplicationPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-
-        public static string GetBackupDirectoryPath(string folderName)
-        {
-            return PathUtils.Combine(PhysicalApplicationPath, folderName);
-        }
-
-        public static string GetTablesFilePath(string folderName)
-        {
-            return PathUtils.Combine(GetBackupDirectoryPath(folderName), DirectoryDatabase, "_tables.json");
-        }
-
-        public static string GetTableMetadataFilePath(string folderName, string tableName)
-        {
-            return PathUtils.Combine(GetBackupDirectoryPath(folderName), DirectoryDatabase, tableName, "_metadata.json");
-        }
-
-        public static string GetTableContentFilePath(string folderName, string tableName, string fileName)
-        {
-            return PathUtils.Combine(GetBackupDirectoryPath(folderName), DirectoryDatabase, tableName, fileName);
-        }
+        public static readonly string PhysicalApplicationPath = Environment.CurrentDirectory;
 
         private const int ConsoleTableWidth = 77;
 
@@ -54,7 +33,7 @@ namespace SiteServer.Cli.Core
             }
             catch (OptionException ex)
             {
-                PrintError(ex);
+                PrintError(ex.Message);
                 return false;
             }
         }
@@ -77,25 +56,61 @@ namespace SiteServer.Cli.Core
             Console.WriteLine(row);
         }
 
-        public static void PrintError(Exception ex)
+        public static void PrintProgressBar(int progress, int total)
         {
-            Console.Error.WriteLine($"error: {StringUtils.RemoveNewline(ex.Message)}");
-            Console.Error.WriteLine("Try '--help' for more information.");
+            //draw empty progress bar
+            Console.CursorLeft = 0;
+            Console.Write("["); //start
+            Console.CursorLeft = 32;
+            Console.Write("]"); //end
+            Console.CursorLeft = 1;
+            float onechunk = 30.0f / total;
+
+            //draw filled part
+            int position = 1;
+            for (int i = 0; i < onechunk * progress; i++)
+            {
+                Console.BackgroundColor = ConsoleColor.Green;
+                Console.CursorLeft = position++;
+                Console.Write(" ");
+            }
+
+            //draw unfilled part
+            for (int i = position; i <= 31; i++)
+            {
+                Console.BackgroundColor = ConsoleColor.Gray;
+                Console.CursorLeft = position++;
+                Console.Write(" ");
+            }
+
+            //draw totals
+            Console.CursorLeft = 35;
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.Write(Convert.ToDouble(progress / (double)total).ToString("0%") + "    "); //blanks at the end remove any excess
         }
 
-        public static void LogErrors(List<Exception> exceptions)
+        public static void PrintError(string errorMessage)
+        {
+            Console.WriteLine();
+            var color = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Error.WriteLine(errorMessage);
+            Console.ForegroundColor = color;
+        }
+
+        public static void LogErrors(string commandName, List<TextLogInfo> logs)
         {
             var builder = new StringBuilder();
-            if (exceptions != null && exceptions.Count > 0)
+            if (logs != null && logs.Count > 0)
             {
-                foreach (var exception in exceptions)
+                foreach (var log in logs)
                 {
-                    builder.Append($"Message: {exception.Message}");
-                    builder.Append($"StackTrace: {exception.StackTrace}");
+                    builder.AppendLine();
+                    builder.Append(log);
                     builder.AppendLine();
                 }
             }
-            FileUtils.WriteText(PathUtils.Combine(CliUtils.PhysicalApplicationPath, "error.log"), Encoding.UTF8, builder.ToString());
+            FileUtils.WriteText(PathUtils.Combine(PhysicalApplicationPath, $"{commandName}.error.log"), Encoding.UTF8, builder.ToString());
         }
     }
 }

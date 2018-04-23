@@ -11,17 +11,16 @@ namespace SiteServer.Cli.Commands
     public static class BackupManager
     {
         public const string CommandName = "backup";
-        private const int PageSize = 1000;
 
         private static bool _isHelp;
-        private static string _folderName = "backup";
-        private static string _webConfigFileName = "Web.config";
+        private static string _directory;
+        private static string _webConfigFileName;
 
         private static readonly OptionSet Options = new OptionSet() {
             { "c|config=", "the {web.config} file name.",
-                v => _webConfigFileName = !string.IsNullOrEmpty(v) ? v : "Web.config" },
-            { "f|folder=", "the backup {folder} name.",
-                v => _folderName = !string.IsNullOrEmpty(v) ? v : "backup" },
+                v => _webConfigFileName = v },
+            { "d|directory=", "the backup {directory} name.",
+                v => _directory = v },
             { "h|help",  "show this message and exit",
                 v => _isHelp = v != null }
         };
@@ -43,16 +42,27 @@ namespace SiteServer.Cli.Commands
                 return;
             }
 
+            if (string.IsNullOrEmpty(_directory))
+            {
+                _directory = $"backup/{DateTime.Now:yyyy-MM-dd}";
+            }
+            if (string.IsNullOrEmpty(_webConfigFileName))
+            {
+                _webConfigFileName = "web.config";
+            }
+
+            var treeInfo = new TreeInfo(_directory);
+            DirectoryUtils.CreateDirectoryIfNotExists(treeInfo.DirectoryPath);
+
             WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, _webConfigFileName);
 
-            DirectoryUtils.DeleteDirectoryIfExists(CliUtils.GetBackupDirectoryPath(_folderName));
-
-            Console.WriteLine($"DatabaseType: {WebConfigUtils.DatabaseType.Value}");
-            Console.WriteLine($"ConnectionString: {WebConfigUtils.ConnectionString}");
+            Console.WriteLine($"Database Type: {WebConfigUtils.DatabaseType.Value}");
+            Console.WriteLine($"Connection String: {WebConfigUtils.ConnectionString}");
+            Console.WriteLine($"Backup Directory: {treeInfo.DirectoryPath}");
 
             var tableNames = DataProvider.DatabaseDao.GetTableNameList();
 
-            FileUtils.WriteText(CliUtils.GetTablesFilePath(_folderName), Encoding.UTF8, TranslateUtils.JsonSerialize(tableNames));
+            FileUtils.WriteText(treeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(tableNames));
 
             CliUtils.PrintLine();
             CliUtils.PrintRow("Backup Table Name", "Total Count");
@@ -74,21 +84,25 @@ namespace SiteServer.Cli.Commands
                 if (tableInfo.TotalCount > 0)
                 {
                     var current = 1;
-                    if (tableInfo.TotalCount > PageSize)
+                    if (tableInfo.TotalCount > CliUtils.PageSize)
                     {
-                        var pageCount = (int)Math.Ceiling((double)tableInfo.TotalCount / PageSize);
+                        var pageCount = (int)Math.Ceiling((double)tableInfo.TotalCount / CliUtils.PageSize);
 
                         for (; current <= pageCount; current++)
                         {
+                            CliUtils.PrintProgressBar(current - 1, pageCount);
+
                             var fileName = $"{current}.json";
                             tableInfo.RowFiles.Add(fileName);
-                            var offset = (current - 1) * PageSize;
-                            var limit = PageSize;
+                            var offset = (current - 1) * CliUtils.PageSize;
+                            var limit = CliUtils.PageSize;
 
                             var rows = DataProvider.DatabaseDao.GetPageObjects(tableName, identityColumnName, offset, limit);
 
-                            FileUtils.WriteText(CliUtils.GetTableContentFilePath(_folderName, tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
+                            FileUtils.WriteText(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
                         }
+
+                        Console.CursorLeft = 0;
                     }
                     else
                     {
@@ -96,11 +110,11 @@ namespace SiteServer.Cli.Commands
                         tableInfo.RowFiles.Add(fileName);
                         var rows = DataProvider.DatabaseDao.GetObjects(tableName);
 
-                        FileUtils.WriteText(CliUtils.GetTableContentFilePath(_folderName, tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
+                        FileUtils.WriteText(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
                     }
                 }
 
-                FileUtils.WriteText(CliUtils.GetTableMetadataFilePath(_folderName, tableName), Encoding.UTF8, TranslateUtils.JsonSerialize(tableInfo));
+                FileUtils.WriteText(treeInfo.GetTableMetadataFilePath(tableName), Encoding.UTF8, TranslateUtils.JsonSerialize(tableInfo));
             }
 
             CliUtils.PrintLine();

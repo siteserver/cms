@@ -68,8 +68,13 @@ namespace SiteServer.Cli
             }
             catch (Exception ex)
             {
-                CliUtils.PrintError(ex);
-                CliUtils.LogErrors(new List<Exception> {ex});
+                CliUtils.PrintError(ex.Message);
+                CliUtils.LogErrors(commandName, new List<TextLogInfo> {new TextLogInfo
+                {
+                    DateTime = DateTime.Now,
+                    Detail = "Console Error",
+                    Exception = ex
+                }});
             }
         }
     }

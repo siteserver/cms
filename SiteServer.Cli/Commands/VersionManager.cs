@@ -18,6 +18,7 @@ namespace SiteServer.Cli.Commands
         {
             var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             Console.WriteLine($"Version: {version.Substring(0, version.Length - 2)}");
+            Console.WriteLine($"Current Directory: {CliUtils.PhysicalApplicationPath}");
         }
     }
 }

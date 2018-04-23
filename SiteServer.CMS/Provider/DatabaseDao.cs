@@ -31,7 +31,7 @@ namespace SiteServer.CMS.Provider
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
                 var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
-                //检测数据库版本
+                //������ݿ�汾
                 const string sqlCheck = "SELECT SERVERPROPERTY('productversion')";
                 var versions = ExecuteScalar(sqlCheck).ToString();
                 //MM.nn.bbbb.rr
@@ -662,7 +662,7 @@ SELECT * FROM (
                     }
                 }
 
-                //添加主键及索引
+                //�������������
                 sqlBuilder.Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
                     ? @"PRIMARY KEY (Id)"
                     : $@"CONSTRAINT PK_{tableName} PRIMARY KEY (Id)").AppendLine();
@@ -999,7 +999,7 @@ SELECT * FROM (
                         rdr.Close();
                     }
                 }
-                
+
                 CacheUtils.Insert(cacheKey, sequence);
             }
 
@@ -1146,7 +1146,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
                 while (rdr.Read())
                 {
                     var columnName = (rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0)).ToLower();
-                    if (columnName == "msrepl_tran_version") //sqlserver 发布订阅字段，忽略
+                    if (columnName == "msrepl_tran_version") //sqlserver ���������ֶΣ�����
                     {
                         continue;
                     }
@@ -1163,7 +1163,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
 
                     var isPrimaryKey = isPrimaryKeyInt == 1;
                     var isIdentity = isIdentityInt == 1 || StringUtils.EqualsIgnoreCase(columnName, "Id");
-                    //sqlserver 2005 返回isIdentity结果不正确,so 在此假设所有ID字段为Idenity字段
+                    //sqlserver 2005 ����isIdentity�������ȷ,so �ڴ˼�������ID�ֶ�ΪIdenity�ֶ�
                     if (isIdentity)
                     {
                         isIdentityExist = true;
@@ -1663,37 +1663,24 @@ FROM (SELECT TOP {totalNum} *
             return objects;
         }
 
-        public List<Exception> SyncJObjects(string tableName, List<JObject> items, List<TableColumnInfo> tableColumns)
+        public void InsertMultiple(string tableName, IEnumerable<JObject> items, List<TableColumnInfo> tableColumns)
         {
-            var exceptions = new List<Exception>();
-
-            var names = new StringBuilder();
-            var values = new StringBuilder();
+            var columnNames = new StringBuilder();
             foreach (var tableColumn in tableColumns)
             {
-                names.Append($"{tableColumn.ColumnName},");
-                values.Append($"@{tableColumn.ColumnName},");
+                columnNames.Append($"{tableColumn.ColumnName},");
             }
+            columnNames.Length -= 1;
 
-            names.Length -= 1;
-            values.Length -= 1;
-
-            var isIdentityColumn = !StringUtils.EqualsIgnoreCase(tableName, DataProvider.SiteDao.TableName);
-
+            var valuesList = new List<string>();
+            var parameterList = new List<IDataParameter>();
+            var index = 0;
             foreach (var item in items)
             {
-                var sqlString = $@"INSERT INTO {tableName} ({names}) VALUES ({values})";
-                if (isIdentityColumn && WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-                {
-                    sqlString = $@"
-SET IDENTITY_INSERT {tableName} ON
-{sqlString}
-SET IDENTITY_INSERT {tableName} OFF
-";
-                }
-                var parameters = new List<IDataParameter>();
                 var dict = TranslateUtils.JsonGetDictionaryIgnorecase(item);
 
+                index++;
+                var values = new StringBuilder();
                 foreach (var tableColumn in tableColumns)
                 {
                     object val;
@@ -1702,52 +1689,71 @@ SET IDENTITY_INSERT {tableName} OFF
                     if (tableColumn.DataType == DataType.Integer)
                     {
                         if (val == null) val = 0;
-                        parameters.Add(GetParameter($"@{tableColumn.ColumnName}", tableColumn.DataType, Convert.ToInt32(val)));
+                        values.Append($"{Convert.ToInt32(val)},");
                     }
                     else if (tableColumn.DataType == DataType.Decimal)
                     {
                         if (val == null) val = 0;
-                        parameters.Add(GetParameter($"@{tableColumn.ColumnName}", tableColumn.DataType, Convert.ToDecimal(val)));
+                        values.Append($"{Convert.ToDecimal(val)},");
                     }
                     else if (tableColumn.DataType == DataType.Boolean)
                     {
+                        var paramName = $"@{tableColumn.ColumnName}_{index}";
                         if (val == null) val = false;
-                        parameters.Add(GetParameter($"@{tableColumn.ColumnName}", tableColumn.DataType, Convert.ToBoolean(val)));
+                        values.Append($"{paramName},");
+                        parameterList.Add(GetParameter(paramName, tableColumn.DataType, Convert.ToBoolean(val)));
                     }
                     else if (tableColumn.DataType == DataType.DateTime)
                     {
                         if (val == null) val = DateTime.Now;
-                        parameters.Add(GetParameter($"@{tableColumn.ColumnName}", tableColumn.DataType, Convert.ToDateTime(val)));
+                        values.Append($"{SqlUtils.GetComparableDateTime(Convert.ToDateTime(val))},");
                     }
                     else
                     {
-                        parameters.Add(GetParameter($"@{tableColumn.ColumnName}", tableColumn.DataType, Convert.ToString(val)));
+                        var paramName = $"@{tableColumn.ColumnName}_{index}";
+                        values.Append($"{paramName},");
+                        parameterList.Add(GetParameter(paramName, tableColumn.DataType, Convert.ToString(val)));
                     }
                 }
+                values.Length -= 1;
+                valuesList.Add(values.ToString());
 
-                try
+                if (parameterList.Count > 1000)
                 {
-                    ExecuteNonQuery(sqlString, parameters.ToArray());
-                }
-                catch (Exception ex)
-                {
-                    exceptions.Add(ex);
+                    InsertRows(tableName, columnNames.ToString(), valuesList, parameterList);
+                    valuesList.Clear();
+                    parameterList.Clear();
                 }
             }
 
-            return exceptions;
+            if (valuesList.Count > 0 && parameterList.Count > 0)
+            {
+                InsertRows(tableName, columnNames.ToString(), valuesList, parameterList);
+            }
+        }
 
-            //            if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            //            {
-            //                foreach (var tableColumnInfo in tableColumns)
-            //                {
-            //                    if (tableColumnInfo.IsIdentity)
-            //                    {
-            //                        ExecuteNonQuery($@"
-            //SELECT setval(pg_get_serial_sequence('{tableName}', '{tableColumnInfo.ColumnName}'),(SELECT MAX({tableColumnInfo.ColumnName}) FROM {tableName}))");
-            //                    }
-            //                }
-            //            }
+        private void InsertRows(string tableName, string columnNames, List<string> valuesList, List<IDataParameter> parameterList)
+        {
+            var sqlStringBuilder = new StringBuilder($@"INSERT INTO {tableName} ({columnNames}) VALUES ");
+            foreach (var values in valuesList)
+            {
+                sqlStringBuilder.Append($"({values}), ");
+            }
+            sqlStringBuilder.Length -= 2;
+
+            var sqlString = sqlStringBuilder.ToString();
+
+            var isIdentityColumn = !StringUtils.EqualsIgnoreCase(tableName, DataProvider.SiteDao.TableName);
+            if (isIdentityColumn && WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                sqlString = $@"
+SET IDENTITY_INSERT {tableName} ON
+{sqlString}
+SET IDENTITY_INSERT {tableName} OFF
+";
+            }
+
+            ExecuteNonQuery(sqlString, parameterList.ToArray());
         }
 
         private ETriState _sqlServerVersionState = ETriState.All;

@@ -5,15 +5,15 @@ namespace SiteServer.Cli.Updater
 {
     public abstract class UpdaterBase
     {
-        protected UpdaterBase(string oldFolderName, string newFolderName)
+        protected UpdaterBase(TreeInfo oldTreeInfo, TreeInfo newTreeInfo)
         {
-            OldFolderName = oldFolderName;
-            NewFolderName = newFolderName;
+            OldTreeInfo = oldTreeInfo;
+            NewTreeInfo = newTreeInfo;
         }
 
-        protected string OldFolderName { get; }
+        protected TreeInfo OldTreeInfo { get; }
 
-        protected string NewFolderName { get; }
+        protected TreeInfo NewTreeInfo { get; }
 
         public abstract KeyValuePair<string, TableInfo> UpdateTableInfo(string oldTableName, TableInfo oldTableInfo, List<string> contentTableNameList);
     }
