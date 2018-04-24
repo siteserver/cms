@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.PageContents" %>
+﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.PageContent" %>
   <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>

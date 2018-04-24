@@ -8,8 +8,15 @@
       <!--#include file="../inc/head.html"-->
       <script type="text/javascript">
         $(document).ready(function () {
+          $("#btnPager").click(function(event){
+            event.stopPropagation();
+            $('#dropdown-pager').toggle();
+          });
           loopRows(document.getElementById('contents'), function (cur) {
             cur.onclick = chkSelect;
+          });
+          $(document).click(function() {
+            $('#dropdown-pager').hide();
           });
         });
       </script>
@@ -31,7 +38,6 @@
               <div class="form-group m-l-10">
                 <label class="col-form-label m-r-10">状态</label>
                 <asp:DropDownList ID="DdlState" AutoPostBack="true" OnSelectedIndexChanged="Search_OnClick" class="form-control" runat="server"></asp:DropDownList>
-                <asp:CheckBox ID="CbIsDuplicate" class="checkbox checkbox-primary" Text="包含重复标题" runat="server"></asp:CheckBox>
               </div>
             </div>
 
@@ -106,7 +112,7 @@
             </div>
           </div>
 
-          <ctrl:sqlPager id="SpContents" runat="server" class="table table-pager" />
+          <ctrl:pager id="PgContents" runat="server" />
 
           <hr />
 

@@ -16,14 +16,13 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public DropDownList DdlChannelId;
         public DropDownList DdlState;
-        public CheckBox CbIsDuplicate;
         public DropDownList DdlSearchType;
         public TextBox TbKeyword;
         public DateTimeTextBox TbDateFrom;
         public DateTimeTextBox TbDateTo;
 
         public Repeater RptContents;
-        public SqlPager SpContents;
+        public Pager PgContents;
         public Literal LtlColumnsHead;
 
         public Button BtnAddContent;
@@ -37,11 +36,11 @@ namespace SiteServer.BackgroundPages.Cms
         private bool _isWritingOnly;
         private bool _isSelfOnly;
         private int _channelId;
-        private ChannelInfo _nodeInfo;
+        private ChannelInfo _channelInfo;
         private List<int> _relatedIdentities;
         private List<TableStyleInfo> _styleInfoList;
         private StringCollection _attributesOfDisplay;
-        private List<TableStyleInfo> _attributesOfDisplayStyleInfoList;
+        private List<TableStyleInfo> _allStyleInfoList;
         private Dictionary<string, List<HyperLink>> _pluginLinks;
         private bool _isEdit;
         private readonly Dictionary<string, string> _nameValueCacheDict = new Dictionary<string, string>();
@@ -67,49 +66,76 @@ namespace SiteServer.BackgroundPages.Cms
                 administratorName = AuthRequest.AdminPermissions.IsViewContentOnlySelf(SiteId, _channelId) ? AuthRequest.AdminName : string.Empty;
             }
 
-            _nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
-            var tableName = ChannelManager.GetTableName(SiteInfo, _nodeInfo);
+            _channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+            var tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
             _styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, _relatedIdentities);
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplay(SiteId, _channelId));
-            _attributesOfDisplayStyleInfoList = ContentUtility.GetAllTableStyleInfoList(_styleInfoList);
-            _pluginLinks = PluginContentManager.GetContentLinks(_nodeInfo);
+            _allStyleInfoList = ContentUtility.GetAllTableStyleInfoList(_styleInfoList);
+            _pluginLinks = PluginContentManager.GetContentLinks(_channelInfo);
             _isEdit = TextUtility.IsEdit(SiteInfo, _channelId, AuthRequest.AdminPermissions);
 
             var stateType = AuthRequest.IsQueryExists("state") ? ETriStateUtils.GetEnumType(AuthRequest.GetQueryString("state")) : ETriState.All;
             var searchType = AuthRequest.IsQueryExists("searchType") ? AuthRequest.GetQueryString("searchType") : ContentAttribute.Title;
             var dateFrom = AuthRequest.IsQueryExists("dateFrom") ? AuthRequest.GetQueryString("dateFrom") : string.Empty;
             var dateTo = AuthRequest.IsQueryExists("dateTo") ? AuthRequest.GetQueryString("dateTo") : string.Empty;
-            var isDuplicate = AuthRequest.IsQueryExists("isDuplicate") && AuthRequest.GetQueryBool("isDuplicate");
             var keyword = AuthRequest.IsQueryExists("keyword") ? AuthRequest.GetQueryString("keyword") : string.Empty;
 
-            SpContents.ControlToPaginate = RptContents;
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(tableName, SiteId, _channelId, AuthRequest.AdminPermissions.IsSystemAdministrator, AuthRequest.AdminPermissions.OwningChannelIdList, searchType, keyword, dateFrom, dateTo, true, stateType, !isDuplicate, false, _isWritingOnly, administratorName);
-            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
-            SpContents.SortField = ContentAttribute.Id;
-            SpContents.SortMode = SortMode.DESC;
-            SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc);
+            //SpContents.ControlToPaginate = RptContents;
+            //SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(tableName, SiteId, _channelId, AuthRequest.AdminPermissions.IsSystemAdministrator, AuthRequest.AdminPermissions.OwningChannelIdList, searchType, keyword, dateFrom, dateTo, true, stateType, !isDuplicate, false, _isWritingOnly, administratorName);
+            //SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
+            //SpContents.SortField = ContentAttribute.Id;
+            //SpContents.SortMode = SortMode.DESC;
+            //SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
+
+            var allLowerAttributeNameList = TableMetadataManager.GetAllLowerAttributeNameList(tableName);
+            var pagerParam = new PagerParam
+            {
+                ControlToPaginate = RptContents,
+                TableName = tableName,
+                PageSize = SiteInfo.Additional.PageSize,
+                Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
+                OrderSqlString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc),
+                ReturnColumnNames =
+                    DataProvider.ContentDao.GetPagerReturnColumnNames(allLowerAttributeNameList, _attributesOfDisplay)
+            };
+            
+            var channelIdList = ChannelManager.GetChannelIdList(_channelInfo, EScopeType.All, string.Empty, string.Empty, _channelInfo.ContentModelPluginId);
+
+            var searchChannelIdList = new List<int>();
+            if (AuthRequest.AdminPermissions.IsSystemAdministrator)
+            {
+                searchChannelIdList = channelIdList;
+            }
+            else
+            {
+                foreach (var theChannelId in channelIdList)
+                {
+                    if (AuthRequest.AdminPermissions.OwningChannelIdList.Contains(theChannelId))
+                    {
+                        searchChannelIdList.Add(theChannelId);
+                    }
+                }
+            }
+
+            pagerParam.WhereSqlString = DataProvider.ContentDao.GetPagerWhereSqlString(allLowerAttributeNameList,
+                SiteId, _channelId, AuthRequest.AdminPermissions.IsSystemAdministrator, searchChannelIdList, searchType, keyword,
+                dateFrom, dateTo, true, stateType, false, _isWritingOnly, administratorName);
+            pagerParam.TotalCount =
+                DataProvider.DatabaseDao.GetPageTotalCount(tableName, pagerParam.WhereSqlString);
+
+            PgContents.Param = pagerParam;
 
             if (!IsPostBack)
             {
                 ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, true, true, AuthRequest.AdminPermissions);
 
-                DdlSearchType.Items.Add(new ListItem("标题", ContentAttribute.Title));
-                if (_styleInfoList != null)
+                foreach (var styleInfo in _allStyleInfoList)
                 {
-                    foreach (var styleInfo in _styleInfoList)
-                    {
-                        if (styleInfo.AttributeName != ContentAttribute.AddDate)
-                        {
-                            var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
-                            DdlSearchType.Items.Add(listitem);
-                        }
-                    }
+                    var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
+                    DdlSearchType.Items.Add(listitem);
                 }
-                DdlSearchType.Items.Add(new ListItem("内容ID", ContentAttribute.Id));
-                DdlSearchType.Items.Add(new ListItem("添加者", ContentAttribute.AddUserName));
-                DdlSearchType.Items.Add(new ListItem("最后修改者", ContentAttribute.LastEditUserName));
 
                 ETriStateUtils.AddListItems(DdlState, "全部", "已审核", "待审核");
 
@@ -118,13 +144,12 @@ namespace SiteServer.BackgroundPages.Cms
                     ControlUtils.SelectSingleItem(DdlChannelId, _channelId.ToString());
                 }
                 ControlUtils.SelectSingleItem(DdlState, AuthRequest.GetQueryString("State"));
-                CbIsDuplicate.Checked = isDuplicate;
                 ControlUtils.SelectSingleItem(DdlSearchType, searchType);
                 TbKeyword.Text = keyword;
                 TbDateFrom.Text = dateFrom;
                 TbDateTo.Text = dateTo;
 
-                SpContents.DataBind();
+                PgContents.DataBind();
 
                 var showPopWinString = ModalAddToGroup.GetOpenWindowStringToContentForMultiChannels(SiteId);
                 BtnAddToGroup.Attributes.Add("onclick", showPopWinString);
@@ -180,7 +205,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             ltlTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
 
-            ltlColumns.Text = TextUtility.GetColumnsHtml(_nameValueCacheDict, SiteInfo, contentInfo, _attributesOfDisplay, _attributesOfDisplayStyleInfoList);
+            ltlColumns.Text = TextUtility.GetColumnsHtml(_nameValueCacheDict, SiteInfo, contentInfo, _attributesOfDisplay, _allStyleInfoList);
 
             string nodeName;
             if (!_nameValueCacheDict.TryGetValue(contentInfo.ChannelId.ToString(), out nodeName))
@@ -201,7 +226,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void AddContent_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _nodeInfo, PageUrl));
+            PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo, PageUrl));
         }
 
         public void Search_OnClick(object sender, EventArgs e)
@@ -220,7 +245,6 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         {"ChannelId", DdlChannelId.SelectedValue},
                         {"State", DdlState.SelectedValue},
-                        {"IsDuplicate", CbIsDuplicate.Checked.ToString()},
                         {"SearchType", DdlSearchType.SelectedValue},
                         {"Keyword", TbKeyword.Text},
                         {"DateFrom", TbDateFrom.Text},
