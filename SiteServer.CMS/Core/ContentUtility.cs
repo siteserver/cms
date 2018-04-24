@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using System.Web.UI.WebControls;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
@@ -332,7 +333,13 @@ namespace SiteServer.CMS.Core
 
             if (tableStyleInfoList != null)
             {
-                list.InsertRange(2, tableStyleInfoList);
+                foreach (var tableStyleInfo in tableStyleInfoList)
+                {
+                    if (!list.Exists(t => t.AttributeName == tableStyleInfo.AttributeName))
+                    {
+                        list.Insert(2, tableStyleInfo);
+                    }
+                }
             }
 
             return list;

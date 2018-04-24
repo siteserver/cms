@@ -688,6 +688,17 @@ namespace SiteServer.Utils
             return builder.ToString();
         }
 
+        public static bool DictGetValue(Dictionary<int, bool> dict, int key)
+        {
+            bool retval;
+            if (dict.TryGetValue(key, out retval))
+            {
+                return retval;
+            }
+
+            return false;
+        }
+
         public static string ToAttributesString(LowerNameValueCollection attributes)
         {
             var builder = new StringBuilder();

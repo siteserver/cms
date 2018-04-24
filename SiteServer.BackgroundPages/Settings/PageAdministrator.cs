@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
@@ -27,8 +28,8 @@ namespace SiteServer.BackgroundPages.Settings
         public Button BtnUnLock;
         public Button BtnDelete;
 
-        private bool[] _isLastNodeArrayOfDepartment;
-        private bool[] _isLastNodeArrayOfArea;
+        private Dictionary<int, bool> _parentsCountDictOfDepartment = new Dictionary<int, bool>();
+        private Dictionary<int, bool> _parentsCountDictOfArea = new Dictionary<int, bool>();
         private EUserLockType _lockType = EUserLockType.Forever;
 
         public static string GetRedirectUrl()
@@ -153,23 +154,19 @@ namespace SiteServer.BackgroundPages.Settings
 
             DdlDepartmentId.Items.Add(new ListItem("<所有部门>", "0"));
             var departmentIdList = DepartmentManager.GetDepartmentIdList();
-            var count = departmentIdList.Count;
-            _isLastNodeArrayOfDepartment = new bool[count];
             foreach (var theDepartmentId in departmentIdList)
             {
                 var departmentInfo = DepartmentManager.GetDepartmentInfo(theDepartmentId);
-                DdlDepartmentId.Items.Add(new ListItem(GetTreeItem(departmentInfo.Id, departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode, _isLastNodeArrayOfDepartment), theDepartmentId.ToString()));
+                DdlDepartmentId.Items.Add(new ListItem(GetTreeItem(departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode, _parentsCountDictOfDepartment), theDepartmentId.ToString()));
             }
             ControlUtils.SelectSingleItem(DdlDepartmentId, departmentId.ToString());
 
             DdlAreaId.Items.Add(new ListItem("<全部区域>", "0"));
             var areaIdList = AreaManager.GetAreaIdList();
-            count = areaIdList.Count;
-            _isLastNodeArrayOfArea = new bool[count];
             foreach (var theAreaId in areaIdList)
             {
                 var areaInfo = AreaManager.GetAreaInfo(theAreaId);
-                DdlAreaId.Items.Add(new ListItem(GetTreeItem(areaInfo.Id, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode, _isLastNodeArrayOfArea), theAreaId.ToString()));
+                DdlAreaId.Items.Add(new ListItem(GetTreeItem(areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode, _parentsCountDictOfArea), theAreaId.ToString()));
             }
             ControlUtils.SelectSingleItem(DdlAreaId, areaId.ToString());
 
@@ -197,20 +194,20 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.DataBind();
         }
 
-        public string GetTreeItem(int areaId, string areaName, int parentsCount, bool isLastNode, bool[] array)
+        public string GetTreeItem(string areaName, int parentsCount, bool isLastNode, Dictionary<int, bool> parentsCountDict)
         {
             var str = "";
             if (isLastNode == false)
             {
-                array[parentsCount] = false;
+                parentsCountDict[parentsCount] = false;
             }
             else
             {
-                array[parentsCount] = true;
+                parentsCountDict[parentsCount] = true;
             }
             for (var i = 0; i < parentsCount; i++)
             {
-                str = string.Concat(str, array[i] ? "　" : "│");
+                str = string.Concat(str, TranslateUtils.DictGetValue(parentsCountDict, i) ? "　" : "│");
             }
             str = string.Concat(str, isLastNode ? "└" : "├");
             str = string.Concat(str, areaName);

@@ -76,38 +76,42 @@ namespace SiteServer.BackgroundPages.Cms
                 return;
             }
 
-            string whereSqlString;
-            var administratorName = AuthRequest.AdminPermissions.IsViewContentOnlySelf(SiteId, channelId) ? AuthRequest.AdminName : string.Empty;
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
+
             var allLowerAttributeNameList = TableMetadataManager.GetAllLowerAttributeNameList(_tableName);
-            if (AuthRequest.IsQueryExists("searchType"))
-            {
-                var owningChannelIdList = new List<int>
-                {
-                    channelId
-                };
-                whereSqlString = DataProvider.ContentDao.GetPagerWhereSqlString(allLowerAttributeNameList, SiteId, channelId, AuthRequest.AdminPermissions.IsSystemAdministrator, owningChannelIdList, AuthRequest.GetQueryString("searchType"), AuthRequest.GetQueryString("keyword"), AuthRequest.GetQueryString("dateFrom"), string.Empty, false, ETriState.All, false, false, administratorName);
-            }
-            else
-            {
-                whereSqlString = DataProvider.ContentDao.GetPagerWhereSqlString(channelId, ETriState.All, administratorName);
-            }
-
-            var orderSqlString = DataProvider.ContentDao.GetPagerOrderSqlString(_channelInfo);
-            var returnColumnNames = DataProvider.ContentDao.GetPagerReturnColumnNames(allLowerAttributeNameList, _attributesOfDisplay);
-
-            PgContents.Param = new PagerParam
+            var pagerParam = new PagerParam
             {
                 ControlToPaginate = RptContents,
                 TableName = _tableName,
-                ReturnColumnNames = returnColumnNames,
-                WhereSqlString = whereSqlString,
-                OrderSqlString = orderSqlString,
                 PageSize = SiteInfo.Additional.PageSize,
                 TotalCount = _channelInfo.ContentNum,
-                Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1)
+                Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
+                OrderSqlString = DataProvider.ContentDao.GetPagerOrderSqlString(_channelInfo),
+                ReturnColumnNames =
+                    DataProvider.ContentDao.GetPagerReturnColumnNames(allLowerAttributeNameList, _attributesOfDisplay)
             };
 
-            RptContents.ItemDataBound += RptContents_ItemDataBound;
+            var administratorName = AuthRequest.AdminPermissions.IsViewContentOnlySelf(SiteId, channelId) ? AuthRequest.AdminName : string.Empty;
+            
+            if (AuthRequest.IsQueryExists("searchType"))
+            {
+                pagerParam.WhereSqlString = DataProvider.ContentDao.GetPagerWhereSqlString(allLowerAttributeNameList,
+                    SiteId, channelId, AuthRequest.AdminPermissions.IsSystemAdministrator, new List<int>
+                    {
+                        channelId
+                    }, AuthRequest.GetQueryString("searchType"), AuthRequest.GetQueryString("keyword"),
+                    AuthRequest.GetQueryString("dateFrom"), string.Empty, false, ETriState.All, false, false,
+                    administratorName);
+                pagerParam.TotalCount =
+                    DataProvider.DatabaseDao.GetPageTotalCount(_tableName, pagerParam.WhereSqlString);
+            }
+            else
+            {
+                pagerParam.WhereSqlString = DataProvider.ContentDao.GetPagerWhereSqlString(channelId, ETriState.All, administratorName);
+                pagerParam.TotalCount = _channelInfo.ContentNum;
+            }
+
+            PgContents.Param = pagerParam;
 
             if (IsPostBack) return;
 
@@ -116,20 +120,11 @@ namespace SiteServer.BackgroundPages.Cms
 
             PgContents.DataBind();
 
-            if (_styleInfoList != null)
+            foreach (var styleInfo in ContentUtility.GetAllTableStyleInfoList(_styleInfoList))
             {
-                foreach (var styleInfo in _styleInfoList)
-                {
-                    var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
-                    DdlSearchType.Items.Add(listitem);
-                }
+                var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
+                DdlSearchType.Items.Add(listitem);
             }
-
-            //添加隐藏属性
-            DdlSearchType.Items.Add(new ListItem("内容ID", ContentAttribute.Id));
-            DdlSearchType.Items.Add(new ListItem("添加者", ContentAttribute.AddUserName));
-            DdlSearchType.Items.Add(new ListItem("最后修改者", ContentAttribute.LastEditUserName));
-            DdlSearchType.Items.Add(new ListItem("内容组", ContentAttribute.GroupNameCollection));
 
             if (AuthRequest.IsQueryExists("searchType"))
             {
@@ -147,7 +142,11 @@ $(document).ready(function() {
 </script>
 ";
                 }
-                
+
+            }
+            else
+            {
+                ControlUtils.SelectSingleItem(DdlSearchType, ContentAttribute.Title);
             }
 
             LtlColumnsHead.Text = TextUtility.GetColumnsHeadHtml(_styleInfoList, _attributesOfDisplay, SiteInfo);
