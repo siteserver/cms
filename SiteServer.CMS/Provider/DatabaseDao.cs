@@ -1804,25 +1804,16 @@ SET IDENTITY_INSERT {tableName} OFF
                 {
                     retval = $"SELECT {returnColumnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
                 }
+                else if (offset == 0)
+                {
+                    retval = $"SELECT TOP {limit} {returnColumnNames} FROM {tableName} {whereSqlString} {orderSqlString}";
+                }
                 else
                 {
-                    var orderSqlStringReverse = string.Empty;
-                    var orders = TranslateUtils.StringCollectionToStringList(orderSqlString);
-                    foreach (var order in orders)
-                    {
-                        if (StringUtils.ContainsIgnoreCase(order, " ASC"))
-                        {
-                            orderSqlStringReverse += StringUtils.ReplaceIgnoreCase(order, " ASC", " DESC");
-                        }
-                        else if (StringUtils.ContainsIgnoreCase(order, " DESC"))
-                        {
-                            orderSqlStringReverse += StringUtils.ReplaceIgnoreCase(order, " DESC", " ASC");
-                        }
-                        else
-                        {
-                            orderSqlStringReverse += order + " DESC";
-                        }
-                    }
+                    orderSqlString = orderSqlString.ToUpper();
+                    var orderSqlStringReverse = orderSqlString.Replace(" DESC", " DESC2");
+                    orderSqlStringReverse = orderSqlStringReverse.Replace(" ASC", " DESC");
+                    orderSqlStringReverse = orderSqlStringReverse.Replace(" DESC2", " ASC");
 
                     retval = $@"
 SELECT * FROM (
