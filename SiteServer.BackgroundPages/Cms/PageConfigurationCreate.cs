@@ -15,7 +15,6 @@ namespace SiteServer.BackgroundPages.Cms
         public DropDownList DdlIsCreateIe8Compatible;
         public DropDownList DdlIsCreateBrowserNoCache;
         public DropDownList DdlIsCreateJsIgnoreError;
-        public DropDownList DdlIsCreateSearchDuplicate;
         public DropDownList DdlIsCreateWithJQuery;
         public DropDownList DdlIsCreateDoubleClick;
         public TextBox TbCreateStaticMaxPage;
@@ -51,9 +50,6 @@ namespace SiteServer.BackgroundPages.Cms
             EBooleanUtils.AddListItems(DdlIsCreateJsIgnoreError, "包含JS容错代码", "不设置");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateJsIgnoreError, SiteInfo.Additional.IsCreateJsIgnoreError.ToString());
 
-            EBooleanUtils.AddListItems(DdlIsCreateSearchDuplicate, "包含", "不包含");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateSearchDuplicate, SiteInfo.Additional.IsCreateSearchDuplicate.ToString());
-
             EBooleanUtils.AddListItems(DdlIsCreateWithJQuery, "是", "否");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateWithJQuery, SiteInfo.Additional.IsCreateWithJQuery.ToString());
 
@@ -87,7 +83,6 @@ namespace SiteServer.BackgroundPages.Cms
 		    SiteInfo.Additional.IsCreateIe8Compatible = TranslateUtils.ToBool(DdlIsCreateIe8Compatible.SelectedValue);
 		    SiteInfo.Additional.IsCreateBrowserNoCache = TranslateUtils.ToBool(DdlIsCreateBrowserNoCache.SelectedValue);
 		    SiteInfo.Additional.IsCreateJsIgnoreError = TranslateUtils.ToBool(DdlIsCreateJsIgnoreError.SelectedValue);
-		    SiteInfo.Additional.IsCreateSearchDuplicate = TranslateUtils.ToBool(DdlIsCreateSearchDuplicate.SelectedValue);
 		    SiteInfo.Additional.IsCreateWithJQuery = TranslateUtils.ToBool(DdlIsCreateWithJQuery.SelectedValue);
 
 		    SiteInfo.Additional.IsCreateDoubleClick = TranslateUtils.ToBool(DdlIsCreateDoubleClick.SelectedValue);

@@ -1863,7 +1863,7 @@ group by tmp.userName";
             return whereBuilder.ToString();
         }
 
-        public string GetSqlString(string tableName, int siteId, int channelId, bool isSystemAdministrator, List<int> owningChannelIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isNoDup, bool isTrashContent)
+        public string GetSqlString(string tableName, int siteId, int channelId, bool isSystemAdministrator, List<int> owningChannelIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isTrashContent)
         {
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             var channelIdList = ChannelManager.GetChannelIdList(channelInfo,
@@ -1885,10 +1885,10 @@ group by tmp.userName";
                 }
             }
 
-            return GetSqlStringByCondition(tableName, siteId, list, searchType, keyword, dateFrom, dateTo, checkedState, isNoDup, isTrashContent);
+            return GetSqlStringByCondition(tableName, siteId, list, searchType, keyword, dateFrom, dateTo, checkedState, isTrashContent);
         }
 
-        public string GetSqlString(string tableName, int siteId, int channelId, bool isSystemAdministrator, List<int> owningChannelIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isNoDup, bool isTrashContent, bool isWritingOnly, string userNameOnly)
+        public string GetSqlString(string tableName, int siteId, int channelId, bool isSystemAdministrator, List<int> owningChannelIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isTrashContent, bool isWritingOnly, string userNameOnly)
         {
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             var channelIdList = ChannelManager.GetChannelIdList(channelInfo, isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, channelInfo.ContentModelPluginId);
@@ -1909,7 +1909,7 @@ group by tmp.userName";
                 }
             }
 
-            return GetSqlStringByCondition(tableName, siteId, list, searchType, keyword, dateFrom, dateTo, checkedState, isNoDup, isTrashContent, isWritingOnly, userNameOnly);
+            return GetSqlStringByCondition(tableName, siteId, list, searchType, keyword, dateFrom, dateTo, checkedState, isTrashContent, isWritingOnly, userNameOnly);
         }
 
         public string GetSqlStringByContentGroup(string tableName, string contentGroupName, int siteId)
@@ -1920,12 +1920,12 @@ group by tmp.userName";
             return sqlString;
         }
 
-        public DataSet GetStlDataSourceChecked(List<int> channelIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
+        public DataSet GetStlDataSourceChecked(List<int> channelIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, LowerNameValueCollection others)
         {
-            return GetStlDataSourceChecked(tableName, channelIdList, startNum, totalNum, orderByString, whereString, isNoDup, others);
+            return GetStlDataSourceChecked(tableName, channelIdList, startNum, totalNum, orderByString, whereString, others);
         }
 
-        public string GetStlSqlStringChecked(List<int> channelIdList, string tableName, int siteId, int channelId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isNoDup)
+        public string GetStlSqlStringChecked(List<int> channelIdList, string tableName, int siteId, int channelId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot)
         {
             string sqlWhereString;
 
@@ -1943,12 +1943,6 @@ group by tmp.userName";
                 sqlWhereString = channelIdList.Count == 1 ? $"WHERE (ChannelId = {channelIdList[0]} AND IsChecked = '{true}' {whereString})" : $"WHERE (ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND IsChecked = '{true}' {whereString})";
             }
 
-            if (isNoDup)
-            {
-                var sqlString = DataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
-                sqlWhereString += $" AND Id IN ({sqlString})";
-            }
-
             if (!string.IsNullOrEmpty(tableName))
             {
                 return DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, StlColumns, sqlWhereString, orderByString);
@@ -1956,15 +1950,10 @@ group by tmp.userName";
             return string.Empty;
         }
 
-        public string GetStlSqlStringCheckedBySearch(string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup)
+        public string GetStlSqlStringCheckedBySearch(string tableName, int startNum, int totalNum, string orderByString, string whereString)
         {
-            string sqlWhereString =
+            var sqlWhereString =
                     $"WHERE (ChannelId > 0 AND IsChecked = '{true}' {whereString})";
-            if (isNoDup)
-            {
-                var sqlString = DataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
-                sqlWhereString += $" AND Id IN ({sqlString})";
-            }
 
             if (!string.IsNullOrEmpty(tableName))
             {
@@ -2144,7 +2133,7 @@ group by tmp.userName";
             return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public string GetStlWhereString(int siteId, string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, bool isCreateSearchDuplicate)
+        public string GetStlWhereString(int siteId, string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
         {
             var whereBuilder = new StringBuilder();
             whereBuilder.Append($" AND SiteId = {siteId} ");
@@ -2252,12 +2241,6 @@ group by tmp.userName";
             if (!string.IsNullOrEmpty(where))
             {
                 whereBuilder.Append($" AND ({where}) ");
-            }
-
-            if (!isCreateSearchDuplicate)
-            {
-                var sqlString = DataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(ID)", whereBuilder + " GROUP BY Title");
-                whereBuilder.Append($" AND ID IN ({sqlString}) ");
             }
 
             return whereBuilder.ToString();
@@ -2380,12 +2363,12 @@ group by tmp.userName";
             return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        private string GetSqlStringByCondition(string tableName, int siteId, List<int> channelIdList, string searchType, string keyword, string dateFrom, string dateTo, ETriState checkedState, bool isNoDup, bool isTrashContent)
+        private string GetSqlStringByCondition(string tableName, int siteId, List<int> channelIdList, string searchType, string keyword, string dateFrom, string dateTo, ETriState checkedState, bool isTrashContent)
         {
-            return GetSqlStringByCondition(tableName, siteId, channelIdList, searchType, keyword, dateFrom, dateTo, checkedState, isNoDup, isTrashContent, false, string.Empty);
+            return GetSqlStringByCondition(tableName, siteId, channelIdList, searchType, keyword, dateFrom, dateTo, checkedState, isTrashContent, false, string.Empty);
         }
 
-        private string GetSqlStringByCondition(string tableName, int siteId, List<int> channelIdList, string searchType, string keyword, string dateFrom, string dateTo, ETriState checkedState, bool isNoDup, bool isTrashContent, bool isWritingOnly, string userNameOnly)
+        private string GetSqlStringByCondition(string tableName, int siteId, List<int> channelIdList, string searchType, string keyword, string dateFrom, string dateTo, ETriState checkedState, bool isTrashContent, bool isWritingOnly, string userNameOnly)
         {
             if (channelIdList == null || channelIdList.Count == 0)
             {
@@ -2445,12 +2428,6 @@ group by tmp.userName";
                 whereString.Append("AND IsChecked='False' ");
             }
 
-            if (isNoDup)
-            {
-                var sqlString = DataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", whereString + " GROUP BY Title");
-                whereString.Append($"AND Id IN ({sqlString})");
-            }
-
             if (!string.IsNullOrEmpty(userNameOnly))
             {
                 whereString.Append($" AND AddUserName = '{userNameOnly}' ");
@@ -2472,19 +2449,13 @@ group by tmp.userName";
             return DataProvider.DatabaseDao.GetIntList(sqlString);
         }
 
-        private DataSet GetStlDataSourceChecked(string tableName, List<int> channelIdList, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
+        private DataSet GetStlDataSourceChecked(string tableName, List<int> channelIdList, int startNum, int totalNum, string orderByString, string whereString, LowerNameValueCollection others)
         {
             if (channelIdList == null || channelIdList.Count == 0)
             {
                 return null;
             }
             var sqlWhereString = channelIdList.Count == 1 ? $"WHERE (ChannelId = {channelIdList[0]} AND IsChecked = '{true}' {whereString})" : $"WHERE (ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND IsChecked = '{true}' {whereString})";
-
-            if (isNoDup)
-            {
-                var sqlString = DataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
-                sqlWhereString += $" AND Id IN ({sqlString})";
-            }
 
             if (others != null && others.Count > 0)
             {

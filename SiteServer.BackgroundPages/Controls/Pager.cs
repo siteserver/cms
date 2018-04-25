@@ -24,7 +24,7 @@ namespace SiteServer.BackgroundPages.Controls
     {
         public const string QueryNamePage = "page";
 
-        public PagerParam Param { private get; set; }
+        public PagerParam Param { get; set; }
 
         public override void DataBind()
         {
@@ -74,6 +74,12 @@ namespace SiteServer.BackgroundPages.Controls
                 dropdownBuilder.Append($@"<a class=""dropdown-item {(i == Param.Page ? "active" : string.Empty)}"" href=""{GetPageUrl(i)}"">第 {i} 页</a>");
             }
 
+            var top = -(pageCount * 28 + 10);
+            if (pageCount > 10)
+            {
+                top = 0;
+            }
+
             output.Write($@"
 <div class=""clearfix"">
     <ul class=""pagination float-left"">
@@ -94,11 +100,24 @@ namespace SiteServer.BackgroundPages.Controls
         <button id=""btnPager"" type=""button"" class=""btn btn-light text-secondary dropdown-toggle"">
             第 {Param.Page} 页（共 {pageCount} 页）
         </button>
-        <div id=""dropdown-pager"" class=""dropdown-menu"" style=""position: absolute;left: 0px;top: {-(pageCount * 30 + 5)}px;margin-bottom: 20px;"">
+        <div id=""dropdown-pager"" class=""dropdown-menu"" style=""position: absolute;left: 0px;top: {top}px;margin-bottom: 20px;"">
         {dropdownBuilder}
         </div>
     </span>
-</div>");
+</div>
+<script type=""text/javascript"">
+$(document).ready(function () {{
+  $(""body"").height($(window).height() - 40);
+  $(""#btnPager"").click(function(event){{
+    event.stopPropagation();
+    $('#dropdown-pager').toggle();
+  }});
+  $(document).click(function() {{
+    $('#dropdown-pager').hide();
+  }});
+}});
+</script>
+");
         }
     }
 }

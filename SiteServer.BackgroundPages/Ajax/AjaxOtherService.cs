@@ -247,7 +247,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 var directoryPath = PathUtility.GetSiteTemplatesPath(directoryName);
                 if (!DirectoryUtils.IsDirectoryExists(directoryPath))
                 {
-                    ZipUtils.UnpackFiles(filePath, directoryPath);
+                    ZipUtils.ExtractZip(filePath, directoryPath);
                 }
 
                 CacheUtils.Insert(cacheCurrentCountKey, "5");
@@ -294,7 +294,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheCurrentCountKey, "4");
                 CacheUtils.Insert(cacheMessageKey, "插件压缩包下载成功，开始安装");
 
-                ZipUtils.UnpackFiles(filePath, PathUtils.GetPluginPath(fileName.Substring(0, fileName.IndexOf(".", StringComparison.Ordinal))));
+                ZipUtils.ExtractZip(filePath, PathUtils.GetPluginPath(fileName.Substring(0, fileName.IndexOf(".", StringComparison.Ordinal))));
 
                 CacheUtils.Insert(cacheCurrentCountKey, "5");
                 CacheUtils.Insert(cacheMessageKey, string.Empty);
@@ -336,7 +336,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 FileUtils.DeleteFileIfExists(filePath);
 
-                ZipUtils.PackFiles(filePath, directoryPath);
+                ZipUtils.CreateZip(filePath, directoryPath);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
 
@@ -374,7 +374,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 var directoryPath = PathUtility.GetSiteTemplatesPath(PathUtils.GetFileNameWithoutExtension(fileName));
                 var zipFilePath = PathUtility.GetSiteTemplatesPath(fileName);
 
-                ZipUtils.UnpackFiles(zipFilePath, directoryPath);
+                ZipUtils.ExtractZip(zipFilePath, directoryPath);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
 

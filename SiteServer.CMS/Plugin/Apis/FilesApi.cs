@@ -43,6 +43,12 @@ namespace SiteServer.CMS.Plugin.Apis
             return PathUtils.Combine(localDirectoryPath, localFileName);
         }
 
+        public string GetSitePath(int siteId, string virtualPath)
+        {
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            return PathUtility.MapPath(siteInfo, virtualPath);
+        }
+
         public string GetTemporaryFilesPath(string relatedPath)
         {
             return PathUtils.GetTemporaryFilesPath(relatedPath);
@@ -54,10 +60,10 @@ namespace SiteServer.CMS.Plugin.Apis
             return PageUtility.GetSiteUrl(siteInfo, false);
         }
 
-        public string GetSiteUrl(int siteId, string relatedUrl)
+        public string GetSiteUrl(int siteId, string virtualPath)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            return PageUtility.GetSiteUrl(siteInfo, relatedUrl, false);
+            return PageUtility.ParseNavigationUrl(siteInfo, virtualPath, false);
         }
 
         public string GetSiteUrlByFilePath(string filePath)
@@ -87,6 +93,16 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             return PageUtility.GetContentUrl(siteInfo, ChannelManager.GetChannelInfo(siteId, channelId), contentId, false);
+        }
+
+        public void CreateZip(string zipFilePath, string directoryPath)
+        {
+            ZipUtils.CreateZip(zipFilePath, directoryPath);
+        }
+
+        public void ExtractZip(string zipFilePath, string directoryPath)
+        {
+            ZipUtils.ExtractZip(zipFilePath, directoryPath);
         }
     }
 }

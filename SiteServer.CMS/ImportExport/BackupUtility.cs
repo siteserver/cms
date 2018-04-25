@@ -62,7 +62,7 @@ namespace SiteServer.CMS.ImportExport
             exportObject.ExportConfiguration(configurationFilePath);
             exportObject.ExportMetadata(siteInfo.SiteName, siteInfo.Additional.WebUrl, string.Empty, string.Empty, metadataPath);
 
-            ZipUtils.PackFiles(filePath, siteTemplatePath);
+            ZipUtils.CreateZip(filePath, siteTemplatePath);
             DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
         }
 
@@ -80,7 +80,7 @@ namespace SiteServer.CMS.ImportExport
                 DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
                 DirectoryUtils.CreateDirectoryIfNotExists(siteTemplatePath);
 
-                ZipUtils.UnpackFiles(path, siteTemplatePath);
+                ZipUtils.ExtractZip(path, siteTemplatePath);
             }
             var siteTemplateMetadataPath = PathUtils.Combine(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteTemplateMetadata);
 

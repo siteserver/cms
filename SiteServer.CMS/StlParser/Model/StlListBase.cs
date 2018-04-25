@@ -24,7 +24,6 @@
         public static readonly Attr IsImage = new Attr("isImage", "仅显示图片内容");
         public static readonly Attr IsVideo = new Attr("isVideo", "仅显示视频内容");
         public static readonly Attr IsFile = new Attr("isFile", "仅显示附件内容");
-        public static readonly Attr IsNoDup = new Attr("isNoDup", "不显示重复标题的内容");
         public static readonly Attr IsRelatedContents = new Attr("isRelatedContents", "显示相关内容列表");
         public static readonly Attr Where = new Attr("where", "获取内容列表的条件判断");
         public static readonly Attr Columns = new Attr("columns", "列数");

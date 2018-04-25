@@ -175,7 +175,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 var siteTemplateDir = $"T_{onlineTemplateName}";
                 var directoryPath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
                 DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
-                ZipUtils.UnpackFiles(filePath, directoryPath);
+                ZipUtils.ExtractZip(filePath, directoryPath);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "3");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "站点模板下载成功，正在导入数据...");//存储消息

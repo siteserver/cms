@@ -81,12 +81,6 @@ namespace SiteServer.BackgroundPages.Cms
             var dateTo = AuthRequest.IsQueryExists("dateTo") ? AuthRequest.GetQueryString("dateTo") : string.Empty;
             var keyword = AuthRequest.IsQueryExists("keyword") ? AuthRequest.GetQueryString("keyword") : string.Empty;
 
-            //SpContents.ControlToPaginate = RptContents;
-            //SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(tableName, SiteId, _channelId, AuthRequest.AdminPermissions.IsSystemAdministrator, AuthRequest.AdminPermissions.OwningChannelIdList, searchType, keyword, dateFrom, dateTo, true, stateType, !isDuplicate, false, _isWritingOnly, administratorName);
-            //SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
-            //SpContents.SortField = ContentAttribute.Id;
-            //SpContents.SortMode = SortMode.DESC;
-            //SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
             var allLowerAttributeNameList = TableMetadataManager.GetAllLowerAttributeNameList(tableName);

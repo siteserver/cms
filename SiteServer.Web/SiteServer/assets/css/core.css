@@ -32,7 +32,7 @@ html {
   min-height: 100%;
   background: #f5f5f5;
 }
-a {
+.page-link, a {
   color: #337ab7;
 }
 h1,
@@ -390,16 +390,6 @@ pre {
 .pagination > li:last-child > span {
   border-bottom-right-radius: 3px;
   border-top-right-radius: 3px;
-}
-.pagination > li > a,
-.pagination > li > span {
-  color: #636e7b;
-}
-.pagination > li > a:hover,
-.pagination > li > span:hover,
-.pagination > li > a:focus,
-.pagination > li > span:focus {
-  background-color: #e4e7ea;
 }
 .pagination-split li {
   margin-left: 5px;

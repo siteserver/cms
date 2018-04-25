@@ -41,8 +41,8 @@
                       <th>模板名称 </th>
                       <th>模板文件 </th>
                       <th>生成文件名</th>
-                      <th class="text-center">使用次数</th>
-                      <th class="text-center">模板类型</th>
+                      <th class="text-center" width="80">使用</th>
+                      <th class="text-center" width="120">模板类型</th>
                       <th class="text-center"></th>
                     </tr>
                   </thead>

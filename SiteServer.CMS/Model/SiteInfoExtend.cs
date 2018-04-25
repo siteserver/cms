@@ -255,12 +255,6 @@ namespace SiteServer.CMS.Model
             set { Set("IsCreateJsIgnoreError", value.ToString()); }
         }
 
-        public bool IsCreateSearchDuplicate
-        {
-            get { return GetBool("IsCreateSearchDuplicate", true); }
-            set { Set("IsCreateSearchDuplicate", value.ToString()); }
-        }
-
         public bool IsCreateWithJQuery
         {
             get { return GetBool("IsCreateWithJQuery", true); }

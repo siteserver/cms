@@ -359,10 +359,6 @@ namespace SiteServer.CMS.StlParser.Model
                 {
                     listInfo.IsFile = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, StlContents.IsNoDup.Name))
-                {
-                    listInfo.IsNoDup = TranslateUtils.ToBool(value);
-                }
                 else if (StringUtils.EqualsIgnoreCase(name, StlContents.IsRelatedContents.Name))
                 {
                     listInfo.IsRelatedContents = TranslateUtils.ToBool(value);
@@ -519,8 +515,6 @@ namespace SiteServer.CMS.StlParser.Model
         }
 
         public bool IsFileExists { get; private set; }
-
-        public bool IsNoDup { get; set; }
 
         public bool IsRelatedContents { get; set; }
 

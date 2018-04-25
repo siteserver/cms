@@ -1790,23 +1790,23 @@ SET IDENTITY_INSERT {tableName} OFF
             return GetIntResult($@"SELECT COUNT(*) FROM {tableName} {whereSqlString}");
         }
 
-        public string GetPageSqlString(string tableName, string returnColumnNames, string whereSqlString, string orderSqlString, int offset, int limit)
+        public string GetPageSqlString(string tableName, string columnNames, string whereSqlString, string orderSqlString, int offset, int limit)
         {
             var retval = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $@"SELECT {returnColumnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
+                retval = $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
                 if (IsSqlServer2012)
                 {
-                    retval = $"SELECT {returnColumnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
+                    retval = $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
                 }
                 else if (offset == 0)
                 {
-                    retval = $"SELECT TOP {limit} {returnColumnNames} FROM {tableName} {whereSqlString} {orderSqlString}";
+                    retval = $"SELECT TOP {limit} {columnNames} FROM {tableName} {whereSqlString} {orderSqlString}";
                 }
                 else
                 {
@@ -1818,18 +1818,18 @@ SET IDENTITY_INSERT {tableName} OFF
                     retval = $@"
 SELECT * FROM (
     SELECT TOP {limit} * FROM (
-        SELECT TOP {limit + offset} {returnColumnNames} FROM {tableName} {whereSqlString} {orderSqlString}
+        SELECT TOP {limit + offset} {columnNames} FROM {tableName} {whereSqlString} {orderSqlString}
     ) AS t1 {orderSqlStringReverse}
 ) AS t2 {orderSqlString}";
                 }
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"SELECT {returnColumnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
+                retval = $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"SELECT {returnColumnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
+                retval = $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
             }
 
             return retval;

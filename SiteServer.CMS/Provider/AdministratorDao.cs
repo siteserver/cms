@@ -496,21 +496,7 @@ namespace SiteServer.CMS.Provider
             return areaId;
         }
 
-        public string GetSelectCommand(bool isConsoleAdministrator, string creatorUserName)
-        {
-            var sqlString =
-                    "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator";
-            if (!isConsoleAdministrator)
-            {
-                sqlString =
-                    $"SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator WHERE CreatorUserName = '{PageUtils.FilterSql(creatorUserName)}'";
-            }
-
-            return sqlString;
-        }
-
-        public string GetSelectCommand(string searchWord, string roleName, int dayOfLastActivity,
-            bool isConsoleAdministrator, string creatorUserName, int departmentId, int areaId)
+        public string GetWhereSqlString(bool isConsoleAdministrator, string creatorUserName, string searchWord, string roleName, int dayOfLastActivity, int departmentId, int areaId)
         {
             var whereBuilder = new StringBuilder();
 
@@ -574,16 +560,12 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            var sqlString =
-                "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator " +
-                whereString;
-
-            return sqlString;
+            return whereString;
         }
 
-        public string GetSortFieldName()
+        public string GetOrderSqlString(string order)
         {
-            return "UserName";
+            return $"ORDER BY {order} {(StringUtils.EqualsIgnoreCase(order, nameof(AdministratorInfo.UserName)) ? "ASC" : "DESC")}";
         }
 
         public bool IsAdminNameExists(string adminName)

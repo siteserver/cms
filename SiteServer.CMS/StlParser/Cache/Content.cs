@@ -37,10 +37,10 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static DataSet GetStlDataSourceChecked(List<int> channelIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
+        public static DataSet GetStlDataSourceChecked(List<int> channelIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, LowerNameValueCollection others)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetStlDataSourceChecked),
-                    TranslateUtils.ObjectCollectionToString(channelIdList), tableName, startNum.ToString(), totalNum.ToString(), orderByString, whereString, isNoDup.ToString(), TranslateUtils.NameValueCollectionToString(others));
+                    TranslateUtils.ObjectCollectionToString(channelIdList), tableName, startNum.ToString(), totalNum.ToString(), orderByString, whereString, TranslateUtils.NameValueCollectionToString(others));
             var retval = StlCacheUtils.GetCache<DataSet>(cacheKey);
             if (retval != null) return retval;
 
@@ -49,7 +49,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<DataSet>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.ContentDao.GetStlDataSourceChecked(channelIdList, tableName, startNum, totalNum, orderByString, whereString, isNoDup, others);
+                    retval = DataProvider.ContentDao.GetStlDataSourceChecked(channelIdList, tableName, startNum, totalNum, orderByString, whereString, others);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -269,15 +269,14 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static string GetStlWhereString(int siteId, string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, bool isCreateSearchDuplicate)
+        public static string GetStlWhereString(int siteId, string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetStlWhereString),
                     siteId.ToString(), tableName, group, groupNot,
                     tags, isImageExists.ToString(), isImage.ToString(), isVideoExists.ToString(), isVideo.ToString(),
                     isFileExists.ToString(), isFile.ToString(), isTopExists.ToString(), isTop.ToString(),
                     isRecommendExists.ToString(), isRecommend.ToString(), isHotExists.ToString(), isHot.ToString(),
-                    isColorExists.ToString(), isColor.ToString(), where,
-                    isCreateSearchDuplicate.ToString());
+                    isColorExists.ToString(), isColor.ToString(), where);
             var retval = StlCacheUtils.GetCache<string>(cacheKey);
             if (retval != null) return retval;
 
@@ -289,8 +288,7 @@ namespace SiteServer.CMS.StlParser.Cache
                     retval = DataProvider.ContentDao.GetStlWhereString(siteId, tableName, group,
                     groupNot,
                     tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop,
-                    isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where,
-                    isCreateSearchDuplicate);
+                    isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -320,12 +318,12 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static string GetStlSqlStringChecked(string tableName, int siteId, int channelId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isNoDup)
+        public static string GetStlSqlStringChecked(string tableName, int siteId, int channelId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetStlSqlStringChecked),
                     tableName, siteId.ToString(), channelId.ToString(), startNum.ToString(),
                     totalNum.ToString(), orderByString, whereString, EScopeTypeUtils.GetValue(scopeType), groupChannel,
-                    groupChannelNot, isNoDup.ToString());
+                    groupChannelNot);
             var retval = StlCacheUtils.GetCache<string>(cacheKey);
             if (retval != null) return retval;
 
@@ -337,7 +335,7 @@ namespace SiteServer.CMS.StlParser.Cache
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                     var channelIdList = ChannelManager.GetChannelIdList(channelInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
                     retval = DataProvider.ContentDao.GetStlSqlStringChecked(channelIdList, tableName, siteId, channelId, startNum,
-                    totalNum, orderByString, whereString, scopeType, groupChannel, groupChannelNot, isNoDup);
+                    totalNum, orderByString, whereString, scopeType, groupChannel, groupChannelNot);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -370,11 +368,11 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static string GetStlSqlStringCheckedBySearch(string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup)
+        public static string GetStlSqlStringCheckedBySearch(string tableName, int startNum, int totalNum, string orderByString, string whereString)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content),
                        nameof(GetStlSqlStringCheckedBySearch),
-                       tableName, startNum.ToString(), totalNum.ToString(), orderByString, whereString, isNoDup.ToString());
+                       tableName, startNum.ToString(), totalNum.ToString(), orderByString, whereString);
             var retval = StlCacheUtils.GetCache<string>(cacheKey);
             if (retval != null) return retval;
 
@@ -384,7 +382,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 if (retval == null)
                 {
                     retval = DataProvider.ContentDao.GetStlSqlStringCheckedBySearch(tableName, startNum, totalNum,
-                    orderByString, whereString, isNoDup);
+                    orderByString, whereString);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }

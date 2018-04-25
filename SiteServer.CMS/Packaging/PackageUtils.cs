@@ -76,7 +76,7 @@ namespace SiteServer.CMS.Packaging
                 WebClientUtils.SaveRemoteFileToLocal(
                     $"http://api.siteserver.cn/downloads/update/{version}", localFilePath);
 
-                ZipUtils.UnpackFiles(localFilePath, directoryPath);
+                ZipUtils.ExtractZip(localFilePath, directoryPath);
             }
             else
             {
@@ -90,7 +90,7 @@ namespace SiteServer.CMS.Packaging
                 WebClientUtils.SaveRemoteFileToLocal(
                     $"http://api.siteserver.cn/downloads/package/{packageId}/{version}", localFilePath);
 
-                ZipUtils.UnpackFiles(localFilePath, directoryPath);
+                ZipUtils.ExtractZip(localFilePath, directoryPath);
 
                 //var repo = PackageRepositoryFactory.Default.CreateRepository(WebConfigUtils.IsNightlyUpdate
                 //? MyGetPackageSource

@@ -8,15 +8,8 @@
       <!--#include file="../inc/head.html"-->
       <script type="text/javascript">
         $(document).ready(function () {
-          $("#btnPager").click(function(event){
-            event.stopPropagation();
-            $('#dropdown-pager').toggle();
-          });
           loopRows(document.getElementById('contents'), function (cur) {
             cur.onclick = chkSelect;
-          });
-          $(document).click(function() {
-            $('#dropdown-pager').hide();
           });
         });
       </script>

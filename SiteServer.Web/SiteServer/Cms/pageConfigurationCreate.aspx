@@ -59,11 +59,6 @@
           </div>
 
           <div class="form-group">
-            <label class="col-form-label">内容列表及搜索是否可包含重复标题</label>
-            <asp:DropDownList ID="DdlIsCreateSearchDuplicate" class="form-control" runat="server"></asp:DropDownList>
-          </div>
-
-          <div class="form-group">
             <label class="col-form-label">是否生成页面中包含JQuery脚本引用</label>
             <asp:DropDownList ID="DdlIsCreateWithJQuery" class="form-control" runat="server"></asp:DropDownList>
           </div>

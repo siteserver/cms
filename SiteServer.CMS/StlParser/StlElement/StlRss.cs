@@ -169,7 +169,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             channel.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetChannelUrl(pageInfo.SiteInfo, nodeInfo, pageInfo.IsLocal)));
 
-            var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, string.Empty, scopeType, groupChannel, groupChannelNot, null);
+            var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, string.Empty, scopeType, groupChannel, groupChannelNot, null);
 
             if (dataSource != null)
             {
