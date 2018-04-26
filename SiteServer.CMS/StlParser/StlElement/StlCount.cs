@@ -9,30 +9,19 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "显示数值", Description = "通过 stl:count 标签在模板中显示统计数字")]
+    [StlClass(Usage = "显示数值", Description = "通过 stl:count 标签在模板中显示统计数字")]
     public class StlCount
 	{
         private StlCount() { }
 		public const string ElementName = "stl:count";
 
-		public const string AttributeType = "type";
-        public const string AttributeChannelIndex = "channelIndex";
-        public const string AttributeChannelName = "channelName";
-        public const string AttributeUpLevel = "upLevel";
-        public const string AttributeTopLevel = "topLevel";
-        public const string AttributeScope = "scope";
-        public const string AttributeSince = "since";
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeType, StringUtils.SortedListToAttributeValueString("需要获取值的类型", TypeList)},
-            {AttributeChannelIndex, "栏目索引"},
-            {AttributeChannelName, "栏目名称"},
-            {AttributeUpLevel, "上级栏目的级别"},
-            {AttributeTopLevel, "从首页向下的栏目级别"},
-            {AttributeScope, "内容范围"},
-            {AttributeSince, "时间段"}
-        };
+		private static readonly Attr Type = new Attr("type", "需要获取值的类型");
+        private static readonly Attr ChannelIndex = new Attr("channelIndex", "栏目索引");
+        private static readonly Attr ChannelName = new Attr("channelName", "栏目名称");
+        private static readonly Attr UpLevel = new Attr("upLevel", "上级栏目的级别");
+        private static readonly Attr TopLevel = new Attr("topLevel", "从首页向下的栏目级别");
+        private static readonly Attr Scope = new Attr("scope", "内容范围");
+        private static readonly Attr Since = new Attr("since", "时间段");
 
         public const string TypeChannels = "Channels";
         public const string TypeContents = "Contents";
@@ -59,31 +48,31 @@ namespace SiteServer.CMS.StlParser.StlElement
 		    {
 		        var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, AttributeType))
+                if (StringUtils.EqualsIgnoreCase(name, Type.Name))
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelIndex.Name))
                 {
                     channelIndex = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelName))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelName.Name))
                 {
                     channelName = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeUpLevel))
+                else if (StringUtils.EqualsIgnoreCase(name, UpLevel.Name))
                 {
                     upLevel = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeTopLevel))
+                else if (StringUtils.EqualsIgnoreCase(name, TopLevel.Name))
                 {
                     topLevel = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeScope))
+                else if (StringUtils.EqualsIgnoreCase(name, Scope.Name))
                 {
                     scope = EScopeTypeUtils.GetEnumType(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeSince))
+                else if (StringUtils.EqualsIgnoreCase(name, Since.Name))
                 {
                     since = value;
                 }
@@ -108,13 +97,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
 
                 var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
-
-                //var channelIdList = DataProvider.ChannelDao.GetIdListByScopeType(nodeInfo.ChannelId, nodeInfo.ChildrenCount, scope, string.Empty, string.Empty);
                 var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, scope, string.Empty, string.Empty, string.Empty);
                 foreach (var theChannelId in channelIdList)
                 {
                     var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, theChannelId);
-                    count += Content.GetCountOfContentAdd(tableName, pageInfo.SiteId, theChannelId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty);
+                    count += Content.GetCountOfContentAdd(tableName, pageInfo.SiteId, theChannelId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty, ETriState.True);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeChannels))

@@ -99,6 +99,12 @@ namespace SiteServer.CMS.StlParser.Parsers
             //var parsedContent = StlCacheManager.ParsedContent.GetParsedContent(stlElement, pageInfo, contextInfo);
             //if (parsedContent != null) return parsedContent;
 
+            //if (stlElement.StartsWith("<stl:form"))
+            //{
+            //    var x = 1;
+            //    var y = 2;
+            //}
+
             var xmlDocument = StlParserUtility.GetXmlDocument(stlElement, contextInfo.IsInnerElement);
             XmlNode node = xmlDocument.DocumentElement;
             if (node != null)

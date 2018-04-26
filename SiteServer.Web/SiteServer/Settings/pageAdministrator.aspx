@@ -44,7 +44,6 @@
               <div class="form-group m-l-10">
                 <label class="col-form-label m-r-10">每页显示条数</label>
                 <asp:DropDownList ID="DdlPageNum" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="Search_OnClick" runat="server">
-                  <asp:ListItem Text="默认" Value="0" Selected="true"></asp:ListItem>
                   <asp:ListItem Text="30" Value="30"></asp:ListItem>
                   <asp:ListItem Text="50" Value="50"></asp:ListItem>
                   <asp:ListItem Text="100" Value="100"></asp:ListItem>
@@ -172,7 +171,7 @@
             </div>
           </div>
 
-          <ctrl:sqlPager id="SpContents" runat="server" class="table table-pager" />
+          <ctrl:pager id="PgContents" runat="server" />
 
           <hr />
 

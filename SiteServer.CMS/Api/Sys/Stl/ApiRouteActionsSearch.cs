@@ -4,7 +4,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Api.Sys.Stl
 {
-    public class ApiRouteActionsSearch
+    public static class ApiRouteActionsSearch
     {
         public const string Route = "sys/stl/actions/search";
 
@@ -17,22 +17,22 @@ namespace SiteServer.CMS.Api.Sys.Stl
         {
             return $@"
 {{
-    {StlSearch.AttributeIsAllSites.ToLower()}: {isAllSites.ToString().ToLower()},
-    {StlSearch.AttributeSiteName.ToLower()}: '{siteName}',
-    {StlSearch.AttributeSiteDir.ToLower()}: '{siteDir}',
-    {StlSearch.AttributeSiteIds.ToLower()}: '{siteIds}',
-    {StlSearch.AttributeChannelIndex.ToLower()}: '{channelIndex}',
-    {StlSearch.AttributeChannelName.ToLower()}: '{channelName}',
-    {StlSearch.AttributeChannelIds.ToLower()}: '{channelIds}',
-    {StlSearch.AttributeType.ToLower()}: '{type}',
-    {StlSearch.AttributeWord.ToLower()}: '{word}',
-    {StlSearch.AttributeDateAttribute.ToLower()}: '{dateAttribute}',
-    {StlSearch.AttributeDateFrom.ToLower()}: '{dateFrom}',
-    {StlSearch.AttributeDateTo.ToLower()}: '{dateTo}',
-    {StlSearch.AttributeSince.ToLower()}: '{since}',
-    {StlSearch.AttributePageNum.ToLower()}: {pageNum},
-    {StlSearch.AttributeIsHighlight.ToLower()}: {isHighlight.ToString().ToLower()},
-    {StlSearch.AttributeIsDefaultDisplay.ToLower()}: {isDefaultDisplay.ToString().ToLower()},
+    {StlSearch.IsAllSites.Name.ToLower()}: {isAllSites.ToString().ToLower()},
+    {StlSearch.SiteName.Name.ToLower()}: '{siteName}',
+    {StlSearch.SiteDir.Name.ToLower()}: '{siteDir}',
+    {StlSearch.SiteIds.Name.ToLower()}: '{siteIds}',
+    {StlSearch.ChannelIndex.Name.ToLower()}: '{channelIndex}',
+    {StlSearch.ChannelName.Name.ToLower()}: '{channelName}',
+    {StlSearch.ChannelIds.Name.ToLower()}: '{channelIds}',
+    {StlSearch.Type.Name.ToLower()}: '{type}',
+    {StlSearch.Word.Name.ToLower()}: '{word}',
+    {StlSearch.DateAttribute.Name.ToLower()}: '{dateAttribute}',
+    {StlSearch.DateFrom.Name.ToLower()}: '{dateFrom}',
+    {StlSearch.DateTo.Name.ToLower()}: '{dateTo}',
+    {StlSearch.Since.Name.ToLower()}: '{since}',
+    {StlSearch.PageNum.Name.ToLower()}: {pageNum},
+    {StlSearch.IsHighlight.Name.ToLower()}: {isHighlight.ToString().ToLower()},
+    {StlSearch.IsDefaultDisplay.Name.ToLower()}: {isDefaultDisplay.ToString().ToLower()},
     siteid: '{siteId}',
     ajaxdivid: '{ajaxDivId}',
     template: '{TranslateUtils.EncryptStringBySecretKey(template)}',
@@ -41,22 +41,22 @@ namespace SiteServer.CMS.Api.Sys.Stl
 
         public static List<string> ExlcudeAttributeNames => new List<string>
         {
-            StlSearch.AttributeIsAllSites.ToLower(),
-            StlSearch.AttributeSiteName.ToLower(),
-            StlSearch.AttributeSiteDir.ToLower(),
-            StlSearch.AttributeSiteIds.ToLower(),
-            StlSearch.AttributeChannelIndex.ToLower(),
-            StlSearch.AttributeChannelName.ToLower(),
-            StlSearch.AttributeChannelIds.ToLower(),
-            StlSearch.AttributeType.ToLower(),
-            StlSearch.AttributeWord.ToLower(),
-            StlSearch.AttributeDateAttribute.ToLower(),
-            StlSearch.AttributeDateFrom.ToLower(),
-            StlSearch.AttributeDateTo.ToLower(),
-            StlSearch.AttributeSince.ToLower(),
-            StlSearch.AttributePageNum.ToLower(),
-            StlSearch.AttributeIsHighlight.ToLower(),
-            StlSearch.AttributeIsDefaultDisplay.ToLower(),
+            StlSearch.IsAllSites.Name.ToLower(),
+            StlSearch.SiteName.Name.ToLower(),
+            StlSearch.SiteDir.Name.ToLower(),
+            StlSearch.SiteIds.Name.ToLower(),
+            StlSearch.ChannelIndex.Name.ToLower(),
+            StlSearch.ChannelName.Name.ToLower(),
+            StlSearch.ChannelIds.Name.ToLower(),
+            StlSearch.Type.Name.ToLower(),
+            StlSearch.Word.Name.ToLower(),
+            StlSearch.DateAttribute.Name.ToLower(),
+            StlSearch.DateFrom.Name.ToLower(),
+            StlSearch.DateTo.Name.ToLower(),
+            StlSearch.Since.Name.ToLower(),
+            StlSearch.PageNum.Name.ToLower(),
+            StlSearch.IsHighlight.Name.ToLower(),
+            StlSearch.IsDefaultDisplay.Name.ToLower(),
             "siteid",
             "ajaxdivid",
             "template",

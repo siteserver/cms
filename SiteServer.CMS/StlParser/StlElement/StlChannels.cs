@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
@@ -10,69 +9,14 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "栏目列表", Description = "通过 stl:channels 标签在模板中显示栏目列表")]
-    public class StlChannels
+    [StlClass(Usage = "栏目列表", Description = "通过 stl:channels 标签在模板中显示栏目列表")]
+    public class StlChannels : StlListBase
     {
         public const string ElementName = "stl:channels";
 
-        public const string AttributeChannelIndex = "channelIndex";			    //栏目索引
-        public const string AttributeChannelName = "channelName";				//栏目名称
-        public const string AttributeUpLevel = "upLevel";						//上级栏目的级别
-        public const string AttributeTopLevel = "topLevel";					    //从首页向下的栏目级别
-        public const string AttributeIsTotal = "isTotal";						//是否从所有栏目中选择（包括首页）
-        public const string AttributeIsAllChildren = "isAllChildren";			//是否显示所有级别的子栏目
-        public const string AttributeGroupChannel = "groupChannel";		        //指定显示的栏目组
-        public const string AttributeGroupChannelNot = "groupChannelNot";	    //指定不显示的栏目组
-        public const string AttributeTotalNum = "totalNum";					    //显示栏目数目
-        public const string AttributeStartNum = "startNum";					    //从第几条信息开始显示
-        public const string AttributeOrder = "order";						    //排序
-        public const string AttributeIsImage = "isImage";					    //仅显示图片栏目
-        public const string AttributeWhere = "where";                           //获取栏目列表的条件判断
-        public const string AttributeCellPadding = "cellPadding";
-        public const string AttributeCellSpacing = "cellSpacing";
-        public const string AttributeClass = "class";
-        public const string AttributeColumns = "columns";
-        public const string AttributeDirection = "direction";
-        public const string AttributeHeight = "height";
-        public const string AttributeWidth = "width";
-        public const string AttributeAlign = "align";
-        public const string AttributeLayout = "layout";
-        public const string AttributeItemHeight = "itemHeight";
-        public const string AttributeItemWidth = "itemWidth";
-        public const string AttributeItemAlign = "itemAlign";
-        public const string AttributeItemVerticalAlign = "itemVerticalAlign";
-        public const string AttributeItemClass = "itemClass";
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeChannelIndex, "栏目索引"},
-            {AttributeChannelName, "栏目名称"},
-            {AttributeUpLevel, "上级栏目的级别"},
-            {AttributeTopLevel, "从首页向下的栏目级别"},
-            {AttributeIsTotal, "是否从所有栏目中选择"},
-            {AttributeIsAllChildren, "是否显示所有级别的子栏目"},
-            {AttributeGroupChannel, "指定显示的栏目组"},
-            {AttributeGroupChannelNot, "指定不显示的栏目组"},
-            {AttributeTotalNum, "显示栏目数目"},
-            {AttributeStartNum, "从第几条信息开始显示"},
-            {AttributeOrder, "排序"},
-            {AttributeIsImage, "仅显示图片栏目"},
-            {AttributeWhere, "获取栏目列表的条件判断"},
-            {AttributeCellPadding, "填充"},
-            {AttributeCellSpacing, "间距"},
-            {AttributeClass, "Css类"},
-            {AttributeColumns, "列数"},
-            {AttributeDirection, "方向"},
-            {AttributeHeight, "整体高度"},
-            {AttributeWidth, "整体宽度"},
-            {AttributeAlign, "整体对齐"},
-            {AttributeLayout, "指定列表布局方式"},
-            {AttributeItemHeight, "项高度"},
-            {AttributeItemWidth, "项宽度"},
-            {AttributeItemAlign, "项水平对齐"},
-            {AttributeItemVerticalAlign, "项垂直对齐"},
-            {AttributeItemClass, "项Css类"},
-        };
+        
+        protected static readonly Attr IsTotal = new Attr("isTotal", "是否从所有栏目中选择", AttrType.Boolean);						//是否从所有栏目中选择（包括首页）
+        protected static readonly Attr IsAllChildren = new Attr("isAllChildren", "是否显示所有级别的子栏目", AttrType.Boolean);			//是否显示所有级别的子栏目
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -92,9 +36,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
 
-            var isTotal = TranslateUtils.ToBool(listInfo.Others.Get(AttributeIsTotal));
+            var isTotal = TranslateUtils.ToBool(listInfo.Others.Get(IsTotal.Name));
 
-            if (TranslateUtils.ToBool(listInfo.Others.Get(AttributeIsAllChildren)))
+            if (TranslateUtils.ToBool(listInfo.Others.Get(IsAllChildren.Name)))
             {
                 listInfo.Scope = EScopeType.Descendant;
             }

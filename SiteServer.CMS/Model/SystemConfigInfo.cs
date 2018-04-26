@@ -36,16 +36,16 @@ namespace SiteServer.CMS.Model
             set { Set("IsLogUser", value.ToString()); }
         }
 
-        public bool IsLogTask
+        public bool IsLogError
         {
-            get { return GetBool("IsLogTask", true); }
-            set { Set("IsLogTask", value.ToString()); }
+            get { return GetBool("IsLogError", true); }
+            set { Set("IsLogError", value.ToString()); }
         }
 
         /// <summary>
         /// 是否只查看自己添加的内容
         /// 如果是，那么管理员只能查看自己添加的内容
-        /// 如果不是，那么管理员可以查看其他管理员天机的内容，默认false
+        /// 如果不是，那么管理员可以查看其他管理员的内容，默认false
         /// 注意：超级管理与，站点管理员，审核管理员，此设置无效
         /// add by sessionliang at 20151217
         /// </summary>

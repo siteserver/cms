@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
@@ -20,15 +21,15 @@ namespace SiteServer.BackgroundPages.Settings
         public TextBox TbKeyword;
 
         public Repeater RptContents;
-        public SqlPager SpContents;
+        public Pager PgContents;
 
         public Button BtnAdd;
         public Button BtnLock;
         public Button BtnUnLock;
         public Button BtnDelete;
 
-        private bool[] _isLastNodeArrayOfDepartment;
-        private bool[] _isLastNodeArrayOfArea;
+        private readonly Dictionary<int, bool> _parentsCountDictOfDepartment = new Dictionary<int, bool>();
+        private readonly Dictionary<int, bool> _parentsCountDictOfArea = new Dictionary<int, bool>();
         private EUserLockType _lockType = EUserLockType.Forever;
 
         public static string GetRedirectUrl()
@@ -40,6 +41,13 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
+            var pageNum = AuthRequest.GetQueryInt("pageNum") == 0 ? 30 : AuthRequest.GetQueryInt("pageNum");
+            var keyword = AuthRequest.GetQueryString("keyword");
+            var roleName = AuthRequest.GetQueryString("roleName");
+            var lastActivityDate = AuthRequest.GetQueryInt("lastActivityDate");
+            var isConsoleAdministrator = AuthRequest.AdminPermissions.IsConsoleAdministrator;
+            var adminName = AuthRequest.AdminName;
+            var order = AuthRequest.IsQueryExists("order") ? AuthRequest.GetQueryString("order") : nameof(AdministratorInfo.UserName);
             var departmentId = AuthRequest.GetQueryInt("departmentId");
             var areaId = AuthRequest.GetQueryInt("areaId");
 
@@ -98,24 +106,19 @@ namespace SiteServer.BackgroundPages.Settings
                 }
             }
 
-            SpContents.ControlToPaginate = RptContents;
-            SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
-
-            if (string.IsNullOrEmpty(AuthRequest.GetQueryString("pageNum")))
+            PgContents.Param = new PagerParam
             {
-                SpContents.ItemsPerPage = TranslateUtils.ToInt(DdlPageNum.SelectedValue) == 0 ? StringUtils.Constants.PageSize : TranslateUtils.ToInt(DdlPageNum.SelectedValue);
+                ControlToPaginate = RptContents,
+                TableName = DataProvider.AdministratorDao.TableName,
+                PageSize = pageNum,
+                Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
+                OrderSqlString = DataProvider.AdministratorDao.GetOrderSqlString(order),
+                ReturnColumnNames = SqlUtils.Asterisk,
+                WhereSqlString = DataProvider.AdministratorDao.GetWhereSqlString(isConsoleAdministrator, adminName, keyword, roleName, lastActivityDate, departmentId, areaId)
+            };
 
-                SpContents.SelectCommand = DataProvider.AdministratorDao.GetSelectCommand(AuthRequest.AdminPermissions.IsConsoleAdministrator, AuthRequest.AdminName);
-                SpContents.SortField = DataProvider.AdministratorDao.GetSortFieldName();
-                SpContents.SortMode = SortMode.ASC;
-            }
-            else
-            {
-                SpContents.ItemsPerPage = AuthRequest.GetQueryInt("pageNum") == 0 ? StringUtils.Constants.PageSize : AuthRequest.GetQueryInt("pageNum");
-                SpContents.SelectCommand = DataProvider.AdministratorDao.GetSelectCommand(AuthRequest.GetQueryString("keyword"), AuthRequest.GetQueryString("roleName"), AuthRequest.GetQueryInt("lastActivityDate"), AuthRequest.AdminPermissions.IsConsoleAdministrator, AuthRequest.AdminName, AuthRequest.GetQueryInt("departmentId"), AuthRequest.GetQueryInt("areaId"));
-                SpContents.SortField = AuthRequest.GetQueryString("order");
-                SpContents.SortMode = StringUtils.EqualsIgnoreCase(SpContents.SortField, nameof(AdministratorInfo.UserName)) ? SortMode.ASC : SortMode.DESC;
-            }
+            PgContents.Param.TotalCount =
+                DataProvider.DatabaseDao.GetPageTotalCount(DataProvider.AdministratorDao.TableName, PgContents.Param.WhereSqlString);
 
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
@@ -134,55 +137,47 @@ namespace SiteServer.BackgroundPages.Settings
             var allRoles = AuthRequest.AdminPermissions.IsConsoleAdministrator ? DataProvider.RoleDao.GetAllRoles() : DataProvider.RoleDao.GetAllRolesByCreatorUserName(AuthRequest.AdminName);
 
             var allPredefinedRoles = EPredefinedRoleUtils.GetAllPredefinedRoleName();
-            foreach (var roleName in allRoles)
+            foreach (var theRoleName in allRoles)
             {
-                if (allPredefinedRoles.Contains(roleName))
+                if (allPredefinedRoles.Contains(theRoleName))
                 {
-                    var listitem = new ListItem(EPredefinedRoleUtils.GetText(EPredefinedRoleUtils.GetEnumType(roleName)), roleName);
+                    var listitem = new ListItem(EPredefinedRoleUtils.GetText(EPredefinedRoleUtils.GetEnumType(theRoleName)), theRoleName);
                     DdlRoleName.Items.Add(listitem);
                 }
-            }
-            foreach (var roleName in allRoles)
-            {
-                if (!allPredefinedRoles.Contains(roleName))
+                else
                 {
-                    var listitem = new ListItem(roleName, roleName);
+                    var listitem = new ListItem(theRoleName, theRoleName);
                     DdlRoleName.Items.Add(listitem);
                 }
             }
 
             DdlDepartmentId.Items.Add(new ListItem("<所有部门>", "0"));
             var departmentIdList = DepartmentManager.GetDepartmentIdList();
-            var count = departmentIdList.Count;
-            _isLastNodeArrayOfDepartment = new bool[count];
             foreach (var theDepartmentId in departmentIdList)
             {
                 var departmentInfo = DepartmentManager.GetDepartmentInfo(theDepartmentId);
-                DdlDepartmentId.Items.Add(new ListItem(GetTreeItem(departmentInfo.Id, departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode, _isLastNodeArrayOfDepartment), theDepartmentId.ToString()));
+                DdlDepartmentId.Items.Add(new ListItem(GetTreeItem(departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode, _parentsCountDictOfDepartment), theDepartmentId.ToString()));
             }
             ControlUtils.SelectSingleItem(DdlDepartmentId, departmentId.ToString());
 
             DdlAreaId.Items.Add(new ListItem("<全部区域>", "0"));
             var areaIdList = AreaManager.GetAreaIdList();
-            count = areaIdList.Count;
-            _isLastNodeArrayOfArea = new bool[count];
             foreach (var theAreaId in areaIdList)
             {
                 var areaInfo = AreaManager.GetAreaInfo(theAreaId);
-                DdlAreaId.Items.Add(new ListItem(GetTreeItem(areaInfo.Id, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode, _isLastNodeArrayOfArea), theAreaId.ToString()));
+                DdlAreaId.Items.Add(new ListItem(GetTreeItem(areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode, _parentsCountDictOfArea), theAreaId.ToString()));
             }
             ControlUtils.SelectSingleItem(DdlAreaId, areaId.ToString());
 
-            if (AuthRequest.IsQueryExists("pageNum"))
-            {
-                ControlUtils.SelectSingleItem(DdlRoleName, AuthRequest.GetQueryString("roleName"));
-                ControlUtils.SelectSingleItem(DdlPageNum, AuthRequest.GetQueryString("pageNum"));
-                TbKeyword.Text = AuthRequest.GetQueryString("keyword");
-                ControlUtils.SelectSingleItem(DdlDepartmentId, AuthRequest.GetQueryString("departmentId"));
-                ControlUtils.SelectSingleItem(DdlAreaId, AuthRequest.GetQueryString("areaId"));
-                ControlUtils.SelectSingleItem(DdlLastActivityDate, AuthRequest.GetQueryString("lastActivityDate"));
-                ControlUtils.SelectSingleItem(DdlOrder, AuthRequest.GetQueryString("order"));
-            }
+            ControlUtils.SelectSingleItem(DdlRoleName, roleName);
+            ControlUtils.SelectSingleItem(DdlPageNum, pageNum.ToString());
+            TbKeyword.Text = keyword;
+            ControlUtils.SelectSingleItem(DdlDepartmentId, departmentId.ToString());
+            ControlUtils.SelectSingleItem(DdlAreaId, areaId.ToString());
+            ControlUtils.SelectSingleItem(DdlLastActivityDate, lastActivityDate.ToString());
+            ControlUtils.SelectSingleItem(DdlOrder, order);
+
+            PgContents.DataBind();
 
             BtnAdd.Attributes.Add("onclick", $@"location.href='{PageAdministratorAdd.GetRedirectUrlToAdd(departmentId)}';return false;");
 
@@ -193,24 +188,22 @@ namespace SiteServer.BackgroundPages.Settings
             BtnUnLock.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(urlAdministrator + "?UnLock=True", "UserNameCollection", "UserNameCollection", "请选择需要解除锁定的管理员！", "此操作将解除锁定所选管理员，确认吗？"));
 
             BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(urlAdministrator + "?Delete=True", "UserNameCollection", "UserNameCollection", "请选择需要删除的管理员！", "此操作将删除所选管理员，确认吗？"));
-
-            SpContents.DataBind();
         }
 
-        public string GetTreeItem(int areaId, string areaName, int parentsCount, bool isLastNode, bool[] array)
+        public string GetTreeItem(string areaName, int parentsCount, bool isLastNode, Dictionary<int, bool> parentsCountDict)
         {
             var str = "";
             if (isLastNode == false)
             {
-                array[parentsCount] = false;
+                parentsCountDict[parentsCount] = false;
             }
             else
             {
-                array[parentsCount] = true;
+                parentsCountDict[parentsCount] = true;
             }
             for (var i = 0; i < parentsCount; i++)
             {
-                str = string.Concat(str, array[i] ? "　" : "│");
+                str = string.Concat(str, TranslateUtils.DictGetValue(parentsCountDict, i) ? "　" : "│");
             }
             str = string.Concat(str, isLastNode ? "└" : "├");
             str = string.Concat(str, areaName);

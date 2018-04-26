@@ -13,6 +13,8 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public string Installed => PluginManager.IsExists(_pluginId).ToString().ToLower();
 
+        public string Package => TranslateUtils.JsonSerialize(PluginManager.GetMetadata(_pluginId));
+
         public string InstalledVersion
         {
             get

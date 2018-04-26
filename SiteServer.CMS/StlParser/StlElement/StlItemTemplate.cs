@@ -1,24 +1,16 @@
 ﻿using System.Collections.Generic;
-using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "列表项", Description = "通过 stl:itemTemplate 标签在模板中控制列表中每一项的显示内容及样式")]
+    [StlClass(Usage = "列表项", Description = "通过 stl:itemTemplate 标签在模板中控制列表中每一项的显示内容及样式")]
     public class StlItemTemplate
 	{
         public const string ElementName = "stl:itemTemplate";
 
-        public const string AttributeType = "type";
-        public const string AttributeSelected = "selected";
-        public const string AttributeSelectedValue = "selectedValue";
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeType, StringUtils.SortedListToAttributeValueString("列表项类型", TypeList)},
-            {AttributeSelected, StringUtils.SortedListToAttributeValueString("列表当前选定项类型", SelectedList)},
-            {AttributeSelectedValue, "当前选定项的值"}
-        };
+	    public static readonly Attr Type = new Attr("type", "列表项类型");
+	    public static readonly Attr Selected = new Attr("selected", "列表当前选定项类型");
+	    public static readonly Attr SelectedValue = new Attr("selectedValue", "当前选定项的值");
 
         public const string TypeHeader = "header";
         public const string TypeFooter = "footer";

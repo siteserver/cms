@@ -117,7 +117,7 @@ yArrayUpdate.push('{yValueUpdate}');";
 
                 SetXHashtable(channelId, nodeInfo.ChannelName);
 
-                SetYHashtable(channelId, DataProvider.ContentDao.GetCountOfContentAdd(tableName, SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeNew);
+                SetYHashtable(channelId, DataProvider.ContentDao.GetCountOfContentAdd(tableName, SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty, ETriState.All), YTypeNew);
                 SetYHashtable(channelId, DataProvider.ContentDao.GetCountOfContentUpdate(tableName, SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeUpdate);
             }
 

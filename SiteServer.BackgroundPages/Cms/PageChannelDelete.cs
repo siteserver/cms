@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using System.Collections.Generic;
+using SiteServer.CMS.Core.Create;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -85,18 +86,18 @@ namespace SiteServer.BackgroundPages.Cms
                 channelIdList.Sort();
                 channelIdList.Reverse();
 
-                var channelIdArrayList = new List<int>();
+                var channelIdListToDelete = new List<int>();
                 foreach (var channelId in channelIdList)
                 {
                     if (channelId == SiteId) continue;
                     if (HasChannelPermissions(channelId, ConfigManager.ChannelPermissions.ChannelDelete))
                     {
-                        channelIdArrayList.Add(channelId);
+                        channelIdListToDelete.Add(channelId);
                     }
                 }
 
                 var builder = new StringBuilder();
-                foreach (var channelId in channelIdArrayList)
+                foreach (var channelId in channelIdListToDelete)
                 {
                     builder.Append(ChannelManager.GetChannelName(SiteId, channelId)).Append(",");
                 }
@@ -112,11 +113,11 @@ namespace SiteServer.BackgroundPages.Cms
                         ? "成功删除内容以及生成页面！"
                         : "成功删除内容，生成页面未被删除！");
 
-                    foreach (var channelId in channelIdArrayList)
+                    foreach (var channelId in channelIdListToDelete)
                     {
                         var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
                         var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId);
-                        DirectoryUtility.DeleteContents(SiteInfo, channelId, contentIdList);
+                        DeleteManager.DeleteContents(SiteInfo, channelId, contentIdList);
                         DataProvider.ContentDao.TrashContents(SiteId, tableName, contentIdList);
                     }
 
@@ -126,7 +127,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (bool.Parse(RblRetainFiles.SelectedValue) == false)
                     {
-                        DirectoryUtility.DeleteChannels(SiteInfo, channelIdArrayList);
+                        DeleteManager.DeleteChannels(SiteInfo, channelIdListToDelete);
                         SuccessMessage("成功删除栏目以及相关生成页面！");
                     }
                     else
@@ -134,7 +135,7 @@ namespace SiteServer.BackgroundPages.Cms
                         SuccessMessage("成功删除栏目，相关生成页面未被删除！");
                     }
 
-                    foreach (var channelId in channelIdArrayList)
+                    foreach (var channelId in channelIdListToDelete)
                     {
                         var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
                         DataProvider.ContentDao.TrashContentsByChannelId(SiteId, tableName, channelId);
@@ -150,7 +151,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 FailMessage(ex, _deleteContents ? "删除内容失败！" : "删除栏目失败！");
 
-                LogUtils.AddSystemErrorLog(ex);
+                LogUtils.AddErrorLog(ex);
             }
         }
     }

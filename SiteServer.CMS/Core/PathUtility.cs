@@ -11,12 +11,8 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
-    public class PathUtility
+    public static class PathUtility
     {
-        private PathUtility()
-        {
-        }
-
         public static string GetSitePath(SiteInfo siteInfo)
         {
             return PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, siteInfo.SiteDir);

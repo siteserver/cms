@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
@@ -10,10 +10,10 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageTemplateReference : BasePageCms
     {
-		public Literal LtlTemplateElements;
-		public Literal LtlTemplateEntities;
+        public Literal LtlElements;
+        public Literal LtlAttributes;
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -23,52 +23,73 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
 
-            var elementsDictionary = StlAll.StlElements.GetElementsNameDictionary();
-            var attributesDictionary = StlAll.StlElements.ElementsAttributesDictionary;
-            LtlTemplateElements.Text = GetElementsString(elementsDictionary, attributesDictionary, false);
+            // var elementsDictionary = StlAll.StlElements.GetElementsNameDictionary();
+            var elements = StlAll.Elements;
 
-            elementsDictionary = StlAll.StlEntities.GetEntitiesNameDictionary();
-            attributesDictionary = StlAll.StlEntities.EntitiesAttributesDictionary;
-            LtlTemplateEntities.Text = GetElementsString(elementsDictionary, attributesDictionary, true);
+            var liBuilder = new StringBuilder();
+            var contentBuilder = new StringBuilder();
+            foreach (var elementName in elements.Keys)
+            {
+                var elementType = elements[elementName];
+
+                var htmlId = elementName.Replace(":", "-");
+                liBuilder.Append($@"<li class=""nav-item"">
+              <a href=""#tab-content"" data-attr=""{htmlId}"" class=""nav-link"">
+                {elementName}
+              </a>
+            </li>");
+
+                var attrBuilder = new StringBuilder();
+
+                var fields = elementType.GetFields(BindingFlags.Static | BindingFlags.NonPublic);
+                foreach (var field in fields)
+                {
+                    var attr = field.GetValue(null) as Attr;
+                    if (attr != null)
+                    {
+                        attrBuilder.Append($@"<tr>
+                          <td>{attr.Name}</td>
+                          <td>{AttrUtils.GetAttrTypeText(attr.Type, attr.GetEnums(elementType, SiteId))}</td>
+                          <td>{attr.Description}</td>
+                        </tr>");
+                    }
+                }
+
+                var helpUrl = StringUtils.Constants.GetStlUrl(false, elementName);
+
+                var stlAttribute = (StlClassAttribute) Attribute.GetCustomAttribute(elementType, typeof(StlClassAttribute));
+
+                contentBuilder.Append($@"<div class=""tab-pane show"" id=""{htmlId}"">
+              <h4 class=""m-t-0 header-title"">
+                &lt;{elementName}&gt; {stlAttribute.Usage}
+              </h4>
+              <p>
+                {stlAttribute.Description}
+                <a href=""{helpUrl}"" target=""_blank"">详细使用说明</a>
+              </p>
+              <div class=""panel panel-default m-t-10"">
+                <div class=""panel-body p-0"">
+                  <div class=""table-responsive"">
+                    <table class=""table tablesaw table-striped m-0"">
+                      <thead>
+                        <tr>
+                          <th>属性</th>
+                          <th>取值</th>
+                          <th>简介</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {attrBuilder}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+");
+            }
+            LtlElements.Text = liBuilder.ToString();
+            LtlAttributes.Text = contentBuilder.ToString();
         }
-
-
-        private static string GetElementsString(SortedList<string, StlAttribute> elementsDictionary, SortedList<string, SortedList<string, string>> attributesDictionary, bool isEntities)
-		{
-			var retval = string.Empty;
-
-            if (elementsDictionary != null)
-			{
-				var builder = new StringBuilder();
-				foreach (string name in elementsDictionary.Keys)
-				{
-					var stlAttribute = elementsDictionary[name];
-				    var helpUrl = StringUtils.Constants.GetStlUrl(isEntities, name);
-                    string tdName = $@"<a href=""{helpUrl}"" target=""_blank"">&lt;{name}&gt;</a>";
-                    if (isEntities)
-                    {
-                        tdName = $@"<a href=""{helpUrl}"" target=""_blank"">{{{name}}}</a>";
-                    }
-
-					var attributesList = attributesDictionary[name];
-					var attributesBuilder = new StringBuilder();
-                    if (attributesList != null)
-                    {
-                        foreach (var attributeName in attributesList.Keys)
-                        {
-                            attributesBuilder.Append($@"<a href=""{helpUrl + "#" + attributeName}"" target=""_blank"">{attributeName}</a>=""{attributesList[attributeName]}""<br />");
-                        }
-                    }
-				    if (attributesBuilder.Length > 0) attributesBuilder.Length = attributesBuilder.Length - 6;
-
-                    string tdAttributes = $@"<td>{attributesBuilder}<br /></td>";
-
-					builder.Append(@"<tr><td>" + tdName + $@"</td><td>{stlAttribute.Usage}</td><td>{stlAttribute.Description}</td>" + tdAttributes);
-				}
-				retval = builder.ToString();
-			}
-
-			return retval;
-		}
 	}
 }

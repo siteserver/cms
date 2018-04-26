@@ -9,26 +9,17 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "显示导航", Description = "通过 stl:navigation 标签在模板中显示链接导航")]
+    [StlClass(Usage = "显示导航", Description = "通过 stl:navigation 标签在模板中显示链接导航")]
     public class StlNavigation
     {
         private StlNavigation() { }
         public const string ElementName = "stl:navigation";
 
-        public const string AttributeType = "type";
-        public const string AttributeEmptyText = "emptyText";
-        public const string AttributeTipText = "tipText";
-        public const string AttributeWordNum = "wordNum";
-        public const string AttributeIsKeyboard = "isKeyboard";
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeType, StringUtils.SortedListToAttributeValueString("类型", TypeList)},
-            {AttributeEmptyText, "当无内容时显示的信息"},
-            {AttributeTipText, "导航提示信息"},
-            {AttributeWordNum, "显示字数"},
-            {AttributeIsKeyboard, "是否开启键盘，↑↓←→键分别为上下左右"}
-        };
+        private static readonly Attr Type = new Attr("type", "类型");
+        private static readonly Attr EmptyText = new Attr("emptyText", "当无内容时显示的信息");
+        private static readonly Attr TipText = new Attr("tipText", "导航提示信息");
+        private static readonly Attr WordNum = new Attr("wordNum", "显示字数");
+        private static readonly Attr IsKeyboard = new Attr("isKeyboard", "是否开启键盘，↑↓←→键分别为上下左右");
 
         public const string TypePreviousChannel = "PreviousChannel";
         public const string TypeNextChannel = "NextChannel";
@@ -56,23 +47,23 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, AttributeType))
+                if (StringUtils.EqualsIgnoreCase(name, Type.Name))
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeEmptyText))
+                else if (StringUtils.EqualsIgnoreCase(name, EmptyText.Name))
                 {
                     emptyText = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeTipText))
+                else if (StringUtils.EqualsIgnoreCase(name, TipText.Name))
                 {
                     tipText = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeWordNum))
+                else if (StringUtils.EqualsIgnoreCase(name, WordNum.Name))
                 {
                     wordNum = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsKeyboard))
+                else if (StringUtils.EqualsIgnoreCase(name, IsKeyboard.Name))
                 {
                     isKeyboard = TranslateUtils.ToBool(value);
                 }

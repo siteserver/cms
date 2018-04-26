@@ -2437,15 +2437,11 @@ namespace SiteServer.CMS.Data
 
         #region Utility Functions
 
-        public string ToTopSqlString(string connectionString, string tableName, string columns, string whereString, string orderString, int startIndex, int count)
+        public string GetPageSqlString(string tableName, string columnNames,
+            string whereSqlString, string orderSqlString, int offset, int limit)
         {
-            return DataProvider.DatabaseDao.GetSelectSqlString(connectionString, tableName, startIndex + 1, count,
-                columns, whereString, orderString);
-        }
-
-        public string ToTopSqlString(string tableName, string columns, string whereString, string orderString, int count)
-        {
-            return SqlUtils.ToTopSqlString(tableName, columns, whereString, orderString, count);
+            return DataProvider.DatabaseDao.GetPageSqlString(tableName, columnNames,
+            whereSqlString, orderSqlString, offset, limit);
         }
 
         public string ToPlusSqlString(string fieldName, int plusNum)

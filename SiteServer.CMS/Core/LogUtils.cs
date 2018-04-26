@@ -1,16 +1,17 @@
 ﻿using System;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
-    public class LogUtils
+    public static class LogUtils
     {
         private static int AddErrorLog(ErrorLogInfo logInfo)
         {
             try
             {
+                if (!ConfigManager.SystemConfigInfo.IsLogError) return 0;
+
                 if (ConfigManager.SystemConfigInfo.IsTimeThreshold)
                 {
                     DataProvider.ErrorLogDao.Delete(ConfigManager.SystemConfigInfo.TimeThreshold);
@@ -26,12 +27,32 @@ namespace SiteServer.CMS.Core
             return 0;
         }
 
-        public static int AddSystemErrorLog(Exception ex, string summary = "")
+        public static void AddErrorLogAndRedirect(Exception ex, string summary = "")
+        {
+            if (ex.HResult == -2147467259) // 文件名不存在
+            {
+                PageUtils.RedirectToErrorPage(ex.Message);
+            }
+            else
+            {
+                var logId = AddErrorLog(ex, summary);
+                if (logId > 0)
+                {
+                    PageUtils.RedirectToErrorPage(logId);
+                }
+                else
+                {
+                    PageUtils.RedirectToErrorPage(ex.Message);
+                }
+            }
+        }
+
+        public static int AddErrorLog(Exception ex, string summary = "")
         {
             return AddErrorLog(new ErrorLogInfo(0, string.Empty, ex.Message, ex.StackTrace, summary, DateTime.Now));
         }
 
-        public static int AddPluginErrorLog(string pluginId, Exception ex, string summary = "")
+        public static int AddErrorLog(string pluginId, Exception ex, string summary = "")
         {
             return AddErrorLog(new ErrorLogInfo(0, pluginId, ex.Message, ex.StackTrace, summary, DateTime.Now));
         }
@@ -61,7 +82,7 @@ namespace SiteServer.CMS.Core
             }
             catch (Exception ex)
             {
-                AddSystemErrorLog(ex);
+                AddErrorLog(ex);
             }
         }
 
@@ -89,7 +110,7 @@ namespace SiteServer.CMS.Core
             }
             catch (Exception ex)
             {
-                AddSystemErrorLog(ex);
+                AddErrorLog(ex);
             }
         }
     }

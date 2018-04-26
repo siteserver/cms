@@ -103,13 +103,13 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var channelId in _idsDictionary.Keys)
                     {
-                        var contentIdArrayList = _idsDictionary[channelId];
-                        if (contentIdArrayList != null)
+                        var contentIdList = _idsDictionary[channelId];
+                        if (contentIdList != null)
                         {
-                            contentIdArrayList.Reverse();
-                            if (contentIdArrayList.Count > 0)
+                            contentIdList.Reverse();
+                            if (contentIdList.Count > 0)
                             {
-                                foreach (var contentId in contentIdArrayList)
+                                foreach (var contentId in contentIdList)
                                 {
                                     ContentUtility.Translate(SiteInfo, channelId, contentId, Request.Form["translateCollection"], translateType, AuthRequest.AdminName);
 
@@ -124,7 +124,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddSystemErrorLog(ex);
+                    LogUtils.AddErrorLog(ex);
                     FailMessage(ex, "内容转移失败！");
                 }
             }

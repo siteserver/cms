@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -30,7 +31,7 @@ namespace SiteServer.BackgroundPages.Cms
             return LayerUtils.GetOpenScript("生成页面",
                 PageUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
                 {
-                    {"templateID", templateId.ToString()},
+                    {"templateId", templateId.ToString()},
                     {"CreateByTemplate", true.ToString()}
                 }), 500, 360);
         }
@@ -143,9 +144,10 @@ namespace SiteServer.BackgroundPages.Cms
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
                 //PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将内容放入生成队列"));
             }
-            else if (AuthRequest.IsQueryExists("CreateByTemplate") && AuthRequest.IsQueryExists("templateID"))
+            else if (AuthRequest.IsQueryExists("CreateByTemplate") && AuthRequest.IsQueryExists("templateId"))
             {
-                CreateManager.CreateFile(SiteId, AuthRequest.GetQueryInt("templateID"));
+                var templateId = AuthRequest.GetQueryInt("templateId");
+                CreateManager.CreateByTemplate(SiteId, templateId);
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
                 //PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将文件放入生成队列"));

@@ -1,11 +1,10 @@
-﻿using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Text;
 using System.Xml;
 using SiteServer.Plugin;
 
 namespace SiteServer.Utils
 {
-    public class WebConfigUtils
+    public static class WebConfigUtils
     {
         public const string WebConfigFileName = "Web.config";
         /// <summary>
@@ -37,7 +36,13 @@ namespace SiteServer.Utils
 
         public static void Load(string physicalApplicationPath)
         {
+            Load(physicalApplicationPath, WebConfigFileName);
+        }
+
+        public static void Load(string physicalApplicationPath, string webConfigFileName)
+        {
             PhysicalApplicationPath = physicalApplicationPath;
+
 
             var isProtectData = false;
             var databaseType = string.Empty;
@@ -46,7 +51,7 @@ namespace SiteServer.Utils
             {
                 var doc = new XmlDocument();
 
-                var configFile = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
+                var configFile = PathUtils.Combine(PhysicalApplicationPath, webConfigFileName);
 
                 doc.Load(configFile);
 
@@ -100,7 +105,7 @@ namespace SiteServer.Utils
                                         SecretKey = attrValue.Value;
                                     }
                                 }
-                                
+
                                 else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(IsNightlyUpdate)))
                                 {
                                     var attrValue = setting.Attributes["value"];

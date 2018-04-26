@@ -28,7 +28,7 @@ namespace SiteServer.CMS.StlParser
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnBeforeStlParse));
+                    LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnBeforeStlParse));
                 }
             }
 
@@ -158,7 +158,7 @@ namespace SiteServer.CMS.StlParser
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(service.OnAfterStlParse));
+                    LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnAfterStlParse));
                 }
             }
         }

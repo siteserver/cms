@@ -3,7 +3,6 @@ using System.IO;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.BackgroundPages.Plugins;
-using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -90,7 +89,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 	        HifFile.PostedFile.SaveAs(localFilePath);
 
-	        ZipUtils.UnpackFiles(localFilePath, directoryPath);
+	        ZipUtils.ExtractZip(localFilePath, directoryPath);
 
 	        AuthRequest.AddAdminLog("手动升级 SiteServer CMS 版本：" + idAndVersion);
 

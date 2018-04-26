@@ -176,7 +176,7 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             }
             else
             {
-                if (AuthRequest.AdminPermissions.IsSystemAdministrator)
+                if (AuthRequest.AdminPermissions.IsConsoleAdministrator)
                 {
                     PageUtils.Redirect(PageSiteAdd.GetRedirectUrl());
                     return;
@@ -228,7 +228,7 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
         {
             var siteIdList = AuthRequest.AdminPermissions.SiteIdList;
 
-            if (!AuthRequest.AdminPermissions.IsSystemAdministrator && siteIdList.Count == 0)
+            if (siteIdList.Count == 0)
             {
                 return string.Empty;
             }

@@ -34,8 +34,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SiteServer.Plugin, Version=1.4.45.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.4.45-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.6.51.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.6.51-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -435,6 +435,7 @@
     <Compile Include="Controls\NoTagText.cs" />
     <Compile Include="Controls\Script.cs" />
     <Compile Include="Controls\SqlCountPager.cs" />
+    <Compile Include="Controls\Pager.cs" />
     <Compile Include="Controls\SqlPager.cs" />
     <Compile Include="Controls\Style.cs" />
     <Compile Include="Controls\TextEditorBase.cs" />
@@ -467,9 +468,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageDefault.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PageError.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageFindPwd.cs">

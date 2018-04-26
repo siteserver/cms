@@ -193,7 +193,7 @@
         }
       }
 
-      var versionApi = new apiUtils.Api();
+      var ssApi = new apiUtils.Api();
       var downloadApi = new apiUtils.Api('<%=DownloadApiUrl%>');
       var isNightly = <%=IsNightly%>;
       var version = '<%=Version%>';
@@ -207,17 +207,17 @@
       var updatePackages = 0;
 
       function packageUpdates() {
-        // if ('<%=CurrentVersion%>' == '0.0.0-dev') return;
+        if ('<%=CurrentVersion%>' == '0.0.0-dev') return;
 
-        versionApi.get({
+        ssApi.get({
           isNightly: isNightly,
           version: version,
           $filter: "id in '" + packageIds.join(',') + "'"
         }, function (err, res) {
-          if (err || !res) return;
+          if (err || !res || !res.value) return;
 
-          for (var i = 0; i < res.length; i++) {
-            var package = res[i];
+          for (var i = 0; i < res.value.length; i++) {
+            var package = res.value[i];
             if (!package || !package.version) continue;
 
             if (package.id == packageIdSsCms) {

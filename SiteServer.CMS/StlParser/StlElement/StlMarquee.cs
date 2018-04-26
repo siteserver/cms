@@ -6,24 +6,16 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "无间隔滚动", Description = "通过 stl:marquee 标签在模板中创建一个能够无间隔滚动的内容块")]
+    [StlClass(Usage = "无间隔滚动", Description = "通过 stl:marquee 标签在模板中创建一个能够无间隔滚动的内容块")]
     public class StlMarquee
 	{
 		private StlMarquee(){}
 		public const string ElementName = "stl:marquee";
 
-		public const string AttributeScrollDelay = "scrollDelay";
-		public const string AttributeDirection = "direction";
-		public const string AttributeWidth = "width";
-		public const string AttributeHeight = "height";
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeScrollDelay, "滚动延迟时间（毫秒）"},
-            {AttributeDirection, StringUtils.SortedListToAttributeValueString("滚动方向", DirectionList)},
-            {AttributeWidth, "宽度"},
-            {AttributeHeight, "高度"}
-        };
+		private static readonly Attr ScrollDelay = new Attr("scrollDelay", "滚动延迟时间（毫秒）");
+		private static readonly Attr Direction = new Attr("direction", "滚动方向");
+		private static readonly Attr Width = new Attr("width", "宽度");
+		private static readonly Attr Height = new Attr("height", "高度");
 
         public const string DirectionVertical = "vertical";         //垂直
         public const string DirectionHorizontal = "horizontal";		//水平
@@ -51,18 +43,18 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, AttributeScrollDelay))
+                if (StringUtils.EqualsIgnoreCase(name, ScrollDelay.Name))
                 {
                     scrollDelay = TranslateUtils.ToInt(value, 40);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeDirection))
+                else if (StringUtils.EqualsIgnoreCase(name, Direction.Name))
                 {
                     if (value.ToLower().Equals(DirectionHorizontal.ToLower()))
                     {
                         direction = DirectionHorizontal;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeWidth))
+                else if (StringUtils.EqualsIgnoreCase(name, Width.Name))
                 {
                     value = value.Trim();
                     if (!string.IsNullOrEmpty(value))
@@ -77,7 +69,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeHeight))
+                else if (StringUtils.EqualsIgnoreCase(name, Height.Name))
                 {
                     value = value.Trim();
                     if (!string.IsNullOrEmpty(value))

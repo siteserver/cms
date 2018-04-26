@@ -118,7 +118,7 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 
-            ZipUtils.UnpackFiles(zipFilePath, directoryPath);
+            ZipUtils.ExtractZip(zipFilePath, directoryPath);
 
             var relatedFieldIe = new RelatedFieldIe(_siteInfo.Id, directoryPath);
             relatedFieldIe.ImportRelatedField(overwrite);
@@ -151,7 +151,7 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            ZipUtils.UnpackFiles(zipFilePath, styleDirectoryPath);
+            ZipUtils.ExtractZip(zipFilePath, styleDirectoryPath);
 
             TableStyleIe.SingleImportTableStyle(tableName, styleDirectoryPath, channelId);
         }
@@ -169,7 +169,7 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            ZipUtils.UnpackFiles(zipFilePath, siteContentDirectoryPath);
+            ZipUtils.ExtractZip(zipFilePath, siteContentDirectoryPath);
 
             ImportChannelsAndContentsFromZip(parentId, siteContentDirectoryPath, isOverride);
 
@@ -263,7 +263,7 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            ZipUtils.UnpackFiles(zipFilePath, siteContentDirectoryPath);
+            ZipUtils.ExtractZip(zipFilePath, siteContentDirectoryPath);
 
             var tableName = ChannelManager.GetTableName(_siteInfo, nodeInfo);
 
@@ -418,7 +418,7 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 
-            ZipUtils.UnpackFiles(zipFilePath, directoryPath);
+            ZipUtils.ExtractZip(zipFilePath, directoryPath);
 
             var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, channelId);
 

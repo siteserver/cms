@@ -93,7 +93,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 	                    HifFile.PostedFile.SaveAs(localFilePath);
 
-	                    ZipUtils.UnpackFiles(localFilePath, directoryPath);
+	                    ZipUtils.ExtractZip(localFilePath, directoryPath);
 
                         LayerUtils.CloseAndRedirect(Page, PageSiteTemplate.GetRedirectUrl());
 	                }

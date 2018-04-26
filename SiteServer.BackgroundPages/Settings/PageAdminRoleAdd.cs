@@ -6,6 +6,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -208,7 +209,11 @@ if (ss_role) {
             }
             else
             {
-                if (DataProvider.RoleDao.IsRoleExists(TbRoleName.Text))
+                if (EPredefinedRoleUtils.IsPredefinedRole(TbRoleName.Text))
+                {
+                    FailMessage($"角色添加失败，{TbRoleName.Text}为系统角色！");
+                }
+                else if (DataProvider.RoleDao.IsRoleExists(TbRoleName.Text))
                 {
                     FailMessage("角色添加失败，角色标识已存在！");
                 }

@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dapper, Version=1.50.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.4\lib\net451\Dapper.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
     </Reference>
@@ -43,8 +46,8 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql, Version=3.2.6.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Npgsql.3.2.6\lib\net451\Npgsql.dll</HintPath>
+    <Reference Include="Npgsql, Version=3.2.7.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.3.2.7\lib\net451\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Common, Version=4.5.0.4, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\NuGet.Common.4.5.0\lib\net45\NuGet.Common.dll</HintPath>
@@ -68,8 +71,8 @@
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=1.4.45.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.4.45-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.6.51.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.6.51-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -102,6 +105,7 @@
     <Compile Include="Api\Preview\ApiRoutePreview.cs" />
     <Compile Include="Api\Sys\Administrators\ApiRouteActionsLogin.cs" />
     <Compile Include="Api\Sys\Administrators\ApiRouteSiteCheckList.cs" />
+    <Compile Include="Api\Sys\Errors\ApiRouteError.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteClearCache.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteUpdateSsCms.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteUpdate.cs" />
@@ -133,6 +137,7 @@
     <Compile Include="Core\CountManager.cs" />
     <Compile Include="Core\Create\CreateManager.cs" />
     <Compile Include="Core\Create\CreateTaskManager.cs" />
+    <Compile Include="Core\Create\DeleteManager.cs" />
     <Compile Include="Core\Create\ICreateTaskManager.cs" />
     <Compile Include="Core\CrossSiteTransUtility.cs" />
     <Compile Include="Core\DataProvider.cs" />
@@ -335,6 +340,8 @@
     <Compile Include="StlParser\Cache\Tag.cs" />
     <Compile Include="StlParser\Cache\User.cs" />
     <Compile Include="StlParser\FileSystemObjectAsync.cs" />
+    <Compile Include="StlParser\Model\AttrUtils.cs" />
+    <Compile Include="StlParser\Model\AttrType.cs" />
     <Compile Include="StlParser\Model\ChannelItemInfo.cs" />
     <Compile Include="StlParser\Model\ContentItemInfo.cs" />
     <Compile Include="StlParser\Model\ContextInfo.cs" />
@@ -348,7 +355,11 @@
     <Compile Include="StlParser\Model\PageInfo.cs" />
     <Compile Include="StlParser\Model\ParsedDataList.cs" />
     <Compile Include="StlParser\Model\StlAll.cs" />
-    <Compile Include="StlParser\Model\StlAttribute.cs" />
+    <Compile Include="StlParser\Model\Attr.cs" />
+    <Compile Include="StlParser\Model\AttrEnum.cs" />
+    <Compile Include="StlParser\Model\StlListBase.cs" />
+    <Compile Include="StlParser\Model\StlFieldAttribute.cs" />
+    <Compile Include="StlParser\Model\StlClassAttribute.cs" />
     <Compile Include="StlParser\Parser.cs" />
     <Compile Include="StlParser\Parsers\StlElementParser.cs" />
     <Compile Include="StlParser\Parsers\StlEntityParser.cs" />

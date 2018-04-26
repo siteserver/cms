@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
@@ -9,35 +8,21 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "获取链接", Description = "通过 stl:a 标签在模板中创建链接，系统将根据所处上下文计算链接地址")]
-    public class StlA
+    [StlClass(Usage = "获取链接", Description = "通过 stl:a 标签在模板中创建链接，系统将根据所处上下文计算链接地址")]
+    public static class StlA
     {
         public const string ElementName = "stl:a";
 
-        public const string AttributeId = "id";
-        public const string AttributeChannelIndex = "channelIndex";
-        public const string AttributeChannelName = "channelName";
-        public const string AttributeParent = "parent";
-        public const string AttributeUpLevel = "upLevel";
-        public const string AttributeTopLevel = "topLevel";
-        public const string AttributeContext = "context";
-        public const string AttributeHref = "href";
-        public const string AttributeHost = "host";
-        public const string AttributeQueryString = "queryString"; 
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeId, "唯一标识符"},
-            {AttributeChannelIndex, "栏目索引"},
-            {AttributeChannelName, "栏目名称"},
-            {AttributeParent, "显示父栏目"},
-            {AttributeUpLevel, "上级栏目的级别"},
-            {AttributeTopLevel, "从首页向下的栏目级别"},
-            {AttributeContext, "所处上下文"},
-            {AttributeHref, "链接地址"},
-            {AttributeHost, "链接域名"},
-            {AttributeQueryString, "链接参数"} 
-        };
+        private static readonly Attr Id = new Attr("id", "唯一标识符");
+        private static readonly Attr ChannelIndex = new Attr("channelIndex", "栏目索引", AttrType.Enum);
+        private static readonly Attr ChannelName = new Attr("channelName", "栏目名称", AttrType.Enum);
+        private static readonly Attr Parent = new Attr("parent", "显示父栏目", AttrType.Boolean);
+        private static readonly Attr UpLevel = new Attr("upLevel", "上级栏目的级别", AttrType.Integer);
+        private static readonly Attr TopLevel = new Attr("topLevel", "从首页向下的栏目级别", AttrType.Integer);
+        private static readonly Attr Context = new Attr("context", "所处上下文", AttrType.Enum);
+        private static readonly Attr Href = new Attr("href", "链接地址");
+        private static readonly Attr Host = new Attr("host", "链接域名");
+        private static readonly Attr QueryString = new Attr("queryString", "链接参数");
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -55,11 +40,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             foreach (var name in contextInfo.Attributes.Keys)
             {
                 var value = contextInfo.Attributes[name];
-                if (StringUtils.EqualsIgnoreCase(name, AttributeId))
+                if (StringUtils.EqualsIgnoreCase(name, Id.Name))
                 {
                     htmlId = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelIndex.Name))
                 {
                     channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     if (!string.IsNullOrEmpty(channelIndex))
@@ -67,7 +52,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         contextInfo.ContextType = EContextType.Channel;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelName))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelName.Name))
                 {
                     channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     if (!string.IsNullOrEmpty(channelName))
@@ -75,7 +60,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         contextInfo.ContextType = EContextType.Channel;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeParent))
+                else if (StringUtils.EqualsIgnoreCase(name, Parent.Name))
                 {
                     if (TranslateUtils.ToBool(value))
                     {
@@ -83,7 +68,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         contextInfo.ContextType = EContextType.Channel;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeUpLevel))
+                else if (StringUtils.EqualsIgnoreCase(name, UpLevel.Name))
                 {
                     upLevel = TranslateUtils.ToInt(value);
                     if (upLevel > 0)
@@ -91,7 +76,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         contextInfo.ContextType = EContextType.Channel;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeTopLevel))
+                else if (StringUtils.EqualsIgnoreCase(name, TopLevel.Name))
                 {
                     topLevel = TranslateUtils.ToInt(value);
                     if (topLevel >= 0)
@@ -99,19 +84,19 @@ namespace SiteServer.CMS.StlParser.StlElement
                         contextInfo.ContextType = EContextType.Channel;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeContext))
+                else if (StringUtils.EqualsIgnoreCase(name, Context.Name))
                 {
                     contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeHref))
+                else if (StringUtils.EqualsIgnoreCase(name, Href.Name))
                 {
                     href = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeQueryString))
+                else if (StringUtils.EqualsIgnoreCase(name, QueryString.Name))
                 {
                     queryString = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeHost))
+                else if (StringUtils.EqualsIgnoreCase(name, Host.Name))
                 {
                     host = value;
                 } 

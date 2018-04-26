@@ -278,7 +278,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                         catch (Exception ex)
                         {
-                            LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
+                            LogUtils.AddErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
                         }
                     }
 
@@ -296,14 +296,11 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddSystemErrorLog(ex);
+                    LogUtils.AddErrorLog(ex);
                     FailMessage($"内容添加失败：{ex.Message}");
                 }
 
-                if (contentInfo.IsChecked)
-                {
-                    CreateManager.CreateContentAndTrigger(SiteId, _nodeInfo.Id, contentInfo.Id);
-                }
+                CreateManager.CreateContentAndTrigger(SiteId, _nodeInfo.Id, contentInfo.Id);
 
                 AuthRequest.AddSiteLog(SiteId, _nodeInfo.Id, contentInfo.Id, "添加内容",
                     $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
@@ -361,7 +358,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                         catch (Exception ex)
                         {
-                            LogUtils.AddPluginErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
+                            LogUtils.AddErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
                         }
                     }
 
@@ -440,15 +437,12 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddSystemErrorLog(ex);
+                    LogUtils.AddErrorLog(ex);
                     FailMessage($"内容修改失败：{ex.Message}");
                     return;
                 }
 
-                if (contentInfo.IsChecked)
-                {
-                    CreateManager.CreateContentAndTrigger(SiteId, _nodeInfo.Id, contentId);
-                }
+                CreateManager.CreateContentAndTrigger(SiteId, _nodeInfo.Id, contentId);
 
                 AuthRequest.AddSiteLog(SiteId, _nodeInfo.Id, contentId, "修改内容",
                     $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");

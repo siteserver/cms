@@ -86,7 +86,7 @@ namespace SiteServer.CMS.ImportExport
 
             DirectoryUtils.Copy(_sitePath, filesDirectoryPath);
 
-            ZipUtils.PackFiles(filePath, filesDirectoryPath);
+            ZipUtils.CreateZip(filePath, filesDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(filesDirectoryPath);
         }
@@ -96,7 +96,7 @@ namespace SiteServer.CMS.ImportExport
             var filePath = PathUtils.GetTemporaryFilesPath("tableStyle.zip");
             var styleDirectoryPath = PathUtils.GetTemporaryFilesPath("TableStyle");
             TableStyleIe.SingleExportTableStyles(tableName, _siteInfo.Id, relatedIdentity, styleDirectoryPath);
-            ZipUtils.PackFiles(filePath, styleDirectoryPath);
+            ZipUtils.CreateZip(filePath, styleDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
 
@@ -108,7 +108,7 @@ namespace SiteServer.CMS.ImportExport
             var filePath = PathUtils.GetTemporaryFilesPath("tableStyle.zip");
             var styleDirectoryPath = PathUtils.GetTemporaryFilesPath("TableStyle");
             TableStyleIe.SingleExportTableStyles(tableName, styleDirectoryPath);
-            ZipUtils.PackFiles(filePath, styleDirectoryPath);
+            ZipUtils.CreateZip(filePath, styleDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
 
@@ -163,7 +163,7 @@ namespace SiteServer.CMS.ImportExport
             var relatedFieldIe = new RelatedFieldIe(_siteInfo.Id, directoryPath);
             relatedFieldIe.ExportRelatedField(relatedFieldInfo);
 
-            ZipUtils.PackFiles(filePath, directoryPath);
+            ZipUtils.CreateZip(filePath, directoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
 
@@ -301,7 +301,7 @@ namespace SiteServer.CMS.ImportExport
             var uploadFilePath = PathUtils.Combine(uploadFolderPath, BackupUtility.UploadFileName); 
             feed.Save(uploadFilePath);
 
-            ZipUtils.PackFiles(filePath, siteContentDirectoryPath);
+            ZipUtils.CreateZip(filePath, siteContentDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
 
@@ -320,7 +320,7 @@ namespace SiteServer.CMS.ImportExport
             var isExport = contentIe.ExportContents(_siteInfo, channelId, contentIdArrayList, isPeriods, dateFrom, dateTo, checkedState);
             if (isExport)
             {
-                ZipUtils.PackFiles(filePath, siteContentDirectoryPath);
+                ZipUtils.CreateZip(filePath, siteContentDirectoryPath);
                 DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             }
             return isExport;

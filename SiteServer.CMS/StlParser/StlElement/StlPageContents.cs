@@ -15,29 +15,18 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "翻页内容列表", Description = "通过 stl:pageContents 标签在模板中显示翻页内容列表")]
+    [StlClass(Usage = "翻页内容列表", Description = "通过 stl:pageContents 标签在模板中显示翻页内容列表")]
     public class StlPageContents : StlContents
     {
         public new const string ElementName = "stl:pageContents";
 
-        public const string AttributePageNum = "pageNum";
-        public const string AttributeMaxPage = "maxPage";
+        public static readonly Attr PageNum = new Attr("pageNum", "每页显示的内容数目");
+        public static readonly Attr MaxPage = new Attr("maxPage", "翻页中生成的静态页面最大数，剩余页面将动态获取");
 
         private readonly string _stlPageContentsElement;
         private readonly XmlNode _node;
         private readonly PageInfo _pageInfo;
         private readonly ContextInfo _contextInfo;
-
-        public new static SortedList<string, string> AttributeList
-        {
-            get
-            {
-                var attributes = StlContents.AttributeList;
-                attributes.Add(AttributePageNum, "每页显示的内容数目");
-                attributes.Add(AttributeMaxPage, "翻页中生成的静态页面最大数，剩余页面将动态获取");
-                return attributes;
-            }
-        }
 
         public StlPageContents(string stlPageContentsElement, PageInfo pageInfo, ContextInfo contextInfo, bool isXmlContent)
         {
@@ -80,7 +69,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(_pageInfo.SiteId, channelId, ListInfo.ChannelIndex, ListInfo.ChannelName);
 
-            SqlString = StlDataUtility.GetStlPageContentsSqlString(_pageInfo.SiteInfo, channelId, ListInfo.GroupContent, ListInfo.GroupContentNot, ListInfo.Tags, ListInfo.IsImageExists, ListInfo.IsImage, ListInfo.IsVideoExists, ListInfo.IsVideo, ListInfo.IsFileExists, ListInfo.IsFile, ListInfo.IsNoDup, ListInfo.StartNum, ListInfo.TotalNum, ListInfo.OrderByString, ListInfo.IsTopExists, ListInfo.IsTop, ListInfo.IsRecommendExists, ListInfo.IsRecommend, ListInfo.IsHotExists, ListInfo.IsHot, ListInfo.IsColorExists, ListInfo.IsColor, ListInfo.Where, ListInfo.Scope, ListInfo.GroupChannel, ListInfo.GroupChannelNot);
+            SqlString = StlDataUtility.GetStlPageContentsSqlString(_pageInfo.SiteInfo, channelId, ListInfo.GroupContent, ListInfo.GroupContentNot, ListInfo.Tags, ListInfo.IsImageExists, ListInfo.IsImage, ListInfo.IsVideoExists, ListInfo.IsVideo, ListInfo.IsFileExists, ListInfo.IsFile, ListInfo.StartNum, ListInfo.TotalNum, ListInfo.OrderByString, ListInfo.IsTopExists, ListInfo.IsTop, ListInfo.IsRecommendExists, ListInfo.IsRecommend, ListInfo.IsHotExists, ListInfo.IsHot, ListInfo.IsColorExists, ListInfo.IsColor, ListInfo.Where, ListInfo.Scope, ListInfo.GroupChannel, ListInfo.GroupChannelNot);
         }
 
         //API StlActionsSearchController调用
@@ -127,7 +116,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 ListInfo.PageNum = pageNum;
             }
 
-            SqlString = StlDataUtility.GetPageContentsSqlStringBySearch(tableName, ListInfo.GroupContent, ListInfo.GroupContentNot, ListInfo.Tags, ListInfo.IsImageExists, ListInfo.IsImage, ListInfo.IsVideoExists, ListInfo.IsVideo, ListInfo.IsFileExists, ListInfo.IsFile, ListInfo.IsNoDup, ListInfo.StartNum, ListInfo.TotalNum, ListInfo.OrderByString, ListInfo.IsTopExists, ListInfo.IsTop, ListInfo.IsRecommendExists, ListInfo.IsRecommend, ListInfo.IsHotExists, ListInfo.IsHot, ListInfo.IsColorExists, ListInfo.IsColor, ListInfo.Where, ListInfo.Scope, ListInfo.GroupChannel, ListInfo.GroupChannelNot);
+            SqlString = StlDataUtility.GetPageContentsSqlStringBySearch(tableName, ListInfo.GroupContent, ListInfo.GroupContentNot, ListInfo.Tags, ListInfo.IsImageExists, ListInfo.IsImage, ListInfo.IsVideoExists, ListInfo.IsVideo, ListInfo.IsFileExists, ListInfo.IsFile, ListInfo.StartNum, ListInfo.TotalNum, ListInfo.OrderByString, ListInfo.IsTopExists, ListInfo.IsTop, ListInfo.IsRecommendExists, ListInfo.IsRecommend, ListInfo.IsHotExists, ListInfo.IsHot, ListInfo.IsColorExists, ListInfo.IsColor, ListInfo.Where, ListInfo.Scope, ListInfo.GroupChannel, ListInfo.GroupChannelNot);
         }
 
         public int GetPageCount(out int totalNum)

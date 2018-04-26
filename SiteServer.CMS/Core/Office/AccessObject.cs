@@ -23,7 +23,7 @@ namespace SiteServer.CMS.Core.Office
 
             var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
             var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedidentityes);
-            styleInfoList = ContentUtility.GetAllTableStyleInfoList(siteInfo, styleInfoList);
+            styleInfoList = ContentUtility.GetAllTableStyleInfoList(styleInfoList);
 
             var accessDao = new AccessDao(filePath);
 

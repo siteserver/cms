@@ -9,26 +9,17 @@ using SiteServer.CMS.StlParser.Cache;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "标签", Description = "通过 stl:tags 标签在模板中显示内容标签")]
+    [StlClass(Usage = "标签", Description = "通过 stl:tags 标签在模板中显示内容标签")]
     public class StlTags
 	{
         private StlTags() { }
         public const string ElementName = "stl:tags";
 
-        public const string AttributeTagLevel = "tagLevel";
-        public const string AttributeTotalNum = "totalNum";
-        public const string AttributeIsOrderByCount = "isOrderByCount";
-        public const string AttributeTheme = "theme";
-        public const string AttributeContext = "context";
-
-	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
-	    {
-	        {AttributeTagLevel, "标签级别"},
-	        {AttributeTotalNum, "显示标签数目"},
-	        {AttributeIsOrderByCount, "是否按引用次数排序"},
-	        {AttributeTheme, "主题样式"},
-	        {AttributeContext, "所处上下文"}
-	    };
+        private static readonly Attr TagLevel = new Attr("tagLevel", "标签级别");
+        private static readonly Attr TotalNum = new Attr("totalNum", "显示标签数目");
+        private static readonly Attr IsOrderByCount = new Attr("isOrderByCount", "是否按引用次数排序");
+        private static readonly Attr Theme = new Attr("theme", "主题样式");
+        private static readonly Attr Context = new Attr("context", "所处上下文");
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
@@ -42,23 +33,23 @@ namespace SiteServer.CMS.StlParser.StlElement
 		    {
 		        var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, AttributeTagLevel))
+                if (StringUtils.EqualsIgnoreCase(name, TagLevel.Name))
                 {
                     tagLevel = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeTotalNum))
+                else if (StringUtils.EqualsIgnoreCase(name, TotalNum.Name))
                 {
                     totalNum = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsOrderByCount))
+                else if (StringUtils.EqualsIgnoreCase(name, IsOrderByCount.Name))
                 {
                     isOrderByCount = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeTheme))
+                else if (StringUtils.EqualsIgnoreCase(name, Theme.Name))
                 {
                     theme = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeContext))
+                else if (StringUtils.EqualsIgnoreCase(name, Context.Name))
                 {
                     contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
                 }

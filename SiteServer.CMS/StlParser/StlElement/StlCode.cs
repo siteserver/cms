@@ -6,20 +6,14 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "添加代码", Description = "通过 stl:code 标签在页面中添加html代码，相同Key的代码将显示最后添加的值")]
+    [StlClass(Usage = "添加代码", Description = "通过 stl:code 标签在页面中添加html代码，相同Key的代码将显示最后添加的值")]
     public class StlCode
 	{
         private StlCode() { }
 		public const string ElementName = "stl:code";
 
-		public const string AttributeType = "type";
-        public const string AttributeKey = "key";
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeType, StringUtils.SortedListToAttributeValueString("代码放置的位置", TypeList)},
-            {AttributeKey, "代码键"}
-        };
+		private static readonly Attr Type = new Attr("type", "代码放置的位置");
+        private static readonly Attr Key = new Attr("key", "代码键");
 
         public const string TypeHead = "Head";
         public const string TypeBody = "Body";
@@ -41,11 +35,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 		    {
 		        var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, AttributeType))
+                if (StringUtils.EqualsIgnoreCase(name, Type.Name))
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeKey))
+                else if (StringUtils.EqualsIgnoreCase(name, Key.Name))
                 {
                     key = value;
                 }

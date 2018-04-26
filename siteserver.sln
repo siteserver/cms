@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.BackgroundPages"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.API", "SiteServer.Web\SiteServer.API.csproj", "{69C00F60-F28A-4CBC-B1A4-2DB73BB97471}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.Cli", "SiteServer.Cli\SiteServer.Cli.csproj", "{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{69C00F60-F28A-4CBC-B1A4-2DB73BB97471}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69C00F60-F28A-4CBC-B1A4-2DB73BB97471}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69C00F60-F28A-4CBC-B1A4-2DB73BB97471}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

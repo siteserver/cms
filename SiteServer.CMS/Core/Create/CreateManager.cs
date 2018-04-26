@@ -1,12 +1,13 @@
 ﻿using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core.Create
 {
-    public class CreateManager
+    public static class CreateManager
     {
-        public static string GetTaskName(ECreateType createType, int siteId, int channelId, int contentId,
+        private static string GetTaskName(ECreateType createType, int siteId, int channelId, int contentId,
             int templateId, out int pageCount)
         {
             pageCount = 0;
@@ -49,6 +50,53 @@ namespace SiteServer.CMS.Core.Create
                 }
             }
             return name;
+        }
+
+        public static void CreateByAll(int siteId)
+        {
+            CreateTaskManager.Instance.ClearAllTask(siteId);
+
+            var channelIdList = ChannelManager.GetChannelIdList(siteId);
+            foreach (var channelId in channelIdList)
+            {
+                CreateChannel(siteId, channelId);
+                CreateAllContent(siteId, channelId);
+            }
+
+            foreach (var templateId in TemplateManager.GetAllFileTemplateIdList(siteId))
+            {
+                CreateFile(siteId, templateId);
+            }
+        }
+
+        public static void CreateByTemplate(int siteId, int templateId)
+        {
+            var templateInfo = TemplateManager.GetTemplateInfo(siteId, templateId);
+
+            if (templateInfo.TemplateType == TemplateType.IndexPageTemplate)
+            {
+                CreateChannel(siteId, siteId);
+            }
+            else if (templateInfo.TemplateType == TemplateType.ChannelTemplate)
+            {
+                var channelIdList = DataProvider.ChannelDao.GetChannelIdList(templateInfo);
+                foreach (var channelId in channelIdList)
+                {
+                    CreateChannel(siteId, channelId);
+                }
+            }
+            else if (templateInfo.TemplateType == TemplateType.ContentTemplate)
+            {
+                var channelIdList = DataProvider.ChannelDao.GetChannelIdList(templateInfo);
+                foreach (var channelId in channelIdList)
+                {
+                    CreateAllContent(siteId, channelId);
+                }
+            }
+            else if (templateInfo.TemplateType == TemplateType.FileTemplate)
+            {
+                CreateFile(siteId, templateId);
+            }
         }
 
         public static void CreateChannel(int siteId, int channelId)
@@ -97,23 +145,6 @@ namespace SiteServer.CMS.Core.Create
 
             var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.File, siteId, 0, 0, templateId, pageCount);
             CreateTaskManager.Instance.AddPendingTask(taskInfo);
-        }
-
-        public static void CreateAll(int siteId)
-        {
-            CreateTaskManager.Instance.ClearAllTask(siteId);
-
-            var nodeInfoList = ChannelManager.GetChannelInfoList(siteId);
-            foreach (var nodeInfo in nodeInfoList)
-            {
-                CreateChannel(siteId, nodeInfo.Id);
-                CreateAllContent(siteId, nodeInfo.Id);
-            }
-
-            foreach (var templateId in TemplateManager.GetAllFileTemplateIdList(siteId))
-            {
-                CreateFile(siteId, templateId);
-            }
         }
 
         public static void CreateContentTrigger(int siteId, int channelId)

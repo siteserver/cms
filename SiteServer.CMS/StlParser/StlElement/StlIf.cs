@@ -12,24 +12,16 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "条件判断", Description = "通过 stl:if 标签在模板中根据条件判断显示内容")]
+    [StlClass(Usage = "条件判断", Description = "通过 stl:if 标签在模板中根据条件判断显示内容")]
     public class StlIf
     {
         private StlIf() { }
         public const string ElementName = "stl:if";
 
-        private const string AttributeType = "type";			                                    //测试类型
-        private const string AttributeOperate = "operate";				                            //测试操作
-        private const string AttributeValue = "value";				                                //测试值
-        private const string AttributeContext = "context";                                          //所处上下文
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeType, "测试类型"},
-            {AttributeOperate, "测试操作"},
-            {AttributeValue, "测试值"},
-            {AttributeContext, "所处上下文"}
-        };
+        private static readonly Attr Type = new Attr("type", "测试类型");			                                    //测试类型
+        private static readonly Attr Operate = new Attr("operate", "测试操作");				                            //测试操作
+        private static readonly Attr Value = new Attr("value", "测试值");				                                //测试值
+        private static readonly Attr Context = new Attr("context", "所处上下文");                                          //所处上下文
 
         public const string TypeIsUserLoggin = "IsUserLoggin";                                      //用户是否已登录
         public const string TypeIsAdministratorLoggin = "IsAdministratorLoggin";                    //管理员是否已登录
@@ -102,19 +94,19 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, AttributeType) || StringUtils.EqualsIgnoreCase(name, "testType"))
+                if (StringUtils.EqualsIgnoreCase(name, Type.Name) || StringUtils.EqualsIgnoreCase(name, "testType"))
                 {
                     testTypeStr = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeOperate) || StringUtils.EqualsIgnoreCase(name, "testOperate"))
+                else if (StringUtils.EqualsIgnoreCase(name, Operate.Name) || StringUtils.EqualsIgnoreCase(name, "testOperate"))
                 {
                     testOperate = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeValue) || StringUtils.EqualsIgnoreCase(name, "testValue"))
+                else if (StringUtils.EqualsIgnoreCase(name, Value.Name) || StringUtils.EqualsIgnoreCase(name, "testValue"))
                 {
                     testValue = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeContext))
+                else if (StringUtils.EqualsIgnoreCase(name, Context.Name))
                 {
                     contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
                 }
@@ -670,20 +662,6 @@ function {functionName}(pageNum)
             {
                 theValue = GetValueFromChannel(pageInfo, contextInfo, testTypeStr);
             }
-            else if (contextInfo.ContextType == EContextType.Comment)
-            {
-                if (contextInfo.ItemContainer.CommentItem != null)
-                {
-                    theValue = DataBinder.Eval(contextInfo.ItemContainer.CommentItem.DataItem, testTypeStr, "{0}");
-                }
-            }
-            //else if (contextInfo.ContextType == EContextType.InputContent)
-            //{
-            //    if (contextInfo.ItemContainer.InputItem != null)
-            //    {
-            //        theValue = DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, testTypeStr, "{0}");
-            //    }
-            //}
             else if (contextInfo.ContextType == EContextType.SqlContent)
             {
                 if (contextInfo.ItemContainer.SqlItem != null)
@@ -702,10 +680,6 @@ function {functionName}(pageNum)
             {
                 if (contextInfo.ItemContainer != null)
                 {
-                    if (contextInfo.ItemContainer.CommentItem != null)
-                    {
-                        theValue = DataBinder.Eval(contextInfo.ItemContainer.CommentItem.DataItem, testTypeStr, "{0}");
-                    }
                     //else if (contextInfo.ItemContainer.InputItem != null)
                     //{
                     //    theValue = DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, testTypeStr, "{0}");
@@ -718,7 +692,7 @@ function {functionName}(pageNum)
                     //{
                     //    theValue = DataBinder.Eval(contextInfo.ItemContainer.ChannelItem.DataItem, testTypeStr, "{0}");
                     //}
-                    else if (contextInfo.ItemContainer.SqlItem != null)
+                    if (contextInfo.ItemContainer.SqlItem != null)
                     {
                         theValue = DataBinder.Eval(contextInfo.ItemContainer.SqlItem.DataItem, testTypeStr, "{0}");
                     }
@@ -824,28 +798,10 @@ function {functionName}(pageNum)
 
                 addDate = channel.AddDate;
             }
-            else if (contextInfo.ContextType == EContextType.Comment)
-            {
-                if (contextInfo.ItemContainer.CommentItem != null)
-                {
-                    addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.CommentItem.DataItem, "AddDate");
-                }
-            }
-            //else if (contextInfo.ContextType == EContextType.InputContent)
-            //{
-            //    if (contextInfo.ItemContainer.InputItem != null)
-            //    {
-            //        addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, InputContentAttribute.AddDate);
-            //    }
-            //}
             else
             {
                 if (contextInfo.ItemContainer != null)
                 {
-                    if (contextInfo.ItemContainer.CommentItem != null)
-                    {
-                        addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.CommentItem.DataItem, "AddDate");
-                    }
                     //else if (contextInfo.ItemContainer.InputItem != null)
                     //{
                     //    addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, InputContentAttribute.AddDate);
@@ -858,7 +814,7 @@ function {functionName}(pageNum)
                     //{
                     //    addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.ChannelItem.DataItem, NodeAttribute.AddDate);
                     //}
-                    else if (contextInfo.ItemContainer.SqlItem != null)
+                    if (contextInfo.ItemContainer.SqlItem != null)
                     {
                         addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.SqlItem.DataItem, "AddDate");
                     }

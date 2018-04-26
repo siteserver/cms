@@ -115,7 +115,6 @@ namespace SiteServer.CMS.Provider
             PermissionManager.ClearAllCache();
         }
 
-
         public void Update(SiteInfo info)
         {
             var sqlString = $"UPDATE {TableName} SET SiteName = @SiteName, SiteDir = @SiteDir, TableName = @TableName, IsRoot = @IsRoot, ParentId = @ParentId, Taxis = @Taxis, SettingsXML = @SettingsXML WHERE  Id = @Id";

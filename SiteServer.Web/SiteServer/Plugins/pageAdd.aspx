@@ -126,7 +126,7 @@
     <script src="../assets/vue/vue.min.js"></script>
     <script src="../assets/js/apiUtils.js"></script>
     <script>
-      var api = new apiUtils.Api();
+      var ssApi = new apiUtils.Api();
       var isNightly = <%=IsNightly%>;
       var version = '<%=Version%>';
 
@@ -137,14 +137,14 @@
         searchPackages: null,
       };
 
-      api.get({
+      ssApi.get({
         isNightly: isNightly,
         version: version,
         $filter: "category eq 'featured'"
       }, function (err, res) {
-        if (!err && res && res.length > 0) {
-          data.featuredPackages = res
-        }
+        if (err || !res || !res.value) return;
+
+        data.featuredPackages = res.value
       }, 'packages');
 
       var $vue = new Vue({
@@ -154,12 +154,16 @@
           search: function (event) {
             if (this.word) {
               this.searching = true;
-              api.get({
-                isNightly: isNightly
+              ssApi.get({
+                isNightly: isNightly,
+                version: version,
+                $filter: "keyword eq '" + this.word + "'"
               }, function (err, res) {
                 data.searching = false;
-                data.searchPackages = res;
-              }, 'packages/actions/search/' + this.word);
+                if (err || !res || !res.value) return;
+
+                data.searchPackages = res.value;
+              }, 'packages');
             } else {
               this.searching = false;
               data.searchPackages = null;

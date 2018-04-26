@@ -102,7 +102,7 @@
           <asp:Button class="btn btn-primary" ID="BtnAdd" Text="添加字段" runat="server"></asp:Button>
           <asp:Button class="btn" ID="BtnCreateDb" Text="创建辅助表" runat="server"></asp:Button>
           <asp:Button class="btn" ID="BtnDelete" Text="删除辅助表" runat="server"></asp:Button>
-          <asp:Button class="btn" ID="BtnReCreateDb" Text="创建辅助表" runat="server"></asp:Button>
+          <asp:Button class="btn" ID="BtnReCreateDb" Text="重新创建辅助表" runat="server"></asp:Button>
           <asp:Button class="btn" ID="BtnSqlString" Text="显示创建表SQL命令" runat="server"></asp:Button>
           <asp:Button class="btn m-r-5" text="返 回" onclick="Return_OnClick" runat="server" />
 

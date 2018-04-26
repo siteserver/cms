@@ -32,8 +32,7 @@ namespace SiteServer.API.Controllers.Preview
             }
             catch (Exception ex)
             {
-                var logId = LogUtils.AddSystemErrorLog(ex);
-                PageUtils.RedirectToErrorPage(logId);
+                LogUtils.AddErrorLogAndRedirect(ex);
             }
 
             return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -51,8 +50,7 @@ namespace SiteServer.API.Controllers.Preview
             }
             catch (Exception ex)
             {
-                var logId = LogUtils.AddSystemErrorLog(ex);
-                PageUtils.RedirectToErrorPage(logId);
+                LogUtils.AddErrorLogAndRedirect(ex);
             }
 
             return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -71,8 +69,7 @@ namespace SiteServer.API.Controllers.Preview
             }
             catch (Exception ex)
             {
-                var logId = LogUtils.AddSystemErrorLog(ex);
-                PageUtils.RedirectToErrorPage(logId);
+                LogUtils.AddErrorLogAndRedirect(ex);
             }
 
             return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -90,8 +87,7 @@ namespace SiteServer.API.Controllers.Preview
             }
             catch (Exception ex)
             {
-                var logId = LogUtils.AddSystemErrorLog(ex);
-                PageUtils.RedirectToErrorPage(logId);
+                LogUtils.AddErrorLogAndRedirect(ex);
             }
 
             return Request.CreateResponse(HttpStatusCode.NotFound);

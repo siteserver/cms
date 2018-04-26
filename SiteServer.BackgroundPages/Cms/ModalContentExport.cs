@@ -34,8 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
             var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
             var tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
-            styleInfoList = ContentUtility.GetAllTableStyleInfoList(SiteInfo, styleInfoList);
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities));
 
             foreach (var styleInfo in styleInfoList)
             {

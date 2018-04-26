@@ -16,7 +16,6 @@ namespace SiteServer.BackgroundPages.Cms
     public class ModalContentMultipleSelect : BasePageCms
     {
         public DropDownList DdlChannelId;
-        public CheckBox CbIsDuplicate;
         public DropDownList DdlSearchType;
         public TextBox TbKeyword;
         public DateTimeTextBox TbDateFrom;
@@ -62,12 +61,12 @@ namespace SiteServer.BackgroundPages.Cms
                 ? DataProvider.ContentDao.GetSqlString(_tableName, SiteId,
                     _channelInfo.Id, AuthRequest.AdminPermissions.IsSystemAdministrator,
                     AuthRequest.AdminPermissions.OwningChannelIdList, DdlSearchType.SelectedValue, TbKeyword.Text,
-                    TbDateFrom.Text, TbDateTo.Text, true, ETriState.True, !CbIsDuplicate.Checked, false)
+                    TbDateFrom.Text, TbDateTo.Text, true, ETriState.True, false)
                 : DataProvider.ContentDao.GetSqlString(_tableName, SiteId,
                     _channelInfo.Id, AuthRequest.AdminPermissions.IsSystemAdministrator,
                     AuthRequest.AdminPermissions.OwningChannelIdList, AuthRequest.GetQueryString("SearchType"),
                     AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"), AuthRequest.GetQueryString("DateTo"), true,
-                    ETriState.True, !AuthRequest.GetQueryBool("IsDuplicate"), true);
+                    ETriState.True, true);
             SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
             SpContents.SortField = ContentAttribute.Id;
             SpContents.SortMode = SortMode.DESC;
@@ -98,7 +97,6 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     ControlUtils.SelectSingleItem(DdlChannelId, _channelInfo.Id.ToString());
                 }
-                CbIsDuplicate.Checked = AuthRequest.GetQueryBool("IsDuplicate");
                 ControlUtils.SelectSingleItem(DdlSearchType, AuthRequest.GetQueryString("SearchType"));
                 TbKeyword.Text = AuthRequest.GetQueryString("Keyword");
                 TbDateFrom.Text = AuthRequest.GetQueryString("DateFrom");
@@ -175,7 +173,6 @@ namespace SiteServer.BackgroundPages.Cms
                     _pageUrl = PageUtils.GetCmsUrl(SiteId, nameof(ModalContentMultipleSelect), new NameValueCollection
                     {
                         {"channelId", DdlChannelId.SelectedValue},
-                        {"IsDuplicate", CbIsDuplicate.Checked.ToString()},
                         {"SearchType", DdlSearchType.SelectedValue},
                         {"Keyword", TbKeyword.Text},
                         {"DateFrom", TbDateFrom.Text},

@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Controls
     {
         private PagedDataSource _dataSource;
         private string CacheKeyName => Page.Request.FilePath + "_" + UniqueID + "_Data";
-        public const string ParmPage = "page";
+        private const string ParmPage = "page";
         private bool _isSetTotalCount;
 
         //        private string GetQueryPageCommandText(int recsToRetrieve)
@@ -398,8 +398,6 @@ namespace SiteServer.BackgroundPages.Controls
             }
         }
 
-        public ArrayList RemoveQueryString = new ArrayList();
-
         private string GetNavigationUrl(int page)
         {
             var queryString = new NameValueCollection(Page.Request.QueryString);
@@ -410,13 +408,6 @@ namespace SiteServer.BackgroundPages.Controls
             else
             {
                 queryString.Remove(ParmPage);
-            }
-            if (RemoveQueryString.Count > 0)
-            {
-                foreach (string name in RemoveQueryString)
-                {
-                    queryString.Remove(name);
-                }
             }
             return PageUtils.AddQueryString(PageUtils.GetUrlWithoutQueryString(Page.Request.RawUrl), queryString);
         }

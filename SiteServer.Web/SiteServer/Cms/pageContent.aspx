@@ -8,8 +8,15 @@
       <!--#include file="../inc/head.html"-->
       <script type="text/javascript">
         $(document).ready(function () {
+          $("#btnMore").click(function(event){
+            event.stopPropagation();
+            $('#dropdown-more').toggle();
+          });
           loopRows(document.getElementById('contents'), function (cur) {
             cur.onclick = chkSelect;
+          });
+          $(document).click(function() {
+            $('#dropdown-more').hide();
           });
         });
       </script>
@@ -26,7 +33,7 @@
             </div>
 
             <div class="btn-group ml-1">
-              <button type="button" class="btn btn-light text-secondary dropdown-toggle" onclick="$('#dropdown-more').toggle();return false;">
+              <button id="btnMore" type="button" class="btn btn-light text-secondary dropdown-toggle">
                 更多
                 <span class="caret"></span>
               </button>
@@ -99,7 +106,7 @@
             </div>
           </div>
 
-          <ctrl:sqlPager id="SpContents" runat="server" class="table table-pager" />
+          <ctrl:pager id="PgContents" runat="server" />
         </div>
 
       </form>

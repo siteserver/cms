@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Web.UI.HtmlControls;
+﻿using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -11,40 +10,24 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "显示图片", Description = "通过 stl:image 标签在模板中显示栏目或内容的图片")]
+    [StlClass(Usage = "显示图片", Description = "通过 stl:image 标签在模板中显示栏目或内容的图片")]
     public class StlImage
 	{
 		private StlImage(){}
 		public const string ElementName = "stl:image";
 
-		public const string AttributeChannelIndex = "channelIndex";
-		public const string AttributeChannelName = "channelName";
-        public const string AttributeNo = "no";
-		public const string AttributeParent = "parent";
-		public const string AttributeUpLevel = "upLevel";
-        public const string AttributeTopLevel = "topLevel";
-        public const string AttributeType = "type";
-        public const string AttributeIsOriginal = "isOriginal";
-		public const string AttributeSrc = "src";
-        public const string AttributeAltSrc = "altSrc";
-        public const string AttributeWidth = "width";
-        public const string AttributeHeight = "height";
-
-	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-	        {AttributeChannelIndex, "栏目索引"},
-	        {AttributeChannelName, "栏目名称"},
-	        {AttributeNo, "显示字段的顺序"},
-	        {AttributeParent, "显示父栏目"},
-	        {AttributeUpLevel, "上级栏目的级别"},
-	        {AttributeTopLevel, "从首页向下的栏目级别"},
-	        {AttributeType, "指定存储图片的字段"},
-	        {AttributeIsOriginal, "如果是引用内容，是否获取所引用内容的值"},
-	        {AttributeSrc, "显示的图片地址"},
-	        {AttributeAltSrc, "当指定的图片不存在时显示的图片地址"},
-	        {AttributeWidth, "宽度"},
-	        {AttributeHeight, "高度"}
-	    };
+		private static readonly Attr ChannelIndex = new Attr("channelIndex", "栏目索引");
+		private static readonly Attr ChannelName = new Attr("channelName", "栏目名称");
+        private static readonly Attr No = new Attr("no", "显示字段的顺序");
+		private static readonly Attr Parent = new Attr("parent", "显示父栏目");
+		private static readonly Attr UpLevel = new Attr("upLevel", "上级栏目的级别");
+        private static readonly Attr TopLevel = new Attr("topLevel", "从首页向下的栏目级别");
+        private static readonly Attr Type = new Attr("type", "指定存储图片的字段");
+        private static readonly Attr IsOriginal = new Attr("isOriginal", "如果是引用内容，是否获取所引用内容的值");
+		private static readonly Attr Src = new Attr("src", "显示的图片地址");
+        private static readonly Attr AltSrc = new Attr("altSrc", "当指定的图片不存在时显示的图片地址");
+        private static readonly Attr Width = new Attr("width", "宽度");
+        private static readonly Attr Height = new Attr("height", "高度");
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
@@ -64,7 +47,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
+                if (StringUtils.EqualsIgnoreCase(name, ChannelIndex.Name))
                 {
                     channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     if (!string.IsNullOrEmpty(channelIndex))
@@ -72,7 +55,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelName))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelName.Name))
                 {
                     channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     if (!string.IsNullOrEmpty(channelName))
@@ -80,11 +63,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeNo))
+                else if (StringUtils.EqualsIgnoreCase(name, No.Name))
                 {
                     no = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeParent))
+                else if (StringUtils.EqualsIgnoreCase(name, Parent.Name))
                 {
                     if (TranslateUtils.ToBool(value))
                     {
@@ -92,7 +75,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeUpLevel))
+                else if (StringUtils.EqualsIgnoreCase(name, UpLevel.Name))
                 {
                     upLevel = TranslateUtils.ToInt(value);
                     if (upLevel > 0)
@@ -100,7 +83,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeTopLevel))
+                else if (StringUtils.EqualsIgnoreCase(name, TopLevel.Name))
                 {
                     topLevel = TranslateUtils.ToInt(value);
                     if (topLevel >= 0)
@@ -108,19 +91,19 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeType))
+                else if (StringUtils.EqualsIgnoreCase(name, Type.Name))
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsOriginal))
+                else if (StringUtils.EqualsIgnoreCase(name, IsOriginal.Name))
                 {
                     isOriginal = TranslateUtils.ToBool(value, true);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeSrc))
+                else if (StringUtils.EqualsIgnoreCase(name, Src.Name))
                 {
                     src = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeAltSrc))
+                else if (StringUtils.EqualsIgnoreCase(name, AltSrc.Name))
                 {
                     altSrc = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }

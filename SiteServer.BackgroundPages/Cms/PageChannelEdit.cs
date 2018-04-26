@@ -300,7 +300,7 @@ namespace SiteServer.BackgroundPages.Cms
             catch (Exception ex)
             {
                 FailMessage(ex, $"栏目修改失败：{ex.Message}");
-                LogUtils.AddSystemErrorLog(ex);
+                LogUtils.AddErrorLog(ex);
                 return;
             }
 

@@ -64,7 +64,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
                 HifFile.PostedFile.SaveAs(localFilePath);
 
-                ZipUtils.UnpackFiles(localFilePath, directoryPath);
+                ZipUtils.ExtractZip(localFilePath, directoryPath);
 
                 string errorMessage;
                 if (!PackageUtils.UpdatePackage(idAndVersion, PackageType.Plugin, out errorMessage))

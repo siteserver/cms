@@ -11,20 +11,14 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [Stl(Usage = "动态显示", Description = "通过 stl:dynamic 标签在模板中实现动态显示功能")]
+    [StlClass(Usage = "动态显示", Description = "通过 stl:dynamic 标签在模板中实现动态显示功能")]
     public class StlDynamic
     {
         private StlDynamic() { }
         public const string ElementName = "stl:dynamic";
 
-        public const string AttributeContext = "context";
-        public const string AttributeIsPageRefresh = "isPageRefresh";
-
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
-        {
-            {AttributeContext, "所处上下文"},
-            {AttributeIsPageRefresh, "翻页时是否刷新页面"}
-        };
+        private static readonly Attr Context = new Attr("context", "所处上下文");
+        private static readonly Attr IsPageRefresh = new Attr("isPageRefresh", "翻页时是否刷新页面");
 
         internal static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -40,11 +34,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, AttributeContext))
+                if (StringUtils.EqualsIgnoreCase(name, Context.Name))
                 {
                     contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsPageRefresh))
+                else if (StringUtils.EqualsIgnoreCase(name, IsPageRefresh.Name))
                 {
                     isPageRefresh = TranslateUtils.ToBool(value);
                 }

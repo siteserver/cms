@@ -31,7 +31,6 @@
               <div class="form-group m-l-10">
                 <label class="col-form-label m-r-10">状态</label>
                 <asp:DropDownList ID="DdlState" AutoPostBack="true" OnSelectedIndexChanged="Search_OnClick" class="form-control" runat="server"></asp:DropDownList>
-                <asp:CheckBox ID="CbIsDuplicate" class="checkbox checkbox-primary" Text="包含重复标题" runat="server"></asp:CheckBox>
               </div>
             </div>
 
@@ -106,7 +105,7 @@
             </div>
           </div>
 
-          <ctrl:sqlPager id="SpContents" runat="server" class="table table-pager" />
+          <ctrl:pager id="PgContents" runat="server" />
 
           <hr />
 

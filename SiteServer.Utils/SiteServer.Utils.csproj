@@ -43,15 +43,15 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql, Version=3.2.6.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Npgsql.3.2.6\lib\net451\Npgsql.dll</HintPath>
+    <Reference Include="Npgsql, Version=3.2.7.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.3.2.7\lib\net451\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.1.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=1.4.45.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.4.45-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.6.51.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.6.51-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />

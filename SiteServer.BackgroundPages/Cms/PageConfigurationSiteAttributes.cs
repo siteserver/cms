@@ -102,25 +102,17 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
 		{
-			if (Page.IsPostBack && Page.IsValid)
-			{
-				SiteInfo.SiteName = TbSiteName.Text;
-                
-				try
-				{
-                    BackgroundInputTypeParser.SaveAttributes(SiteInfo.Additional, SiteInfo, _styleInfoList, Page.Request.Form, null);
+		    if (!Page.IsPostBack || !Page.IsValid) return;
 
-                    DataProvider.SiteDao.Update(SiteInfo);
+		    SiteInfo.SiteName = TbSiteName.Text;
 
-                    AuthRequest.AddSiteLog(SiteId, "修改站点设置");
+            BackgroundInputTypeParser.SaveAttributes(SiteInfo.Additional, SiteInfo, _styleInfoList, Page.Request.Form, null);
 
-					SuccessMessage("站点设置修改成功！");
-				}
-				catch(Exception ex)
-				{
-                    FailMessage(ex, "站点设置修改失败！");
-				}
-			}
-		}
+            DataProvider.SiteDao.Update(SiteInfo);
+
+            AuthRequest.AddSiteLog(SiteId, "修改站点设置");
+
+            SuccessMessage("站点设置修改成功！");
+        }
 	}
 }

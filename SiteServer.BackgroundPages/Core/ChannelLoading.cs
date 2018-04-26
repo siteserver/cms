@@ -10,7 +10,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Core
 {
-    public class ChannelLoading
+    public static class ChannelLoading
     {
         public static string GetChannelRowHtml(SiteInfo siteInfo, ChannelInfo nodeInfo, bool enabled, ELoadingType loadingType, NameValueCollection additional, PermissionManager permissionManager)
         {
@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Core
                 var endDate = TranslateUtils.ToDateTime(additional["EndDate"]);
 
                 var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
-                var num = DataProvider.ContentDao.GetCountOfContentAdd(tableName, siteInfo.Id, nodeInfo.Id, EScopeType.All, startDate, endDate, string.Empty);
+                var num = DataProvider.ContentDao.GetCountOfContentAdd(tableName, siteInfo.Id, nodeInfo.Id, EScopeType.All, startDate, endDate, string.Empty, ETriState.All);
                 var contentAddNum = num == 0 ? "0" : $"<strong>{num}</strong>";
 
                 num = DataProvider.ContentDao.GetCountOfContentUpdate(tableName, siteInfo.Id, nodeInfo.Id, EScopeType.All, startDate, endDate, string.Empty);

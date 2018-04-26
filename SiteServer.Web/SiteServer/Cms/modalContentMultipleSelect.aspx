@@ -29,7 +29,6 @@
               <td>
                 栏目：
                 <asp:DropDownList ID="DdlChannelId" AutoPostBack="true" OnSelectedIndexChanged="Search_OnClick" runat="server"></asp:DropDownList>
-                <asp:CheckBox ID="CbIsDuplicate" class="checkbox checkbox-primary" Text="包含重复标题" runat="server"></asp:CheckBox>
               </td>
             </tr>
             <tr>

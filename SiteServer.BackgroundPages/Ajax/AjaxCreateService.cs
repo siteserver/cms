@@ -124,7 +124,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheCurrentCountKey, "2");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "正在导入数据...");//存储消息
                 SiteTemplateManager.Instance.ImportSiteTemplateToEmptySite(siteId, siteTemplateDir, isUseTables, isImportContents, isImportTableStyles, administratorName);
-                CreateManager.CreateAll(siteId);
+                CreateManager.CreateByAll(siteId);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "3");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
@@ -135,7 +135,7 @@ namespace SiteServer.BackgroundPages.Ajax
             catch (Exception ex)
             {
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                LogUtils.AddSystemErrorLog(ex);
+                LogUtils.AddErrorLog(ex);
             }
 
             CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
@@ -175,13 +175,13 @@ namespace SiteServer.BackgroundPages.Ajax
                 var siteTemplateDir = $"T_{onlineTemplateName}";
                 var directoryPath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
                 DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
-                ZipUtils.UnpackFiles(filePath, directoryPath);
+                ZipUtils.ExtractZip(filePath, directoryPath);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "3");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "站点模板下载成功，正在导入数据...");//存储消息
 
                 SiteTemplateManager.Instance.ImportSiteTemplateToEmptySite(siteId, siteTemplateDir, isUseTables, isImportContents, isImportTableStyles, administratorName);
-                CreateManager.CreateAll(siteId);
+                CreateManager.CreateByAll(siteId);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "4");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
@@ -193,7 +193,7 @@ namespace SiteServer.BackgroundPages.Ajax
             catch (Exception ex)
             {
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                LogUtils.AddSystemErrorLog(ex);
+                LogUtils.AddErrorLog(ex);
             }
 
             CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
@@ -232,7 +232,7 @@ namespace SiteServer.BackgroundPages.Ajax
             catch (Exception ex)
             {
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                LogUtils.AddSystemErrorLog(ex);
+                LogUtils.AddErrorLog(ex);
             }
 
             CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数

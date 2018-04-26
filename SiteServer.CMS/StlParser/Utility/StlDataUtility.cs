@@ -294,14 +294,12 @@ namespace SiteServer.CMS.StlParser.Utility
             return ETaxisTypeUtils.GetContentOrderByString(taxisType, orderByString);
         }
 
-        public static string GetStlPageContentsSqlString(SiteInfo siteInfo, int channelId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot)
+        public static string GetStlPageContentsSqlString(SiteInfo siteInfo, int channelId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot)
         {
             if (!ChannelManager.IsExists(siteInfo.Id, channelId)) return string.Empty;
 
             var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
             var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
-
-
 
             var sqlWhereString = ChannelManager.IsContentModelPlugin(siteInfo, nodeInfo)
                 ? Content.GetStlWhereString(siteInfo.Id, groupContent, groupContentNot,
@@ -309,20 +307,20 @@ namespace SiteServer.CMS.StlParser.Utility
                 : Content.GetStlWhereString(siteInfo.Id, tableName, groupContent,
                     groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile,
                     isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor,
-                    where, siteInfo.Additional.IsCreateSearchDuplicate);
+                    where);
 
-            return Content.GetStlSqlStringChecked(tableName, siteInfo.Id, channelId, startNum, totalNum, orderByString, sqlWhereString, scopeType, groupChannel, groupChannelNot, isNoDup);
+            return Content.GetStlSqlStringChecked(tableName, siteInfo.Id, channelId, startNum, totalNum, orderByString, sqlWhereString, scopeType, groupChannel, groupChannelNot);
         }
 
-        public static string GetPageContentsSqlStringBySearch(string tableName, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot)
+        public static string GetPageContentsSqlStringBySearch(string tableName, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot)
         {
             var sqlWhereString = Content.GetStlWhereStringBySearch(tableName, groupContent, groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
-            var sqlString = Content.GetStlSqlStringCheckedBySearch(tableName, startNum, totalNum, orderByString, sqlWhereString, isNoDup);
+            var sqlString = Content.GetStlSqlStringCheckedBySearch(tableName, startNum, totalNum, orderByString, sqlWhereString);
 
             return sqlString;
         }
 
-        public static DataSet GetContentsDataSource(SiteInfo siteInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, LowerNameValueCollection others)
+        public static DataSet GetContentsDataSource(SiteInfo siteInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, LowerNameValueCollection others)
         {
             if (!ChannelManager.IsExists(siteInfo.Id, channelId)) return null;
 
@@ -372,10 +370,10 @@ namespace SiteServer.CMS.StlParser.Utility
                 : Content.GetStlWhereString(siteInfo.Id, tableName, groupContent,
                     groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile,
                     isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor,
-                    where, siteInfo.Additional.IsCreateSearchDuplicate);
+                    where);
 
             var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
-            return Content.GetStlDataSourceChecked(channelIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, isNoDup, others);
+            return Content.GetStlDataSourceChecked(channelIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, others);
         }
 
         public static DataSet GetChannelsDataSource(int siteId, int channelId, string group, string groupNot, bool isImageExists, bool isImage, int startNum, int totalNum, string orderByString, EScopeType scopeType, bool isTotal, string where)

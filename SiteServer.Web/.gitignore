@@ -1,6 +1,8 @@
 bin/
 obj/
 home/
+/channels/
+/contents/
 SiteFiles/BackupFiles/
 SiteFiles/Plugins/
 SiteFiles/packages/

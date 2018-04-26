@@ -51,7 +51,7 @@ namespace SiteServer.CMS.Plugin.Apis
             }
             catch (Exception ex)
             {
-                LogUtils.AddPluginErrorLog(_metadata.Id, ex);
+                LogUtils.AddErrorLog(_metadata.Id, ex);
                 return false;
             }
             return true;
@@ -71,7 +71,7 @@ namespace SiteServer.CMS.Plugin.Apis
             }
             catch (Exception ex)
             {
-                LogUtils.AddPluginErrorLog(_metadata.Id, ex);
+                LogUtils.AddErrorLog(_metadata.Id, ex);
             }
             return default(T);
         }
@@ -86,7 +86,7 @@ namespace SiteServer.CMS.Plugin.Apis
             }
             catch (Exception ex)
             {
-                LogUtils.AddPluginErrorLog(_metadata.Id, ex);
+                LogUtils.AddErrorLog(_metadata.Id, ex);
                 return false;
             }
             return true;

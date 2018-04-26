@@ -152,151 +152,97 @@ namespace SiteServer.BackgroundPages.Cms
 		    var targetChannelId = TranslateUtils.ToInt(DdlChannelIdTo.SelectedValue);
 
 		    var targetSiteId = TranslateUtils.ToInt(DdlSiteId.SelectedValue);
-		    var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
-		    bool isChecked;
-		    int checkedLevel;
-		    if (targetSiteInfo.Additional.CheckContentLevel == 0 || AuthRequest.AdminPermissions.HasChannelPermissions(targetSiteId, targetChannelId, ConfigManager.ChannelPermissions.ContentAdd, ConfigManager.ChannelPermissions.ContentCheck))
-		    {
-		        isChecked = true;
-		        checkedLevel = 0;
-		    }
-		    else
-		    {
-		        var userCheckLevel = 0;
-		        var ownHighestLevel = false;
 
-		        if (AuthRequest.AdminPermissions.HasChannelPermissions(targetSiteId, targetChannelId, ConfigManager.ChannelPermissions.ContentCheckLevel1))
-		        {
-		            userCheckLevel = 1;
-		            if (AuthRequest.AdminPermissions.HasChannelPermissions(targetSiteId, targetChannelId, ConfigManager.ChannelPermissions.ContentCheckLevel2))
-		            {
-		                userCheckLevel = 2;
-		                if (AuthRequest.AdminPermissions.HasChannelPermissions(targetSiteId, targetChannelId, ConfigManager.ChannelPermissions.ContentCheckLevel3))
-		                {
-		                    userCheckLevel = 3;
-		                    if (AuthRequest.AdminPermissions.HasChannelPermissions(targetSiteId, targetChannelId, ConfigManager.ChannelPermissions.ContentCheckLevel4))
-		                    {
-		                        userCheckLevel = 4;
-		                        if (AuthRequest.AdminPermissions.HasChannelPermissions(targetSiteId, targetChannelId, ConfigManager.ChannelPermissions.ContentCheckLevel5))
-		                        {
-		                            userCheckLevel = 5;
-		                        }
-		                    }
-		                }
-		            }
-		        }
+            var translateType = ETranslateTypeUtils.GetEnumType(DdlTranslateType.SelectedValue);
 
-		        if (userCheckLevel >= targetSiteInfo.Additional.CheckContentLevel)
-		        {
-		            ownHighestLevel = true;
-		        }
-		        if (ownHighestLevel)
-		        {
-		            isChecked = true;
-		            checkedLevel = 0;
-		        }
-		        else
-		        {
-		            isChecked = false;
-		            checkedLevel = userCheckLevel;
-		        }
-		    }
+            var channelIdStrArrayList = ControlUtils.GetSelectedListControlValueArrayList(LbChannelIdFrom);
 
-		    try
-		    {
-		        var translateType = ETranslateTypeUtils.GetEnumType(DdlTranslateType.SelectedValue);
+            var channelIdList = new List<int>();//需要转移的栏目ID
+            foreach (string channelIdStr in channelIdStrArrayList)
+            {
+                var channelId = int.Parse(channelIdStr);
+                if (translateType != ETranslateType.Content)//需要转移栏目
+                {
+                    if (!ChannelManager.IsAncestorOrSelf(SiteId, channelId, targetChannelId))
+                    {
+                        channelIdList.Add(channelId);
+                    }
+                }
 
-		        var channelIdStrArrayList = ControlUtils.GetSelectedListControlValueArrayList(LbChannelIdFrom);
+                if (translateType == ETranslateType.Content)//转移内容
+                {
+                    TranslateContent(channelId, targetSiteId, targetChannelId);
+                }
+            }
 
-		        var channelIdList = new List<int>();//需要转移的栏目ID
-		        foreach (string channelIdStr in channelIdStrArrayList)
-		        {
-		            var channelId = int.Parse(channelIdStr);
-		            if (translateType != ETranslateType.Content)//需要转移栏目
-		            {
-		                if (!ChannelManager.IsAncestorOrSelf(SiteId, channelId, targetChannelId))
-		                {
-                            channelIdList.Add(channelId);
-		                }
-		            }
+            if (translateType != ETranslateType.Content)//需要转移栏目
+            {
+                var channelIdListToTranslate = new List<int>(channelIdList);
+                foreach (var channelId in channelIdList)
+                {
+                    var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                    var subChannelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
 
-		            if (translateType == ETranslateType.Content)//转移内容
-		            {
-		                TranslateContent(targetSiteInfo, channelId, targetChannelId, isChecked, checkedLevel);
-		            }
-		        }
+                    if (subChannelIdList != null && subChannelIdList.Count > 0)
+                    {
+                        foreach (var channelIdToDelete in subChannelIdList)
+                        {
+                            if (channelIdListToTranslate.Contains(channelIdToDelete))
+                            {
+                                channelIdListToTranslate.Remove(channelIdToDelete);
+                            }
+                        }
+                    }
+                }
 
-		        if (translateType != ETranslateType.Content)//需要转移栏目
-		        {
-		            var channelIdListToTranslate = new List<int>(channelIdList);
-		            foreach (var channelId in channelIdList)
-		            {
-                        var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-                        var subChannelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
+                var nodeInfoList = new List<ChannelInfo>();
+                foreach (int channelId in channelIdListToTranslate)
+                {
+                    var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                    nodeInfoList.Add(nodeInfo);
+                }
 
-		                if (subChannelIdList != null && subChannelIdList.Count > 0)
-		                {
-		                    foreach (var channelIdToDelete in subChannelIdList)
-		                    {
-		                        if (channelIdListToTranslate.Contains(channelIdToDelete))
-		                        {
-                                    channelIdListToTranslate.Remove(channelIdToDelete);
-		                        }
-		                    }
-		                }
-		            }
+                TranslateChannelAndContent(nodeInfoList, targetSiteId, targetChannelId, translateType, null, null);
 
-		            var nodeInfoList = new List<ChannelInfo>();
-		            foreach (int channelId in channelIdListToTranslate)
-		            {
-		                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-		                nodeInfoList.Add(nodeInfo);
-		            }
+                if (RblIsDeleteAfterTranslate.Visible && EBooleanUtils.Equals(RblIsDeleteAfterTranslate.SelectedValue, EBoolean.True))
+                {
+                    foreach (var channelId in channelIdListToTranslate)
+                    {
+                        try
+                        {
+                            DataProvider.ChannelDao.Delete(SiteId, channelId);
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
+                    }
+                }
+            }
 
-		            TranslateChannelAndContent(nodeInfoList, targetSiteId, targetChannelId, translateType, isChecked, checkedLevel, null, null);
+            var builder = new StringBuilder();
+            foreach (ListItem listItem in LbChannelIdFrom.Items)
+            {
+                if (listItem.Selected)
+                {
+                    builder.Append(listItem.Text).Append(",");
+                }
+            }
+            if (builder.Length > 0)
+            {
+                builder.Length = builder.Length - 1;
+            }
+            AuthRequest.AddSiteLog(SiteId, "批量转移", $"栏目:{builder},转移后删除:{RblIsDeleteAfterTranslate.SelectedValue}");
 
-		            if (RblIsDeleteAfterTranslate.Visible && EBooleanUtils.Equals(RblIsDeleteAfterTranslate.SelectedValue, EBoolean.True))
-		            {
-		                foreach (int channelId in channelIdListToTranslate)
-		                {
-		                    try
-		                    {
-		                        DataProvider.ChannelDao.Delete(SiteId, channelId);
-		                    }
-		                    catch
-		                    {
-		                        // ignored
-		                    }
-		                }
-		            }
-		        }
-                BtnSubmit.Enabled = false;
+            SuccessMessage("批量转移成功！");
 
-		        var builder = new StringBuilder();
-		        foreach (ListItem listItem in LbChannelIdFrom.Items)
-		        {
-		            if (listItem.Selected)
-		            {
-		                builder.Append(listItem.Text).Append(",");
-		            }
-		        }
-		        if (builder.Length > 0)
-		        {
-		            builder.Length = builder.Length - 1;
-		        }
-		        AuthRequest.AddSiteLog(SiteId, "批量转移", $"栏目:{builder},转移后删除:{RblIsDeleteAfterTranslate.SelectedValue}");
+            if (!string.IsNullOrEmpty(ReturnUrl))
+            {
+                PageUtils.Redirect(ReturnUrl);
+            }
+        }
 
-		        SuccessMessage("批量转移成功！");
-		        PageUtils.Redirect(AuthRequest.IsQueryExists("ChannelIDCollection") ? ReturnUrl : GetRedirectUrl(SiteId));
-		    }
-		    catch(Exception ex)
-		    {
-		        FailMessage(ex, "批量转移失败！");
-		        LogUtils.AddSystemErrorLog(ex);
-		    }
-		}
-
-		private void TranslateChannelAndContent(List<ChannelInfo> nodeInfoList, int targetSiteId, int parentId, ETranslateType translateType, bool isChecked, int checkedLevel, List<string> nodeIndexNameList, List<string> filePathList)
+		private void TranslateChannelAndContent(List<ChannelInfo> nodeInfoList, int targetSiteId, int parentId, ETranslateType translateType, List<string> nodeIndexNameList, List<string> filePathList)
 		{
 			if (nodeInfoList == null || nodeInfoList.Count == 0)
 			{
@@ -312,8 +258,6 @@ namespace SiteServer.BackgroundPages.Cms
 			{
                 filePathList = DataProvider.ChannelDao.GetAllFilePathBySiteId(targetSiteId);
 			}
-
-            var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
 
 			foreach (var oldNodeInfo in nodeInfoList)
 			{
@@ -349,14 +293,14 @@ namespace SiteServer.BackgroundPages.Cms
                     nodeInfo.FilePath = string.Empty;
                 }
 
-                var insertedChannelId = DataProvider.ChannelDao.Insert(nodeInfo);
+                var targetChannelId = DataProvider.ChannelDao.Insert(nodeInfo);
 
                 if (translateType == ETranslateType.All)
                 {
-                    TranslateContent(targetSiteInfo, oldNodeInfo.Id, insertedChannelId, isChecked, checkedLevel);
+                    TranslateContent(oldNodeInfo.Id, targetSiteId, targetChannelId);
                 }
 
-                if (insertedChannelId != 0)
+                if (targetChannelId != 0)
                 {
                     //var orderByString = ETaxisTypeUtils.GetChannelOrderByString(ETaxisType.OrderByTaxis);
                     //var childrenNodeInfoList = DataProvider.ChannelDao.GetChannelInfoList(oldNodeInfo, 0, "", EScopeType.Children, orderByString);
@@ -370,56 +314,31 @@ namespace SiteServer.BackgroundPages.Cms
 
                     if (channelIdList.Count > 0)
                     {
-                        TranslateChannelAndContent(childrenNodeInfoList, targetSiteId, insertedChannelId, translateType, isChecked, checkedLevel, nodeIndexNameList, filePathList);
+                        TranslateChannelAndContent(childrenNodeInfoList, targetSiteId, targetChannelId, translateType, nodeIndexNameList, filePathList);
                     }
 
-                    if (isChecked)
-                    {
-                        CreateManager.CreateChannel(targetSiteInfo.Id, insertedChannelId);
-                    }
+                    CreateManager.CreateChannel(targetSiteId, targetChannelId);
                 }
 			}
 		}
 
-		private void TranslateContent(SiteInfo targetSiteInfo, int channelId, int targetChannelId, bool isChecked, int checkedLevel)
+		private void TranslateContent(int channelId, int targetSiteId, int targetChannelId)
 		{
             var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
 
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxis);
 
-            var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelId);
             var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, channelId, orderByString);
+		    var translateType = RblIsDeleteAfterTranslate.Visible &&
+		                        EBooleanUtils.Equals(RblIsDeleteAfterTranslate.SelectedValue, EBoolean.True)
+		        ? ETranslateContentType.Cut
+		        : ETranslateContentType.Copy;
 
             foreach (var contentId in contentIdList)
 			{
-                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
-                FileUtility.MoveFileByContentInfo(SiteInfo, targetSiteInfo, contentInfo);
-                contentInfo.SiteId = TranslateUtils.ToInt(DdlSiteId.SelectedValue);
-                contentInfo.SourceId = contentInfo.ChannelId;
-				contentInfo.ChannelId = targetChannelId;
-				contentInfo.IsChecked = isChecked;
-				contentInfo.CheckedLevel = checkedLevel;
-
-                var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, contentInfo);
-				if (contentInfo.IsChecked)
-				{
-                    CreateManager.CreateContentAndTrigger(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
-				}
-			}
-
-			if (RblIsDeleteAfterTranslate.Visible && EBooleanUtils.Equals(RblIsDeleteAfterTranslate.SelectedValue, EBoolean.True))
-			{
-                try
-                {
-                    DataProvider.ContentDao.TrashContents(SiteId, tableName, contentIdList, channelId);
-                }
-			    catch
-			    {
-			        // ignored
-			    }
+                ContentUtility.Translate(SiteInfo, channelId, contentId, targetSiteId, targetChannelId, translateType, AuthRequest.AdminName);
 			}
 		}
-
 
 		public void DdlSiteId_OnSelectedIndexChanged(object sender, EventArgs e)
 		{

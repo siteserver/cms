@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>SiteServer.Cli</RootNamespace>
+    <AssemblyName>siteserver</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>SiteServer.Cli.Program</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>logo.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Costura, Version=2.0.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Costura.Fody.2.0.0\lib\net452\Costura.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
+    </Reference>
+    <Reference Include="NDesk.Options, Version=0.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NDesk.Options.0.2.1\lib\NDesk.Options.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="SiteServer.Plugin, Version=1.6.51.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.6.51-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.3.0\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Commands\BackupManager.cs" />
+    <Compile Include="Commands\VersionManager.cs" />
+    <Compile Include="Commands\UpdateManager.cs" />
+    <Compile Include="Commands\RestoreManager.cs" />
+    <Compile Include="Core\CliUtils.cs" />
+    <Compile Include="Core\TreeInfo.cs" />
+    <Compile Include="Core\TableInfo.cs" />
+    <Compile Include="Core\TextLogInfo.cs" />
+    <Compile Include="Core\UpdateUtils.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Updater\Model36\BairongAdministrator.cs" />
+    <Compile Include="Updater\Model36\BairongAdministratorsInRoles.cs" />
+    <Compile Include="Updater\Model36\BairongArea.cs" />
+    <Compile Include="Updater\Model36\BairongCache.cs" />
+    <Compile Include="Updater\Model36\BairongCloudStorage.cs" />
+    <Compile Include="Updater\Model36\BairongConfig.cs" />
+    <Compile Include="Updater\Model36\BairongContentCheck.cs" />
+    <Compile Include="Updater\Model36\BairongContentModel.cs" />
+    <Compile Include="Updater\Model36\BairongCount.cs" />
+    <Compile Include="Updater\Model36\BairongDepartment.cs" />
+    <Compile Include="Updater\Model36\BairongDigg.cs" />
+    <Compile Include="Updater\Model36\BairongFTPStorage.cs" />
+    <Compile Include="Updater\Model36\BairongIP2City.cs" />
+    <Compile Include="Updater\Model36\BairongLocalStorage.cs" />
+    <Compile Include="Updater\Model36\BairongLog.cs" />
+    <Compile Include="Updater\Model36\BairongModule.cs" />
+    <Compile Include="Updater\Model36\BairongPermissionsInRoles.cs" />
+    <Compile Include="Updater\Model36\BairongRoles.cs" />
+    <Compile Include="Updater\Model36\BairongSMSMessages.cs" />
+    <Compile Include="Updater\Model36\BairongSSOApp.cs" />
+    <Compile Include="Updater\Model36\BairongStorage.cs" />
+    <Compile Include="Updater\Model36\BairongTableCollection.cs" />
+    <Compile Include="Updater\Model36\BairongTableMatch.cs" />
+    <Compile Include="Updater\Model36\BairongTableMetadata.cs" />
+    <Compile Include="Updater\Model36\BairongTableStyle.cs" />
+    <Compile Include="Updater\Model36\BairongTableStyleItem.cs" />
+    <Compile Include="Updater\Model36\BairongTags.cs" />
+    <Compile Include="Updater\Model36\BairongTask.cs" />
+    <Compile Include="Updater\Model36\BairongTaskLog.cs" />
+    <Compile Include="Updater\Model36\BairongUserBinding.cs" />
+    <Compile Include="Updater\Model36\BairongUserConfig.cs" />
+    <Compile Include="Updater\Model36\BairongUserContact.cs" />
+    <Compile Include="Updater\Model36\BairongUserCreditsLog.cs" />
+    <Compile Include="Updater\Model36\BairongUserDownload.cs" />
+    <Compile Include="Updater\Model36\BairongUserMessage.cs" />
+    <Compile Include="Updater\Model36\BairongUsers.cs" />
+    <Compile Include="Updater\Model36\BairongUserType.cs" />
+    <Compile Include="Updater\Model36\SiteServerContent.cs" />
+    <Compile Include="Updater\Model36\SiteserverAd.cs" />
+    <Compile Include="Updater\Model36\SiteserverAdvertisement.cs" />
+    <Compile Include="Updater\Model36\SiteserverComment.cs" />
+    <Compile Include="Updater\Model36\SiteserverCommentContent.cs" />
+    <Compile Include="Updater\Model36\SiteserverConfiguration.cs" />
+    <Compile Include="Updater\Model36\SiteserverContentGroup.cs" />
+    <Compile Include="Updater\Model36\SiteserverGatherDatabaseRule.cs" />
+    <Compile Include="Updater\Model36\SiteserverGatherFileRule.cs" />
+    <Compile Include="Updater\Model36\SiteserverGatherRule.cs" />
+    <Compile Include="Updater\Model36\SiteserverGovInteractChannel.cs" />
+    <Compile Include="Updater\Model36\SiteserverGovInteractLog.cs" />
+    <Compile Include="Updater\Model36\SiteserverGovInteractPermissions.cs" />
+    <Compile Include="Updater\Model36\SiteserverGovInteractRemark.cs" />
+    <Compile Include="Updater\Model36\SiteserverGovInteractReply.cs" />
+    <Compile Include="Updater\Model36\SiteserverGovInteractType.cs" />
+    <Compile Include="Updater\Model36\SiteserverGovPublicApply.cs" />
+    <Compile Include="Updater\Model36\SiteserverGovPublicApplyLog.cs" />
+    <Compile Include="Updater\Model36\SiteserverGovPublicApplyRemark.cs" />
+    <Compile Include="Updater\Model36\SiteserverGovPublicApplyReply.cs" />
+    <Compile Include="Updater\Model36\SiteserverGovPublicCategory.cs" />
+    <Compile Include="Updater\Model36\SiteserverGovPublicCategoryClass.cs" />
+    <Compile Include="Updater\Model36\SiteserverGovPublicChannel.cs" />
+    <Compile Include="Updater\Model36\SiteserverGovPublicIdentifierRule.cs" />
+    <Compile Include="Updater\Model36\SiteserverGovPublicIdentifierSeq.cs" />
+    <Compile Include="Updater\Model36\SiteserverInnerLink.cs" />
+    <Compile Include="Updater\Model36\SiteserverInput.cs" />
+    <Compile Include="Updater\Model36\SiteserverInputContent.cs" />
+    <Compile Include="Updater\Model36\SiteserverKeyword.cs" />
+    <Compile Include="Updater\Model36\SiteserverLog.cs" />
+    <Compile Include="Updater\Model36\SiteserverMailSendLog.cs" />
+    <Compile Include="Updater\Model36\SiteserverMailSubscribe.cs" />
+    <Compile Include="Updater\Model36\SiteserverMenuDisplay.cs" />
+    <Compile Include="Updater\Model36\SiteserverNode.cs" />
+    <Compile Include="Updater\Model36\SiteserverNodeGroup.cs" />
+    <Compile Include="Updater\Model36\SiteserverPhotoContent.cs" />
+    <Compile Include="Updater\Model36\SiteserverPublishmentSystem.cs" />
+    <Compile Include="Updater\Model36\SiteserverRelatedField.cs" />
+    <Compile Include="Updater\Model36\SiteserverRelatedFieldItem.cs" />
+    <Compile Include="Updater\Model36\SiteserverResumeContent.cs" />
+    <Compile Include="Updater\Model36\SiteserverSeoMeta.cs" />
+    <Compile Include="Updater\Model36\SiteserverSeoMetasInNodes.cs" />
+    <Compile Include="Updater\Model36\SiteserverSigninLog.cs" />
+    <Compile Include="Updater\Model36\SiteserverSigninSetting.cs" />
+    <Compile Include="Updater\Model36\SiteserverSigninUserContentID.cs" />
+    <Compile Include="Updater\Model36\SiteserverStar.cs" />
+    <Compile Include="Updater\Model36\SiteserverStarSetting.cs" />
+    <Compile Include="Updater\Model36\SiteserverStlTag.cs" />
+    <Compile Include="Updater\Model36\SiteserverSystemPermissions.cs" />
+    <Compile Include="Updater\Model36\SiteserverTagStyle.cs" />
+    <Compile Include="Updater\Model36\SiteserverTemplate.cs" />
+    <Compile Include="Updater\Model36\SiteserverTemplateMatch.cs" />
+    <Compile Include="Updater\Model36\SiteserverTemplateRule.cs" />
+    <Compile Include="Updater\Model36\SiteserverTouGaoSetting.cs" />
+    <Compile Include="Updater\Model36\SiteserverTracking.cs" />
+    <Compile Include="Updater\Model36\SiteserverUserGroup.cs" />
+    <Compile Include="Updater\Model36\SiteserverUsers.cs" />
+    <Compile Include="Updater\Model36\SiteserverVoteOperation.cs" />
+    <Compile Include="Updater\Model36\SiteserverVoteOption.cs" />
+    <Compile Include="Updater\UpdaterBase.cs" />
+    <Compile Include="Updater\Updater36.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="FodyWeavers.xml" />
+    <Content Include="logo.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
+      <Project>{944127c3-915d-4f02-a534-64ec668c46ec}</Project>
+      <Name>SiteServer.CMS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj">
+      <Project>{2176d8ba-5f57-4c56-8e21-a09011517ae2}</Project>
+      <Name>SiteServer.Utils</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Fody.3.0.3\build\Fody.targets" Condition="Exists('..\packages\Fody.3.0.3\build\Fody.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Fody.3.0.3\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.3.0.3\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\Costura.Fody.2.0.0\build\Costura.Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Costura.Fody.2.0.0\build\Costura.Fody.targets'))" />
+  </Target>
+  <Import Project="..\packages\Costura.Fody.2.0.0\build\Costura.Fody.targets" Condition="Exists('..\packages\Costura.Fody.2.0.0\build\Costura.Fody.targets')" />
+</Project>

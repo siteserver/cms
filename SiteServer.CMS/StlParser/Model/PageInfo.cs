@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using System.Text;
@@ -38,8 +37,6 @@ namespace SiteServer.CMS.StlParser.Model
         public Stack<ChannelItemInfo> ChannelItems { get; }
 
         public Stack<ContentItemInfo> ContentItems { get; }
-
-        public Stack CommentItems { get; }
 
         public Stack SqlItems { get; }
 
@@ -85,7 +82,6 @@ namespace SiteServer.CMS.StlParser.Model
 
             ChannelItems = new Stack<ChannelItemInfo>(5);
             ContentItems = new Stack<ContentItemInfo>(5);
-            CommentItems = new Stack(5);
             SqlItems = new Stack(5);
             SiteItems = new Stack(5);
             EachItems = new Stack(5);

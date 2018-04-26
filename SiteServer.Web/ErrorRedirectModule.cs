@@ -1,7 +1,6 @@
 using System;
 using System.Web;
 using SiteServer.CMS.Core;
-using SiteServer.Utils;
 
 namespace SiteServer.API
 {
@@ -25,22 +24,7 @@ namespace SiteServer.API
                 }
                 HttpContext.Current.Server.ClearError();
 
-                if (ex.HResult == -2147467259) // 文件名不存在
-                {
-                    PageUtils.RedirectToErrorPage(ex.Message);
-                }
-                else
-                {
-                    var logId = LogUtils.AddSystemErrorLog(ex, "Application Error");
-                    if (logId > 0)
-                    {
-                        PageUtils.RedirectToErrorPage(logId);
-                    }
-                    else
-                    {
-                        PageUtils.RedirectToErrorPage(ex.Message);
-                    }
-                }
+                LogUtils.AddErrorLogAndRedirect(ex, "系统错误");
             }
             catch
             {

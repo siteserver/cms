@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Cms
                     PhFilePath.Visible = false;
                 }
 
-                BtnSubmit.Attributes.Add("onclick", "if (UE && UE.getEditor('Content', {{allowDivTransToP: false}})){ UE.getEditor('Content', {{allowDivTransToP: false}}).sync(); }");
+                BtnSubmit.Attributes.Add("onclick", $"if (UE && UE.getEditor('Content', {ETextEditorTypeUtils.ConfigValues})){{ UE.getEditor('Content', {ETextEditorTypeUtils.ConfigValues}).sync(); }}");
 
                 CacAttributes.Attributes = nodeInfo.Additional;
 
@@ -267,7 +267,7 @@ namespace SiteServer.BackgroundPages.Cms
             catch (Exception ex)
             {
                 FailMessage(ex, $"栏目修改失败：{ex.Message}");
-                LogUtils.AddSystemErrorLog(ex);
+                LogUtils.AddErrorLog(ex);
             }
 
             if (isChanged)

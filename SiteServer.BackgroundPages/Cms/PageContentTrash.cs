@@ -53,12 +53,12 @@ namespace SiteServer.BackgroundPages.Cms
             if (string.IsNullOrEmpty(AuthRequest.GetQueryString("channelId")))
             {
                 SpContents.ItemsPerPage = TranslateUtils.ToInt(DdlPageNum.SelectedValue) == 0 ? SiteInfo.Additional.PageSize : TranslateUtils.ToInt(DdlPageNum.SelectedValue);
-                SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(tableName, SiteId, _channelId, AuthRequest.AdminPermissions.IsSystemAdministrator, AuthRequest.AdminPermissions.OwningChannelIdList, DdlSearchType.SelectedValue, TbKeyword.Text, TbDateFrom.Text, TbDateTo.Text, true, ETriState.All, false, true);
+                SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(tableName, SiteId, _channelId, AuthRequest.AdminPermissions.IsSystemAdministrator, AuthRequest.AdminPermissions.OwningChannelIdList, DdlSearchType.SelectedValue, TbKeyword.Text, TbDateFrom.Text, TbDateTo.Text, true, ETriState.All, true);
             }
             else
             {
                 SpContents.ItemsPerPage = AuthRequest.GetQueryInt("PageNum") == 0 ? SiteInfo.Additional.PageSize : AuthRequest.GetQueryInt("PageNum");
-                SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(tableName, SiteId, _channelId, AuthRequest.AdminPermissions.IsSystemAdministrator, AuthRequest.AdminPermissions.OwningChannelIdList, AuthRequest.GetQueryString("SearchType"), AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"), AuthRequest.GetQueryString("DateTo"), true, ETriState.All, false, true);
+                SpContents.SelectCommand = DataProvider.ContentDao.GetSqlString(tableName, SiteId, _channelId, AuthRequest.AdminPermissions.IsSystemAdministrator, AuthRequest.AdminPermissions.OwningChannelIdList, AuthRequest.GetQueryString("SearchType"), AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"), AuthRequest.GetQueryString("DateTo"), true, ETriState.All, true);
             }
             SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
