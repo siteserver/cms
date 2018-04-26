@@ -13,12 +13,8 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
-    public class ContentUtility
+    public static class ContentUtility
     {
-        private ContentUtility()
-        {
-        }
-
         public static string PagePlaceHolder = "[SITESERVER_PAGE]";//内容翻页展位符
 
         public static string TextEditorContentEncode(SiteInfo siteInfo, string content)

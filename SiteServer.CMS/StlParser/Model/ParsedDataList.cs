@@ -307,11 +307,11 @@ namespace SiteServer.CMS.StlParser.Model
 			}
 			else if (attributeName.Equals("gridlines"))
 			{
-				GridLines = Converter.ToGridLines(attributeValue);
+				GridLines = TranslateUtils.ToGridLines(attributeValue);
 			}
 			else if (attributeName.Equals("horizontalalign"))
 			{
-				HorizontalAlign = Converter.ToHorizontalAlign(attributeValue);
+				HorizontalAlign = TranslateUtils.ToHorizontalAlign(attributeValue);
 			}
 			else if (attributeName.Equals("repeatcolumns") || attributeName.Equals("columns"))
 			{
@@ -319,11 +319,11 @@ namespace SiteServer.CMS.StlParser.Model
 			}
 			else if (attributeName.Equals("repeatdirection") || attributeName.Equals("direction"))
 			{
-				RepeatDirection = Converter.ToRepeatDirection(attributeValue);
+				RepeatDirection = TranslateUtils.ToRepeatDirection(attributeValue);
 			}
 			else if (attributeName.Equals("repeatlayout"))
 			{
-				RepeatLayout = Converter.ToRepeatLayout(attributeValue);
+				RepeatLayout = TranslateUtils.ToRepeatLayout(attributeValue);
 			}
 			else if (attributeName.Equals("tooltip"))
 			{

@@ -6,7 +6,7 @@ using SiteServer.Utils.IO;
 
 namespace SiteServer.CMS.Core
 {
-    public sealed class TableColumnManager
+    public static class TableColumnManager
     {
         private static class TableColumnManagerCache
         {

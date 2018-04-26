@@ -133,7 +133,6 @@
     <Compile Include="Core\CheckManager.cs" />
     <Compile Include="Core\ConfigManager.cs" />
     <Compile Include="Core\ContentUtility.cs" />
-    <Compile Include="Core\Converter.cs" />
     <Compile Include="Core\CountManager.cs" />
     <Compile Include="Core\Create\CreateManager.cs" />
     <Compile Include="Core\Create\CreateTaskManager.cs" />
@@ -168,6 +167,7 @@
     <Compile Include="Core\TableStyleManager.cs" />
     <Compile Include="Core\TabManager.cs" />
     <Compile Include="Core\TagUtils.cs" />
+    <Compile Include="Core\SpecialManager.cs" />
     <Compile Include="Core\TemplateManager.cs" />
     <Compile Include="Core\TemplateTypeUtils.cs" />
     <Compile Include="Core\UEditorUploader.cs" />
@@ -260,6 +260,7 @@
     <Compile Include="Model\TableStyleInfoExtend.cs" />
     <Compile Include="Model\TableStyleItemInfo.cs" />
     <Compile Include="Model\TagInfo.cs" />
+    <Compile Include="Model\SpecialInfo.cs" />
     <Compile Include="Model\TemplateInfo.cs" />
     <Compile Include="Model\TemplateLogInfo.cs" />
     <Compile Include="Model\TemplateMatchInfo.cs" />
@@ -324,6 +325,7 @@
     <Compile Include="Provider\TableStyleDao.cs" />
     <Compile Include="Provider\TableStyleItemDao.cs" />
     <Compile Include="Provider\TagDao.cs" />
+    <Compile Include="Provider\SpecialDao.cs" />
     <Compile Include="Provider\TemplateDao.cs" />
     <Compile Include="Provider\TemplateLogDao.cs" />
     <Compile Include="Provider\TemplateMatchDao.cs" />

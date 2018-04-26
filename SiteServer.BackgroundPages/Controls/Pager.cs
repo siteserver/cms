@@ -59,6 +59,8 @@ namespace SiteServer.BackgroundPages.Controls
 
         protected override void Render(HtmlTextWriter output)
         {
+            if (Param == null || Param.PageSize <= 0) return;
+
             var pageCount = (int)Math.Ceiling((double)Param.TotalCount / Param.PageSize);
 
             if (pageCount <= 1) return;

@@ -8,20 +8,30 @@ namespace SiteServer.CMS.Api.Preview
         public const string RouteChannel = "preview/{siteId}/{channelId}";
         public const string RouteContent = "preview/{siteId}/{channelId}/{contentId}";
         public const string RouteFile = "preview/{siteId}/file/{fileTemplateId}";
+        public const string RouteSpecial = "preview/{siteId}/special/{specialId}";
 
         public static string GetSiteUrl(int siteId)
         {
-            return GetUrl(siteId, 0, 0, 0);
+            var apiUrl = ApiManager.GetInnerApiUrl(Route);
+            apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
+            return apiUrl;
         }
 
         public static string GetChannelUrl(int siteId, int channelId)
         {
-            return GetUrl(siteId, channelId, 0, 0);
+            var apiUrl = ApiManager.GetInnerApiUrl(RouteChannel);
+            apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
+            apiUrl = apiUrl.Replace("{channelId}", channelId.ToString());
+            return apiUrl;
         }
 
         public static string GetContentUrl(int siteId, int channelId, int contentId)
         {
-            return GetUrl(siteId, channelId, contentId, 0);
+            var apiUrl = ApiManager.GetInnerApiUrl(RouteContent);
+            apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
+            apiUrl = apiUrl.Replace("{channelId}", channelId.ToString());
+            apiUrl = apiUrl.Replace("{contentId}", contentId.ToString());
+            return apiUrl;
         }
 
         public static string GetContentPreviewUrl(int siteId, int channelId, int contentId, int previewId)
@@ -30,30 +40,45 @@ namespace SiteServer.CMS.Api.Preview
             {
                 contentId = previewId;
             }
-            return $"{GetUrl(siteId, channelId, contentId, 0)}?isPreview=true&previewId={previewId}";
+            return $"{GetContentUrl(siteId, channelId, contentId)}?isPreview=true&previewId={previewId}";
         }
 
         public static string GetFileUrl(int siteId, int fileTemplateId)
         {
-            return GetUrl(siteId, 0, 0, fileTemplateId);
+            var apiUrl = ApiManager.GetInnerApiUrl(RouteFile);
+            apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
+            apiUrl = apiUrl.Replace("{fileTemplateId}", fileTemplateId.ToString());
+            return apiUrl;
         }
 
-        private static string GetUrl(int siteId, int channelId, int contentId, int fileTemplateId)
+        public static string GetSpecialUrl(int siteId, int specialId)
         {
-            var apiUrl = ApiManager.GetInnerApiUrl(Route);
+            var apiUrl = ApiManager.GetInnerApiUrl(RouteSpecial);
             apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
+            apiUrl = apiUrl.Replace("{specialId}", specialId.ToString());
+            return apiUrl;
+        }
+
+        public static string GetUrl(int siteId, int channelId, int contentId, int fileTemplateId, int specialId)
+        {
+            var apiUrl = GetSiteUrl(siteId);
             if (channelId > 0)
             {
-                apiUrl = PageUtils.Combine(apiUrl, channelId.ToString());
+                apiUrl = GetChannelUrl(siteId, channelId);
                 if (contentId > 0)
                 {
-                    apiUrl = PageUtils.Combine(apiUrl, contentId.ToString());
+                    apiUrl = GetContentUrl(siteId, channelId, contentId);
                 }
             }
             else if (fileTemplateId > 0)
             {
-                apiUrl = PageUtils.Combine(apiUrl, fileTemplateId.ToString());
+                apiUrl = GetFileUrl(siteId, fileTemplateId);
             }
+            else if (specialId > 0)
+            {
+                apiUrl = GetSpecialUrl(siteId, specialId);
+            }
+
             return apiUrl;
         }
     }

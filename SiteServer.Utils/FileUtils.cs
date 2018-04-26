@@ -8,7 +8,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils
 {	
-	public class FileUtils
+	public static class FileUtils
 	{
         public static string ReadText(string filePath, ECharset charset)
 		{

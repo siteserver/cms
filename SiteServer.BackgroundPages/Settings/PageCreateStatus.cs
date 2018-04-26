@@ -10,7 +10,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             return PageUtils.GetSettingsUrl(nameof(PageCreateStatus), new NameValueCollection
             {
-                {"siteID", siteId.ToString()}
+                {"siteId", siteId.ToString()}
             });
         }
 
@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Settings
             return LayerUtils.GetOpenScript("页面生成进度",
                 PageUtils.GetSettingsUrl(nameof(PageCreateStatus), new NameValueCollection
                 {
-                    {"siteID", siteId.ToString()}
+                    {"siteId", siteId.ToString()}
                 }));
         }
 
@@ -27,12 +27,12 @@ namespace SiteServer.BackgroundPages.Settings
         {
             var pageUrl = PageUtils.GetSettingsUrl(nameof(PageCreateStatus), new NameValueCollection
             {
-                {"siteID", siteId.ToString()}
+                {"siteId", siteId.ToString()}
             });
             PageUtils.Redirect(pageUrl);
         }
 
-        public string SiteUrl => PageRedirect.GetRedirectUrl(SiteId);
+        public string RedirectUrl => PageRedirect.GetRedirectUrl(SiteId);
 
         public string SignalrHubsUrl = ApiManager.SignalrHubsUrl;
 

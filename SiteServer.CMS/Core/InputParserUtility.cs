@@ -9,12 +9,8 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
-    public class InputParserUtility
+    public static class InputParserUtility
     {
-        private InputParserUtility()
-        {
-        }
-
         public static string GetContentByTableStyle(string content, SiteInfo siteInfo, TableStyleInfo styleInfo)
         {
             if (!string.IsNullOrEmpty(content))

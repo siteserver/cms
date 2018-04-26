@@ -9,7 +9,8 @@ namespace SiteServer.CMS.Model
             siteId = taskInfo.SiteId;
             channelId = taskInfo.ChannelId;
             contentId = taskInfo.ContentId;
-            templateId = taskInfo.TemplateId;
+            fileTemplateId = taskInfo.FileTemplateId;
+            specialId = taskInfo.SpecialId;
             type = ECreateTypeUtils.GetText(taskInfo.CreateType);
             name = taskInfo.Name;
             this.timeSpan = timeSpan;
@@ -24,7 +25,8 @@ namespace SiteServer.CMS.Model
             siteId = logInfo.SiteId;
             channelId = logInfo.ChannelId;
             contentId = logInfo.ContentId;
-            templateId = logInfo.TemplateId;
+            fileTemplateId = logInfo.FileTemplateId;
+            specialId = logInfo.SpecialId;
             type = ECreateTypeUtils.GetText(logInfo.CreateType);
             name = logInfo.TaskName;
             timeSpan = logInfo.TimeSpan;
@@ -37,7 +39,8 @@ namespace SiteServer.CMS.Model
         public int siteId { get; set; }
         public int channelId { get; set; }
         public int contentId { get; set; }
-        public int templateId { get; set; }
+        public int fileTemplateId { get; set; }
+        public int specialId { get; set; }
 
         public string type { get; set; }
         public string name { get; set; }

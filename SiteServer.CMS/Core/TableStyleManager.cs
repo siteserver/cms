@@ -6,7 +6,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
 {
-    public sealed class TableStyleManager
+    public static class TableStyleManager
     {
         private static readonly object LockObject = new object();
         private static bool _async = true;//缓存与数据库不同步

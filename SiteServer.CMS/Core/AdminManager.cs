@@ -6,13 +6,9 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
-    public class AdminManager
+    public static class AdminManager
     {
         private static readonly object LockObject = new object();
-
-        private AdminManager()
-        {
-        }
 
         public static AdministratorInfo GetAdminInfo(string userName)
         {

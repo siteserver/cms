@@ -5,7 +5,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
-    public class OnlineTemplateManager
+    public static class OnlineTemplateManager
     {
         private const string UrlTemplatesXml = "http://templates.siteserver.cn/templates.xml";
 

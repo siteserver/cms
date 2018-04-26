@@ -9,12 +9,8 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
 {
-    public class TagUtils
+    public static class TagUtils
     {
-        private TagUtils()
-        {
-        }
-
         public static void AddTags(StringCollection tags, int siteId, int contentId)
         {
             if (tags == null || tags.Count == 0) return;

@@ -9,9 +9,9 @@ using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-    public class PageCreateFile : BasePageCms
+    public class PageCreateSpecial : BasePageCms
     {
-        public ListBox LbTemplateIdList;
+        public ListBox LbSpecialIdList;
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -23,12 +23,12 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Create);
 
-            var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListOfFile(SiteId);
+            var specialInfoList = DataProvider.SpecialDao.GetSpecialInfoList(SiteId);
 
-            foreach (var templateInfo in templateInfoList)
+            foreach (var specialInfo in specialInfoList)
             {
-                var listitem = new ListItem(templateInfo.CreatedFileFullName, templateInfo.Id.ToString());
-                LbTemplateIdList.Items.Add(listitem);
+                var listitem = new ListItem($"{specialInfo.Title}({specialInfo.Url})", specialInfo.Id.ToString());
+                LbSpecialIdList.Items.Add(listitem);
             }
         }
 
@@ -36,24 +36,24 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var templateIdList = new List<int>();
-            foreach (ListItem item in LbTemplateIdList.Items)
+            var specialIdList = new List<int>();
+            foreach (ListItem item in LbSpecialIdList.Items)
             {
                 if (!item.Selected) continue;
 
-                var templateId = int.Parse(item.Value);
-                templateIdList.Add(templateId);
+                var specialId = TranslateUtils.ToInt(item.Value);
+                specialIdList.Add(specialId);
             }
 
-            if (templateIdList.Count == 0)
+            if (specialIdList.Count == 0)
             {
-                FailMessage("请选择需要生成的文件页！");
+                FailMessage("请选择需要生成的专题！");
                 return;
             }
 
-            foreach (var templateId in templateIdList)
+            foreach (var specialId in specialIdList)
             {
-                CreateManager.CreateFile(SiteId, templateId);
+                CreateManager.CreateSpecial(SiteId, specialId);
             }
 
             PageCreateStatus.Redirect(SiteId);

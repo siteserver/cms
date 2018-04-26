@@ -32,32 +32,41 @@ namespace SiteServer.API.Controllers.Sys.Stl
                 }
                 var contentId = request.GetQueryInt("contentId");
                 var fileTemplateId = request.GetQueryInt("fileTemplateId");
+                var specialId = request.GetQueryInt("specialId");
                 var isRedirect = TranslateUtils.ToBool(request.GetQueryString("isRedirect"));
 
                 var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
 
-                if (fileTemplateId != 0)
+                if (specialId != 0)
                 {
-                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.File, 0, 0, fileTemplateId);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Special, 0, 0, 0, specialId);
+                }
+                else if (fileTemplateId != 0)
+                {
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.File, 0, 0, fileTemplateId, 0);
                 }
                 else if (contentId != 0)
                 {
-                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Content, channelId, contentId, 0);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Content, channelId, contentId, 0, 0);
                 }
                 else if (channelId != 0)
                 {
-                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Channel, channelId, 0, 0);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Channel, channelId, 0, 0, 0);
                 }
                 else if (siteId != 0)
                 {
-                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Channel, siteId, 0, 0);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Channel, siteId, 0, 0, 0);
                 }
 
                 if (isRedirect)
                 {
                     var redirectUrl = string.Empty;
-                    if (fileTemplateId != 0)
+                    if (specialId != 0)
+                    {
+                        redirectUrl = PageUtility.GetFileUrl(siteInfo, specialId, false);
+                    }
+                    else if (fileTemplateId != 0)
                     {
                         redirectUrl = PageUtility.GetFileUrl(siteInfo, fileTemplateId, false);
                     }

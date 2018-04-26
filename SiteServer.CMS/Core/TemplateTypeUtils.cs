@@ -4,7 +4,7 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
-	public class TemplateTypeUtils
+    public static class TemplateTypeUtils
 	{
 		public static TemplateType GetEnumType(string typeStr)
 		{

@@ -284,7 +284,7 @@ namespace SiteServer.CMS.StlParser.Model
                 else if (StringUtils.EqualsIgnoreCase(name, StlContents.Direction.Name))
                 {
                     listInfo.Layout = ELayout.Table;
-                    listInfo.Direction = Converter.ToRepeatDirection(value);
+                    listInfo.Direction = TranslateUtils.ToRepeatDirection(value);
                     isSetDirection = true;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlContents.Height.Name))

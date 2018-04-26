@@ -9,7 +9,7 @@ using SiteServer.Utils.IO;
 
 namespace SiteServer.CMS.Core
 {
-    public sealed class TableMetadataManager
+    public static class TableMetadataManager
     {
         private static class TableMetadataManagerCache
         {

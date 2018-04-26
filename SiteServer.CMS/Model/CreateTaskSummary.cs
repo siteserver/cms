@@ -4,20 +4,24 @@ namespace SiteServer.CMS.Model
 {
     public class CreateTaskSummary
     {
-        public CreateTaskSummary(List<CreateTaskSummaryItem> tasks, int channelsCount, int contentsCount, int filesCount)
+        public CreateTaskSummary(List<CreateTaskSummaryItem> tasks, int channelsCount, int contentsCount,
+            int filesCount, int specialsCount)
         {
             Tasks = tasks;
             ChannelsCount = channelsCount;
             ContentsCount = contentsCount;
             FilesCount = filesCount;
+            SpecialsCount = specialsCount;
         }
 
-        public List<CreateTaskSummaryItem> Tasks { get; set; }
+        public List<CreateTaskSummaryItem> Tasks { get; }
 
-        public int ChannelsCount { get; set; }
+        public int ChannelsCount { get; }
 
-        public int ContentsCount { get; set; }
+        public int ContentsCount { get; }
 
-        public int FilesCount { get; set; }
+        public int FilesCount { get; }
+
+        public int SpecialsCount { get; }
     }
 }

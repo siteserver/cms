@@ -9,12 +9,8 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
-    public class PageUtility
+    public static class PageUtility
     {
-        private PageUtility()
-        {
-        }
-
         public static string GetSiteUrl(SiteInfo siteInfo, bool isLocal)
         {
             return GetSiteUrl(siteInfo, string.Empty, isLocal);
@@ -110,8 +106,8 @@ namespace SiteServer.CMS.Core
         {
             if (siteInfo == null)
             {
-                var publishmentSystemId = PathUtility.GetCurrentSiteId();
-                siteInfo = SiteManager.GetSiteInfo(publishmentSystemId);
+                var siteId = PathUtility.GetCurrentSiteId();
+                siteInfo = SiteManager.GetSiteInfo(siteId);
             }
             if (string.IsNullOrEmpty(physicalPath)) return siteInfo.Additional.WebUrl;
 
@@ -132,6 +128,15 @@ namespace SiteServer.CMS.Core
             return isLocal
                 ? ApiRoutePreview.GetSiteUrl(siteInfo.Id)
                 : ParseNavigationUrl(siteInfo, createdFileFullName, false);
+        }
+
+        public static string GetSpecialUrl(SiteInfo siteInfo, int specialId, bool isLocal)
+        {
+            var specialUrl = SpecialManager.GetSpecialUrl(siteInfo, specialId);
+
+            return isLocal
+                ? ApiRoutePreview.GetSpecialUrl(siteInfo.Id, specialId)
+                : ParseNavigationUrl(siteInfo, specialUrl, false);
         }
 
         public static string GetFileUrl(SiteInfo siteInfo, int fileTemplateId, bool isLocal)
@@ -452,9 +457,9 @@ namespace SiteServer.CMS.Core
             return ParseNavigationUrl(siteInfo, url, isLocal);
         }
 
-        public static string ParseNavigationUrl(int publishmentSystemId, string url, bool isLocal)
+        public static string ParseNavigationUrl(int siteId, string url, bool isLocal)
         {
-            var siteInfo = SiteManager.GetSiteInfo(publishmentSystemId);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
             return ParseNavigationUrl(siteInfo, url, isLocal);
         }
 

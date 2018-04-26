@@ -80,6 +80,12 @@
     <Compile Include="BasePageCms.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Cms\ModalSpecialUpload.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Cms\ModalSpecialAdd.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Cms\ModalAddToGroup.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -348,6 +354,9 @@
     <Compile Include="Cms\PageCreateContent.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Cms\PageCreateSpecial.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Cms\PageCreateFile.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -379,6 +388,9 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageTableStyleSite.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Cms\PageSpecial.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageTemplate.cs">

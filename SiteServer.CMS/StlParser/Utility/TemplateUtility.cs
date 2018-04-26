@@ -345,19 +345,19 @@ namespace SiteServer.CMS.StlParser.Utility
 			myDataList.Width = listInfo.Width;
             if (!string.IsNullOrEmpty(listInfo.Align))
             {
-                myDataList.HorizontalAlign = Converter.ToHorizontalAlign(listInfo.Align);
+                myDataList.HorizontalAlign = TranslateUtils.ToHorizontalAlign(listInfo.Align);
             }
 			myDataList.ItemStyle.Height = listInfo.ItemHeight;
 			myDataList.ItemStyle.Width = listInfo.ItemWidth;
             myDataList.ItemStyle.HorizontalAlign = HorizontalAlign.Left;
             if (!string.IsNullOrEmpty(listInfo.ItemAlign))
             {
-                myDataList.ItemStyle.HorizontalAlign = Converter.ToHorizontalAlign(listInfo.ItemAlign);
+                myDataList.ItemStyle.HorizontalAlign = TranslateUtils.ToHorizontalAlign(listInfo.ItemAlign);
             }
             myDataList.ItemStyle.VerticalAlign = VerticalAlign.Top;
             if (!string.IsNullOrEmpty(listInfo.ItemVerticalAlign))
             {
-                myDataList.ItemStyle.VerticalAlign = Converter.ToVerticalAlign(listInfo.ItemVerticalAlign);
+                myDataList.ItemStyle.VerticalAlign = TranslateUtils.ToVerticalAlign(listInfo.ItemVerticalAlign);
             }
             if (!string.IsNullOrEmpty(listInfo.ItemClass))
             {

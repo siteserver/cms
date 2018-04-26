@@ -9,7 +9,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
-    public class SmsManager
+    public static class SmsManager
     {
         public static bool IsReady()
         {

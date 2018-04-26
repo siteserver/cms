@@ -7,12 +7,8 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
-	public class TemplateManager
+	public static class TemplateManager
 	{
-        private TemplateManager()
-		{
-        }
-
         private const string CacheKey = "SiteServer.CMS.Core.TemplateManager";
         private static readonly object SyncRoot = new object();
 

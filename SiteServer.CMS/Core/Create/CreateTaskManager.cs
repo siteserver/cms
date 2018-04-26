@@ -110,7 +110,7 @@ namespace SiteServer.CMS.Core.Create
         public void AddSuccessLog(CreateTaskInfo taskInfo, string timeSpan)
         {
             var taskLogs = GetTaskLogs(taskInfo.SiteId);
-            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.SiteId, taskInfo.ChannelId, taskInfo.ContentId, taskInfo.TemplateId, taskInfo.Name, timeSpan, true, string.Empty, DateTime.Now);
+            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.SiteId, taskInfo.ChannelId, taskInfo.ContentId, taskInfo.FileTemplateId, taskInfo.SpecialId, taskInfo.Name, timeSpan, true, string.Empty, DateTime.Now);
             if (taskLogs.Count > 20)
             {
                 taskLogs.RemoveAt(20);
@@ -121,7 +121,7 @@ namespace SiteServer.CMS.Core.Create
         public void AddFailureLog(CreateTaskInfo taskInfo, Exception ex)
         {
             var taskLogs = GetTaskLogs(taskInfo.SiteId);
-            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.SiteId, taskInfo.ChannelId, taskInfo.ContentId, taskInfo.TemplateId, taskInfo.Name, string.Empty, false, ex.Message, DateTime.Now);
+            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.SiteId, taskInfo.ChannelId, taskInfo.ContentId, taskInfo.FileTemplateId, taskInfo.SpecialId, taskInfo.Name, string.Empty, false, ex.Message, DateTime.Now);
             if (taskLogs.Count > 20)
             {
                 taskLogs.RemoveAt(20);
@@ -153,6 +153,7 @@ namespace SiteServer.CMS.Core.Create
             var channelsCount = 0;
             var contentsCount = 0;
             var filesCount = 0;
+            var specialsCount = 0;
 
             foreach (var taskInfo in pendingTasks)
             {
@@ -167,6 +168,10 @@ namespace SiteServer.CMS.Core.Create
                 else if (taskInfo.CreateType == ECreateType.File)
                 {
                     filesCount += taskInfo.PageCount;
+                }
+                else if (taskInfo.CreateType == ECreateType.Special)
+                {
+                    specialsCount += taskInfo.PageCount;
                 }
             }
 
@@ -199,7 +204,7 @@ namespace SiteServer.CMS.Core.Create
                 list.Add(summaryItem);
             }
 
-            var summary = new CreateTaskSummary(list, channelsCount, contentsCount, filesCount);
+            var summary = new CreateTaskSummary(list, channelsCount, contentsCount, filesCount, specialsCount);
 
             return summary;
         }

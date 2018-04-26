@@ -1158,5 +1158,30 @@ namespace SiteServer.Utils
 
             return encryptor.OutString;
         }
+
+        public static HorizontalAlign ToHorizontalAlign(string typeStr)
+        {
+            return (HorizontalAlign)ToEnum(typeof(HorizontalAlign), typeStr, HorizontalAlign.Left);
+        }
+
+        public static VerticalAlign ToVerticalAlign(string typeStr)
+        {
+            return (VerticalAlign)ToEnum(typeof(VerticalAlign), typeStr, VerticalAlign.Middle);
+        }
+
+        public static GridLines ToGridLines(string typeStr)
+        {
+            return (GridLines)ToEnum(typeof(GridLines), typeStr, GridLines.None);
+        }
+
+        public static RepeatDirection ToRepeatDirection(string typeStr)
+        {
+            return (RepeatDirection)ToEnum(typeof(RepeatDirection), typeStr, RepeatDirection.Vertical);
+        }
+
+        public static RepeatLayout ToRepeatLayout(string typeStr)
+        {
+            return (RepeatLayout)ToEnum(typeof(RepeatLayout), typeStr, RepeatLayout.Table);
+        }
     }
 }

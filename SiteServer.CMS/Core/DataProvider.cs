@@ -6,7 +6,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
 {
-    public class DataProvider
+    public static class DataProvider
     {
         private static IDataApi _dataApi;
         public static IDataApi DataApi
@@ -93,12 +93,6 @@ namespace SiteServer.CMS.Core
         private static PluginDao _pluginDao;
         public static PluginDao PluginDao => _pluginDao ?? (_pluginDao = new PluginDao());
 
-        private static SiteDao _siteDao;
-        public static SiteDao SiteDao => _siteDao ?? (_siteDao = new SiteDao());
-
-        private static SiteLogDao _siteLogDao;
-        public static SiteLogDao SiteLogDao => _siteLogDao ?? (_siteLogDao = new SiteLogDao());
-
         private static RecordDao _recordDao;
         public static RecordDao RecordDao => _recordDao ?? (_recordDao = new RecordDao());
 
@@ -111,8 +105,17 @@ namespace SiteServer.CMS.Core
         private static RoleDao _roleDao;
         public static RoleDao RoleDao => _roleDao ?? (_roleDao = new RoleDao());
 
+        private static SiteDao _siteDao;
+        public static SiteDao SiteDao => _siteDao ?? (_siteDao = new SiteDao());
+
+        private static SiteLogDao _siteLogDao;
+        public static SiteLogDao SiteLogDao => _siteLogDao ?? (_siteLogDao = new SiteLogDao());
+
         private static SitePermissionsDao _sitePermissionsDao;
         public static SitePermissionsDao SitePermissionsDao => _sitePermissionsDao ?? (_sitePermissionsDao = new SitePermissionsDao());
+
+        private static SpecialDao _specialDao;
+        public static SpecialDao SpecialDao => _specialDao ?? (_specialDao = new SpecialDao());
 
         private static TableDao _tableDao;
         public static TableDao TableDao => _tableDao ?? (_tableDao = new TableDao());
@@ -168,13 +171,14 @@ namespace SiteServer.CMS.Core
             PermissionsInRolesDao,
             PluginConfigDao,
             PluginDao,
-            SiteDao,
-            SiteLogDao,
             RecordDao,
             RelatedFieldDao,
             RelatedFieldItemDao,
             RoleDao,
+            SiteDao,
+            SiteLogDao,
             SitePermissionsDao,
+            SpecialDao,
             TableDao,
             TableMatchDao,
             TableMetadataDao,

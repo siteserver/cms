@@ -2,12 +2,8 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
-	public class CountManager
+    public static class CountManager
 	{
-		private CountManager()
-		{
-		}
-
 		public static void AddCount(string relatedTableName, string relatedIdentity, ECountType countType)
 		{
             if (DataProvider.CountDao.IsExists(relatedTableName, relatedIdentity, countType))

@@ -6,7 +6,7 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
-    public class TabManager
+    public static class TabManager
 	{
         public static List<Tab> GetTopMenuTabs()
         {

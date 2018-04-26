@@ -6,9 +6,9 @@ using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.Core
 {
-	public class CheckManager
+    public static class CheckManager
 	{
-	    public class LevelInt
+	    public static class LevelInt
 	    {
 	        public const int CaoGao = -99;//草稿
 	        public const int DaiShen = 0;//待审

@@ -6,7 +6,7 @@ using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.Core.Office
 {
-    public class WordUtils
+    public static class WordUtils
     {
         public static string GetWordFilePath(string fileName)
         {

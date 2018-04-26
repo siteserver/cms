@@ -16,23 +16,9 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser
 {
-    public class FileSystemObjectAsync
+    public static class FileSystemObjectAsync
     {
-        //public FileSystemObject(int siteId)
-        //{
-        //    SiteInfo = SiteManager.GetSiteInfo(siteId);
-        //    if (SiteInfo == null)
-        //    {
-        //        throw new ArgumentException(siteId + " 不是正确的发布系统ID！");
-        //    }
-        //    SiteId = siteInfo.Id;
-        //    SiteDir = SiteInfo.SiteDir;
-        //    SitePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, SiteInfo.SiteDir);
-        //    IsRoot = SiteInfo.IsRoot;
-        //    DirectoryUtils.CreateDirectoryIfNotExists(SitePath);
-        //}
-
-        public static async Task ExecuteAsync(int siteId, ECreateType createType, int channelId, int contentId, int templateId)
+        public static async Task ExecuteAsync(int siteId, ECreateType createType, int channelId, int contentId, int fileTemplatId, int specialId)
         {
             if (createType == ECreateType.Channel)
             {
@@ -51,7 +37,11 @@ namespace SiteServer.CMS.StlParser
             }
             else if (createType == ECreateType.File)
             {
-                await CreateFileAsync(siteId, templateId);
+                await CreateFileAsync(siteId, fileTemplatId);
+            }
+            else if (createType == ECreateType.Special)
+            {
+                await CreateSpecialAsync(siteId, specialId);
             }
         }
 
@@ -355,8 +345,7 @@ namespace SiteServer.CMS.StlParser
                 var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
                 var pageChannelsElementParser = new StlPageChannels(stlElement, pageInfo, contextInfo, false);
-                int totalNum;
-                var pageCount = pageChannelsElementParser.GetPageCount(out totalNum);
+                var pageCount = pageChannelsElementParser.GetPageCount(out _);
 
                 Parser.Parse(siteInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
@@ -379,8 +368,7 @@ namespace SiteServer.CMS.StlParser
                 var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
                 var pageSqlContentsElementParser = new StlPageSqlContents(stlElement, pageInfo, contextInfo, false);
-                int totalNum;
-                var pageCount = pageSqlContentsElementParser.GetPageCount(out totalNum);
+                var pageCount = pageSqlContentsElementParser.GetPageCount(out _);
 
                 Parser.Parse(siteInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
@@ -403,10 +391,10 @@ namespace SiteServer.CMS.StlParser
             }
         }
 
-        private static async Task CreateFileAsync(int siteId, int templateId)
+        private static async Task CreateFileAsync(int siteId, int fileTemplatId)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var templateInfo = TemplateManager.GetTemplateInfo(siteId, templateId);
+            var templateInfo = TemplateManager.GetTemplateInfo(siteId, fileTemplatId);
             if (templateInfo == null || templateInfo.TemplateType != TemplateType.FileTemplate)
             {
                 return;
@@ -415,17 +403,25 @@ namespace SiteServer.CMS.StlParser
             var contextInfo = new ContextInfo(pageInfo);
             var filePath = PathUtility.MapPath(siteInfo, templateInfo.CreatedFileFullName);
 
-            //if (siteInfo.Additional.VisualType == EVisualType.Dynamic)
-            //{
-            //    string pageUrl = PageUtility.GetFileUrl(siteInfo, templateID, EVisualType.Dynamic);
-            //    string content = StringUtility.GetRedirectPageHtml(pageUrl);
-            //    this.GenerateFile(filePath, pageInfo.TemplateInfo.Charset, content);
-            //    return;
-            //}
-
             var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(siteInfo, templateInfo));
             Parser.Parse(siteInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
             await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
+        }
+
+        private static async Task CreateSpecialAsync(int siteId, int specialId)
+        {
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var templateInfoList = SpecialManager.GetTemplateInfoList(siteInfo, specialId);
+            foreach (var templateInfo in templateInfoList)
+            {
+                var pageInfo = new PageInfo(siteId, 0, siteInfo, templateInfo, new Dictionary<string, object>());
+                var contextInfo = new ContextInfo(pageInfo);
+                var filePath = PathUtility.MapPath(siteInfo, templateInfo.CreatedFileFullName);
+
+                var contentBuilder = new StringBuilder(templateInfo.Content);
+                Parser.Parse(siteInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
+            }
         }
 
         //private string CreateIncludeFile(string virtualUrl, bool isCreateIfExists)

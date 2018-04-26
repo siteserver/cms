@@ -1,6 +1,6 @@
 ﻿namespace SiteServer.CMS.Core
 {
-	public class SourceManager
+    public static class SourceManager
 	{
         public const int CaiJi = -2;        //采集
         public const int Preview = -99;     //预览

@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.PageCreateContent" %>
+﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.PageCreateSpecial" %>
   <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
@@ -8,8 +8,8 @@
       <!--#include file="../inc/head.html"-->
       <script type="text/javascript" language="javascript">
         function selectAll(isChecked) {
-          for (var i = 0; i < document.getElementById('<%=LbChannelIdList.ClientID%>').options.length; i++) {
-            document.getElementById('<%=LbChannelIdList.ClientID%>').options[i].selected = isChecked;
+          for (var i = 0; i < document.getElementById('<%=LbSpecialIdList.ClientID%>').options.length; i++) {
+            document.getElementById('<%=LbSpecialIdList.ClientID%>').options[i].selected = isChecked;
           }
         }
       </script>
@@ -21,16 +21,16 @@
 
         <div class="card-box">
           <div class="m-t-0 header-title">
-            生成内容页
+            生成专题
           </div>
           <p class="text-muted font-13 m-b-25">
-            选择需要生成内容页面的栏目后点击“生成选定内容”即可生成对应的内容页面，按住Ctrl可多选
+            选择需要生成的专题后点击“生成选定专题”即可生成对应的专题面，按住Ctrl可多选
           </p>
 
           <div class="form-group form-row">
-            <label class="col-sm-2 col-form-label">生成选定的内容</label>
+            <label class="col-sm-2 col-form-label">生成专题</label>
             <div class="col-sm-4">
-              <asp:ListBox ID="LbChannelIdList" SelectionMode="Multiple" Rows="19" class="form-control" runat="server"></asp:ListBox>
+              <asp:ListBox ID="LbSpecialIdList" SelectionMode="Multiple" Rows="19" class="form-control" runat="server"></asp:ListBox>
             </div>
             <div class="col-sm-6">
 
@@ -39,17 +39,17 @@
           <div class="form-group form-row">
             <label class="col-sm-2 col-form-label">生成范围</label>
             <div class="col-sm-4">
-              <asp:DropDownList ID="DdlScope" class="form-control" runat="server"></asp:DropDownList>
-            </div>
-            <div class="col-sm-6">
               <div class="checkbox checkbox-primary float-left">
                 <input id="checkbox" type="checkbox" onClick="selectAll(this.checked);">
                 <label for="checkbox">
                   全选
                 </label>
               </div>
-              <asp:Button class="btn btn-primary float-left" style="margin-bottom:0px;" text="生成选定内容" onclick="Create_OnClick" runat="server"
+              <asp:Button class="btn btn-primary float-left" style="margin-bottom:0px;" text="生成选定专题" onclick="Create_OnClick" runat="server"
               />
+            </div>
+            <div class="col-sm-6">
+
             </div>
           </div>
 

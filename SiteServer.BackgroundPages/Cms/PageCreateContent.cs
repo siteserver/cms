@@ -13,7 +13,6 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public ListBox LbChannelIdList;
         public DropDownList DdlScope;
-        public Button BtnDeleteAll;
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -35,7 +34,6 @@ namespace SiteServer.BackgroundPages.Cms
             DdlScope.Items.Add(listitem);
 
             ChannelManager.AddListItems(LbChannelIdList.Items, SiteInfo, false, true, AuthRequest.AdminPermissions);
-            BtnDeleteAll.Attributes.Add("onclick", "return confirm(\"此操作将删除所有已生成的内容页面，确定吗？\");");
         }
 
 
@@ -99,14 +97,6 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             PageCreateStatus.Redirect(SiteId);
-        }
-
-        public void BtnDeleteAll_OnClick(object sender, EventArgs e)
-        {
-            if (!Page.IsPostBack || !Page.IsValid) return;
-
-            var url = PageProgressBar.GetDeleteAllPageUrl(SiteId, TemplateType.ContentTemplate);
-            PageUtils.RedirectToLoadingPage(url);
         }
     }
 }
