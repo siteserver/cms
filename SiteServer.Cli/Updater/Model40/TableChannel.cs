@@ -8,7 +8,7 @@ namespace SiteServer.Cli.Updater.Model40
 {
     public partial class TableChannel
     {
-        [JsonProperty("nodeId")]
+        [JsonProperty("nodeID")]
         public long NodeId { get; set; }
 
         [JsonProperty("nodeName")]
@@ -17,13 +17,13 @@ namespace SiteServer.Cli.Updater.Model40
         [JsonProperty("nodeType")]
         public string NodeType { get; set; }
 
-        [JsonProperty("publishmentSystemId")]
+        [JsonProperty("publishmentSystemID")]
         public long PublishmentSystemId { get; set; }
 
-        [JsonProperty("contentModelId")]
+        [JsonProperty("contentModelID")]
         public string ContentModelId { get; set; }
 
-        [JsonProperty("parentId")]
+        [JsonProperty("parentID")]
         public long ParentId { get; set; }
 
         [JsonProperty("parentsPath")]
@@ -59,6 +59,9 @@ namespace SiteServer.Cli.Updater.Model40
         [JsonProperty("contentNum")]
         public long ContentNum { get; set; }
 
+        [JsonProperty("commentNum")]
+        public long CommentNum { get; set; }
+
         [JsonProperty("filePath")]
         public string FilePath { get; set; }
 
@@ -74,10 +77,10 @@ namespace SiteServer.Cli.Updater.Model40
         [JsonProperty("linkType")]
         public string LinkType { get; set; }
 
-        [JsonProperty("channelTemplateId")]
+        [JsonProperty("channelTemplateID")]
         public long ChannelTemplateId { get; set; }
 
-        [JsonProperty("contentTemplateId")]
+        [JsonProperty("contentTemplateID")]
         public long ContentTemplateId { get; set; }
 
         [JsonProperty("keywords")]

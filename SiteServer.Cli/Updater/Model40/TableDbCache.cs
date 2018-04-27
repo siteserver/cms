@@ -15,14 +15,11 @@ namespace SiteServer.Cli.Updater.Model40
 
         [JsonProperty("cacheValue")]
         public string CacheValue { get; set; }
-
-        [JsonProperty("addDate")]
-        public string AddDate { get; set; }
     }
 
     public partial class TableDbCache
     {
-        public const string OldTableName = "bairong_DbCache";
+        public const string OldTableName = "bairong_Cache";
 
         public static readonly string NewTableName = DataProvider.DbCacheDao.TableName;
 

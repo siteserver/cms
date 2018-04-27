@@ -7,10 +7,10 @@ namespace SiteServer.Cli.Updater.Model40
 {
     public partial class TableTableMetadata
     {
-        [JsonProperty("tableMetadataId")]
+        [JsonProperty("tableMetadataID")]
         public long TableMetadataId { get; set; }
 
-        [JsonProperty("auxiliaryTableEnName")]
+        [JsonProperty("auxiliaryTableENName")]
         public string AuxiliaryTableEnName { get; set; }
 
         [JsonProperty("attributeName")]
@@ -22,11 +22,17 @@ namespace SiteServer.Cli.Updater.Model40
         [JsonProperty("dataLength")]
         public long DataLength { get; set; }
 
+        [JsonProperty("canBeNull")]
+        public string CanBeNull { get; set; }
+
+        [JsonProperty("dbDefaultValue")]
+        public string DbDefaultValue { get; set; }
+
         [JsonProperty("taxis")]
         public long Taxis { get; set; }
 
         [JsonProperty("isSystem")]
-        public bool IsSystem { get; set; }
+        public string IsSystem { get; set; }
     }
 
     public partial class TableTableMetadata

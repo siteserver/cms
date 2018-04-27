@@ -7,13 +7,16 @@ namespace SiteServer.Cli.Updater.Model40
 {
     public partial class TableTag
     {
-        [JsonProperty("tagId")]
+        [JsonProperty("tagID")]
         public long TagId { get; set; }
 
-        [JsonProperty("publishmentSystemId")]
+        [JsonProperty("productID")]
+        public string ProductId { get; set; }
+
+        [JsonProperty("publishmentSystemID")]
         public long PublishmentSystemId { get; set; }
 
-        [JsonProperty("contentIdCollection")]
+        [JsonProperty("contentIDCollection")]
         public string ContentIdCollection { get; set; }
 
         [JsonProperty("tag")]

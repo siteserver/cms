@@ -30,7 +30,7 @@ namespace SiteServer.Cli.Commands
 
         public static void PrintUsage()
         {
-            Console.WriteLine("Update command usage: ");
+            Console.WriteLine("Update command usage: siteserver update");
             Options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }
@@ -74,6 +74,14 @@ namespace SiteServer.Cli.Commands
             else if (_version == Updater40.Version)
             {
                 updater = new Updater40(oldTreeInfo, newTreeInfo);
+            }
+            else if (_version == Updater41.Version)
+            {
+                updater = new Updater41(oldTreeInfo, newTreeInfo);
+            }
+            else if (_version == Updater50.Version)
+            {
+                updater = new Updater50(oldTreeInfo, newTreeInfo);
             }
             if (updater == null)
             {

@@ -24,9 +24,6 @@ namespace SiteServer.Cli.Updater.Model40
         [JsonProperty("lastEditUserName")]
         public string LastEditUserName { get; set; }
 
-        [JsonProperty("writingUserName")]
-        public string WritingUserName { get; set; }
-
         [JsonProperty("lastEditDate")]
         public DateTimeOffset LastEditDate { get; set; }
 
@@ -79,31 +76,31 @@ namespace SiteServer.Cli.Updater.Model40
         public string Title { get; set; }
 
         [JsonProperty("subTitle")]
-        public object SubTitle { get; set; }
+        public string SubTitle { get; set; }
 
         [JsonProperty("imageUrl")]
-        public object ImageUrl { get; set; }
+        public string ImageUrl { get; set; }
 
         [JsonProperty("videoUrl")]
-        public object VideoUrl { get; set; }
+        public string VideoUrl { get; set; }
 
         [JsonProperty("fileUrl")]
-        public object FileUrl { get; set; }
+        public string FileUrl { get; set; }
 
         [JsonProperty("linkUrl")]
-        public object LinkUrl { get; set; }
+        public string LinkUrl { get; set; }
 
         [JsonProperty("content")]
-        public object Content { get; set; }
+        public string Content { get; set; }
 
         [JsonProperty("summary")]
-        public object Summary { get; set; }
+        public string Summary { get; set; }
 
         [JsonProperty("author")]
-        public object Author { get; set; }
+        public string Author { get; set; }
 
         [JsonProperty("source")]
-        public object Source { get; set; }
+        public string Source { get; set; }
 
         [JsonProperty("isRecommend")]
         public string IsRecommend { get; set; }

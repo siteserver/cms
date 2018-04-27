@@ -7,7 +7,7 @@ namespace SiteServer.Cli.Updater.Model40
 {
     public partial class TableTableStyle
     {
-        [JsonProperty("tableStyleId")]
+        [JsonProperty("tableStyleID")]
         public long TableStyleId { get; set; }
 
         [JsonProperty("relatedIdentity")]
@@ -29,25 +29,25 @@ namespace SiteServer.Cli.Updater.Model40
         public string HelpText { get; set; }
 
         [JsonProperty("isVisible")]
-        public bool IsVisible { get; set; }
+        public string IsVisible { get; set; }
 
         [JsonProperty("isVisibleInList")]
-        public bool IsVisibleInList { get; set; }
+        public string IsVisibleInList { get; set; }
 
         [JsonProperty("isSingleLine")]
-        public bool IsSingleLine { get; set; }
+        public string IsSingleLine { get; set; }
 
         [JsonProperty("inputType")]
         public string InputType { get; set; }
 
         [JsonProperty("isRequired")]
-        public bool IsRequired { get; set; }
+        public string IsRequired { get; set; }
 
         [JsonProperty("defaultValue")]
         public string DefaultValue { get; set; }
 
         [JsonProperty("isHorizontal")]
-        public bool IsHorizontal { get; set; }
+        public string IsHorizontal { get; set; }
 
         [JsonProperty("extendValues")]
         public string ExtendValues { get; set; }

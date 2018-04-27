@@ -11,6 +11,9 @@ namespace SiteServer.Cli.Updater.Model40
         [JsonProperty("userId")]
         public long UserId { get; set; }
 
+        [JsonProperty("groupSN")]
+        public string GroupSn { get; set; }
+
         [JsonProperty("userName")]
         public string UserName { get; set; }
 
@@ -26,29 +29,32 @@ namespace SiteServer.Cli.Updater.Model40
         [JsonProperty("groupId")]
         public long GroupId { get; set; }
 
+        [JsonProperty("credits")]
+        public long Credits { get; set; }
+
         [JsonProperty("createDate")]
         public DateTimeOffset CreateDate { get; set; }
 
-        [JsonProperty("lastResetPasswordDate")]
-        public DateTimeOffset LastResetPasswordDate { get; set; }
+        [JsonProperty("createIpAddress")]
+        public string CreateIpAddress { get; set; }
+
+        [JsonProperty("createUserName")]
+        public string CreateUserName { get; set; }
+
+        [JsonProperty("pointCount")]
+        public long PointCount { get; set; }
 
         [JsonProperty("lastActivityDate")]
         public DateTimeOffset LastActivityDate { get; set; }
-
-        [JsonProperty("countOfLogin")]
-        public long CountOfLogin { get; set; }
-
-        [JsonProperty("countOfFailedLogin")]
-        public long CountOfFailedLogin { get; set; }
-
-        [JsonProperty("countOfWriting")]
-        public long CountOfWriting { get; set; }
 
         [JsonProperty("isChecked")]
         public string IsChecked { get; set; }
 
         [JsonProperty("isLockedOut")]
         public string IsLockedOut { get; set; }
+
+        [JsonProperty("isTemporary")]
+        public string IsTemporary { get; set; }
 
         [JsonProperty("displayName")]
         public string DisplayName { get; set; }
@@ -59,50 +65,23 @@ namespace SiteServer.Cli.Updater.Model40
         [JsonProperty("mobile")]
         public string Mobile { get; set; }
 
-        [JsonProperty("avatarUrl")]
-        public string AvatarUrl { get; set; }
+        [JsonProperty("onlineSeconds")]
+        public string OnlineSeconds { get; set; }
 
-        [JsonProperty("organization")]
-        public string Organization { get; set; }
+        [JsonProperty("avatarLarge")]
+        public string AvatarLarge { get; set; }
 
-        [JsonProperty("department")]
-        public string Department { get; set; }
+        [JsonProperty("avatarMiddle")]
+        public string AvatarMiddle { get; set; }
 
-        [JsonProperty("position")]
-        public string Position { get; set; }
-
-        [JsonProperty("gender")]
-        public string Gender { get; set; }
-
-        [JsonProperty("birthday")]
-        public string Birthday { get; set; }
-
-        [JsonProperty("education")]
-        public string Education { get; set; }
-
-        [JsonProperty("graduation")]
-        public string Graduation { get; set; }
-
-        [JsonProperty("address")]
-        public string Address { get; set; }
-
-        [JsonProperty("weiXin")]
-        public string WeiXin { get; set; }
-
-        [JsonProperty("qq")]
-        public string Qq { get; set; }
-
-        [JsonProperty("weiBo")]
-        public string WeiBo { get; set; }
-
-        [JsonProperty("interests")]
-        public string Interests { get; set; }
+        [JsonProperty("avatarSmall")]
+        public string AvatarSmall { get; set; }
 
         [JsonProperty("signature")]
         public string Signature { get; set; }
 
-        [JsonProperty("extendValues")]
-        public string ExtendValues { get; set; }
+        [JsonProperty("settingsXml")]
+        public string SettingsXml { get; set; }
     }
 
     public partial class TableUser
@@ -116,7 +95,8 @@ namespace SiteServer.Cli.Updater.Model40
         public static readonly Dictionary<string, string> ConvertDict =
             new Dictionary<string, string>
             {
-                {nameof(UserInfo.Id), nameof(UserId)}
+                {nameof(UserInfo.Id), nameof(UserId)},
+                {nameof(UserInfo.AvatarUrl), nameof(AvatarLarge)}
             };
     }
 }

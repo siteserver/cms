@@ -50,7 +50,7 @@ namespace SiteServer.Cli
                 }
                 else if (StringUtils.EqualsIgnoreCase(commandName, VersionManager.CommandName))
                 {
-                    VersionManager.Execute(commandArgs);
+                    VersionManager.Execute(commandArgs.ToArray());
                 }
                 else
                 {
@@ -60,6 +60,7 @@ namespace SiteServer.Cli
                     BackupManager.PrintUsage();
                     RestoreManager.PrintUsage();
                     UpdateManager.PrintUsage();
+                    VersionManager.PrintUsage();
                     CliUtils.PrintLine();
                     CliUtils.PrintRow("http://www.siteserver.cn/docs/cli");
                     CliUtils.PrintLine();

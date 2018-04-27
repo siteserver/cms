@@ -10,7 +10,7 @@ namespace SiteServer.Cli.Updater.Model40
         [JsonProperty("nodeGroupName")]
         public string NodeGroupName { get; set; }
 
-        [JsonProperty("publishmentSystemId")]
+        [JsonProperty("publishmentSystemID")]
         public long PublishmentSystemId { get; set; }
 
         [JsonProperty("taxis")]

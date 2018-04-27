@@ -7,10 +7,10 @@ namespace SiteServer.Cli.Updater.Model40
 {
     public partial class TableTable
     {
-        [JsonProperty("tableEnName")]
+        [JsonProperty("tableENName")]
         public string TableEnName { get; set; }
 
-        [JsonProperty("tableCnName")]
+        [JsonProperty("tableCNName")]
         public string TableCnName { get; set; }
 
         [JsonProperty("attributeNum")]
@@ -19,10 +19,10 @@ namespace SiteServer.Cli.Updater.Model40
         [JsonProperty("auxiliaryTableType")]
         public string AuxiliaryTableType { get; set; }
 
-        [JsonProperty("isCreatedInDb")]
+        [JsonProperty("isCreatedInDB")]
         public string IsCreatedInDb { get; set; }
 
-        [JsonProperty("isChangedAfterCreatedInDb")]
+        [JsonProperty("isChangedAfterCreatedInDB")]
         public string IsChangedAfterCreatedInDb { get; set; }
 
         [JsonProperty("isDefault")]

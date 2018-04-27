@@ -28,7 +28,7 @@ namespace SiteServer.Cli.Commands
 
         public static void PrintUsage()
         {
-            Console.WriteLine("Restore command usage: ");
+            Console.WriteLine("Restore command usage: siteserver restore");
             Options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }

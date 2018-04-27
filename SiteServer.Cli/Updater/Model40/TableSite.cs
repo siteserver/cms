@@ -7,7 +7,7 @@ namespace SiteServer.Cli.Updater.Model40
 {
     public partial class TableSite
     {
-        [JsonProperty("publishmentSystemId")]
+        [JsonProperty("publishmentSystemID")]
         public long PublishmentSystemId { get; set; }
 
         [JsonProperty("publishmentSystemName")]
@@ -18,6 +18,12 @@ namespace SiteServer.Cli.Updater.Model40
 
         [JsonProperty("auxiliaryTableForContent")]
         public string AuxiliaryTableForContent { get; set; }
+
+        [JsonProperty("auxiliaryTableForGoods")]
+        public string AuxiliaryTableForGoods { get; set; }
+
+        [JsonProperty("auxiliaryTableForBrand")]
+        public string AuxiliaryTableForBrand { get; set; }
 
         [JsonProperty("auxiliaryTableForGovPublic")]
         public string AuxiliaryTableForGovPublic { get; set; }
@@ -46,13 +52,16 @@ namespace SiteServer.Cli.Updater.Model40
         [JsonProperty("isHeadquarters")]
         public string IsHeadquarters { get; set; }
 
-        [JsonProperty("parentPublishmentSystemId")]
+        [JsonProperty("parentPublishmentSystemID")]
         public long ParentPublishmentSystemId { get; set; }
+
+        [JsonProperty("groupSN")]
+        public string GroupSn { get; set; }
 
         [JsonProperty("taxis")]
         public long Taxis { get; set; }
 
-        [JsonProperty("settingsXml")]
+        [JsonProperty("settingsXML")]
         public string SettingsXml { get; set; }
 
         [JsonProperty("id")]

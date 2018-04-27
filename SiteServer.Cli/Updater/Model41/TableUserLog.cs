@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
-namespace SiteServer.Cli.Updater.Model40
+namespace SiteServer.Cli.Updater.Model41
 {
     public partial class TableUserLog
     {

@@ -11,10 +11,10 @@ namespace SiteServer.Cli.Updater.Model40
         [JsonProperty("id")]
         public long Id { get; set; }
 
-        [JsonProperty("templateId")]
+        [JsonProperty("templateID")]
         public long TemplateId { get; set; }
 
-        [JsonProperty("publishmentSystemId")]
+        [JsonProperty("publishmentSystemID")]
         public long PublishmentSystemId { get; set; }
 
         [JsonProperty("addDate")]

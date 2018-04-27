@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
-using SiteServer.Cli.Updater.Model40;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
+using SiteServer.Cli.Updater.Model40;
 
 namespace SiteServer.Cli.Updater
 {
@@ -215,50 +213,8 @@ namespace SiteServer.Cli.Updater
                 newColumns = TableUser.NewColumns;
                 convertDict = TableUser.ConvertDict;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableUserLog.OldTableName))
-            {
-                newTableName = TableUserLog.NewTableName;
-                newColumns = TableUserLog.NewColumns;
-                convertDict = TableUserLog.ConvertDict;
-            }
 
-            if (string.IsNullOrEmpty(newTableName))
-            {
-                newTableName = oldTableName;
-            }
-            if (newColumns == null || newColumns.Count == 0)
-            {
-                newColumns = oldTableInfo.Columns;
-            }
-
-            var newTableInfo = new TableInfo
-            {
-                Columns = newColumns,
-                TotalCount = oldTableInfo.TotalCount,
-                RowFiles = oldTableInfo.RowFiles
-            };
-
-            foreach (var fileName in oldTableInfo.RowFiles)
-            {
-                var oldFilePath = OldTreeInfo.GetTableContentFilePath(oldTableName, fileName);
-                var newFilePath = NewTreeInfo.GetTableContentFilePath(newTableName, fileName);
-
-                if (convertDict != null)
-                {
-                    var oldRows =
-                        TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(oldFilePath, Encoding.UTF8));
-
-                    var newRows = UpdateUtils.UpdateRows(oldRows, convertDict);
-
-                    FileUtils.WriteText(newFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newRows));
-                }
-                else
-                {
-                    FileUtils.CopyFile(oldFilePath, newFilePath);
-                }
-            }
-
-            return new KeyValuePair<string, TableInfo>(newTableName, newTableInfo);
+            return GetNewTableInfo(oldTableName, oldTableInfo, newTableName, newColumns, convertDict);
         }
     }
 }

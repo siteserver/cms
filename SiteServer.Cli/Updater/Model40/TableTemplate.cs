@@ -7,10 +7,10 @@ namespace SiteServer.Cli.Updater.Model40
 {
     public partial class TableTemplate
     {
-        [JsonProperty("templateId")]
+        [JsonProperty("templateID")]
         public long TemplateId { get; set; }
 
-        [JsonProperty("publishmentSystemId")]
+        [JsonProperty("publishmentSystemID")]
         public long PublishmentSystemId { get; set; }
 
         [JsonProperty("templateName")]
@@ -32,7 +32,7 @@ namespace SiteServer.Cli.Updater.Model40
         public string Charset { get; set; }
 
         [JsonProperty("isDefault")]
-        public bool IsDefault { get; set; }
+        public string IsDefault { get; set; }
     }
 
     public partial class TableTemplate

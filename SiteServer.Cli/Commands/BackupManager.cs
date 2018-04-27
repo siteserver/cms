@@ -27,7 +27,7 @@ namespace SiteServer.Cli.Commands
 
         public static void PrintUsage()
         {
-            Console.WriteLine("Backup command usage: ");
+            Console.WriteLine("Backup command usage: siteserver backup");
             Options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }

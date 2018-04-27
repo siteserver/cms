@@ -10,6 +10,9 @@ namespace SiteServer.Cli.Updater.Model40
         [JsonProperty("roleName")]
         public string RoleName { get; set; }
 
+        [JsonProperty("productIDCollection")]
+        public string ProductIdCollection { get; set; }
+
         [JsonProperty("creatorUserName")]
         public string CreatorUserName { get; set; }
 

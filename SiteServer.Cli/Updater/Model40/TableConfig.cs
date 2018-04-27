@@ -20,14 +20,17 @@ namespace SiteServer.Cli.Updater.Model40
         [JsonProperty("restrictionWhiteList")]
         public string RestrictionWhiteList { get; set; }
 
+        [JsonProperty("isRelatedUrl")]
+        public string IsRelatedUrl { get; set; }
+
+        [JsonProperty("rootUrl")]
+        public string RootUrl { get; set; }
+
         [JsonProperty("updateDate")]
         public DateTimeOffset UpdateDate { get; set; }
 
-        [JsonProperty("userConfig")]
-        public string UserConfig { get; set; }
-
-        [JsonProperty("systemConfig")]
-        public string SystemConfig { get; set; }
+        [JsonProperty("settingsXML")]
+        public string SettingsXml { get; set; }
 
         [JsonProperty("id")]
         public long Id { get; set; }

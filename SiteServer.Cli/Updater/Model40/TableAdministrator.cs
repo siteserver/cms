@@ -26,11 +26,11 @@ namespace SiteServer.Cli.Updater.Model40
         [JsonProperty("lastActivityDate")]
         public DateTimeOffset LastActivityDate { get; set; }
 
+        [JsonProperty("lastProductID")]
+        public string LastProductId { get; set; }
+
         [JsonProperty("countOfLogin")]
         public long CountOfLogin { get; set; }
-
-        [JsonProperty("countOfFailedLogin")]
-        public long CountOfFailedLogin { get; set; }
 
         [JsonProperty("creatorUserName")]
         public string CreatorUserName { get; set; }
@@ -38,26 +38,38 @@ namespace SiteServer.Cli.Updater.Model40
         [JsonProperty("isLockedOut")]
         public string IsLockedOut { get; set; }
 
-        [JsonProperty("publishmentSystemIdCollection")]
+        [JsonProperty("publishmentSystemIDCollection")]
         public string PublishmentSystemIdCollection { get; set; }
 
-        [JsonProperty("publishmentSystemId")]
+        [JsonProperty("publishmentSystemID")]
         public long PublishmentSystemId { get; set; }
 
-        [JsonProperty("departmentId")]
+        [JsonProperty("departmentID")]
         public long DepartmentId { get; set; }
 
-        [JsonProperty("areaId")]
+        [JsonProperty("areaID")]
         public long AreaId { get; set; }
 
         [JsonProperty("displayName")]
         public string DisplayName { get; set; }
+
+        [JsonProperty("question")]
+        public string Question { get; set; }
+
+        [JsonProperty("answer")]
+        public string Answer { get; set; }
 
         [JsonProperty("email")]
         public string Email { get; set; }
 
         [JsonProperty("mobile")]
         public string Mobile { get; set; }
+
+        [JsonProperty("theme")]
+        public string Theme { get; set; }
+
+        [JsonProperty("language")]
+        public string Language { get; set; }
 
         [JsonProperty("id")]
         public long Id { get; set; }
