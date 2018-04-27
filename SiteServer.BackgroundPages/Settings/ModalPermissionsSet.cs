@@ -77,7 +77,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             LbAvailableRoles.Items.Clear();
             LbAssignedRoles.Items.Clear();
-            var allRoles = AuthRequest.AdminPermissions.IsConsoleAdministrator ? DataProvider.RoleDao.GetAllRoles() : DataProvider.RoleDao.GetAllRolesByCreatorUserName(AuthRequest.AdminName);
+            var allRoles = AuthRequest.AdminPermissions.IsConsoleAdministrator ? DataProvider.RoleDao.GetRoleNameList() : DataProvider.RoleDao.GetRoleNameListByCreatorUserName(AuthRequest.AdminName);
             var userRoles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(_userName);
             var userRoleNameArrayList = new ArrayList(userRoles);
             foreach (var roleName in allRoles)

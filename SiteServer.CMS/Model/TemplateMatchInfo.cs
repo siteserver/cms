@@ -2,18 +2,6 @@ namespace SiteServer.CMS.Model
 {
 	public class TemplateMatchInfo
 	{
-	    public TemplateMatchInfo()
-	    {
-	        Id = 0;
-            ChannelId = 0;
-			SiteId = 0;
-			ChannelTemplateId = 0;
-			ContentTemplateId = 0;
-            FilePath = string.Empty;
-            ChannelFilePathRule = string.Empty;
-            ContentFilePathRule = string.Empty;
-		}
-
         public TemplateMatchInfo(int id, int channelId, int siteId, int channelTemplateId, int contentTemplateId, string filePath, string channelFilePathRule, string contentFilePathRule)
         {
             Id = id;

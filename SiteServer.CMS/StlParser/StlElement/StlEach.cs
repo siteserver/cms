@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;

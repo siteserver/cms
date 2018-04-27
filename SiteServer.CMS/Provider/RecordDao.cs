@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -17,32 +18,32 @@ namespace SiteServer.CMS.Provider
         {
             new TableColumnInfo
             {
-                ColumnName = "Id",
+                ColumnName = nameof(RecordInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
             new TableColumnInfo
             {
-                ColumnName = "Text",
+                ColumnName = nameof(RecordInfo.Text),
                 DataType = DataType.VarChar,
                 Length = 2000
             },
             new TableColumnInfo
             {
-                ColumnName = "Summary",
+                ColumnName = nameof(RecordInfo.Summary),
                 DataType = DataType.VarChar,
                 Length = 2000
             },
             new TableColumnInfo
             {
-                ColumnName = "Source",
+                ColumnName = nameof(RecordInfo.Source),
                 DataType = DataType.VarChar,
                 Length = 200
             },
             new TableColumnInfo
             {
-                ColumnName = "AddDate",
+                ColumnName = nameof(RecordInfo.AddDate),
                 DataType = DataType.DateTime
             }
         };

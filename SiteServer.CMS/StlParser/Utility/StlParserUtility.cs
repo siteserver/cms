@@ -8,6 +8,7 @@ using SiteServer.Utils;
 using SiteServer.Utils.ThirdParty.Sgml;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Plugin;
 

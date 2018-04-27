@@ -66,7 +66,12 @@ namespace SiteServer.CMS.Provider
                     }
                 }
             }
-            DataProvider.RoleDao.InsertRole(roleName, creatorUserName, description);
+            DataProvider.RoleDao.InsertRole(new RoleInfo
+            {
+                RoleName = roleName,
+                CreatorUserName = creatorUserName,
+                Description = description
+            });
         }
 
 		public void InsertWithTrans(PermissionsInRolesInfo info, IDbTransaction trans) 

@@ -102,7 +102,7 @@ namespace SiteServer.Cli.Commands
                             FileUtils.WriteText(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
                         }
 
-                        Console.CursorLeft = 0;
+                        CliUtils.PrintProgressBarEnd();
                     }
                     else
                     {

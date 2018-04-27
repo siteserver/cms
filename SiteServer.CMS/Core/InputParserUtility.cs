@@ -5,6 +5,7 @@ using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core

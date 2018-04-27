@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Provider;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.Plugin;

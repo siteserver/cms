@@ -16,20 +16,20 @@ namespace SiteServer.CMS.Provider
         {
             new TableColumnInfo
             {
-                ColumnName = "Id",
+                ColumnName = nameof(AdministratorsInRolesInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
             new TableColumnInfo
             {
-                ColumnName = "RoleName",
+                ColumnName = nameof(AdministratorsInRolesInfo.RoleName),
                 DataType = DataType.VarChar,
                 Length = 255
             },
             new TableColumnInfo
             {
-                ColumnName = "UserName",
+                ColumnName = nameof(AdministratorsInRolesInfo.UserName),
                 DataType = DataType.VarChar,
                 Length = 255
             }

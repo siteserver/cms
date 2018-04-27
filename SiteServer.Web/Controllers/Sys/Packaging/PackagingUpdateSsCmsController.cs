@@ -31,7 +31,7 @@ namespace SiteServer.API.Controllers.Sys.Packaging
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), PathUtils.GetBinDirectoryPath(string.Empty), true);
             FileUtils.CopyFile(packageWebConfigPath, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.WebConfigFileName), true);
 
-            SystemManager.SyncDatabase();
+            //SystemManager.SyncDatabase();
 
             return Ok();
         }

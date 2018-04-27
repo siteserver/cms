@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
@@ -16,14 +17,14 @@ namespace SiteServer.CMS.Provider
         {
             new TableColumnInfo
             {
-                ColumnName = nameof(PluginConfigInfo.Id),
+                ColumnName = nameof(PluginInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
             new TableColumnInfo
             {
-                ColumnName = nameof(PluginConfigInfo.PluginId),
+                ColumnName = nameof(PluginInfo.PluginId),
                 DataType = DataType.VarChar,
                 Length = 50
             },
@@ -58,7 +59,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(nameof(PluginInfo.IsDisabled), DataType.VarChar, 18, isDisabled.ToString()),
+                GetParameter(nameof(PluginInstance.IsDisabled), DataType.VarChar, 18, isDisabled.ToString()),
                 GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginId)
             };
 
@@ -71,7 +72,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(nameof(PluginInfo.Taxis), DataType.Integer, taxis),
+                GetParameter(nameof(PluginInstance.Taxis), DataType.Integer, taxis),
                 GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginId)
             };
 
@@ -108,8 +109,8 @@ namespace SiteServer.CMS.Provider
                 parameters = new IDataParameter[]
                 {
                     GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginId),
-                    GetParameter(nameof(PluginInfo.IsDisabled), DataType.VarChar, 18, false.ToString()),
-                    GetParameter(nameof(PluginInfo.Taxis), DataType.Integer, 0)
+                    GetParameter(nameof(PluginInstance.IsDisabled), DataType.VarChar, 18, false.ToString()),
+                    GetParameter(nameof(PluginInstance.Taxis), DataType.Integer, 0)
                 };
 
                 ExecuteNonQuery(sqlString, parameters);

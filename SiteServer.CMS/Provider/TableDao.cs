@@ -4,6 +4,7 @@ using System.Data;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 

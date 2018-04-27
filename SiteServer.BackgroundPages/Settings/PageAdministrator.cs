@@ -134,7 +134,7 @@ namespace SiteServer.BackgroundPages.Settings
             };
             DdlRoleName.Items.Add(theListItem);
 
-            var allRoles = AuthRequest.AdminPermissions.IsConsoleAdministrator ? DataProvider.RoleDao.GetAllRoles() : DataProvider.RoleDao.GetAllRolesByCreatorUserName(AuthRequest.AdminName);
+            var allRoles = AuthRequest.AdminPermissions.IsConsoleAdministrator ? DataProvider.RoleDao.GetRoleNameList() : DataProvider.RoleDao.GetRoleNameListByCreatorUserName(AuthRequest.AdminName);
 
             var allPredefinedRoles = EPredefinedRoleUtils.GetAllPredefinedRoleName();
             foreach (var theRoleName in allRoles)

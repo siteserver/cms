@@ -71,6 +71,10 @@ namespace SiteServer.Cli.Commands
             {
                 updater = new Updater36(oldTreeInfo, newTreeInfo);
             }
+            else if (_version == Updater40.Version)
+            {
+                updater = new Updater40(oldTreeInfo, newTreeInfo);
+            }
             if (updater == null)
             {
                 Console.WriteLine($"Error, The currently supported update versions are {Updater36.Version}");
@@ -102,7 +106,7 @@ namespace SiteServer.Cli.Commands
                     {
                         var dict = TranslateUtils.JsonGetDictionaryIgnorecase(row);
                         object obj;
-                        if (dict.TryGetValue(nameof(SiteserverPublishmentSystem.AuxiliaryTableForContent),
+                        if (dict.TryGetValue(nameof(TableSite.AuxiliaryTableForContent),
                             out obj))
                         {
                             if (obj != null)

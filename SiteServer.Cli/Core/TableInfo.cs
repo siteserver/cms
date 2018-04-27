@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.Cli.Core

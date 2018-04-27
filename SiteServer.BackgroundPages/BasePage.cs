@@ -36,6 +36,12 @@ namespace SiteServer.BackgroundPages
 
             AuthRequest = new AuthRequest(Request);
 
+            if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.Version)
+            {
+                PageUtils.Redirect(PageSyncDatabase.GetRedirectUrl());
+                return;
+            }
+
             if (!IsAccessable) // 如果页面不能直接访问且又没有登录则直接跳登录页
             {
                 if (!AuthRequest.IsAdminLoggin || AuthRequest.AdminInfo == null) // 检测管理员是否登录

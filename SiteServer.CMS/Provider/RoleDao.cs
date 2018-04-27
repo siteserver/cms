@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -15,26 +16,26 @@ namespace SiteServer.CMS.Provider
         {
             new TableColumnInfo
             {
-                ColumnName = "Id",
+                ColumnName = nameof(RoleInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
             new TableColumnInfo
             {
-                ColumnName = "RoleName",
+                ColumnName = nameof(RoleInfo.RoleName),
                 DataType = DataType.VarChar,
                 Length = 255
             },
             new TableColumnInfo
             {
-                ColumnName = "CreatorUserName",
+                ColumnName = nameof(RoleInfo.CreatorUserName),
                 DataType = DataType.VarChar,
                 Length = 255
             },
             new TableColumnInfo
             {
-                ColumnName = "Description",
+                ColumnName = nameof(RoleInfo.Description),
                 DataType = DataType.VarChar,
                 Length = 255
             }
@@ -84,7 +85,7 @@ namespace SiteServer.CMS.Provider
 			return creatorUserName;
 		}
 
-        public List<string> GetAllRoles()
+        public List<string> GetRoleNameList()
         {
             var list = new List<string>();
             const string sqlSelect = "SELECT RoleName FROM siteserver_Role ORDER BY RoleName";
@@ -101,7 +102,7 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-		public List<string> GetAllRolesByCreatorUserName(string creatorUserName)
+		public List<string> GetRoleNameListByCreatorUserName(string creatorUserName)
 		{
 			var list = new List<string>();
 
@@ -124,17 +125,17 @@ namespace SiteServer.CMS.Provider
 		    return list;
 		}
 
-        public void InsertRole(string roleName, string creatorUserName, string description)
+        public void InsertRole(RoleInfo roleInfo)
         {
-            if (EPredefinedRoleUtils.IsPredefinedRole(roleName)) return;
+            if (EPredefinedRoleUtils.IsPredefinedRole(roleInfo.RoleName)) return;
 
             const string sqlString = "INSERT INTO siteserver_Role (RoleName, CreatorUserName, Description) VALUES (@RoleName, @CreatorUserName, @Description)";
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleName, DataType.VarChar, 255, roleName),
-                GetParameter(ParmCreatorUsername, DataType.VarChar, 255, creatorUserName),
-                GetParameter(ParmDescription, DataType.VarChar, 255, description)
+				GetParameter(ParmRoleName, DataType.VarChar, 255, roleInfo.RoleName),
+                GetParameter(ParmCreatorUsername, DataType.VarChar, 255, roleInfo.CreatorUserName),
+                GetParameter(ParmDescription, DataType.VarChar, 255, roleInfo.Description)
 			};
 
             ExecuteNonQuery(sqlString, parms);

@@ -7,6 +7,7 @@ using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.BackgroundPages.Core
 {

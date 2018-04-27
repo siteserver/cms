@@ -3,6 +3,7 @@ using SiteServer.Utils;
 using Word.Plugin;
 using System.Collections.Specialized;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.CMS.Core.Office
 {

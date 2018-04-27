@@ -1,5 +1,6 @@
 using System;
 using System.Xml.Serialization;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Model

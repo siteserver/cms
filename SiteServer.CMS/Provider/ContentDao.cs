@@ -7,6 +7,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;

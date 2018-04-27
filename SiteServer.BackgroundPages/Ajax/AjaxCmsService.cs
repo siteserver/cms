@@ -5,6 +5,7 @@ using System.Web.UI;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.BackgroundPages.Ajax
 {

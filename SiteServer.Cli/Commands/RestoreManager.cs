@@ -121,7 +121,7 @@ namespace SiteServer.Cli.Commands
                     }
                 }
 
-                Console.CursorLeft = 0;
+                CliUtils.PrintProgressBarEnd();
             }
 
             CliUtils.PrintLine();

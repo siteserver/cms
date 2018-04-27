@@ -58,35 +58,55 @@ namespace SiteServer.Cli.Core
 
         public static void PrintProgressBar(int progress, int total)
         {
-            //draw empty progress bar
-            Console.CursorLeft = 0;
-            Console.Write("["); //start
-            Console.CursorLeft = 32;
-            Console.Write("]"); //end
-            Console.CursorLeft = 1;
-            float onechunk = 30.0f / total;
-
-            //draw filled part
-            int position = 1;
-            for (int i = 0; i < onechunk * progress; i++)
+            try
             {
-                Console.BackgroundColor = ConsoleColor.Green;
-                Console.CursorLeft = position++;
-                Console.Write(" ");
-            }
+                //draw empty progress bar
+                Console.CursorLeft = 0;
+                Console.Write("["); //start
+                Console.CursorLeft = 32;
+                Console.Write("]"); //end
+                Console.CursorLeft = 1;
+                float onechunk = 30.0f / total;
 
-            //draw unfilled part
-            for (int i = position; i <= 31; i++)
+                //draw filled part
+                int position = 1;
+                for (int i = 0; i < onechunk * progress; i++)
+                {
+                    Console.BackgroundColor = ConsoleColor.Green;
+                    Console.CursorLeft = position++;
+                    Console.Write(" ");
+                }
+
+                //draw unfilled part
+                for (int i = position; i <= 31; i++)
+                {
+                    Console.BackgroundColor = ConsoleColor.Gray;
+                    Console.CursorLeft = position++;
+                    Console.Write(" ");
+                }
+
+                //draw totals
+                Console.CursorLeft = 35;
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.Write(Convert.ToDouble(progress / (double) total).ToString("0%") +
+                              "    "); //blanks at the end remove any excess
+            }
+            catch
             {
-                Console.BackgroundColor = ConsoleColor.Gray;
-                Console.CursorLeft = position++;
-                Console.Write(" ");
+                // ignored
             }
+        }
 
-            //draw totals
-            Console.CursorLeft = 35;
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.Write(Convert.ToDouble(progress / (double)total).ToString("0%") + "    "); //blanks at the end remove any excess
+        public static void PrintProgressBarEnd()
+        {
+            try
+            {
+                Console.CursorLeft = 0;
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         public static void PrintError(string errorMessage)

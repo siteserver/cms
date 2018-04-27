@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Web;
 using SiteServer.CMS.Core;
 
@@ -24,7 +24,7 @@ namespace SiteServer.API
                 }
                 HttpContext.Current.Server.ClearError();
 
-                LogUtils.AddErrorLogAndRedirect(ex, "ÏµÍ³´íÎó");
+                LogUtils.AddErrorLogAndRedirect(ex, "HttpApplication Error");
             }
             catch
             {

@@ -31,13 +31,10 @@ namespace SiteServer.CMS.Provider
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
                 var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
-                //������ݿ�汾
+
                 const string sqlCheck = "SELECT SERVERPROPERTY('productversion')";
                 var versions = ExecuteScalar(sqlCheck).ToString();
-                //MM.nn.bbbb.rr
-                //8 -- 2000
-                //9 -- 2005
-                //10 -- 2008
+
                 var version = 8;
                 var arr = versions.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
                 if (arr.Length > 0)

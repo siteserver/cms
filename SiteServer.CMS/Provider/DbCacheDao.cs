@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -16,26 +17,26 @@ namespace SiteServer.CMS.Provider
         {
             new TableColumnInfo
             {
-                ColumnName = "Id",
+                ColumnName = nameof(DbCacheInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
             new TableColumnInfo
             {
-                ColumnName = "CacheKey",
+                ColumnName = nameof(DbCacheInfo.CacheKey),
                 DataType = DataType.VarChar,
                 Length = 200
             },
             new TableColumnInfo
             {
-                ColumnName = "CacheValue",
+                ColumnName = nameof(DbCacheInfo.CacheValue),
                 DataType = DataType.VarChar,
                 Length = 500
             },
             new TableColumnInfo
             {
-                ColumnName = "AddDate",
+                ColumnName = nameof(DbCacheInfo.AddDate),
                 DataType = DataType.DateTime
             }
         };

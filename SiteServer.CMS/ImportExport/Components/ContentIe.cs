@@ -6,6 +6,7 @@ using Atom.Core.Collections;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.ImportExport.Components
