@@ -43,7 +43,6 @@ namespace SiteServer.Utils
         {
             PhysicalApplicationPath = physicalApplicationPath;
 
-
             var isProtectData = false;
             var databaseType = string.Empty;
             var connectionString = string.Empty;

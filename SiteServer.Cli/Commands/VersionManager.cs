@@ -41,8 +41,14 @@ namespace SiteServer.Cli.Commands
             var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             Console.WriteLine($"SiteServer CLI Version: {version.Substring(0, version.Length - 2)}");
             Console.WriteLine($"Work Directory: {CliUtils.PhysicalApplicationPath}");
+            Console.WriteLine();
 
-            if (!string.IsNullOrEmpty(_webConfigFileName))
+            if (string.IsNullOrEmpty(_webConfigFileName))
+            {
+                _webConfigFileName = "web.config";
+            }
+
+            if (FileUtils.IsFileExists(PathUtils.Combine(CliUtils.PhysicalApplicationPath, _webConfigFileName)))
             {
                 WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, _webConfigFileName);
 
