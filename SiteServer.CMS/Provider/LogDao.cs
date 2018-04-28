@@ -88,10 +88,14 @@ namespace SiteServer.CMS.Provider
             }
         }
 
-        public void Delete(int days)
+        public void DeleteIfThreshold()
         {
+            if (!ConfigManager.SystemConfigInfo.IsTimeThreshold) return;
+
+            var days = ConfigManager.SystemConfigInfo.TimeThreshold;
             if (days <= 0) return;
-            ExecuteNonQuery($@"DELETE FROM siteserver_Log WHERE AddDate < '{DateUtils.GetDateAndTimeString(DateTime.Now.AddDays(-days))}'");
+
+            ExecuteNonQuery($@"DELETE FROM siteserver_Log WHERE AddDate < {SqlUtils.GetComparableDateTime(DateTime.Now.AddDays(-days))}");
         }
 
         public void DeleteAll()

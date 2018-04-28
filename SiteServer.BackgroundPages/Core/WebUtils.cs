@@ -11,7 +11,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Core
 {
-    public class WebUtils
+    public static class WebUtils
     {
         public static string GetContentTitle(SiteInfo siteInfo, ContentInfo contentInfo, string pageUrl)
         {

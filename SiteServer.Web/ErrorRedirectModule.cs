@@ -24,7 +24,7 @@ namespace SiteServer.API
                 }
                 HttpContext.Current.Server.ClearError();
 
-                LogUtils.AddErrorLogAndRedirect(ex, "HttpApplication Error");
+                LogUtils.AddErrorLogAndRedirect(ex, "Server Error in Application");
             }
             catch
             {

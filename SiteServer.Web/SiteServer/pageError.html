@@ -37,8 +37,7 @@
         </blockquote>
       </div>
       <div class="card-footer text-muted">
-        <span class="m-r-5">如果错误信息为列名无效，可以尝试运行
-          <a href="pageSyncDatabase.aspx">数据库升级向导</a>，以确保数据库字段与系统版本一致</span>
+        <span class="m-r-5">如需帮助，请点击链接向 SiteServer CMS 官方 <a target="_blank" v-bind:href="'https://github.com/siteserver/cms/issues/new?title=' + message + '&body=' + stacktrace">提交问题</a></span>
       </div>
     </div>
 
@@ -69,7 +68,7 @@
 
         errorApi.get(null, function (err, res) {
           if (!err && res && res.logInfo) {
-            $this.message = res.logInfo.summary + '<br />' + res.logInfo.message;
+            $this.message = res.logInfo.summary + ' ' + res.logInfo.message;
             $this.stacktrace = res.logInfo.stacktrace;
             $this.addDate = res.logInfo.addDate;
             $this.reportError(res.logInfo, res.version);

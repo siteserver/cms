@@ -86,9 +86,9 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (ConfigManager.SystemConfigInfo.IsLogAdmin)
             {
-                BtnSetting.Text = "禁用记录日志";
+                BtnSetting.Text = "禁用管理员日志";
                 BtnSetting.Attributes.Add("onclick",
-                    AlertUtils.ConfirmRedirect("禁用记录日志", "此操作将禁用管理员日志记录功能，确定吗？", "禁 用",
+                    AlertUtils.ConfirmRedirect("禁用管理员日志", "此操作将禁用管理员日志记录功能，确定吗？", "禁 用",
                         PageUtils.GetSettingsUrl(nameof(PageLogAdmin), new NameValueCollection
                         {
                             {"Setting", "True"}
@@ -97,9 +97,9 @@ namespace SiteServer.BackgroundPages.Settings
             else
             {
                 LtlState.Text = @"<div class=""alert alert-danger m-t-10"">管理员日志当前处于禁用状态，系统将不会记录管理员操作日志！</div>";
-                BtnSetting.Text = "启用记录日志";
+                BtnSetting.Text = "启用管理员日志";
                 BtnSetting.Attributes.Add("onclick",
-                    AlertUtils.ConfirmRedirect("启用记录日志", "此操作将启用管理员日志记录功能，确定吗？", "启 用",
+                    AlertUtils.ConfirmRedirect("启用管理员日志", "此操作将启用管理员日志记录功能，确定吗？", "启 用",
                         PageUtils.GetSettingsUrl(nameof(PageLogAdmin), new NameValueCollection
                         {
                             {"Setting", "True"}

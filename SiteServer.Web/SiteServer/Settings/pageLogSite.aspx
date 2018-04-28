@@ -125,8 +125,11 @@
 
           <hr />
 
+          <asp:Literal ID="LtlState" runat="server"></asp:Literal>
+
           <asp:Button class="btn m-r-5" id="BtnDelete" Text="删 除" runat="server" />
           <asp:Button class="btn m-r-5" id="BtnDeleteAll" Text="删除全部" runat="server" />
+          <asp:Button class="btn m-r-5" ID="BtnSetting" runat="server" />
 
         </div>
 

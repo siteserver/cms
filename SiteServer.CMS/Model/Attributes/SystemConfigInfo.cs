@@ -24,6 +24,12 @@ namespace SiteServer.CMS.Model.Attributes
 
         public string ApiUrl => IsSeparatedApi ? SeparatedApiUrl : PageUtils.ParseNavigationUrl("~/api");
 
+        public bool IsLogSite
+        {
+            get { return GetBool("IsLogSite", true); }
+            set { Set("IsLogSite", value.ToString()); }
+        }
+
         public bool IsLogAdmin
         {
             get { return GetBool("IsLogAdmin", true); }

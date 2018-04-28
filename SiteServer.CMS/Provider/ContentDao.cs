@@ -1721,9 +1721,8 @@ group by tmp.userName";
             return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
         
-        public string GetWhereStringByStlSearch(bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int siteId, List<string> excludeAttributes, NameValueCollection form, out bool isDefaultCondition)
+        public string GetWhereStringByStlSearch(bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int siteId, List<string> excludeAttributes, NameValueCollection form)
         {
-            isDefaultCondition = true;
             var whereBuilder = new StringBuilder();
 
             SiteInfo siteInfo = null;
@@ -1856,11 +1855,6 @@ group by tmp.userName";
                 }
             }
 
-            if (whereBuilder.ToString().Contains(" AND "))
-            {
-                isDefaultCondition = false;
-            }
-
             return whereBuilder.ToString();
         }
 
@@ -1958,7 +1952,7 @@ group by tmp.userName";
 
             if (!string.IsNullOrEmpty(tableName))
             {
-                return DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, $"{nameof(IContentInfo.Id)}, {nameof(IContentInfo.ChannelId)}, {nameof(IContentInfo.IsTop)}, {nameof(IContentInfo.AddDate)}, {nameof(IContentInfo.LastEditDate)}, {nameof(IContentInfo.Taxis)}, {nameof(IContentInfo.Hits)}, {nameof(IContentInfo.HitsByDay)}, {nameof(IContentInfo.HitsByWeek)}, {nameof(IContentInfo.HitsByMonth)}", sqlWhereString, orderByString);
+                return DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, TranslateUtils.ObjectCollectionToString(ContentAttribute.AllAttributesLowercase), sqlWhereString, orderByString);
             }
             return string.Empty;
         }
@@ -2134,7 +2128,7 @@ group by tmp.userName";
             return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public string GetStlWhereString(int siteId, string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
+        public string GetStlWhereString(int siteId, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
         {
             var whereBuilder = new StringBuilder();
             whereBuilder.Append($" AND SiteId = {siteId} ");
@@ -2247,7 +2241,7 @@ group by tmp.userName";
             return whereBuilder.ToString();
         }
 
-        public string GetStlWhereStringBySearch(string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
+        public string GetStlWhereStringBySearch(string group, string groupNot, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
         {
             var whereBuilder = new StringBuilder();
 
@@ -2350,11 +2344,7 @@ group by tmp.userName";
 
         public string GetSqlStringByDownloads(string tableName, int siteId)
         {
-            var whereString = new StringBuilder();
-            whereString.Append(
-                $"WHERE (SiteId = {siteId} AND IsChecked='True' AND FileUrl <> '') ");
-
-            return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
+            return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, $"WHERE (SiteId = {siteId} AND IsChecked='True' AND FileUrl <> '') ");
         }
 
         private int GetTaxis(int selectedId, string tableName)
@@ -2820,20 +2810,20 @@ group by tmp.userName";
             return ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channelInfo.Additional.DefaultTaxisType));
         }
 
-        public string GetPagerReturnColumnNames(List<string> allLowerAttributeNameList, StringCollection attributesOfDisplay)
-        {
-            var columnLowerList = new List<string>(ContentAttribute.AllAttributesLowercase);
-            foreach (var attribute in attributesOfDisplay)
-            {
-                var lowerAttribute = attribute;
-                if (!columnLowerList.Contains(lowerAttribute) && allLowerAttributeNameList.Contains(lowerAttribute))
-                {
-                    columnLowerList.Add(lowerAttribute);
-                }
-            }
+        //public string GetPagerReturnColumnNames(List<string> allLowerAttributeNameList, StringCollection attributesOfDisplay)
+        //{
+        //    var columnLowerList = new List<string>(ContentAttribute.AllAttributesLowercase);
+        //    foreach (var attribute in attributesOfDisplay)
+        //    {
+        //        var lowerAttribute = attribute;
+        //        if (!columnLowerList.Contains(lowerAttribute) && allLowerAttributeNameList.Contains(lowerAttribute))
+        //        {
+        //            columnLowerList.Add(lowerAttribute);
+        //        }
+        //    }
 
-            return TranslateUtils.ObjectCollectionToString(columnLowerList);
-        }
+        //    return TranslateUtils.ObjectCollectionToString(columnLowerList);
+        //}
 
         //----------------------------pager end----------------------------------------//
     }

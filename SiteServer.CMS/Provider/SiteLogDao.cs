@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
@@ -94,6 +95,16 @@ namespace SiteServer.CMS.Provider
 			};
 
             ExecuteNonQuery(sqlString, parms);
+        }
+
+        public void DeleteIfThreshold()
+        {
+            if (!ConfigManager.SystemConfigInfo.IsTimeThreshold) return;
+
+            var days = ConfigManager.SystemConfigInfo.TimeThreshold;
+            if (days <= 0) return;
+
+            ExecuteNonQuery($@"DELETE FROM siteserver_SiteLog WHERE AddDate < {SqlUtils.GetComparableDateTime(DateTime.Now.AddDays(-days))}");
         }
 
         public void Delete(List<int> idList)

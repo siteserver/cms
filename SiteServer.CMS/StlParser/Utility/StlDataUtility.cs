@@ -295,7 +295,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return ETaxisTypeUtils.GetContentOrderByString(taxisType, orderByString);
         }
 
-        public static string GetStlPageContentsSqlString(SiteInfo siteInfo, int channelId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot)
+        public static string GetStlPageContentsSqlString(SiteInfo siteInfo, int channelId, ListInfo listInfo)
         {
             if (!ChannelManager.IsExists(siteInfo.Id, channelId)) return string.Empty;
 
@@ -303,19 +303,19 @@ namespace SiteServer.CMS.StlParser.Utility
             var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
 
             var sqlWhereString = ChannelManager.IsContentModelPlugin(siteInfo, nodeInfo)
-                ? Content.GetStlWhereString(siteInfo.Id, groupContent, groupContentNot,
-                    tags, isTopExists, isTop, where)
-                : Content.GetStlWhereString(siteInfo.Id, tableName, groupContent,
-                    groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile,
-                    isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor,
-                    where);
+                ? Content.GetStlWhereString(siteInfo.Id, listInfo.GroupContent, listInfo.GroupContentNot,
+                    listInfo.Tags, listInfo.IsTopExists, listInfo.IsTop, listInfo.Where)
+                : Content.GetStlWhereString(siteInfo.Id, listInfo.GroupContent,
+                    listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile,
+                    listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor,
+                    listInfo.Where);
 
-            return Content.GetStlSqlStringChecked(tableName, siteInfo.Id, channelId, startNum, totalNum, orderByString, sqlWhereString, scopeType, groupChannel, groupChannelNot);
+            return Content.GetStlSqlStringChecked(tableName, siteInfo.Id, channelId, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, sqlWhereString, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot);
         }
 
-        public static string GetPageContentsSqlStringBySearch(string tableName, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot)
+        public static string GetPageContentsSqlStringBySearch(string tableName, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
         {
-            var sqlWhereString = Content.GetStlWhereStringBySearch(tableName, groupContent, groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
+            var sqlWhereString = Content.GetStlWhereStringBySearch(groupContent, groupContentNot, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
             var sqlString = Content.GetStlSqlStringCheckedBySearch(tableName, startNum, totalNum, orderByString, sqlWhereString);
 
             return sqlString;
@@ -368,7 +368,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var sqlWhereString = PluginManager.IsExists(nodeInfo.ContentModelPluginId)
                 ? Content.GetStlWhereString(siteInfo.Id, groupContent, groupContentNot,
                     tags, isTopExists, isTop, where)
-                : Content.GetStlWhereString(siteInfo.Id, tableName, groupContent,
+                : Content.GetStlWhereString(siteInfo.Id, groupContent,
                     groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile,
                     isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor,
                     where);

@@ -480,7 +480,8 @@ namespace SiteServer.CMS.Core
 
         public static string GetVirtualUrl(SiteInfo siteInfo, string url)
         {
-            var virtualUrl = StringUtils.ReplaceStartsWith(url, siteInfo.Additional.WebUrl, "@/");
+            var relatedSiteUrl = PageUtils.ParseNavigationUrl($"~/{siteInfo.SiteDir}");
+            var virtualUrl = StringUtils.ReplaceStartsWith(url, relatedSiteUrl, "@/");
             return StringUtils.ReplaceStartsWith(virtualUrl, "@//", "@/");
         }
 

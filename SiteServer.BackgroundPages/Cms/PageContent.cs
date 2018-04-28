@@ -9,6 +9,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
+using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -79,7 +80,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
-            var allLowerAttributeNameList = TableMetadataManager.GetAllLowerAttributeNameList(_tableName);
+            var allLowerAttributeNameList = TableMetadataManager.GetAllLowerAttributeNameListExcludeText(_tableName);
             var pagerParam = new PagerParam
             {
                 ControlToPaginate = RptContents,
@@ -87,8 +88,7 @@ namespace SiteServer.BackgroundPages.Cms
                 PageSize = SiteInfo.Additional.PageSize,
                 Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
                 OrderSqlString = DataProvider.ContentDao.GetPagerOrderSqlString(_channelInfo),
-                ReturnColumnNames =
-                    DataProvider.ContentDao.GetPagerReturnColumnNames(allLowerAttributeNameList, _attributesOfDisplay)
+                ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allLowerAttributeNameList)
             };
 
             var administratorName = AuthRequest.AdminPermissions.IsViewContentOnlySelf(SiteId, channelId) ? AuthRequest.AdminName : string.Empty;
@@ -122,6 +122,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var styleInfo in _allStyleInfoList)
             {
+                if (styleInfo.InputType == InputType.TextEditor) continue;
+
                 var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
                 DdlSearchType.Items.Add(listitem);
             }

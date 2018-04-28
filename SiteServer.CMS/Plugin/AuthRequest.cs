@@ -162,34 +162,7 @@ namespace SiteServer.CMS.Plugin
 
         public void AddSiteLog(int siteId, int channelId, int contentId, string action, string summary)
         {
-            if (siteId <= 0)
-            {
-                LogUtils.AddAdminLog(AdminName, action, summary);
-            }
-            else
-            {
-                try
-                {
-                    if (!string.IsNullOrEmpty(action))
-                    {
-                        action = StringUtils.MaxLengthText(action, 250);
-                    }
-                    if (!string.IsNullOrEmpty(summary))
-                    {
-                        summary = StringUtils.MaxLengthText(summary, 250);
-                    }
-                    if (channelId < 0)
-                    {
-                        channelId = -channelId;
-                    }
-                    var logInfo = new SiteLogInfo(0, siteId, channelId, contentId, AdminName, PageUtils.GetIpAddress(), DateTime.Now, action, summary);
-                    DataProvider.SiteLogDao.Insert(logInfo);
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
+            LogUtils.AddSiteLog(siteId, channelId, contentId, AdminName, action, summary);
         }
 
         public void AddAdminLog(string action, string summary)

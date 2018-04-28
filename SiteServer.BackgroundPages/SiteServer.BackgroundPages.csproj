@@ -670,9 +670,6 @@
     <Compile Include="Settings\PageSiteKeyword.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageSiteReplace.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\PageSiteSave.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

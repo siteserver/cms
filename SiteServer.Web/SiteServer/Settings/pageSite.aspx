@@ -55,7 +55,6 @@
                       <th class="text-center">保存为站点模板</th>
                       <th class="text-center">修改属性</th>
                       <th class="text-center">站点路径转移</th>
-                      <th class="text-center">整站替换</th>
                       <th class="text-center">整站删除</th>
                       <th class="text-center">上升</th>
                       <th class="text-center">下降</th>
@@ -82,9 +81,6 @@
                           </td>
                           <td class="text-center">
                             <asp:Literal ID="ltlChangeType" runat="server"></asp:Literal>
-                          </td>
-                          <td class="text-center">
-                            <asp:Literal ID="ltlReplace" runat="server"></asp:Literal>
                           </td>
                           <td class="text-center">
                             <asp:Literal ID="ltlDelete" runat="server"></asp:Literal>

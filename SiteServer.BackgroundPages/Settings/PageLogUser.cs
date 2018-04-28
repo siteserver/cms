@@ -79,9 +79,9 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (ConfigManager.SystemConfigInfo.IsLogUser)
             {
-                BtnSetting.Text = "禁用记录日志";
+                BtnSetting.Text = "禁用用户日志";
                 BtnSetting.Attributes.Add("onclick",
-                    AlertUtils.ConfirmRedirect("禁用记录日志", "此操作将禁用用户日志记录功能，确定吗？", "禁 用",
+                    AlertUtils.ConfirmRedirect("禁用用户日志", "此操作将禁用用户日志记录功能，确定吗？", "禁 用",
                         PageUtils.GetSettingsUrl(nameof(PageLogUser), new NameValueCollection
                         {
                             {"Setting", "True"}
@@ -90,9 +90,9 @@ namespace SiteServer.BackgroundPages.Settings
             else
             {
                 LtlState.Text = @"<div class=""alert alert-danger m-t-10"">用户日志当前处于禁用状态，系统将不会记录用户操作日志！</div>";
-                BtnSetting.Text = "启用记录日志";
+                BtnSetting.Text = "启用用户日志";
                 BtnSetting.Attributes.Add("onclick",
-                    AlertUtils.ConfirmRedirect("启用记录日志", "此操作将启用用户日志记录功能，确定吗？", "启 用",
+                    AlertUtils.ConfirmRedirect("启用用户日志", "此操作将启用用户日志记录功能，确定吗？", "启 用",
                         PageUtils.GetSettingsUrl(nameof(PageLogUser), new NameValueCollection
                         {
                             {"Setting", "True"}

@@ -112,7 +112,7 @@ namespace SiteServer.BackgroundPages.Settings
             else
             {
                 LtlState.Text = @"<div class=""alert alert-danger m-t-10"">系统错误日志当前处于禁用状态，系统将不会记录系统错误日志！</div>";
-                BtnSetting.Text = "启用记录日志";
+                BtnSetting.Text = "启用系统错误日志";
                 BtnSetting.Attributes.Add("onclick",
                     AlertUtils.ConfirmRedirect("启用系统错误日志", "此操作将启用系统错误日志记录功能，确定吗？", "启 用",
                         PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection

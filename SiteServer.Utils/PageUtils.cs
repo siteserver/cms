@@ -924,7 +924,7 @@ namespace SiteServer.Utils
 
         public static string GetErrorPageUrl(string message)
         {
-            return GetAdminDirectoryUrl($"pageError.html?message={HttpUtility.UrlEncode(message)}");
+            return GetAdminDirectoryUrl($"pageError.html?message={message}");
         }
 
         public static void CheckRequestParameter(params string[] parameters)

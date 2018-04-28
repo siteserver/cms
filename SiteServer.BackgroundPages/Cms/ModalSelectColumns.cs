@@ -6,6 +6,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -45,6 +46,8 @@ namespace SiteServer.BackgroundPages.Cms
             var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetTableStyleInfoList(tableName, _relatedIdentities));
             foreach (var styleInfo in styleInfoList)
             {
+                if (styleInfo.InputType == InputType.TextEditor) continue;
+                
                 var listitem = new ListItem($"{styleInfo.DisplayName}({styleInfo.AttributeName})", styleInfo.AttributeName);
                 if (styleInfo.AttributeName == ContentAttribute.Title)
                 {
