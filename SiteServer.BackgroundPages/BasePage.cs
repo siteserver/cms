@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages
 
             if (!IsInstallerPage)
             {
-                if (!WebConfigUtils.IsInitialized)
+                if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
                 {
                     PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl("Installer"));
                     return;

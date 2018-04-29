@@ -150,6 +150,50 @@ namespace SiteServer.CMS.Core
         private static UserLogDao _userLogDao;
         public static UserLogDao UserLogDao => _userLogDao ?? (_userLogDao = new UserLogDao());
 
+        public static void Reset()
+        {
+            _dataApi = null;
+
+            _administratorDao = null;
+            _administratorsInRolesDao = null;
+            _areaDao = null;
+            _channelDao = null;
+            _channelGroupDao = null;
+            _configDao = null;
+            _contentCheckDao = null;
+            _contentDao = null;
+            _contentGroupDao = null;
+            _countDao = null;
+            _databaseDao = null;
+            _dbCacheDao = null;
+            _departmentDao = null;
+            _errorLogDao = null;
+            _keywordDao = null;
+            _logDao = null;
+            _permissionsInRolesDao = null;
+            _pluginConfigDao = null;
+            _pluginDao = null;
+            _recordDao = null;
+            _relatedFieldDao = null;
+            _relatedFieldItemDao = null;
+            _roleDao = null;
+            _siteDao = null;
+            _siteLogDao = null;
+            _sitePermissionsDao = null;
+            _specialDao = null;
+            _tableDao = null;
+            _tableMatchDao = null;
+            _tableMetadataDao = null;
+            _tableStyleDao = null;
+            _tableStyleItemDao = null;
+            _tagDao = null;
+            _templateDao = null;
+            _templateLogDao = null;
+            _templateMatchDao = null;
+            _userDao = null;
+            _userLogDao = null;
+        }
+
         public static List<DataProviderBase> AllProviders => new List<DataProviderBase>
         {
             AdministratorDao,

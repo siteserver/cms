@@ -352,8 +352,6 @@ Disallow: /SiteFiles/");
 
             try
             {
-                //var errorBuilder = new StringBuilder();
-                //DataProvider.DatabaseDao.Install(errorBuilder);
                 SystemManager.InstallDatabase(TbAdminName.Text, TbAdminPassword.Text);
                 
                 return true;
@@ -378,6 +376,8 @@ Disallow: /SiteFiles/");
                 var connectionString = GetConnectionString(true);
 
                 WebConfigUtils.UpdateWebConfig(isProtectData, databaseType, connectionString, "SiteServer", StringUtils.GetShortGuid(), false);
+
+                DataProvider.Reset();
 
                 returnValue = true;
             }

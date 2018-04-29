@@ -12,8 +12,6 @@ namespace SiteServer.Utils
         /// </summary>
         public static string PhysicalApplicationPath { get; private set; }
 
-        public static bool IsInitialized { get; private set; }
-
         public static bool IsProtectData { get; private set; }
         public static DatabaseType DatabaseType { get; private set; }
 
@@ -134,7 +132,6 @@ namespace SiteServer.Utils
             IsProtectData = isProtectData;
             DatabaseType = DatabaseTypeUtils.GetEnumType(databaseType);
             ConnectionString = connectionString;
-            IsInitialized = !string.IsNullOrEmpty(ConnectionString);
             if (string.IsNullOrEmpty(AdminDirectory))
             {
                 AdminDirectory = "siteserver";
@@ -161,12 +158,20 @@ namespace SiteServer.Utils
         public static void UpdateWebConfig(bool isProtectData, DatabaseType databaseType, string connectionString,
             string adminDirectory, string secretKey, bool isNightlyUpdate)
         {
+            connectionString = SqlUtils.GetConnectionString(databaseType, connectionString);
+
             var configPath = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
             UpdateWebConfig(configPath, isProtectData, databaseType, connectionString, adminDirectory, secretKey, isNightlyUpdate);
+
+            IsProtectData = isProtectData;
+            DatabaseType = databaseType;
+            ConnectionString = connectionString;
         }
 
         public static void UpdateWebConfig(string configPath, bool isProtectData, DatabaseType databaseType, string connectionString, string adminDirectory, string secretKey, bool isNightlyUpdate)
         {
+            connectionString = SqlUtils.GetConnectionString(databaseType, connectionString);
+
             var doc = new XmlDocument();
             doc.Load(configPath);
             var dirty = false;
@@ -257,10 +262,6 @@ namespace SiteServer.Utils
                 writer.Flush();
                 writer.Close();
             }
-
-            IsProtectData = isProtectData;
-            DatabaseType = databaseType;
-            ConnectionString = connectionString;
         }
 
         public static string GetConnectionStringByName(string name)
