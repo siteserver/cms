@@ -33,7 +33,7 @@ namespace SiteServer.Utils
                 {
                     connectionString += $"Database={database};";
                 }
-                connectionString += "CharSet=utf8;";
+                connectionString += "SslMode=none;CharSet=utf8;";
             }
             else if (databaseType == DatabaseType.SqlServer)
             {
