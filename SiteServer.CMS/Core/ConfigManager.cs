@@ -1,4 +1,5 @@
-﻿using SiteServer.CMS.Model;
+﻿using System;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils;
 

@@ -21,8 +21,6 @@ namespace SiteServer.BackgroundPages
         {
             if (IsForbidden) return; // 检测是否允许访问本页面
 
-            if (SystemManager.DetermineRedirectToInstaller()) return; // 检测系统是否需要安装，如果需要转到安装页面。
-
             var redirectUrl = PageMain.GetRedirectUrl(); // 如果检测登录帐号一切正常，则准备转到框架主页 pagemain.aspx
 
             var siteIdList = AuthRequest.AdminPermissions.SiteIdList; // 获取当前站点ID

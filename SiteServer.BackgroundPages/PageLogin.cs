@@ -36,8 +36,6 @@ namespace SiteServer.BackgroundPages
                     LtlMessage.Text = GetMessageHtml(AuthRequest.GetQueryString("error"));
                 }
 
-                SystemManager.DetermineRedirectToInstaller(); // 判断是否需要安装，如果需要则转到安装页面。
-
                 LtlValidateCodeImage.Text =
                         $@"<a href=""javascript:;"" onclick=""$('#imgVerify').attr('src', $('#imgVerify').attr('src') + '&' + new Date().getTime())""><img id=""imgVerify"" name=""imgVerify"" src=""{PageValidateCode.GetRedirectUrl(_vcManager.GetCookieName())}"" align=""absmiddle"" /></a>";
             }

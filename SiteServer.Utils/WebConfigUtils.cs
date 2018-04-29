@@ -12,6 +12,8 @@ namespace SiteServer.Utils
         /// </summary>
         public static string PhysicalApplicationPath { get; private set; }
 
+        public static bool IsInitialized { get; private set; }
+
         public static bool IsProtectData { get; private set; }
         public static DatabaseType DatabaseType { get; private set; }
 
@@ -132,6 +134,7 @@ namespace SiteServer.Utils
             IsProtectData = isProtectData;
             DatabaseType = DatabaseTypeUtils.GetEnumType(databaseType);
             ConnectionString = connectionString;
+            IsInitialized = !string.IsNullOrEmpty(ConnectionString);
             if (string.IsNullOrEmpty(AdminDirectory))
             {
                 AdminDirectory = "siteserver";

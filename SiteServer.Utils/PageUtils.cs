@@ -9,7 +9,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils
 {
-    public class PageUtils
+    public static class PageUtils
     {
         public const char SeparatorChar = '/';
 
@@ -924,7 +924,7 @@ namespace SiteServer.Utils
 
         public static string GetErrorPageUrl(string message)
         {
-            return GetAdminDirectoryUrl($"pageError.html?message={message}");
+            return GetAdminDirectoryUrl($"pageError.html?message={HttpUtility.UrlPathEncode(message)}");
         }
 
         public static void CheckRequestParameter(params string[] parameters)
