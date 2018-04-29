@@ -20,7 +20,7 @@
           <div class="card-box">
 
             <div class="row">
-              <div class="col-8">
+              <div class="col-10">
                 <div class="form-inline">
                   <div class="form-group">
                     <label class="col-form-label m-r-10">关键字</label>
@@ -30,7 +30,7 @@
                   <asp:Button id="BtnSearch" text="搜索插件" onClientClick="$vue.search();return false;" class="btn btn-success m-l-10 btn-md" runat="server" />
                 </div>
               </div>
-              <div class="col-4">
+              <div class="col-2">
                 <asp:Button id="BtnUpload" class="btn btn-primary float-right btn-md" Text="手动安装插件" runat="server" />
               </div>
             </div>

@@ -4,7 +4,7 @@
     only:
       - master
 
-  version: 6.1.{build}
+  version: 6.2.{build}
   image: Visual Studio 2017
 
   assembly_info:
@@ -48,6 +48,9 @@
     - path: siteserver_install.zip
       name: siteserver_install
 
+    - path: siteserver.exe
+      name: siteserver.exe
+
     - path: '*.nupkg'
 
   deploy:
@@ -56,7 +59,7 @@
       description: 'SiteServer CMS'
       auth_token:
         secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
-      artifact: /.*\.zip/
+      artifact: /.*\.[zip|exe]/
       draft: false
       prerelease: false
       on:
