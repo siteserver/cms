@@ -131,7 +131,7 @@ namespace SiteServer.Utils
 
             IsProtectData = isProtectData;
             DatabaseType = DatabaseTypeUtils.GetEnumType(databaseType);
-            ConnectionString = connectionString;
+            ConnectionString = SqlUtils.GetConnectionString(DatabaseType, connectionString);
             if (string.IsNullOrEmpty(AdminDirectory))
             {
                 AdminDirectory = "siteserver";

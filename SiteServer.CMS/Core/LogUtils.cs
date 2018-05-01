@@ -27,24 +27,14 @@ namespace SiteServer.CMS.Core
 
         public static void AddErrorLogAndRedirect(Exception ex, string summary = "")
         {
-            if (ex.HResult == -2147467259) // 文件名不存在
+            var logId = AddErrorLog(ex, summary);
+            if (logId > 0)
             {
-                var response = HttpContext.Current.Response;
-                response.TrySkipIisCustomErrors = true; // For IIS 7 Integrated Pipeline - see previous post
-                response.Status = "404 Not Found";
-                response.StatusCode = 404;
+                PageUtils.RedirectToErrorPage(logId);
             }
             else
             {
-                var logId = AddErrorLog(ex, summary);
-                if (logId > 0)
-                {
-                    PageUtils.RedirectToErrorPage(logId);
-                }
-                else
-                {
-                    PageUtils.RedirectToErrorPage(ex.Message);
-                }
+                PageUtils.RedirectToErrorPage(ex.Message);
             }
         }
 
