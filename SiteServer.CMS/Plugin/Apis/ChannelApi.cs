@@ -81,6 +81,12 @@ namespace SiteServer.CMS.Plugin.Apis
             return ChannelManager.GetChannelName(siteId, channelId);
         }
 
+        public string GetTableName(int siteId, int channelId)
+        {
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            return ChannelManager.GetTableName(siteInfo, channelId);
+        }
+
         public void Update(int siteId, IChannelInfo channelInfo)
         {
             DataProvider.ChannelDao.Update(channelInfo);

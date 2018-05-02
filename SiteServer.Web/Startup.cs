@@ -1,4 +1,5 @@
-﻿using System.Web.Hosting;
+﻿using System.Linq;
+using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.Routing;
@@ -52,6 +53,15 @@ namespace SiteServer.API
             settings.Converters.Add(timeFormat);
             jsonFormatter.SerializerSettings = settings;
             jsonFormatter.Indent = true;
+
+            var formatters = config.Formatters.Where(formatter =>
+                    formatter.SupportedMediaTypes.Any(media => media.MediaType == "application/xml"))
+                .ToList();
+
+            foreach (var match in formatters)
+            {
+                config.Formatters.Remove(match);
+            }
 
             config.EnsureInitialized();
 

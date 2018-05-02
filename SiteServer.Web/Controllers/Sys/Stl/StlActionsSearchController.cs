@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Web;
 using System.Web.Http;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
@@ -96,12 +95,12 @@ namespace SiteServer.API.Controllers.Sys.Stl
                                 $"<span style='color:#cc0000'>{word}</span>"));
                         }
 
-                        Parser.Parse(siteInfo, pageInfo, contextInfo, pagedBuilder, string.Empty, false);
+                        Parser.Parse(pageInfo, contextInfo, pagedBuilder, string.Empty, false);
                         return Ok(pagedBuilder.ToString());
                     }
                 }
 
-                Parser.Parse(siteInfo, pageInfo, contextInfo, contentBuilder, string.Empty, false);
+                Parser.Parse(pageInfo, contextInfo, contentBuilder, string.Empty, false);
                 return Ok(contentBuilder.ToString());
             }
             catch (Exception ex)

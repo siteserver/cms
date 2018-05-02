@@ -3,7 +3,6 @@ using System.Text;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -12,19 +11,15 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser
 {
-	public class Parser
+	public static class Parser
 	{
-		private Parser()
-		{
-		}
-
-        public static void Parse(SiteInfo siteInfo, PageInfo pageInfo, ContextInfo contextInfo, StringBuilder contentBuilder, string filePath, bool isDynamic)
+        public static void Parse(PageInfo pageInfo, ContextInfo contextInfo, StringBuilder contentBuilder, string filePath, bool isDynamic)
         {
             foreach (var service in PluginManager.Services)
             {
                 try
                 {
-                    service.OnBeforeStlParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, filePath, contentBuilder));
+                    service.OnBeforeStlParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, filePath, pageInfo.HeadCodes, pageInfo.BodyCodes, pageInfo.FootCodes, contentBuilder));
                 }
                 catch (Exception ex)
                 {
@@ -35,6 +30,18 @@ namespace SiteServer.CMS.StlParser
             if (contentBuilder.Length > 0)
             {
                 StlParserManager.ParseTemplateContent(contentBuilder, pageInfo, contextInfo);
+            }
+
+            foreach (var service in PluginManager.Services)
+            {
+                try
+                {
+                    service.OnAfterStlParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, filePath, pageInfo.HeadCodes, pageInfo.BodyCodes, pageInfo.FootCodes, contentBuilder));
+                }
+                catch (Exception ex)
+                {
+                    LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnAfterStlParse));
+                }
             }
 
             if (EFileSystemTypeUtils.IsHtml(PathUtils.GetExtension(filePath)))
@@ -147,18 +154,6 @@ namespace SiteServer.CMS.StlParser
                 if (!string.IsNullOrEmpty(footCodesHtml))
                 {
                     contentBuilder.Append(footCodesHtml + StringUtils.Constants.ReturnAndNewline);
-                }
-            }
-
-            foreach (var service in PluginManager.Services)
-            {
-                try
-                {
-                    service.OnAfterStlParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, filePath, contentBuilder));
-                }
-                catch (Exception ex)
-                {
-                    LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnAfterStlParse));
                 }
             }
         }
