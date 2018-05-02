@@ -40,7 +40,7 @@
     publish_nuget: true
 
   after_build:
-    - gulp release
+    - gulp build
     - nuget pack build/SS.CMS.nuspec
     - gulp zip
 
@@ -85,7 +85,7 @@
     only:
       - dev
 
-  version: 6.1.{build}
+  version: 6.2.{build}-beta
   image: Visual Studio 2017
 
   assembly_info:
@@ -93,7 +93,7 @@
     file: '**\AssemblyInfo.cs'
     assembly_version: "{version}"
     assembly_file_version: "{version}"
-    assembly_informational_version: "{version}-beta"
+    assembly_informational_version: "{version}"
 
   configuration:
     - Release
@@ -121,7 +121,7 @@
     publish_nuget: true
 
   after_build:
-    - gulp preview
+    - gulp build
     - nuget pack build/SS.CMS.nuspec
     - gulp zip
 
@@ -136,7 +136,7 @@
 
   deploy:
     - provider: GitHub
-      release: siteserver-v$(appveyor_build_version)-beta
+      release: siteserver-v$(appveyor_build_version)
       description: 'SiteServer CMS'
       auth_token:
         secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
