@@ -1,0 +1,18 @@
+.book .book-summary ul.summary li.part {
+    padding-top: 0px;
+}
+
+.book .book-summary ul.summary li.part > ul.articles {
+    padding-left: 0px;
+}
+
+.book .book-summary ul.summary li.part.divider {
+    margin: 10px 15px 10px 15px;
+}
+
+.book .book-summary ul.summary li.part > span {
+    font-style: italic;
+    font-weight: bold;
+    cursor: default;
+    opacity: 1;
+}
