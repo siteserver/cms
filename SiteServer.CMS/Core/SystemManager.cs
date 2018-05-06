@@ -115,11 +115,11 @@ namespace SiteServer.CMS.Core
             return isNeedInstall;
         }
 
-        public static bool DetermineRedirectToInstaller()
-        {
-            if (!IsNeedInstall()) return false;
-            PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl("Installer"));
-            return true;
-        }
+        //public static bool DetermineRedirectToInstaller()
+        //{
+        //    if (!IsNeedInstall()) return false;
+        //    PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl("Installer"));
+        //    return true;
+        //}
     }
 }

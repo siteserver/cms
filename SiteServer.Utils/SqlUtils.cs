@@ -33,7 +33,7 @@ namespace SiteServer.Utils
                 {
                     connectionString += $"Database={database};";
                 }
-                connectionString += "CharSet=utf8;";
+                connectionString += "SslMode=none;CharSet=utf8;";
             }
             else if (databaseType == DatabaseType.SqlServer)
             {
@@ -71,6 +71,45 @@ namespace SiteServer.Utils
             }
 
             return connectionString;
+        }
+
+        public static string GetConnectionString(DatabaseType databaseType, string connectionString)
+        {
+            if (databaseType == DatabaseType.MySql)
+            {
+                if (!StringUtils.ContainsIgnoreCase(connectionString, "SslMode="))
+                {
+                    connectionString += "SslMode=none;";
+                }
+                if (!StringUtils.ContainsIgnoreCase(connectionString, "CharSet="))
+                {
+                    connectionString += "CharSet=utf8;";
+                }
+            }
+
+            return connectionString;
+        }
+
+        public static string GetConnectionStringUserId(string connectionString)
+        {
+            var userId = string.Empty;
+
+            foreach (var pair in TranslateUtils.StringCollectionToStringList(connectionString, ';'))
+            {
+                if (!string.IsNullOrEmpty(pair) && pair.IndexOf("=", StringComparison.Ordinal) != -1)
+                {
+                    var key = pair.Substring(0, pair.IndexOf("=", StringComparison.Ordinal));
+                    var value = pair.Substring(pair.IndexOf("=", StringComparison.Ordinal) + 1);
+                    if (StringUtils.EqualsIgnoreCase(key, "Uid") ||
+                        StringUtils.EqualsIgnoreCase(key, "Username") ||
+                        StringUtils.EqualsIgnoreCase(key, "User ID"))
+                    {
+                        return value;
+                    }
+                }
+            }
+
+            return userId;
         }
 
         public static IDbConnection GetIDbConnection(DatabaseType databaseType, string connectionString)
@@ -945,19 +984,6 @@ SELECT * FROM (
                 return $"{attributeName} text";
             }
             return $"{attributeName} varchar({length})";
-        }
-
-        public static string GetConnectionStringUserId(string connectionString)
-        {
-            try
-            {
-                var csb = new SqlConnectionStringBuilder(connectionString);
-                return csb.UserID;
-            }
-            catch
-            {
-                return string.Empty;
-            }
         }
 
         public static string ToOracleColumnString(DataType type, string attributeName, int length)

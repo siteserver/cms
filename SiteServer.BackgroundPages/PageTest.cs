@@ -10,6 +10,7 @@ using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin.Apis;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages
