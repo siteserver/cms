@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web.Http;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Core;
@@ -226,7 +227,12 @@ namespace SiteServer.API.Controllers
             switch (retval.GetType().Name)
             {
                 case nameof(String):
-                    return Content(HttpStatusCode.OK, (string)retval);
+                    var response = new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent((string)retval)
+                    };
+                    response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
+                    return ResponseMessage(response);
                 case nameof(IHttpActionResult):
                     return (IHttpActionResult)retval;
                 case nameof(HttpResponseMessage):

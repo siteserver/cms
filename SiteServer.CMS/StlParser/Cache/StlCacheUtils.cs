@@ -3,15 +3,13 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.StlParser.Cache
 {
-    public class StlCacheUtils
+    public static class StlCacheUtils
     {
-        private StlCacheUtils()
-        {
-        }
+        private const string CachePrefix = "SiteServer.CMS.StlParser.Cache";
 
         public static string GetCacheKey(string nameofClass, string nameofMethod, params string[] values)
         {
-            var key = $"SiteServer.CMS.StlParser.Cache.{nameofClass}.{nameofMethod}";
+            var key = $"{CachePrefix}.{nameofClass}.{nameofMethod}";
             if (values == null || values.Length <= 0) return key;
             foreach (var t in values)
             {
@@ -43,6 +41,11 @@ namespace SiteServer.CMS.StlParser.Cache
         public static void ClearCache(string nameofClass)
         {
             CacheUtils.RemoveByStartString(GetCacheKey(nameofClass, string.Empty));
+        }
+
+        public static void ClearAll()
+        {
+            CacheUtils.RemoveByStartString(CachePrefix);
         }
     }
 }
