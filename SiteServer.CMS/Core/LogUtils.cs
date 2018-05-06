@@ -27,6 +27,8 @@ namespace SiteServer.CMS.Core
 
         public static void AddErrorLogAndRedirect(Exception ex, string summary = "")
         {
+            if (ex == null || ex.StackTrace.Contains("System.Web.HttpResponse.set_StatusCode(Int32 value)")) return;
+
             if (ex.HResult == -2147467259) // 文件名不存在
             {
                 var response = HttpContext.Current.Response;
