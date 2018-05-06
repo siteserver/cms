@@ -21,21 +21,22 @@ namespace SiteServer.CMS.Core
         public static string TextEditorContentEncode(SiteInfo siteInfo, string content)
         {
             if (siteInfo == null) return content;
-
-            var url = siteInfo.Additional.WebUrl;
+            
             if (siteInfo.Additional.IsSaveImageInTextEditor && !string.IsNullOrEmpty(content))
             {
                 content = PathUtility.SaveImage(siteInfo, content);
             }
 
-            if (string.IsNullOrEmpty(url) || url == "/")
-            {
-                return content;
-            }
-
             var builder = new StringBuilder(content);
 
-            StringUtils.ReplaceHrefOrSrc(builder, url, "@");
+            var url = siteInfo.Additional.WebUrl;
+            if (!string.IsNullOrEmpty(url))
+            {
+                StringUtils.ReplaceHrefOrSrc(builder, url, "@");
+            }
+
+            var relatedSiteUrl = PageUtils.ParseNavigationUrl($"~/{siteInfo.SiteDir}");
+            StringUtils.ReplaceHrefOrSrc(builder, relatedSiteUrl, "@");
 
             builder.Replace("@'@", "'@");
             builder.Replace("@\"@", "\"@");
