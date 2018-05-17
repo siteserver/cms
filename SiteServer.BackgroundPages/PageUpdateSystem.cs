@@ -36,6 +36,13 @@ namespace SiteServer.BackgroundPages
         {
             if (IsPostBack) return;
 
+            if (!AuthRequest.AdminPermissions.IsConsoleAdministrator)
+            {
+                Page.Response.Write("非授权管理员，向导被禁用");
+                Page.Response.End();
+                return;
+            }
+
             if (SystemManager.IsNeedInstall())
             {
                 Page.Response.Write("系统未安装，向导被禁用");

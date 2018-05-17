@@ -236,9 +236,7 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlLastActivityDate = (Literal)e.Item.FindControl("ltlLastActivityDate");
             var ltlCountOfLogin = (Literal)e.Item.FindControl("ltlCountOfLogin");
             var ltlRoles = (Literal)e.Item.FindControl("ltlRoles");
-            var ltlEdit = (Literal)e.Item.FindControl("ltlEdit");
-            var hlChangePassword = (HyperLink)e.Item.FindControl("hlChangePassword");
-            var ltlRole = (Literal)e.Item.FindControl("ltlRole");
+            var ltlActions = (Literal)e.Item.FindControl("ltlActions");
             var ltlSelect = (Literal)e.Item.FindControl("ltlSelect");
 
             ltlUserName.Text = GetUserNameHtml(userName, countOfFailedLogin, isLockedOut, lastActivityDate);
@@ -251,14 +249,14 @@ namespace SiteServer.BackgroundPages.Settings
             ltlCountOfLogin.Text = countOfLogin.ToString();
             ltlRoles.Text = AdminManager.GetRolesHtml(userName);
 
-            var urlEdit = PageAdministratorAdd.GetRedirectUrlToEdit(departmentId, userName);
-            ltlEdit.Text = $@"<a href=""{urlEdit}"">修改属性</a>";
-            hlChangePassword.Attributes.Add("onclick", ModalAdminPassword.GetOpenWindowString(userName));
-
             if (AuthRequest.AdminName != userName)
             {
-                var openWindowString = ModalPermissionsSet.GetOpenWindowString(userName);
-                ltlRole.Text = $@"<a href=""javascript:;"" onclick=""{openWindowString}"">权限设置</a>";
+                ltlActions.Text = $@"
+<a class=""m-r-5"" href=""{PageAdministratorAdd.GetRedirectUrlToEdit(departmentId, userName)}"">修改资料</a>
+<a class=""m-r-5"" href=""javascript:;"" onclick=""{ModalAdminPassword.GetOpenWindowString(userName)}"">更改密码</a>
+<a class=""m-r-5"" href=""javascript:;"" onclick=""{ModalPermissionsSet.GetOpenWindowString(userName)}"">权限设置</a>
+";
+
                 ltlSelect.Text = $@"<input type=""checkbox"" name=""UserNameCollection"" value=""{userName}"" />";
             }
         }

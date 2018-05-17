@@ -104,6 +104,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\V1\ApiStlManager.cs" />
     <Compile Include="Api\ApiRoutePlugin.cs" />
     <Compile Include="Api\Preview\ApiRoutePreview.cs" />
     <Compile Include="Api\Sys\Administrators\ApiRouteActionsLogin.cs" />
@@ -127,6 +128,7 @@
     <Compile Include="Api\Sys\Stl\ApiRouteActionsSearch.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsTrigger.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsUpload.cs" />
+    <Compile Include="Api\V1\ApiStlRoute.cs" />
     <Compile Include="Core\AdminManager.cs" />
     <Compile Include="Api\ApiManager.cs" />
     <Compile Include="Core\ArchiveManager.cs" />
@@ -164,6 +166,7 @@
     <Compile Include="Core\SiteTemplateManager.cs" />
     <Compile Include="Core\SmsManager.cs" />
     <Compile Include="Core\SourceManager.cs" />
+    <Compile Include="Core\AccessTokenManager.cs" />
     <Compile Include="Core\SystemManager.cs" />
     <Compile Include="Core\TableColumnManager.cs" />
     <Compile Include="Core\TableMetadataManager.cs" />
@@ -241,6 +244,7 @@
     <Compile Include="Model\Enumerations\EWriteBackMethod.cs" />
     <Compile Include="Model\ErrorLogInfo.cs" />
     <Compile Include="Model\Attributes\ExtendedAttributes.cs" />
+    <Compile Include="Model\AccessTokenInfo.cs" />
     <Compile Include="Model\KeywordInfo.cs" />
     <Compile Include="Model\LogInfo.cs" />
     <Compile Include="Model\PermissionsInRolesInfo.cs" />
@@ -325,6 +329,7 @@
     <Compile Include="Provider\SiteDao.cs" />
     <Compile Include="Provider\SiteLogDao.cs" />
     <Compile Include="Provider\SitePermissionsDao.cs" />
+    <Compile Include="Provider\AccessTokenDao.cs" />
     <Compile Include="Provider\TableDao.cs" />
     <Compile Include="Provider\TableMatchDao.cs" />
     <Compile Include="Provider\TableMetadataDao.cs" />

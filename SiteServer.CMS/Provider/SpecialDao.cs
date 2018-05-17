@@ -69,7 +69,7 @@ namespace SiteServer.CMS.Provider
 
             ExecuteNonQuery(sqlString, parameters);
 
-            TemplateManager.RemoveCache(specialInfo.SiteId);
+            SpecialManager.RemoveCache(specialInfo.SiteId);
         }
 
         public void Update(SpecialInfo specialInfo)
@@ -92,7 +92,7 @@ namespace SiteServer.CMS.Provider
 
             ExecuteNonQuery(sqlString, parameters);
 
-            TemplateManager.RemoveCache(specialInfo.SiteId);
+            SpecialManager.RemoveCache(specialInfo.SiteId);
         }
 
         public void Delete(int siteId, int specialId)
@@ -102,7 +102,7 @@ namespace SiteServer.CMS.Provider
             var sqlString = $"DELETE FROM {TableName} WHERE {nameof(SpecialInfo.Id)} = {specialId}";
             ExecuteNonQuery(sqlString);
 
-            TemplateManager.RemoveCache(siteId);
+            SpecialManager.RemoveCache(siteId);
         }
 
         public bool IsTitleExists(int siteId, string title)

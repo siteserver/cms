@@ -515,6 +515,9 @@
     <Compile Include="PageValidateCode.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Settings\ModalUtilityAccessToken.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Settings\ModalManualUpdateSystem.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -710,6 +713,12 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageUserConfiguration.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Settings\PageUtilityAccessTokensAdd.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Settings\PageUtilityAccessTokens.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageUtilityCache.cs">

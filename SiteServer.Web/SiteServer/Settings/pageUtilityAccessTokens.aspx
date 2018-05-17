@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.PageUtilityParameter" %>
+﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.PageUtilityAccessTokens" %>
   <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
@@ -16,10 +16,10 @@
             <li class="nav-item">
               <a class="nav-link" href="pageUtilityCache.aspx">系统缓存</a>
             </li>
-            <li class="nav-item active">
+            <li class="nav-item">
               <a class="nav-link" href="pageUtilityParameter.aspx">系统参数查看</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item active">
               <a class="nav-link" href="pageUtilityAccessTokens.aspx">Access Tokens</a>
             </li>
             <li class="nav-item">
@@ -34,28 +34,40 @@
           </ul>
         </div>
 
-        <ctrl:alerts runat="server" />
+        <ctrl:alerts text="Access Token 可以用于访问 SiteServer API" runat="server" />
 
         <div class="card-box">
+          <p class="text-muted font-13 m-b-25">
+            <a class="btn btn-success m-l-5" href="pageUtilityAccessTokensAdd.aspx">添加新Token</a>
+          </p>
+
           <div class="panel panel-default">
             <div class="panel-body p-0">
               <div class="table-responsive">
                 <table id="contents" class="table tablesaw table-hover m-0">
                   <thead>
                     <tr class="thead">
-                      <th width="150" class="text-center text-nowrap">参数名称</th>
-                      <th>值</th>
+                      <th>名称</th>
+                      <th>授权范围</th>
+                      <th class="text-center">操作</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <asp:Repeater ID="RptContents" runat="server">
+                    <asp:Repeater id="RptContents" runat="server">
                       <itemtemplate>
                         <tr>
-                          <td class="text-center text-nowrap">
-                            <asp:Literal ID="ltlName" runat="server"></asp:Literal>
+                          <td style="word-break: break-all;">
+                            <span>
+                              <asp:Literal id="ltlTitle" runat="server"></asp:Literal>
+                            </span>
                           </td>
-                          <td>
-                            <asp:Literal ID="ltlValue" runat="server"></asp:Literal>
+                          <td style="word-break: break-all;">
+                            <span>
+                              <asp:Literal id="ltlScopes" runat="server"></asp:Literal>
+                            </span>
+                          </td>
+                          <td class="text-center">
+                              <asp:Literal id="ltlActions" runat="server"></asp:Literal>
                           </td>
                         </tr>
                       </itemtemplate>
@@ -66,6 +78,8 @@
               </div>
             </div>
           </div>
+
+          <ctrl:sqlPager id="SpContents" runat="server" class="table table-pager" />
 
         </div>
 

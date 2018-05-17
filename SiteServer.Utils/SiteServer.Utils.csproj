@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="AlertUtils.cs" />
     <Compile Include="Auth\AdministratorToken.cs" />
+    <Compile Include="Auth\AuthUtils.cs" />
     <Compile Include="Auth\Base64Utils.cs" />
     <Compile Include="Auth\DefaultJsonSerializer.cs" />
     <Compile Include="Auth\DesEncryptor.cs" />

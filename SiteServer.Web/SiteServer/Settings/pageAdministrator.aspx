@@ -113,9 +113,7 @@
                       <th width="100">最后登录</th>
                       <th width="100">登录次数</th>
                       <th>角色</th>
-                      <th width="80">&nbsp;</th>
-                      <th width="80">&nbsp;</th>
-                      <th width="80">&nbsp;</th>
+                      <th width="280">操作</th>
                       <th width="20">
                         <input onclick="_checkFormAll(this.checked)" type="checkbox" />
                       </th>
@@ -150,13 +148,7 @@
                             <asp:Literal ID="ltlRoles" runat="server"></asp:Literal>
                           </td>
                           <td class="text-center">
-                            <asp:Literal ID="ltlEdit" runat="server"></asp:Literal>
-                          </td>
-                          <td class="text-center">
-                            <asp:Literal ID="ltlRole" runat="server"></asp:Literal>
-                          </td>
-                          <td class="text-center">
-                            <asp:HyperLink NavigateUrl="javascript:;" ID="hlChangePassword" Text="重设密码" runat="server"></asp:HyperLink>
+                            <asp:Literal ID="ltlActions" runat="server"></asp:Literal>
                           </td>
                           <td class="text-center">
                             <asp:Literal ID="ltlSelect" runat="server"></asp:Literal>

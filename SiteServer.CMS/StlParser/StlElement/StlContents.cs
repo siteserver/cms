@@ -1,5 +1,8 @@
-﻿using System.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils;
@@ -14,17 +17,17 @@ namespace SiteServer.CMS.StlParser.StlElement
     {
         public const string ElementName = "stl:contents";
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            // 如果是实体标签则返回空
+            var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.Content);
+            var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
+
             if (contextInfo.IsStlEntity)
             {
-                return string.Empty;
+                return ParseEntity(pageInfo, dataSource);
             }
 
-            var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.Content);
-
-            return ParseImpl(pageInfo, contextInfo, listInfo);
+            return ParseElement(pageInfo, contextInfo, listInfo, dataSource);
         }
 
         public static DataSet GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
@@ -36,11 +39,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             return StlDataUtility.GetContentsDataSource(pageInfo.SiteInfo, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Where, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
+        private static string ParseElement(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, DataSet dataSource)
         {
             var parsedContent = string.Empty;
-
-            var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
 
             if (listInfo.Layout == ELayout.None)
             {
@@ -114,5 +115,25 @@ namespace SiteServer.CMS.StlParser.StlElement
             return parsedContent;
         }
 
+        private static object ParseEntity(PageInfo pageInfo, DataSet dataSource)
+        {
+            var contentInfoList = new List<ContentInfo>();
+            var table = dataSource.Tables[0];
+            foreach (DataRow row in table.Rows)
+            {
+                var contentId = Convert.ToInt32(row[nameof(ContentAttribute.Id)]);
+                var channelId = Convert.ToInt32(row[nameof(ContentAttribute.ChannelId)]);
+
+                var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, channelId);
+                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+
+                if (contentInfo != null)
+                {
+                    contentInfoList.Add(contentInfo);
+                }
+            }
+
+            return contentInfoList;
+        }
     }
 }

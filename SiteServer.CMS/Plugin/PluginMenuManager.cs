@@ -1,25 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Web.UI;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Plugin
 {
-    public class PluginMenuManager
+    public static class PluginMenuManager
     {
-        private static readonly Dictionary<string, string> PluginIconClassDict = new Dictionary<string, string>();
-
         public static string GetPluginIconClass(string pluginId)
         {
-            string iconClass;
-            if (PluginIconClassDict.TryGetValue(pluginId, out iconClass))
-            {
-                return iconClass;
-            }
-            return string.Empty;
+            return "ion-cube";
         }
 
         public static Dictionary<string, Menu> GetTopMenus()
@@ -33,11 +25,6 @@ namespace SiteServer.CMS.Plugin
                 try
                 {
                     var pluginMenu = GetMenu(service.PluginId, 0, service.PluginMenu, 0);
-
-                    if (!string.IsNullOrEmpty(pluginMenu.IconClass))
-                    {
-                        PluginIconClassDict[service.PluginId] = pluginMenu.IconClass;
-                    }
 
                     menus.Add(service.PluginId, pluginMenu);
                 }
@@ -72,11 +59,6 @@ namespace SiteServer.CMS.Plugin
 
                 var pluginMenu = GetMenu(service.PluginId, siteId, metadataMenu, 0);
 
-                if (!string.IsNullOrEmpty(pluginMenu.IconClass))
-                {
-                    PluginIconClassDict[service.PluginId] = pluginMenu.IconClass;
-                }
-
                 menus.Add(service.PluginId, pluginMenu);
             }
 
@@ -90,7 +72,7 @@ namespace SiteServer.CMS.Plugin
                 return href;
             }
 
-            var url = PageUtils.AddQueryStringIfNotExists(PageUtils.GetPluginDirectoryUrl(pluginId, href), new NameValueCollection
+            var url = PageUtils.AddQueryStringIfNotExists(PageUtils.ParsePluginUrl(pluginId, href), new NameValueCollection
             {
                 {"v", StringUtils.GetRandomInt(1, 1000).ToString()}
             });
@@ -110,7 +92,7 @@ namespace SiteServer.CMS.Plugin
             {
                 return href;
             }
-            return PageUtils.AddQueryStringIfNotExists(PageUtils.GetPluginDirectoryUrl(pluginId, href), new NameValueCollection
+            return PageUtils.AddQueryStringIfNotExists(PageUtils.ParsePluginUrl(pluginId, href), new NameValueCollection
             {
                 {"siteId", siteId.ToString()},
                 {"channelId", channelId.ToString()},

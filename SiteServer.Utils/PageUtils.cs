@@ -834,15 +834,23 @@ namespace SiteServer.Utils
             return Combine(siteTemplateUrl, DirectoryUtils.SiteTemplates.SiteTemplateMetadata, relatedUrl);
         }
 
-        public static string GetPluginDirectoryUrl(string pluginId, string url)
+        public static string ParsePluginUrl(string pluginId, string url)
         {
             if (string.IsNullOrEmpty(url)) return string.Empty;
 
-            if (!IsProtocolUrl(url))
+            if (IsProtocolUrl(url)) return url;
+
+            if (StringUtils.StartsWith(url, "~/"))
             {
-                return StringUtils.StartsWith(url, "@/") ? GetAdminDirectoryUrl(url.Substring(1)) : GetSiteFilesUrl(Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, url));
+                return GetRootUrl(url.Substring(1));
             }
-            return url;
+
+            if (StringUtils.StartsWith(url, "@/"))
+            {
+                return GetAdminDirectoryUrl(url.Substring(1));
+            }
+
+            return GetSiteFilesUrl(Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, url));
         }
 
         public static string GetSiteServerUrl(string className, NameValueCollection queryString)

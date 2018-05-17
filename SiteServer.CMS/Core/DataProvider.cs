@@ -36,6 +36,9 @@ namespace SiteServer.CMS.Core
             }
         }
 
+        private static AccessTokenDao _accessTokenDao;
+        public static AccessTokenDao AccessTokenDao => _accessTokenDao ?? (_accessTokenDao = new AccessTokenDao());
+
         private static AdministratorDao _administratorDao;
         public static AdministratorDao AdministratorDao => _administratorDao ?? (_administratorDao = new AdministratorDao());
 
@@ -154,6 +157,7 @@ namespace SiteServer.CMS.Core
         {
             _dataApi = null;
 
+            _accessTokenDao = null;
             _administratorDao = null;
             _administratorsInRolesDao = null;
             _areaDao = null;
@@ -196,6 +200,7 @@ namespace SiteServer.CMS.Core
 
         public static List<DataProviderBase> AllProviders => new List<DataProviderBase>
         {
+            AccessTokenDao,
             AdministratorDao,
             AdministratorsInRolesDao,
             AreaDao,

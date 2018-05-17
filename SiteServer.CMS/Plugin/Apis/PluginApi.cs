@@ -22,6 +22,20 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string GetPluginUrl(string relatedUrl = "")
         {
+            if (string.IsNullOrEmpty(relatedUrl)) return string.Empty;
+
+            if (PageUtils.IsProtocolUrl(relatedUrl)) return relatedUrl;
+
+            if (StringUtils.StartsWith(relatedUrl, "~/"))
+            {
+                return PageUtils.GetRootUrl(relatedUrl.Substring(1));
+            }
+
+            if (StringUtils.StartsWith(relatedUrl, "@/"))
+            {
+                return PageUtils.GetAdminDirectoryUrl(relatedUrl.Substring(1));
+            }
+
             return PageUtility.GetSiteFilesUrl(ApiManager.OuterApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
         }
 

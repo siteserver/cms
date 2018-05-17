@@ -209,8 +209,6 @@
       var updatePackages = 0;
 
       function packageUpdates() {
-        if ('<%=CurrentVersion%>' == '0.0.0-dev') return;
-
         ssApi.get({
           isNightly: isNightly,
           version: version,
@@ -296,6 +294,8 @@
           color: '#dcdcdc',
           wheelStep: 5
         });
+
+        if ('<%=IsConsoleAdministrator%>' === 'False' || '<%=CurrentVersion%>' === '0.0.0-dev') return;
 
         packageUpdates();
       });

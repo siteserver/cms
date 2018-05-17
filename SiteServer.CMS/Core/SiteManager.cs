@@ -108,6 +108,23 @@ namespace SiteServer.CMS.Core
             return null;
         }
 
+        public static SiteInfo GetSiteInfoByIsRoot()
+        {
+            var list = SiteManagerCache.GetSiteInfoKeyValuePairList();
+
+            foreach (var pair in list)
+            {
+                var siteInfo = pair.Value;
+                if (siteInfo == null) continue;
+
+                if (siteInfo.IsRoot)
+                {
+                    return siteInfo;
+                }
+            }
+            return null;
+        }
+
         public static SiteInfo GetSiteInfoByDirectory(string siteDir)
         {
             var list = SiteManagerCache.GetSiteInfoKeyValuePairList();

@@ -62,6 +62,8 @@ namespace SiteServer.BackgroundPages
 
         public string UpdateSystemUrl => PageUpdateSystem.GetRedirectUrl();
 
+        public bool IsConsoleAdministrator => AuthRequest.AdminPermissions.IsConsoleAdministrator;
+
         public static string GetRedirectUrl()
         {
             return PageUtils.GetSiteServerUrl(nameof(PageMain), null);
@@ -176,7 +178,7 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             }
             else
             {
-                if (AuthRequest.AdminPermissions.IsConsoleAdministrator)
+                if (IsConsoleAdministrator)
                 {
                     PageUtils.Redirect(PageSiteAdd.GetRedirectUrl());
                     return;
@@ -354,13 +356,13 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             var builder = new StringBuilder();
             foreach (var tab in topMenuTabs)
             {
-                if (!AuthRequest.AdminPermissions.IsConsoleAdministrator && !TabManager.IsValid(tab, permissionList)) continue;
+                if (!IsConsoleAdministrator && !TabManager.IsValid(tab, permissionList)) continue;
 
                 var tabs = TabManager.GetTabList(tab.Id, 0);
                 var tabsBuilder = new StringBuilder();
                 foreach (var parent in tabs)
                 {
-                    if (!AuthRequest.AdminPermissions.IsConsoleAdministrator && !TabManager.IsValid(parent, permissionList)) continue;
+                    if (!IsConsoleAdministrator && !TabManager.IsValid(parent, permissionList)) continue;
 
                     var hasChildren = parent.Children != null && parent.Children.Length > 0;
 

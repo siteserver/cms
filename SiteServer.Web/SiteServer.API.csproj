@@ -136,6 +136,7 @@
     <Compile Include="Controllers\Sys\Stl\StlActionsTriggerController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsUploadController.cs" />
     <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Controllers\V1\StlController.cs" />
     <Compile Include="CreateHub.cs" />
     <Compile Include="ErrorRedirectModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -155,6 +156,7 @@
       <Name>SiteServer.Utils</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

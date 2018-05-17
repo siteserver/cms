@@ -12,7 +12,6 @@
     <script type="text/javascript">
       var siteId = <%=SiteId%>;
       function getRedirectUrl(task) {
-        console.log(task);
         var url = '<%=RedirectUrl%>';
         if (task.channelId) {
           url += '&channelId=' + task.channelId;

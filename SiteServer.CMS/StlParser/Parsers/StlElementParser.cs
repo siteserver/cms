@@ -14,12 +14,8 @@ namespace SiteServer.CMS.StlParser.Parsers
     /// <summary>
     /// Stl元素解析器
     /// </summary>
-    public class StlElementParser
+    public static class StlElementParser
     {
-        private StlElementParser()
-        {
-        }
-
         /// <summary>
         /// 将原始内容中的STL元素替换为实际内容
         /// </summary>
@@ -43,7 +39,7 @@ namespace SiteServer.CMS.StlParser.Parsers
             }
         }
 
-        private static readonly Dictionary<string, Func<PageInfo, ContextInfo, string>> ElementsToParseDic = new Dictionary<string, Func<PageInfo, ContextInfo, string>>
+        public static readonly Dictionary<string, Func<PageInfo, ContextInfo, object>> ElementsToParseDic = new Dictionary<string, Func<PageInfo, ContextInfo, object>>
         {
             {StlA.ElementName.ToLower(), StlA.Parse},
             {StlAction.ElementName.ToLower(), StlAction.Parse},
@@ -165,11 +161,23 @@ namespace SiteServer.CMS.StlParser.Parsers
                         {
                             try
                             {
-                                Func<PageInfo, ContextInfo, string> func;
+                                Func<PageInfo, ContextInfo, object> func;
                                 if (ElementsToParseDic.TryGetValue(elementName, out func))
                                 {
-                                    parsedContent = func(pageInfo,
-                                        contextInfo.Clone(stlElement, attributes, innerXml, childNodes));
+                                    var obj = func(pageInfo, contextInfo.Clone(stlElement, attributes, innerXml, childNodes));
+
+                                    if (obj == null)
+                                    {
+                                        parsedContent = string.Empty;
+                                    }
+                                    else if (obj is string)
+                                    {
+                                        parsedContent = (string)obj;
+                                    }
+                                    else
+                                    {
+                                        parsedContent = TranslateUtils.JsonSerialize(obj);
+                                    }
                                 }
                             }
                             catch (Exception ex)

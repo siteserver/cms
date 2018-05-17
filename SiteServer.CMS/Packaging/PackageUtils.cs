@@ -74,7 +74,7 @@ namespace SiteServer.CMS.Packaging
                 var localFilePath = PathUtils.Combine(directoryPath, idWithVersion + ".nupkg");                
 
                 WebClientUtils.SaveRemoteFileToLocal(
-                    $"http://api.siteserver.cn/downloads/update/{version}", localFilePath);
+                    $"https://api.siteserver.cn/downloads/update/{version}", localFilePath);
 
                 ZipUtils.ExtractZip(localFilePath, directoryPath);
             }
@@ -88,7 +88,7 @@ namespace SiteServer.CMS.Packaging
                 var localFilePath = PathUtils.Combine(directoryPath, idWithVersion + ".nupkg");
 
                 WebClientUtils.SaveRemoteFileToLocal(
-                    $"http://api.siteserver.cn/downloads/package/{packageId}/{version}", localFilePath);
+                    $"https://api.siteserver.cn/downloads/package/{packageId}/{version}", localFilePath);
 
                 ZipUtils.ExtractZip(localFilePath, directoryPath);
 

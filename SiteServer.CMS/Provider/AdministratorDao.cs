@@ -415,11 +415,7 @@ namespace SiteServer.CMS.Provider
                 {
                     var i = 0;
                     info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
-                        EPasswordFormatUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++),
-                        GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
-                        GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
-                        GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
-                        GetString(rdr, i));
+                        EPasswordFormatUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
                 }
                 rdr.Close();
             }
@@ -429,6 +425,8 @@ namespace SiteServer.CMS.Provider
 
         public AdministratorInfo GetByUserName(string userName)
         {
+            if (string.IsNullOrEmpty(userName)) return null;
+
             AdministratorInfo info = null;
 
             IDataParameter[] parms =
@@ -442,8 +440,7 @@ namespace SiteServer.CMS.Provider
                 {
                     var i = 0;
                     info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
-                        EPasswordFormatUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++),
-                        GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
+                        EPasswordFormatUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
                         GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
                         GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i));
@@ -620,10 +617,7 @@ namespace SiteServer.CMS.Provider
 
         public string GetUserNameByMobile(string mobile)
         {
-            if (string.IsNullOrEmpty(mobile))
-            {
-                return string.Empty;
-            }
+            if (string.IsNullOrEmpty(mobile)) return string.Empty;
 
             var userName = string.Empty;
 
@@ -883,7 +877,7 @@ namespace SiteServer.CMS.Provider
             return arraylist;
         }
 
-        public static string EncodePassword(string password, EPasswordFormat passwordFormat, out string passwordSalt)
+        public string EncodePassword(string password, EPasswordFormat passwordFormat, out string passwordSalt)
         {
             var retval = string.Empty;
             passwordSalt = string.Empty;
@@ -923,7 +917,7 @@ namespace SiteServer.CMS.Provider
             return retval;
         }
 
-        public static string GenerateSalt()
+        public string GenerateSalt()
         {
             var data = new byte[0x10];
             new RNGCryptoServiceProvider().GetBytes(data);
@@ -1073,7 +1067,7 @@ namespace SiteServer.CMS.Provider
             return false;
         }
 
-        public static string DecodePassword(string password, EPasswordFormat passwordFormat, string passwordSalt)
+        public string DecodePassword(string password, EPasswordFormat passwordFormat, string passwordSalt)
         {
             var retval = string.Empty;
             if (passwordFormat == EPasswordFormat.Clear)
@@ -1105,11 +1099,6 @@ namespace SiteServer.CMS.Provider
             var pass2 = DecodePassword(dbpassword, passwordFormat, passwordSalt);
 
             return pass1 == pass2;
-        }
-
-        public string GetPassword(string password, EPasswordFormat passwordFormat, string passwordSalt)
-        {
-            return DecodePassword(password, passwordFormat, passwordSalt);
         }
     }
 }

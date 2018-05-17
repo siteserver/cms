@@ -286,6 +286,9 @@
               <a class="nav-link" href="pageUtilityParameter.aspx">系统参数查看</a>
             </li>
             <li class="nav-item">
+              <a class="nav-link" href="pageUtilityAccessTokens.aspx">Access Tokens</a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link" href="pageUtilityEncrypt.aspx">加密字符串</a>
             </li>
             <li class="nav-item active">

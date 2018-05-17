@@ -411,7 +411,7 @@ namespace SiteServer.CMS.Plugin
 
             foreach (var service in Services)
             {
-                if (service.PluginId == pluginId)
+                if (StringUtils.EqualsIgnoreCase(service.PluginId, pluginId))
                 {
                     return service;
                 }
