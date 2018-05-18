@@ -27,8 +27,8 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 DataProvider.AccessTokenDao.Delete(AuthRequest.GetQueryInt("id"));
 
-                AuthRequest.AddAdminLog("删除 Access Token");
-                SuccessMessage("Access Token 删除成功！");
+                AuthRequest.AddAdminLog("删除API密钥");
+                SuccessMessage("API密钥删除成功！");
             }
 
             RptContents.DataSource = DataProvider.AccessTokenDao.GetAccessTokenInfoList();
@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             ltlActions.Text = $@"
 <a href=""{PageUtilityAccessTokensAdd.GetRedirectUrlToEdit(tokenInfo.Id)}"" class=""btn btn-success m-r-5"">编 辑</a>
-<a href=""javascript:;"" class=""btn btn-danger m-r-5"" onclick=""{AlertUtils.ConfirmDelete("删除 Access Token", $"此操作将删除 Access Token {tokenInfo.Title}，确定吗？", GetRedirectUrl() + "?delete=true&id=" + tokenInfo.Id)}"">删 除</a>";
+<a href=""javascript:;"" class=""btn btn-danger m-r-5"" onclick=""{AlertUtils.ConfirmDelete("删除API密钥", $"此操作将删除API密钥 {tokenInfo.Title}，确定吗？", GetRedirectUrl() + "?delete=true&id=" + tokenInfo.Id)}"">删 除</a>";
         }
     }
 }

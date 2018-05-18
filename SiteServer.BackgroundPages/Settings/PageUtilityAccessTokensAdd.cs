@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Utility);
 
-            LtlPageTitle.Text = _id > 0 ? "修改 Access Token" : "新增 Access Token";
+            LtlPageTitle.Text = _id > 0 ? "修改API密钥" : "新增API密钥";
 
             if (_id > 0)
             {
@@ -67,7 +67,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 if (tokenInfo.Title != TbTitle.Text && DataProvider.AccessTokenDao.IsTitleExists(TbTitle.Text))
                 {
-                    FailMessage("保存失败，已存在相同标题的 Access Token！");
+                    FailMessage("保存失败，已存在相同标题的API密钥！");
                     return;
                 }
 
@@ -83,16 +83,16 @@ namespace SiteServer.BackgroundPages.Settings
 
                 DataProvider.AccessTokenDao.Update(tokenInfo);
 
-                AuthRequest.AddAdminLog("修改 Access Token", $"Access Token:{tokenInfo.Title}");
+                AuthRequest.AddAdminLog("修改API密钥", $"Access Token:{tokenInfo.Title}");
 
-                SuccessMessage("Access Token 修改成功！");
+                SuccessMessage("API密钥修改成功！");
                 AddWaitAndRedirectScript(PageUtilityAccessTokens.GetRedirectUrl());
             }
             else
             {
                 if (DataProvider.AccessTokenDao.IsTitleExists(TbTitle.Text))
                 {
-                    FailMessage("保存失败，已存在相同标题的 Access Token！");
+                    FailMessage("保存失败，已存在相同标题的API密钥！");
                     return;
                 }
 
@@ -110,9 +110,9 @@ namespace SiteServer.BackgroundPages.Settings
 
                 DataProvider.AccessTokenDao.Insert(tokenInfo);
 
-                AuthRequest.AddAdminLog("新增 Access Token", $"Access Token:{tokenInfo.Title}");
+                AuthRequest.AddAdminLog("新增API密钥", $"Access Token:{tokenInfo.Title}");
 
-                SuccessMessage("Access Token 新增成功！");
+                SuccessMessage("API密钥新增成功！");
                 AddWaitAndRedirectScript(PageUtilityAccessTokens.GetRedirectUrl());
             }
         }

@@ -136,6 +136,7 @@
     <Compile Include="Controllers\Sys\Stl\StlActionsTriggerController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsUploadController.cs" />
     <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Controllers\V1\PingController.cs" />
     <Compile Include="Controllers\V1\StlController.cs" />
     <Compile Include="CreateHub.cs" />
     <Compile Include="ErrorRedirectModule.cs" />

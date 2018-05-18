@@ -20,7 +20,7 @@
               <a class="nav-link" href="pageUtilityParameter.aspx">系统参数查看</a>
             </li>
             <li class="nav-item active">
-              <a class="nav-link" href="pageUtilityAccessTokens.aspx">Access Tokens</a>
+              <a class="nav-link" href="pageUtilityAccessTokens.aspx">API密钥</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="pageUtilityEncrypt.aspx">加密字符串</a>
@@ -55,7 +55,7 @@
           <div class="form-group">
             <label class="col-form-label">授权范围
               <small class="form-text text-muted">
-                授权范围定义 Access Token 的访问权限
+                授权范围定义API密钥的访问权限
                 <a href="https://docs.siteserver.cn/api/" target="_blank">阅读更多</a>
               </small>
             </label>

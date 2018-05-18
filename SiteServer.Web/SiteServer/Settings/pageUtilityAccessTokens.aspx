@@ -20,7 +20,7 @@
               <a class="nav-link" href="pageUtilityParameter.aspx">系统参数查看</a>
             </li>
             <li class="nav-item active">
-              <a class="nav-link" href="pageUtilityAccessTokens.aspx">Access Tokens</a>
+              <a class="nav-link" href="pageUtilityAccessTokens.aspx">API密钥</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="pageUtilityEncrypt.aspx">加密字符串</a>
@@ -34,11 +34,13 @@
           </ul>
         </div>
 
-        <ctrl:alerts text="Access Token 可以用于访问 SiteServer API" runat="server" />
+        <ctrl:alerts runat="server">
+          API密钥可以用于访问 SiteServer REST API <a href="https://docs.siteserver.cn/api/" target="_blank">阅读更多</a>
+        </ctrl:alerts>
 
         <div class="card-box">
           <p class="text-muted font-13 m-b-25">
-            <a class="btn btn-success m-l-5" href="pageUtilityAccessTokensAdd.aspx">添加新Token</a>
+            <a class="btn btn-success m-l-5" href="pageUtilityAccessTokensAdd.aspx">添加新密钥</a>
           </p>
 
           <div class="panel panel-default">

@@ -48,13 +48,13 @@ namespace SiteServer.BackgroundPages.Settings
                 LtlToken.Text = TranslateUtils.DecryptStringBySecretKey(DataProvider.AccessTokenDao.Regenerate(_id));
                 LtlUpdatedDate.Text = DateUtils.GetDateAndTimeString(DateTime.Now);
 
-                AuthRequest.AddAdminLog("重设 Access Token");
+                AuthRequest.AddAdminLog("重设API密钥");
 
-                SuccessMessage("Access Token 重新设置成功！");
+                SuccessMessage("API密钥重新设置成功！");
             }
             catch(Exception ex)
             {
-                FailMessage(ex, "Access Token 重新设置失败！");
+                FailMessage(ex, "API密钥重新设置失败！");
             }
         }
     }

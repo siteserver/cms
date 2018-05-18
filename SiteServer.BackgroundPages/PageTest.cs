@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin.Apis;
@@ -19,19 +20,46 @@ namespace SiteServer.BackgroundPages
     {
         public Literal LtlContent;
 
+        // MODEL Reference
         public void Page_Load(object sender, EventArgs e)
         {
-            //FieldInfo[] fields = typeof(ChannelAttribute).GetFields(BindingFlags.Static | BindingFlags.Public);
+            var builder = new StringBuilder();
+            foreach (var provider in DataProvider.AllProviders)
+            {
+                if (string.IsNullOrEmpty(provider.TableName) || provider.TableColumns == null ||
+                    provider.TableColumns.Count == 0) continue;
 
+                builder.Append($@"{provider.TableName}<br /><br />
+字段  | 数据类型  | 数据大小  | 说明<br />
+------  | ------  | ------  | ------<br />
+");
+                foreach (var column in provider.TableColumns)
+                {
+                    builder.Append($"{column.ColumnName} | {column.DataType} | {(column.Length == 0 ? string.Empty : column.Length.ToString())} | {(column.IsIdentity ? "自增长" : string.Empty) + (column.IsPrimaryKey ? "主键" : string.Empty)}<br />");
+                }
 
-            //LtlContent.Text = DisplayPropertyInfo(fields);
+                builder.Append("<br /><br />");
+            }
 
-            //LtlContent.Text += "Original: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJBZG1pbmlzdHJhdG9yTmFtZSI6InRlc3QxIiwiQWRkRGF0ZSI6IlwvRGF0ZSgyMTU3NjA5OTg1NTA3KVwvIn0.5yDhtZUa7iT0axC1hIP6ohVpSGt_3jIhtf_FQNPbZUU" + "<hr />";
+            builder.Append($@"model_Content<br /><br />
+字段  | 数据类型  | 数据大小  | 说明<br />
+------  | ------  | ------  | ------<br />
+");
+            foreach (var column in DataProvider.ContentDao.TableColumns)
+            {
+                builder.Append($"{column.ColumnName} | {column.DataType} | {(column.Length == 0 ? string.Empty : column.Length.ToString())} | {(column.IsIdentity ? "自增长" : string.Empty) + (column.IsPrimaryKey ? "主键" : string.Empty)}<br />");
+            }
 
-            //LtlContent.Text += $"Encrypt: {TranslateUtils.EncryptStringBySecretKey("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJBZG1pbmlzdHJhdG9yTmFtZSI6InRlc3QxIiwiQWRkRGF0ZSI6IlwvRGF0ZSgyMTU3NjA5OTg1NTA3KVwvIn0.5yDhtZUa7iT0axC1hIP6ohVpSGt_3jIhtf_FQNPbZUU")}" + "<hr />";
-
-            LtlContent.Text += $"Decrypt: {TranslateUtils.DecryptStringBySecretKey("M3ENIa3NKJJ39JCRHnY4PgfJqMC7lFjggL0e9S06Bs9ubZE90add0xM2aesaL0add0Cxo8Xe5VZrSanerzFU8oZaMXCC9DZXJNsl9usrbd9oVcgoA34PNCM50tzhAIxAZUKcuBpZ4zSwm5OFBaY33YmUCvqQM441S84eHTVj3Mu0B4I0slash0UeXTHilH0slash0Gwi7Bo01Dzystb0slash00slash0hdJaSBi8Wtk8OLQDt2z8S5XZHOnrS1")}";
+            LtlContent.Text = builder.ToString();
         }
+
+        // STL Reference
+        //public void Page_Load(object sender, EventArgs e)
+        //{
+        //    FieldInfo[] fields = typeof(ChannelAttribute).GetFields(BindingFlags.Static | BindingFlags.Public);
+
+        //    LtlContent.Text = DisplayPropertyInfo(fields);
+        //}
 
         public static string DisplayPropertyInfo(FieldInfo[] propInfos)
         {

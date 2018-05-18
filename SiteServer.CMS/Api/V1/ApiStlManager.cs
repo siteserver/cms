@@ -38,13 +38,21 @@ namespace SiteServer.CMS.Api.V1
             {
                 SiteInfo = SiteManager.GetSiteInfo(siteId);
             }
-            else if (string.IsNullOrEmpty(siteDir))
+            else if (!string.IsNullOrEmpty(siteDir))
             {
                 SiteInfo = SiteManager.GetSiteInfoByDirectory(siteDir);
             }
             else
             {
                 SiteInfo = SiteManager.GetSiteInfoByIsRoot();
+                if (SiteInfo == null)
+                {
+                    var siteInfoList = SiteManager.GetSiteInfoList();
+                    if (siteInfoList != null && siteInfoList.Count > 0)
+                    {
+                        SiteInfo = siteInfoList[0];
+                    }
+                }
             }
 
             if (SiteInfo == null) return;
