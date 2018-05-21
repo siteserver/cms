@@ -264,7 +264,6 @@
     <Compile Include="Model\Attributes\SystemConfigInfo.cs" />
     <Compile Include="Core\TableColumnInfo.cs" />
     <Compile Include="Model\TableInfo.cs" />
-    <Compile Include="Model\TableMatchInfo.cs" />
     <Compile Include="Model\TableMetadataInfo.cs" />
     <Compile Include="Model\TableStyleInfo.cs" />
     <Compile Include="Model\Attributes\TableStyleInfoExtend.cs" />
@@ -332,7 +331,6 @@
     <Compile Include="Provider\SitePermissionsDao.cs" />
     <Compile Include="Provider\AccessTokenDao.cs" />
     <Compile Include="Provider\TableDao.cs" />
-    <Compile Include="Provider\TableMatchDao.cs" />
     <Compile Include="Provider\TableMetadataDao.cs" />
     <Compile Include="Provider\TableStyleDao.cs" />
     <Compile Include="Provider\TableStyleItemDao.cs" />

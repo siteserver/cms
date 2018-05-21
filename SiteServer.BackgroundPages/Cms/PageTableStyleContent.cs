@@ -65,7 +65,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             InfoMessage(
-                $"在此编辑内容模型字段,子栏目默认继承父栏目字段设置; 辅助表:{DataProvider.TableDao.GetDisplayName(_tableName)}({_tableName})");
+                $"在此编辑内容模型字段,子栏目默认继承父栏目字段设置; 内容表:{DataProvider.TableDao.GetDisplayName(_tableName)}({_tableName})");
             ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissions);
             ControlUtils.SelectSingleItem(DdlChannelId, channelId.ToString());
 

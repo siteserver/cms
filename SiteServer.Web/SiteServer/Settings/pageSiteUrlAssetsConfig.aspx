@@ -26,7 +26,7 @@
               <a class="nav-link" href="pageSiteUrlApi.aspx">API访问地址</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">辅助表管理</a>
+              <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">内容表管理</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="pageSiteKeyword.aspx">敏感词管理</a>

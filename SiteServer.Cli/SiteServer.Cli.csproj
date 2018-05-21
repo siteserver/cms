@@ -103,7 +103,6 @@
     <Compile Include="Updater\Model36\TablePermissionsInRoles.cs" />
     <Compile Include="Updater\Model36\TableRole.cs" />
     <Compile Include="Updater\Model36\TableTable.cs" />
-    <Compile Include="Updater\Model36\TableTableMatch.cs" />
     <Compile Include="Updater\Model36\TableTableMetadata.cs" />
     <Compile Include="Updater\Model36\TableTableStyle.cs" />
     <Compile Include="Updater\Model36\TableTableStyleItem.cs" />
@@ -134,7 +133,6 @@
     <Compile Include="Updater\Model41\TableSiteLog.cs" />
     <Compile Include="Updater\Model41\TableSitePermissions.cs" />
     <Compile Include="Updater\Model41\TableTable.cs" />
-    <Compile Include="Updater\Model41\TableTableMatch.cs" />
     <Compile Include="Updater\Model41\TableTableMetadata.cs" />
     <Compile Include="Updater\Model41\TableTableStyle.cs" />
     <Compile Include="Updater\Model41\TableTableStyleItem.cs" />
@@ -167,7 +165,6 @@
     <Compile Include="Updater\Model50\TableSiteLog.cs" />
     <Compile Include="Updater\Model50\TableSitePermissions.cs" />
     <Compile Include="Updater\Model50\TableTable.cs" />
-    <Compile Include="Updater\Model50\TableTableMatch.cs" />
     <Compile Include="Updater\Model50\TableTableMetadata.cs" />
     <Compile Include="Updater\Model50\TableTableStyle.cs" />
     <Compile Include="Updater\Model50\TableTableStyleItem.cs" />
@@ -200,7 +197,6 @@
     <Compile Include="Updater\Model40\TableSiteLog.cs" />
     <Compile Include="Updater\Model40\TableSitePermissions.cs" />
     <Compile Include="Updater\Model40\TableTable.cs" />
-    <Compile Include="Updater\Model40\TableTableMatch.cs" />
     <Compile Include="Updater\Model40\TableTableMetadata.cs" />
     <Compile Include="Updater\Model40\TableTableStyle.cs" />
     <Compile Include="Updater\Model40\TableTableStyleItem.cs" />

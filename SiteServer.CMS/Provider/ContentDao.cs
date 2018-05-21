@@ -16,11 +16,10 @@ namespace SiteServer.CMS.Provider
 {
     public class ContentDao : DataProviderBase
     {
-        public const int TaxisMaxValue = 2147483647;
-        public const int TaxisIsTopStartValue = 2147480000;
+        public const int TaxisIsTopStartValue = 2000000000;
         public const string SortFieldName = nameof(ContentAttribute.Taxis);
 
-        public string StlColumns => $"{ContentAttribute.Id}, {ContentAttribute.ChannelId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}, {ContentAttribute.LastEditDate}, {ContentAttribute.Taxis}, {ContentAttribute.Hits}, {ContentAttribute.HitsByDay}, {ContentAttribute.HitsByWeek}, {ContentAttribute.HitsByMonth}";
+        public static string StlColumns { get; } = $"{ContentAttribute.Id}, {ContentAttribute.ChannelId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}, {ContentAttribute.LastEditDate}, {ContentAttribute.Taxis}, {ContentAttribute.Hits}, {ContentAttribute.HitsByDay}, {ContentAttribute.HitsByWeek}, {ContentAttribute.HitsByMonth}";
 
         public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
         {
@@ -370,7 +369,7 @@ GO");
             Content.ClearCache();
         }
 
-        public void UpdateIsChecked(string tableName, int siteId, int channelId, List<int> contentIdList, int translateChannelId, bool isAdmin, string userName, bool isChecked, int checkedLevel, string reasons)
+        public void UpdateIsChecked(string tableName, int siteId, int channelId, List<int> contentIdList, int translateChannelId, string userName, bool isChecked, int checkedLevel, string reasons)
         {
             if (isChecked)
             {
@@ -383,7 +382,6 @@ GO");
             {
                 var settingsXml = GetValue(tableName, contentId, ContentAttribute.SettingsXml);
                 var attributes = TranslateUtils.ToNameValueCollection(settingsXml);
-                attributes[ContentAttribute.CheckIsAdmin] = isAdmin.ToString();
                 attributes[ContentAttribute.CheckUserName] = userName;
                 attributes[ContentAttribute.CheckCheckDate] = DateUtils.GetDateAndTimeString(checkDate);
                 attributes[ContentAttribute.CheckReasons] = reasons;
@@ -397,7 +395,7 @@ GO");
                 }
                 ExecuteNonQuery(sqlString);
 
-                var checkInfo = new ContentCheckInfo(0, tableName, siteId, channelId, contentId, isAdmin, userName, isChecked, checkedLevel, checkDate, reasons);
+                var checkInfo = new ContentCheckInfo(0, tableName, siteId, channelId, contentId, userName, isChecked, checkedLevel, checkDate, reasons);
                 DataProvider.ContentCheckDao.Insert(checkInfo);
             }
 
@@ -1146,7 +1144,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             {
                 maxTaxis = TaxisIsTopStartValue;
 
-                string sqlString =
+                var sqlString =
                     $"SELECT MAX(Taxis) FROM {tableName} WHERE ChannelId = {channelId} AND Taxis >= {TaxisIsTopStartValue}";
 
                 using (var conn = GetConnection())
@@ -1161,14 +1159,15 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
                         rdr.Close();
                     }
                 }
-                if (maxTaxis == TaxisMaxValue)
+
+                if (maxTaxis < TaxisIsTopStartValue)
                 {
-                    maxTaxis = TaxisMaxValue - 1;
+                    maxTaxis = TaxisIsTopStartValue;
                 }
             }
             else
             {
-                string sqlString =
+                var sqlString =
                     $"SELECT MAX(Taxis) FROM {tableName} WHERE ChannelId = {channelId} AND Taxis < {TaxisIsTopStartValue}";
                 using (var conn = GetConnection())
                 {

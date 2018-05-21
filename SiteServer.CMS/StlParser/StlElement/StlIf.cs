@@ -5,7 +5,6 @@ using System.Web.UI;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
@@ -231,136 +230,140 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var theValue = GetAttributeValueByContext(pageInfo, contextInfo, testType);
 
-            if (StringUtils.IsDateTime(theValue))
+            if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotEmpty))
             {
-                var dateTime = TranslateUtils.ToDateTime(theValue);
-                isSuccess = IsDateTime(dateTime, testOperate, testValue);
+                if (!string.IsNullOrEmpty(theValue))
+                {
+                    isSuccess = true;
+                }
             }
-            else if (StringUtils.IsNumber(theValue))
+            else if (StringUtils.EqualsIgnoreCase(testOperate, OperateEmpty))
             {
-                var number = TranslateUtils.ToInt(theValue);
-                isSuccess = IsNumber(number, testOperate, testValue);
+                if (string.IsNullOrEmpty(theValue))
+                {
+                    isSuccess = true;
+                }
             }
             else
             {
-                if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotEmpty))
+                if (StringUtils.IsDateTime(theValue))
                 {
-                    if (!string.IsNullOrEmpty(theValue))
-                    {
-                        isSuccess = true;
-                    }
+                    var dateTime = TranslateUtils.ToDateTime(theValue);
+                    isSuccess = IsDateTime(dateTime, testOperate, testValue);
                 }
-                else if (StringUtils.EqualsIgnoreCase(testOperate, OperateEmpty))
+                else if (StringUtils.IsNumber(theValue))
                 {
-                    if (string.IsNullOrEmpty(theValue))
-                    {
-                        isSuccess = true;
-                    }
+                    var number = TranslateUtils.ToInt(theValue);
+                    isSuccess = IsNumber(number, testOperate, testValue);
                 }
-                else if (StringUtils.EqualsIgnoreCase(testOperate, OperateEquals))
+                else
                 {
-                    if (StringUtils.EqualsIgnoreCase(theValue, testValue))
+                    if (StringUtils.EqualsIgnoreCase(testOperate, OperateEquals))
                     {
-                        isSuccess = true;
-                    }
-                }
-                else if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotEquals))
-                {
-                    if (!StringUtils.EqualsIgnoreCase(theValue, testValue))
-                    {
-                        isSuccess = true;
-                    }
-                }
-                else if (StringUtils.EqualsIgnoreCase(testOperate, OperateGreatThan))
-                {
-                    if (StringUtils.Contains(theValue, "-"))
-                    {
-                        if (TranslateUtils.ToDateTime(theValue) > TranslateUtils.ToDateTime(testValue))
+                        if (StringUtils.EqualsIgnoreCase(theValue, testValue))
                         {
                             isSuccess = true;
                         }
                     }
-                    else
+                    else if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotEquals))
                     {
-                        if (TranslateUtils.ToInt(theValue) > TranslateUtils.ToInt(testValue))
+                        if (!StringUtils.EqualsIgnoreCase(theValue, testValue))
                         {
                             isSuccess = true;
                         }
                     }
-                }
-                else if (StringUtils.EqualsIgnoreCase(testOperate, OperateLessThan))
-                {
-                    if (StringUtils.Contains(theValue, "-"))
+                    else if (StringUtils.EqualsIgnoreCase(testOperate, OperateGreatThan))
                     {
-                        if (TranslateUtils.ToDateTime(theValue) < TranslateUtils.ToDateTime(testValue))
+                        if (StringUtils.Contains(theValue, "-"))
                         {
-                            isSuccess = true;
-                        }
-                    }
-                    else
-                    {
-                        if (TranslateUtils.ToInt(theValue) < TranslateUtils.ToInt(testValue))
-                        {
-                            isSuccess = true;
-                        }
-                    }
-                }
-                else if (StringUtils.EqualsIgnoreCase(testOperate, OperateIn))
-                {
-                    var stringList = TranslateUtils.StringCollectionToStringList(testValue);
-
-                    foreach (var str in stringList)
-                    {
-                        if (StringUtils.EndsWithIgnoreCase(str, "*"))
-                        {
-                            var theStr = str.Substring(0, str.Length - 1);
-                            if (StringUtils.StartsWithIgnoreCase(theValue, theStr))
+                            if (TranslateUtils.ToDateTime(theValue) > TranslateUtils.ToDateTime(testValue))
                             {
                                 isSuccess = true;
-                                break;
                             }
                         }
                         else
                         {
-                            if (StringUtils.EqualsIgnoreCase(theValue, str))
+                            if (TranslateUtils.ToInt(theValue) > TranslateUtils.ToInt(testValue))
                             {
                                 isSuccess = true;
-                                break;
                             }
                         }
                     }
-                }
-                else if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotIn))
-                {
-                    var stringList = TranslateUtils.StringCollectionToStringList(testValue);
-
-                    var isIn = false;
-                    foreach (var str in stringList)
+                    else if (StringUtils.EqualsIgnoreCase(testOperate, OperateLessThan))
                     {
-                        if (StringUtils.EndsWithIgnoreCase(str, "*"))
+                        if (StringUtils.Contains(theValue, "-"))
                         {
-                            var theStr = str.Substring(0, str.Length - 1);
-                            if (StringUtils.StartsWithIgnoreCase(theValue, theStr))
+                            if (TranslateUtils.ToDateTime(theValue) < TranslateUtils.ToDateTime(testValue))
                             {
-                                isIn = true;
-                                break;
+                                isSuccess = true;
                             }
                         }
                         else
                         {
-                            if (StringUtils.EqualsIgnoreCase(theValue, str))
+                            if (TranslateUtils.ToInt(theValue) < TranslateUtils.ToInt(testValue))
                             {
-                                isIn = true;
-                                break;
+                                isSuccess = true;
                             }
                         }
                     }
-                    if (!isIn)
+                    else if (StringUtils.EqualsIgnoreCase(testOperate, OperateIn))
                     {
-                        isSuccess = true;
+                        var stringList = TranslateUtils.StringCollectionToStringList(testValue);
+
+                        foreach (var str in stringList)
+                        {
+                            if (StringUtils.EndsWithIgnoreCase(str, "*"))
+                            {
+                                var theStr = str.Substring(0, str.Length - 1);
+                                if (StringUtils.StartsWithIgnoreCase(theValue, theStr))
+                                {
+                                    isSuccess = true;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                if (StringUtils.EqualsIgnoreCase(theValue, str))
+                                {
+                                    isSuccess = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotIn))
+                    {
+                        var stringList = TranslateUtils.StringCollectionToStringList(testValue);
+
+                        var isIn = false;
+                        foreach (var str in stringList)
+                        {
+                            if (StringUtils.EndsWithIgnoreCase(str, "*"))
+                            {
+                                var theStr = str.Substring(0, str.Length - 1);
+                                if (StringUtils.StartsWithIgnoreCase(theValue, theStr))
+                                {
+                                    isIn = true;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                if (StringUtils.EqualsIgnoreCase(theValue, str))
+                                {
+                                    isIn = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!isIn)
+                        {
+                            isSuccess = true;
+                        }
                     }
                 }
             }
+            
             return isSuccess;
         }
 
@@ -867,6 +870,7 @@ function {functionName}(pageNum)
         private static bool IsNumber(int number, string testOperate, string testValue)
         {
             var isSuccess = false;
+            
             if (StringUtils.EqualsIgnoreCase(testOperate, OperateEquals))
             {
                 if (number == TranslateUtils.ToInt(testValue))
@@ -907,7 +911,7 @@ function {functionName}(pageNum)
                     }
                 }
             }
-            else if (StringUtils.EqualsIgnoreCase(testOperate, OperateIn))
+            else if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotIn))
             {
                 var intArrayList = TranslateUtils.StringCollectionToIntList(testValue);
                 var isIn = false;

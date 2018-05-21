@@ -26,7 +26,7 @@
               <a class="nav-link" href="pageSiteUrlApi.aspx">API访问地址</a>
             </li>
             <li class="nav-item active">
-              <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">辅助表管理</a>
+              <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">内容表管理</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="pageSiteKeyword.aspx">敏感词管理</a>
@@ -49,8 +49,8 @@
                 <table class="table tablesaw table-hover m-0">
                   <thead>
                     <tr class="thead">
-                      <th>辅助表标识</th>
-                      <th>辅助表名称</th>
+                      <th>内容表标识</th>
+                      <th>内容表名称</th>
                       <th class="text-center" width="120">是否被使用</th>
                       <th class="text-center" width="120">是否存在</th>
                       <th class="text-center" width="120">创建后修改</th>
@@ -103,7 +103,7 @@
 
           <hr />
 
-          <asp:Button class="btn btn-primary" id="BtnAdd" Text="新增辅助表" runat="server" />
+          <asp:Button class="btn btn-primary" id="BtnAdd" Text="新增内容表" runat="server" />
 
         </div>
 

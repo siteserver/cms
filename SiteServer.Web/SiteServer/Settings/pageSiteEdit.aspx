@@ -26,7 +26,7 @@
               <a class="nav-link" href="pageSiteUrlApi.aspx">API访问地址</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">辅助表管理</a>
+              <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">内容表管理</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="pageSiteKeyword.aspx">敏感词管理</a>
@@ -79,8 +79,8 @@
           </asp:PlaceHolder>
 
           <div class="form-group">
-            <label class="col-form-label">内容辅助表
-              <asp:RequiredFieldValidator ControlToValidate="DdlTableName" ErrorMessage="辅助表不能为空！" foreColor="red" Display="Dynamic"
+            <label class="col-form-label">内容表
+              <asp:RequiredFieldValidator ControlToValidate="DdlTableName" ErrorMessage="内容表不能为空！" foreColor="red" Display="Dynamic"
                 runat="server" />
             </label>
             <asp:DropDownList ID="DdlTableName" class="form-control" runat="server"> </asp:DropDownList>

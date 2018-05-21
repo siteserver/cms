@@ -22,15 +22,15 @@ namespace SiteServer.BackgroundPages.Settings
 
 			if (AuthRequest.IsQueryExists("Delete"))
 			{
-                var enName = AuthRequest.GetQueryString("ENName");//辅助表
-                var enNameArchive = enName + "_Archive";//辅助表归档
+                var enName = AuthRequest.GetQueryString("ENName");//内容表
+                var enNameArchive = enName + "_Archive";//内容表归档
 			
 				try
 				{
-                    DataProvider.TableDao.DeleteCollectionTableInfoAndDbTable(enName);//删除辅助表
-                    DataProvider.TableDao.DeleteCollectionTableInfoAndDbTable(enNameArchive);//删除辅助表归档
+                    DataProvider.TableDao.DeleteCollectionTableInfoAndDbTable(enName);//删除内容表
+                    DataProvider.TableDao.DeleteCollectionTableInfoAndDbTable(enNameArchive);//删除内容表归档
 
-                    AuthRequest.AddAdminLog("删除辅助表", $"辅助表:{enName}");
+                    AuthRequest.AddAdminLog("删除内容表", $"内容表:{enName}");
 
 					SuccessDeleteMessage();
 				}
@@ -89,7 +89,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!isTableUsed)
             {
-                var script = AlertUtils.Warning("删除辅助表", $"此操作将删除辅助表“{tableName}”，如果辅助表已在数据库中建立，将同时删除建立的辅助表，确认吗？", "取 消",
+                var script = AlertUtils.Warning("删除内容表", $"此操作将删除内容表“{tableName}”，如果内容表已在数据库中建立，将同时删除建立的内容表，确认吗？", "取 消",
                     "确认删除", $"location.href = '{GetRedirectUrl()}?Delete=True&ENName={tableName}';");
                 ltlDelete.Text =
                 $@"<a href=""javascript:;"" onClick=""{script}"">删除</a>";

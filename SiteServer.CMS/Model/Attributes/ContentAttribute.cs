@@ -2,12 +2,8 @@
 
 namespace SiteServer.CMS.Model.Attributes
 {
-    public class ContentAttribute
+    public static class ContentAttribute
     {
-        protected ContentAttribute()
-        {
-        }
-
         public const string Id = nameof(Id);
         public const string ChannelId = nameof(ChannelId);
         public const string SiteId = nameof(SiteId);
@@ -46,7 +42,6 @@ namespace SiteServer.CMS.Model.Attributes
             return attributeName + "_Extend";
         }
 
-        public const string CheckIsAdmin = "Check_IsAdmin";              //审核者是否为管理员
         public const string CheckUserName = "Check_UserName";            //审核者
         public const string CheckCheckDate = "Check_CheckDate";          //审核时间
         public const string CheckReasons = "Check_Reasons";              //审核原因

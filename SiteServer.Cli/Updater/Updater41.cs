@@ -159,12 +159,6 @@ namespace SiteServer.Cli.Updater
                 newColumns = TableTable.NewColumns;
                 convertDict = TableTable.ConvertDict;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableTableMatch.OldTableName))
-            {
-                newTableName = TableTableMatch.NewTableName;
-                newColumns = TableTableMatch.NewColumns;
-                convertDict = TableTableMatch.ConvertDict;
-            }
             else if (StringUtils.EqualsIgnoreCase(oldTableName, TableTableMetadata.OldTableName))
             {
                 newTableName = TableTableMetadata.NewTableName;

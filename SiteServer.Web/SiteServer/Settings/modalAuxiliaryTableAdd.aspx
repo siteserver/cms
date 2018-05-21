@@ -10,10 +10,10 @@
 
     <body>
       <form runat="server">
-        <ctrl:alerts text="辅助表标识为辅助表的唯一标识，当在数据库中创建辅助表时此标识作为被创建表的名称，只允许包含字母、数字以及下划线" runat="server" />
+        <ctrl:alerts text="内容表标识为内容表的唯一标识，当在数据库中创建内容表时此标识作为被创建表的名称，只允许包含字母、数字以及下划线" runat="server" />
 
         <div class="form-group form-row">
-          <label class="col-3 text-right col-form-label">辅助表标识</label>
+          <label class="col-3 text-right col-form-label">内容表标识</label>
           <div class="col-8">
             <asp:TextBox id="TbTableName" cssClass="form-control" runat="server" />
           </div>
@@ -26,7 +26,7 @@
         </div>
 
         <div class="form-group form-row">
-          <label class="col-3 text-right col-form-label">辅助表名称</label>
+          <label class="col-3 text-right col-form-label">内容表名称</label>
           <div class="col-8">
             <asp:TextBox id="TbDisplayName" cssClass="form-control" runat="server" />
           </div>
@@ -39,7 +39,7 @@
         </div>
 
         <div class="form-group form-row">
-          <label class="col-3 text-right col-form-label">辅助表简介</label>
+          <label class="col-3 text-right col-form-label">内容表简介</label>
           <div class="col-8">
             <asp:TextBox id="TbDescription" cssClass="form-control" Columns="45" Rows="4" TextMode="MultiLine" runat="server" />
           </div>

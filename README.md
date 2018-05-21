@@ -2,9 +2,9 @@
 
 SiteServer CMS 是.NET平台CMS系统的创始者，能够以最低的成本、最少的人力投入在最短的时间内架设一个功能齐全、性能优异、规模庞大并易于维护的网站平台。
 
-![SiteServer CMS](http://www.siteserver.cn/assets/github-banner.png)
+![SiteServer CMS](https://www.siteserver.cn/assets/github-banner.png)
 
-[官网](http://www.siteserver.cn/) | [文档中心](http://docs.siteserver.cn/) | [STL 语言](http://stl.siteserver.cn/) | [博客](http://blog.siteserver.cn/)
+[官网](https://www.siteserver.cn/) | [文档中心](https://docs.siteserver.cn/) | [STL 语言](https://stl.siteserver.cn/) | [博客](https://blog.siteserver.cn/)
 
 ## 版本
 
@@ -26,6 +26,10 @@ SiteServer CMS 是.NET平台CMS系统的创始者，能够以最低的成本、�
 ├─SiteServer.Utils                基础类库
 └─SiteServer.Web                  API 源文件及aspx页面
 ```
+
+## SiteServer CMS 数据结构
+
+请参考[《SiteServer CMS 数据结构参考手册》](https://docs.siteserver.cn/model)
 
 ## 生成安装包
 
@@ -68,7 +72,7 @@ SiteServer CMS 产品将在每个月底发布新的正式版本，我们将在�
 
 ## 关注最新动态
 
-[![qrcode](http://www.siteserver.cn/images/qrcode_for_wx.jpg)](http://www.siteserver.cn/)
+[![qrcode](https://www.siteserver.cn/images/qrcode_for_wx.jpg)](https://www.siteserver.cn/)
 
 ## License
 

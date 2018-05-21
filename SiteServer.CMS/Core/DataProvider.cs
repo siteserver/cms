@@ -123,9 +123,6 @@ namespace SiteServer.CMS.Core
         private static TableDao _tableDao;
         public static TableDao TableDao => _tableDao ?? (_tableDao = new TableDao());
 
-        private static TableMatchDao _tableMatchDao;
-        public static TableMatchDao TableMatchDao => _tableMatchDao ?? (_tableMatchDao = new TableMatchDao());
-
         private static TableMetadataDao _tableMetadataDao;
         public static TableMetadataDao TableMetadataDao => _tableMetadataDao ?? (_tableMetadataDao = new TableMetadataDao());
 
@@ -186,7 +183,6 @@ namespace SiteServer.CMS.Core
             _sitePermissionsDao = null;
             _specialDao = null;
             _tableDao = null;
-            _tableMatchDao = null;
             _tableMetadataDao = null;
             _tableStyleDao = null;
             _tableStyleItemDao = null;
@@ -229,7 +225,6 @@ namespace SiteServer.CMS.Core
             SitePermissionsDao,
             SpecialDao,
             TableDao,
-            TableMatchDao,
             TableMetadataDao,
             TableStyleDao,
             TableStyleItemDao,

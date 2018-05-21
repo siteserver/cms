@@ -290,7 +290,7 @@ namespace SiteServer.BackgroundPages.Cms
                     if (CheckManager.IsCheckable(SiteInfo, contentInfo.ChannelId, contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                     {
                         //添加审核记录
-                        DataProvider.ContentDao.UpdateIsChecked(_tableName, SiteId, contentInfo.ChannelId, new List<int> { contentInfo.Id }, 0, true, AuthRequest.AdminName, contentInfo.IsChecked, contentInfo.CheckedLevel, "");
+                        DataProvider.ContentDao.UpdateIsChecked(_tableName, SiteId, contentInfo.ChannelId, new List<int> { contentInfo.Id }, 0, AuthRequest.AdminName, contentInfo.IsChecked, contentInfo.CheckedLevel, "");
                     }
 
                     TagUtils.AddTags(tagCollection, SiteId, contentInfo.Id);

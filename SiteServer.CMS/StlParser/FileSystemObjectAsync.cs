@@ -110,6 +110,7 @@ namespace SiteServer.CMS.StlParser
                 var contentAttributeHtml = innerBuilder.ToString();
                 var pageCount = StringUtils.GetCount(ContentUtility.PagePlaceHolder, contentAttributeHtml) + 1;//一共需要的页数
 
+                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
                 Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -141,6 +142,7 @@ namespace SiteServer.CMS.StlParser
                 int totalNum;
                 var pageCount = pageContentsElementParser.GetPageCount(out totalNum);
 
+                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
                 Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -173,6 +175,7 @@ namespace SiteServer.CMS.StlParser
                 int totalNum;
                 var pageCount = pageChannelsElementParser.GetPageCount(out totalNum);
 
+                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
                 Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -197,6 +200,7 @@ namespace SiteServer.CMS.StlParser
                 int totalNum;
                 var pageCount = pageSqlContentsElementParser.GetPageCount(out totalNum);
 
+                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
                 Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -211,30 +215,6 @@ namespace SiteServer.CMS.StlParser
                     await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
                 }
             }
-            //如果标签中存在<stl:StlPageInputContents>
-            //else if (StlParserUtility.IsStlElementExists(StlPageInputContents.ElementName, stlLabelList))
-            //{
-            //    var stlElement = StlParserUtility.GetStlElement(StlPageInputContents.ElementName, stlLabelList);
-            //    var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
-
-            //    var pageInputContentsElementParser = new StlPageInputContents(stlElement, pageInfo, contextInfo, true);
-            //    int totalNum;
-            //    var pageCount = pageInputContentsElementParser.GetPageCount(out totalNum);
-
-            //    Parser.Parse(siteInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
-
-            //    for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
-            //    {
-            //        var thePageInfo = new PageInfo(pageInfo.PageChannelId, pageInfo.PageContentId, pageInfo.SiteInfo, pageInfo.TemplateInfo, null);
-            //        var pageHtml = pageInputContentsElementParser.Parse(currentPageIndex, pageCount);
-            //        var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
-
-            //        StlParserManager.ReplacePageElementsInChannelPage(pagedBuilder, thePageInfo, stlLabelList, thePageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
-
-            //        filePath = PathUtility.GetChannelPageFilePath(siteInfo, thePageInfo.PageChannelId, currentPageIndex);
-            //        GenerateFile(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
-            //    }
-            //}
             else
             {
                 Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
