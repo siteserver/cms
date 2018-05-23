@@ -19,7 +19,7 @@ namespace SiteServer.CMS.Plugin
         private const string UserAuthCookie = "ss_user_access_token";
         private const string AdministratorAuthCookie = "ss_administrator_access_token";
         private const string ApiAuthHeader = "X-SS-API-KEY";
-        private const string ApiAuthQuery = "api-key";
+        private const string ApiAuthQuery = "apiKey";
         private const int AccessTokenExpireDays = 7;
 
         public AuthRequest(): this(HttpContext.Current.Request)

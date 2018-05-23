@@ -29,10 +29,6 @@ namespace SiteServer.CMS.StlParser.Model
                 typeof(StlChannels)
             },
             {
-                StlCode.ElementName,
-                typeof(StlCode)
-            },
-            {
                 StlContainer.ElementName,
                 typeof(StlContainer)
             },
