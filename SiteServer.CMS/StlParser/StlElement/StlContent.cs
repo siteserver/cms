@@ -34,7 +34,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         private static readonly Attr IsUpper = new Attr("isUpper", "是否转换为大写");
         private static readonly Attr IsOriginal = new Attr("isOriginal", "如果是引用内容，是否获取所引用内容的值");
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
             var leftText = string.Empty;
             var rightText = string.Empty;
@@ -52,7 +52,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var isLower = false;
             var isUpper = false;
             var isOriginal = true;//引用的时候，默认使用原来的数据
-            var type = ContentAttribute.Title.ToLower();
+            var type = string.Empty;
 
             foreach (var name in contextInfo.Attributes.Keys)
             {
@@ -128,7 +128,15 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            var parsedContent = ParseImpl(pageInfo, contextInfo, leftText, rightText, formatString, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBrStr, isLower, isUpper, isOriginal, type);
+            var contentId = contextInfo.ContentId;
+            var contentInfo = contextInfo.ContentInfo;
+
+            if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))
+            {
+                return contentInfo;
+            }
+
+            var parsedContent = ParseImpl(pageInfo, contextInfo, leftText, rightText, formatString, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBrStr, isLower, isUpper, isOriginal, type, contentInfo, contentId);
 
             var innerBuilder = new StringBuilder(parsedContent);
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
@@ -137,9 +145,16 @@ namespace SiteServer.CMS.StlParser.StlElement
             return parsedContent;
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string leftText, string rightText, string formatString, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, string isReturnToBrStr, bool isLower, bool isUpper, bool isOriginal, string type)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string leftText, string rightText, string formatString, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, string isReturnToBrStr, bool isLower, bool isUpper, bool isOriginal, string type, ContentInfo contentInfo, int contentId)
         {
+            if (contentInfo == null) return string.Empty;
+
             var parsedContent = string.Empty;
+
+            if (string.IsNullOrEmpty(type))
+            {
+                type = ContentAttribute.Title.ToLower();
+            }
 
             var isReturnToBr = false;
             if (string.IsNullOrEmpty(isReturnToBrStr))
@@ -153,10 +168,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 isReturnToBr = TranslateUtils.ToBool(isReturnToBrStr, true);
             }
-
-            var contentId = contextInfo.ContentId;
-            var contentInfo = contextInfo.ContentInfo;
-            if (contentInfo == null) return string.Empty;
 
             if (isOriginal)
             {
