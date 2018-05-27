@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using Newtonsoft.Json;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -179,6 +180,48 @@ namespace SiteServer.CMS.Model
             set { Set(ContentAttribute.LinkUrl, value); }
         }
 
+	    public string SubTitle
+	    {
+	        get { return GetString(BackgroundContentAttribute.SubTitle); }
+	        set { Set(BackgroundContentAttribute.SubTitle, value); }
+	    }
+	    public string ImageUrl
+	    {
+	        get { return GetString(BackgroundContentAttribute.ImageUrl); }
+	        set { Set(BackgroundContentAttribute.ImageUrl, value); }
+	    }
+	    public string VideoUrl
+	    {
+	        get { return GetString(BackgroundContentAttribute.VideoUrl); }
+	        set { Set(BackgroundContentAttribute.VideoUrl, value); }
+	    }
+	    public string FileUrl
+	    {
+	        get { return GetString(BackgroundContentAttribute.FileUrl); }
+	        set { Set(BackgroundContentAttribute.FileUrl, value); }
+	    }
+	    public string Author
+	    {
+	        get { return GetString(BackgroundContentAttribute.Author); }
+	        set { Set(BackgroundContentAttribute.Author, value); }
+	    }
+	    public string Source
+	    {
+	        get { return GetString(BackgroundContentAttribute.Source); }
+	        set { Set(BackgroundContentAttribute.Source, value); }
+	    }
+	    public string Summary
+	    {
+	        get { return GetString(BackgroundContentAttribute.Summary); }
+	        set { Set(BackgroundContentAttribute.Summary, value); }
+	    }
+	    public string Content
+	    {
+	        get { return GetString(BackgroundContentAttribute.Content); }
+	        set { Set(BackgroundContentAttribute.Content, value); }
+	    }
+
+        [JsonIgnore]
         public string SettingsXml
         {
             get { return GetString(ContentAttribute.SettingsXml); }

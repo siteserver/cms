@@ -6,13 +6,11 @@ using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Core
 {
     public class ChannelTreeItem
     {
-        private readonly string _contentModelIconUrl;
         private readonly string _contentModelIconClass;
         private readonly string _iconEmptyUrl;
         private readonly string _iconMinusUrl;
@@ -36,23 +34,10 @@ namespace SiteServer.BackgroundPages.Core
             _permissionManager = permissionManager;
 
             var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
-            _contentModelIconUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
+            _contentModelIconClass = "ion-folder";
             _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
             _iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");
             _iconPlusUrl = PageUtils.Combine(treeDirectoryUrl, "plus.png");
-
-            if (!string.IsNullOrEmpty(channelInfo.ContentModelPluginId))
-            {
-                _contentModelIconClass = PluginMenuManager.GetPluginIconClass(channelInfo.ContentModelPluginId);
-                if (string.IsNullOrEmpty(_contentModelIconClass))
-                {
-                    var iconUrl = PluginManager.GetPluginIconUrl(channelInfo.ContentModelPluginId);
-                    if (!string.IsNullOrEmpty(iconUrl))
-                    {
-                        _contentModelIconUrl = iconUrl;
-                    }
-                }
-            }
         }
 
         public string GetItemHtml(ELoadingType loadingType, string returnUrl, NameValueCollection additional)
@@ -68,9 +53,9 @@ namespace SiteServer.BackgroundPages.Core
             {
                 htmlBuilder.Append(
                     _channelInfo.SiteId == _channelInfo.Id
-                        ? $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_channelInfo
+                        ? $@"<img align=""absmiddle"" style=""cursor:pointer margin-top: -5px;"" onClick=""displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_channelInfo
                             .Id}"" src=""{_iconMinusUrl}"" />"
-                        : $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_channelInfo
+                        : $@"<img align=""absmiddle"" style=""cursor:pointer; margin-top: -5px;"" onClick=""displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_channelInfo
                             .Id}"" src=""{_iconPlusUrl}"" />");
             }
             else
@@ -78,9 +63,7 @@ namespace SiteServer.BackgroundPages.Core
                 htmlBuilder.Append($@"<img align=""absmiddle"" src=""{_iconEmptyUrl}"" />");
             }
 
-            var contentModelIconHtml = !string.IsNullOrEmpty(_contentModelIconClass)
-                ? $@"<i class=""{_contentModelIconClass}"" style=""color: #00b19d;display: inline-block;font-size: 18px;vertical-align: middle;width: 16px;""></i>"
-                : $@"<img align=""absmiddle"" src=""{_contentModelIconUrl}"" style=""max-height: 22px; max-width: 22px"" />";
+            var contentModelIconHtml = $@"<i class=""{_contentModelIconClass}""></i>";
 
             if (_channelInfo.Id > 0)
             {

@@ -1633,3 +1633,28 @@ table.dataTable td.focus {
 .navbar-nav {
   flex-direction: inherit;
 }
+
+.scroll {
+  overflow-x: scroll !important;
+}
+
+.table-tree a {
+  color: #55565d !important;
+}
+.table-tree i{
+  font-size: 18px;
+  color: #7a7b80 !important;
+}
+
+.table-tree>tbody>tr>td,
+.table-tree>tbody>tr>th {
+  border-top: none !important;
+}
+
+.table-tree a,
+.table-tree span,
+.table-tree div {
+  font-size: 14px !important;
+  margin-top: -5px !important;
+  display: inline-block !important;
+}

@@ -1,5 +1,6 @@
 using System;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
 
@@ -83,6 +84,7 @@ namespace SiteServer.CMS.Model
             set { _taxis = value; }
         }
 
+	    [JsonIgnore]
         public string SettingsXml
         {
             get { return _settingsXml; }
@@ -93,6 +95,7 @@ namespace SiteServer.CMS.Model
             }
         }
 
+	    [JsonIgnore]
         public SiteInfoExtend Additional => _additional ?? (_additional = new SiteInfoExtend(SiteDir, _settingsXml));
 
 	    public IAttributes Attributes => Additional;

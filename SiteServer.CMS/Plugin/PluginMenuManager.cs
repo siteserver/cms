@@ -9,11 +9,6 @@ namespace SiteServer.CMS.Plugin
 {
     public static class PluginMenuManager
     {
-        public static string GetPluginIconClass(string pluginId)
-        {
-            return "ion-cube";
-        }
-
         public static Dictionary<string, Menu> GetTopMenus()
         {
             var menus = new Dictionary<string, Menu>();

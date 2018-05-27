@@ -152,7 +152,7 @@
             <div class="alert alert-success" role="alert">
               <h4 class="alert-heading">升级完成！</h4>
               <p>
-                恭喜，您已经完成了 SiteServer CMS 系统的升级，请进入数据库升级向导已完成数据库升级
+                恭喜，您已经完成了 SiteServer CMS 系统的升级，请点击按钮进入数据库升级向导
                 <a class="btn btn-success m-l-5" href="<%=AdminUrl%>">进入数据库升级向导</a>
               </p>
               <hr>

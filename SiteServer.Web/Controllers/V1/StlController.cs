@@ -40,11 +40,7 @@ namespace SiteServer.API.Controllers.V1
                     {
                         var obj = func(manager.PageInfo, manager.ContextInfo);
 
-                        if (obj == null)
-                        {
-                            value = string.Empty;
-                        }
-                        else if (obj is string)
+                        if (obj is string)
                         {
                             value = (string)obj;
                         }

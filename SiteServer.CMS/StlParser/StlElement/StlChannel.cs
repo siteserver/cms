@@ -38,7 +38,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         private static readonly Attr IsLower = new Attr("isLower", "是否转换为小写", AttrType.Boolean);
         private static readonly Attr IsUpper = new Attr("isUpper", "是否转换为大写", AttrType.Boolean);
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
             var leftText = string.Empty;
             var rightText = string.Empty;
@@ -46,7 +46,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var channelName = string.Empty;
             var upLevel = 0;
             var topLevel = -1;
-            var type = ChannelAttribute.Title;
+            var type = string.Empty;
             var formatString = string.Empty;
             string separator = null;
             var startIndex = 0;
@@ -149,20 +149,28 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, leftText, rightText, channelIndex, channelName, upLevel, topLevel, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
-        }
-
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string leftText, string rightText, string channelIndex, string channelName, int upLevel, int topLevel, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
-        {
-            if (string.IsNullOrEmpty(type)) return string.Empty;
-            type = type.ToLower();
-
-            var parsedContent = string.Empty;
-
             var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
             channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
             var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
+
+            if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))
+            {
+                return channel;
+            }
+
+            return ParseImpl(pageInfo, contextInfo, leftText, rightText, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, channel, channelId);
+        }
+
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string leftText, string rightText, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, ChannelInfo channel, int channelId)
+        {
+            if (string.IsNullOrEmpty(type))
+            {
+                type = ChannelAttribute.Title;
+            }
+            type = type.ToLower();
+
+            var parsedContent = string.Empty;
 
             if (!string.IsNullOrEmpty(formatString))
             {
