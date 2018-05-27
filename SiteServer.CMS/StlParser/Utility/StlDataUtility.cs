@@ -421,10 +421,10 @@ namespace SiteServer.CMS.StlParser.Utility
             return dataSet;
         }
 
-        public static IDataReader GetSqlContentsDataSource(string connectionString, string queryString, int startNum, int totalNum, string orderByString)
+        public static DataSet GetSqlContentsDataSource(string connectionString, string queryString, int startNum, int totalNum, string orderByString)
         {
             var sqlString = TableStructure.GetSelectSqlStringByQueryString(connectionString, queryString, startNum, totalNum, orderByString);
-            return DataProvider.DatabaseDao.GetDataSource(connectionString, sqlString);
+            return Database.GetDataSet(connectionString, sqlString);
         }
 
         public static DataSet GetPageSqlContentsDataSet(string connectionString, string queryString, int startNum, int totalNum, string orderByString)

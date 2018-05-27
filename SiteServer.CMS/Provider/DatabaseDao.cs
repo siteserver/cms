@@ -405,7 +405,7 @@ namespace SiteServer.CMS.Provider
             return enumerable;
         }
 
-        public DataSet GetDataSet(string connectionString, string sqlString)
+        public DataTable GetDataTable(string connectionString, string sqlString)
         {
             if (string.IsNullOrEmpty(connectionString))
             {
@@ -414,14 +414,27 @@ namespace SiteServer.CMS.Provider
 
             if (string.IsNullOrEmpty(sqlString)) return null;
             var dataset = ExecuteDataset(connectionString, sqlString);
-            return dataset;
+
+            if (dataset == null || dataset.Tables.Count == 0) return null;
+
+            return dataset.Tables[0];
+        }
+
+        public DataSet GetDataSet(string connectionString, string sqlString)
+        {
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                connectionString = ConnectionString;
+            }
+
+            if (string.IsNullOrEmpty(sqlString)) return null;
+            return ExecuteDataset(connectionString, sqlString);
         }
 
         public DataSet GetDataSet(string sqlString)
         {
             if (string.IsNullOrEmpty(sqlString)) return null;
-            var dataset = ExecuteDataset(sqlString);
-            return dataset;
+            return ExecuteDataset(sqlString);
         }
 
         public void ReadResultsToNameValueCollection(IDataReader rdr, NameValueCollection attributes)

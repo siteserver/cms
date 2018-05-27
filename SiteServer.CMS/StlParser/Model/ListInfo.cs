@@ -379,6 +379,10 @@ namespace SiteServer.CMS.StlParser.Model
                         listInfo.ConnectionString = WebConfigUtils.ConnectionString;
                     }
                 }
+                else if (contextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.QueryString.Name))
+                {
+                    listInfo.QueryString = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
                 else
                 {
                     listInfo.Others.Set(name, value);

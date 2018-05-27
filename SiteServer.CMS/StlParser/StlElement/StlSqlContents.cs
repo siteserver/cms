@@ -1,4 +1,5 @@
-﻿using System.Web.UI.WebControls;
+﻿using System.Data;
+using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
@@ -13,6 +14,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static readonly Attr ConnectionStringName = new Attr("connectionStringName", "数据库链接字符串名称");
         public static readonly Attr ConnectionString = new Attr("connectionString", "数据库链接字符串");
+        public static readonly Attr QueryString = new Attr("queryString", "数据库查询语句");
         public static readonly Attr TotalNum = new Attr("totalNum", "填充");
         public static readonly Attr StartNum = new Attr("startNum", "间距");
         public static readonly Attr Order = new Attr("order", "Css类");
@@ -31,14 +33,20 @@ namespace SiteServer.CMS.StlParser.StlElement
         public static readonly Attr ItemClass = new Attr("itemClass", "从第几条信息开始显示");
         public static readonly Attr Layout = new Attr("layout", "排序");
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
             var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.SqlContent);
+            var dataSource = StlDataUtility.GetSqlContentsDataSource(listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString);
 
-            return ParseImpl(pageInfo, contextInfo, listInfo);
+            if (contextInfo.IsStlEntity)
+            {
+                return ParseEntity(pageInfo, dataSource);
+            }
+
+            return ParseElement(pageInfo, contextInfo, listInfo, dataSource);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
+        private static string ParseElement(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, DataSet dataSource)
         {
             var parsedContent = string.Empty;
 
@@ -69,7 +77,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     rptContents.AlternatingItemTemplate = new RepeaterTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.SqlContent, contextInfo);
                 }
 
-                rptContents.DataSource = StlDataUtility.GetSqlContentsDataSource(listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString);
+                rptContents.DataSource = dataSource;
                 rptContents.DataBind();
 
                 if (rptContents.Items.Count > 0)
@@ -101,7 +109,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     pdlContents.AlternatingItemTemplate = new DataListTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.SqlContent, contextInfo);
                 }
 
-                pdlContents.DataSource = StlDataUtility.GetSqlContentsDataSource(listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString);
+                pdlContents.DataSource = dataSource;
                 pdlContents.DataBind();
 
                 if (pdlContents.Items.Count > 0)
@@ -111,6 +119,12 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             return parsedContent;
+        }
+
+        private static object ParseEntity(PageInfo pageInfo, DataSet dataSource)
+        {
+            var table = dataSource.Tables[0];
+            return TranslateUtils.DataTableToDictionaryList(table);
         }
     }
 }

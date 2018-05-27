@@ -1183,5 +1183,22 @@ namespace SiteServer.Utils
         {
             return (RepeatLayout)ToEnum(typeof(RepeatLayout), typeStr, RepeatLayout.Table);
         }
+
+        public static List<Dictionary<string, object>> DataTableToDictionaryList(DataTable dataTable)
+        {
+            var rows = new List<Dictionary<string, object>>();
+
+            foreach (DataRow dataRow in dataTable.Rows)
+            {
+                var row = new Dictionary<string, object>();
+                foreach (DataColumn col in dataTable.Columns)
+                {
+                    row.Add(col.ColumnName, dataRow[col]);
+                }
+                rows.Add(row);
+            }
+
+            return rows;
+        }
     }
 }
