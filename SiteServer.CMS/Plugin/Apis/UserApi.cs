@@ -93,7 +93,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public bool Validate(string account, string password, out string userName, out string errorMessage)
         {
-            return DataProvider.UserDao.Validate(account, password, out userName, out errorMessage);
+            return DataProvider.UserDao.Validate(account, password, false, out userName, out errorMessage);
         }
 
         public void UpdateLastActivityDateAndCountOfFailedLogin(string userName)

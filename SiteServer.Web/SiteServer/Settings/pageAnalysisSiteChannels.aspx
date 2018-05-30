@@ -142,7 +142,7 @@
           <div class="panel panel-default">
             <div class="panel-body p-0">
               <div class="table-responsive">
-                <table class="table tablesaw table-hover m-0">
+                <table class="table-tree table tablesaw table-hover m-0">
                   <thead>
                     <th>栏目名</th>
                     <th class="text-center">新增内容</th>

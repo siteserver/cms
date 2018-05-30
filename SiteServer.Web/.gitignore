@@ -1,4 +1,5 @@
 bin/
+css/
 obj/
 home/
 /channels/
@@ -9,6 +10,7 @@ SiteFiles/packages/
 SiteFiles/SiteTemplates/
 SiteFiles/TemporaryFiles/
 SiteFiles/UserFiles/test/
+Template
 test1/
 test2/
 test3/
@@ -38,3 +40,5 @@ test26/
 test27/
 test28/
 test29/
+upload
+T_*.html

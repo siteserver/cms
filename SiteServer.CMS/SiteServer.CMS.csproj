@@ -104,7 +104,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\V1\ApiStlManager.cs" />
+    <Compile Include="Api\V1\ApiUsersRoute.cs" />
+    <Compile Include="Api\V1\StlRequest.cs" />
     <Compile Include="Api\ApiRoutePlugin.cs" />
     <Compile Include="Api\Preview\ApiRoutePreview.cs" />
     <Compile Include="Api\Sys\Administrators\ApiRouteActionsLogin.cs" />
@@ -130,6 +131,10 @@
     <Compile Include="Api\Sys\Stl\ApiRouteActionsUpload.cs" />
     <Compile Include="Api\V1\ApiPingRoute.cs" />
     <Compile Include="Api\V1\ApiStlRoute.cs" />
+    <Compile Include="Api\V1\ORequest.cs" />
+    <Compile Include="Api\V1\OUtils.cs" />
+    <Compile Include="Api\V1\OFilter.cs" />
+    <Compile Include="Api\V1\OResponse.cs" />
     <Compile Include="Core\AdminManager.cs" />
     <Compile Include="Api\ApiManager.cs" />
     <Compile Include="Core\ArchiveManager.cs" />

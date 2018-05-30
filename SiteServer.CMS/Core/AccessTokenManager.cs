@@ -6,9 +6,16 @@ namespace SiteServer.CMS.Core
 {
 	public static class AccessTokenManager
 	{
-	    public const string ScopeStl = "stl";
+	    public const string ScopeUsers = "users";
+        public const string ScopeStl = "stl";
 
-	    private static class AccessTokenManagerCache
+	    public static List<string> ScopeList => new List<string>
+	    {
+	        ScopeUsers,
+            ScopeStl
+        };
+
+        private static class AccessTokenManagerCache
         {
 	        private static readonly object LockObject = new object();
 	        private const string CacheKey = "SiteServer.CMS.Core.AccessTokenManager";

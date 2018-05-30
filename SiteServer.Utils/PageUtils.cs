@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Text;
@@ -396,6 +397,23 @@ namespace SiteServer.Utils
             }
             var attributes = GetQueryString(url);
             attributes.Remove(queryString);
+            url = url.Substring(0, url.IndexOf("?", StringComparison.Ordinal));
+            return AddQueryString(url, attributes);
+        }
+
+        public static string RemoveQueryString(string url, List<string> queryNames)
+        {
+            if (queryNames == null || queryNames.Count == 0 || url == null) return url;
+
+            if (url.IndexOf("?", StringComparison.Ordinal) == -1 || url.EndsWith("?"))
+            {
+                return url;
+            }
+            var attributes = GetQueryString(url);
+            foreach (var queryName in queryNames)
+            {
+                attributes.Remove(queryName);
+            }
             url = url.Substring(0, url.IndexOf("?", StringComparison.Ordinal));
             return AddQueryString(url, attributes);
         }

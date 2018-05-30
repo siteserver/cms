@@ -63,13 +63,8 @@
             <div class="m-5">
 
               <div class="row">
-                <div class="col-4">
-                  <asp:CheckBox ID="CblStl" class="checkbox checkbox-primary" Text="stl" value="stl" runat="server" />
-                </div>
-                <div class="col-8">
-                  <small class="form-text text-muted">
-                    拥有STL API调用授权
-                  </small>
+                <div class="col-12">
+                  <asp:CheckBoxList ID="CblScopes" CssClass="checkbox checkbox-primary" RepeatDirection="Horizontal" runat="server" />
                 </div>
               </div>
 

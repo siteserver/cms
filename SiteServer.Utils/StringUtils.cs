@@ -10,19 +10,14 @@ using SiteServer.Plugin;
 
 namespace SiteServer.Utils
 {
-    public class StringUtils
+    public static class StringUtils
     {
-        public sealed class Constants
+        public static class Constants
         {
             public const string ReturnAndNewline = "\r\n";//回车换行
             public const string Html5Empty = @"<html><head><meta charset=""utf-8""></head><body></body></html>";
 
             public const string Ellipsis = "...";
-
-            //分钟基数
-            public static readonly int MinuteFactorWeek = 5040;
-            public static readonly int MinuteFactorDay = 720;
-            public static readonly int MinuteFactorHour = 60;
 
             public const int PageSize = 25;//后台分页数
             public const string HideElementStyle = "display:none";
@@ -30,11 +25,6 @@ namespace SiteServer.Utils
 
             public const string TitleImageAppendix = "t_";
             public const string SmallImageAppendix = "s_";
-
-            public const string CompanyName = "北京百容千域软件技术开发有限责任公司";
-            public const string CompanyUrl = "http://www.siteserver.cn";
-            public const string ProductName = "SITESERVER";
-            public const string ProductUrl = "http://www.siteserver.cn";
 
             public static string GetStlUrl(bool isEntity, string label)
             {
@@ -1245,23 +1235,6 @@ namespace SiteServer.Utils
         {
             if (string.IsNullOrEmpty(input)) return string.Empty;
             return input.First().ToString().ToLower() + input.Substring(1);
-        }
-
-        public static string SortedListToAttributeValueString(string name, SortedList<string, string> attributeValues)
-        {
-            const string seperator = "<br />&nbsp;&nbsp;&nbsp;&nbsp;";
-
-            var builder = new StringBuilder();
-            if (attributeValues != null && attributeValues.Count > 0)
-            {
-                foreach (var key in attributeValues.Keys)
-                {
-                    builder.Append(
-                        $@"{key}：{attributeValues[key]}{seperator}");
-                }
-                builder.Length = builder.Length - seperator.Length;
-            }
-            return name + "，可选值包含：<br />&nbsp;&nbsp;&nbsp;&nbsp;" + builder;
         }
     }
 }

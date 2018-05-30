@@ -338,8 +338,25 @@ namespace SiteServer.Utils
 		    }
 		}
 
+	    public static void SelectMultiItemsIgnoreCase(ListControl listControl, List<string> values)
+	    {
+	        if (listControl == null) return;
 
-		public static string SelectedItemsValueToStringCollection(ListItemCollection items)
+	        listControl.ClearSelection();
+	        foreach (ListItem item in listControl.Items)
+	        {
+	            foreach (var value in values)
+	            {
+	                if (StringUtils.EqualsIgnoreCase(item.Value, value))
+	                {
+	                    item.Selected = true;
+	                    break;
+	                }
+	            }
+	        }
+	    }
+
+        public static string SelectedItemsValueToStringCollection(ListItemCollection items)
 		{
 			var builder = new StringBuilder();
 			if (items!= null)

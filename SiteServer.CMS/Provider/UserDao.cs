@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Dapper;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
@@ -234,7 +236,7 @@ namespace SiteServer.CMS.Provider
             {
                 return true;
             }
-            var obj = CacheUtils.Get($"BaiRong.Core.Provider.UserDao.Insert.IpAddress.{ipAddress}");
+            var obj = CacheUtils.Get($"SiteServer.CMS.Provider.UserDao.Insert.IpAddress.{ipAddress}");
             return obj == null;
         }
 
@@ -242,13 +244,14 @@ namespace SiteServer.CMS.Provider
         {
             if (ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes > 0 && !string.IsNullOrEmpty(ipAddress))
             {
-                CacheUtils.InsertMinutes($"BaiRong.Core.Provider.UserDao.Insert.IpAddress.{ipAddress}", ipAddress, ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes);
+                CacheUtils.InsertMinutes($"SiteServer.CMS.Provider.UserDao.Insert.IpAddress.{ipAddress}", ipAddress, ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes);
             }
         }
 
-        public bool Insert(IUserInfo userInfo, string password, string ipAddress, out string errorMessage)
+        private bool InsertValidate(IUserInfo userInfo, string password, string ipAddress, out string errorMessage)
         {
             errorMessage = string.Empty;
+
             if (!IpAddressIsRegisterAllowed(ipAddress))
             {
                 errorMessage = $"同一IP在{ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes}分钟内只能注册一次";
@@ -290,6 +293,14 @@ namespace SiteServer.CMS.Provider
                 errorMessage = "用户名已被注册，请更换用户名";
                 return false;
             }
+
+            return true;
+        }
+
+        public bool Insert(IUserInfo userInfo, string password, string ipAddress, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+            if (!InsertValidate(userInfo, password, ipAddress, out errorMessage)) return false;
 
             try
             {
@@ -1219,9 +1230,13 @@ namespace SiteServer.CMS.Provider
             return enumerable;
         }
 
-        public bool CheckPassword(string password, string dbpassword, EPasswordFormat passwordFormat, string passwordSalt)
+        public bool CheckPassword(string password, bool isPasswordMd5, string dbpassword, EPasswordFormat passwordFormat, string passwordSalt)
         {
             var decodePassword = DecodePassword(dbpassword, passwordFormat, passwordSalt);
+            if (isPasswordMd5)
+            {
+                return password == AuthUtils.Md5ByString(decodePassword);
+            }
             return password == decodePassword;
         }
 
@@ -1279,7 +1294,7 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString, updateParms);
         }
 
-        public bool Validate(string account, string password, out string userName, out string errorMessage)
+        public bool Validate(string account, string password, bool isPasswordMd5, out string userName, out string errorMessage)
         {
             userName = string.Empty;
             errorMessage = string.Empty;
@@ -1341,7 +1356,7 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            if (!CheckPassword(password, userInfo.Password, EPasswordFormatUtils.GetEnumType(userInfo.PasswordFormat), userInfo.PasswordSalt))
+            if (!CheckPassword(password, isPasswordMd5, userInfo.Password, EPasswordFormatUtils.GetEnumType(userInfo.PasswordFormat), userInfo.PasswordSalt))
             {
                 LogUtils.AddUserLog(userInfo.UserName, "用户登录失败", "帐号或密码错误");
                 errorMessage = "帐号或密码错误";
@@ -1425,6 +1440,53 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
                 rdr.Close();
             }
             return dict;
+        }
+
+        public int ApiGetCount()
+        {
+            return DataProvider.DatabaseDao.GetCount(TableName);
+        }
+
+        public List<UserInfo> ApiGetUsers(int offset, int limit)
+        {
+            var sqlString =
+                DataProvider.DatabaseDao.GetPageSqlString(TableName, "*", string.Empty, "ORDER BY Id", offset, limit);
+            using (var connection = GetConnection())
+            {
+                return connection.Query<UserInfo>(sqlString).ToList();
+            }
+        }
+
+        public bool ApiInsert(UserInfo userInfo, string ipAddress, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+            if (!InsertValidate(userInfo, userInfo.Password, ipAddress, out errorMessage)) return false;
+
+            try
+            {
+                var passwordSalt = string.IsNullOrEmpty(userInfo.PasswordSalt) ? GenerateSalt() : userInfo.PasswordSalt;
+
+                userInfo.Password = EncodePassword(userInfo.Password, EPasswordFormatUtils.GetEnumType(userInfo.PasswordFormat), passwordSalt);
+                userInfo.CreateDate = DateTime.Now;
+                userInfo.LastActivityDate = DateTime.Now;
+                userInfo.LastResetPasswordDate = DateUtils.SqlMinValue;
+
+                const string sqlString = "INSERT INTO siteserver_User (UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreateDate, @LastResetPasswordDate, @LastActivityDate, @CountOfLogin, @CountOfFailedLogin, @CountOfWriting, @IsChecked, @IsLockedOut, @DisplayName, @Email, @Mobile, @AvatarUrl, @Organization, @Department, @Position, @Gender, @Birthday, @Education, @Graduation, @Address, @WeiXin, @QQ, @WeiBo, @Interests, @Signature)";
+
+                using (var connection = GetConnection())
+                {
+                    connection.Execute(sqlString, userInfo);
+                }
+
+                IpAddressCache(ipAddress);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                return false;
+            }
         }
     }
 }

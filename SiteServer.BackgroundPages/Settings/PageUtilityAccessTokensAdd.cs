@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
@@ -13,7 +12,7 @@ namespace SiteServer.BackgroundPages.Settings
         public Literal LtlPageTitle;
         public TextBox TbTitle;
 
-        public CheckBox CblStl;
+        public CheckBoxList CblScopes;
 
         private int _id;
 
@@ -42,6 +41,11 @@ namespace SiteServer.BackgroundPages.Settings
 
             LtlPageTitle.Text = _id > 0 ? "修改API密钥" : "新增API密钥";
 
+            foreach (var scope in AccessTokenManager.ScopeList)
+            {
+                CblScopes.Items.Add(new ListItem(scope, scope));
+            }
+
             if (_id > 0)
             {
                 var tokenInfo = DataProvider.AccessTokenDao.GetAccessTokenInfo(_id);
@@ -49,11 +53,7 @@ namespace SiteServer.BackgroundPages.Settings
                 TbTitle.Text = tokenInfo.Title;
 
                 var scopes = TranslateUtils.StringCollectionToStringList(tokenInfo.Scopes);
-
-                if (scopes.Contains(AccessTokenManager.ScopeStl))
-                {
-                    CblStl.Checked = true;
-                }
+                ControlUtils.SelectMultiItemsIgnoreCase(CblScopes, scopes);
             }
         }
 
@@ -73,11 +73,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 tokenInfo.Title = TbTitle.Text;
 
-                var scopes = new List<string>();
-                if (CblStl.Checked)
-                {
-                    scopes.Add(AccessTokenManager.ScopeStl);
-                }
+                var scopes = ControlUtils.GetSelectedListControlValueStringList(CblScopes);
 
                 tokenInfo.Scopes = TranslateUtils.ObjectCollectionToString(scopes);
 
@@ -96,11 +92,7 @@ namespace SiteServer.BackgroundPages.Settings
                     return;
                 }
 
-                var scopes = new List<string>();
-                if (CblStl.Checked)
-                {
-                    scopes.Add(AccessTokenManager.ScopeStl);
-                }
+                var scopes = ControlUtils.GetSelectedListControlValueStringList(CblScopes);
 
                 var tokenInfo = new AccessTokenInfo
                 {

@@ -4,14 +4,13 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Plugin;
-using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Api.V1
 {
-    public class ApiStlManager
+    public class StlRequest
     {
-        public AuthRequest Request { get; }
+        private AuthRequest Request { get; }
 
         public bool IsAuthorized { get; }
 
@@ -21,7 +20,7 @@ namespace SiteServer.CMS.Api.V1
 
         public ContextInfo ContextInfo { get; }
 
-        public ApiStlManager()
+        public StlRequest()
         {
             Request = new AuthRequest();
             IsAuthorized = AccessTokenManager.IsScope(Request.ApiToken, AccessTokenManager.ScopeStl);

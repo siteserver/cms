@@ -38,7 +38,7 @@ SiteServer CMS 是.NET平台CMS系统的创始者，能够以最低的成本、�
 二、安装NodeJs
 三、打开命令行，运行 npm install gulp -g
 四、命令行，转到根目录，运行 npm install
-五、命令行，运行 gulp release
+五、命令行，运行 gulp build
 六、命令行，运行 gulp zip
 ```
 
@@ -46,7 +46,7 @@ SiteServer CMS 是.NET平台CMS系统的创始者，能够以最低的成本、�
 以上步骤是第一次生成安装包所需要执行的操作，如果已经生成过安装包：
 
 ```code
-一、命令行，转到根目录，运行 gulp release
+一、命令行，转到根目录，运行 gulp build
 二、命令行，运行 gulp zip
 ```
 

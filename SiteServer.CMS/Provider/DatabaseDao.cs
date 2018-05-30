@@ -13,7 +13,6 @@ using Npgsql;
 using Oracle.ManagedDataAccess.Client;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
-using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -1803,6 +1802,11 @@ SET IDENTITY_INSERT {tableName} OFF
         public string GetPageSqlString(string tableName, string columnNames, string whereSqlString, string orderSqlString, int offset, int limit)
         {
             var retval = string.Empty;
+
+            if (string.IsNullOrEmpty(orderSqlString))
+            {
+                orderSqlString = "ORDER BY Id DESC";
+            }
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {

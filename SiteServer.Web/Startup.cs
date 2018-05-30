@@ -24,18 +24,19 @@ namespace SiteServer.API
 
             var config = GlobalConfiguration.Configuration;
 
+            config.MapHttpAttributeRoutes();
+
             var corsAttr = new EnableCorsAttribute("*", "*", "*")
             {
                 SupportsCredentials = true
             };
             config.EnableCors(corsAttr);
-            config.MapHttpAttributeRoutes();
 
-            config.Routes.MapHttpRoute(
-                "DefaultApi",
-                "api/{controller}/{id}",
-                new { id = RouteParameter.Optional }
-            );
+            //config.Routes.MapHttpRoute(
+            //    "DefaultApi",
+            //    "api/{controller}/{id}",
+            //    new { id = RouteParameter.Optional }
+            //);
 
             //config.Routes.Add("name", new HttpRoute());
 
