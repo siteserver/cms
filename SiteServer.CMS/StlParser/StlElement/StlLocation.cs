@@ -58,9 +58,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string separator, string target, string linkClass, int wordNum, bool isContainSelf)
         {
-            if (!string.IsNullOrEmpty(contextInfo.InnerXml))
+            if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
-                separator = contextInfo.InnerXml;
+                separator = contextInfo.InnerHtml;
             }
 
             var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);

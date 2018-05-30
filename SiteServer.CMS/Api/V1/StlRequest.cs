@@ -4,6 +4,7 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Plugin;
+using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Api.V1
@@ -69,7 +70,7 @@ namespace SiteServer.CMS.Api.V1
                 UserInfo = Request.UserInfo
             };
 
-            var dict = new Dictionary<string, string>();
+            var dict = TranslateUtils.NewIgnoreCaseDictionary<string>();
             foreach (string key in Request.QueryString.Keys)
             {
                 dict[key] = Request.QueryString[key];
@@ -79,7 +80,7 @@ namespace SiteServer.CMS.Api.V1
             {
                 IsStlEntity = true,
                 Attributes = dict,
-                InnerXml = string.Empty
+                InnerHtml = string.Empty
             };
         }
     }

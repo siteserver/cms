@@ -21,7 +21,7 @@ namespace SiteServer.CMS.Core
             return string.Empty;
         }
 
-        public static string GetContentByTableStyle(string content, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, Dictionary<string, string> attributes, string innerXml, bool isStlEntity)
+        public static string GetContentByTableStyle(string content, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, Dictionary<string, string> attributes, string innerHtml, bool isStlEntity)
         {
             var parsedContent = content;
 
@@ -92,13 +92,13 @@ namespace SiteServer.CMS.Core
             }
             else if (inputType == InputType.File)
             {
-                parsedContent = GetFileHtmlWithoutCount(siteInfo, parsedContent, attributes, innerXml, isStlEntity);
+                parsedContent = GetFileHtmlWithoutCount(siteInfo, parsedContent, attributes, innerHtml, isStlEntity);
             }
 
             return parsedContent;
         }
 
-        public static string GetContentByTableStyle(ContentInfo contentInfo, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, int no, Dictionary<string, string> attributes, string innerXml, bool isStlEntity)
+        public static string GetContentByTableStyle(ContentInfo contentInfo, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, int no, Dictionary<string, string> attributes, string innerHtml, bool isStlEntity)
         {
             var value = contentInfo.GetString(styleInfo.AttributeName);
             var parsedContent = string.Empty;
@@ -202,7 +202,7 @@ namespace SiteServer.CMS.Core
             {
                 if (no <= 1)
                 {
-                    parsedContent = GetFileHtmlWithoutCount(siteInfo, value, attributes, innerXml, isStlEntity);
+                    parsedContent = GetFileHtmlWithoutCount(siteInfo, value, attributes, innerHtml, isStlEntity);
                 }
                 else
                 {
@@ -215,7 +215,7 @@ namespace SiteServer.CMS.Core
                         {
                             if (index == no)
                             {
-                                parsedContent = GetFileHtmlWithoutCount(siteInfo, extendValue, attributes, innerXml, isStlEntity);
+                                parsedContent = GetFileHtmlWithoutCount(siteInfo, extendValue, attributes, innerHtml, isStlEntity);
                                 break;
                             }
                             index++;
@@ -313,7 +313,7 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static string GetFileHtmlWithCount(SiteInfo siteInfo, int channelId, int contentId, string fileUrl, Dictionary<string, string> attributes, string innerXml, bool isStlEntity)
+        public static string GetFileHtmlWithCount(SiteInfo siteInfo, int channelId, int contentId, string fileUrl, Dictionary<string, string> attributes, string innerHtml, bool isStlEntity)
         {
             var retval = string.Empty;
             if (!string.IsNullOrEmpty(fileUrl))
@@ -327,7 +327,7 @@ namespace SiteServer.CMS.Core
                     var stlAnchor = new HtmlAnchor();
                     ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
                     stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.OuterApiUrl, siteInfo.Id, channelId, contentId, fileUrl);
-                    stlAnchor.InnerHtml = string.IsNullOrEmpty(innerXml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerXml;
+                    stlAnchor.InnerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
 
                     retval = ControlUtils.GetControlRenderHtml(stlAnchor);
                 }
@@ -335,7 +335,7 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static string GetFileHtmlWithoutCount(SiteInfo siteInfo, string fileUrl, Dictionary<string, string> attributes, string innerXml, bool isStlEntity)
+        public static string GetFileHtmlWithoutCount(SiteInfo siteInfo, string fileUrl, Dictionary<string, string> attributes, string innerHtml, bool isStlEntity)
         {
             if (siteInfo != null)
             {
@@ -351,7 +351,7 @@ namespace SiteServer.CMS.Core
                         var stlAnchor = new HtmlAnchor();
                         ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
                         stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.OuterApiUrl, siteInfo.Id, fileUrl);
-                        stlAnchor.InnerHtml = string.IsNullOrEmpty(innerXml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerXml;
+                        stlAnchor.InnerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
 
                         retval = ControlUtils.GetControlRenderHtml(stlAnchor);
                     }

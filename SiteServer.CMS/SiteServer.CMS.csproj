@@ -40,6 +40,9 @@
     <Reference Include="Google.Protobuf, Version=3.5.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.5.1\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.8.4.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.8.4\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
     </Reference>
@@ -74,8 +77,8 @@
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=1.6.56.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.6.56-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.7.0\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -374,6 +377,7 @@
     <Compile Include="StlParser\Model\StlAll.cs" />
     <Compile Include="StlParser\Model\Attr.cs" />
     <Compile Include="StlParser\Model\AttrEnum.cs" />
+    <Compile Include="StlParser\Model\StlElementInfo.cs" />
     <Compile Include="StlParser\Model\StlListBase.cs" />
     <Compile Include="StlParser\Model\StlFieldAttribute.cs" />
     <Compile Include="StlParser\Model\StlClassAttribute.cs" />
@@ -419,7 +423,6 @@
     <Compile Include="StlParser\StlElement\StlSites.cs" />
     <Compile Include="StlParser\StlElement\StlSqlContent.cs" />
     <Compile Include="StlParser\StlElement\StlSqlContents.cs" />
-    <Compile Include="StlParser\StlElement\StlTabs.cs" />
     <Compile Include="StlParser\StlElement\StlTags.cs" />
     <Compile Include="StlParser\StlElement\StlTree.cs" />
     <Compile Include="StlParser\StlElement\StlValue.cs" />
@@ -440,8 +443,6 @@
     <Compile Include="StlParser\Utility\SeparatorTemplate.cs" />
     <Compile Include="StlParser\Utility\StlAjaxLoading.cs" />
     <Compile Include="StlParser\Utility\StlDataUtility.cs" />
-    <Compile Include="StlParser\Utility\StlHtmlUtility.cs" />
-    <Compile Include="StlParser\Utility\StlInnerUtility.cs" />
     <Compile Include="StlParser\Utility\StlParserManager.cs" />
     <Compile Include="StlParser\Utility\StlParserUtility.cs" />
     <Compile Include="StlParser\Utility\StlScriptUtility.cs" />

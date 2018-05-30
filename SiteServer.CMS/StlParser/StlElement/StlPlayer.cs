@@ -161,14 +161,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 playUrl = Content.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.VideoUrl);
                             }
                         }
-                        if (string.IsNullOrEmpty(playUrl))
-                        {
-                            if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.FileUrl))
-                            {
-                                //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.FileUrl);
-                                playUrl = Content.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.FileUrl);
-                            }
-                        }
+                        //if (string.IsNullOrEmpty(playUrl))
+                        //{
+                        //    if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.FileUrl))
+                        //    {
+                        //        //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.FileUrl);
+                        //        playUrl = Content.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.FileUrl);
+                        //    }
+                        //}
                     }
                     else
                     {
@@ -177,10 +177,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             playUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.VideoUrl);
                         }
-                        if (string.IsNullOrEmpty(playUrl))
-                        {
-                            playUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.FileUrl);
-                        }
+                        //if (string.IsNullOrEmpty(playUrl))
+                        //{
+                        //    playUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.FileUrl);
+                        //}
                     }
                 }
             }

@@ -5,7 +5,6 @@ using SiteServer.Utils;
 using System.Web.UI.WebControls;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
@@ -16,7 +15,7 @@ namespace SiteServer.CMS.Core
 {
     public static class ContentUtility
     {
-        public static string PagePlaceHolder = "[SITESERVER_PAGE]";//内容翻页展位符
+        public static string PagePlaceHolder = "[SITESERVER_PAGE]";//内容翻页占位符
 
         public static string TextEditorContentEncode(SiteInfo siteInfo, string content)
         {
@@ -224,13 +223,6 @@ namespace SiteServer.CMS.Core
             {
                 builder.Append(content);
             }
-        }
-
-        public static int GetRealContentId(string tableName, int contentId)
-        {
-            string linkUrl;
-            var referenceId = DataProvider.ContentDao.GetReferenceId(tableName, contentId, out linkUrl);
-            return referenceId > 0 ? referenceId : contentId;
         }
 
         public static List<TableStyleInfo> GetAllTableStyleInfoList(List<TableStyleInfo> tableStyleInfoList)
@@ -453,11 +445,11 @@ namespace SiteServer.CMS.Core
                 var targetSiteId = TranslateUtils.ToInt(translates[0]);
                 var targetChannelId = TranslateUtils.ToInt(translates[1]);
 
-                Translate(siteInfo, channelId, contentId, targetSiteId, targetChannelId, translateType, administratorName);
+                Translate(siteInfo, channelId, contentId, targetSiteId, targetChannelId, translateType);
             }
         }
 
-        public static void Translate(SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, ETranslateContentType translateType, string administratorName)
+        public static void Translate(SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, ETranslateContentType translateType)
         {
             if (siteInfo == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
 

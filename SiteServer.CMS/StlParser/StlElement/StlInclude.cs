@@ -47,7 +47,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             pageInfo.Parameters = parameters;
 
             var content = TemplateManager.GetIncludeContent(pageInfo.SiteInfo, file, pageInfo.TemplateInfo.Charset);
-            content = StlParserUtility.Amp(content);
             var contentBuilder = new StringBuilder(content);
             StlParserManager.ParseTemplateContent(contentBuilder, pageInfo, contextInfo);
             var parsedContent = contentBuilder.ToString();

@@ -360,6 +360,11 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             {
                 if (!IsConsoleAdministrator && !TabManager.IsValid(tab, permissionList)) continue;
 
+                if (tab.Text == "我的账户")
+                {
+                    tab.Text = AuthRequest.AdminName;
+                }
+
                 var tabs = TabManager.GetTabList(tab.Id, 0);
                 var tabsBuilder = new StringBuilder();
                 foreach (var parent in tabs)

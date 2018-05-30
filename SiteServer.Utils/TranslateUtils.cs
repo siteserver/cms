@@ -1200,5 +1200,12 @@ namespace SiteServer.Utils
 
             return rows;
         }
+
+        public static Dictionary<string, T> NewIgnoreCaseDictionary<T>()
+        {
+            var comparer = StringComparer.OrdinalIgnoreCase;
+            var caseInsensitiveDictionary = new Dictionary<string, T>(comparer);
+            return caseInsensitiveDictionary;
+        }
     }
 }

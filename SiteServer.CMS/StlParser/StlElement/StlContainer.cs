@@ -21,7 +21,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 return string.Empty;
             }
 
-            if (string.IsNullOrEmpty(contextInfo.InnerXml))
+            if (string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
                 return string.Empty;
             }
@@ -36,7 +36,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            var innerHtml = RegexUtils.GetInnerContent(ElementName, contextInfo.StlElement);
+            var innerHtml = RegexUtils.GetInnerContent(ElementName, contextInfo.OuterHtml);
 
             var builder = new StringBuilder(innerHtml);
             StlParserManager.ParseInnerContent(builder, pageInfo, contextInfo);

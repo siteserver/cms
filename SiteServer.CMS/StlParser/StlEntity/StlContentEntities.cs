@@ -336,6 +336,9 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     // ignored
                 }
             }
+
+            parsedContent = parsedContent.Replace(ContentUtility.PagePlaceHolder, string.Empty);
+
             return parsedContent;
         }
     }

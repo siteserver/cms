@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Web.UI.WebControls;
 using System.Xml;
 using SiteServer.Utils;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
@@ -29,33 +27,12 @@ namespace SiteServer.CMS.StlParser.StlElement
         public StlPageChannels(string stlPageChannelsElement, PageInfo pageInfo, ContextInfo contextInfo, bool isXmlContent)
         {
             _stlPageChannelsElement = stlPageChannelsElement;
+
+            _stlPageChannelsElement = stlPageChannelsElement;
             _pageInfo = pageInfo;
-            var xmlDocument = StlParserUtility.GetXmlDocument(_stlPageChannelsElement, isXmlContent);
-            _node = xmlDocument.DocumentElement;
-            _node = _node?.FirstChild;
+            var stlElementInfo = StlParserUtility.ParseStlElement(stlPageChannelsElement);
 
-            var attributes = new Dictionary<string, string>();
-            var ie = _node?.Attributes?.GetEnumerator();
-            if (ie != null)
-            {
-                while (ie.MoveNext())
-                {
-                    var attr = (XmlAttribute)ie.Current;
-
-                    var key = attr.Name;
-                    if (!string.IsNullOrEmpty(key))
-                    {
-                        var value = attr.Value;
-                        if (string.IsNullOrEmpty(value))
-                        {
-                            value = string.Empty;
-                        }
-                        attributes[key] = value;
-                    }
-                }
-            }
-
-            _contextInfo = contextInfo.Clone(stlPageChannelsElement, attributes, _node?.InnerXml, _node?.ChildNodes);
+            _contextInfo = contextInfo.Clone(stlPageChannelsElement, stlElementInfo.InnerHtml, stlElementInfo.AttributesIgnoreCase);
 
             DisplayInfo = ListInfo.GetListInfoByXmlNode(pageInfo, _contextInfo, EContextType.Channel);
 
@@ -198,7 +175,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             //还原翻页为0，使得其他列表能够正确解析ItemIndex
             _contextInfo.PageItemIndex = 0;
 
-            return StlParserUtility.GetBackHtml(parsedContent, _pageInfo);
+            return parsedContent;
         }
     }
 

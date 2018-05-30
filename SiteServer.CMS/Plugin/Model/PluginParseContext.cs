@@ -6,7 +6,7 @@ namespace SiteServer.CMS.Plugin.Model
 {
     public class PluginParseContext: IParseContext
     {
-        public PluginParseContext(Dictionary<string, string> stlAttributes, string stlInnerXml, PageInfo pageInfo, ContextInfo contextInfo)
+        public PluginParseContext(string stlOuterHtml, string stlInnerHtml, Dictionary<string, string> stlAttributes, PageInfo pageInfo, ContextInfo contextInfo)
         {
             SiteId = contextInfo.SiteInfo.Id;
             ChannelId = contextInfo.ChannelId;
@@ -18,8 +18,10 @@ namespace SiteServer.CMS.Plugin.Model
             StlPageHead = pageInfo.HeadCodes;
             StlPageBody = pageInfo.BodyCodes;
             StlPageFoot = pageInfo.FootCodes;
+            StlOuterHtml = stlOuterHtml;
+            StlInnerHtml = stlInnerHtml;
             StlAttributes = stlAttributes;
-            StlInnerXml = stlInnerXml;
+            
             StlItems = pageInfo.PluginItems;
             IsStlEntity = contextInfo.IsStlEntity;
         }
@@ -42,9 +44,11 @@ namespace SiteServer.CMS.Plugin.Model
 
         public SortedDictionary<string, string> StlPageFoot { get; }
 
-        public Dictionary<string, string> StlAttributes { get; set; }
+        public string StlOuterHtml { get; set; }
 
-        public string StlInnerXml { get; set; }
+        public string StlInnerHtml { get; set; }
+
+        public Dictionary<string, string> StlAttributes { get; set; }
 
         public Dictionary<string, object> StlItems { get; }
 

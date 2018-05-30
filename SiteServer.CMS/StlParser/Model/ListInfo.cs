@@ -7,7 +7,6 @@ using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
-using System.Collections.Generic;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -35,27 +34,27 @@ namespace SiteServer.CMS.StlParser.Model
                 _contextType = contextType
             };
 
-            var innerXml = contextInfo.InnerXml;
+            var innerHtml = contextInfo.InnerHtml;
             var itemTemplate = string.Empty;
 
-            if (!string.IsNullOrEmpty(innerXml))
+            if (!string.IsNullOrEmpty(innerHtml))
             {
-                var stlElementList = StlParserUtility.GetStlElementList(innerXml);
+                var stlElementList = StlParserUtility.GetStlElementList(innerHtml);
                 if (stlElementList.Count > 0)
                 {
                     foreach (var theStlElement in stlElementList)
                     {
                         if (StlParserUtility.IsSpecifiedStlElement(theStlElement, StlItemTemplate.ElementName))
                         {
-                            var attributes = new LowerNameValueCollection();
-                            var templateString = StlParserUtility.GetInnerXml(theStlElement, true, attributes);
+                            var attributes = TranslateUtils.NewIgnoreCaseDictionary<string>();
+                            var templateString = StlParserUtility.GetInnerHtml(theStlElement, attributes);
                             if (!string.IsNullOrEmpty(templateString))
                             {
                                 foreach (var key in attributes.Keys)
                                 {
                                     if (!StringUtils.EqualsIgnoreCase(key, StlItemTemplate.Type.Name)) continue;
 
-                                    var type = attributes.Get(key);
+                                    var type = attributes[key];
                                     if (StringUtils.EqualsIgnoreCase(type, StlItemTemplate.TypeItem))
                                     {
                                         itemTemplate = templateString;
@@ -74,9 +73,9 @@ namespace SiteServer.CMS.StlParser.Model
                                     }
                                     else if (StringUtils.EqualsIgnoreCase(type, StlItemTemplate.TypeSelectedItem))
                                     {
-                                        if (!string.IsNullOrEmpty(attributes.Get(StlItemTemplate.Selected.Name)))
+                                        if (!string.IsNullOrEmpty(attributes[StlItemTemplate.Selected.Name]))
                                         {
-                                            var selected = attributes.Get(StlItemTemplate.Selected.Name);
+                                            var selected = attributes[StlItemTemplate.Selected.Name];
                                             var arraylist = new ArrayList();
                                             if (selected.IndexOf(',') != -1)
                                             {
@@ -102,16 +101,16 @@ namespace SiteServer.CMS.StlParser.Model
                                             {
                                                 listInfo.SelectedItems.Set(val, templateString);
                                             }
-                                            if (!string.IsNullOrEmpty(attributes.Get(StlItemTemplate.SelectedValue.Name)))
+                                            if (!string.IsNullOrEmpty(attributes[StlItemTemplate.SelectedValue.Name]))
                                             {
-                                                var selectedValue = attributes.Get(StlItemTemplate.SelectedValue.Name);
+                                                var selectedValue = attributes[StlItemTemplate.SelectedValue.Name];
                                                 listInfo.SelectedValues.Set(selectedValue, templateString);
                                             }
                                         }
                                     }
                                     else if (StringUtils.EqualsIgnoreCase(type, StlItemTemplate.TypeSeparator))
                                     {
-                                        var selectedValue = TranslateUtils.ToInt(attributes.Get(StlItemTemplate.SelectedValue.Name), 1);
+                                        var selectedValue = TranslateUtils.ToInt(attributes[StlItemTemplate.SelectedValue.Name], 1);
                                         if (selectedValue <= 1)
                                         {
                                             listInfo.SeparatorTemplate = templateString;
@@ -124,23 +123,21 @@ namespace SiteServer.CMS.StlParser.Model
                                     }
                                 }
                             }
-                            innerXml = innerXml.Replace(theStlElement, string.Empty);
+                            innerHtml = innerHtml.Replace(theStlElement, string.Empty);
                         }
                         else if (StlParserUtility.IsSpecifiedStlElement(theStlElement, StlLoading.ElementName))
                         {
-                            var innerBuilder = new StringBuilder(StlParserUtility.GetInnerXml(theStlElement, true));
+                            var innerBuilder = new StringBuilder(StlParserUtility.GetInnerHtml(theStlElement));
                             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                            StlParserUtility.XmlToHtml(innerBuilder);
                             listInfo.LoadingTemplate = innerBuilder.ToString();
-                            innerXml = innerXml.Replace(theStlElement, string.Empty);
+                            innerHtml = innerHtml.Replace(theStlElement, string.Empty);
                         }
                         else if (contextType == EContextType.SqlContent && StlParserUtility.IsSpecifiedStlElement(theStlElement, StlQueryString.ElementName))
                         {
-                            var innerBuilder = new StringBuilder(StlParserUtility.GetInnerXml(theStlElement, true));
+                            var innerBuilder = new StringBuilder(StlParserUtility.GetInnerHtml(theStlElement));
                             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                            StlParserUtility.XmlToHtml(innerBuilder);
                             listInfo.QueryString = innerBuilder.ToString();
-                            innerXml = innerXml.Replace(theStlElement, string.Empty);
+                            innerHtml = innerHtml.Replace(theStlElement, string.Empty);
                         }
                     }
                 }
@@ -148,7 +145,7 @@ namespace SiteServer.CMS.StlParser.Model
 
             if (string.IsNullOrEmpty(itemTemplate))
             {
-                listInfo.ItemTemplate = !string.IsNullOrEmpty(innerXml) ? innerXml : "<stl:a target=\"_blank\"></stl:a>";
+                listInfo.ItemTemplate = !string.IsNullOrEmpty(innerHtml) ? innerHtml : "<stl:a target=\"_blank\"></stl:a>";
             }
             else
             {

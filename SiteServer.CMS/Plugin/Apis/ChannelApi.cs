@@ -19,6 +19,22 @@ namespace SiteServer.CMS.Plugin.Apis
             return ChannelManager.GetChannelInfo(siteId, channelId);
         }
 
+        public int GetChannelId(int siteId, string channelIndex)
+        {
+            if (string.IsNullOrEmpty(channelIndex)) return 0;
+
+            var channelInfoList = ChannelManager.GetChannelInfoList(siteId);
+            foreach (var channelInfo in channelInfoList)
+            {
+                if (channelInfo.IndexName == channelIndex)
+                {
+                    return channelInfo.Id;
+                }
+            }
+
+            return 0;
+        }
+
         public IChannelInfo NewInstance(int siteId)
         {
             return new ChannelInfo

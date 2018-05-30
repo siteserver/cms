@@ -665,12 +665,12 @@ namespace SiteServer.CMS.Data
 			return cmdType;
 		}
 
-		/// <summary>
-		/// Converts the OleDb parameter direction
-		/// </summary>
-		/// <param name="oledbDirection">The integer parameter direction</param>
-		/// <returns>A ParameterDirection</returns>
-		private static ParameterDirection GetParameterDirection( short oledbDirection) 
+        /// <summary>
+        /// Converts the OleDb parameter direction
+        /// </summary>
+        /// <param name="oledbDirection">The integer parameter direction</param>
+        /// <returns>A ParameterDirection</returns>
+        private static ParameterDirection GetParameterDirection( short oledbDirection) 
 		{
 			ParameterDirection pd;
 			switch (oledbDirection) 

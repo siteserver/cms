@@ -157,10 +157,6 @@ namespace SiteServer.CMS.StlParser.Model
                 typeof(StlSqlContents)
             },
             {
-                StlTabs.ElementName,
-                typeof(StlTabs)
-            },
-            {
                 StlTags.ElementName,
                 typeof(StlTags)
             },

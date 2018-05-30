@@ -10,12 +10,8 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
-    public class StlParserManager
+    public static class StlParserManager
     {
-        private StlParserManager()
-        {
-        }
-
         public static void ParseTemplateContent(StringBuilder parsedBuilder, PageInfo pageInfo, ContextInfo contextInfo)
         {
             var isInnerElement = contextInfo.IsInnerElement;
@@ -148,7 +144,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = StlPageElementParser.ParseStlPageItemInSearchPage(stlElement, pageInfo, ajaxDivId, channelId, currentPageIndex, pageCount, totalNum);
+                    var pageHtml = StlPageElementParser.ParseStlPageItemInSearchPage(stlElement, pageInfo, ajaxDivId, currentPageIndex, pageCount, totalNum);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
             }

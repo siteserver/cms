@@ -51,7 +51,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var url = PageUtils.UnclickedUrl;
             var onclick = string.Empty;
 
-            var innerBuilder = new StringBuilder(contextInfo.InnerXml);
+            var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
             stlAnchor.InnerHtml = innerBuilder.ToString();
 

@@ -53,8 +53,8 @@
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=1.6.56.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.6.56-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.7.0\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -314,8 +314,6 @@
     <Compile Include="ThirdParty\Atom\AtomWriter.cs" />
     <Compile Include="ThirdParty\MvpXml\XmlNamespaces.cs" />
     <Compile Include="ThirdParty\MvpXml\XPathNavigatorReader.cs" />
-    <Compile Include="ThirdParty\Sgml\SgmlParser.cs" />
-    <Compile Include="ThirdParty\Sgml\SgmlReader.cs" />
     <Compile Include="TranslateUtils.cs" />
     <Compile Include="UEditorUploaderForUser.cs" />
     <Compile Include="ValidateTypeUtils.cs" />
@@ -338,7 +336,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="ThirdParty\Sgml\Html.dtd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

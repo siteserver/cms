@@ -62,9 +62,9 @@ SiteServer CMS 是.NET平台CMS系统的创始者，能够以最低的成本、�
 - 4、将您的修改记录提交到远程 `git` 仓库 (`git push origin my-new-feature`)
 - 5、然后到 github 网站的该 `git` 远程仓库的 `my-new-feature` 分支下发起 Pull Request（请提交到 `dev` 分支，不要直接提交到 `master` 分支）
 
-## 产品路线图
+## 系统更新
 
-SiteServer CMS 产品将在每个月底发布新的正式版本，我们将在每次迭代中对核心功能、文档支持、功能插件以及网站模板四个方面进行持续改进，详情请参考 [路线图](https://github.com/siteserver/cms/wiki/%E8%B7%AF%E7%BA%BF%E5%9B%BE)。
+SiteServer CMS 产品将在每个月底发布新的正式版本，我们将在每次迭代中对核心功能、文档支持、功能插件以及网站模板四个方面进行持续改进。
 
 ## 问题与建议
 
