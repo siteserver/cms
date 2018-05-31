@@ -21,9 +21,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             try
             {
                 var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
-                if (stlElementInfo.AttributesIgnoreCase.ContainsKey(Context.Name))
+                if (stlElementInfo.Attributes[Context.Name] != null)
                 {
-                    contextType = EContextTypeUtils.GetEnumType(stlElementInfo.AttributesIgnoreCase[Context.Name]);
+                    contextType = EContextTypeUtils.GetEnumType(stlElementInfo.Attributes[Context.Name]);
                 }
 
                 if (pageCount <= 1)

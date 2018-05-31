@@ -1,23 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Specialized;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.StlParser.Model
 {
     public class StlElementInfo
     {
-        public StlElementInfo(string name, Dictionary<string, string> attributesIgnoreCase, string outerHtml, string innerHtml)
+        public StlElementInfo(string name, NameValueCollection attributes, string outerHtml, string innerHtml)
         {
             Name = name;
-            AttributesIgnoreCase = attributesIgnoreCase;
+            Attributes = attributes;
             OuterHtml = outerHtml;
             InnerHtml = innerHtml;
 
-            IsDynamic = AttributesIgnoreCase.ContainsKey("isDynamic") &&
-                        TranslateUtils.ToBool(AttributesIgnoreCase["isDynamic"]);
+            IsDynamic = TranslateUtils.ToBool(Attributes["isDynamic"]);
         }
 
         public bool IsDynamic { get; }
@@ -26,7 +21,7 @@ namespace SiteServer.CMS.StlParser.Model
         public string Name { get; }
 
         // attributesIgnoreCase is always not null
-        public Dictionary<string, string> AttributesIgnoreCase { get; }
+        public NameValueCollection Attributes { get; }
 
         public string OuterHtml { get; }
 

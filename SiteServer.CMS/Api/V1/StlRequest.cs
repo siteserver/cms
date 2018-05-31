@@ -70,16 +70,16 @@ namespace SiteServer.CMS.Api.V1
                 UserInfo = Request.UserInfo
             };
 
-            var dict = TranslateUtils.NewIgnoreCaseDictionary<string>();
-            foreach (string key in Request.QueryString.Keys)
+            var attributes = TranslateUtils.NewIgnoreCaseNameValueCollection();
+            foreach (var key in Request.QueryString.AllKeys)
             {
-                dict[key] = Request.QueryString[key];
+                attributes[key] = Request.QueryString[key];
             }
 
             ContextInfo = new ContextInfo(PageInfo)
             {
                 IsStlEntity = true,
-                Attributes = dict,
+                Attributes = attributes,
                 InnerHtml = string.Empty
             };
         }

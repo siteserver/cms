@@ -29,7 +29,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var theme = "default";
             var isInnerHtml = !string.IsNullOrEmpty(contextInfo.InnerHtml);
 
-		    foreach (var name in contextInfo.Attributes.Keys)
+		    foreach (var name in contextInfo.Attributes.AllKeys)
 		    {
 		        var value = contextInfo.Attributes[name];
 

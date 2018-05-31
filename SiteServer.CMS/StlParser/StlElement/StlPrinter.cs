@@ -26,7 +26,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var locationId = string.Empty;
             var stlAnchor = new HtmlAnchor();
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 

@@ -72,11 +72,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var lStr = string.Empty;
                 var rStr = string.Empty;
                 var alwaysA = true;
-                var attributes = new Dictionary<string, string>();
+                var attributes = TranslateUtils.NewIgnoreCaseNameValueCollection();
 
-                foreach (var name in stlElementInfo.AttributesIgnoreCase.Keys)
+                foreach (var name in stlElementInfo.Attributes.AllKeys)
                 {
-                    var value = stlElementInfo.AttributesIgnoreCase[name];
+                    var value = stlElementInfo.Attributes[name];
 
                     if (StringUtils.EqualsIgnoreCase(name, Type.Name))
                     {
@@ -544,11 +544,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var lStr = string.Empty;
                 var rStr = string.Empty;
                 var alwaysA = true;
-                var attributes = new Dictionary<string, string>();
+                var attributes = TranslateUtils.NewIgnoreCaseNameValueCollection();
 
-                foreach (var name in stlElementInfo.AttributesIgnoreCase.Keys)
+                foreach (var name in stlElementInfo.Attributes.AllKeys)
                 {
-                    var value = stlElementInfo.AttributesIgnoreCase[name];
+                    var value = stlElementInfo.Attributes[name];
 
                     if (StringUtils.EqualsIgnoreCase(name, Type.Name))
                     {
@@ -1020,11 +1020,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var lStr = string.Empty;
                 var rStr = string.Empty;
                 var alwaysA = true;
-                var attributes = new Dictionary<string, string>();
+                var attributes = TranslateUtils.NewIgnoreCaseNameValueCollection();
 
-                foreach (var name in stlElementInfo.AttributesIgnoreCase.Keys)
+                foreach (var name in stlElementInfo.Attributes.AllKeys)
                 {
-                    var value = stlElementInfo.AttributesIgnoreCase[name];
+                    var value = stlElementInfo.Attributes[name];
 
                     if (StringUtils.EqualsIgnoreCase(name, Type.Name))
                     {

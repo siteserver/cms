@@ -44,7 +44,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var scope = EScopeType.Self;
             var since = string.Empty;
 
-		    foreach (var name in contextInfo.Attributes.Keys)
+		    foreach (var name in contextInfo.Attributes.AllKeys)
 		    {
 		        var value = contextInfo.Attributes[name];
 

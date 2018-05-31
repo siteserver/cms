@@ -54,7 +54,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var isOriginal = true;//引用的时候，默认使用原来的数据
             var type = string.Empty;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 

@@ -117,7 +117,7 @@ namespace SiteServer.CMS.StlParser.Parsers
                             Func<PageInfo, ContextInfo, object> func;
                             if (ElementsToParseDic.TryGetValue(elementName, out func))
                             {
-                                var contextInfoClone = contextInfo.Clone(stlElement, stlElementInfo.InnerHtml, stlElementInfo.AttributesIgnoreCase);
+                                var contextInfoClone = contextInfo.Clone(stlElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
                                 var obj = func(pageInfo, contextInfoClone);
 
@@ -157,7 +157,7 @@ namespace SiteServer.CMS.StlParser.Parsers
                                 Func<PluginParseContext, string> func;
                                 if (parsers.TryGetValue(elementName, out func))
                                 {
-                                    var context = new PluginParseContext(stlElementInfo.OuterHtml, stlElementInfo.InnerHtml, stlElementInfo.AttributesIgnoreCase, pageInfo, contextInfo);
+                                    var context = new PluginParseContext(stlElementInfo.OuterHtml, stlElementInfo.InnerHtml, stlElementInfo.Attributes, pageInfo, contextInfo);
                                     parsedContent = func(context);
                                 }
                             }

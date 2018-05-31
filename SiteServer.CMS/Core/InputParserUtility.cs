@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Stl;
@@ -21,7 +21,7 @@ namespace SiteServer.CMS.Core
             return string.Empty;
         }
 
-        public static string GetContentByTableStyle(string content, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, Dictionary<string, string> attributes, string innerHtml, bool isStlEntity)
+        public static string GetContentByTableStyle(string content, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, NameValueCollection attributes, string innerHtml, bool isStlEntity)
         {
             var parsedContent = content;
 
@@ -98,7 +98,7 @@ namespace SiteServer.CMS.Core
             return parsedContent;
         }
 
-        public static string GetContentByTableStyle(ContentInfo contentInfo, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, int no, Dictionary<string, string> attributes, string innerHtml, bool isStlEntity)
+        public static string GetContentByTableStyle(ContentInfo contentInfo, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, int no, NameValueCollection attributes, string innerHtml, bool isStlEntity)
         {
             var value = contentInfo.GetString(styleInfo.AttributeName);
             var parsedContent = string.Empty;
@@ -231,7 +231,7 @@ namespace SiteServer.CMS.Core
             return parsedContent;
         }
 
-        public static string GetImageOrFlashHtml(SiteInfo siteInfo, string imageUrl, Dictionary<string, string> attributes, bool isStlEntity)
+        public static string GetImageOrFlashHtml(SiteInfo siteInfo, string imageUrl, NameValueCollection attributes, bool isStlEntity)
         {
             var retval = string.Empty;
             if (!string.IsNullOrEmpty(imageUrl))
@@ -292,7 +292,7 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static string GetVideoHtml(SiteInfo siteInfo, string videoUrl, Dictionary<string, string> attributes, bool isStlEntity)
+        public static string GetVideoHtml(SiteInfo siteInfo, string videoUrl, NameValueCollection attributes, bool isStlEntity)
         {
             var retval = string.Empty;
             if (!string.IsNullOrEmpty(videoUrl))
@@ -313,7 +313,7 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static string GetFileHtmlWithCount(SiteInfo siteInfo, int channelId, int contentId, string fileUrl, Dictionary<string, string> attributes, string innerHtml, bool isStlEntity)
+        public static string GetFileHtmlWithCount(SiteInfo siteInfo, int channelId, int contentId, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity)
         {
             var retval = string.Empty;
             if (!string.IsNullOrEmpty(fileUrl))
@@ -335,7 +335,7 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static string GetFileHtmlWithoutCount(SiteInfo siteInfo, string fileUrl, Dictionary<string, string> attributes, string innerHtml, bool isStlEntity)
+        public static string GetFileHtmlWithoutCount(SiteInfo siteInfo, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity)
         {
             if (siteInfo != null)
             {

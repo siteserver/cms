@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Text;
+﻿using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Enumerations;
@@ -7,6 +6,7 @@ using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
+using System.Collections.Generic;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -46,11 +46,11 @@ namespace SiteServer.CMS.StlParser.Model
                     {
                         if (StlParserUtility.IsSpecifiedStlElement(theStlElement, StlItemTemplate.ElementName))
                         {
-                            var attributes = TranslateUtils.NewIgnoreCaseDictionary<string>();
+                            var attributes = TranslateUtils.NewIgnoreCaseNameValueCollection();
                             var templateString = StlParserUtility.GetInnerHtml(theStlElement, attributes);
                             if (!string.IsNullOrEmpty(templateString))
                             {
-                                foreach (var key in attributes.Keys)
+                                foreach (var key in attributes.AllKeys)
                                 {
                                     if (!StringUtils.EqualsIgnoreCase(key, StlItemTemplate.Type.Name)) continue;
 
@@ -76,10 +76,10 @@ namespace SiteServer.CMS.StlParser.Model
                                         if (!string.IsNullOrEmpty(attributes[StlItemTemplate.Selected.Name]))
                                         {
                                             var selected = attributes[StlItemTemplate.Selected.Name];
-                                            var arraylist = new ArrayList();
+                                            var list = new List<string>();
                                             if (selected.IndexOf(',') != -1)
                                             {
-                                                arraylist.AddRange(selected.Split(','));
+                                                list.AddRange(selected.Split(','));
                                             }
                                             else
                                             {
@@ -89,15 +89,15 @@ namespace SiteServer.CMS.StlParser.Model
                                                     var second = TranslateUtils.ToInt(selected.Split('-')[1]);
                                                     for (var i = first; i <= second; i++)
                                                     {
-                                                        arraylist.Add(i.ToString());
+                                                        list.Add(i.ToString());
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    arraylist.Add(selected);
+                                                    list.Add(selected);
                                                 }
                                             }
-                                            foreach (string val in arraylist)
+                                            foreach (string val in list)
                                             {
                                                 listInfo.SelectedItems.Set(val, templateString);
                                             }
@@ -154,7 +154,7 @@ namespace SiteServer.CMS.StlParser.Model
 
             var isSetDirection = false;//是否设置了direction属性
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 

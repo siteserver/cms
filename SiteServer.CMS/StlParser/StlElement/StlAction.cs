@@ -27,7 +27,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var type = string.Empty;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
                 if (StringUtils.EqualsIgnoreCase(name, Type.Name))
@@ -43,7 +43,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var stlAnchor = new HtmlAnchor();
 
-            foreach (var attributeName in contextInfo.Attributes.Keys)
+            foreach (var attributeName in contextInfo.Attributes.AllKeys)
             {
                 stlAnchor.Attributes.Add(attributeName, contextInfo.Attributes[attributeName]);
             }

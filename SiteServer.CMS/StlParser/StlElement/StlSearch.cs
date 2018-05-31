@@ -49,7 +49,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var pageNum = 0;
             var isHighlight = false;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 

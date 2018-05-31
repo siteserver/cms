@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Plugin;
 
@@ -6,7 +7,7 @@ namespace SiteServer.CMS.Plugin.Model
 {
     public class PluginParseContext: IParseContext
     {
-        public PluginParseContext(string stlOuterHtml, string stlInnerHtml, Dictionary<string, string> stlAttributes, PageInfo pageInfo, ContextInfo contextInfo)
+        public PluginParseContext(string stlOuterHtml, string stlInnerHtml, NameValueCollection stlAttributes, PageInfo pageInfo, ContextInfo contextInfo)
         {
             SiteId = contextInfo.SiteInfo.Id;
             ChannelId = contextInfo.ChannelId;
@@ -23,7 +24,7 @@ namespace SiteServer.CMS.Plugin.Model
             StlAttributes = stlAttributes;
             
             StlItems = pageInfo.PluginItems;
-            IsStlEntity = contextInfo.IsStlEntity;
+            IsStlElement = !contextInfo.IsStlEntity;
         }
 
         public int SiteId  { get; set; }
@@ -48,10 +49,10 @@ namespace SiteServer.CMS.Plugin.Model
 
         public string StlInnerHtml { get; set; }
 
-        public Dictionary<string, string> StlAttributes { get; set; }
+        public NameValueCollection StlAttributes { get; set; }
 
         public Dictionary<string, object> StlItems { get; }
 
-        public bool IsStlEntity { get; }
+        public bool IsStlElement { get; }
     }
 }

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections.Specialized;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Cache;
@@ -36,7 +36,7 @@ namespace SiteServer.CMS.StlParser.Model
             Attributes = contextInfo.Attributes;
         }
 
-        public ContextInfo Clone(string outerHtml, string innerHtml, Dictionary<string, string> attributes)
+        public ContextInfo Clone(string outerHtml, string innerHtml, NameValueCollection attributes)
         {
             var contextInfo = new ContextInfo(this)
             {
@@ -65,7 +65,7 @@ namespace SiteServer.CMS.StlParser.Model
 
         public string InnerHtml { get; set; }
 
-        public Dictionary<string, string> Attributes { get; set; }
+        public NameValueCollection Attributes { get; set; }
 
         public ContentInfo ContentInfo
         {

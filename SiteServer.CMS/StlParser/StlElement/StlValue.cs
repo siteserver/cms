@@ -55,7 +55,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var isLower = false;
             var isUpper = false;
 
-		    foreach (var name in contextInfo.Attributes.Keys)
+		    foreach (var name in contextInfo.Attributes.AllKeys)
 		    {
 		        var value = contextInfo.Attributes[name];
 

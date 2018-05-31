@@ -33,7 +33,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var stlElementInfo = StlParserUtility.ParseStlElement(stlPageContentsElement);
 
-            _contextInfo = contextInfo.Clone(stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.AttributesIgnoreCase);
+            _contextInfo = contextInfo.Clone(stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
             ListInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.Content);
 
@@ -51,7 +51,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             _contextInfo = contextInfo;
 
             var stlElementInfo = StlParserUtility.ParseStlElement(stlPageContentsElement);
-            _contextInfo = contextInfo.Clone(stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.AttributesIgnoreCase);
+            _contextInfo = contextInfo.Clone(stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
             ListInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.Content);
 

@@ -21,7 +21,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 		    var file = string.Empty;
             var parameters = new Dictionary<string, string>();
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 

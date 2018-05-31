@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using SiteServer.Utils;
@@ -241,7 +242,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return retval;
         }
 
-        public static string GetInnerHtml(string stlElement, Dictionary<string, string> attributes)
+        public static string GetInnerHtml(string stlElement, NameValueCollection attributes)
         {
             var retval = string.Empty;
 
@@ -289,7 +290,7 @@ namespace SiteServer.CMS.StlParser.Utility
                     var name = stlNode.Name;
                     var outerHtml = stlNode.OuterHtml;
                     var innerHtml = stlNode.InnerHtml;
-                    var attributesIgnoreCase = TranslateUtils.NewIgnoreCaseDictionary<string>();
+                    var attributesIgnoreCase = TranslateUtils.NewIgnoreCaseNameValueCollection();
 
                     if (attributesIgnoreCase != null && stlNode.Attributes != null)
                     {

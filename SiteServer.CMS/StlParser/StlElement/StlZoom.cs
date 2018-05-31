@@ -21,7 +21,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var fontSize = 16;
             var stlAnchor = new HtmlAnchor();
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 

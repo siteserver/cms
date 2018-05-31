@@ -32,7 +32,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var stlElementInfo = StlParserUtility.ParseStlElement(_stlPageSqlContentsElement);
 
-                _contextInfo = contextInfo.Clone(stlPageSqlContentsElement, stlElementInfo.InnerHtml, stlElementInfo.AttributesIgnoreCase);
+                _contextInfo = contextInfo.Clone(stlPageSqlContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
                 _listInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.SqlContent);
                 if (isLoadData)
@@ -53,7 +53,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var stlElementInfo = StlParserUtility.ParseStlElement(stlPageSqlContentsElement);
 
-                _contextInfo = contextInfo.Clone(stlPageSqlContentsElement, stlElementInfo.InnerHtml, stlElementInfo.AttributesIgnoreCase);
+                _contextInfo = contextInfo.Clone(stlPageSqlContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
                 _listInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.SqlContent);
                 _dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString);

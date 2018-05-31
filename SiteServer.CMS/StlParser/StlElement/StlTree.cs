@@ -47,7 +47,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var isShowTreeLine = true;
             var currentFormatString = "<strong>{0}</strong>";
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
