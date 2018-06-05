@@ -115,7 +115,7 @@ namespace SiteServer.BackgroundPages
                 }
 
                 var permissionList = new List<string>(AuthRequest.AdminPermissions.PermissionList);
-                
+
                 if (AuthRequest.AdminPermissions.HasSitePermissions(_siteInfo.Id))
                 {
                     var websitePermissionList = AuthRequest.AdminPermissions.GetSitePermissions(_siteInfo.Id);
@@ -360,7 +360,7 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             {
                 if (!IsConsoleAdministrator && !TabManager.IsValid(tab, permissionList)) continue;
 
-                if (tab.Text == "我的账户")
+                if (tab.Id == "Account")
                 {
                     tab.Text = AuthRequest.AdminName;
                 }

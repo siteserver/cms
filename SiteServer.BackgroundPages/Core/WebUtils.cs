@@ -379,7 +379,7 @@ function getWordSpliter(){{
             $('.nav-pills').children('li').eq(1).find('a').click();
 			$('#TbTags').val(data).focus();
 		}}else{{
-            {AlertUtils.Error("敏感词检测", "对不起，内容不足，无法提取关键字")}
+            {AlertUtils.Error("提取关键字", "对不起，内容不足，无法提取关键字")}
         }}
 	}});	
 }}

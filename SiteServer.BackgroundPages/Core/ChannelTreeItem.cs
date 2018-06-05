@@ -34,7 +34,12 @@ namespace SiteServer.BackgroundPages.Core
             _permissionManager = permissionManager;
 
             var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
-            _contentModelIconClass = "ion-folder";
+            
+            //为后台栏目树中的首页和外链栏目添加图标
+            if (_channelInfo.ParentId == 0) _contentModelIconClass = "ion-ios-home";
+            else if (_channelInfo.LinkUrl.Length != 0) _contentModelIconClass = "ion-link";
+            else _contentModelIconClass = "ion-folder";
+
             _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
             _iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");
             _iconPlusUrl = PageUtils.Combine(treeDirectoryUrl, "plus.png");
