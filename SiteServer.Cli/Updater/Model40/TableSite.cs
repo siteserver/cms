@@ -70,7 +70,7 @@ namespace SiteServer.Cli.Updater.Model40
 
     public partial class TableSite
     {
-        public const string OldTableName = "siteserver_PublishmentSystem";
+        public const string OldTableName = "PublishmentSystem";
 
         public static readonly string NewTableName = DataProvider.SiteDao.TableName;
 

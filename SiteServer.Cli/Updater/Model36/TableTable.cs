@@ -40,7 +40,7 @@ namespace SiteServer.Cli.Updater.Model36
 
     public partial class TableTable
     {
-        public const string OldTableName = "bairong_TableCollection";
+        public const string OldTableName = "TableCollection";
 
         public static readonly string NewTableName = DataProvider.TableDao.TableName;
 

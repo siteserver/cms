@@ -1,5 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using Newtonsoft.Json.Linq;
+using SiteServer.Cli.Updater.Plugins.GovInteract;
+using SiteServer.Cli.Updater.Plugins.GovPublic;
+using SiteServer.Cli.Updater.Plugins.Jobs;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli.Core
@@ -22,6 +26,85 @@ namespace SiteServer.Cli.Core
             }
 
             return newRows;
+        }
+
+        public static void LoadContentTableNameList(TreeInfo oldTreeInfo, string oldSiteTableName, List<string> contentTableNameList)
+        {
+            var siteMetadataFilePath = oldTreeInfo.GetTableMetadataFilePath(oldSiteTableName);
+            if (FileUtils.IsFileExists(siteMetadataFilePath))
+            {
+                var siteTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(siteMetadataFilePath, Encoding.UTF8));
+                foreach (var fileName in siteTableInfo.RowFiles)
+                {
+                    var filePath = oldTreeInfo.GetTableContentFilePath(oldSiteTableName, fileName);
+                    var rows = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(filePath, Encoding.UTF8));
+                    foreach (var row in rows)
+                    {
+                        var dict = TranslateUtils.JsonGetDictionaryIgnorecase(row);
+                        object obj;
+                        if (dict.TryGetValue("AuxiliaryTableForContent",
+                            out obj))
+                        {
+                            if (obj != null && !contentTableNameList.Contains(obj.ToString()))
+                            {
+                                contentTableNameList.Add(obj.ToString());
+                            }
+                        }
+                        if (dict.TryGetValue("AuxiliaryTableForGovInteract",
+                            out obj))
+                        {
+                            if (obj != null && !contentTableNameList.Contains(obj.ToString()))
+                            {
+                                contentTableNameList.Add(obj.ToString());
+                            }
+                        }
+                        if (dict.TryGetValue("AuxiliaryTableForGovPublic",
+                            out obj))
+                        {
+                            if (obj != null && !contentTableNameList.Contains(obj.ToString()))
+                            {
+                                contentTableNameList.Add(obj.ToString());
+                            }
+                        }
+                        if (dict.TryGetValue("AuxiliaryTableForJob",
+                            out obj))
+                        {
+                            if (obj != null && !contentTableNameList.Contains(obj.ToString()))
+                            {
+                                contentTableNameList.Add(obj.ToString());
+                            }
+                        }
+                        if (dict.TryGetValue("AuxiliaryTableForVote",
+                            out obj))
+                        {
+                            if (obj != null && !contentTableNameList.Contains(obj.ToString()))
+                            {
+                                contentTableNameList.Add(obj.ToString());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public static string GetContentTableName(string oldTableNameWithPrefix)
+        {
+            var newTableName = oldTableNameWithPrefix;
+
+            if (StringUtils.EqualsIgnoreCase(oldTableNameWithPrefix, TableGovInteractContent.OldTableName))
+            {
+                newTableName = TableGovInteractContent.NewTableName;
+            }
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithPrefix, TableGovPublicContent.OldTableName))
+            {
+                newTableName = TableGovPublicContent.NewTableName;
+            }
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithPrefix, TableJobsContent.OldTableName))
+            {
+                newTableName = TableJobsContent.NewTableName;
+            }
+
+            return newTableName;
         }
     }
 }

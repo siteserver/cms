@@ -19,7 +19,7 @@ namespace SiteServer.Cli.Updater.Model41
 
     public partial class TablePermissionsInRoles
     {
-        public const string OldTableName = "bairong_PermissionsInRoles";
+        public const string OldTableName = "PermissionsInRoles";
 
         public static readonly string NewTableName = DataProvider.PermissionsInRolesDao.TableName;
 

@@ -32,7 +32,7 @@ namespace SiteServer.Cli.Updater.Model41
 
     public partial class TableTemplateLog
     {
-        public const string OldTableName = "siteserver_TemplateLog";
+        public const string OldTableName = "TemplateLog";
 
         public static readonly string NewTableName = DataProvider.TemplateLogDao.TableName;
 

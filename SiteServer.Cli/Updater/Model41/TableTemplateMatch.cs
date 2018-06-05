@@ -34,7 +34,7 @@ namespace SiteServer.Cli.Updater.Model41
 
     public partial class TableTemplateMatch
     {
-        public const string OldTableName = "siteserver_TemplateMatch";
+        public const string OldTableName = "TemplateMatch";
 
         public static readonly string NewTableName = DataProvider.TemplateMatchDao.TableName;
 

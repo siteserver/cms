@@ -19,7 +19,7 @@ namespace SiteServer.Cli.Updater.Model41
 
     public partial class TableAdministratorsInRoles
     {
-        public const string OldTableName = "bairong_AdministratorsInRoles";
+        public const string OldTableName = "AdministratorsInRoles";
 
         public static readonly string NewTableName = DataProvider.AdministratorsInRolesDao.TableName;
 

@@ -26,7 +26,7 @@ namespace SiteServer.Cli.Updater.Model40
 
     public partial class TableErrorLog
     {
-        public const string OldTableName = "bairong_ErrorLog";
+        public const string OldTableName = "ErrorLog";
 
         public static readonly string NewTableName = DataProvider.ErrorLogDao.TableName;
 

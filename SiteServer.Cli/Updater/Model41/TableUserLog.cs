@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 
 namespace SiteServer.Cli.Updater.Model41
 {
@@ -29,7 +28,7 @@ namespace SiteServer.Cli.Updater.Model41
 
     public partial class TableUserLog
     {
-        public const string OldTableName = "bairong_UserLog";
+        public const string OldTableName = "UserLog";
 
         public static readonly string NewTableName = DataProvider.UserLogDao.TableName;
 

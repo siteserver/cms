@@ -107,7 +107,7 @@ namespace SiteServer.Cli.Updater.Model50
 
     public partial class TableUser
     {
-        public const string OldTableName = "bairong_Users";
+        public const string OldTableName = "Users";
 
         public static readonly string NewTableName = DataProvider.UserDao.TableName;
 

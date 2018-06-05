@@ -28,7 +28,7 @@ namespace SiteServer.Cli.Updater.Model36
 
     public partial class TableRelatedFieldItem
     {
-        public const string OldTableName = "siteserver_RelatedFieldItem";
+        public const string OldTableName = "RelatedFieldItem";
 
         public static readonly string NewTableName = DataProvider.RelatedFieldItemDao.TableName;
 

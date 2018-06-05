@@ -29,7 +29,7 @@ namespace SiteServer.Cli.Updater.Model50
 
     public partial class TableUserLog
     {
-        public const string OldTableName = "bairong_UserLog";
+        public const string OldTableName = "UserLog";
 
         public static readonly string NewTableName = DataProvider.UserLogDao.TableName;
 

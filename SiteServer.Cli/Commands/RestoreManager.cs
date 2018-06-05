@@ -73,6 +73,21 @@ namespace SiteServer.Cli.Commands
             Console.WriteLine($"Connection String: {WebConfigUtils.ConnectionString}");
             Console.WriteLine($"Restore Directory: {treeInfo.DirectoryPath}");
 
+            if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
+            {
+                CliUtils.PrintError("Error, Connection String Is Empty");
+                return;
+            }
+
+            List<string> databaseNameList;
+            string errorMessage;
+            var isConnectValid = DataProvider.DatabaseDao.ConnectToServer(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, out databaseNameList, out errorMessage);
+            if (!isConnectValid)
+            {
+                CliUtils.PrintError("Error, Connection String Not Correct");
+                return;
+            }
+
             var tableNames = TranslateUtils.JsonDeserialize<List<string>>(FileUtils.ReadText(tablesFilePath, Encoding.UTF8));
 
             CliUtils.PrintLine();
@@ -100,28 +115,30 @@ namespace SiteServer.Cli.Commands
                     DataProvider.DatabaseDao.AlterSystemTable(tableName, tableInfo.Columns);
                 }
 
-                for (var i = 0; i < tableInfo.RowFiles.Count; i++)
+                using (var progress = new ProgressBar())
                 {
-                    CliUtils.PrintProgressBar(i, tableInfo.RowFiles.Count);
-                    var fileName = tableInfo.RowFiles[i];
+                    for (var i = 0; i < tableInfo.RowFiles.Count; i++)
+                    {
+                        progress.Report((double)i / tableInfo.RowFiles.Count);
 
-                    var objects = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8));
-                    try
-                    {
-                        DataProvider.DatabaseDao.InsertMultiple(tableName, objects, tableInfo.Columns);
-                    }
-                    catch (Exception ex)
-                    {
-                        logs.Add(new TextLogInfo
+                        var fileName = tableInfo.RowFiles[i];
+
+                        var objects = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8));
+                        try
                         {
-                            DateTime = DateTime.Now,
-                            Detail = $"tableName {tableName}, fileName {fileName}",
-                            Exception = ex
-                        });
+                            DataProvider.DatabaseDao.InsertMultiple(tableName, objects, tableInfo.Columns);
+                        }
+                        catch (Exception ex)
+                        {
+                            logs.Add(new TextLogInfo
+                            {
+                                DateTime = DateTime.Now,
+                                Detail = $"tableName {tableName}, fileName {fileName}",
+                                Exception = ex
+                            });
+                        }
                     }
                 }
-
-                CliUtils.PrintProgressBarEnd();
             }
 
             CliUtils.PrintLine();

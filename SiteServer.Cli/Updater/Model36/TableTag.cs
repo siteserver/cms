@@ -28,7 +28,7 @@ namespace SiteServer.Cli.Updater.Model36
 
     public partial class TableTag
     {
-        public const string OldTableName = "bairong_Tags";
+        public const string OldTableName = "Tags";
 
         public static readonly string NewTableName = DataProvider.TagDao.TableName;
 

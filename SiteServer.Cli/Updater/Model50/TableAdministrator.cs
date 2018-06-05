@@ -65,7 +65,7 @@ namespace SiteServer.Cli.Updater.Model50
 
     public partial class TableAdministrator
     {
-        public const string OldTableName = "bairong_Administrator";
+        public const string OldTableName = "Administrator";
 
         public static readonly string NewTableName = DataProvider.AdministratorDao.TableName;
 

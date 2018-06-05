@@ -25,7 +25,7 @@ namespace SiteServer.Cli.Updater.Model41
 
     public partial class TableChannelGroup
     {
-        public const string OldTableName = "siteserver_NodeGroup";
+        public const string OldTableName = "NodeGroup";
 
         public static readonly string NewTableName = DataProvider.ChannelGroupDao.TableName;
 

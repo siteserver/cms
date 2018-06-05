@@ -28,7 +28,7 @@ namespace SiteServer.Cli.Updater.Model41
 
     public partial class TableSitePermissions
     {
-        public const string OldTableName = "siteserver_SystemPermissions";
+        public const string OldTableName = "SystemPermissions";
 
         public static readonly string NewTableName = DataProvider.SitePermissionsDao.TableName;
 

@@ -47,7 +47,7 @@ namespace SiteServer.Cli.Updater.Model50
 
     public partial class TableDepartment
     {
-        public const string OldTableName = "bairong_Department";
+        public const string OldTableName = "Department";
 
         public static readonly string NewTableName = DataProvider.DepartmentDao.TableName;
 

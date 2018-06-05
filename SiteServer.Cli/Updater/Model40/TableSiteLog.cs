@@ -38,7 +38,7 @@ namespace SiteServer.Cli.Updater.Model40
 
     public partial class TableSiteLog
     {
-        public const string OldTableName = "siteserver_Log";
+        public const string OldTableName = "Log";
 
         public static readonly string NewTableName = DataProvider.SiteLogDao.TableName;
 

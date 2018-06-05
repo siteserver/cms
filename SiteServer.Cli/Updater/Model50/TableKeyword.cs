@@ -22,7 +22,7 @@ namespace SiteServer.Cli.Updater.Model50
 
     public partial class TableKeyword
     {
-        public const string OldTableName = "siteserver_Keyword";
+        public const string OldTableName = "Keyword";
 
         public static readonly string NewTableName = DataProvider.KeywordDao.TableName;
 

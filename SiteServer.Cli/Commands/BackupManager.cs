@@ -60,6 +60,21 @@ namespace SiteServer.Cli.Commands
             Console.WriteLine($"Connection String: {WebConfigUtils.ConnectionString}");
             Console.WriteLine($"Backup Directory: {treeInfo.DirectoryPath}");
 
+            if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
+            {
+                CliUtils.PrintError("Error, Connection String Is Empty");
+                return;
+            }
+
+            List<string> databaseNameList;
+            string errorMessage;
+            var isConnectValid = DataProvider.DatabaseDao.ConnectToServer(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, out databaseNameList, out errorMessage);
+            if (!isConnectValid)
+            {
+                CliUtils.PrintError("Error, Connection String Not Correct");
+                return;
+            }
+
             var tableNames = DataProvider.DatabaseDao.GetTableNameList();
 
             FileUtils.WriteText(treeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(tableNames));
@@ -88,21 +103,22 @@ namespace SiteServer.Cli.Commands
                     {
                         var pageCount = (int)Math.Ceiling((double)tableInfo.TotalCount / CliUtils.PageSize);
 
-                        for (; current <= pageCount; current++)
+                        using (var progress = new ProgressBar())
                         {
-                            CliUtils.PrintProgressBar(current - 1, pageCount);
+                            for (; current <= pageCount; current++)
+                            {
+                                progress.Report((double)(current - 1) / pageCount);
 
-                            var fileName = $"{current}.json";
-                            tableInfo.RowFiles.Add(fileName);
-                            var offset = (current - 1) * CliUtils.PageSize;
-                            var limit = CliUtils.PageSize;
+                                var fileName = $"{current}.json";
+                                tableInfo.RowFiles.Add(fileName);
+                                var offset = (current - 1) * CliUtils.PageSize;
+                                var limit = CliUtils.PageSize;
 
-                            var rows = DataProvider.DatabaseDao.GetPageObjects(tableName, identityColumnName, offset, limit);
+                                var rows = DataProvider.DatabaseDao.GetPageObjects(tableName, identityColumnName, offset, limit);
 
-                            FileUtils.WriteText(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
+                                FileUtils.WriteText(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
+                            }
                         }
-
-                        CliUtils.PrintProgressBarEnd();
                     }
                     else
                     {

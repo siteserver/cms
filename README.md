@@ -32,11 +32,11 @@ SiteServer CMS 基于.NET平台，能够以最低的成本、最少的人力投�
 
 [《STL 语言参考手册》](https://stl.siteserver.cn)
 
-[《CLI 命令行参考手册》](https://stl.siteserver.cn/cli)
+[《CLI 命令行参考手册》](https://docs.siteserver.cn/cli)
 
-[《REST API 参考手册》](https://stl.siteserver.cn/api)
+[《REST API 参考手册》](https://docs.siteserver.cn/api)
 
-[《数据结构参考手册》](https://stl.siteserver.cn/model)
+[《数据结构参考手册》](https://docs.siteserver.cn/model)
 
 系统使用文档请点击 [SiteServer CMS 文档中心](https://docs.siteserver.cn)
 

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 
 namespace SiteServer.Cli.Updater.Model36
 {
@@ -19,7 +18,7 @@ namespace SiteServer.Cli.Updater.Model36
 
     public partial class TableDbCache
     {
-        public const string OldTableName = "bairong_Cache";
+        public const string OldTableName = "Cache";
 
         public static readonly string NewTableName = DataProvider.DbCacheDao.TableName;
 

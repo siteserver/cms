@@ -95,7 +95,7 @@ namespace SiteServer.Cli.Updater.Model41
 
     public partial class TableChannel
     {
-        public const string OldTableName = "siteserver_Node";
+        public const string OldTableName = "Node";
 
         public static readonly string NewTableName = DataProvider.ChannelDao.TableName;
 

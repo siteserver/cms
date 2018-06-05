@@ -25,7 +25,7 @@ namespace SiteServer.Cli.Updater.Model50
 
     public partial class TableContentGroup
     {
-        public const string OldTableName = "siteserver_ContentGroup";
+        public const string OldTableName = "ContentGroup";
 
         public static readonly string NewTableName = DataProvider.ContentGroupDao.TableName;
 

@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using NDesk.Options;
-using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
 using SiteServer.Cli.Updater;
-using SiteServer.Cli.Updater.Model36;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli.Commands
@@ -67,6 +65,7 @@ namespace SiteServer.Cli.Commands
             DirectoryUtils.CreateDirectoryIfNotExists(newTreeInfo.DirectoryPath);
 
             UpdaterBase updater = null;
+
             if (_version == Updater36.Version)
             {
                 updater = new Updater36(oldTreeInfo, newTreeInfo);
@@ -102,29 +101,10 @@ namespace SiteServer.Cli.Commands
             CliUtils.PrintLine();
 
             var contentTableNameList = new List<string>();
-            var siteMetadataFilePath = oldTreeInfo.GetTableMetadataFilePath("siteserver_PublishmentSystem");
-            if (FileUtils.IsFileExists(siteMetadataFilePath))
-            {
-                var siteTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(siteMetadataFilePath, Encoding.UTF8));
-                foreach (var fileName in siteTableInfo.RowFiles)
-                {
-                    var filePath = oldTreeInfo.GetTableContentFilePath("siteserver_PublishmentSystem", fileName);
-                    var rows = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(filePath, Encoding.UTF8));
-                    foreach (var row in rows)
-                    {
-                        var dict = TranslateUtils.JsonGetDictionaryIgnorecase(row);
-                        object obj;
-                        if (dict.TryGetValue(nameof(TableSite.AuxiliaryTableForContent),
-                            out obj))
-                        {
-                            if (obj != null)
-                            {
-                                contentTableNameList.Add(obj.ToString());
-                            }
-                        }
-                    }
-                }
-            }
+            UpdateUtils.LoadContentTableNameList(oldTreeInfo, "siteserver_PublishmentSystem",
+                contentTableNameList);
+            UpdateUtils.LoadContentTableNameList(oldTreeInfo, "wcm_PublishmentSystem",
+                contentTableNameList);
 
             foreach (var oldTableName in oldTableNames)
             {
@@ -138,23 +118,9 @@ namespace SiteServer.Cli.Commands
                 var newTableName = kvp.Key;
                 var newTableInfo = kvp.Value;
 
-                CliUtils.PrintRow(oldTableName, newTableName, oldTableInfo.TotalCount.ToString("#,0"));
-
                 newTableNames.Add(newTableName);
 
                 FileUtils.WriteText(newTreeInfo.GetTableMetadataFilePath(newTableName), Encoding.UTF8, TranslateUtils.JsonSerialize(newTableInfo));
-
-                //DataProvider.DatabaseDao.CreateSystemTable(tableName, tableInfo.Columns);
-
-                //foreach (var rowFileName in tableInfo.RowFiles)
-                //{
-                //    var filePath = PathUtils.Combine(oldDbFilesDirectoryPath, rowFileName);
-
-                //    var objects = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(filePath, Encoding.UTF8));
-                //    DataProvider.DatabaseDao.SyncObjects(tableName, objects, tableInfo.Columns);
-                //}
-
-
             }
 
             FileUtils.WriteText(newTreeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newTableNames));

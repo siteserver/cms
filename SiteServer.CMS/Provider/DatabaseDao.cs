@@ -1743,31 +1743,57 @@ FROM (SELECT TOP {totalNum} *
 
         private void InsertRows(string tableName, string columnNames, List<string> valuesList, List<IDataParameter> parameterList)
         {
-            var sqlStringBuilder = new StringBuilder($@"INSERT INTO {tableName} ({columnNames}) VALUES ");
-            foreach (var values in valuesList)
+            if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                sqlStringBuilder.Append($"({values}), ");
-            }
-            sqlStringBuilder.Length -= 2;
+                var sqlStringBuilder = new StringBuilder($@"INSERT INTO {tableName} ({columnNames}) VALUES ");
+                foreach (var values in valuesList)
+                {
+                    sqlStringBuilder.Append($"({values}), ");
+                }
+                sqlStringBuilder.Length -= 2;
 
-            var sqlString = sqlStringBuilder.ToString();
+                var sqlString = sqlStringBuilder.ToString();
 
-            var isIdentityColumn = !StringUtils.EqualsIgnoreCase(tableName, DataProvider.SiteDao.TableName);
-            if (isIdentityColumn && WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-            {
-                sqlString = $@"
+                var isIdentityColumn = !StringUtils.EqualsIgnoreCase(tableName, DataProvider.SiteDao.TableName);
+                if (isIdentityColumn)
+                {
+                    sqlString = $@"
 SET IDENTITY_INSERT {tableName} ON
 {sqlString}
 SET IDENTITY_INSERT {tableName} OFF
 ";
-            }
+                }
 
-            ExecuteNonQuery(sqlString, parameterList.ToArray());
+                ExecuteNonQuery(sqlString, parameterList.ToArray());
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                var sqlStringBuilder = new StringBuilder("INSERT ALL");
+                foreach (var values in valuesList)
+                {
+                    sqlStringBuilder.Append($@" INTO {tableName} ({columnNames}) VALUES ({values})");
+                }
+
+                sqlStringBuilder.Append(" SELECT 1 FROM DUAL");
+
+                ExecuteNonQuery(sqlStringBuilder.ToString(), parameterList.ToArray());
+            }
+            else
+            {
+                var sqlStringBuilder = new StringBuilder($@"INSERT INTO {tableName} ({columnNames}) VALUES ");
+                foreach (var values in valuesList)
+                {
+                    sqlStringBuilder.Append($"({values}), ");
+                }
+                sqlStringBuilder.Length -= 2;
+
+                ExecuteNonQuery(sqlStringBuilder.ToString(), parameterList.ToArray());
+            }
         }
 
         private ETriState _sqlServerVersionState = ETriState.All;
 
-        public bool IsSqlServer2012
+        private bool IsSqlServer2012
         {
             get
             {

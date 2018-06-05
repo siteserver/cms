@@ -37,7 +37,7 @@ namespace SiteServer.Cli.Updater.Model50
 
     public partial class TableArea
     {
-        public const string OldTableName = "bairong_Area";
+        public const string OldTableName = "Area";
 
         public static readonly string NewTableName = DataProvider.AreaDao.TableName;
 

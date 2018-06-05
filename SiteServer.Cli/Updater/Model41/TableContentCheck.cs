@@ -44,7 +44,7 @@ namespace SiteServer.Cli.Updater.Model41
 
     public partial class TableContentCheck
     {
-        public const string OldTableName = "bairong_ContentCheck";
+        public const string OldTableName = "ContentCheck";
 
         public static readonly string NewTableName = DataProvider.ContentCheckDao.TableName;
 

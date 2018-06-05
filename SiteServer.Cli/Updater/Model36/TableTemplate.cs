@@ -40,7 +40,7 @@ namespace SiteServer.Cli.Updater.Model36
 
     public partial class TableTemplate
     {
-        public const string OldTableName = "siteserver_Template";
+        public const string OldTableName = "Template";
 
         public static readonly string NewTableName = DataProvider.TemplateDao.TableName;
 

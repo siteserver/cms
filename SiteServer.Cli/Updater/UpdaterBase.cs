@@ -37,23 +37,32 @@ namespace SiteServer.Cli.Updater
                 RowFiles = oldTableInfo.RowFiles
             };
 
-            foreach (var fileName in oldTableInfo.RowFiles)
+            CliUtils.PrintRow(oldTableName, newTableName, oldTableInfo.TotalCount.ToString("#,0"));
+
+            var i = 0;
+
+            using (var progress = new ProgressBar())
             {
-                var oldFilePath = OldTreeInfo.GetTableContentFilePath(oldTableName, fileName);
-                var newFilePath = NewTreeInfo.GetTableContentFilePath(newTableName, fileName);
-
-                if (convertDict != null)
+                foreach (var fileName in oldTableInfo.RowFiles)
                 {
-                    var oldRows =
-                        TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(oldFilePath, Encoding.UTF8));
+                    progress.Report((double)i++ / oldTableInfo.RowFiles.Count);
 
-                    var newRows = UpdateUtils.UpdateRows(oldRows, convertDict);
+                    var oldFilePath = OldTreeInfo.GetTableContentFilePath(oldTableName, fileName);
+                    var newFilePath = NewTreeInfo.GetTableContentFilePath(newTableName, fileName);
 
-                    FileUtils.WriteText(newFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newRows));
-                }
-                else
-                {
-                    FileUtils.CopyFile(oldFilePath, newFilePath);
+                    if (convertDict != null)
+                    {
+                        var oldRows =
+                            TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(oldFilePath, Encoding.UTF8));
+
+                        var newRows = UpdateUtils.UpdateRows(oldRows, convertDict);
+
+                        FileUtils.WriteText(newFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newRows));
+                    }
+                    else
+                    {
+                        FileUtils.CopyFile(oldFilePath, newFilePath);
+                    }
                 }
             }
 

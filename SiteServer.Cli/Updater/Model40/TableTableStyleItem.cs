@@ -25,7 +25,7 @@ namespace SiteServer.Cli.Updater.Model40
 
     public partial class TableTableStyleItem
     {
-        public const string OldTableName = "bairong_TableStyleItem";
+        public const string OldTableName = "TableStyleItem";
 
         public static readonly string NewTableName = DataProvider.TableStyleItemDao.TableName;
 

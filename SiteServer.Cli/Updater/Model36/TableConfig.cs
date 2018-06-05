@@ -38,7 +38,7 @@ namespace SiteServer.Cli.Updater.Model36
 
     public partial class TableConfig
     {
-        public const string OldTableName = "bairong_Config";
+        public const string OldTableName = "Config";
 
         public static readonly string NewTableName = DataProvider.ConfigDao.TableName;
 

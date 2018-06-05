@@ -31,7 +31,7 @@ namespace SiteServer.Cli.Updater.Model50
 
     public partial class TableTableMetadata
     {
-        public const string OldTableName = "bairong_TableMetadata";
+        public const string OldTableName = "TableMetadata";
 
         public static readonly string NewTableName = DataProvider.TableMetadataDao.TableName;
 

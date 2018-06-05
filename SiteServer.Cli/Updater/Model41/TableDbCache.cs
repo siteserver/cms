@@ -19,7 +19,7 @@ namespace SiteServer.Cli.Updater.Model41
 
     public partial class TableDbCache
     {
-        public const string OldTableName = "bairong_Cache";
+        public const string OldTableName = "Cache";
 
         public static readonly string NewTableName = DataProvider.DbCacheDao.TableName;
 

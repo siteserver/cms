@@ -28,7 +28,7 @@ namespace SiteServer.Cli.Updater.Model41
 
     public partial class TableCount
     {
-        public const string OldTableName = "bairong_Count";
+        public const string OldTableName = "Count";
 
         public static readonly string NewTableName = DataProvider.CountDao.TableName;
 

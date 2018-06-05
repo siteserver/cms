@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 
 namespace SiteServer.Cli.Updater.Model36
 {
@@ -19,7 +18,7 @@ namespace SiteServer.Cli.Updater.Model36
 
     public partial class TableAdministratorsInRoles
     {
-        public const string OldTableName = "bairong_AdministratorsInRoles";
+        public const string OldTableName = "AdministratorsInRoles";
 
         public static readonly string NewTableName = DataProvider.AdministratorsInRolesDao.TableName;
 
