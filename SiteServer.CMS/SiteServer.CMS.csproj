@@ -77,8 +77,8 @@
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=1.7.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.7.1\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.7.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.7.4\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -270,7 +270,6 @@
     <Compile Include="Model\SitePermissionsInfo.cs" />
     <Compile Include="Core\SiteTemplateInfo.cs" />
     <Compile Include="Model\Attributes\SystemConfigInfo.cs" />
-    <Compile Include="Core\TableColumnInfo.cs" />
     <Compile Include="Model\TableInfo.cs" />
     <Compile Include="Model\TableMetadataInfo.cs" />
     <Compile Include="Model\TableStyleInfo.cs" />

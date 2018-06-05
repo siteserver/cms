@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Plugins.GovInteract
@@ -35,47 +34,56 @@ namespace SiteServer.Cli.Updater.Plugins.GovInteract
 
         public static readonly string NewTableName = "ss_govinteract_channel";
 
-        public static readonly List<TableColumnInfo> NewColumns = new List<TableColumnInfo>
+        public static readonly List<TableColumn> NewColumns = new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "ChannelId",
+                AttributeName = "Id",
+                DataType = DataType.Integer,
+                IsPrimaryKey = true,
+                IsIdentity = true
+            },
+            new TableColumn
+            {
+                AttributeName = "ChannelId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "SiteId",
+                AttributeName = "SiteId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "ApplyStyleId",
+                AttributeName = "ApplyStyleId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "QueryStyleId",
+                AttributeName = "QueryStyleId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "DepartmentIdCollection",
+                AttributeName = "DepartmentIdCollection",
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Summary",
+                AttributeName = "Summary",
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             }
         };
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        public static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {"ChannelId", nameof(NodeId)},
                 {"SiteId", nameof(PublishmentSystemId)}
             };
+
+        public static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Plugins.GovInteract
@@ -42,63 +41,67 @@ namespace SiteServer.Cli.Updater.Plugins.GovInteract
 
         public static readonly string NewTableName = "ss_govinteract_reply";
 
-        public static readonly List<TableColumnInfo> NewColumns = new List<TableColumnInfo>
+        public static readonly List<TableColumn> NewColumns = new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Id",
+                AttributeName = "Id",
+                DataType = DataType.Integer,
+                IsPrimaryKey = true,
+                IsIdentity = true
+            },
+            new TableColumn
+            {
+                AttributeName = "SiteId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "SiteId",
+                AttributeName = "ChannelId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "ChannelId",
+                AttributeName = "ContentId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "ContentId",
-                DataType = DataType.Integer
-            },
-            new TableColumnInfo
-            {
-                ColumnName = "Reply",
+                AttributeName = "Reply",
                 DataType = DataType.Text
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "FileUrl",
+                AttributeName = "FileUrl",
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "DepartmentId",
+                AttributeName = "DepartmentId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "UserName",
+                AttributeName = "UserName",
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "AddDate",
+                AttributeName = "AddDate",
                 DataType = DataType.DateTime
             }
         };
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        public static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {"Id", nameof(ReplyId)},
                 {"SiteId", nameof(PublishmentSystemId)},
                 {"ChannelId", nameof(NodeId)}
             };
+
+        public static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

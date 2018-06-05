@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Model40
 {
@@ -32,12 +33,14 @@ namespace SiteServer.Cli.Updater.Model40
 
         public static readonly string NewTableName = DataProvider.CountDao.TableName;
 
-        public static readonly List<TableColumnInfo> NewColumns = DataProvider.CountDao.TableColumns;
+        public static readonly List<TableColumn> NewColumns = DataProvider.CountDao.TableColumns;
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        public static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(CountInfo.Id), nameof(CountId)}
             };
+
+        public static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

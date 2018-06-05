@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Data;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -12,40 +11,40 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_RelatedFieldItem";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(RelatedFieldItemInfo.Id),
+                AttributeName = nameof(RelatedFieldItemInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(RelatedFieldItemInfo.RelatedFieldId),
+                AttributeName = nameof(RelatedFieldItemInfo.RelatedFieldId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(RelatedFieldItemInfo.ItemName),
+                AttributeName = nameof(RelatedFieldItemInfo.ItemName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(RelatedFieldItemInfo.ItemValue),
+                AttributeName = nameof(RelatedFieldItemInfo.ItemValue),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(RelatedFieldItemInfo.ParentId),
+                AttributeName = nameof(RelatedFieldItemInfo.ParentId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(RelatedFieldItemInfo.Taxis),
+                AttributeName = nameof(RelatedFieldItemInfo.Taxis),
                 DataType = DataType.Integer
             }
         };

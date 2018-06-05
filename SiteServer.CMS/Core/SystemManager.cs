@@ -25,7 +25,7 @@ namespace SiteServer.CMS.Core
             //var version = assemblyVersion.ToString();
             //if (StringUtils.EndsWith(version, ".0"))
             //{
-            //    version = version.Substring(0, version.Length - 2);
+            //    version = version.Substring(0, version.DataLength - 2);
             //}
             //Version = version;
         }

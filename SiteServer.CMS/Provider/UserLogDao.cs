@@ -14,43 +14,43 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_UserLog";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserLogInfo.Id),
+                AttributeName = nameof(UserLogInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserLogInfo.UserName),
+                AttributeName = nameof(UserLogInfo.UserName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserLogInfo.IpAddress),
+                AttributeName = nameof(UserLogInfo.IpAddress),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserLogInfo.AddDate),
+                AttributeName = nameof(UserLogInfo.AddDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserLogInfo.Action),
+                AttributeName = nameof(UserLogInfo.Action),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserLogInfo.Summary),
+                AttributeName = nameof(UserLogInfo.Summary),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             }
         };
 

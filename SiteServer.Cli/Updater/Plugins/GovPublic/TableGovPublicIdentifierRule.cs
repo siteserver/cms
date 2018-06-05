@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Plugins.GovPublic
@@ -47,85 +46,89 @@ namespace SiteServer.Cli.Updater.Plugins.GovPublic
 
         public static readonly string NewTableName = "ss_govpublic_identifier_rule";
 
-        public static readonly List<TableColumnInfo> NewColumns = new List<TableColumnInfo>
+        public static readonly List<TableColumn> NewColumns = new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Id",
+                AttributeName = "Id",
+                DataType = DataType.Integer,
+                IsPrimaryKey = true,
+                IsIdentity = true
+            },
+            new TableColumn
+            {
+                AttributeName = "SiteId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "SiteId",
+                AttributeName = "RuleName",
+                DataType = DataType.VarChar,
+                DataLength = 200
+            },
+            new TableColumn
+            {
+                AttributeName = "IdentifierType",
+                DataType = DataType.VarChar,
+                DataLength = 50
+            },
+            new TableColumn
+            {
+                AttributeName = "MinLength",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "RuleName",
+                AttributeName = "Suffix",
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "IdentifierType",
+                AttributeName = "FormatString",
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "MinLength",
+                AttributeName = "AttributeName",
+                DataType = DataType.VarChar,
+                DataLength = 50
+            },
+            new TableColumn
+            {
+                AttributeName = "Sequence",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Suffix",
-                DataType = DataType.VarChar,
-                Length = 50
-            },
-            new TableColumnInfo
-            {
-                ColumnName = "FormatString",
-                DataType = DataType.VarChar,
-                Length = 50
-            },
-            new TableColumnInfo
-            {
-                ColumnName = "AttributeName",
-                DataType = DataType.VarChar,
-                Length = 50
-            },
-            new TableColumnInfo
-            {
-                ColumnName = "Sequence",
+                AttributeName = "Taxis",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Taxis",
-                DataType = DataType.Integer
-            },
-            new TableColumnInfo
-            {
-                ColumnName = "IsSequenceChannelZero",
+                AttributeName = "IsSequenceChannelZero",
                 DataType = DataType.Boolean
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "IsSequenceDepartmentZero",
+                AttributeName = "IsSequenceDepartmentZero",
                 DataType = DataType.Boolean
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "IsSequenceYearZero",
+                AttributeName = "IsSequenceYearZero",
                 DataType = DataType.Boolean
             }
         };
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        public static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {"Id", nameof(RuleId)},
                 {"SiteId", nameof(PublishmentSystemId)}
             };
+
+        public static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

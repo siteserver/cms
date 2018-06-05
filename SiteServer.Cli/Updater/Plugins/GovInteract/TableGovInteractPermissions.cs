@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Plugins.GovInteract
@@ -26,30 +25,39 @@ namespace SiteServer.Cli.Updater.Plugins.GovInteract
 
         public static readonly string NewTableName = "ss_govinteract_permissions";
 
-        public static readonly List<TableColumnInfo> NewColumns = new List<TableColumnInfo>
+        public static readonly List<TableColumn> NewColumns = new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "UserName",
-                DataType = DataType.VarChar,
-                Length = 50
+                AttributeName = "Id",
+                DataType = DataType.Integer,
+                IsPrimaryKey = true,
+                IsIdentity = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "ChannelId",
+                AttributeName = "UserName",
+                DataType = DataType.VarChar,
+                DataLength = 50
+            },
+            new TableColumn
+            {
+                AttributeName = "ChannelId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Permissions",
+                AttributeName = "Permissions",
                 DataType = DataType.Text
             }
         };
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        public static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {"ChannelId", nameof(NodeId)}
             };
+
+        public static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

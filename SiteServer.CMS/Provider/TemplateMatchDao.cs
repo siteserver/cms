@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Data;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -11,52 +10,52 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_TemplateMatch";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateMatchInfo.Id),
+                AttributeName = nameof(TemplateMatchInfo.Id),
                 DataType = DataType.Integer,
                 IsPrimaryKey = true,
                 IsIdentity = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateMatchInfo.ChannelId),
+                AttributeName = nameof(TemplateMatchInfo.ChannelId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateMatchInfo.SiteId),
+                AttributeName = nameof(TemplateMatchInfo.SiteId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateMatchInfo.ChannelTemplateId),
+                AttributeName = nameof(TemplateMatchInfo.ChannelTemplateId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateMatchInfo.ContentTemplateId),
+                AttributeName = nameof(TemplateMatchInfo.ContentTemplateId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateMatchInfo.FilePath),
+                AttributeName = nameof(TemplateMatchInfo.FilePath),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateMatchInfo.ChannelFilePathRule),
+                AttributeName = nameof(TemplateMatchInfo.ChannelFilePathRule),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateMatchInfo.ContentFilePathRule),
+                AttributeName = nameof(TemplateMatchInfo.ContentFilePathRule),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             }
         };
 

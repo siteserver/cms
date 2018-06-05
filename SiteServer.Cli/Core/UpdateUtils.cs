@@ -10,16 +10,29 @@ namespace SiteServer.Cli.Core
 {
     public static class UpdateUtils
     {
-        public static List<Dictionary<string, object>> UpdateRows(List<JObject> oldRows, Dictionary<string, string> convertDict)
+        public static string GetConvertValueDictKey(string key, object oldValue)
+        {
+            return $"{key}${oldValue}";
+        }
+
+        public static List<Dictionary<string, object>> UpdateRows(List<JObject> oldRows, Dictionary<string, string> convertKeyDict, Dictionary<string, string> convertValueDict)
         {
             var newRows = new List<Dictionary<string, object>>();
 
             foreach (var oldRow in oldRows)
             {
                 var newRow = TranslateUtils.JsonGetDictionaryIgnorecase(oldRow);
-                foreach (var convertKey in convertDict.Keys)
+                foreach (var key in convertKeyDict.Keys)
                 {
-                    newRow[convertKey] = newRow[convertDict[convertKey]];
+                    var value = newRow[convertKeyDict[key]];
+
+                    var valueDictKey = GetConvertValueDictKey(key, value);
+                    if (convertValueDict != null && convertValueDict.ContainsKey(valueDictKey))
+                    {
+                        value = convertValueDict[valueDictKey];
+                    }
+
+                    newRow[key] = value;
                 }
 
                 newRows.Add(newRow);

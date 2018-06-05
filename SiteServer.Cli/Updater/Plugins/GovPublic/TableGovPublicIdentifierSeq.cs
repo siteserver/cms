@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Plugins.GovPublic
@@ -32,46 +31,50 @@ namespace SiteServer.Cli.Updater.Plugins.GovPublic
 
         public static readonly string NewTableName = "ss_govpublic_identifier_seq";
 
-        public static readonly List<TableColumnInfo> NewColumns = new List<TableColumnInfo>
+        public static readonly List<TableColumn> NewColumns = new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Id",
+                AttributeName = "Id",
+                DataType = DataType.Integer,
+                IsPrimaryKey = true,
+                IsIdentity = true
+            },
+            new TableColumn
+            {
+                AttributeName = "SiteId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "SiteId",
+                AttributeName = "ChannelId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "ChannelId",
+                AttributeName = "DepartmentId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "DepartmentId",
+                AttributeName = "AddYear",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "AddYear",
-                DataType = DataType.Integer
-            },
-            new TableColumnInfo
-            {
-                ColumnName = "Sequence",
+                AttributeName = "Sequence",
                 DataType = DataType.Integer
             }
         };
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        public static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {"Id", nameof(SeqId)},
                 {"SiteId", nameof(PublishmentSystemId)},
                 {"ChannelId", nameof(NodeId)}
             };
+
+        public static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

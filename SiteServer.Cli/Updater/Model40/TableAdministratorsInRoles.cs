@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Model40
 {
@@ -23,8 +23,10 @@ namespace SiteServer.Cli.Updater.Model40
 
         public static readonly string NewTableName = DataProvider.AdministratorsInRolesDao.TableName;
 
-        public static readonly List<TableColumnInfo> NewColumns = DataProvider.AdministratorsInRolesDao.TableColumns;
+        public static readonly List<TableColumn> NewColumns = DataProvider.AdministratorsInRolesDao.TableColumns;
 
-        public static readonly Dictionary<string, string> ConvertDict = null;
+        public static readonly Dictionary<string, string> ConvertKeyDict = null;
+
+        public static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

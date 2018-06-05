@@ -13,34 +13,34 @@ namespace SiteServer.CMS.Provider
 	{
         public override string TableName => "siteserver_ChannelGroup";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelGroupInfo.Id),
+                AttributeName = nameof(ChannelGroupInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelGroupInfo.GroupName),
+                AttributeName = nameof(ChannelGroupInfo.GroupName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelGroupInfo.SiteId),
+                AttributeName = nameof(ChannelGroupInfo.SiteId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelGroupInfo.Taxis),
+                AttributeName = nameof(ChannelGroupInfo.Taxis),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelGroupInfo.Description),
+                AttributeName = nameof(ChannelGroupInfo.Description),
                 DataType = DataType.Text
             }
         };

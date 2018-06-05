@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Model36
 {
@@ -48,14 +49,16 @@ namespace SiteServer.Cli.Updater.Model36
 
         public static readonly string NewTableName = DataProvider.ContentCheckDao.TableName;
 
-        public static readonly List<TableColumnInfo> NewColumns = DataProvider.ContentCheckDao.TableColumns;
+        public static readonly List<TableColumn> NewColumns = DataProvider.ContentCheckDao.TableColumns;
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        public static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(ContentCheckInfo.Id), nameof(CheckId)},
                 {nameof(ContentCheckInfo.SiteId), nameof(PublishmentSystemId)},
                 {nameof(ContentCheckInfo.ChannelId), nameof(NodeId)}
             };
+
+        public static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

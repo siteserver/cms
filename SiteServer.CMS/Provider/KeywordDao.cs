@@ -13,32 +13,32 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_Keyword";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(KeywordInfo.Id),
+                AttributeName = nameof(KeywordInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(KeywordInfo.Keyword),
+                AttributeName = nameof(KeywordInfo.Keyword),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(KeywordInfo.Alternative),
+                AttributeName = nameof(KeywordInfo.Alternative),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(KeywordInfo.Grade),
+                AttributeName = nameof(KeywordInfo.Grade),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             }
         };
 

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Plugins.GovInteract
@@ -29,42 +28,46 @@ namespace SiteServer.Cli.Updater.Plugins.GovInteract
 
         public static readonly string NewTableName = "ss_govinteract_type";
 
-        public static readonly List<TableColumnInfo> NewColumns = new List<TableColumnInfo>
+        public static readonly List<TableColumn> NewColumns = new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Id",
-                DataType = DataType.Integer
+                AttributeName = "Id",
+                DataType = DataType.Integer,
+                IsPrimaryKey = true,
+                IsIdentity = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "TypeName",
+                AttributeName = "TypeName",
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "ChannelId",
+                AttributeName = "ChannelId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "SiteId",
+                AttributeName = "SiteId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Taxis",
+                AttributeName = "Taxis",
                 DataType = DataType.Integer
             }
         };
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        public static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {"Id", nameof(TypeId)},
                 {"ChannelId", nameof(NodeId)},
                 {"SiteId", nameof(PublishmentSystemId)}
             };
+
+        public static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

@@ -79,7 +79,7 @@
     //                foreach (var str in connectionString.Split(';'))
     //                {
     //                    var arr = str.Split('=');
-    //                    if (arr.Length == 2)
+    //                    if (arr.DataLength == 2)
     //                    {
     //                        var name = StringUtils.Trim(arr[0]);
     //                        var value = StringUtils.Trim(arr[1]);

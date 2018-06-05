@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Model41
 {
@@ -32,8 +33,10 @@ namespace SiteServer.Cli.Updater.Model41
 
         public static readonly string NewTableName = DataProvider.RelatedFieldItemDao.TableName;
 
-        public static readonly List<TableColumnInfo> NewColumns = DataProvider.RelatedFieldItemDao.TableColumns;
+        public static readonly List<TableColumn> NewColumns = DataProvider.RelatedFieldItemDao.TableColumns;
 
-        public static readonly Dictionary<string, string> ConvertDict = null;
+        public static readonly Dictionary<string, string> ConvertKeyDict = null;
+
+        public static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

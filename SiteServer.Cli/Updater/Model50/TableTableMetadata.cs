@@ -1,7 +1,12 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using SiteServer.Cli.Core;
+using SiteServer.Cli.Updater.Plugins.GovInteract;
+using SiteServer.Cli.Updater.Plugins.GovPublic;
+using SiteServer.Cli.Updater.Plugins.Jobs;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Model50
 {
@@ -35,13 +40,21 @@ namespace SiteServer.Cli.Updater.Model50
 
         public static readonly string NewTableName = DataProvider.TableMetadataDao.TableName;
 
-        public static readonly List<TableColumnInfo> NewColumns = DataProvider.TableMetadataDao.TableColumns;
+        public static readonly List<TableColumn> NewColumns = DataProvider.TableMetadataDao.TableColumns;
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        public static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(TableMetadataInfo.Id), nameof(TableMetadataId)},
                 {nameof(TableMetadataInfo.TableName), nameof(AuxiliaryTableEnName)}
+            };
+
+        public static readonly Dictionary<string, string> ConvertValueDict =
+            new Dictionary<string, string>
+            {
+                {UpdateUtils.GetConvertValueDictKey(nameof(TableMetadataInfo.TableName), TableGovInteractContent.OldTableName), TableGovInteractContent.NewTableName},
+                {UpdateUtils.GetConvertValueDictKey(nameof(TableMetadataInfo.TableName), TableGovPublicContent.OldTableName), TableGovPublicContent.NewTableName},
+                {UpdateUtils.GetConvertValueDictKey(nameof(TableMetadataInfo.TableName), TableJobsContent.OldTableName), TableJobsContent.NewTableName}
             };
     }
 }

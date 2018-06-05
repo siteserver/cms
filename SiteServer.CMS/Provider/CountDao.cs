@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -13,36 +12,36 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_Count";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(CountInfo.Id),
+                AttributeName = nameof(CountInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(CountInfo.RelatedTableName),
+                AttributeName = nameof(CountInfo.RelatedTableName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(CountInfo.RelatedIdentity),
+                AttributeName = nameof(CountInfo.RelatedIdentity),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(CountInfo.CountType),
+                AttributeName = nameof(CountInfo.CountType),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(CountInfo.CountNum),
+                AttributeName = nameof(CountInfo.CountNum),
                 DataType = DataType.Integer
             }
         };

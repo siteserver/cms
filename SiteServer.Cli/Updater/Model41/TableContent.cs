@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli.Updater.Model41
@@ -120,22 +121,22 @@ namespace SiteServer.Cli.Updater.Model41
 
     public partial class TableContent
     {
-        public static List<TableColumnInfo> GetNewColumns(List<TableColumnInfo> oldColumns)
+        public static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
         {
-            var columns = new List<TableColumnInfo>();
+            var columns = new List<TableColumn>();
             foreach (var tableColumnInfo in oldColumns)
             {
-                if (StringUtils.EqualsIgnoreCase(tableColumnInfo.ColumnName, nameof(NodeId)))
+                if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(NodeId)))
                 {
-                    tableColumnInfo.ColumnName = nameof(ContentInfo.ChannelId);
+                    tableColumnInfo.AttributeName = nameof(ContentInfo.ChannelId);
                 }
-                else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.ColumnName, nameof(PublishmentSystemId)))
+                else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(PublishmentSystemId)))
                 {
-                    tableColumnInfo.ColumnName = nameof(ContentInfo.SiteId);
+                    tableColumnInfo.AttributeName = nameof(ContentInfo.SiteId);
                 }
-                else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.ColumnName, nameof(ContentGroupNameCollection)))
+                else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(ContentGroupNameCollection)))
                 {
-                    tableColumnInfo.ColumnName = nameof(ContentInfo.GroupNameCollection);
+                    tableColumnInfo.AttributeName = nameof(ContentInfo.GroupNameCollection);
                 }
                 columns.Add(tableColumnInfo);
             }
@@ -143,12 +144,14 @@ namespace SiteServer.Cli.Updater.Model41
             return columns;
         }
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        public static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(ContentInfo.ChannelId), nameof(NodeId)},
                 {nameof(ContentInfo.SiteId), nameof(PublishmentSystemId)},
                 {nameof(ContentInfo.GroupNameCollection), nameof(ContentGroupNameCollection)}
             };
+
+        public static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

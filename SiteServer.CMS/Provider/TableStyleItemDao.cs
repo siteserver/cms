@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Data;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -11,37 +10,37 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_TableStyleItem";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableStyleItemInfo.Id),
+                AttributeName = nameof(TableStyleItemInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableStyleItemInfo.TableStyleId),
+                AttributeName = nameof(TableStyleItemInfo.TableStyleId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableStyleItemInfo.ItemTitle),
+                AttributeName = nameof(TableStyleItemInfo.ItemTitle),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableStyleItemInfo.ItemValue),
+                AttributeName = nameof(TableStyleItemInfo.ItemValue),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableStyleItemInfo.IsSelected),
+                AttributeName = nameof(TableStyleItemInfo.IsSelected),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             }
         };
 

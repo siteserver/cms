@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -16,7 +15,7 @@ namespace SiteServer.CMS.Data
 
         public virtual string TableName => string.Empty;
 
-        public virtual List<TableColumnInfo> TableColumns => null;
+        public virtual List<TableColumn> TableColumns => null;
 
         protected IDbConnection GetConnection()
         {

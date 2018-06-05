@@ -103,7 +103,7 @@ gulp.task("build-siteserver-min", function() {
 });
 
 gulp.task("build-docs", function() {
-  return gulp.src("./SiteServer.Web/安装向导.html").pipe(gulp.dest("./build"));
+  return gulp.src(["./SiteServer.Web/安装向导.html", "./SiteServer.Web/favicon.ico"]).pipe(gulp.dest("./build"));
 });
 
 gulp.task("build-webconfig", function() {

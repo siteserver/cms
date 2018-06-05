@@ -3,6 +3,7 @@ using System.Text;
 using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
 using SiteServer.CMS.Core;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli.Updater
@@ -19,7 +20,7 @@ namespace SiteServer.Cli.Updater
 
         protected TreeInfo NewTreeInfo { get; }
 
-        protected KeyValuePair<string, TableInfo> GetNewTableInfo(string oldTableName, TableInfo oldTableInfo, string newTableName, List<TableColumnInfo> newColumns, Dictionary<string, string> convertDict)
+        protected KeyValuePair<string, TableInfo> GetNewTableInfo(string oldTableName, TableInfo oldTableInfo, string newTableName, List<TableColumn> newColumns, Dictionary<string, string> convertKeyDict, Dictionary<string, string> convertValueDict)
         {
             if (string.IsNullOrEmpty(newTableName))
             {
@@ -50,12 +51,12 @@ namespace SiteServer.Cli.Updater
                     var oldFilePath = OldTreeInfo.GetTableContentFilePath(oldTableName, fileName);
                     var newFilePath = NewTreeInfo.GetTableContentFilePath(newTableName, fileName);
 
-                    if (convertDict != null)
+                    if (convertKeyDict != null)
                     {
                         var oldRows =
                             TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(oldFilePath, Encoding.UTF8));
 
-                        var newRows = UpdateUtils.UpdateRows(oldRows, convertDict);
+                        var newRows = UpdateUtils.UpdateRows(oldRows, convertKeyDict, convertValueDict);
 
                         FileUtils.WriteText(newFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newRows));
                     }

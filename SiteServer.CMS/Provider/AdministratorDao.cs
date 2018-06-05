@@ -17,109 +17,109 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_Administrator";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.Id),
+                AttributeName = nameof(AdministratorInfo.Id),
                 DataType = DataType.Integer,
                 IsPrimaryKey = true,
                 IsIdentity = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.UserName),
+                AttributeName = nameof(AdministratorInfo.UserName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.Password),
+                AttributeName = nameof(AdministratorInfo.Password),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.PasswordFormat),
+                AttributeName = nameof(AdministratorInfo.PasswordFormat),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.PasswordSalt),
+                AttributeName = nameof(AdministratorInfo.PasswordSalt),
                 DataType = DataType.VarChar,
-                Length = 128
+                DataLength = 128
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.CreationDate),
+                AttributeName = nameof(AdministratorInfo.CreationDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.LastActivityDate),
+                AttributeName = nameof(AdministratorInfo.LastActivityDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.CountOfLogin),
+                AttributeName = nameof(AdministratorInfo.CountOfLogin),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.CountOfFailedLogin),
+                AttributeName = nameof(AdministratorInfo.CountOfFailedLogin),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.CreatorUserName),
+                AttributeName = nameof(AdministratorInfo.CreatorUserName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.IsLockedOut),
+                AttributeName = nameof(AdministratorInfo.IsLockedOut),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.SiteIdCollection),
+                AttributeName = nameof(AdministratorInfo.SiteIdCollection),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.SiteId),
+                AttributeName = nameof(AdministratorInfo.SiteId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.DepartmentId),
+                AttributeName = nameof(AdministratorInfo.DepartmentId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.AreaId),
+                AttributeName = nameof(AdministratorInfo.AreaId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.DisplayName),
+                AttributeName = nameof(AdministratorInfo.DisplayName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.Email),
+                AttributeName = nameof(AdministratorInfo.Email),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.Mobile),
+                AttributeName = nameof(AdministratorInfo.Mobile),
                 DataType = DataType.VarChar,
-                Length = 20
+                DataLength = 20
             }
         };
 

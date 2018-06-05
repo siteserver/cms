@@ -13,46 +13,46 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_AccessToken";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AccessTokenInfo.Id),
+                AttributeName = nameof(AccessTokenInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AccessTokenInfo.Title),
+                AttributeName = nameof(AccessTokenInfo.Title),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AccessTokenInfo.Token),
+                AttributeName = nameof(AccessTokenInfo.Token),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AccessTokenInfo.Scopes),
+                AttributeName = nameof(AccessTokenInfo.Scopes),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AccessTokenInfo.RateLimit),
+                AttributeName = nameof(AccessTokenInfo.RateLimit),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AccessTokenInfo.AddDate),
+                AttributeName = nameof(AccessTokenInfo.AddDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AccessTokenInfo.UpdatedDate),
+                AttributeName = nameof(AccessTokenInfo.UpdatedDate),
                 DataType = DataType.DateTime
             }
         };

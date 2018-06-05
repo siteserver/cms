@@ -13,48 +13,48 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_TableMetadata";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableMetadataInfo.Id),
+                AttributeName = nameof(TableMetadataInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableMetadataInfo.TableName),
+                AttributeName = nameof(TableMetadataInfo.TableName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableMetadataInfo.AttributeName),
+                AttributeName = nameof(TableMetadataInfo.AttributeName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableMetadataInfo.DataType),
+                AttributeName = nameof(TableMetadataInfo.DataType),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableMetadataInfo.DataLength),
+                AttributeName = nameof(TableMetadataInfo.DataLength),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableMetadataInfo.Taxis),
+                AttributeName = nameof(TableMetadataInfo.Taxis),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableMetadataInfo.IsSystem),
+                AttributeName = nameof(TableMetadataInfo.IsSystem),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             }
         };
 

@@ -13,73 +13,73 @@ namespace SiteServer.CMS.Provider
 	{
         public override string TableName => "siteserver_Department";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(DepartmentInfo.Id),
+                AttributeName = nameof(DepartmentInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(DepartmentInfo.DepartmentName),
+                AttributeName = nameof(DepartmentInfo.DepartmentName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(DepartmentInfo.Code),
+                AttributeName = nameof(DepartmentInfo.Code),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(DepartmentInfo.ParentId),
+                AttributeName = nameof(DepartmentInfo.ParentId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(DepartmentInfo.ParentsPath),
+                AttributeName = nameof(DepartmentInfo.ParentsPath),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(DepartmentInfo.ParentsCount),
+                AttributeName = nameof(DepartmentInfo.ParentsCount),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(DepartmentInfo.ChildrenCount),
+                AttributeName = nameof(DepartmentInfo.ChildrenCount),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(DepartmentInfo.IsLastNode),
+                AttributeName = nameof(DepartmentInfo.IsLastNode),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(DepartmentInfo.Taxis),
+                AttributeName = nameof(DepartmentInfo.Taxis),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(DepartmentInfo.AddDate),
+                AttributeName = nameof(DepartmentInfo.AddDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(DepartmentInfo.Summary),
+                AttributeName = nameof(DepartmentInfo.Summary),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(DepartmentInfo.CountOfAdmin),
+                AttributeName = nameof(DepartmentInfo.CountOfAdmin),
                 DataType = DataType.Integer
             }
         };

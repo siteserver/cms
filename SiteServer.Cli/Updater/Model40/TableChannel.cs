@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Model40
 {
@@ -99,9 +100,9 @@ namespace SiteServer.Cli.Updater.Model40
 
         public static readonly string NewTableName = DataProvider.ChannelDao.TableName;
 
-        public static readonly List<TableColumnInfo> NewColumns = DataProvider.ChannelDao.TableColumns;
+        public static readonly List<TableColumn> NewColumns = DataProvider.ChannelDao.TableColumns;
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        public static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(ChannelInfo.Id), nameof(NodeId)},
@@ -110,5 +111,7 @@ namespace SiteServer.Cli.Updater.Model40
                 {nameof(ChannelInfo.IndexName), nameof(NodeIndexName)},
                 {nameof(ChannelInfo.GroupNameCollection), nameof(NodeGroupNameCollection)}
             };
+
+        public static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

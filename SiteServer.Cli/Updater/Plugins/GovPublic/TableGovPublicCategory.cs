@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Plugins.GovPublic
@@ -57,90 +56,94 @@ namespace SiteServer.Cli.Updater.Plugins.GovPublic
 
         public static readonly string NewTableName = "ss_govpublic_category";
 
-        public static readonly List<TableColumnInfo> NewColumns = new List<TableColumnInfo>
+        public static readonly List<TableColumn> NewColumns = new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Id",
+                AttributeName = "Id",
+                DataType = DataType.Integer,
+                IsPrimaryKey = true,
+                IsIdentity = true
+            },
+            new TableColumn
+            {
+                AttributeName = "SiteId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "SiteId",
-                DataType = DataType.Integer
-            },
-            new TableColumnInfo
-            {
-                ColumnName = "ClassCode",
+                AttributeName = "ClassCode",
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "CategoryName",
+                AttributeName = "CategoryName",
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "CategoryCode",
+                AttributeName = "CategoryCode",
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "ParentId",
+                AttributeName = "ParentId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "ParentsPath",
+                AttributeName = "ParentsPath",
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "ParentsCount",
+                AttributeName = "ParentsCount",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "ChildrenCount",
+                AttributeName = "ChildrenCount",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "IsLastNode",
+                AttributeName = "IsLastNode",
                 DataType = DataType.Boolean
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Taxis",
+                AttributeName = "Taxis",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "AddDate",
+                AttributeName = "AddDate",
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Summary",
+                AttributeName = "Summary",
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "ContentNum",
+                AttributeName = "ContentNum",
                 DataType = DataType.Integer
             }
         };
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        public static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {"Id", nameof(CategoryId)},
                 {"SiteId", nameof(PublishmentSystemId)}
             };
+
+        public static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

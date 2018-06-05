@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Model40
 {
@@ -32,13 +33,15 @@ namespace SiteServer.Cli.Updater.Model40
 
         public static readonly string NewTableName = DataProvider.SitePermissionsDao.TableName;
 
-        public static readonly List<TableColumnInfo> NewColumns = DataProvider.SitePermissionsDao.TableColumns;
+        public static readonly List<TableColumn> NewColumns = DataProvider.SitePermissionsDao.TableColumns;
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        public static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(SitePermissionsInfo.SiteId), nameof(PublishmentSystemId)},
                 {nameof(SitePermissionsInfo.ChannelIdCollection), nameof(NodeIdCollection)}
             };
+
+        public static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

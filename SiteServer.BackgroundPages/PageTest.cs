@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages
 ");
                 foreach (var column in provider.TableColumns)
                 {
-                    builder.Append($"{column.ColumnName} | {column.DataType} | {(column.Length == 0 ? string.Empty : column.Length.ToString())} | {(column.IsIdentity ? "自增长" : string.Empty) + (column.IsPrimaryKey ? "主键" : string.Empty)}<br />");
+                    builder.Append($"{column.AttributeName} | {column.DataType} | {(column.DataLength == 0 ? string.Empty : column.DataLength.ToString())} | {(column.IsIdentity ? "自增长" : string.Empty) + (column.IsPrimaryKey ? "主键" : string.Empty)}<br />");
                 }
 
                 builder.Append("<br /><br />");
@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages
 ");
             foreach (var column in DataProvider.ContentDao.TableColumns)
             {
-                builder.Append($"{column.ColumnName} | {column.DataType} | {(column.Length == 0 ? string.Empty : column.Length.ToString())} | {(column.IsIdentity ? "自增长" : string.Empty) + (column.IsPrimaryKey ? "主键" : string.Empty)}<br />");
+                builder.Append($"{column.AttributeName} | {column.DataType} | {(column.DataLength == 0 ? string.Empty : column.DataLength.ToString())} | {(column.IsIdentity ? "自增长" : string.Empty) + (column.IsPrimaryKey ? "主键" : string.Empty)}<br />");
             }
 
             LtlContent.Text = builder.ToString();

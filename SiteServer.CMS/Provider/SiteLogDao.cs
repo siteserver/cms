@@ -14,58 +14,58 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_SiteLog";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SiteLogInfo.Id),
+                AttributeName = nameof(SiteLogInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SiteLogInfo.SiteId),
+                AttributeName = nameof(SiteLogInfo.SiteId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SiteLogInfo.ChannelId),
+                AttributeName = nameof(SiteLogInfo.ChannelId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SiteLogInfo.ContentId),
+                AttributeName = nameof(SiteLogInfo.ContentId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SiteLogInfo.UserName),
+                AttributeName = nameof(SiteLogInfo.UserName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SiteLogInfo.IpAddress),
+                AttributeName = nameof(SiteLogInfo.IpAddress),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SiteLogInfo.AddDate),
+                AttributeName = nameof(SiteLogInfo.AddDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SiteLogInfo.Action),
+                AttributeName = nameof(SiteLogInfo.Action),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SiteLogInfo.Summary),
+                AttributeName = nameof(SiteLogInfo.Summary),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             }
         };
 

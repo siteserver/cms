@@ -21,155 +21,155 @@ namespace SiteServer.CMS.Provider
 
         public static string StlColumns { get; } = $"{ContentAttribute.Id}, {ContentAttribute.ChannelId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}, {ContentAttribute.LastEditDate}, {ContentAttribute.Taxis}, {ContentAttribute.Hits}, {ContentAttribute.HitsByDay}, {ContentAttribute.HitsByWeek}, {ContentAttribute.HitsByMonth}";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.Id),
+                AttributeName = nameof(ContentInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.ChannelId),
+                AttributeName = nameof(ContentInfo.ChannelId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.SiteId),
+                AttributeName = nameof(ContentInfo.SiteId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.AddUserName),
+                AttributeName = nameof(ContentInfo.AddUserName),
                 DataType = DataType.VarChar,
-                Length = 255,
+                DataLength = 255,
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.LastEditUserName),
+                AttributeName = nameof(ContentInfo.LastEditUserName),
                 DataType = DataType.VarChar,
-                Length = 255,
+                DataLength = 255,
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.WritingUserName),
+                AttributeName = nameof(ContentInfo.WritingUserName),
                 DataType = DataType.VarChar,
-                Length = 255,
+                DataLength = 255,
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.LastEditDate),
+                AttributeName = nameof(ContentInfo.LastEditDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.Taxis),
+                AttributeName = nameof(ContentInfo.Taxis),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.GroupNameCollection),
+                AttributeName = nameof(ContentInfo.GroupNameCollection),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.Tags),
+                AttributeName = nameof(ContentInfo.Tags),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.SourceId),
+                AttributeName = nameof(ContentInfo.SourceId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.ReferenceId),
+                AttributeName = nameof(ContentInfo.ReferenceId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.IsChecked),
+                AttributeName = nameof(ContentInfo.IsChecked),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.CheckedLevel),
+                AttributeName = nameof(ContentInfo.CheckedLevel),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.Hits),
+                AttributeName = nameof(ContentInfo.Hits),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.HitsByDay),
+                AttributeName = nameof(ContentInfo.HitsByDay),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.HitsByWeek),
+                AttributeName = nameof(ContentInfo.HitsByWeek),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.HitsByMonth),
+                AttributeName = nameof(ContentInfo.HitsByMonth),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.LastHitsDate),
+                AttributeName = nameof(ContentInfo.LastHitsDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.SettingsXml),
+                AttributeName = nameof(ContentInfo.SettingsXml),
                 DataType = DataType.Text
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.Title),
+                AttributeName = nameof(ContentInfo.Title),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.IsTop),
+                AttributeName = nameof(ContentInfo.IsTop),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.IsRecommend),
+                AttributeName = nameof(ContentInfo.IsRecommend),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.IsHot),
+                AttributeName = nameof(ContentInfo.IsHot),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.IsColor),
+                AttributeName = nameof(ContentInfo.IsColor),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.LinkUrl),
+                AttributeName = nameof(ContentInfo.LinkUrl),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.AddDate),
+                AttributeName = nameof(ContentInfo.AddDate),
                 DataType = DataType.DateTime
             }
         };

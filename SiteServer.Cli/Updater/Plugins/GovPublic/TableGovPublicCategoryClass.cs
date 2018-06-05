@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Plugins.GovPublic
@@ -41,63 +40,67 @@ namespace SiteServer.Cli.Updater.Plugins.GovPublic
 
         public static readonly string NewTableName = "ss_govpublic_category_class";
 
-        public static readonly List<TableColumnInfo> NewColumns = new List<TableColumnInfo>
+        public static readonly List<TableColumn> NewColumns = new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Id",
+                AttributeName = "Id",
+                DataType = DataType.Integer,
+                IsPrimaryKey = true,
+                IsIdentity = true
+            },
+            new TableColumn
+            {
+                AttributeName = "SiteId",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "SiteId",
-                DataType = DataType.Integer
-            },
-            new TableColumnInfo
-            {
-                ColumnName = "ClassCode",
+                AttributeName = "ClassCode",
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "ClassName",
+                AttributeName = "ClassName",
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "IsSystem",
+                AttributeName = "IsSystem",
                 DataType = DataType.Boolean
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "IsEnabled",
+                AttributeName = "IsEnabled",
                 DataType = DataType.Boolean
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "ContentAttributeName",
+                AttributeName = "ContentAttributeName",
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Taxis",
+                AttributeName = "Taxis",
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Description",
+                AttributeName = "Description",
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             }
         };
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        public static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {"SiteId", nameof(PublishmentSystemId)}
             };
+
+        public static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }
