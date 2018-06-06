@@ -223,11 +223,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                         parsedContent = ContentUtility.FormatTitle(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString), parsedContent);
                     }
 
-                    if (!contextInfo.IsInnerElement)
-                    {
-                        parsedContent = parsedContent.Replace("&", "&amp;");
-                    }
-
                     if (pageInfo.SiteInfo.Additional.IsContentTitleBreakLine)
                     {
                         parsedContent = parsedContent.Replace("  ", !contextInfo.IsInnerElement ? "<br />" : string.Empty);
@@ -236,10 +231,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                 else if (BackgroundContentAttribute.Summary.ToLower().Equals(type))
                 {
                     parsedContent = StringUtils.ParseString(contentInfo.GetString(BackgroundContentAttribute.Summary), replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
-                    if (!contextInfo.IsInnerElement)
-                    {
-                        parsedContent = parsedContent.Replace("&", "&amp;");
-                    }
                 }
                 else if (BackgroundContentAttribute.Content.ToLower().Equals(type))
                 {
@@ -263,11 +254,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                     if (!string.IsNullOrEmpty(formatString))
                     {
                         parsedContent = string.Format(formatString, parsedContent);
-                    }
-
-                    if (!contextInfo.IsInnerElement)
-                    {
-                        parsedContent = parsedContent.Replace("&", "&amp;");
                     }
                 }
                 else if (BackgroundContentAttribute.PageContent.ToLower().Equals(type))
@@ -559,11 +545,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                             parsedContent = contentInfo.GetString(type);
                             parsedContent = StringUtils.ParseString(parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
-                    }
-
-                    if (!contextInfo.IsInnerElement)
-                    {
-                        parsedContent = parsedContent.Replace("&", "&amp;");
                     }
                 }
 
