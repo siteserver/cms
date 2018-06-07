@@ -114,13 +114,14 @@ namespace SiteServer.Cli.Commands
 
                 var oldTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(oldMetadataFilePath, Encoding.UTF8));
 
-                var kvp = updater.UpdateTableInfo(oldTableName, oldTableInfo, contentTableNameList);
-                var newTableName = kvp.Key;
-                var newTableInfo = kvp.Value;
+                string newTableName;
+                TableInfo newTableInfo;
+                if (updater.UpdateTableInfo(oldTableName, oldTableInfo, contentTableNameList, out newTableName, out newTableInfo))
+                {
+                    newTableNames.Add(newTableName);
 
-                newTableNames.Add(newTableName);
-
-                FileUtils.WriteText(newTreeInfo.GetTableMetadataFilePath(newTableName), Encoding.UTF8, TranslateUtils.JsonSerialize(newTableInfo));
+                    FileUtils.WriteText(newTreeInfo.GetTableMetadataFilePath(newTableName), Encoding.UTF8, TranslateUtils.JsonSerialize(newTableInfo));
+                }
             }
 
             FileUtils.WriteText(newTreeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newTableNames));

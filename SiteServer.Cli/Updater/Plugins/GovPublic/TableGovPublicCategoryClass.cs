@@ -38,9 +38,17 @@ namespace SiteServer.Cli.Updater.Plugins.GovPublic
     {
         public const string OldTableName = "GovPublicCategoryClass";
 
-        public static readonly string NewTableName = "ss_govpublic_category_class";
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumn> NewColumns = new List<TableColumn>
+        private static readonly string NewTableName = "ss_govpublic_category_class";
+
+        private static readonly List<TableColumn> NewColumns = new List<TableColumn>
         {
             new TableColumn
             {
@@ -95,12 +103,12 @@ namespace SiteServer.Cli.Updater.Plugins.GovPublic
             }
         };
 
-        public static readonly Dictionary<string, string> ConvertKeyDict =
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {"SiteId", nameof(PublishmentSystemId)}
             };
 
-        public static readonly Dictionary<string, string> ConvertValueDict = null;
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

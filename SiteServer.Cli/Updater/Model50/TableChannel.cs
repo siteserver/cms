@@ -96,11 +96,19 @@ namespace SiteServer.Cli.Updater.Model50
     {
         public const string OldTableName = "Node";
 
-        public static readonly string NewTableName = DataProvider.ChannelDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumn> NewColumns = DataProvider.ChannelDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.ChannelDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertKeyDict =
+        private static readonly List<TableColumn> NewColumns = DataProvider.ChannelDao.TableColumns;
+
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(ChannelInfo.Id), nameof(NodeId)},
@@ -111,7 +119,7 @@ namespace SiteServer.Cli.Updater.Model50
                 {nameof(ChannelInfo.ContentModelPluginId), nameof(ContentModelId)}
             };
 
-        public static readonly Dictionary<string, string> ConvertValueDict = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> ConvertValueDict = new Dictionary<string, string>
         {
             {UpdateUtils.GetConvertValueDictKey(nameof(ChannelInfo.ContentModelPluginId), "GovInteract"), "SS.GovInteract"},
             {UpdateUtils.GetConvertValueDictKey(nameof(ChannelInfo.ContentModelPluginId), "GovPublic"), "SS.GovPublic"},

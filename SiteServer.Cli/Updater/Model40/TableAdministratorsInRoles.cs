@@ -21,12 +21,20 @@ namespace SiteServer.Cli.Updater.Model40
     {
         public const string OldTableName = "AdministratorsInRoles";
 
-        public static readonly string NewTableName = DataProvider.AdministratorsInRolesDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumn> NewColumns = DataProvider.AdministratorsInRolesDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.AdministratorsInRolesDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertKeyDict = null;
+        private static readonly List<TableColumn> NewColumns = DataProvider.AdministratorsInRolesDao.TableColumns;
 
-        public static readonly Dictionary<string, string> ConvertValueDict = null;
+        private static readonly Dictionary<string, string> ConvertKeyDict = null;
+
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

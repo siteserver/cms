@@ -2,8 +2,6 @@
 using System.Text;
 using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
-using SiteServer.CMS.Core;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli.Updater
@@ -20,25 +18,39 @@ namespace SiteServer.Cli.Updater
 
         protected TreeInfo NewTreeInfo { get; }
 
-        protected KeyValuePair<string, TableInfo> GetNewTableInfo(string oldTableName, TableInfo oldTableInfo, string newTableName, List<TableColumn> newColumns, Dictionary<string, string> convertKeyDict, Dictionary<string, string> convertValueDict)
+        protected bool GetNewTableInfo(string oldTableName, TableInfo oldTableInfo, ConvertInfo converter, out string newTableName, out TableInfo newTableInfo)
         {
-            if (string.IsNullOrEmpty(newTableName))
+            newTableName = null;
+            newTableInfo = null;
+
+            if (converter == null)
             {
-                newTableName = oldTableName;
-            }
-            if (newColumns == null || newColumns.Count == 0)
-            {
-                newColumns = oldTableInfo.Columns;
+                converter = new ConvertInfo();
             }
 
-            var newTableInfo = new TableInfo
+            if (converter.IsAbandon)
             {
-                Columns = newColumns,
+                CliUtils.PrintRow(oldTableName, "Abandon", "--");
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(converter.NewTableName))
+            {
+                converter.NewTableName = oldTableName;
+            }
+            if (converter.NewColumns == null || converter.NewColumns.Count == 0)
+            {
+                converter.NewColumns = oldTableInfo.Columns;
+            }
+
+            newTableInfo = new TableInfo
+            {
+                Columns = converter.NewColumns,
                 TotalCount = oldTableInfo.TotalCount,
                 RowFiles = oldTableInfo.RowFiles
             };
 
-            CliUtils.PrintRow(oldTableName, newTableName, oldTableInfo.TotalCount.ToString("#,0"));
+            CliUtils.PrintRow(oldTableName, converter.NewTableName, oldTableInfo.TotalCount.ToString("#,0"));
 
             var i = 0;
 
@@ -49,14 +61,14 @@ namespace SiteServer.Cli.Updater
                     progress.Report((double)i++ / oldTableInfo.RowFiles.Count);
 
                     var oldFilePath = OldTreeInfo.GetTableContentFilePath(oldTableName, fileName);
-                    var newFilePath = NewTreeInfo.GetTableContentFilePath(newTableName, fileName);
+                    var newFilePath = NewTreeInfo.GetTableContentFilePath(converter.NewTableName, fileName);
 
-                    if (convertKeyDict != null)
+                    if (converter.ConvertKeyDict != null)
                     {
                         var oldRows =
                             TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(oldFilePath, Encoding.UTF8));
 
-                        var newRows = UpdateUtils.UpdateRows(oldRows, convertKeyDict, convertValueDict);
+                        var newRows = UpdateUtils.UpdateRows(oldRows, converter.ConvertKeyDict, converter.ConvertValueDict);
 
                         FileUtils.WriteText(newFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newRows));
                     }
@@ -67,9 +79,11 @@ namespace SiteServer.Cli.Updater
                 }
             }
 
-            return new KeyValuePair<string, TableInfo>(newTableName, newTableInfo);
+            newTableName = converter.NewTableName;
+
+            return true;
         }
 
-        public abstract KeyValuePair<string, TableInfo> UpdateTableInfo(string oldTableName, TableInfo oldTableInfo, List<string> contentTableNameList);
+        public abstract bool UpdateTableInfo(string oldTableName, TableInfo oldTableInfo, List<string> contentTableNameList, out string newTableName, out TableInfo newTableInfo);
     }
 }

@@ -44,9 +44,17 @@ namespace SiteServer.Cli.Updater.Plugins.GovPublic
     {
         public const string OldTableName = "GovPublicIdentifierRule";
 
-        public static readonly string NewTableName = "ss_govpublic_identifier_rule";
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumn> NewColumns = new List<TableColumn>
+        private static readonly string NewTableName = "ss_govpublic_identifier_rule";
+
+        private static readonly List<TableColumn> NewColumns = new List<TableColumn>
         {
             new TableColumn
             {
@@ -122,13 +130,13 @@ namespace SiteServer.Cli.Updater.Plugins.GovPublic
             }
         };
 
-        public static readonly Dictionary<string, string> ConvertKeyDict =
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {"Id", nameof(RuleId)},
                 {"SiteId", nameof(PublishmentSystemId)}
             };
 
-        public static readonly Dictionary<string, string> ConvertValueDict = null;
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

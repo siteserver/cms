@@ -28,17 +28,25 @@ namespace SiteServer.Cli.Updater.Model50
     {
         public const string OldTableName = "Tags";
 
-        public static readonly string NewTableName = DataProvider.TagDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumn> NewColumns = DataProvider.TagDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.TagDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertKeyDict =
+        private static readonly List<TableColumn> NewColumns = DataProvider.TagDao.TableColumns;
+
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(TagInfo.Id), nameof(TagId)},
                 {nameof(TagInfo.SiteId), nameof(PublishmentSystemId)}
             };
 
-        public static readonly Dictionary<string, string> ConvertValueDict = null;
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

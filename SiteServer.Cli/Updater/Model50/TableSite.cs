@@ -64,11 +64,19 @@ namespace SiteServer.Cli.Updater.Model50
     {
         public const string OldTableName = "PublishmentSystem";
 
-        public static readonly string NewTableName = DataProvider.SiteDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumn> NewColumns = DataProvider.SiteDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.SiteDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertKeyDict =
+        private static readonly List<TableColumn> NewColumns = DataProvider.SiteDao.TableColumns;
+
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(SiteInfo.Id), nameof(PublishmentSystemId)},
@@ -79,6 +87,6 @@ namespace SiteServer.Cli.Updater.Model50
                 {nameof(SiteInfo.ParentId), nameof(ParentPublishmentSystemId)}
             };
 
-        public static readonly Dictionary<string, string> ConvertValueDict = null;
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

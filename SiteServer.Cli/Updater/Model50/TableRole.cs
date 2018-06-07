@@ -25,12 +25,20 @@ namespace SiteServer.Cli.Updater.Model50
     {
         public const string OldTableName = "Roles";
 
-        public static readonly string NewTableName = DataProvider.RoleDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumn> NewColumns = DataProvider.RoleDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.RoleDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertKeyDict = null;
+        private static readonly List<TableColumn> NewColumns = DataProvider.RoleDao.TableColumns;
 
-        public static readonly Dictionary<string, string> ConvertValueDict = null;
+        private static readonly Dictionary<string, string> ConvertKeyDict = null;
+
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

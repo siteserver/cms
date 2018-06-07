@@ -31,17 +31,25 @@ namespace SiteServer.Cli.Updater.Model36
     {
         public const string OldTableName = "SystemPermissions";
 
-        public static readonly string NewTableName = DataProvider.SitePermissionsDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumn> NewColumns = DataProvider.SitePermissionsDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.SitePermissionsDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertKeyDict =
+        private static readonly List<TableColumn> NewColumns = DataProvider.SitePermissionsDao.TableColumns;
+
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(SitePermissionsInfo.SiteId), nameof(PublishmentSystemId)},
                 {nameof(SitePermissionsInfo.ChannelIdCollection), nameof(NodeIdCollection)}
             };
 
-        public static readonly Dictionary<string, string> ConvertValueDict = null;
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

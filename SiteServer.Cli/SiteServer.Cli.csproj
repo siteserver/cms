@@ -92,6 +92,7 @@
     <Compile Include="Core\UpdateUtils.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Updater\ConvertInfo.cs" />
     <Compile Include="Updater\Model36\TableAdministrator.cs" />
     <Compile Include="Updater\Model36\TableAdministratorsInRoles.cs" />
     <Compile Include="Updater\Model36\TableArea.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="Updater\Model36\TableContentCheck.cs" />
     <Compile Include="Updater\Model36\TableCount.cs" />
     <Compile Include="Updater\Model36\TableDepartment.cs" />
+    <Compile Include="Updater\Model36\TableErrorLog.cs" />
     <Compile Include="Updater\Model36\TableLog.cs" />
     <Compile Include="Updater\Model36\TablePermissionsInRoles.cs" />
     <Compile Include="Updater\Model36\TableRole.cs" />

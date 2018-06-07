@@ -89,17 +89,25 @@ namespace SiteServer.Cli.Updater.Model41
     {
         public const string OldTableName = "Users";
 
-        public static readonly string NewTableName = DataProvider.UserDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumn> NewColumns = DataProvider.UserDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.UserDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertKeyDict =
+        private static readonly List<TableColumn> NewColumns = DataProvider.UserDao.TableColumns;
+
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(UserInfo.Id), nameof(UserId)},
                 {nameof(UserInfo.AvatarUrl), nameof(AvatarLarge)}
             };
 
-        public static readonly Dictionary<string, string> ConvertValueDict = null;
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

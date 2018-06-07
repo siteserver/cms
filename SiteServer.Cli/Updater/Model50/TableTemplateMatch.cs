@@ -37,17 +37,25 @@ namespace SiteServer.Cli.Updater.Model50
     {
         public const string OldTableName = "TemplateMatch";
 
-        public static readonly string NewTableName = DataProvider.TemplateMatchDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumn> NewColumns = DataProvider.TemplateMatchDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.TemplateMatchDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertKeyDict =
+        private static readonly List<TableColumn> NewColumns = DataProvider.TemplateMatchDao.TableColumns;
+
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(TemplateMatchInfo.ChannelId), nameof(NodeId)},
                 {nameof(TemplateMatchInfo.SiteId), nameof(PublishmentSystemId)}
             };
 
-        public static readonly Dictionary<string, string> ConvertValueDict = null;
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

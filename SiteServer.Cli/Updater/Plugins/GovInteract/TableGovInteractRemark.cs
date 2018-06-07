@@ -39,9 +39,17 @@ namespace SiteServer.Cli.Updater.Plugins.GovInteract
     {
         public const string OldTableName = "GovInteractRemark";
 
-        public static readonly string NewTableName = "ss_govinteract_remark";
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumn> NewColumns = new List<TableColumn>
+        private static readonly string NewTableName = "ss_govinteract_remark";
+
+        private static readonly List<TableColumn> NewColumns = new List<TableColumn>
         {
             new TableColumn
             {
@@ -95,7 +103,7 @@ namespace SiteServer.Cli.Updater.Plugins.GovInteract
             }
         };
 
-        public static readonly Dictionary<string, string> ConvertKeyDict =
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {"Id", nameof(RemarkId)},
@@ -103,6 +111,6 @@ namespace SiteServer.Cli.Updater.Plugins.GovInteract
                 {"ChannelId", nameof(NodeId)}
             };
 
-        public static readonly Dictionary<string, string> ConvertValueDict = null;
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

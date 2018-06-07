@@ -21,12 +21,20 @@ namespace SiteServer.Cli.Updater.Model36
     {
         public const string OldTableName = "Cache";
 
-        public static readonly string NewTableName = DataProvider.DbCacheDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumn> NewColumns = DataProvider.DbCacheDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.DbCacheDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertKeyDict = null;
+        private static readonly List<TableColumn> NewColumns = DataProvider.DbCacheDao.TableColumns;
 
-        public static readonly Dictionary<string, string> ConvertValueDict = null;
+        private static readonly Dictionary<string, string> ConvertKeyDict = null;
+
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

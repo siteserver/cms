@@ -31,12 +31,20 @@ namespace SiteServer.Cli.Updater.Model36
     {
         public const string OldTableName = "RelatedFieldItem";
 
-        public static readonly string NewTableName = DataProvider.RelatedFieldItemDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumn> NewColumns = DataProvider.RelatedFieldItemDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.RelatedFieldItemDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertKeyDict = null;
+        private static readonly List<TableColumn> NewColumns = DataProvider.RelatedFieldItemDao.TableColumns;
 
-        public static readonly Dictionary<string, string> ConvertValueDict = null;
+        private static readonly Dictionary<string, string> ConvertKeyDict = null;
+
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

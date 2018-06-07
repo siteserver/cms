@@ -28,16 +28,24 @@ namespace SiteServer.Cli.Updater.Model50
     {
         public const string OldTableName = "TableStyleItem";
 
-        public static readonly string NewTableName = DataProvider.TableStyleItemDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumn> NewColumns = DataProvider.TableStyleItemDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.TableStyleItemDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertKeyDict =
+        private static readonly List<TableColumn> NewColumns = DataProvider.TableStyleItemDao.TableColumns;
+
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(TableStyleItemInfo.Id), nameof(TableStyleItemId)}
             };
 
-        public static readonly Dictionary<string, string> ConvertValueDict = null;
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

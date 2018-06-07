@@ -62,17 +62,26 @@ namespace SiteServer.Cli.Updater.Model36
     {
         public const string OldTableName = "TableStyle";
 
-        public static readonly string NewTableName = DataProvider.TableStyleDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumn> NewColumns = DataProvider.TableStyleDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.TableStyleDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertKeyDict =
+        private static readonly List<TableColumn> NewColumns = DataProvider.TableStyleDao.TableColumns;
+
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(TableStyleInfo.Id), nameof(TableStyleId)}
+                {nameof(TableStyleInfo.Id), nameof(TableStyleId)},
+                {nameof(TableStyleInfo.TableName), nameof(TableName)}
             };
 
-        public static readonly Dictionary<string, string> ConvertValueDict =
+        private static readonly Dictionary<string, string> ConvertValueDict =
             new Dictionary<string, string>
             {
                 {UpdateUtils.GetConvertValueDictKey(nameof(TableStyleInfo.TableName), TableGovInteractContent.OldTableName), TableGovInteractContent.NewTableName},

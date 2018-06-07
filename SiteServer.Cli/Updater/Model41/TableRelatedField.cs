@@ -31,11 +31,19 @@ namespace SiteServer.Cli.Updater.Model41
     {
         public const string OldTableName = "RelatedField";
 
-        public static readonly string NewTableName = DataProvider.RelatedFieldDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumn> NewColumns = DataProvider.RelatedFieldDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.RelatedFieldDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertKeyDict =
+        private static readonly List<TableColumn> NewColumns = DataProvider.RelatedFieldDao.TableColumns;
+
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(RelatedFieldInfo.Id), nameof(RelatedFieldId)},
@@ -43,6 +51,6 @@ namespace SiteServer.Cli.Updater.Model41
                 {nameof(RelatedFieldInfo.SiteId), nameof(PublishmentSystemId)}
             };
 
-        public static readonly Dictionary<string, string> ConvertValueDict = null;
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

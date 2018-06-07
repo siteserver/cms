@@ -47,18 +47,26 @@ namespace SiteServer.Cli.Updater.Model36
     {
         public const string OldTableName = "TableCollection";
 
-        public static readonly string NewTableName = DataProvider.TableDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumn> NewColumns = DataProvider.TableDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.TableDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertKeyDict =
+        private static readonly List<TableColumn> NewColumns = DataProvider.TableDao.TableColumns;
+
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(TableInfo.TableName), nameof(TableEnName)},
                 {nameof(TableInfo.DisplayName), nameof(TableCnName)}
             };
 
-        public static readonly Dictionary<string, string> ConvertValueDict =
+        private static readonly Dictionary<string, string> ConvertValueDict =
             new Dictionary<string, string>
             {
                 {UpdateUtils.GetConvertValueDictKey(nameof(TableInfo.TableName), TableGovInteractContent.OldTableName), TableGovInteractContent.NewTableName},

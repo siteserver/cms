@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using SiteServer.Cli.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -121,7 +122,18 @@ namespace SiteServer.Cli.Updater.Model41
 
     public partial class TableContent
     {
-        public static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
+        public static ConvertInfo GetConverter(string oldTableName, List<TableColumn> oldColumns)
+        {
+            return new ConvertInfo
+            {
+                NewTableName = UpdateUtils.GetContentTableName(oldTableName),
+                NewColumns = GetNewColumns(oldColumns),
+                ConvertKeyDict = ConvertKeyDict,
+                ConvertValueDict = ConvertValueDict
+            };
+        }
+
+        private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
         {
             var columns = new List<TableColumn>();
             foreach (var tableColumnInfo in oldColumns)
@@ -144,7 +156,7 @@ namespace SiteServer.Cli.Updater.Model41
             return columns;
         }
 
-        public static readonly Dictionary<string, string> ConvertKeyDict =
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(ContentInfo.ChannelId), nameof(NodeId)},
@@ -152,6 +164,6 @@ namespace SiteServer.Cli.Updater.Model41
                 {nameof(ContentInfo.GroupNameCollection), nameof(ContentGroupNameCollection)}
             };
 
-        public static readonly Dictionary<string, string> ConvertValueDict = null;
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }
