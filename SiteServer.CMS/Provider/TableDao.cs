@@ -355,7 +355,7 @@ namespace SiteServer.CMS.Provider
         public void SyncDbTable(string tableName)
         {
             var metadataInfoList = TableMetadataManager.GetTableMetadataInfoList(tableName);
-            var columnInfolist = TableColumnManager.GetTableColumnInfoListLowercase(tableName, ContentAttribute.AllAttributesLowercase);
+            var columnInfolist = TableColumnManager.GetTableColumnInfoList(tableName, ContentAttribute.AllAttributesLowercase);
 
             var sqlList = new List<string>();
 

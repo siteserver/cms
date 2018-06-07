@@ -693,10 +693,10 @@ SELECT * FROM (
         public void AlterPluginTable(string pluginId, string tableName, List<TableColumn> tableColumns)
         {
             var isAltered = false;
-            var columnNameList = TableColumnManager.GetTableColumnNameListLowercase(tableName);
+            var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
             foreach (var tableColumn in tableColumns)
             {
-                if (columnNameList.Contains(tableColumn.AttributeName.ToLower())) continue;
+                if (StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName)) continue;
 
                 var columnSqlString = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
                 var sqlString = SqlUtils.GetAddColumnsSqlString(tableName, columnSqlString);
@@ -781,10 +781,10 @@ SELECT * FROM (
         {
             var list = new List<string>();
 
-            var columnNameList = TableColumnManager.GetTableColumnNameListLowercase(tableName);
+            var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
             foreach (var tableColumn in tableColumns)
             {
-                if (columnNameList.Contains(tableColumn.AttributeName.ToLower())) continue;
+                if (StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName)) continue;
 
                 list.Add(SqlUtils.GetAddColumnsSqlString(tableName, SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength)));
             }
@@ -946,7 +946,7 @@ SELECT * FROM (
             return defaultConstraintName;
         }
 
-        public List<TableColumn> GetTableColumnInfoListLowercase(string connectionString, string tableName)
+        public List<TableColumn> GetTableColumnInfoList(string connectionString, string tableName)
         {
             if (string.IsNullOrEmpty(connectionString))
             {
@@ -959,19 +959,19 @@ SELECT * FROM (
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                list = GetMySqlColumnsLowercase(connectionString, databaseName, tableName);
+                list = GetMySqlColumns(connectionString, databaseName, tableName);
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                list = GetSqlServerColumnsLowercase(connectionString, databaseName, tableName);
+                list = GetSqlServerColumns(connectionString, databaseName, tableName);
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                list = GetPostgreSqlColumnsLowercase(connectionString, databaseName, tableName);
+                list = GetPostgreSqlColumns(connectionString, databaseName, tableName);
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                list = GetOracleColumnsLowercase(connectionString, tableName);
+                list = GetOracleColumns(connectionString, tableName);
             }
 
             return list;
@@ -1015,7 +1015,7 @@ SELECT * FROM (
             return sequence;
         }
 
-        private List<TableColumn> GetOracleColumnsLowercase(string connectionString, string tableName)
+        private List<TableColumn> GetOracleColumns(string connectionString, string tableName)
         {
             var owner = SqlUtils.GetConnectionStringUserId(connectionString).ToUpper();
             tableName = tableName.ToUpper();
@@ -1027,7 +1027,7 @@ SELECT * FROM (
             {
                 while (rdr.Read())
                 {
-                    var columnName = (rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0)).ToLower();
+                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
                     var dataType = SqlUtils.ToDataType(DatabaseType.Oracle, rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
                     var percision = rdr.IsDBNull(2) ? 0 : rdr.GetInt32(2);
                     var scale = rdr.IsDBNull(3) ? 0 : rdr.GetInt32(3);
@@ -1068,7 +1068,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
             {
                 while (rdr.Read())
                 {
-                    var columnName = (rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0)).ToLower();
+                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
 
                     foreach (var tableColumnInfo in list)
                     {
@@ -1085,16 +1085,16 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
             return list;
         }
 
-        private List<TableColumn> GetPostgreSqlColumnsLowercase(string connectionString, string databaseName, string tableName)
+        private List<TableColumn> GetPostgreSqlColumns(string connectionString, string databaseName, string tableName)
         {
             var list = new List<TableColumn>();
-            string sqlString =
+            var sqlString =
                 $"SELECT COLUMN_NAME, UDT_NAME, CHARACTER_MAXIMUM_LENGTH, COLUMN_DEFAULT FROM information_schema.columns WHERE table_catalog = '{databaseName}' AND table_name = '{tableName.ToLower()}' ORDER BY ordinal_position";
             using (var rdr = ExecuteReader(connectionString, sqlString))
             {
                 while (rdr.Read())
                 {
-                    var columnName = (rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0)).ToLower();
+                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
                     var dataType = SqlUtils.ToDataType(DatabaseType.PostgreSql, rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
                     var length = rdr.IsDBNull(2) ? 0 : rdr.GetInt32(2);
                     var columnDefault = rdr.IsDBNull(3) ? string.Empty : rdr.GetString(3);
@@ -1120,7 +1120,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
             {
                 while (rdr.Read())
                 {
-                    var columnName = (rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0)).ToLower();
+                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
                     var constraintName = rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1);
 
                     var isPrimary = constraintName.StartsWith("pk");
@@ -1143,7 +1143,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
             return list;
         }
 
-        private List<TableColumn> GetSqlServerColumnsLowercase(string connectionString, string databaseName, string tableName)
+        private List<TableColumn> GetSqlServerColumns(string connectionString, string databaseName, string tableName)
         {
             var list = new List<TableColumn>();
 
@@ -1161,15 +1161,15 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
                 rdr.Close();
             }
 
-            string sqlString =
+            var sqlString =
                 $"select C.name, T.name, C.length, C.colstat, case when C.autoval is null then 0 else 1 end, SC.text, (select CForgin.name from [{databaseName}]..sysreferences Sr,[{databaseName}]..sysobjects O,[{databaseName}]..syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1), (select O.name from [{databaseName}]..sysreferences Sr,[{databaseName}]..sysobjects O,[{databaseName}]..syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1), (select Sr.rkeyid from [{databaseName}]..sysreferences Sr,[{databaseName}]..sysobjects O,[{databaseName}]..syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1) from [{databaseName}]..systypes T, [{databaseName}]..syscolumns C left join [{databaseName}]..syscomments SC on C.cdefault=SC.id where C.id={tableId} and C.xtype=T.xusertype order by C.colid";
 
             using (var rdr = ExecuteReader(connectionString, sqlString))
             {
                 while (rdr.Read())
                 {
-                    var columnName = (rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0)).ToLower();
-                    if (columnName == "msrepl_tran_version") //sqlserver ���������ֶΣ�����
+                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
+                    if (columnName == "msrepl_tran_version")
                     {
                         continue;
                     }
@@ -1213,7 +1213,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
                 {
                     if (rdr.Read())
                     {
-                        clName = (rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0)).ToLower();
+                        clName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
                     }
                     rdr.Close();
                 }
@@ -1230,7 +1230,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
             return list;
         }
 
-        private List<TableColumn> GetMySqlColumnsLowercase(string connectionString, string databaseName, string tableName)
+        private List<TableColumn> GetMySqlColumns(string connectionString, string databaseName, string tableName)
         {
             var list = new List<TableColumn>();
 
@@ -1240,7 +1240,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
             {
                 while (rdr.Read())
                 {
-                    var columnName = (rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0)).ToLower();
+                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
                     var dataType = SqlUtils.ToDataType(DatabaseType.MySql, rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
                     var length = rdr.IsDBNull(2) || dataType == DataType.Text ? 0 : Convert.ToInt32(rdr.GetValue(2));
                     var isPrimaryKey = Convert.ToString(rdr.GetValue(3)) == "PRI";

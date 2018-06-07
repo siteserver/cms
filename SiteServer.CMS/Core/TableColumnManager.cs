@@ -50,7 +50,7 @@ namespace SiteServer.CMS.Core
                 return allDict;
             }
 
-            public static List<TableColumn> GetTableColumnInfoListLowercase(string tableName)
+            public static List<TableColumn> GetTableColumnInfoList(string tableName)
             {
                 var allDict = GetAllDictionary();
 
@@ -59,21 +59,21 @@ namespace SiteServer.CMS.Core
 
                 if (list != null) return list;
 
-                list = DataProvider.DatabaseDao.GetTableColumnInfoListLowercase(WebConfigUtils.ConnectionString, tableName);
+                list = DataProvider.DatabaseDao.GetTableColumnInfoList(WebConfigUtils.ConnectionString, tableName);
                 Update(allDict, list, tableName);
                 return list;
             }
         }
 
-        public static List<TableColumn> GetTableColumnInfoListLowercase(string tableName, List<string> excludeAttributeNameListLowercase = null)
+        public static List<TableColumn> GetTableColumnInfoList(string tableName, List<string> excludeAttributeNameList = null)
         {
-            var list = TableColumnManagerCache.GetTableColumnInfoListLowercase(tableName);
-            if (excludeAttributeNameListLowercase == null || excludeAttributeNameListLowercase.Count == 0) return list;
+            var list = TableColumnManagerCache.GetTableColumnInfoList(tableName);
+            if (excludeAttributeNameList == null || excludeAttributeNameList.Count == 0) return list;
 
             var retval = new List<TableColumn>();
             foreach (var tableColumnInfo in list)
             {
-                if (!excludeAttributeNameListLowercase.Contains(tableColumnInfo.AttributeName.ToLower()))
+                if (!StringUtils.ContainsIgnoreCase(excludeAttributeNameList, tableColumnInfo.AttributeName))
                 {
                     retval.Add(tableColumnInfo);
                 }
@@ -82,9 +82,9 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static List<string> GetTableColumnNameListLowercase(string tableName, List<string> excludeAttributeNameListLowercase = null)
+        public static List<string> GetTableColumnNameList(string tableName, List<string> excludeAttributeNameList = null)
         {
-            var allTableColumnInfoList = GetTableColumnInfoListLowercase(tableName, excludeAttributeNameListLowercase);
+            var allTableColumnInfoList = GetTableColumnInfoList(tableName, excludeAttributeNameList);
 
             var columnNameList = new List<string>();
 

@@ -96,7 +96,7 @@ namespace SiteServer.Cli.Commands
 
                 var tableInfo = new TableInfo
                 {
-                    Columns = DataProvider.DatabaseDao.GetTableColumnInfoListLowercase(WebConfigUtils.ConnectionString, tableName),
+                    Columns = DataProvider.DatabaseDao.GetTableColumnInfoList(WebConfigUtils.ConnectionString, tableName),
                     TotalCount = DataProvider.DatabaseDao.GetCount(tableName),
                     RowFiles = new List<string>()
                 };
