@@ -45,13 +45,14 @@ namespace SiteServer.Cli.Commands
 
             if (string.IsNullOrEmpty(_version))
             {
-                Console.WriteLine("Error, Please input the version to update");
+                Console.WriteLine("Error, the {version} to update is empty");
                 return;
             }
 
             if (string.IsNullOrEmpty(_directory))
             {
-                _directory = $"backup/{DateTime.Now:yyyy-MM-dd}";
+                CliUtils.PrintError("Error, the update {directory} name is empty");
+                return;
             }
 
             var oldTreeInfo = new TreeInfo(_directory);
@@ -59,7 +60,7 @@ namespace SiteServer.Cli.Commands
 
             if (!DirectoryUtils.IsDirectoryExists(oldTreeInfo.DirectoryPath))
             {
-                CliUtils.PrintError($"Error, Directory {oldTreeInfo.DirectoryPath} Not Exists");
+                CliUtils.PrintError($"Error, directory {oldTreeInfo.DirectoryPath} not exists");
                 return;
             }
             DirectoryUtils.CreateDirectoryIfNotExists(newTreeInfo.DirectoryPath);
@@ -84,7 +85,7 @@ namespace SiteServer.Cli.Commands
             }
             if (updater == null)
             {
-                Console.WriteLine($"Error, The currently supported update versions are {Updater36.Version}");
+                Console.WriteLine($"Error, the currently supported update versions are {Updater36.Version},{Updater40.Version},{Updater41.Version},{Updater50.Version}");
                 return;
             }
 

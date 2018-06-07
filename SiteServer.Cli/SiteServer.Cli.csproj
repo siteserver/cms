@@ -85,6 +85,7 @@
     <Compile Include="Commands\UpdateManager.cs" />
     <Compile Include="Commands\RestoreManager.cs" />
     <Compile Include="Core\CliUtils.cs" />
+    <Compile Include="Core\ConfigInfo.cs" />
     <Compile Include="Core\ProgressBar.cs" />
     <Compile Include="Core\TreeInfo.cs" />
     <Compile Include="Core\TableInfo.cs" />

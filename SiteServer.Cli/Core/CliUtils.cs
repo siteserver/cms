@@ -14,6 +14,43 @@ namespace SiteServer.Cli.Core
 
         private const int ConsoleTableWidth = 77;
 
+        public static ConfigInfo LoadConfig(string configFileName)
+        {
+            ConfigInfo configInfo = null;
+
+            if (string.IsNullOrEmpty(configFileName))
+            {
+                configFileName = "cli.json";
+            }
+
+            if (FileUtils.IsFileExists(PathUtils.Combine(PhysicalApplicationPath, configFileName)))
+            {
+                configInfo = TranslateUtils.JsonDeserialize<ConfigInfo>(
+                    FileUtils.ReadText(PathUtils.Combine(PhysicalApplicationPath, configFileName), Encoding.UTF8));
+
+                WebConfigUtils.Load(PhysicalApplicationPath, configInfo.RestoreConfig.DatabaseType, configInfo.RestoreConfig.ConnectionString);
+            }
+            else if (FileUtils.IsFileExists(PathUtils.Combine(PhysicalApplicationPath, "web.config")))
+            {
+                configInfo = new ConfigInfo();
+                WebConfigUtils.Load(PhysicalApplicationPath, "web.config");
+            }
+
+            if (configInfo != null)
+            {
+                if (configInfo.BackupConfig == null)
+                {
+                    configInfo.BackupConfig = new BackupConfigInfo();
+                }
+                if (configInfo.RestoreConfig == null)
+                {
+                    configInfo.RestoreConfig = new RestoreConfigInfo();
+                }
+            }
+
+            return configInfo;
+        }
+
         private static string AlignCentre(string text, int width)
         {
             text = text.Length > width ? text.Substring(0, width - 3) + "..." : text;

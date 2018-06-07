@@ -15,11 +15,11 @@ namespace SiteServer.Cli.Commands
 
         private static bool _isHelp;
         private static string _directory;
-        private static string _webConfigFileName;
+        private static string _configFileName;
 
         private static readonly OptionSet Options = new OptionSet() {
-            { "c|config=", "the {web.config} file name.",
-                v => _webConfigFileName = v },
+            { "c|config=", "the {cli.json} file name.",
+                v => _configFileName = v },
             { "d|directory=", "the restore {directory} name.",
                 v => _directory = v },
             { "h|help",  "show this message and exit",
@@ -45,48 +45,48 @@ namespace SiteServer.Cli.Commands
 
             if (string.IsNullOrEmpty(_directory))
             {
-                _directory = $"backup/{DateTime.Now:yyyy-MM-dd}";
-            }
-            if (string.IsNullOrEmpty(_webConfigFileName))
-            {
-                _webConfigFileName = "web.config";
+                CliUtils.PrintError("Error, the restore {directory} name is empty");
+                return;
             }
 
             var treeInfo = new TreeInfo(_directory);
 
             if (!DirectoryUtils.IsDirectoryExists(treeInfo.DirectoryPath))
             {
-                CliUtils.PrintError($"Error, Directory {treeInfo.DirectoryPath} Not Exists");
+                CliUtils.PrintError($"Error, directory {treeInfo.DirectoryPath} not exists");
                 return;
             }
 
             var tablesFilePath = treeInfo.TablesFilePath;
             if (!FileUtils.IsFileExists(tablesFilePath))
             {
-                CliUtils.PrintError($"Error, File {treeInfo.TablesFilePath} Not Exists");
+                CliUtils.PrintError($"Error, file {treeInfo.TablesFilePath} not exists");
                 return;
             }
 
-            WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, _webConfigFileName);
+            var configInfo = CliUtils.LoadConfig(_configFileName);
+            if (configInfo == null)
+            {
+                CliUtils.PrintError("Error, config file cli.json not exists");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
+            {
+                CliUtils.PrintError("Error, connection string is empty");
+                return;
+            }
+
+            var isConnectValid = DataProvider.DatabaseDao.ConnectToServer(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, out _, out _);
+            if (!isConnectValid)
+            {
+                CliUtils.PrintError("Error, connection string not correct");
+                return;
+            }
 
             Console.WriteLine($"Database Type: {WebConfigUtils.DatabaseType.Value}");
             Console.WriteLine($"Connection String: {WebConfigUtils.ConnectionString}");
             Console.WriteLine($"Restore Directory: {treeInfo.DirectoryPath}");
-
-            if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
-            {
-                CliUtils.PrintError("Error, Connection String Is Empty");
-                return;
-            }
-
-            List<string> databaseNameList;
-            string errorMessage;
-            var isConnectValid = DataProvider.DatabaseDao.ConnectToServer(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, out databaseNameList, out errorMessage);
-            if (!isConnectValid)
-            {
-                CliUtils.PrintError("Error, Connection String Not Correct");
-                return;
-            }
 
             var tableNames = TranslateUtils.JsonDeserialize<List<string>>(FileUtils.ReadText(tablesFilePath, Encoding.UTF8));
 
@@ -98,6 +98,15 @@ namespace SiteServer.Cli.Commands
 
             foreach (var tableName in tableNames)
             {
+                if (configInfo.RestoreConfig.Includes != null)
+                {
+                    if (!StringUtils.ContainsIgnoreCase(configInfo.RestoreConfig.Includes, tableName)) continue;
+                }
+                if (configInfo.RestoreConfig.Excludes != null)
+                {
+                    if (StringUtils.ContainsIgnoreCase(configInfo.RestoreConfig.Includes, tableName)) continue;
+                }
+
                 var metadataFilePath = treeInfo.GetTableMetadataFilePath(tableName);
 
                 if (!FileUtils.IsFileExists(metadataFilePath)) continue;
@@ -143,7 +152,10 @@ namespace SiteServer.Cli.Commands
 
             CliUtils.PrintLine();
 
-            SystemManager.SyncDatabase();
+            if (configInfo.RestoreConfig.SyncDatabase)
+            {
+                SystemManager.SyncDatabase();
+            }
 
             CliUtils.LogErrors(CommandName, logs);
 

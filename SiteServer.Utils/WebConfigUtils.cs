@@ -143,6 +143,13 @@ namespace SiteServer.Utils
             }
         }
 
+        public static void Load(string physicalApplicationPath, string databaseType, string connectionString)
+        {
+            PhysicalApplicationPath = physicalApplicationPath;
+            DatabaseType = DatabaseTypeUtils.GetEnumType(databaseType);
+            ConnectionString = SqlUtils.GetConnectionString(DatabaseType, connectionString);
+        }
+
         public static void ResetWebConfig()
         {
             var configPath = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
