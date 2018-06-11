@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages
                     provider.TableColumns.Count == 0) continue;
 
                 builder.Append($@"{provider.TableName}<br /><br />
-字段  | 数据类型  | 数据大小  | 说明<br />
+字段  | 数据类型  | 数据大小  | 说明3<br />
 ------  | ------  | ------  | ------<br />
 ");
                 foreach (var column in provider.TableColumns)

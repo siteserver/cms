@@ -369,7 +369,7 @@ namespace SiteServer.CMS.Provider
 
                     columnExists = true;
 
-                    if (metadataInfo.DataType != columnInfo.DataType || metadataInfo.DataType == DataType.VarChar && metadataInfo.DataLength != columnInfo.DataLength)
+                    if (metadataInfo.DataType != columnInfo.DataType)
                     {
                         var dropColumnsSqlList = DataProvider.DatabaseDao.GetDropColumnsSqlString(tableName, metadataInfo.AttributeName);
                         foreach (var sql in dropColumnsSqlList)

@@ -171,8 +171,8 @@ namespace SiteServer.BackgroundPages.Core
 
             //if (isComment)
             //{
-            //    //var urlComment = PageComment.GetRedirectUrl(siteInfo.SiteId, contentInfo.ChannelId, contentInfo.Id, pageUrl);
-            //    var urlComment = PageComments.GetRedirectUrl(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl);
+            //    //var urlComment = PageComment.GetPageUrl(siteInfo.SiteId, contentInfo.ChannelId, contentInfo.Id, pageUrl);
+            //    var urlComment = PageComments.GetPageUrl(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl);
             //    builder.Append(
             //        $@"<a style=""margin:0 5px"" href=""{urlComment}"">评论<span style=""color:gray"">({contentInfo
             //            .Comments})</span></a>");
@@ -225,7 +225,7 @@ namespace SiteServer.BackgroundPages.Core
 
         //    //if (modelType == EContentModelType.Photo)
         //    //{
-        //    //    var contentPhotoUploadUrl = PageContentPhotoUpload.GetRedirectUrl(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl);
+        //    //    var contentPhotoUploadUrl = PageContentPhotoUpload.GetPageUrl(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl);
         //    //    builder.Append(
         //    //        $@"<td class=""center"" width=""50""><a href=""{contentPhotoUploadUrl}"">图片</a><span style=""color:gray"">({contentInfo
         //    //            .Photos})</span></td>");
@@ -233,7 +233,7 @@ namespace SiteServer.BackgroundPages.Core
         //    //else if (modelType == EContentModelType.Job)
         //    //{
         //    //    var resumeNum = DataProvider.ResumeContentDao.GetCount(siteInfo.Id, contentInfo.Id);
-        //    //    var urlResume = PageResumeContent.GetRedirectUrl(siteInfo.Id, contentInfo.Id, StringUtils.ValueToUrl(pageUrl));;
+        //    //    var urlResume = PageResumeContent.GetPageUrl(siteInfo.Id, contentInfo.Id, StringUtils.ValueToUrl(pageUrl));;
         //    //    builder.Append(
         //    //        $@"<td class=""center"" width=""50""><a href=""{urlResume}"">简历</a><span style=""color:gray"">({resumeNum})</span></td>");
         //    //}
@@ -242,8 +242,8 @@ namespace SiteServer.BackgroundPages.Core
         //    {
         //        if (AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, contentInfo.ChannelId, ConfigManager.Permissions.Channel.CommentCheck, ConfigManager.Permissions.Channel.CommentDelete))
         //        {
-        //            //var urlComment = PageComment.GetRedirectUrl(siteInfo.SiteId, contentInfo.ChannelId, contentInfo.Id, pageUrl);
-        //            var urlComment = PageComments.GetRedirectUrl(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl);
+        //            //var urlComment = PageComment.GetPageUrl(siteInfo.SiteId, contentInfo.ChannelId, contentInfo.Id, pageUrl);
+        //            var urlComment = PageComments.GetPageUrl(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl);
         //            builder.Append(
         //                $@"<td class=""center"" width=""50""><a href=""{urlComment}"">评论</a><span style=""color:gray"">({contentInfo
         //                    .Comments})</span></td>");

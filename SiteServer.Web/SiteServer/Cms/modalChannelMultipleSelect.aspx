@@ -23,7 +23,7 @@
           </div>
         </asp:PlaceHolder>
 
-        <table class="table tablesaw table-hover m-0">
+        <table class="table table-tree tablesaw table-hover m-0">
           <thead>
             <tr class="thead">
               <th>
@@ -36,7 +36,7 @@
               <td>
                 <img align="absmiddle" style="cursor:pointer" onClick="displayChildren(this);" isAjax="false" isOpen="true" src="../assets/icons/tree/minus.png"
                 />
-                <img align="absmiddle" border="0" src="../assets/icons/tree/folder.gif" />
+                <i class="ion-ios-home"></i>
                 <asp:Literal ID="LtlChannelName" runat="server"></asp:Literal>
               </td>
             </tr>

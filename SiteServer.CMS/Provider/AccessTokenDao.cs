@@ -36,6 +36,12 @@ namespace SiteServer.CMS.Provider
             },
             new TableColumn
             {
+                AttributeName = nameof(AccessTokenInfo.AdminName),
+                DataType = DataType.VarChar,
+                DataLength = 200
+            },
+            new TableColumn
+            {
                 AttributeName = nameof(AccessTokenInfo.Scopes),
                 DataType = DataType.VarChar,
                 DataLength = 200
@@ -64,6 +70,7 @@ namespace SiteServer.CMS.Provider
             var sqlString = $@"INSERT INTO {TableName}
            ({nameof(AccessTokenInfo.Title)}, 
             {nameof(AccessTokenInfo.Token)},
+            {nameof(AccessTokenInfo.AdminName)},
             {nameof(AccessTokenInfo.Scopes)},
             {nameof(AccessTokenInfo.RateLimit)},
             {nameof(AccessTokenInfo.AddDate)},
@@ -71,6 +78,7 @@ namespace SiteServer.CMS.Provider
      VALUES
            (@{nameof(AccessTokenInfo.Title)}, 
             @{nameof(AccessTokenInfo.Token)},
+            @{nameof(AccessTokenInfo.AdminName)},
             @{nameof(AccessTokenInfo.Scopes)},
             @{nameof(AccessTokenInfo.RateLimit)},
             @{nameof(AccessTokenInfo.AddDate)},
@@ -80,6 +88,7 @@ namespace SiteServer.CMS.Provider
             {
                 GetParameter(nameof(accessTokenInfo.Title), DataType.VarChar, 200, accessTokenInfo.Title),
                 GetParameter(nameof(accessTokenInfo.Token), DataType.VarChar, 200, token),
+                GetParameter(nameof(accessTokenInfo.AdminName), DataType.VarChar, 200, accessTokenInfo.AdminName),
                 GetParameter(nameof(accessTokenInfo.Scopes), DataType.VarChar, 200, accessTokenInfo.Scopes),
                 GetParameter(nameof(accessTokenInfo.RateLimit), DataType.Integer, accessTokenInfo.RateLimit),
                 GetParameter(nameof(accessTokenInfo.AddDate), DataType.DateTime, DateTime.Now),
@@ -95,6 +104,7 @@ namespace SiteServer.CMS.Provider
         {
             var sqlString = $@"UPDATE {TableName} SET
                 {nameof(AccessTokenInfo.Title)} = @{nameof(AccessTokenInfo.Title)}, 
+                {nameof(AccessTokenInfo.AdminName)} = @{nameof(AccessTokenInfo.AdminName)},
                 {nameof(AccessTokenInfo.Scopes)} = @{nameof(AccessTokenInfo.Scopes)},
                 {nameof(AccessTokenInfo.RateLimit)} = @{nameof(AccessTokenInfo.RateLimit)},
                 {nameof(AccessTokenInfo.UpdatedDate)} = @{nameof(AccessTokenInfo.UpdatedDate)}
@@ -103,6 +113,7 @@ namespace SiteServer.CMS.Provider
             IDataParameter[] parameters =
             {
                 GetParameter(nameof(accessTokenInfo.Title), DataType.VarChar, 200, accessTokenInfo.Title),
+                GetParameter(nameof(accessTokenInfo.AdminName), DataType.VarChar, 200, accessTokenInfo.AdminName),
                 GetParameter(nameof(accessTokenInfo.Scopes), DataType.VarChar, 200, accessTokenInfo.Scopes),
                 GetParameter(nameof(accessTokenInfo.RateLimit), DataType.VarChar, 200, accessTokenInfo.RateLimit),
                 GetParameter(nameof(accessTokenInfo.UpdatedDate), DataType.DateTime, DateTime.Now),
@@ -177,6 +188,7 @@ namespace SiteServer.CMS.Provider
             var sqlString = $@"SELECT {nameof(AccessTokenInfo.Id)}, 
                 {nameof(AccessTokenInfo.Title)}, 
                 {nameof(AccessTokenInfo.Token)},
+                {nameof(AccessTokenInfo.AdminName)},
                 {nameof(AccessTokenInfo.Scopes)},
                 {nameof(AccessTokenInfo.RateLimit)},
                 {nameof(AccessTokenInfo.AddDate)},
@@ -202,6 +214,7 @@ namespace SiteServer.CMS.Provider
             var sqlString = $@"SELECT {nameof(AccessTokenInfo.Id)}, 
                 {nameof(AccessTokenInfo.Title)}, 
                 {nameof(AccessTokenInfo.Token)},
+                {nameof(AccessTokenInfo.AdminName)},
                 {nameof(AccessTokenInfo.Scopes)},
                 {nameof(AccessTokenInfo.RateLimit)},
                 {nameof(AccessTokenInfo.AddDate)},
@@ -227,6 +240,7 @@ namespace SiteServer.CMS.Provider
             var sqlString = $@"SELECT {nameof(AccessTokenInfo.Id)}, 
             {nameof(AccessTokenInfo.Title)}, 
             {nameof(AccessTokenInfo.Token)},
+            {nameof(AccessTokenInfo.AdminName)},
             {nameof(AccessTokenInfo.Scopes)},
             {nameof(AccessTokenInfo.RateLimit)},
             {nameof(AccessTokenInfo.AddDate)},
@@ -262,6 +276,8 @@ namespace SiteServer.CMS.Provider
             accessTokenInfo.Title = rdr.IsDBNull(i) ? string.Empty : rdr.GetString(i);
             i++;
             accessTokenInfo.Token = rdr.IsDBNull(i) ? string.Empty : rdr.GetString(i);
+            i++;
+            accessTokenInfo.AdminName = rdr.IsDBNull(i) ? string.Empty : rdr.GetString(i);
             i++;
             accessTokenInfo.Scopes = rdr.IsDBNull(i) ? string.Empty : rdr.GetString(i);
             i++;

@@ -10,6 +10,8 @@ namespace SiteServer.CMS.Model
 
         public string Token { get; set; }
 
+        public string AdminName { get; set; }
+
         public string Scopes { get; set; }
 
         public int RateLimit { get; set; }

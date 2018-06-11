@@ -305,7 +305,7 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     retval = $@"
-<embed src=""{SiteFilesAssets.GetUrl(ApiManager.OuterApiUrl, SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
+<embed src=""{SiteFilesAssets.GetUrl(ApiManager.ApiUrl, SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
                         .ToString().ToLower()}&image={string.Empty}&file={videoUrl}"" width=""{450}"" height=""{350}""/>
 ";
                 }
@@ -320,13 +320,13 @@ namespace SiteServer.CMS.Core
             {
                 if (isStlEntity)
                 {
-                    retval = ApiRouteActionsDownload.GetUrl(ApiManager.OuterApiUrl, siteInfo.Id, channelId, contentId, fileUrl);
+                    retval = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, channelId, contentId, fileUrl);
                 }
                 else
                 {
                     var stlAnchor = new HtmlAnchor();
                     ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                    stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.OuterApiUrl, siteInfo.Id, channelId, contentId, fileUrl);
+                    stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, channelId, contentId, fileUrl);
                     stlAnchor.InnerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
 
                     retval = ControlUtils.GetControlRenderHtml(stlAnchor);
@@ -344,13 +344,13 @@ namespace SiteServer.CMS.Core
                 {
                     if (isStlEntity)
                     {
-                        retval = ApiRouteActionsDownload.GetUrl(ApiManager.OuterApiUrl, siteInfo.Id, fileUrl);
+                        retval = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, fileUrl);
                     }
                     else
                     {
                         var stlAnchor = new HtmlAnchor();
                         ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                        stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.OuterApiUrl, siteInfo.Id, fileUrl);
+                        stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, fileUrl);
                         stlAnchor.InnerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
 
                         retval = ControlUtils.GetControlRenderHtml(stlAnchor);

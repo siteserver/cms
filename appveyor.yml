@@ -33,10 +33,10 @@
     - node_modules                        # local npm modules
 
   before_build:
-    - nuget restore siteserver.sln
+    - nuget restore siteserver-all.sln
 
   build:
-    project: siteserver.sln       # path to Visual Studio solution or project
+    project: siteserver-all.sln       # path to Visual Studio solution or project
     publish_nuget: true
 
   after_build:
@@ -114,10 +114,10 @@
     - node_modules                        # local npm modules
 
   before_build:
-    - nuget restore siteserver.sln
+    - nuget restore siteserver-all.sln
 
   build:
-    project: siteserver.sln       # path to Visual Studio solution or project
+    project: siteserver-all.sln       # path to Visual Studio solution or project
     publish_nuget: true
 
   after_build:

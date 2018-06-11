@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Net;
+using System.Net.Http;
 using System.Web.Http;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
@@ -12,7 +14,7 @@ namespace SiteServer.API.Controllers.V1
     [RoutePrefix("api")]
     public class UsersController : ApiController
     {
-        [HttpGet, Route(ApiUsersRoute.Route)]
+        [HttpGet, Route(ApiUsersRoute.UsersRoute)]
         public IHttpActionResult GetUsers()
         {
             try
@@ -54,8 +56,61 @@ namespace SiteServer.API.Controllers.V1
             }
         }
 
-        [HttpPost, Route(ApiUsersRoute.Route)]
-        public IHttpActionResult PostRegister(UserInfo userInfo)
+        [HttpGet, Route(ApiUsersRoute.UserRoute)]
+        public IHttpActionResult GetUser(int id)
+        {
+            try
+            {
+                var oRequest = new ORequest();
+
+                if (!oRequest.IsAuthorized(AccessTokenManager.ScopeUsers))
+                {
+                    return Unauthorized();
+                }
+
+                var user = DataProvider.UserDao.ApiGetUser(id);
+                var oResponse = new OResponse(user);
+
+                return Ok(oResponse);
+            }
+            catch (Exception ex)
+            {
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpPut, Route(ApiUsersRoute.UserRoute)]
+        public HttpResponseMessage UpdateUser(int id, [FromBody] UserInfo userInfo)
+        {
+            try
+            {
+                var oRequest = new ORequest();
+
+                if (!oRequest.IsAuthorized(AccessTokenManager.ScopeUsers))
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "Unauthorized");
+                }
+
+                if (userInfo == null) return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Could not read user from body");
+
+                if (!DataProvider.UserDao.ApiIsExists(id)) return Request.CreateResponse(HttpStatusCode.NoContent, "User is not found");
+
+                DataProvider.UserDao.ApiUpdateUser(id, userInfo);
+
+                var oResponse = new OResponse(userInfo);
+
+                return Request.CreateResponse(oResponse);
+            }
+            catch (Exception ex)
+            {
+                LogUtils.AddErrorLog(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+        [HttpPost, Route(ApiUsersRoute.UsersRoute)]
+        public IHttpActionResult PostRegister([FromBody] UserInfo userInfo)
         {
             try
             {
@@ -82,7 +137,7 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPost, Route(ApiUsersRoute.ActionsLoginRoute)]
-        public IHttpActionResult ActionsLogin(ApiUsersRoute.ActionsLoginBody body)
+        public IHttpActionResult ActionsLogin([FromBody] ApiUsersRoute.ActionsLoginBody body)
         {
             try
             {

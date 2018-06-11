@@ -36,7 +36,7 @@ namespace SiteServer.CMS.Plugin.Apis
                 return PageUtils.GetAdminDirectoryUrl(relatedUrl.Substring(1));
             }
 
-            return PageUtility.GetSiteFilesUrl(ApiManager.OuterApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
+            return PageUtility.GetSiteFilesUrl(ApiManager.ApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
         }
 
         public string GetPluginApiUrl(string action = "", string id = "")

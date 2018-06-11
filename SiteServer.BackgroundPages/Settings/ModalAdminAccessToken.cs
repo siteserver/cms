@@ -6,9 +6,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class ModalUtilityAccessToken : BasePage
+	public class ModalAdminAccessToken : BasePage
 	{
-		public Literal LtlTitle;
+	    public static readonly string PageUrl = PageUtils.GetSettingsUrl(nameof(ModalAdminAccessToken));
+
+        public Literal LtlTitle;
 		public Literal LtlToken;
 	    public Literal LtlAddDate;
 	    public Literal LtlUpdatedDate;
@@ -17,7 +19,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowString(int id)
         {
-            return LayerUtils.GetOpenScript("Access Token", PageUtils.GetSettingsUrl(nameof(ModalUtilityAccessToken), new NameValueCollection
+            return LayerUtils.GetOpenScript("获取密钥", PageUtils.GetSettingsUrl(nameof(ModalAdminAccessToken), new NameValueCollection
             {
                 {"id", id.ToString()}
             }), 0, 420);
