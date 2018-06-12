@@ -45,6 +45,9 @@
             <li class="nav-item">
               <a class="nav-link" href="pageAdminArea.aspx">所在区域管理</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pageAdminAccessTokens.cshtml">API密钥管理</a>
+            </li>
           </ul>
         </div>
 
@@ -86,8 +89,8 @@
               </div>
 
               <small class="form-text text-muted">
-                  从下边选择需要管理的栏目，所选栏目下的所有子栏目都属于可管理范围
-                </small>
+                从下边选择需要管理的栏目，所选栏目下的所有子栏目都属于可管理范围
+              </small>
 
               <div class="m-3">
                 <asp:Literal ID="LtlNodeTree" runat="server"></asp:Literal>

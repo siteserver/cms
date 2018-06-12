@@ -871,9 +871,19 @@ namespace SiteServer.Utils
             return GetSiteFilesUrl(Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, url));
         }
 
+        public static string GetSiteServerUrl(string className)
+        {
+            return GetAdminDirectoryUrl(className.ToCamelCase() + ".cshtml");
+        }
+
         public static string GetSiteServerUrl(string className, NameValueCollection queryString)
         {
             return AddQueryString(GetAdminDirectoryUrl(className.ToLower() + ".aspx"), queryString);
+        }
+
+        public static string GetPluginsUrl(string className)
+        {
+            return GetAdminDirectoryUrl(Combine("plugins", className.ToCamelCase() + ".cshtml"));
         }
 
         public static string GetPluginsUrl(string className, NameValueCollection queryString)
@@ -881,9 +891,19 @@ namespace SiteServer.Utils
             return AddQueryString(GetAdminDirectoryUrl(Combine("plugins", className.ToLower() + ".aspx")), queryString);
         }
 
+        public static string GetSettingsUrl(string className)
+        {
+            return GetAdminDirectoryUrl(Combine("settings", className.ToCamelCase() + ".cshtml"));
+        }
+
         public static string GetSettingsUrl(string className, NameValueCollection queryString)
         {
             return AddQueryString(GetAdminDirectoryUrl(Combine("settings", className.ToLower() + ".aspx")), queryString);
+        }
+
+        public static string GetCmsUrl(string className)
+        {
+            return GetAdminDirectoryUrl(Combine("cms", className.ToCamelCase() + ".cshtml"));
         }
 
         public static string GetCmsUrl(int siteId, string className, NameValueCollection queryString)

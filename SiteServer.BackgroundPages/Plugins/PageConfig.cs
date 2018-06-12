@@ -19,7 +19,7 @@
 
     //    private string _pluginId;
 
-    //    public static string GetRedirectUrl(string pluginId)
+    //    public static string GetPageUrl(string pluginId)
     //    {
     //        return PageUtils.GetPluginsUrl(nameof(PageConfig), new NameValueCollection
     //        {
@@ -196,7 +196,7 @@
 
     //    public void Return_OnClick(object sender, EventArgs e)
     //    {
-    //        PageUtils.Redirect(PageManagement.GetRedirectUrl());
+    //        PageUtils.Redirect(PageManagement.GetPageUrl());
     //    }
     //}
 }

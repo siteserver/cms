@@ -12,6 +12,7 @@ using SiteServer.Utils.Auth;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
+using Dapper.Contrib.Extensions;
 
 namespace SiteServer.CMS.Provider
 {
@@ -1451,9 +1452,40 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
         {
             var sqlString =
                 DataProvider.DatabaseDao.GetPageSqlString(TableName, "*", string.Empty, "ORDER BY Id", offset, limit);
+
             using (var connection = GetConnection())
             {
                 return connection.Query<UserInfo>(sqlString).ToList();
+            }
+        }
+
+        public UserInfo ApiGetUser(int id)
+        {
+            var sqlString = $"SELECT * FROM {TableName} WHERE Id = @Id";
+
+            using (var connection = GetConnection())
+            {
+                return connection.QuerySingleOrDefault<UserInfo>(sqlString, new { Id = id });
+            }
+        }
+
+        public bool ApiIsExists(int id)
+        {
+            var sqlString = $"SELECT count(1) FROM {TableName} WHERE Id = @Id";
+
+            using (var connection = GetConnection())
+            {
+                return connection.ExecuteScalar<bool>(sqlString, new { Id = id });
+            }
+        }
+
+        public void ApiUpdateUser(int id, UserInfo userInfo)
+        {
+            userInfo.Id = id;
+
+            using (var connection = GetConnection())
+            {
+                connection.Update(userInfo);
             }
         }
 
@@ -1471,11 +1503,11 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
                 userInfo.LastActivityDate = DateTime.Now;
                 userInfo.LastResetPasswordDate = DateUtils.SqlMinValue;
 
-                const string sqlString = "INSERT INTO siteserver_User (UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreateDate, @LastResetPasswordDate, @LastActivityDate, @CountOfLogin, @CountOfFailedLogin, @CountOfWriting, @IsChecked, @IsLockedOut, @DisplayName, @Email, @Mobile, @AvatarUrl, @Organization, @Department, @Position, @Gender, @Birthday, @Education, @Graduation, @Address, @WeiXin, @QQ, @WeiBo, @Interests, @Signature)";
+                //const string sqlString = "INSERT INTO siteserver_User (UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreateDate, @LastResetPasswordDate, @LastActivityDate, @CountOfLogin, @CountOfFailedLogin, @CountOfWriting, @IsChecked, @IsLockedOut, @DisplayName, @Email, @Mobile, @AvatarUrl, @Organization, @Department, @Position, @Gender, @Birthday, @Education, @Graduation, @Address, @WeiXin, @QQ, @WeiBo, @Interests, @Signature)";
 
                 using (var connection = GetConnection())
                 {
-                    connection.Execute(sqlString, userInfo);
+                    connection.Insert(userInfo);
                 }
 
                 IpAddressCache(ipAddress);

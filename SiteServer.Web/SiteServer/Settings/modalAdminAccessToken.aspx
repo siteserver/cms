@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.ModalUtilityAccessToken" %>
+﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.ModalAdminAccessToken" %>
   <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html class="modalPage">
@@ -21,12 +21,12 @@
         </div>
 
         <div class="form-group form-row">
-          <label class="col-3 text-right col-form-label">Token</label>
+          <label class="col-3 text-right col-form-label">API密钥</label>
           <div class="col-5 form-control-plaintext">
             <code style="font-size: 16px"><asp:Literal id="LtlToken" runat="server" /></code>
           </div>
           <div class="col-4 help-block">
-            <asp:Button id="BtnRegenerate" class="btn btn-success m-l-5" text="重设 Token" runat="server" onClick="Regenerate_OnClick"
+            <asp:Button id="BtnRegenerate" class="btn btn-success m-l-5" text="重 设" runat="server" onClick="Regenerate_OnClick"
             />
           </div>
         </div>

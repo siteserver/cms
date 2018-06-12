@@ -24,11 +24,11 @@ namespace SiteServer.CMS.Api
             return PageUtils.Combine(InnerApiUrl, route);
         }
 
-        public static string OuterApiUrl => ConfigManager.SystemConfigInfo.ApiUrl;
+        public static string ApiUrl => ConfigManager.SystemConfigInfo.ApiUrl;
 
-        public static string GetOuterApiUrl(string route)
+        public static string GetApiUrl(string route)
         {
-            return PageUtils.Combine(OuterApiUrl, route);
+            return PageUtils.Combine(ApiUrl, route);
         }
 
         public static string SignalrHubsUrl => PageUtils.ParseNavigationUrl("~/signalr/hubs");

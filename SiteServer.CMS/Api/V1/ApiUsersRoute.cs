@@ -2,7 +2,8 @@
 {
     public static class ApiUsersRoute
     {
-        public const string Route = "v1/users";
+        public const string UsersRoute = "v1/users";
+        public const string UserRoute = "v1/users/{id}";
         public const string ActionsLoginRoute = "v1/users/actions/login";
 
         public class ActionsLoginBody

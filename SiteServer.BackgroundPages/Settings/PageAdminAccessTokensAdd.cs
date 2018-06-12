@@ -7,23 +7,25 @@ using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-    public class PageUtilityAccessTokensAdd : BasePage
+    public class PageAdminAccessTokensAdd : BasePage
     {
+        public static readonly string PageUrl = PageUtils.GetSettingsUrl(nameof(PageAdminAccessTokensAdd));
+
         public Literal LtlPageTitle;
         public TextBox TbTitle;
-
+        public DropDownList DdlAdministrators;
         public CheckBoxList CblScopes;
 
         private int _id;
 
         public static string GetRedirectUrlToAdd()
         {
-            return PageUtils.GetSettingsUrl(nameof(PageUtilityAccessTokensAdd), null);
+            return PageUtils.GetSettingsUrl(nameof(PageAdminAccessTokensAdd), null);
         }
 
         public static string GetRedirectUrlToEdit(int id)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageUtilityAccessTokensAdd), new NameValueCollection
+            return PageUtils.GetSettingsUrl(nameof(PageAdminAccessTokensAdd), new NameValueCollection
             {
                 {"id", id.ToString()}
             });
@@ -37,9 +39,25 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Utility);
+            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Admin);
 
             LtlPageTitle.Text = _id > 0 ? "修改API密钥" : "新增API密钥";
+
+            if (AuthRequest.AdminPermissions.IsConsoleAdministrator)
+            {
+                var userNameList = DataProvider.AdministratorDao.GetUserNameList();
+
+                foreach (var userName in userNameList)
+                {
+                    DdlAdministrators.Items.Add(new ListItem(userName, userName));
+                }
+
+                ControlUtils.SelectSingleItem(DdlAdministrators, AuthRequest.AdminName);
+            }
+            else
+            {
+                DdlAdministrators.Items.Add(new ListItem(AuthRequest.AdminName, AuthRequest.AdminName));
+            }
 
             foreach (var scope in AccessTokenManager.ScopeList)
             {
@@ -51,6 +69,8 @@ namespace SiteServer.BackgroundPages.Settings
                 var tokenInfo = DataProvider.AccessTokenDao.GetAccessTokenInfo(_id);
 
                 TbTitle.Text = tokenInfo.Title;
+
+                ControlUtils.SelectSingleItem(DdlAdministrators, tokenInfo.AdminName);
 
                 var scopes = TranslateUtils.StringCollectionToStringList(tokenInfo.Scopes);
                 ControlUtils.SelectMultiItemsIgnoreCase(CblScopes, scopes);
@@ -73,8 +93,9 @@ namespace SiteServer.BackgroundPages.Settings
 
                 tokenInfo.Title = TbTitle.Text;
 
-                var scopes = ControlUtils.GetSelectedListControlValueStringList(CblScopes);
+                tokenInfo.AdminName = DdlAdministrators.SelectedValue;
 
+                var scopes = ControlUtils.GetSelectedListControlValueStringList(CblScopes);
                 tokenInfo.Scopes = TranslateUtils.ObjectCollectionToString(scopes);
 
                 DataProvider.AccessTokenDao.Update(tokenInfo);
@@ -82,7 +103,7 @@ namespace SiteServer.BackgroundPages.Settings
                 AuthRequest.AddAdminLog("修改API密钥", $"Access Token:{tokenInfo.Title}");
 
                 SuccessMessage("API密钥修改成功！");
-                AddWaitAndRedirectScript(PageUtilityAccessTokens.GetRedirectUrl());
+                //AddWaitAndRedirectScript(PageAdminAccessTokens.PageUrl);
             }
             else
             {
@@ -97,6 +118,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var tokenInfo = new AccessTokenInfo
                 {
                     Title = TbTitle.Text,
+                    AdminName = DdlAdministrators.SelectedValue,
                     Scopes = TranslateUtils.ObjectCollectionToString(scopes)
                 };
 
@@ -105,13 +127,13 @@ namespace SiteServer.BackgroundPages.Settings
                 AuthRequest.AddAdminLog("新增API密钥", $"Access Token:{tokenInfo.Title}");
 
                 SuccessMessage("API密钥新增成功！");
-                AddWaitAndRedirectScript(PageUtilityAccessTokens.GetRedirectUrl());
+                //AddWaitAndRedirectScript(PageAdminAccessTokens.PageUrl);
             }
         }
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUtilityAccessTokens.GetRedirectUrl());
+            //PageUtils.Redirect(PageAdminAccessTokens.PageUrl);
         }
     }
 }
