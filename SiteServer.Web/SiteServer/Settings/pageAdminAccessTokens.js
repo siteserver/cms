@@ -30,7 +30,9 @@ var $vue = new Vue({
       if (this.adminNames) return;
       var $this = this;
 
+      pageUtils.loading(true);
       new apiUtils.Api($apiUrl + '/settings/admin/accessTokens/action/getAdminNames').get(null, function (err, res) {
+        pageUtils.loading(false);
         if (err || !res || !res.value) return;
 
         $this.adminNames = res.value;
@@ -39,7 +41,9 @@ var $vue = new Vue({
     getAccessToken: function (item) {
       var $this = this;
 
+      pageUtils.loading(true);
       new apiUtils.Api($apiUrl + '/settings/admin/accessTokens/action/getAccessToken/' + item.id).get(null, function (err, res) {
+        pageUtils.loading(false);
         if (err || !res || !res.value) return;
 
         item.accessToken = res.value;
@@ -55,7 +59,9 @@ var $vue = new Vue({
     delete: function (item) {
       var $this = this;
 
+      pageUtils.loading(true);
       api.delete({ id: item.id }, function (err, res) {
+        pageUtils.loading(false);
         if (err || !res || !res.value) return;
 
         $this.items = res.value;
@@ -66,7 +72,9 @@ var $vue = new Vue({
 
       this.item.scopes = this.item.scopes ? this.item.scopes.join(',') : '';
 
+      pageUtils.loading(true);
       api.post(item, function (err, res) {
+        pageUtils.loading(false);
         if (err) {
           $this.pageAlert = {
             type: 'danger',
@@ -87,7 +95,9 @@ var $vue = new Vue({
     regenerate: function (item) {
       var $this = this;
 
+      pageUtils.loading(true);
       new apiUtils.Api($apiUrl + '/settings/admin/accessTokens/action/regenerate/' + item.id).post(null, function (err, res) {
+        pageUtils.loading(false);
         if (err || !res || !res.value) return;
 
         $this.pageType = 'view';

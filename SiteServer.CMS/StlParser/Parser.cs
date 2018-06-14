@@ -76,15 +76,6 @@ namespace SiteServer.CMS.StlParser
                     StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);
                 }
 
-                if (pageInfo.PageContentId > 0 && pageInfo.SiteInfo.Additional.IsCountHits && !pageInfo.BodyCodes.ContainsKey(PageInfo.Const.JsAdStlCountHits))
-                {
-                    if (!pageInfo.FootCodes.ContainsKey(PageInfo.Const.JsAdStlCountHits))
-                    {
-                        pageInfo.FootCodes.Add(PageInfo.Const.JsAdStlCountHits, $@"
-<script src=""{ApiRouteActionsAddContentHits.GetUrl(pageInfo.ApiUrl, pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.PageContentId)}"" type=""text/javascript""></script>");
-                    }
-                }
-
                 var isShowPageInfo = pageInfo.SiteInfo.Additional.IsCreateShowPageInfo;
 
                 if (!pageInfo.IsLocal)

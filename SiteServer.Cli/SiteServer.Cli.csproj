@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\BackupManager.cs" />
+    <Compile Include="Commands\TestManager.cs" />
     <Compile Include="Commands\VersionManager.cs" />
     <Compile Include="Commands\UpdateManager.cs" />
     <Compile Include="Commands\RestoreManager.cs" />
@@ -100,7 +101,6 @@
     <Compile Include="Updater\Model36\TableDbCache.cs" />
     <Compile Include="Updater\Model36\TableConfig.cs" />
     <Compile Include="Updater\Model36\TableContentCheck.cs" />
-    <Compile Include="Updater\Model36\TableCount.cs" />
     <Compile Include="Updater\Model36\TableDepartment.cs" />
     <Compile Include="Updater\Model36\TableErrorLog.cs" />
     <Compile Include="Updater\Model36\TableLog.cs" />
@@ -123,7 +123,6 @@
     <Compile Include="Updater\Model41\TableContent.cs" />
     <Compile Include="Updater\Model41\TableContentCheck.cs" />
     <Compile Include="Updater\Model41\TableContentGroup.cs" />
-    <Compile Include="Updater\Model41\TableCount.cs" />
     <Compile Include="Updater\Model41\TableDbCache.cs" />
     <Compile Include="Updater\Model41\TableDepartment.cs" />
     <Compile Include="Updater\Model41\TableErrorLog.cs" />
@@ -155,7 +154,6 @@
     <Compile Include="Updater\Model50\TableContent.cs" />
     <Compile Include="Updater\Model50\TableContentCheck.cs" />
     <Compile Include="Updater\Model50\TableContentGroup.cs" />
-    <Compile Include="Updater\Model50\TableCount.cs" />
     <Compile Include="Updater\Model50\TableDbCache.cs" />
     <Compile Include="Updater\Model50\TableDepartment.cs" />
     <Compile Include="Updater\Model50\TableErrorLog.cs" />
@@ -187,7 +185,6 @@
     <Compile Include="Updater\Model40\TableContent.cs" />
     <Compile Include="Updater\Model40\TableContentCheck.cs" />
     <Compile Include="Updater\Model40\TableContentGroup.cs" />
-    <Compile Include="Updater\Model40\TableCount.cs" />
     <Compile Include="Updater\Model40\TableDbCache.cs" />
     <Compile Include="Updater\Model40\TableDepartment.cs" />
     <Compile Include="Updater\Model40\TableErrorLog.cs" />

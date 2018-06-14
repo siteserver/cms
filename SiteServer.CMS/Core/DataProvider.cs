@@ -66,9 +66,6 @@ namespace SiteServer.CMS.Core
         private static ContentGroupDao _contentGroupDao;
         public static ContentGroupDao ContentGroupDao => _contentGroupDao ?? (_contentGroupDao = new ContentGroupDao());
 
-        private static CountDao _countDao;
-        public static CountDao CountDao => _countDao ?? (_countDao = new CountDao());
-
         private static DatabaseDao _databaseDao;
         public static DatabaseDao DatabaseDao => _databaseDao ?? (_databaseDao = new DatabaseDao());
 
@@ -164,7 +161,6 @@ namespace SiteServer.CMS.Core
             _contentCheckDao = null;
             _contentDao = null;
             _contentGroupDao = null;
-            _countDao = null;
             _databaseDao = null;
             _dbCacheDao = null;
             _departmentDao = null;
@@ -206,7 +202,6 @@ namespace SiteServer.CMS.Core
             ContentCheckDao,
             ContentDao,
             ContentGroupDao,
-            CountDao,
             DatabaseDao,
             DbCacheDao,
             DepartmentDao,

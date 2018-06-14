@@ -15,12 +15,18 @@ namespace SiteServer.Cli.Commands
         private static bool _isHelp;
         private static string _directory;
         private static string _configFileName;
+        private static string _databaseType;
+        private static string _connectionString;
 
         private static readonly OptionSet Options = new OptionSet() {
-            { "c|config=", "the {cli.json} file name.",
+            { "c|config=", "the {cli.json} file name or {web.config} file name.",
                 v => _configFileName = v },
             { "d|directory=", "the backup {directory} name.",
                 v => _directory = v },
+            { "database=", "the database type.",
+                v => _databaseType = v },
+            { "connection=", "the connection string.",
+                v => _connectionString = v },
             { "h|help",  "show this message and exit",
                 v => _isHelp = v != null }
         };
@@ -44,17 +50,25 @@ namespace SiteServer.Cli.Commands
 
             if (string.IsNullOrEmpty(_directory))
             {
-                CliUtils.PrintError("Error, the backup {directory} name is empty");
-                return;
+                _directory = $"backup/{DateTime.Now:yyyy-MM-dd}";
             }
 
             var treeInfo = new TreeInfo(_directory);
             DirectoryUtils.CreateDirectoryIfNotExists(treeInfo.DirectoryPath);
 
-            var configInfo = CliUtils.LoadConfig(_configFileName);
+            ConfigInfo configInfo;
+            if (!string.IsNullOrEmpty(_databaseType) && !string.IsNullOrEmpty(_connectionString))
+            {
+                configInfo = CliUtils.LoadConfigByArgs(_databaseType, _connectionString);
+            }
+            else
+            {
+                configInfo = CliUtils.LoadConfigByFile(_configFileName);
+            }
+            
             if (configInfo == null)
             {
-                CliUtils.PrintError("Error, config file cli.json not exists");
+                CliUtils.PrintError("Error, config not exists");
                 return;
             }
 

@@ -1479,13 +1479,18 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
             }
         }
 
-        public void ApiUpdateUser(int id, UserInfo userInfo)
+        public void ApiUpdateUser(int id, UserInfo userInfoToUpdate)
         {
-            userInfo.Id = id;
+            var userInfo = ApiGetUser(id);
+
+            userInfoToUpdate.PasswordFormat = userInfo.PasswordFormat;
+            userInfoToUpdate.Password = userInfo.Password;
+            userInfoToUpdate.PasswordSalt = userInfo.PasswordSalt;
+            userInfoToUpdate.CreateDate = userInfo.CreateDate;
 
             using (var connection = GetConnection())
             {
-                connection.Update(userInfo);
+                connection.Update(userInfoToUpdate);
             }
         }
 

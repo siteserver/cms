@@ -10,7 +10,9 @@ namespace SiteServer.API.Controllers.V1
     [RoutePrefix("api")]
     public class StlController : ApiController
     {
-        [HttpGet, Route(ApiStlRoute.Route)]
+        private const string Route = "v1/stl/{elementName}";
+
+        [HttpGet, Route(Route)]
         public IHttpActionResult Get(string elementName)
         {
             try

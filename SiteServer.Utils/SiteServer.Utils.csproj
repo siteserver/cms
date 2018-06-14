@@ -105,7 +105,6 @@
     <Compile Include="DirectoryUtils.cs" />
     <Compile Include="Enumerations\EBoolean.cs" />
     <Compile Include="Enumerations\ECharset.cs" />
-    <Compile Include="Enumerations\ECountType.cs" />
     <Compile Include="Enumerations\EDataFormat.cs" />
     <Compile Include="Enumerations\EDateFormatType.cs" />
     <Compile Include="Enumerations\EDiggType.cs" />

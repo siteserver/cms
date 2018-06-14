@@ -16,12 +16,18 @@ namespace SiteServer.Cli.Commands
         private static bool _isHelp;
         private static string _directory;
         private static string _configFileName;
+        private static string _databaseType;
+        private static string _connectionString;
 
         private static readonly OptionSet Options = new OptionSet() {
             { "c|config=", "the {cli.json} file name.",
                 v => _configFileName = v },
             { "d|directory=", "the restore {directory} name.",
                 v => _directory = v },
+            { "database=", "the database type.",
+                v => _databaseType = v },
+            { "connection=", "the connection string.",
+                v => _connectionString = v },
             { "h|help",  "show this message and exit",
                 v => _isHelp = v != null }
         };
@@ -64,10 +70,19 @@ namespace SiteServer.Cli.Commands
                 return;
             }
 
-            var configInfo = CliUtils.LoadConfig(_configFileName);
+            ConfigInfo configInfo;
+            if (!string.IsNullOrEmpty(_databaseType) && !string.IsNullOrEmpty(_connectionString))
+            {
+                configInfo = CliUtils.LoadConfigByArgs(_databaseType, _connectionString);
+            }
+            else
+            {
+                configInfo = CliUtils.LoadConfigByFile(_configFileName);
+            }
+
             if (configInfo == null)
             {
-                CliUtils.PrintError("Error, config file cli.json not exists");
+                CliUtils.PrintError("Error, config not exists");
                 return;
             }
 
@@ -94,10 +109,12 @@ namespace SiteServer.Cli.Commands
             CliUtils.PrintRow("Import Table Name", "Total Count");
             CliUtils.PrintLine();
 
-            var logs = new List<TextLogInfo>();
+            var errorLogFilePath = CliUtils.CreateErrorLogFile(CommandName);
 
             foreach (var tableName in tableNames)
             {
+                var logs = new List<TextLogInfo>();
+
                 if (configInfo.RestoreConfig.Includes != null)
                 {
                     if (!StringUtils.ContainsIgnoreCase(configInfo.RestoreConfig.Includes, tableName)) continue;
@@ -117,7 +134,17 @@ namespace SiteServer.Cli.Commands
 
                 if (!DataProvider.DatabaseDao.IsTableExists(tableName))
                 {
-                    DataProvider.DatabaseDao.CreateSystemTable(tableName, tableInfo.Columns);
+                    if (!DataProvider.DatabaseDao.CreateSystemTable(tableName, tableInfo.Columns, out var ex, out var sqlString))
+                    {
+                        logs.Add(new TextLogInfo
+                        {
+                            DateTime = DateTime.Now,
+                            Detail = $"create table {tableName}: {sqlString}",
+                            Exception = ex
+                        });
+
+                        continue;
+                    }
                 }
                 else
                 {
@@ -133,6 +160,7 @@ namespace SiteServer.Cli.Commands
                         var fileName = tableInfo.RowFiles[i];
 
                         var objects = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8));
+
                         try
                         {
                             DataProvider.DatabaseDao.InsertMultiple(tableName, objects, tableInfo.Columns);
@@ -142,12 +170,14 @@ namespace SiteServer.Cli.Commands
                             logs.Add(new TextLogInfo
                             {
                                 DateTime = DateTime.Now,
-                                Detail = $"tableName {tableName}, fileName {fileName}",
+                                Detail = $"insert table {tableName}, fileName {fileName}",
                                 Exception = ex
                             });
                         }
                     }
                 }
+
+                CliUtils.AppendErrorLogs(errorLogFilePath, logs);
             }
 
             CliUtils.PrintLine();
@@ -156,8 +186,6 @@ namespace SiteServer.Cli.Commands
             {
                 SystemManager.SyncDatabase();
             }
-
-            CliUtils.LogErrors(CommandName, logs);
 
             Console.WriteLine("Well done! Thanks for Using SiteServer Cli Tool");
         }

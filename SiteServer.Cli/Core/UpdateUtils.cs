@@ -24,15 +24,27 @@ namespace SiteServer.Cli.Core
                 var newRow = TranslateUtils.JsonGetDictionaryIgnorecase(oldRow);
                 foreach (var key in convertKeyDict.Keys)
                 {
-                    var value = newRow[convertKeyDict[key]];
-
-                    var valueDictKey = GetConvertValueDictKey(key, value);
-                    if (convertValueDict != null && convertValueDict.ContainsKey(valueDictKey))
+                    var convertKey = convertKeyDict[key];
+                    object value;
+                    if (newRow.TryGetValue(convertKey, out value))
                     {
-                        value = convertValueDict[valueDictKey];
-                    }
+                        var valueDictKey = GetConvertValueDictKey(key, value);
+                        if (convertValueDict != null && convertValueDict.ContainsKey(valueDictKey))
+                        {
+                            value = convertValueDict[valueDictKey];
+                        }
 
-                    newRow[key] = value;
+                        newRow[key] = value;
+                    }
+                    //var value = newRow [convertKeyDict[key]];
+
+                    //var valueDictKey = GetConvertValueDictKey(key, value);
+                    //if (convertValueDict != null && convertValueDict.ContainsKey(valueDictKey))
+                    //{
+                    //    value = convertValueDict[valueDictKey];
+                    //}
+
+                    //newRow[key] = value;
                 }
 
                 newRows.Add(newRow);

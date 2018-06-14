@@ -625,12 +625,6 @@
     <Compile Include="Settings\PageAnalysisSiteChannels.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageAnalysisSiteDownloads.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageAnalysisSiteDownloadsChannels.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\PageAnalysisSiteHits.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

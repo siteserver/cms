@@ -671,7 +671,6 @@ SELECT * FROM (
                     }
                 }
 
-                //�������������
                 sqlBuilder.Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
                     ? @"PRIMARY KEY (Id)"
                     : $@"CONSTRAINT PK_{tableName} PRIMARY KEY (Id)").AppendLine();
@@ -718,12 +717,15 @@ SELECT * FROM (
             }
         }
 
-        public void CreateSystemTable(string tableName, List<TableColumn> tableColumns)
+        public bool CreateSystemTable(string tableName, List<TableColumn> tableColumns, out Exception ex, out string sqlString)
         {
+            ex = null;
+            sqlString = string.Empty;
+
+            var sqlBuilder = new StringBuilder();
+
             try
             {
-                var sqlBuilder = new StringBuilder();
-
                 sqlBuilder.Append($@"CREATE TABLE {tableName} (").AppendLine();
 
                 var primaryKeyColumns = new List<TableColumn>();
@@ -770,10 +772,17 @@ SELECT * FROM (
                 ExecuteNonQuery(sqlBuilder.ToString());
 
                 TableColumnManager.ClearCache();
+
+                return true;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
+                ex = e;
+                sqlString = sqlBuilder.ToString();
+
                 LogUtils.AddErrorLog(ex, tableName);
+
+                return false;
             }
         }
 
@@ -1713,7 +1722,7 @@ FROM (SELECT TOP {totalNum} *
             {
                 columnNames.Append($"{tableColumn.AttributeName},");
             }
-            columnNames.Length -= 1;
+            if (columnNames.Length > 0) columnNames.Length -= 1;
 
             var valuesList = new List<string>();
             var parameterList = new List<IDataParameter>();
@@ -1726,6 +1735,8 @@ FROM (SELECT TOP {totalNum} *
                 var values = new StringBuilder();
                 foreach (var tableColumn in tableColumns)
                 {
+                    if (string.IsNullOrEmpty(tableColumn?.AttributeName)) continue;
+
                     object val;
                     dict.TryGetValue(tableColumn.AttributeName, out val);
 
@@ -1758,14 +1769,18 @@ FROM (SELECT TOP {totalNum} *
                         parameterList.Add(GetParameter(paramName, tableColumn.DataType, Convert.ToString(val)));
                     }
                 }
-                values.Length -= 1;
-                valuesList.Add(values.ToString());
 
-                if (parameterList.Count > 1000)
+                if (values.Length > 0)
                 {
-                    InsertRows(tableName, columnNames.ToString(), valuesList, parameterList);
-                    valuesList.Clear();
-                    parameterList.Clear();
+                    values.Length -= 1;
+                    valuesList.Add(values.ToString());
+
+                    if (parameterList.Count > 1000)
+                    {
+                        InsertRows(tableName, columnNames.ToString(), valuesList, parameterList);
+                        valuesList.Clear();
+                        parameterList.Clear();
+                    }
                 }
             }
 

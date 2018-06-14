@@ -4,10 +4,6 @@ namespace SiteServer.Cli.Core
 {
     public class BackupConfigInfo
     {
-        public string DatabaseType { get; set; }
-
-        public string ConnectionString { get; set; }
-
         public List<string> Includes { get; set; }
 
         public List<string> Excludes { get; set; }
@@ -15,10 +11,6 @@ namespace SiteServer.Cli.Core
 
     public class RestoreConfigInfo
     {
-        public string DatabaseType { get; set; }
-
-        public string ConnectionString { get; set; }
-
         public List<string> Includes { get; set; }
 
         public List<string> Excludes { get; set; }
@@ -28,6 +20,10 @@ namespace SiteServer.Cli.Core
 
     public class ConfigInfo
     {
+        public string DatabaseType { get; set; }
+
+        public string ConnectionString { get; set; }
+
         public BackupConfigInfo BackupConfig { get; set; }
 
         public RestoreConfigInfo RestoreConfig { get; set; }

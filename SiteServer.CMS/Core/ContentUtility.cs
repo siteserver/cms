@@ -53,8 +53,8 @@ namespace SiteServer.CMS.Core
             string assetsUrl;
             if (isLocal)
             {
-                assetsUrl = PageUtility.GetLocalSiteUrl(siteInfo,
-                    siteInfo.Additional.AssetsDir);
+                assetsUrl = PageUtility.GetSiteUrl(siteInfo,
+                    siteInfo.Additional.AssetsDir, true);
             }
             else
             {

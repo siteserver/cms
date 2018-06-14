@@ -145,7 +145,6 @@
     <Compile Include="Controllers\Sys\Packaging\PackagingSyncDatabaseController.cs" />
     <Compile Include="Controllers\Sys\Packaging\PackagingDownloadController.cs" />
     <Compile Include="Controllers\Sys\Editors\UEditorController.cs" />
-    <Compile Include="Controllers\Sys\Stl\StlActionsAddContentHitsController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsDownloadController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsDynamicController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsIfController.cs" />

@@ -209,7 +209,6 @@ namespace SiteServer.CMS.StlParser.Model
             public const string JsAcAudioJs = "Js_Ac_AudioJs";                    //audio.js
             public const string JsAcVideoJs = "Js_Ac_VideoJs";                    //video.js
 
-            public const string JsAdStlCountHits = "Js_Ad_StlCountHits";          //统计访问量
             public const string JsAeStlZoom = "Js_Ae_StlZoom";                    //文字缩放
             public const string JsAfStlPrinter = "Js_Af_StlPrinter";              //打印
             public const string JsAgStlTreeNotAjax = "Js_Ag_StlTreeNotAjax";                    //树状导航

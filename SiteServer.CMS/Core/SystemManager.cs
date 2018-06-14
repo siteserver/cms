@@ -46,8 +46,7 @@ namespace SiteServer.CMS.Core
                     Password = adminPassword
                 };
 
-                string errorMessage;
-                AdminManager.CreateAdministrator(administratorInfo, out errorMessage);
+                AdminManager.CreateAdministrator(administratorInfo, out _);
                 DataProvider.AdministratorsInRolesDao.AddUserToRole(adminName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
             }
         }
@@ -62,7 +61,7 @@ namespace SiteServer.CMS.Core
 
                 if (!DataProvider.DatabaseDao.IsTableExists(provider.TableName))
                 {
-                    DataProvider.DatabaseDao.CreateSystemTable(provider.TableName, provider.TableColumns);
+                    DataProvider.DatabaseDao.CreateSystemTable(provider.TableName, provider.TableColumns, out _, out _);
                 }
                 else
                 {
@@ -75,7 +74,7 @@ namespace SiteServer.CMS.Core
             {
                 if (!DataProvider.DatabaseDao.IsTableExists(tableName))
                 {
-                    DataProvider.DatabaseDao.CreateSystemTable(tableName, DataProvider.ContentDao.TableColumns);
+                    DataProvider.DatabaseDao.CreateSystemTable(tableName, DataProvider.ContentDao.TableColumns, out _, out _);
                 }
                 else
                 {

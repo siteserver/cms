@@ -55,10 +55,6 @@ namespace SiteServer.Cli.Updater
             {
                 converter = TableContentGroup.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableCount.OldTableName))
-            {
-                converter = TableCount.Converter;
-            }
             else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableDbCache.OldTableName))
             {
                 converter = TableDbCache.Converter;

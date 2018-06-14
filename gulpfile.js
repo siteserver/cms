@@ -79,7 +79,7 @@ gulp.task("build-siteserver-all", function() {
 
 gulp.task("build-siteserver-aspx", function() {
   return gulp
-      .src("./SiteServer.Web/SiteServer/**/*.aspx")
+      .src(["./SiteServer.Web/SiteServer/**/*.html", "./SiteServer.Web/SiteServer/**/*.aspx", "./SiteServer.Web/SiteServer/**/*.cshtml"])
       .pipe(replace('.css"', ".css?v=" + version + '"'))
       .pipe(replace('.js"', ".js?v=" + version + '"'))
       .pipe(gulp.dest("./build/SiteServer"));

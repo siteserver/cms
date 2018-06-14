@@ -83,6 +83,25 @@
           </div>
 
           <div class="form-group">
+            <label class="col-form-label">是否启用默认文件名</label>
+            <asp:DropDownList ID="DdlIsCreateUseDefaultFileName" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="DdlIsCreateUseDefaultFileName_SelectedIndexChanged"
+              runat="server"></asp:DropDownList>
+            <small class="form-text text-muted">
+              若启用此选项，文件名如果是默认文件名，文件名将省略
+            </small>
+          </div>
+
+          <asp:PlaceHolder ID="PhIsCreateUseDefaultFileName" runat="server">
+            <div class="form-group">
+              <label class="col-form-label">默认文件名</label>
+              <asp:TextBox id="TbCreateDefaultFileName" class="form-control" runat="server" />
+              <small class="form-text text-muted">
+                需要确保Web服务器支持默认文件名
+              </small>
+            </div>
+          </asp:PlaceHolder>
+
+          <div class="form-group">
             <label class="col-form-label">根据添加日期限制是否生成内容</label>
             <asp:DropDownList ID="DdlIsCreateStaticContentByAddDate" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="DdlIsCreateStaticContentByAddDate_SelectedIndexChanged"
               runat="server"></asp:DropDownList>

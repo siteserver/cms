@@ -112,7 +112,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api\IdObj.cs" />
-    <Compile Include="Api\V1\ApiUsersRoute.cs" />
     <Compile Include="Api\V1\StlRequest.cs" />
     <Compile Include="Api\ApiRoutePlugin.cs" />
     <Compile Include="Api\Preview\ApiRoutePreview.cs" />
@@ -125,7 +124,6 @@
     <Compile Include="Api\Sys\Packaging\ApiRouteSyncDatabase.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteDownload.cs" />
     <Compile Include="Api\Sys\Editors\ApiRouteUEditor.cs" />
-    <Compile Include="Api\Sys\Stl\ApiRouteActionsAddContentHits.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsDownload.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsDynamic.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsIf.cs" />
@@ -137,8 +135,6 @@
     <Compile Include="Api\Sys\Stl\ApiRouteActionsSearch.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsTrigger.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsUpload.cs" />
-    <Compile Include="Api\V1\ApiPingRoute.cs" />
-    <Compile Include="Api\V1\ApiStlRoute.cs" />
     <Compile Include="Api\V1\ORequest.cs" />
     <Compile Include="Api\V1\OUtils.cs" />
     <Compile Include="Api\V1\OFilter.cs" />
@@ -152,7 +148,6 @@
     <Compile Include="Core\CheckManager.cs" />
     <Compile Include="Core\ConfigManager.cs" />
     <Compile Include="Core\ContentUtility.cs" />
-    <Compile Include="Core\CountManager.cs" />
     <Compile Include="Core\Create\CreateManager.cs" />
     <Compile Include="Core\Create\CreateTaskManager.cs" />
     <Compile Include="Core\Create\DeleteManager.cs" />
@@ -227,7 +222,6 @@
     <Compile Include="Model\ContentCheckInfo.cs" />
     <Compile Include="Model\ContentGroupInfo.cs" />
     <Compile Include="Model\ContentInfo.cs" />
-    <Compile Include="Model\CountInfo.cs" />
     <Compile Include="Core\Create\CreateTaskInfo.cs" />
     <Compile Include="Core\Create\CreateTaskLogInfo.cs" />
     <Compile Include="Core\Create\CreateTaskSummary.cs" />
@@ -324,7 +318,6 @@
     <Compile Include="Provider\ContentCheckDao.cs" />
     <Compile Include="Provider\ContentDao.cs" />
     <Compile Include="Provider\ContentGroupDao.cs" />
-    <Compile Include="Provider\CountDao.cs" />
     <Compile Include="Provider\DatabaseDao.cs" />
     <Compile Include="Provider\DbCacheDao.cs" />
     <Compile Include="Provider\DepartmentDao.cs" />

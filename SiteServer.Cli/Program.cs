@@ -52,6 +52,10 @@ namespace SiteServer.Cli
                 {
                     VersionManager.Execute(commandArgs.ToArray());
                 }
+                else if (StringUtils.EqualsIgnoreCase(commandName, TestManager.CommandName))
+                {
+                    TestManager.Execute(commandArgs.ToArray());
+                }
                 else
                 {
                     CliUtils.PrintLine();
@@ -70,7 +74,10 @@ namespace SiteServer.Cli
             catch (Exception ex)
             {
                 CliUtils.PrintError(ex.Message);
-                CliUtils.LogErrors(commandName, new List<TextLogInfo> {new TextLogInfo
+
+                var errorLogFilePath = CliUtils.CreateErrorLogFile("siteserver");
+
+                CliUtils.AppendErrorLogs(errorLogFilePath, new List<TextLogInfo> {new TextLogInfo
                 {
                     DateTime = DateTime.Now,
                     Detail = "Console Error",

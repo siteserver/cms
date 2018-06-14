@@ -1,6 +1,16 @@
 var pageUtils = {
+  loading: function (isLoading){
+    if (isLoading) {
+      return layer.load(1, {
+        shade: [0.2,'#000'] //0.1透明度的白色背景
+      });
+    } else {
+      layer.close(layer.index);
+    }
+  },
+  
   closeLayer: function() {
-    layer.closeAll();
+    layer.close(layer.index);
     return false;
   },
 

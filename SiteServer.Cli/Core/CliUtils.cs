@@ -14,7 +14,7 @@ namespace SiteServer.Cli.Core
 
         private const int ConsoleTableWidth = 77;
 
-        public static ConfigInfo LoadConfig(string configFileName)
+        public static ConfigInfo LoadConfigByFile(string configFileName)
         {
             ConfigInfo configInfo = null;
 
@@ -28,25 +28,47 @@ namespace SiteServer.Cli.Core
                 configInfo = TranslateUtils.JsonDeserialize<ConfigInfo>(
                     FileUtils.ReadText(PathUtils.Combine(PhysicalApplicationPath, configFileName), Encoding.UTF8));
 
-                WebConfigUtils.Load(PhysicalApplicationPath, configInfo.RestoreConfig.DatabaseType, configInfo.RestoreConfig.ConnectionString);
+                if (configInfo != null)
+                {
+                    WebConfigUtils.Load(PhysicalApplicationPath, configInfo.DatabaseType, configInfo.ConnectionString);
+
+                    if (configInfo.BackupConfig == null)
+                    {
+                        configInfo.BackupConfig = new BackupConfigInfo();
+                    }
+                    if (configInfo.RestoreConfig == null)
+                    {
+                        configInfo.RestoreConfig = new RestoreConfigInfo();
+                    }
+                }
             }
             else if (FileUtils.IsFileExists(PathUtils.Combine(PhysicalApplicationPath, "web.config")))
             {
-                configInfo = new ConfigInfo();
                 WebConfigUtils.Load(PhysicalApplicationPath, "web.config");
+
+                configInfo = new ConfigInfo
+                {
+                    DatabaseType = WebConfigUtils.DatabaseType.Value,
+                    ConnectionString = WebConfigUtils.ConnectionString,
+                    BackupConfig = new BackupConfigInfo(),
+                    RestoreConfig = new RestoreConfigInfo(),
+                };
             }
 
-            if (configInfo != null)
+            return configInfo;
+        }
+
+        public static ConfigInfo LoadConfigByArgs(string databaseType, string connectionString)
+        {
+            var configInfo = new ConfigInfo
             {
-                if (configInfo.BackupConfig == null)
-                {
-                    configInfo.BackupConfig = new BackupConfigInfo();
-                }
-                if (configInfo.RestoreConfig == null)
-                {
-                    configInfo.RestoreConfig = new RestoreConfigInfo();
-                }
-            }
+                DatabaseType = databaseType,
+                ConnectionString = connectionString,
+                BackupConfig = new BackupConfigInfo(),
+                RestoreConfig = new RestoreConfigInfo(),
+            };
+
+            WebConfigUtils.Load(PhysicalApplicationPath, configInfo.DatabaseType, configInfo.ConnectionString);
 
             return configInfo;
         }
@@ -99,19 +121,32 @@ namespace SiteServer.Cli.Core
             Console.Error.WriteLine(errorMessage);
         }
 
-        public static void LogErrors(string commandName, List<TextLogInfo> logs)
+        public static string CreateErrorLogFile(string commandName)
         {
-            var builder = new StringBuilder();
-            if (logs != null && logs.Count > 0)
+            var filePath = PathUtils.Combine(PhysicalApplicationPath, $"{commandName}.error.log");
+            FileUtils.DeleteFileIfExists(filePath);
+            return filePath;
+        }
+
+        public static void AppendErrorLogs(string filePath, List<TextLogInfo> logs)
+        {
+            if (logs == null || logs.Count <= 0) return;
+
+            if (!FileUtils.IsFileExists(filePath))
             {
-                foreach (var log in logs)
-                {
-                    builder.AppendLine();
-                    builder.Append(log);
-                    builder.AppendLine();
-                }
+                FileUtils.WriteText(filePath, Encoding.UTF8, string.Empty);
             }
-            FileUtils.WriteText(PathUtils.Combine(PhysicalApplicationPath, $"{commandName}.error.log"), Encoding.UTF8, builder.ToString());
+
+            var builder = new StringBuilder();
+
+            foreach (var log in logs)
+            {
+                builder.AppendLine();
+                builder.Append(log);
+                builder.AppendLine();
+            }
+
+            FileUtils.AppendText(filePath, Encoding.UTF8, builder.ToString());
         }
     }
 }

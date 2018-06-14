@@ -79,11 +79,6 @@ namespace SiteServer.BackgroundPages.Core
             if (!string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.FileUrl)))
             {
                 image += "&nbsp;<img src='../pic/icon/attachment.gif' title='附件' align='absmiddle' border=0 />";
-                if (siteInfo.Additional.IsCountDownload)
-                {
-                    var count = CountManager.GetCount(siteInfo.TableName, contentInfo.Id.ToString(), ECountType.Download);
-                    image += $"下载次数:<strong>{count}</strong>";
-                }
             }
             if (!string.IsNullOrEmpty(contentInfo.WritingUserName))
             {
