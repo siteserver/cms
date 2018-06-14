@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Web.UI.WebControls;
-using System.Xml;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
@@ -19,12 +18,11 @@ namespace SiteServer.CMS.StlParser.StlElement
         private static readonly Attr PageNum = new Attr("pageNum", "每页显示的栏目数目");
 
         private readonly string _stlPageChannelsElement;
-        private readonly XmlNode _node;
         private readonly PageInfo _pageInfo;
         private readonly ContextInfo _contextInfo;
         private readonly DataSet _dataSet;
 
-        public StlPageChannels(string stlPageChannelsElement, PageInfo pageInfo, ContextInfo contextInfo, bool isXmlContent)
+        public StlPageChannels(string stlPageChannelsElement, PageInfo pageInfo, ContextInfo contextInfo)
         {
             _stlPageChannelsElement = stlPageChannelsElement;
 
@@ -75,94 +73,91 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             try
             {
-                if (_node != null)
+                if (_dataSet != null)
                 {
-                    if (_dataSet != null)
+                    var objPage = new PagedDataSource { DataSource = _dataSet.Tables[0].DefaultView }; //分页类
+
+                    if (pageCount > 1)
                     {
-                        var objPage = new PagedDataSource {DataSource = _dataSet.Tables[0].DefaultView}; //分页类
+                        objPage.AllowPaging = true;
+                        objPage.PageSize = DisplayInfo.PageNum;//每页显示的项数
+                    }
+                    else
+                    {
+                        objPage.AllowPaging = false;
+                    }
 
-                        if (pageCount > 1)
+                    objPage.CurrentPageIndex = currentPageIndex;//当前页的索引
+
+
+                    if (DisplayInfo.Layout == ELayout.None)
+                    {
+                        var rptContents = new Repeater
                         {
-                            objPage.AllowPaging = true;
-                            objPage.PageSize = DisplayInfo.PageNum;//每页显示的项数
+                            ItemTemplate =
+                                new RepeaterTemplate(DisplayInfo.ItemTemplate, DisplayInfo.SelectedItems,
+                                    DisplayInfo.SelectedValues, DisplayInfo.SeparatorRepeatTemplate,
+                                    DisplayInfo.SeparatorRepeat, _pageInfo, EContextType.Channel, _contextInfo)
+                        };
+
+                        if (!string.IsNullOrEmpty(DisplayInfo.HeaderTemplate))
+                        {
+                            rptContents.HeaderTemplate = new SeparatorTemplate(DisplayInfo.HeaderTemplate);
                         }
-                        else
+                        if (!string.IsNullOrEmpty(DisplayInfo.FooterTemplate))
                         {
-                            objPage.AllowPaging = false;
+                            rptContents.FooterTemplate = new SeparatorTemplate(DisplayInfo.FooterTemplate);
+                        }
+                        if (!string.IsNullOrEmpty(DisplayInfo.SeparatorTemplate))
+                        {
+                            rptContents.SeparatorTemplate = new SeparatorTemplate(DisplayInfo.SeparatorTemplate);
+                        }
+                        if (!string.IsNullOrEmpty(DisplayInfo.AlternatingItemTemplate))
+                        {
+                            rptContents.AlternatingItemTemplate = new RepeaterTemplate(DisplayInfo.AlternatingItemTemplate, DisplayInfo.SelectedItems, DisplayInfo.SelectedValues, DisplayInfo.SeparatorRepeatTemplate, DisplayInfo.SeparatorRepeat, _pageInfo, EContextType.Channel, _contextInfo);
                         }
 
-                        objPage.CurrentPageIndex = currentPageIndex;//当前页的索引
+                        rptContents.DataSource = objPage;
+                        rptContents.DataBind();
 
-
-                        if (DisplayInfo.Layout == ELayout.None)
+                        if (rptContents.Items.Count > 0)
                         {
-                            var rptContents = new Repeater
-                            {
-                                ItemTemplate =
-                                    new RepeaterTemplate(DisplayInfo.ItemTemplate, DisplayInfo.SelectedItems,
-                                        DisplayInfo.SelectedValues, DisplayInfo.SeparatorRepeatTemplate,
-                                        DisplayInfo.SeparatorRepeat, _pageInfo, EContextType.Channel, _contextInfo)
-                            };
-
-                            if (!string.IsNullOrEmpty(DisplayInfo.HeaderTemplate))
-                            {
-                                rptContents.HeaderTemplate = new SeparatorTemplate(DisplayInfo.HeaderTemplate);
-                            }
-                            if (!string.IsNullOrEmpty(DisplayInfo.FooterTemplate))
-                            {
-                                rptContents.FooterTemplate = new SeparatorTemplate(DisplayInfo.FooterTemplate);
-                            }
-                            if (!string.IsNullOrEmpty(DisplayInfo.SeparatorTemplate))
-                            {
-                                rptContents.SeparatorTemplate = new SeparatorTemplate(DisplayInfo.SeparatorTemplate);
-                            }
-                            if (!string.IsNullOrEmpty(DisplayInfo.AlternatingItemTemplate))
-                            {
-                                rptContents.AlternatingItemTemplate = new RepeaterTemplate(DisplayInfo.AlternatingItemTemplate, DisplayInfo.SelectedItems, DisplayInfo.SelectedValues, DisplayInfo.SeparatorRepeatTemplate, DisplayInfo.SeparatorRepeat, _pageInfo, EContextType.Channel, _contextInfo);
-                            }
-
-                            rptContents.DataSource = objPage;
-                            rptContents.DataBind();
-
-                            if (rptContents.Items.Count > 0)
-                            {
-                                parsedContent = ControlUtils.GetControlRenderHtml(rptContents);
-                            }
+                            parsedContent = ControlUtils.GetControlRenderHtml(rptContents);
                         }
-                        else
+                    }
+                    else
+                    {
+                        var pdlContents = new ParsedDataList();
+
+                        //设置显示属性
+                        TemplateUtility.PutListInfoToMyDataList(pdlContents, DisplayInfo);
+
+                        //设置列表模板
+                        pdlContents.ItemTemplate = new DataListTemplate(DisplayInfo.ItemTemplate, DisplayInfo.SelectedItems, DisplayInfo.SelectedValues, DisplayInfo.SeparatorRepeatTemplate, DisplayInfo.SeparatorRepeat, _pageInfo, EContextType.Channel, _contextInfo);
+                        if (!string.IsNullOrEmpty(DisplayInfo.HeaderTemplate))
                         {
-                            var pdlContents = new ParsedDataList();
+                            pdlContents.HeaderTemplate = new SeparatorTemplate(DisplayInfo.HeaderTemplate);
+                        }
+                        if (!string.IsNullOrEmpty(DisplayInfo.FooterTemplate))
+                        {
+                            pdlContents.FooterTemplate = new SeparatorTemplate(DisplayInfo.FooterTemplate);
+                        }
+                        if (!string.IsNullOrEmpty(DisplayInfo.SeparatorTemplate))
+                        {
+                            pdlContents.SeparatorTemplate = new SeparatorTemplate(DisplayInfo.SeparatorTemplate);
+                        }
+                        if (!string.IsNullOrEmpty(DisplayInfo.AlternatingItemTemplate))
+                        {
+                            pdlContents.AlternatingItemTemplate = new DataListTemplate(DisplayInfo.AlternatingItemTemplate, DisplayInfo.SelectedItems, DisplayInfo.SelectedValues, DisplayInfo.SeparatorRepeatTemplate, DisplayInfo.SeparatorRepeat, _pageInfo, EContextType.Channel, _contextInfo);
+                        }
 
-                            //设置显示属性
-                            TemplateUtility.PutListInfoToMyDataList(pdlContents, DisplayInfo);
+                        pdlContents.DataSource = objPage;
+                        pdlContents.DataKeyField = ChannelAttribute.Id;
+                        pdlContents.DataBind();
 
-                            //设置列表模板
-                            pdlContents.ItemTemplate = new DataListTemplate(DisplayInfo.ItemTemplate, DisplayInfo.SelectedItems, DisplayInfo.SelectedValues, DisplayInfo.SeparatorRepeatTemplate, DisplayInfo.SeparatorRepeat, _pageInfo, EContextType.Channel, _contextInfo);
-                            if (!string.IsNullOrEmpty(DisplayInfo.HeaderTemplate))
-                            {
-                                pdlContents.HeaderTemplate = new SeparatorTemplate(DisplayInfo.HeaderTemplate);
-                            }
-                            if (!string.IsNullOrEmpty(DisplayInfo.FooterTemplate))
-                            {
-                                pdlContents.FooterTemplate = new SeparatorTemplate(DisplayInfo.FooterTemplate);
-                            }
-                            if (!string.IsNullOrEmpty(DisplayInfo.SeparatorTemplate))
-                            {
-                                pdlContents.SeparatorTemplate = new SeparatorTemplate(DisplayInfo.SeparatorTemplate);
-                            }
-                            if (!string.IsNullOrEmpty(DisplayInfo.AlternatingItemTemplate))
-                            {
-                                pdlContents.AlternatingItemTemplate = new DataListTemplate(DisplayInfo.AlternatingItemTemplate, DisplayInfo.SelectedItems, DisplayInfo.SelectedValues, DisplayInfo.SeparatorRepeatTemplate, DisplayInfo.SeparatorRepeat, _pageInfo, EContextType.Channel, _contextInfo);
-                            }
-
-                            pdlContents.DataSource = objPage;
-                            pdlContents.DataKeyField = ChannelAttribute.Id;
-                            pdlContents.DataBind();
-
-                            if (pdlContents.Items.Count > 0)
-                            {
-                                parsedContent = ControlUtils.GetControlRenderHtml(pdlContents);
-                            }
+                        if (pdlContents.Items.Count > 0)
+                        {
+                            parsedContent = ControlUtils.GetControlRenderHtml(pdlContents);
                         }
                     }
                 }

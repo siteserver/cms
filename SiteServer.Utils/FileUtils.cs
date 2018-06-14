@@ -78,7 +78,7 @@ namespace SiteServer.Utils
 	    {
 	        DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
-	        var file = new FileStream(filePath, FileMode.Append, FileAccess.ReadWrite);
+	        var file = new FileStream(filePath, FileMode.Append, FileAccess.Write);
 	        using (var writer = new StreamWriter(file, encoding))
 	        {
 	            writer.Write(content);
