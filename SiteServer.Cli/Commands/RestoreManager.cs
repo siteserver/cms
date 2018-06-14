@@ -92,10 +92,9 @@ namespace SiteServer.Cli.Commands
                 return;
             }
 
-            var isConnectValid = DataProvider.DatabaseDao.ConnectToServer(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, out _, out _);
-            if (!isConnectValid)
+            if (!DataProvider.DatabaseDao.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             {
-                CliUtils.PrintError("Error, connection string not correct");
+                CliUtils.PrintError("Error, can not connect to the database");
                 return;
             }
 

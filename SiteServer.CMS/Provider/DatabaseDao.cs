@@ -909,33 +909,25 @@ SELECT * FROM (
             return list;
         }
 
-        public Dictionary<string, int> GetTablesAndViewsDictionary(string connectionString, string databaseName)
+        public bool IsConnectionStringWork(DatabaseType databaseType, string connectionString)
         {
-            if (string.IsNullOrEmpty(connectionString))
+            var retval = false;
+            try
             {
-                connectionString = ConnectionString;
-            }
-
-            string sqlString =
-                $"select name, id from [{databaseName}]..sysobjects where type = 'U' and category<>2 Order By Name";
-
-            var dict = new Dictionary<string, int>();
-
-            using (var rdr = ExecuteReader(connectionString, sqlString))
-            {
-                while (rdr.Read())
+                var connection = GetConnection(databaseType, connectionString);
+                connection.Open();
+                if (connection.State == ConnectionState.Open)
                 {
-                    var name = GetString(rdr, 0);
-                    var id = GetInt(rdr, 1);
-                    if (!string.IsNullOrEmpty(name))
-                    {
-                        dict[name] = id;
-                    }
+                    retval = true;
+                    connection.Close();
                 }
-                rdr.Close();
+            }
+            catch
+            {
+                // ignored
             }
 
-            return dict;
+            return retval;
         }
 
         public string GetSqlServerDefaultConstraintName(string tableName, string columnName)
