@@ -12,7 +12,8 @@ var $vue = new Vue({
     items: null,
     adminName: null,
     item: null,
-    adminNames: null
+    adminNames: null,
+    scopes: null
   },
   methods: {
     getItems: function () {
@@ -26,16 +27,17 @@ var $vue = new Vue({
         $this.pageLoad = true;
       });
     },
-    getAdminNames: function () {
-      if (this.adminNames) return;
+    getAdminNamesAndScopes: function () {
+      if (this.adminNames && this.scopes) return;
       var $this = this;
 
       pageUtils.loading(true);
-      new apiUtils.Api($apiUrl + '/settings/admin/accessTokens/action/getAdminNames').get(null, function (err, res) {
+      new apiUtils.Api($apiUrl + '/settings/admin/accessTokens/action/getAdminNamesAndScopes').get(null, function (err, res) {
         pageUtils.loading(false);
         if (err || !res || !res.value) return;
 
-        $this.adminNames = res.value;
+        $this.adminNames = res.value.adminNames;
+        $this.scopes = res.value.scopes;
       });
     },
     getAccessToken: function (item) {
@@ -70,7 +72,7 @@ var $vue = new Vue({
     submit: function (item) {
       var $this = this;
 
-      this.item.scopes = this.item.scopes ? this.item.scopes.join(',') : '';
+      this.item.scopes = this.item.scopeList ? this.item.scopeList.join(',') : '';
 
       pageUtils.loading(true);
       api.post(item, function (err, res) {
@@ -108,8 +110,8 @@ var $vue = new Vue({
       this.pageType = 'add';
       this.item = item;
       this.item.adminName = this.item.adminName ? this.item.adminName : this.adminName;
-      this.item.scopes = this.item.scopes ? this.item.scopes.split(',') : [];
-      this.getAdminNames();
+      this.item.scopeList = this.item.scopes ? this.item.scopes.split(',') : [];
+      this.getAdminNamesAndScopes();
     },
     btnSubmitClick: function () {
       this.submit(this.item);

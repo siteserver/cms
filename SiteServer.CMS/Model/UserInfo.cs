@@ -1,12 +1,10 @@
 using System;
-using Dapper.Contrib.Extensions;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Model
 {
-    [Table("siteserver_User")]
-    public class UserInfo: IUserInfo
+    public class UserInfo : IUserInfo
     {
         public UserInfo()
         {

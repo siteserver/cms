@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
+using Dapper;
+using Dapper.Contrib.Extensions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
@@ -270,6 +273,35 @@ namespace SiteServer.CMS.Provider
             }
 
             return list;
+        }
+
+        public List<UserLogInfo> ApiGetLogs(string userName, int offset, int limit)
+        {
+            var sqlString =
+                DataProvider.DatabaseDao.GetPageSqlString(TableName, "*", $"WHERE {nameof(UserLogInfo.UserName)} = @{nameof(UserLogInfo.UserName)}", "ORDER BY Id DESC", offset, limit);
+
+            using (var connection = GetConnection())
+            {
+                return connection.Query<UserLogInfo>(sqlString, new {UserName = userName}).ToList();
+            }
+        }
+
+        public UserLogInfo ApiInsert(string userName, UserLogInfo logInfo)
+        {
+            logInfo.UserName = userName;
+            logInfo.IpAddress = PageUtils.GetIpAddress();
+            logInfo.AddDate = DateTime.Now;
+
+            using (var connection = GetConnection())
+            {
+                var identity = connection.Insert(logInfo);
+                if (identity > 0)
+                {
+                    logInfo.Id = Convert.ToInt32(identity);
+                }
+            }
+
+            return logInfo;
         }
     }
 }

@@ -57,12 +57,10 @@
       </label>
 
       <div class="checkbox checkbox-primary">
-        <input type="checkbox" id="Contents" value="Contents" v-model="item.scopes" />
-        <label for="Contents">Contents</label>
-        <input type="checkbox" id="Users" value="Users" v-model="item.scopes" />
-        <label for="Users">Users</label>
-        <input type="checkbox" id="STL" value="STL" v-model="item.scopes" />
-        <label for="STL">STL</label>
+        <template v-for="scope in scopes">
+          <input type="checkbox" v-bind:id="scope" v-bind:value="scope" v-model="item.scopeList" />
+          <label v-bind:for="scope">{{ scope }}</label>
+        </template>
       </div>
 
       <small class="form-text text-muted">
@@ -159,4 +157,4 @@
 </template>
 
 @section Scripts{
-<script src="pageAdminAccessTokens.js" type="text/javascript"></script> }
+<script src="pageAdminAccessTokens.js?v=6.18" type="text/javascript"></script> }

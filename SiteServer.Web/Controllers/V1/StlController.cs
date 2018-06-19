@@ -19,7 +19,7 @@ namespace SiteServer.API.Controllers.V1
             {
                 var stlRequest = new StlRequest();
 
-                if (!stlRequest.IsAuthorized)
+                if (!stlRequest.IsApiAuthorized)
                 {
                     return Unauthorized();
                 }

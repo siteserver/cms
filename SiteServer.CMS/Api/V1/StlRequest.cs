@@ -13,7 +13,7 @@ namespace SiteServer.CMS.Api.V1
     {
         private AuthRequest Request { get; }
 
-        public bool IsAuthorized { get; }
+        public bool IsApiAuthorized { get; }
 
         public SiteInfo SiteInfo { get; }
 
@@ -23,10 +23,10 @@ namespace SiteServer.CMS.Api.V1
 
         public StlRequest()
         {
-            Request = new AuthRequest();
-            IsAuthorized = AccessTokenManager.IsScope(Request.ApiToken, AccessTokenManager.ScopeStl);
+            Request = new AuthRequest(AccessTokenManager.ScopeStl);
+            IsApiAuthorized = Request.IsApiAuthorized;
 
-            if (!IsAuthorized) return;
+            if (!IsApiAuthorized) return;
 
             var siteId = Request.GetQueryInt("siteId");
             var siteDir = Request.GetQueryString("siteDir");

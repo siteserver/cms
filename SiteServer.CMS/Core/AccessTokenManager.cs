@@ -59,7 +59,7 @@ namespace SiteServer.CMS.Core
 	        var tokenInfo = GetAccessTokenInfo(token);
 	        if (tokenInfo == null) return false;
 
-	        return StringUtils.In(tokenInfo.Scopes, scope);
+	        return StringUtils.ContainsIgnoreCase(TranslateUtils.StringCollectionToStringList(tokenInfo.Scopes), scope);
 	    }
 
         public static AccessTokenInfo GetAccessTokenInfo(string token)

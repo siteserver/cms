@@ -13,7 +13,7 @@ namespace SiteServer.API.Controllers.Sys.Settings.Admin
     public class AccessTokensController : ApiController
     {
         private const string ApiRoute = "sys/settings/admin/accessTokens";
-        private const string ApiRouteGetAdminNames = "sys/settings/admin/accessTokens/action/getAdminNames";
+        private const string ApiRouteGetAdminNamesAndScopes = "sys/settings/admin/accessTokens/action/getAdminNamesAndScopes";
         private const string ApiRouteGetAccessToken = "sys/settings/admin/accessTokens/action/getAccessToken/{id:int}";
         private const string ApiRouteRegenerate = "sys/settings/admin/accessTokens/action/regenerate/{id:int}";
 
@@ -32,7 +32,7 @@ namespace SiteServer.API.Controllers.Sys.Settings.Admin
                 return Ok(new
                 {
                     Value = DataProvider.AccessTokenDao.GetAccessTokenInfoList(),
-                    AdminName = request.AdminName
+                    request.AdminName
                 });
             }
             catch (Exception ex)
@@ -41,8 +41,8 @@ namespace SiteServer.API.Controllers.Sys.Settings.Admin
             }
         }
 
-        [HttpGet, Route(ApiRouteGetAdminNames)]
-        public IHttpActionResult GetAdminNames()
+        [HttpGet, Route(ApiRouteGetAdminNamesAndScopes)]
+        public IHttpActionResult GetAdminNamesAndScopes()
         {
             try
             {
@@ -53,20 +53,34 @@ namespace SiteServer.API.Controllers.Sys.Settings.Admin
                     return Unauthorized();
                 }
 
-                var userNameList = new List<string>();
+                var adminNames = new List<string>();
 
                 if (request.AdminPermissions.IsConsoleAdministrator)
                 {
-                    userNameList = DataProvider.AdministratorDao.GetUserNameList();
+                    adminNames = DataProvider.AdministratorDao.GetUserNameList();
                 }
                 else
                 {
-                    userNameList.Add(request.AdminName);
+                    adminNames.Add(request.AdminName);
+                }
+
+                var scopes = new List<string>(AccessTokenManager.ScopeList);
+
+                foreach (var service in PluginManager.Services)
+                {
+                    if (service.IsApiAuthorization)
+                    {
+                        scopes.Add(service.PluginId);
+                    }
                 }
 
                 return Ok(new
                 {
-                    Value = userNameList
+                    Value = new
+                    {
+                        adminNames,
+                        scopes
+                    }
                 });
             }
             catch (Exception ex)

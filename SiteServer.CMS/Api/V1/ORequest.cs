@@ -1,5 +1,4 @@
-﻿using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin;
+﻿using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Api.V1
@@ -17,9 +16,9 @@ namespace SiteServer.CMS.Api.V1
         //{"count", "true"},
         //{"search", "tom"}
 
-        public ORequest()
+        public ORequest(string scope)
         {
-            AuthRequest = new AuthRequest();
+            AuthRequest = new AuthRequest(scope);
         }
 
         public OFilter Filter => OUtils.ParseFilter(AuthRequest.QueryString["filter"]);
@@ -39,9 +38,6 @@ namespace SiteServer.CMS.Api.V1
 
         public string RawUrl => AuthRequest.HttpRequest.Url.AbsoluteUri;
 
-        public bool IsAuthorized(string scope)
-        {
-            return AccessTokenManager.IsScope(AuthRequest.ApiToken, scope);
-        }
+        public bool IsApiAuthorized => AuthRequest.IsApiAuthorized;
     }
 }
