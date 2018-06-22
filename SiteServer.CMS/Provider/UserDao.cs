@@ -16,420 +16,186 @@ using Dapper.Contrib.Extensions;
 
 namespace SiteServer.CMS.Provider
 {
-    [Table("siteserver_User")]
-    public class DbUserInfo
-    {
-        public DbUserInfo()
-        {
-            Id = 0;
-            UserName = string.Empty;
-            Password = string.Empty;
-            PasswordFormat = EPasswordFormatUtils.GetValue(EPasswordFormat.Encrypted);
-            PasswordSalt = string.Empty;
-            CreateDate = DateTime.Now;
-            LastResetPasswordDate = DateTime.Now;
-            LastActivityDate = DateTime.Now;
-            CountOfLogin = 0;
-            CountOfFailedLogin = 0;
-            CountOfWriting = 0;
-            IsChecked = true.ToString();
-            IsLockedOut = false.ToString();
-            DisplayName = string.Empty;
-            Email = string.Empty;
-            Mobile = string.Empty;
-            AvatarUrl = string.Empty;
-            Organization = string.Empty;
-            Department = string.Empty;
-            Position = string.Empty;
-            Gender = string.Empty;
-            Birthday = string.Empty;
-            Education = string.Empty;
-            Graduation = string.Empty;
-            Address = string.Empty;
-            WeiXin = string.Empty;
-            Qq = string.Empty;
-            WeiBo = string.Empty;
-            Interests = string.Empty;
-            Signature = string.Empty;
-        }
-
-        public DbUserInfo(UserInfo userInfo)
-        {
-            Id = userInfo.Id;
-            UserName = userInfo.UserName;
-            Password = userInfo.Password;
-            PasswordFormat = userInfo.PasswordFormat;
-            PasswordSalt = userInfo.PasswordSalt;
-            CreateDate = userInfo.CreateDate;
-            LastResetPasswordDate = userInfo.LastResetPasswordDate;
-            LastActivityDate = userInfo.LastActivityDate;
-            CountOfLogin = userInfo.CountOfLogin;
-            CountOfFailedLogin = userInfo.CountOfFailedLogin;
-            CountOfWriting = userInfo.CountOfWriting;
-            IsChecked = userInfo.IsChecked.ToString();
-            IsLockedOut = userInfo.IsLockedOut.ToString();
-            DisplayName = userInfo.DisplayName;
-            Email = userInfo.Email;
-            Mobile = userInfo.Mobile;
-            AvatarUrl = userInfo.AvatarUrl;
-            Organization = userInfo.Organization;
-            Department = userInfo.Department;
-            Position = userInfo.Position;
-            Gender = userInfo.Gender;
-            Birthday = userInfo.Birthday;
-            Education = userInfo.Education;
-            Graduation = userInfo.Graduation;
-            Address = userInfo.Address;
-            WeiXin = userInfo.WeiXin;
-            Qq = userInfo.Qq;
-            WeiBo = userInfo.WeiBo;
-            Interests = userInfo.Interests;
-            Signature = userInfo.Signature;
-        }
-
-        public UserInfo ToUserInfo()
-        {
-            var userInfo = new UserInfo
-            {
-                Id = Id,
-                UserName = UserName,
-                Password = Password,
-                PasswordFormat = PasswordFormat,
-                PasswordSalt = PasswordSalt,
-                CreateDate = CreateDate,
-                LastResetPasswordDate = LastResetPasswordDate,
-                LastActivityDate = LastActivityDate,
-                CountOfLogin = CountOfLogin,
-                CountOfFailedLogin = CountOfFailedLogin,
-                CountOfWriting = CountOfWriting,
-                IsChecked = TranslateUtils.ToBool(IsChecked),
-                IsLockedOut = TranslateUtils.ToBool(IsLockedOut),
-                DisplayName = DisplayName,
-                Email = Email,
-                Mobile = Mobile,
-                AvatarUrl = AvatarUrl,
-                Organization = Organization,
-                Department = Department,
-                Position = Position,
-                Gender = Gender,
-                Birthday = Birthday,
-                Education = Education,
-                Graduation = Graduation,
-                Address = Address,
-                WeiXin = WeiXin,
-                Qq = Qq,
-                WeiBo = WeiBo,
-                Interests = Interests,
-                Signature = Signature
-            };
-
-
-            return userInfo;
-        }
-
-        public int Id { get; set; }
-
-        public string UserName { get; set; }
-
-        public string Password { get; set; }
-
-        public string PasswordFormat { get; set; }
-
-        public string PasswordSalt { get; set; }
-
-        public DateTime CreateDate { get; set; }
-
-        public DateTime LastResetPasswordDate { get; set; }
-
-        public DateTime LastActivityDate { get; set; }
-
-        public int CountOfLogin { get; set; }
-
-        public int CountOfFailedLogin { get; set; }
-
-        public int CountOfWriting { get; set; }
-
-        public string IsChecked { get; set; }
-
-        public string IsLockedOut { get; set; }
-
-        public string DisplayName { get; set; }
-
-        public string Email { get; set; }
-
-        public string Mobile { get; set; }
-
-        public string AvatarUrl { get; set; }
-
-        public string Organization { get; set; }
-
-        public string Department { get; set; }
-
-        public string Position { get; set; }
-
-        public string Gender { get; set; }
-
-        public string Birthday { get; set; }
-
-        public string Education { get; set; }
-
-        public string Graduation { get; set; }
-
-        public string Address { get; set; }
-
-        public string WeiXin { get; set; }
-
-        public string Qq { get; set; }
-
-        public string WeiBo { get; set; }
-
-        public string Interests { get; set; }
-
-        public string Signature { get; set; }
-    }
-
-    public class UserInfoCreateUpdate
-    {
-        public UserInfoCreateUpdate()
-        {
-
-        }
-
-        public string UserName { get; set; }
-
-        public string Password { get; set; }
-
-        public string PasswordFormat { get; set; }
-
-        public DateTime? CreateDate { get; set; }
-
-        public DateTime? LastResetPasswordDate { get; set; }
-
-        public DateTime? LastActivityDate { get; set; }
-
-        public int? CountOfLogin { get; set; }
-
-        public int? CountOfFailedLogin { get; set; }
-
-        public int? CountOfWriting { get; set; }
-
-        public bool? IsChecked { get; set; }
-
-        public bool? IsLockedOut { get; set; }
-
-        public string DisplayName { get; set; }
-
-        public string Email { get; set; }
-
-        public string Mobile { get; set; }
-
-        public string AvatarUrl { get; set; }
-
-        public string Organization { get; set; }
-
-        public string Department { get; set; }
-
-        public string Position { get; set; }
-
-        public string Gender { get; set; }
-
-        public string Birthday { get; set; }
-
-        public string Education { get; set; }
-
-        public string Graduation { get; set; }
-
-        public string Address { get; set; }
-
-        public string WeiXin { get; set; }
-
-        public string Qq { get; set; }
-
-        public string WeiBo { get; set; }
-
-        public string Interests { get; set; }
-
-        public string Signature { get; set; }
-    }
-
     public class UserDao : DataProviderBase
     {
-        public override string TableName => "siteserver_User";
+        public const string DatabaseTableName = "siteserver_User";
+
+        public override string TableName => DatabaseTableName;
 
         public override List<TableColumn> TableColumns => new List<TableColumn>
         {
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.Id),
+                AttributeName = nameof(UserInfoDatabase.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.UserName),
+                AttributeName = nameof(UserInfoDatabase.UserName),
                 DataType = DataType.VarChar,
                 DataLength = 255
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.Password),
+                AttributeName = nameof(UserInfoDatabase.Password),
                 DataType = DataType.VarChar,
                 DataLength = 255
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.PasswordFormat),
+                AttributeName = nameof(UserInfoDatabase.PasswordFormat),
                 DataType = DataType.VarChar,
                 DataLength = 50
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.PasswordSalt),
+                AttributeName = nameof(UserInfoDatabase.PasswordSalt),
                 DataType = DataType.VarChar,
                 DataLength = 128
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.CreateDate),
+                AttributeName = nameof(UserInfoDatabase.CreateDate),
                 DataType = DataType.DateTime
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.LastResetPasswordDate),
+                AttributeName = nameof(UserInfoDatabase.LastResetPasswordDate),
                 DataType = DataType.DateTime
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.LastActivityDate),
+                AttributeName = nameof(UserInfoDatabase.LastActivityDate),
                 DataType = DataType.DateTime
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.CountOfLogin),
+                AttributeName = nameof(UserInfoDatabase.CountOfLogin),
                 DataType = DataType.Integer
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.CountOfFailedLogin),
+                AttributeName = nameof(UserInfoDatabase.CountOfFailedLogin),
                 DataType = DataType.Integer
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.CountOfWriting),
+                AttributeName = nameof(UserInfoDatabase.CountOfWriting),
                 DataType = DataType.Integer
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.IsChecked),
+                AttributeName = nameof(UserInfoDatabase.IsChecked),
                 DataType = DataType.VarChar,
                 DataLength = 18
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.IsLockedOut),
+                AttributeName = nameof(UserInfoDatabase.IsLockedOut),
                 DataType = DataType.VarChar,
                 DataLength = 18
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.DisplayName),
+                AttributeName = nameof(UserInfoDatabase.DisplayName),
                 DataType = DataType.VarChar,
                 DataLength = 255
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.Email),
+                AttributeName = nameof(UserInfoDatabase.Email),
                 DataType = DataType.VarChar,
                 DataLength = 255
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.Mobile),
+                AttributeName = nameof(UserInfoDatabase.Mobile),
                 DataType = DataType.VarChar,
                 DataLength = 20
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.AvatarUrl),
+                AttributeName = nameof(UserInfoDatabase.AvatarUrl),
                 DataType = DataType.VarChar,
                 DataLength = 200
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.Organization),
+                AttributeName = nameof(UserInfoDatabase.Organization),
                 DataType = DataType.VarChar,
                 DataLength = 255
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.Department),
+                AttributeName = nameof(UserInfoDatabase.Department),
                 DataType = DataType.VarChar,
                 DataLength = 255
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.Position),
+                AttributeName = nameof(UserInfoDatabase.Position),
                 DataType = DataType.VarChar,
                 DataLength = 255
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.Gender),
+                AttributeName = nameof(UserInfoDatabase.Gender),
                 DataType = DataType.VarChar,
                 DataLength = 50
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.Birthday),
+                AttributeName = nameof(UserInfoDatabase.Birthday),
                 DataType = DataType.VarChar,
                 DataLength = 50
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.Education),
+                AttributeName = nameof(UserInfoDatabase.Education),
                 DataType = DataType.VarChar,
                 DataLength = 255
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.Graduation),
+                AttributeName = nameof(UserInfoDatabase.Graduation),
                 DataType = DataType.VarChar,
                 DataLength = 255
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.Address),
+                AttributeName = nameof(UserInfoDatabase.Address),
                 DataType = DataType.VarChar,
                 DataLength = 255
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.WeiXin),
+                AttributeName = nameof(UserInfoDatabase.WeiXin),
                 DataType = DataType.VarChar,
                 DataLength = 255
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.Qq),
+                AttributeName = nameof(UserInfoDatabase.Qq),
                 DataType = DataType.VarChar,
                 DataLength = 50
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.WeiBo),
+                AttributeName = nameof(UserInfoDatabase.WeiBo),
                 DataType = DataType.VarChar,
                 DataLength = 255
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.Interests),
+                AttributeName = nameof(UserInfoDatabase.Interests),
                 DataType = DataType.VarChar,
                 DataLength = 255
             },
             new TableColumn
             {
-                AttributeName = nameof(DbUserInfo.Signature),
+                AttributeName = nameof(UserInfoDatabase.Signature),
                 DataType = DataType.VarChar,
                 DataLength = 255
             }
@@ -1512,7 +1278,7 @@ namespace SiteServer.CMS.Provider
             return enumerable;
         }
 
-        public bool CheckPassword(string password, bool isPasswordMd5, string dbpassword, EPasswordFormat passwordFormat, string passwordSalt)
+        private bool CheckPassword(string password, bool isPasswordMd5, string dbpassword, EPasswordFormat passwordFormat, string passwordSalt)
         {
             var decodePassword = DecodePassword(dbpassword, passwordFormat, passwordSalt);
             if (isPasswordMd5)
@@ -1732,14 +1498,14 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
         public List<UserInfo> ApiGetUsers(int offset, int limit)
         {
             var list = new List<UserInfo>();
-            List<DbUserInfo> dbList;
+            List<UserInfoDatabase> dbList;
 
             var sqlString =
                 DataProvider.DatabaseDao.GetPageSqlString(TableName, "*", string.Empty, "ORDER BY Id", offset, limit);
 
             using (var connection = GetConnection())
             {
-                dbList = connection.Query<DbUserInfo>(sqlString).ToList();
+                dbList = connection.Query<UserInfoDatabase>(sqlString).ToList();
             }
 
             if (dbList.Count > 0)
@@ -1764,7 +1530,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 
             using (var connection = GetConnection())
             {
-                var dbUserInfo = connection.QuerySingleOrDefault<DbUserInfo>(sqlString, new { Id = id });
+                var dbUserInfo = connection.QuerySingleOrDefault<UserInfoDatabase>(sqlString, new { Id = id });
                 if (dbUserInfo != null)
                 {
                     userInfo = dbUserInfo.ToUserInfo();
@@ -1790,9 +1556,9 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 
             if (!UpdateValidate(userInfoToUpdate, userInfo.UserName, userInfo.Email, userInfo.Mobile, out errorMessage)) return null;
 
-            var dbUserInfo = new DbUserInfo(userInfo);
+            var dbUserInfo = new UserInfoDatabase(userInfo);
 
-            ApiLoad(userInfoToUpdate, dbUserInfo);
+            userInfoToUpdate.Load(dbUserInfo);
 
             dbUserInfo.Password = userInfo.Password;
             dbUserInfo.PasswordFormat = userInfo.PasswordFormat;
@@ -1812,153 +1578,10 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 
             using (var connection = GetConnection())
             {
-                connection.Delete(new DbUserInfo(userInfoToDelete));
+                connection.Delete(new UserInfoDatabase(userInfoToDelete));
             }
 
             return userInfoToDelete;
-        }
-
-        private void ApiLoad(UserInfoCreateUpdate userInfoToUpdate, DbUserInfo dbUserInfo)
-        {
-            if (userInfoToUpdate.UserName != null)
-            {
-                dbUserInfo.UserName = userInfoToUpdate.UserName;
-            }
-
-            if (userInfoToUpdate.Password != null)
-            {
-                dbUserInfo.Password = userInfoToUpdate.Password;
-            }
-
-            if (userInfoToUpdate.PasswordFormat != null)
-            {
-                dbUserInfo.PasswordFormat = userInfoToUpdate.PasswordFormat;
-            }
-
-            if (userInfoToUpdate.CreateDate != null)
-            {
-                dbUserInfo.CreateDate = (DateTime)userInfoToUpdate.CreateDate;
-            }
-
-            if (userInfoToUpdate.LastResetPasswordDate != null)
-            {
-                dbUserInfo.LastResetPasswordDate = (DateTime)userInfoToUpdate.LastResetPasswordDate;
-            }
-
-            if (userInfoToUpdate.LastActivityDate != null)
-            {
-                dbUserInfo.LastActivityDate = (DateTime)userInfoToUpdate.LastActivityDate;
-            }
-
-            if (userInfoToUpdate.CountOfLogin != null)
-            {
-                dbUserInfo.CountOfLogin = (int)userInfoToUpdate.CountOfLogin;
-            }
-
-            if (userInfoToUpdate.CountOfFailedLogin != null)
-            {
-                dbUserInfo.CountOfFailedLogin = (int)userInfoToUpdate.CountOfFailedLogin;
-            }
-
-            if (userInfoToUpdate.CountOfWriting != null)
-            {
-                dbUserInfo.CountOfWriting = (int)userInfoToUpdate.CountOfWriting;
-            }
-
-            if (userInfoToUpdate.IsChecked != null)
-            {
-                dbUserInfo.IsChecked = userInfoToUpdate.IsChecked.ToString();
-            }
-
-            if (userInfoToUpdate.IsLockedOut != null)
-            {
-                dbUserInfo.IsLockedOut = userInfoToUpdate.IsLockedOut.ToString();
-            }
-
-            if (userInfoToUpdate.DisplayName != null)
-            {
-                dbUserInfo.DisplayName = userInfoToUpdate.DisplayName;
-            }
-
-            if (userInfoToUpdate.Email != null)
-            {
-                dbUserInfo.Email = userInfoToUpdate.Email;
-            }
-
-            if (userInfoToUpdate.Mobile != null)
-            {
-                dbUserInfo.Mobile = userInfoToUpdate.Mobile;
-            }
-
-            if (userInfoToUpdate.AvatarUrl != null)
-            {
-                dbUserInfo.AvatarUrl = userInfoToUpdate.AvatarUrl;
-            }
-
-            if (userInfoToUpdate.Organization != null)
-            {
-                dbUserInfo.Organization = userInfoToUpdate.Organization;
-            }
-
-            if (userInfoToUpdate.Department != null)
-            {
-                dbUserInfo.Department = userInfoToUpdate.Department;
-            }
-
-            if (userInfoToUpdate.Position != null)
-            {
-                dbUserInfo.Position = userInfoToUpdate.Position;
-            }
-
-            if (userInfoToUpdate.Gender != null)
-            {
-                dbUserInfo.Gender = userInfoToUpdate.Gender;
-            }
-
-            if (userInfoToUpdate.Birthday != null)
-            {
-                dbUserInfo.Birthday = userInfoToUpdate.Birthday;
-            }
-
-            if (userInfoToUpdate.Education != null)
-            {
-                dbUserInfo.Education = userInfoToUpdate.Education;
-            }
-
-            if (userInfoToUpdate.Graduation != null)
-            {
-                dbUserInfo.Graduation = userInfoToUpdate.Graduation;
-            }
-
-            if (userInfoToUpdate.Address != null)
-            {
-                dbUserInfo.Address = userInfoToUpdate.Address;
-            }
-
-            if (userInfoToUpdate.WeiXin != null)
-            {
-                dbUserInfo.WeiXin = userInfoToUpdate.WeiXin;
-            }
-
-            if (userInfoToUpdate.Qq != null)
-            {
-                dbUserInfo.Qq = userInfoToUpdate.Qq;
-            }
-
-            if (userInfoToUpdate.WeiBo != null)
-            {
-                dbUserInfo.WeiBo = userInfoToUpdate.WeiBo;
-            }
-
-            if (userInfoToUpdate.Interests != null)
-            {
-                dbUserInfo.Interests = userInfoToUpdate.Interests;
-            }
-
-            if (userInfoToUpdate.Signature != null)
-            {
-                dbUserInfo.Signature = userInfoToUpdate.Signature;
-            }
         }
 
         public UserInfo ApiInsert(UserInfoCreateUpdate userInfoToInsert, string ipAddress, out string errorMessage)
@@ -1967,9 +1590,9 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 
             try
             {
-                var dbUserInfo = new DbUserInfo();
+                var dbUserInfo = new UserInfoDatabase();
 
-                ApiLoad(userInfoToInsert, dbUserInfo);
+                userInfoToInsert.Load(dbUserInfo);
 
                 if (!InsertValidate(dbUserInfo.UserName, dbUserInfo.Email, dbUserInfo.Mobile, dbUserInfo.Password, ipAddress, out errorMessage)) return null;
 

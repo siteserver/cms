@@ -1,4 +1,4 @@
-@using SiteServer.API
+@using SiteServer.CMS.Api
 <!DOCTYPE html>
 <html>
 
@@ -8,8 +8,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link href="../assets/images/favicon.png" rel="icon" type="image/png">
-  <link href="../assets/css/bootstrap_4.0.0/bootstrap.min.css" rel="stylesheet" type="text/css" />
-  <link href="../assets/css/ionicons_2.0.0/ionicons.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/bootstrap-4.0.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/ionicons-2.0.0.min.css" rel="stylesheet" type="text/css" />
   <link href="../assets/css/core.css" rel="stylesheet" type="text/css" />
   <link href="../assets/css/components.css" rel="stylesheet" type="text/css" />
   <link href="../assets/css/pages.css" rel="stylesheet" type="text/css" />
@@ -42,14 +42,12 @@
 
 </html>
 
-<script src="../assets/js/jquery_1.9.1/jquery.min.js" type="text/javascript"></script>
-<script src="../assets/js/sweetalert_2.1.0/sweetalert.min.js" type="text/javascript"></script>
-<script src="../assets/js/vue_2.5.16/vue.min.js" type="text/javascript"></script>
-<script src="../assets/js/layer_3.1.1/layer.js" type="text/javascript"></script>
-
-<script src="../assets/js/apiUtils.js" type="text/javascript"></script>
-<script src="../assets/js/pageUtils.js" type="text/javascript"></script>
-
+<script src="../assets/js/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="../assets/js/layer-3.1.1/layer.js" type="text/javascript"></script>
+<script src="../assets/js/sweetalert-2.1.0.min.js" type="text/javascript"></script>
+<script src="../assets/js/vue-2.5.16.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-  var $apiUrl = '@WebApiConfig.ApiUrl';
-</script> @RenderSection("Scripts")
+  var $apiConfig = { isSeparatedApi: @ApiManager.IsSeparatedApi.ToString().ToLower(), apiUrl: '@ApiManager.ApiUrl', innerApiUrl: '@ApiManager.InnerApiUrl'};
+</script>
+<script src="../assets/js/apiUtils.js" type="text/javascript"></script>
+<script src="../assets/js/pageUtils.js" type="text/javascript"></script> @RenderSection("Scripts")

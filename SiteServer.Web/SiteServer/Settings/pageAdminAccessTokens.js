@@ -1,4 +1,5 @@
-﻿var api = new apiUtils.Api($apiUrl + '/settings/admin/accessTokens');
+﻿var $apiUrl = $apiConfig.apiUrl;
+var api = new apiUtils.Api($apiUrl + '/sys/settings/admin/accessTokens');
 
 var $vue = new Vue({
   el: '#main',
@@ -32,7 +33,7 @@ var $vue = new Vue({
       var $this = this;
 
       pageUtils.loading(true);
-      new apiUtils.Api($apiUrl + '/settings/admin/accessTokens/action/getAdminNamesAndScopes').get(null, function (err, res) {
+      new apiUtils.Api($apiUrl + '/sys/settings/admin/accessTokens/action/getAdminNamesAndScopes').get(null, function (err, res) {
         pageUtils.loading(false);
         if (err || !res || !res.value) return;
 
@@ -44,7 +45,7 @@ var $vue = new Vue({
       var $this = this;
 
       pageUtils.loading(true);
-      new apiUtils.Api($apiUrl + '/settings/admin/accessTokens/action/getAccessToken/' + item.id).get(null, function (err, res) {
+      new apiUtils.Api($apiUrl + '/sys/settings/admin/accessTokens/action/getAccessToken/' + item.id).get(null, function (err, res) {
         pageUtils.loading(false);
         if (err || !res || !res.value) return;
 
@@ -98,7 +99,7 @@ var $vue = new Vue({
       var $this = this;
 
       pageUtils.loading(true);
-      new apiUtils.Api($apiUrl + '/settings/admin/accessTokens/action/regenerate/' + item.id).post(null, function (err, res) {
+      new apiUtils.Api($apiUrl + '/sys/settings/admin/accessTokens/action/regenerate/' + item.id).post(null, function (err, res) {
         pageUtils.loading(false);
         if (err || !res || !res.value) return;
 

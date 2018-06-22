@@ -55,17 +55,10 @@ namespace SiteServer.BackgroundPages
 
             if (!IsAccessable) // 如果页面不能直接访问且又没有登录则直接跳登录页
             {
-                if (!AuthRequest.IsAdminLoggin || AuthRequest.AdminInfo == null) // 检测管理员是否登录
+                if (!AuthRequest.IsAdminLoggin || AuthRequest.AdminInfo == null || AuthRequest.AdminInfo.IsLockedOut) // 检测管理员是否登录，检测管理员帐号是否被锁定
                 {
                     IsForbidden = true;
                     PageUtils.RedirectToLoginPage();
-                    return;
-                }
-
-                if (AuthRequest.AdminInfo.IsLockedOut) // 检测管理员帐号是否被锁定
-                {
-                    IsForbidden = true;
-                    PageUtils.RedirectToLoginPage("对不起，您的账号已被锁定，无法进入系统！");
                     return;
                 }
             }

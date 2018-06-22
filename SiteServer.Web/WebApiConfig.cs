@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using SiteServer.CMS.Api;
+using SiteServer.Utils;
 
 namespace SiteServer.API
 {
@@ -48,7 +49,5 @@ namespace SiteServer.API
 
             config.EnsureInitialized();
         }
-
-        public static string ApiUrl => ApiManager.GetApiUrl("sys");
     }
 }

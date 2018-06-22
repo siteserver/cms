@@ -7,12 +7,14 @@ namespace SiteServer.CMS.Core
 	public static class AccessTokenManager
 	{
 	    public const string ScopeContents = "Contents";
-        public const string ScopeUsers = "Users";
+        public const string ScopeAdministrators = "Administrators";
+	    public const string ScopeUsers = "Users";
         public const string ScopeStl = "STL";
 
 	    public static List<string> ScopeList => new List<string>
 	    {
 	        ScopeContents,
+            ScopeAdministrators,
             ScopeUsers,
             ScopeStl
         };

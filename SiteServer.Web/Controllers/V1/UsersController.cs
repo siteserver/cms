@@ -7,7 +7,6 @@ using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Provider;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -18,6 +17,7 @@ namespace SiteServer.API.Controllers.V1
     {
         private const string Route = "v1/users";
         private const string RouteActionsLogin = "v1/users/actions/login";
+        private const string RouteActionsLogout = "v1/users/actions/logout";
         private const string RouteActionsResetPassword = "v1/users/actions/resetPassword";
 
         private const string RouteUser = "v1/users/{id:int}";
@@ -229,11 +229,29 @@ namespace SiteServer.API.Controllers.V1
 
                 var accessToken = request.UserLogin(userName);
 
-                return Ok(new OResponse(new
+                return Ok(new
                 {
-                    User = userInfo,
+                    Value = userInfo,
                     AccessToken = accessToken
-                }));
+                });
+            }
+            catch (Exception ex)
+            {
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpPost, Route(RouteActionsLogout)]
+        public IHttpActionResult Logout()
+        {
+            try
+            {
+                var request = new AuthRequest();
+
+                request.UserLogout();
+
+                return Ok(new OResponse(true));
             }
             catch (Exception ex)
             {

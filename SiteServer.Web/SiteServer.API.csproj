@@ -69,8 +69,8 @@
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=1.7.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.7.6\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.7.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.7.7\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
@@ -133,8 +133,9 @@
     <Content Include="安装向导.html" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\PluginController.cs" />
+    <Compile Include="Controllers\Plugins\PluginController.cs" />
     <Compile Include="Controllers\Preview\PreviewController.cs" />
+    <Compile Include="Controllers\V1\CaptchaController.cs" />
     <Compile Include="Controllers\Sys\Settings\Admin\AccessTokensController.cs" />
     <Compile Include="Controllers\Sys\Administrators\AdministratorsActionsLoginController.cs" />
     <Compile Include="Controllers\Sys\Administrators\AdministratorsSiteCheckListController.cs" />
@@ -155,6 +156,7 @@
     <Compile Include="Controllers\Sys\Stl\StlActionsTriggerController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsUploadController.cs" />
     <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Controllers\V1\AdministratorsController.cs" />
     <Compile Include="Controllers\V1\UsersController.cs" />
     <Compile Include="Controllers\V1\PingController.cs" />
     <Compile Include="Controllers\V1\StlController.cs" />

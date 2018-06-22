@@ -956,20 +956,14 @@ namespace SiteServer.Utils
             }
         }
 
-        public static void RedirectToLoginPage()
+        public static string GetLoginUrl()
         {
-            RedirectToLoginPage(string.Empty);
+            return GetAdminDirectoryUrl("pageLogin.cshtml");
         }
 
-        public static void RedirectToLoginPage(string error)
+        public static void RedirectToLoginPage()
         {
-            var pageUrl = GetAdminDirectoryUrl("login.aspx");
-
-            if (!string.IsNullOrEmpty(error))
-            {
-                pageUrl = pageUrl + "?error=" + error;
-            }
-            Redirect(pageUrl);
+            Redirect(GetLoginUrl());
         }
 
         public static string GetRootUrlByPhysicalPath(string physicalPath)

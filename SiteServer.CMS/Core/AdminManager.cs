@@ -102,7 +102,7 @@ namespace SiteServer.CMS.Core
             {
                 administratorInfo.LastActivityDate = DateUtils.SqlMinValue;
                 administratorInfo.CreationDate = DateTime.Now;
-                administratorInfo.PasswordFormat = EPasswordFormat.Encrypted;
+                administratorInfo.PasswordFormat = EPasswordFormatUtils.GetValue(EPasswordFormat.Encrypted);
                 var isCreated = DataProvider.AdministratorDao.Insert(administratorInfo, out errorMessage);
                 if (isCreated == false) return false;
 

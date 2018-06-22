@@ -8,7 +8,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 
-namespace SiteServer.API.Controllers
+namespace SiteServer.API.Controllers.Plugins
 {
     [RoutePrefix("api")]
     public class PluginController : ApiController

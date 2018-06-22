@@ -61,11 +61,7 @@
                 <asp:RequiredFieldValidator ControlToValidate="TbValidateCode" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
                 />
               </li>
-              <li>
-                <span class="yun_s1">&nbsp;</span>
-                <asp:CheckBox ID="CbRememberMe" Checked="true" class="checkbox" runat="server" text="记住用户名"></asp:CheckBox>
-              </li>
-              <li>
+              <li style="padding-top: 10px">
                 <span class="yun_s1">&nbsp;</span>
                 <asp:Button class="yun_submit" ID="LoginSubmit" Style="width: 101px" OnClick="Submit_OnClick" runat="server" />
                 <asp:PlaceHolder id="PhFindPassword" runat="server">

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using SiteServer.CMS.Api;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -69,7 +70,8 @@ namespace SiteServer.CMS.Plugin
 
             var url = PageUtils.AddQueryStringIfNotExists(PageUtils.ParsePluginUrl(pluginId, href), new NameValueCollection
             {
-                {"v", StringUtils.GetRandomInt(1, 1000).ToString()}
+                {"v", StringUtils.GetRandomInt(1, 1000).ToString()},
+                {"apiUrl", ApiManager.ApiUrl}
             });
             if (siteId > 0)
             {

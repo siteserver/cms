@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Account
 {
@@ -26,7 +27,7 @@ namespace SiteServer.BackgroundPages.Account
 
             var adminInfo = DataProvider.AdministratorDao.GetByUserName(AuthRequest.AdminName);
 
-            if (DataProvider.AdministratorDao.CheckPassword(TbCurrentPassword.Text, adminInfo.Password, adminInfo.PasswordFormat, adminInfo.PasswordSalt))
+            if (DataProvider.AdministratorDao.CheckPassword(TbCurrentPassword.Text, false, adminInfo.Password, EPasswordFormatUtils.GetEnumType(adminInfo.PasswordFormat), adminInfo.PasswordSalt))
             {
                 string errorMessage;
                 if (DataProvider.AdministratorDao.ChangePassword(AuthRequest.AdminName, TbNewPassword.Text, out errorMessage))

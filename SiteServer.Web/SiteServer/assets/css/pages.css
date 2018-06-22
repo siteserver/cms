@@ -1088,7 +1088,7 @@ h3.timeline-title {
 }
 .wrapper-page .form-control {
   height: 40px;
-  padding-left: 40px;
+  padding-left: 10px;
 }
 .wrapper-page .form-control-feedback {
   left: 15px;
