@@ -44,6 +44,11 @@ namespace SiteServer.Utils
             WriteText(filePath, ECharsetUtils.GetEncoding(charset), content);
         }
 
+	    public static void WriteText(string filePath, string content)
+	    {
+	        WriteText(filePath, Encoding.UTF8, content);
+	    }
+
         public static void WriteText(string filePath, Encoding encoding, string content)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
@@ -57,26 +62,32 @@ namespace SiteServer.Utils
 
                 file.Close();
             }
-
-            //         var sw = new StreamWriter(filePath, false, ECharsetUtils.GetEncoding(charset));
-            //sw.Write(content);
-            //sw.Flush();
-            //sw.Close();
         }
+
+	    public static void AppendText(string filePath, string content)
+	    {
+	        AppendText(filePath, Encoding.UTF8, content);
+	    }
 
         public static void AppendText(string filePath, ECharset charset, string content)
         {
-            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-
-            using (var fs = new FileStream(filePath, FileMode.Append, FileAccess.Write))
-            {
-                using (var sw = new StreamWriter(fs, ECharsetUtils.GetEncoding(charset)))
-                {
-                    sw.Write(content);
-                }
-            }
+            AppendText(filePath, ECharsetUtils.GetEncoding(charset), content);
         }
 
+	    public static void AppendText(string filePath, Encoding encoding, string content)
+	    {
+	        DirectoryUtils.CreateDirectoryIfNotExists(filePath);
+
+	        var file = new FileStream(filePath, FileMode.Append, FileAccess.Write);
+	        using (var writer = new StreamWriter(file, encoding))
+	        {
+	            writer.Write(content);
+	            writer.Flush();
+	            writer.Close();
+
+	            file.Close();
+	        }
+        }
 
         public static void RemoveReadOnlyAndHiddenIfExists(string filePath)
         {

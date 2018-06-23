@@ -64,12 +64,7 @@
                 <img src="assets/icons/logo.png" />
               </a>
             </div>
-            <a href="javascript:;" class="position-fixed" onclick="toggleMenu()" style="margin-top: 10px;margin-left: 30px;">
-              <i class="ion-navicon" style="font-size: 28px;color: #fff;"></i>
-            </a>
-            <ul id="topMenus" class="navigation-menu">
-              <asp:Literal id="LtlTopMenus" runat="server" />
-            </ul>
+            <asp:Literal id="LtlTopMenus" runat="server" />
             <asp:PlaceHolder id="PhSite" runat="server" visible="false">
               <div class="menu-extras">
                 <ul class="nav navbar-nav navbar-right float-right">

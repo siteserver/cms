@@ -49,7 +49,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var pageNum = 0;
             var isHighlight = false;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -118,7 +118,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             string loading;
             string yes;
             string no;
-            StlInnerUtility.GetLoadingYesNo(contextInfo.InnerXml, out loading, out yes, out no);
+            StlParserUtility.GetLoadingYesNo(contextInfo.InnerHtml, out loading, out yes, out no);
 
             if (string.IsNullOrEmpty(loading))
             {

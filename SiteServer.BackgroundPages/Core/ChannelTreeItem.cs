@@ -34,7 +34,12 @@ namespace SiteServer.BackgroundPages.Core
             _permissionManager = permissionManager;
 
             var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
-            _contentModelIconClass = "ion-folder";
+            
+            //为后台栏目树中的首页和外链栏目添加图标
+            if (_channelInfo.ParentId == 0) _contentModelIconClass = "ion-ios-home";
+            else if (_channelInfo.LinkUrl.Length != 0) _contentModelIconClass = "ion-link";
+            else _contentModelIconClass = "ion-folder";
+
             _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
             _iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");
             _iconPlusUrl = PageUtils.Combine(treeDirectoryUrl, "plus.png");
@@ -53,9 +58,9 @@ namespace SiteServer.BackgroundPages.Core
             {
                 htmlBuilder.Append(
                     _channelInfo.SiteId == _channelInfo.Id
-                        ? $@"<img align=""absmiddle"" style=""cursor:pointer margin-top: -5px;"" onClick=""displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_channelInfo
+                        ? $@"<img align=""absmiddle"" style=""cursor:pointer; margin-top: -5px; margin-right: 2px;"" onClick=""displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_channelInfo
                             .Id}"" src=""{_iconMinusUrl}"" />"
-                        : $@"<img align=""absmiddle"" style=""cursor:pointer; margin-top: -5px;"" onClick=""displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_channelInfo
+                        : $@"<img align=""absmiddle"" style=""cursor:pointer; margin-top: -5px; margin-right: 2px;"" onClick=""displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_channelInfo
                             .Id}"" src=""{_iconPlusUrl}"" />");
             }
             else
@@ -121,7 +126,7 @@ namespace SiteServer.BackgroundPages.Core
                     }
                     else
                     {
-                        htmlBuilder.Append($@"<a href=""javascript:;;"">{_channelInfo.ChannelName}</a>");
+                        htmlBuilder.Append($@"<a href=""javascript:;"">{_channelInfo.ChannelName}</a>");
                     }
                 }
             }
@@ -223,7 +228,7 @@ function displayChildren(img){
     if (isToOpen && isByAjax)
     {
         var div = document.createElement('div');
-        div.innerHTML = ""<img align='absmiddle' border='0' src='{iconLoadingUrl}' /> 加载中，请稍候..."";
+        div.innerHTML = ""<img align='absmiddle' width='30' height='12' border='0' src='{iconLoadingUrl}' />"";
         img.parentNode.appendChild(div);
         $(div).addClass('loading');
         loadingChannels(tr, img, div, channelId);
@@ -303,7 +308,7 @@ paths = paths.substring(paths.indexOf(',') + 1);
             script = script.Replace("{iconEmptyUrl}", PageUtils.Combine(treeDirectoryUrl, "empty.gif"));
             script = script.Replace("{iconMinusUrl}", PageUtils.Combine(treeDirectoryUrl, "minus.png"));
             script = script.Replace("{iconPlusUrl}", PageUtils.Combine(treeDirectoryUrl, "plus.png"));
-            script = script.Replace("{iconLoadingUrl}", SiteServerAssets.GetIconUrl("loading.gif"));
+            script = script.Replace("{iconLoadingUrl}", SiteServerAssets.GetUrl("layer/skin/default/xubox_loading0.gif"));
             return script;
         }
 

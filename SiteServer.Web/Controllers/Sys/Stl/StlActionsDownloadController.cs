@@ -84,12 +84,6 @@ namespace SiteServer.API.Controllers.Sys.Stl
 
                     if (!string.IsNullOrEmpty(contentInfo?.GetString(BackgroundContentAttribute.FileUrl)))
                     {
-                        //string fileUrl = contentInfo.GetString(BackgroundContentAttribute.FileUrl);
-                        if (siteInfo.Additional.IsCountDownload)
-                        {
-                            CountManager.AddCount(tableName, contentId.ToString(), ECountType.Download);
-                        }
-
                         if (PageUtils.IsProtocolUrl(fileUrl))
                         {
                             isSuccess = true;

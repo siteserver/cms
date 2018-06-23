@@ -15,50 +15,22 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public IUserInfo GetUserInfoByUserId(int userId)
         {
-            var userInfo = DataProvider.UserDao.GetUserInfo(userId);
-            if (userInfo != null)
-            {
-                userInfo.Password = string.Empty;
-                userInfo.PasswordFormat = string.Empty;
-                userInfo.PasswordSalt = string.Empty;
-            }
-            return userInfo;
+            return DataProvider.UserDao.GetUserInfo(userId);
         }
 
         public IUserInfo GetUserInfoByUserName(string userName)
         {
-            var userInfo = DataProvider.UserDao.GetUserInfoByUserName(userName);
-            if (userInfo != null)
-            {
-                userInfo.Password = string.Empty;
-                userInfo.PasswordFormat = string.Empty;
-                userInfo.PasswordSalt = string.Empty;
-            }
-            return userInfo;
+            return DataProvider.UserDao.GetUserInfoByUserName(userName);
         }
 
         public IUserInfo GetUserInfoByEmail(string email)
         {
-            var userInfo =  DataProvider.UserDao.GetUserInfoByEmail(email);
-            if (userInfo != null)
-            {
-                userInfo.Password = string.Empty;
-                userInfo.PasswordFormat = string.Empty;
-                userInfo.PasswordSalt = string.Empty;
-            }
-            return userInfo;
+            return DataProvider.UserDao.GetUserInfoByEmail(email);
         }
 
         public IUserInfo GetUserInfoByMobile(string mobile)
         {
-            var userInfo = DataProvider.UserDao.GetUserInfoByMobile(mobile);
-            if (userInfo != null)
-            {
-                userInfo.Password = string.Empty;
-                userInfo.PasswordFormat = string.Empty;
-                userInfo.PasswordSalt = string.Empty;
-            }
-            return userInfo;
+            return DataProvider.UserDao.GetUserInfoByMobile(mobile);
         }
 
         public string GetMobileByAccount(string account)
@@ -93,7 +65,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public bool Validate(string account, string password, out string userName, out string errorMessage)
         {
-            return DataProvider.UserDao.Validate(account, password, out userName, out errorMessage);
+            return DataProvider.UserDao.Validate(account, password, false, out userName, out errorMessage);
         }
 
         public void UpdateLastActivityDateAndCountOfFailedLogin(string userName)

@@ -15,52 +15,52 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_Site";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SiteInfo.Id),
+                AttributeName = nameof(SiteInfo.Id),
                 DataType = DataType.Integer,
                 IsPrimaryKey = true,
                 IsIdentity = false
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SiteInfo.SiteName),
+                AttributeName = nameof(SiteInfo.SiteName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SiteInfo.SiteDir),
+                AttributeName = nameof(SiteInfo.SiteDir),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SiteInfo.TableName),
+                AttributeName = nameof(SiteInfo.TableName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SiteInfo.IsRoot),
+                AttributeName = nameof(SiteInfo.IsRoot),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SiteInfo.ParentId),
+                AttributeName = nameof(SiteInfo.ParentId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SiteInfo.Taxis),
+                AttributeName = nameof(SiteInfo.Taxis),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SiteInfo.SettingsXml),
+                AttributeName = nameof(SiteInfo.SettingsXml),
                 DataType = DataType.Text
             }
         };

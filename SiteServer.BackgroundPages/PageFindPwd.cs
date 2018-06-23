@@ -150,7 +150,7 @@ namespace SiteServer.BackgroundPages
 
             LtlPageTitle.Text = "密码设置成功";
             LtlMessage.Text = GetMessageHtml("密码设置成功，系统将跳转至登录页面", false);
-            AddWaitAndRedirectScript("login.aspx");
+            AddWaitAndRedirectScript(PageUtils.GetLoginUrl());
             PhStepAccount.Visible = false;
             PhStepSmsCode.Visible = false;
             PhStepChangePassword.Visible = false;

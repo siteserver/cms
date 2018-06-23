@@ -60,7 +60,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 		    var isLower = false;
 		    var isUpper = false;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -151,7 +151,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var parsedContent = string.Empty;
 
-            if (!string.IsNullOrEmpty(contextInfo.InnerXml))
+            if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
                 var preSiteInfo = pageInfo.SiteInfo;
                 var prePageChannelId = pageInfo.PageChannelId;
@@ -159,7 +159,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, contextInfo);
 
-                var innerBuilder = new StringBuilder(contextInfo.InnerXml);
+                var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
                 parsedContent = innerBuilder.ToString();
 
@@ -194,7 +194,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         else
                         {
-                            parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerXml, false);
+                            parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
 
                             inputType = styleInfo.InputType;
 

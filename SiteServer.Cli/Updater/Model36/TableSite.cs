@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Model36
 {
@@ -58,13 +59,21 @@ namespace SiteServer.Cli.Updater.Model36
 
     public partial class TableSite
     {
-        public const string OldTableName = "siteserver_PublishmentSystem";
+        public const string OldTableName = "PublishmentSystem";
 
-        public static readonly string NewTableName = DataProvider.SiteDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumnInfo> NewColumns = DataProvider.SiteDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.SiteDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        private static readonly List<TableColumn> NewColumns = DataProvider.SiteDao.TableColumns;
+
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(SiteInfo.Id), nameof(PublishmentSystemId)},
@@ -74,5 +83,7 @@ namespace SiteServer.Cli.Updater.Model36
                 {nameof(SiteInfo.IsRoot), nameof(IsHeadquarters)},
                 {nameof(SiteInfo.ParentId), nameof(ParentPublishmentSystemId)}
             };
+
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

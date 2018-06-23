@@ -14,61 +14,61 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_Template";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateInfo.Id),
+                AttributeName = nameof(TemplateInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateInfo.SiteId),
+                AttributeName = nameof(TemplateInfo.SiteId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateInfo.TemplateName),
+                AttributeName = nameof(TemplateInfo.TemplateName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateInfo.TemplateType),
+                AttributeName = nameof(TemplateInfo.TemplateType),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateInfo.RelatedFileName),
+                AttributeName = nameof(TemplateInfo.RelatedFileName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateInfo.CreatedFileFullName),
+                AttributeName = nameof(TemplateInfo.CreatedFileFullName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateInfo.CreatedFileExtName),
+                AttributeName = nameof(TemplateInfo.CreatedFileExtName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateInfo.Charset),
+                AttributeName = nameof(TemplateInfo.Charset),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateInfo.IsDefault),
+                AttributeName = nameof(TemplateInfo.IsDefault),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             }
         };
 

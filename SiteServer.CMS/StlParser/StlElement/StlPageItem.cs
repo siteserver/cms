@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using System.Xml;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -53,16 +52,14 @@ namespace SiteServer.CMS.StlParser.StlElement
         };
 
         //对“翻页项”（pageItem）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
-        public static string ParseElement(string stlElement, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum, bool isXmlContent, EContextType contextType)
+        public static string ParseElement(string stlElement, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum, EContextType contextType)
         {
             var parsedContent = string.Empty;
             try
             {
-                var xmlDocument = StlParserUtility.GetXmlDocument(stlElement, isXmlContent);
-                XmlNode node = xmlDocument.DocumentElement;
-                node = node?.FirstChild;
-                var label = node?.Name;
-                if (!StringUtils.EqualsIgnoreCase(label, ElementName)) return string.Empty;
+                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
+
+                if (!StringUtils.EqualsIgnoreCase(stlElementInfo.Name, ElementName)) return string.Empty;
 
                 var text = string.Empty;
                 var type = string.Empty;
@@ -75,67 +72,62 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var lStr = string.Empty;
                 var rStr = string.Empty;
                 var alwaysA = true;
-                var attributes = new Dictionary<string, string>();
+                var attributes = TranslateUtils.NewIgnoreCaseNameValueCollection();
 
-                var ie = node?.Attributes?.GetEnumerator();
-                if (ie != null)
+                foreach (var name in stlElementInfo.Attributes.AllKeys)
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-                        var name = attr.Name;
+                    var value = stlElementInfo.Attributes[name];
 
-                        if (StringUtils.EqualsIgnoreCase(name, Type.Name))
-                        {
-                            type = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, Text.Name))
-                        {
-                            text = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, ListNum.Name))
-                        {
-                            listNum = TranslateUtils.ToInt(attr.Value, 9);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, ListEllipsis.Name))
-                        {
-                            listEllipsis = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, LinkClass.Name))
-                        {
-                            linkClass = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, TextClass.Name))
-                        {
-                            textClass = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, HasLr.Name))
-                        {
-                            hasLr = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, LStr.Name))
-                        {
-                            lStr = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, RStr.Name))
-                        {
-                            rStr = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, AlwaysA.Name))
-                        {
-                            alwaysA = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else
-                        {
-                            attributes[name] = attr.Value;
-                        }
+                    if (StringUtils.EqualsIgnoreCase(name, Type.Name))
+                    {
+                        type = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, Text.Name))
+                    {
+                        text = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, ListNum.Name))
+                    {
+                        listNum = TranslateUtils.ToInt(value, 9);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, ListEllipsis.Name))
+                    {
+                        listEllipsis = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, LinkClass.Name))
+                    {
+                        linkClass = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, TextClass.Name))
+                    {
+                        textClass = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, HasLr.Name))
+                    {
+                        hasLr = TranslateUtils.ToBool(value);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, LStr.Name))
+                    {
+                        lStr = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, RStr.Name))
+                    {
+                        rStr = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, AlwaysA.Name))
+                    {
+                        alwaysA = TranslateUtils.ToBool(value);
+                    }
+                    else
+                    {
+                        attributes[name] = value;
                     }
                 }
 
                 string successTemplateString;
                 string failureTemplateString;
-                StlInnerUtility.GetYesNo(node.InnerXml, out successTemplateString, out failureTemplateString);
-                if (!string.IsNullOrEmpty(node.InnerXml) && string.IsNullOrEmpty(failureTemplateString))
+                StlParserUtility.GetYesNo(stlElementInfo.InnerHtml, out successTemplateString, out failureTemplateString);
+                if (!string.IsNullOrEmpty(stlElementInfo.InnerHtml) && string.IsNullOrEmpty(failureTemplateString))
                 {
                     failureTemplateString = successTemplateString;
                 }
@@ -447,7 +439,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
-            return StlParserUtility.GetBackHtml(parsedContent, pageInfo);
+            return parsedContent;
 
             //return parsedContent;
         }
@@ -532,16 +524,14 @@ namespace SiteServer.CMS.StlParser.StlElement
             return parsedContent;
         }
 
-        public static string ParseElementInSearchPage(string stlElement, PageInfo pageInfo, string ajaxDivId, int channelId, int currentPageIndex, int pageCount, int totalNum)
+        public static string ParseElementInSearchPage(string stlElement, PageInfo pageInfo, string ajaxDivId, int currentPageIndex, int pageCount, int totalNum)
         {
             var parsedContent = string.Empty;
             try
             {
-                var xmlDocument = StlParserUtility.GetXmlDocument(stlElement, true);
-                XmlNode node = xmlDocument.DocumentElement;
-                node = node?.FirstChild;
-                var label = node?.Name;
-                if (!StringUtils.EqualsIgnoreCase(label, ElementName)) return string.Empty;
+                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
+
+                if (!StringUtils.EqualsIgnoreCase(stlElementInfo.Name, ElementName)) return string.Empty;
 
                 var text = string.Empty;
                 var type = string.Empty;
@@ -554,86 +544,81 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var lStr = string.Empty;
                 var rStr = string.Empty;
                 var alwaysA = true;
-                var attributes = new Dictionary<string, string>();
+                var attributes = TranslateUtils.NewIgnoreCaseNameValueCollection();
 
-                var ie = node?.Attributes?.GetEnumerator();
-                if (ie != null)
+                foreach (var name in stlElementInfo.Attributes.AllKeys)
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-                        var name = attr.Name;
+                    var value = stlElementInfo.Attributes[name];
 
-                        if (StringUtils.EqualsIgnoreCase(name, Type.Name))
-                        {
-                            type = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, Text.Name))
-                        {
-                            text = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, ListNum.Name))
-                        {
-                            listNum = TranslateUtils.ToInt(attr.Value, 9);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, ListEllipsis.Name))
-                        {
-                            listEllipsis = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, LinkClass.Name))
-                        {
-                            linkClass = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, TextClass.Name))
-                        {
-                            textClass = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, HasLr.Name))
-                        {
-                            hasLr = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, LStr.Name))
-                        {
-                            lStr = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, RStr.Name))
-                        {
-                            rStr = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, AlwaysA.Name))
-                        {
-                            alwaysA = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else
-                        {
-                            attributes[name] = attr.Value;
-                        }
+                    if (StringUtils.EqualsIgnoreCase(name, Type.Name))
+                    {
+                        type = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, Text.Name))
+                    {
+                        text = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, ListNum.Name))
+                    {
+                        listNum = TranslateUtils.ToInt(value, 9);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, ListEllipsis.Name))
+                    {
+                        listEllipsis = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, LinkClass.Name))
+                    {
+                        linkClass = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, TextClass.Name))
+                    {
+                        textClass = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, HasLr.Name))
+                    {
+                        hasLr = TranslateUtils.ToBool(value);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, LStr.Name))
+                    {
+                        lStr = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, RStr.Name))
+                    {
+                        rStr = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, AlwaysA.Name))
+                    {
+                        alwaysA = TranslateUtils.ToBool(value);
+                    }
+                    else
+                    {
+                        attributes[name] = value;
                     }
                 }
 
                 var successTemplateString = string.Empty;
                 var failureTemplateString = string.Empty;
 
-                if (!string.IsNullOrEmpty(node.InnerXml))
+                if (!string.IsNullOrEmpty(stlElementInfo.InnerHtml))
                 {
-                    var stlElementList = StlParserUtility.GetStlElementList(node.InnerXml);
+                    var stlElementList = StlParserUtility.GetStlElementList(stlElementInfo.InnerHtml);
                     if (stlElementList.Count > 0)
                     {
                         foreach (var theStlElement in stlElementList)
                         {
                             if (StlParserUtility.IsSpecifiedStlElement(theStlElement, StlYes.ElementName) || StlParserUtility.IsSpecifiedStlElement(theStlElement, StlYes.ElementName2))
                             {
-                                successTemplateString = StlParserUtility.GetInnerXml(theStlElement, true);
+                                successTemplateString = StlParserUtility.GetInnerHtml(theStlElement);
                             }
                             else if (StlParserUtility.IsSpecifiedStlElement(theStlElement, StlNo.ElementName) || StlParserUtility.IsSpecifiedStlElement(theStlElement, StlNo.ElementName2))
                             {
-                                failureTemplateString = StlParserUtility.GetInnerXml(theStlElement, true);
+                                failureTemplateString = StlParserUtility.GetInnerHtml(theStlElement);
                             }
                         }
                     }
                     if (string.IsNullOrEmpty(successTemplateString) && string.IsNullOrEmpty(failureTemplateString))
                     {
-                        successTemplateString = failureTemplateString = node.InnerXml;
+                        successTemplateString = failureTemplateString = stlElementInfo.InnerHtml;
                     }
                 }
 
@@ -1020,11 +1005,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var contextInfo = new ContextInfo(pageInfo);
 
-                var xmlDocument = StlParserUtility.GetXmlDocument(stlElement, true);
-                XmlNode node = xmlDocument.DocumentElement;
-                node = node?.FirstChild;
-                var label = node?.Name;
-                if (!StringUtils.EqualsIgnoreCase(label, ElementName)) return string.Empty;
+                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
+
+                if (!StringUtils.EqualsIgnoreCase(stlElementInfo.Name, ElementName)) return string.Empty;
 
                 var text = string.Empty;
                 var type = string.Empty;
@@ -1037,86 +1020,81 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var lStr = string.Empty;
                 var rStr = string.Empty;
                 var alwaysA = true;
-                var attributes = new Dictionary<string, string>();
+                var attributes = TranslateUtils.NewIgnoreCaseNameValueCollection();
 
-                var ie = node?.Attributes?.GetEnumerator();
-                if (ie != null)
+                foreach (var name in stlElementInfo.Attributes.AllKeys)
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-                        var name = attr.Name;
+                    var value = stlElementInfo.Attributes[name];
 
-                        if (StringUtils.EqualsIgnoreCase(name, Type.Name))
-                        {
-                            type = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, Text.Name))
-                        {
-                            text = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, ListNum.Name))
-                        {
-                            listNum = TranslateUtils.ToInt(attr.Value, 9);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, ListEllipsis.Name))
-                        {
-                            listEllipsis = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, LinkClass.Name))
-                        {
-                            linkClass = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, TextClass.Name))
-                        {
-                            textClass = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, HasLr.Name))
-                        {
-                            hasLr = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, LStr.Name))
-                        {
-                            lStr = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, RStr.Name))
-                        {
-                            rStr = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(name, AlwaysA.Name))
-                        {
-                            alwaysA = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else
-                        {
-                            attributes[name] = attr.Value;
-                        }
+                    if (StringUtils.EqualsIgnoreCase(name, Type.Name))
+                    {
+                        type = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, Text.Name))
+                    {
+                        text = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, ListNum.Name))
+                    {
+                        listNum = TranslateUtils.ToInt(value, 9);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, ListEllipsis.Name))
+                    {
+                        listEllipsis = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, LinkClass.Name))
+                    {
+                        linkClass = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, TextClass.Name))
+                    {
+                        textClass = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, HasLr.Name))
+                    {
+                        hasLr = TranslateUtils.ToBool(value);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, LStr.Name))
+                    {
+                        lStr = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, RStr.Name))
+                    {
+                        rStr = value;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, AlwaysA.Name))
+                    {
+                        alwaysA = TranslateUtils.ToBool(value);
+                    }
+                    else
+                    {
+                        attributes[name] = value;
                     }
                 }
 
                 var successTemplateString = string.Empty;
                 var failureTemplateString = string.Empty;
 
-                if (!string.IsNullOrEmpty(node.InnerXml))
+                if (!string.IsNullOrEmpty(stlElementInfo.InnerHtml))
                 {
-                    var stlElementList = StlParserUtility.GetStlElementList(node.InnerXml);
+                    var stlElementList = StlParserUtility.GetStlElementList(stlElementInfo.InnerHtml);
                     if (stlElementList.Count > 0)
                     {
                         foreach (var theStlElement in stlElementList)
                         {
                             if (StlParserUtility.IsSpecifiedStlElement(theStlElement, StlYes.ElementName) || StlParserUtility.IsSpecifiedStlElement(theStlElement, StlYes.ElementName2))
                             {
-                                successTemplateString = StlParserUtility.GetInnerXml(theStlElement, true);
+                                successTemplateString = StlParserUtility.GetInnerHtml(theStlElement);
                             }
                             else if (StlParserUtility.IsSpecifiedStlElement(theStlElement, StlNo.ElementName) || StlParserUtility.IsSpecifiedStlElement(theStlElement, StlNo.ElementName2))
                             {
-                                failureTemplateString = StlParserUtility.GetInnerXml(theStlElement, true);
+                                failureTemplateString = StlParserUtility.GetInnerHtml(theStlElement);
                             }
                         }
                     }
                     if (string.IsNullOrEmpty(successTemplateString) && string.IsNullOrEmpty(failureTemplateString))
                     {
-                        successTemplateString = failureTemplateString = node.InnerXml;
+                        successTemplateString = failureTemplateString = stlElementInfo.InnerHtml;
                     }
                 }
 

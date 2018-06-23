@@ -11,10 +11,8 @@ namespace SiteServer.BackgroundPages
         {
             if (IsForbidden) return;
 
-            var redirectUrl = PageUtils.GetAdminDirectoryUrl("login.aspx");
-
             AuthRequest.AdminLogout();
-            PageUtils.Redirect(PageUtils.ParseNavigationUrl(redirectUrl));
+            PageUtils.Redirect(PageUtils.GetLoginUrl());
         }
     }
 }

@@ -54,7 +54,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var isOriginal = true;//引用的时候，默认使用原来的数据
             var type = string.Empty;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -142,6 +142,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
             parsedContent = innerBuilder.ToString();
 
+            parsedContent = parsedContent.Replace(ContentUtility.PagePlaceHolder, string.Empty);
+
             return parsedContent;
         }
 
@@ -213,17 +215,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, nodeInfo);
 
                     var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, type, relatedIdentities);
-                    parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo.Title, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerXml, false);
+                    parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo.Title, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
                     parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
                     if (!isClearTags && !string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString)))
                     {
                         parsedContent = ContentUtility.FormatTitle(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString), parsedContent);
-                    }
-
-                    if (!contextInfo.IsInnerElement)
-                    {
-                        parsedContent = parsedContent.Replace("&", "&amp;");
                     }
 
                     if (pageInfo.SiteInfo.Additional.IsContentTitleBreakLine)
@@ -234,10 +231,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                 else if (BackgroundContentAttribute.Summary.ToLower().Equals(type))
                 {
                     parsedContent = StringUtils.ParseString(contentInfo.GetString(BackgroundContentAttribute.Summary), replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
-                    if (!contextInfo.IsInnerElement)
-                    {
-                        parsedContent = parsedContent.Replace("&", "&amp;");
-                    }
                 }
                 else if (BackgroundContentAttribute.Content.ToLower().Equals(type))
                 {
@@ -261,11 +254,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                     if (!string.IsNullOrEmpty(formatString))
                     {
                         parsedContent = string.Format(formatString, parsedContent);
-                    }
-
-                    if (!contextInfo.IsInnerElement)
-                    {
-                        parsedContent = parsedContent.Replace("&", "&amp;");
                     }
                 }
                 else if (BackgroundContentAttribute.PageContent.ToLower().Equals(type))
@@ -434,7 +422,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         else
                         {
                             //第一条
-                            sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.GetString(BackgroundContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerXml, false));
+                            sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.GetString(BackgroundContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerHtml, false));
                             //第n条
                             var extendAttributeName = ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl);
                             var extendValues = contentInfo.GetString(extendAttributeName);
@@ -442,7 +430,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             {
                                 foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
                                 {
-                                    sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerXml, false));
+                                    sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false));
                                 }
                             }
 
@@ -488,7 +476,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             if (num <= 1)
                             {
-                                parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.GetString(BackgroundContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerXml, false);
+                                parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.GetString(BackgroundContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerHtml, false);
                             }
                             else
                             {
@@ -501,7 +489,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                     {
                                         if (index == num)
                                         {
-                                            parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerXml, false);
+                                            parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false);
                                             break;
                                         }
                                         index++;
@@ -549,7 +537,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
                             var num = TranslateUtils.ToInt(no);
-                            parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo, separator, pageInfo.SiteInfo, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerXml, false);
+                            parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo, separator, pageInfo.SiteInfo, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerHtml, false);
                             parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                         else
@@ -557,11 +545,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                             parsedContent = contentInfo.GetString(type);
                             parsedContent = StringUtils.ParseString(parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
-                    }
-
-                    if (!contextInfo.IsInnerElement)
-                    {
-                        parsedContent = parsedContent.Replace("&", "&amp;");
                     }
                 }
 

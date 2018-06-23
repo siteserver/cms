@@ -38,7 +38,7 @@ namespace SiteServer.CMS.Plugin.Apis
         public bool IsSiteAuthorized(int siteId)
         {
             var request = new AuthRequest();
-            return request.AdminPermissions.HasAdministratorPermissions(_metadata.Id + siteId);
+            return request.AdminPermissions.HasSitePermissions(siteId, _metadata.Id);
         }
 
         public bool HasSitePermissions(int siteId, params string[] sitePermissions)

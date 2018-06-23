@@ -13,56 +13,56 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_Area";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AreaInfo.Id),
+                AttributeName = nameof(AreaInfo.Id),
                 DataType = DataType.Integer,
                 IsPrimaryKey = true,
                 IsIdentity = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AreaInfo.AreaName),
+                AttributeName = nameof(AreaInfo.AreaName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AreaInfo.ParentId),
+                AttributeName = nameof(AreaInfo.ParentId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AreaInfo.ParentsPath),
+                AttributeName = nameof(AreaInfo.ParentsPath),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AreaInfo.ParentsCount),
+                AttributeName = nameof(AreaInfo.ParentsCount),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AreaInfo.ChildrenCount),
+                AttributeName = nameof(AreaInfo.ChildrenCount),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AreaInfo.IsLastNode),
+                AttributeName = nameof(AreaInfo.IsLastNode),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AreaInfo.Taxis),
+                AttributeName = nameof(AreaInfo.Taxis),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AreaInfo.CountOfAdmin),
+                AttributeName = nameof(AreaInfo.CountOfAdmin),
                 DataType = DataType.Integer
             }
         };

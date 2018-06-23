@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Model40
 {
@@ -44,18 +45,28 @@ namespace SiteServer.Cli.Updater.Model40
 
     public partial class TableContentCheck
     {
-        public const string OldTableName = "bairong_ContentCheck";
+        public const string OldTableName = "ContentCheck";
 
-        public static readonly string NewTableName = DataProvider.ContentCheckDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumnInfo> NewColumns = DataProvider.ContentCheckDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.ContentCheckDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        private static readonly List<TableColumn> NewColumns = DataProvider.ContentCheckDao.TableColumns;
+
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(ContentCheckInfo.Id), nameof(CheckId)},
                 {nameof(ContentCheckInfo.SiteId), nameof(PublishmentSystemId)},
                 {nameof(ContentCheckInfo.ChannelId), nameof(NodeId)}
             };
+
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

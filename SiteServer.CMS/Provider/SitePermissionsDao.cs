@@ -12,39 +12,39 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_SitePermissions";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SitePermissionsInfo.Id),
+                AttributeName = nameof(SitePermissionsInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SitePermissionsInfo.RoleName),
+                AttributeName = nameof(SitePermissionsInfo.RoleName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SitePermissionsInfo.SiteId),
+                AttributeName = nameof(SitePermissionsInfo.SiteId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SitePermissionsInfo.ChannelIdCollection),
+                AttributeName = nameof(SitePermissionsInfo.ChannelIdCollection),
                 DataType = DataType.Text
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SitePermissionsInfo.ChannelPermissions),
+                AttributeName = nameof(SitePermissionsInfo.ChannelPermissions),
                 DataType = DataType.Text
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SitePermissionsInfo.WebsitePermissions),
+                AttributeName = nameof(SitePermissionsInfo.WebsitePermissions),
                 DataType = DataType.Text
             }
         };

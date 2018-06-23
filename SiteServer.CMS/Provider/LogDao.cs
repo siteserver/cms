@@ -15,43 +15,43 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_Log";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(LogInfo.Id),
+                AttributeName = nameof(LogInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(LogInfo.UserName),
+                AttributeName = nameof(LogInfo.UserName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(LogInfo.IpAddress),
+                AttributeName = nameof(LogInfo.IpAddress),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(LogInfo.AddDate),
+                AttributeName = nameof(LogInfo.AddDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(LogInfo.Action),
+                AttributeName = nameof(LogInfo.Action),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(LogInfo.Summary),
+                AttributeName = nameof(LogInfo.Summary),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             }
         };
 

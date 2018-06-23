@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Core
 {
     public class TableInfo
     {
-        public List<TableColumnInfo> Columns { get; set; }
+        public List<TableColumn> Columns { get; set; }
         public int TotalCount { get; set; }
         public List<string> RowFiles { get; set; }
     }

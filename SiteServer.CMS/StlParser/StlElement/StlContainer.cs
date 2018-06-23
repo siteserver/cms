@@ -21,12 +21,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                 return string.Empty;
             }
 
-            if (string.IsNullOrEmpty(contextInfo.InnerXml))
+            if (string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
                 return string.Empty;
             }
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -36,7 +36,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            var innerHtml = RegexUtils.GetInnerContent(ElementName, contextInfo.StlElement);
+            var innerHtml = RegexUtils.GetInnerContent(ElementName, contextInfo.OuterHtml);
 
             var builder = new StringBuilder(innerHtml);
             StlParserManager.ParseInnerContent(builder, pageInfo, contextInfo);

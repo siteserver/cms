@@ -10,7 +10,7 @@ namespace SiteServer.CMS.Api
 
         public static string GetUrl(string pluginId, string name = "", string id = "")
         {
-            var apiUrl = ApiManager.GetOuterApiUrl(Route);
+            var apiUrl = ApiManager.GetApiUrl(Route);
             apiUrl = apiUrl.Replace("{pluginId}", pluginId);
             if (!string.IsNullOrEmpty(name))
             {

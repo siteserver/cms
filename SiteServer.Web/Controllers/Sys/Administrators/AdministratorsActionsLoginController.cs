@@ -24,7 +24,7 @@ namespace SiteServer.API.Controllers.Sys.Administrators
 
                 string userName;
                 string errorMessage;
-                if (!DataProvider.AdministratorDao.ValidateAccount(account, password, out userName, out errorMessage))
+                if (!DataProvider.AdministratorDao.Validate(account, password, false, out userName, out errorMessage))
                 {
                     LogUtils.AddAdminLog(userName, "后台管理员登录失败");
                     DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfFailedLogin(userName);

@@ -2,7 +2,6 @@
 using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
@@ -57,7 +56,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var height = 350;
             var isAutoPlay = true;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -161,14 +160,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 playUrl = Content.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.VideoUrl);
                             }
                         }
-                        if (string.IsNullOrEmpty(playUrl))
-                        {
-                            if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.FileUrl))
-                            {
-                                //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.FileUrl);
-                                playUrl = Content.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.FileUrl);
-                            }
-                        }
+                        //if (string.IsNullOrEmpty(playUrl))
+                        //{
+                        //    if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.FileUrl))
+                        //    {
+                        //        //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.FileUrl);
+                        //        playUrl = Content.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.FileUrl);
+                        //    }
+                        //}
                     }
                     else
                     {
@@ -177,10 +176,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             playUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.VideoUrl);
                         }
-                        if (string.IsNullOrEmpty(playUrl))
-                        {
-                            playUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.FileUrl);
-                        }
+                        //if (string.IsNullOrEmpty(playUrl))
+                        //{
+                        //    playUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.FileUrl);
+                        //}
                     }
                 }
             }
@@ -365,32 +364,32 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     else if (fileType == EFileSystemType.Rm || fileType == EFileSystemType.Rmb || fileType == EFileSystemType.Rmvb)
                     {
-                        if (!contextInfo.Attributes.ContainsKey("ShowDisplay"))
+                        if (string.IsNullOrEmpty(contextInfo.Attributes["ShowDisplay"]))
                         {
                             contextInfo.Attributes["ShowDisplay"] = "0";
                         }
-                        if (!contextInfo.Attributes.ContainsKey("ShowControls"))
+                        if (string.IsNullOrEmpty(contextInfo.Attributes["ShowControls"]))
                         {
                             contextInfo.Attributes["ShowControls"] = "1";
                         }
                         contextInfo.Attributes["AutoStart"] = isAutoPlay ? "1" : "0";
-                        if (!contextInfo.Attributes.ContainsKey("AutoRewind"))
+                        if (string.IsNullOrEmpty(contextInfo.Attributes["AutoRewind"]))
                         {
                             contextInfo.Attributes["AutoRewind"] = "0";
                         }
-                        if (!contextInfo.Attributes.ContainsKey("PlayCount"))
+                        if (string.IsNullOrEmpty(contextInfo.Attributes["PlayCount"]))
                         {
                             contextInfo.Attributes["PlayCount"] = "0";
                         }
-                        if (!contextInfo.Attributes.ContainsKey("Appearance"))
+                        if (string.IsNullOrEmpty(contextInfo.Attributes["Appearance"]))
                         {
                             contextInfo.Attributes["Appearance"] = "0";
                         }
-                        if (!contextInfo.Attributes.ContainsKey("BorderStyle"))
+                        if (string.IsNullOrEmpty(contextInfo.Attributes["BorderStyle"]))
                         {
                             contextInfo.Attributes["BorderStyle"] = "0";
                         }
-                        if (!contextInfo.Attributes.ContainsKey("Controls"))
+                        if (string.IsNullOrEmpty(contextInfo.Attributes["Controls"]))
                         {
                             contextInfo.Attributes["ImageWindow"] = "0";
                         }

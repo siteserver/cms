@@ -37,7 +37,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
                 };
                 var contextInfo = new ContextInfo(pageInfo);
 
-                var stlPageContents = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, false);
+                var stlPageContents = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo);
 
                 var pageHtml = stlPageContents.Parse(totalNum, currentPageIndex, pageCount, false);
 

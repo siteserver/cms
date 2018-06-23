@@ -18,12 +18,6 @@
               <a class="nav-link" href="pageAnalysisSite.aspx">站点数据统计</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageAnalysisSiteHits.aspx">内容点击统计</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="pageAnalysisSiteDownloads.aspx">文件下载统计</a>
-            </li>
-            <li class="nav-item">
               <a class="nav-link" href="pageAnalysisAdminLogin.aspx">管理员登录统计</a>
             </li>
             <li class="nav-item">
@@ -142,7 +136,7 @@
           <div class="panel panel-default">
             <div class="panel-body p-0">
               <div class="table-responsive">
-                <table class="table tablesaw table-hover m-0">
+                <table class="table-tree table tablesaw table-hover m-0">
                   <thead>
                     <th>栏目名</th>
                     <th class="text-center">新增内容</th>

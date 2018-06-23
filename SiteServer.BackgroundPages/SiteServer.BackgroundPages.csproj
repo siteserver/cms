@@ -34,8 +34,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SiteServer.Plugin, Version=1.6.56.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.6.56-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="SiteServer.Plugin, Version=1.7.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.7.7\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -470,6 +476,9 @@
     <Compile Include="Core\VCManager.cs" />
     <Compile Include="Core\VirtualRecordCount.cs" />
     <Compile Include="Core\WebUtils.cs" />
+    <Compile Include="PageLogin.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="PageSyncDatabase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -494,9 +503,6 @@
     <Compile Include="PageLoading.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="PageLogin.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="PageLogout.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -515,7 +521,7 @@
     <Compile Include="PageValidateCode.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\ModalUtilityAccessToken.cs">
+    <Compile Include="Settings\ModalAdminAccessToken.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\ModalManualUpdateSystem.cs">
@@ -619,12 +625,6 @@
     <Compile Include="Settings\PageAnalysisSiteChannels.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageAnalysisSiteDownloads.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageAnalysisSiteDownloadsChannels.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\PageAnalysisSiteHits.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -715,10 +715,7 @@
     <Compile Include="Settings\PageUserConfiguration.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageUtilityAccessTokensAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageUtilityAccessTokens.cs">
+    <Compile Include="Settings\PageAdminAccessTokensAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageUtilityCache.cs">

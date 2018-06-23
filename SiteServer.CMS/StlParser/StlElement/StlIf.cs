@@ -90,7 +90,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var testOperate = OperateEquals;
             var testValue = string.Empty;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -120,7 +120,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             string successTemplateString;
             string failureTemplateString;
 
-            StlInnerUtility.GetYesNo(contextInfo.InnerXml, out successTemplateString, out failureTemplateString);
+            StlParserUtility.GetYesNo(contextInfo.InnerHtml, out successTemplateString, out failureTemplateString);
 
             if (StringUtils.EqualsIgnoreCase(testType, TypeIsUserLoggin) ||
                 StringUtils.EqualsIgnoreCase(testType, TypeIsAdministratorLoggin) ||

@@ -14,35 +14,35 @@ namespace SiteServer.CMS.Provider
 	{
         public override string TableName => "siteserver_Tag";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TagInfo.Id),
+                AttributeName = nameof(TagInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TagInfo.SiteId),
+                AttributeName = nameof(TagInfo.SiteId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TagInfo.ContentIdCollection),
+                AttributeName = nameof(TagInfo.ContentIdCollection),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TagInfo.Tag),
+                AttributeName = nameof(TagInfo.Tag),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TagInfo.UseNum),
+                AttributeName = nameof(TagInfo.UseNum),
                 DataType = DataType.Integer
             }
         };

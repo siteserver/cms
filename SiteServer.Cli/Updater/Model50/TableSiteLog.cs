@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Model50
 {
@@ -38,16 +39,26 @@ namespace SiteServer.Cli.Updater.Model50
 
     public partial class TableSiteLog
     {
-        public const string OldTableName = "siteserver_Log";
+        public const string OldTableName = "Log";
 
-        public static readonly string NewTableName = DataProvider.SiteLogDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumnInfo> NewColumns = DataProvider.SiteLogDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.SiteLogDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        private static readonly List<TableColumn> NewColumns = DataProvider.SiteLogDao.TableColumns;
+
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(SiteLogInfo.SiteId), nameof(PublishmentSystemId)}
             };
+
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

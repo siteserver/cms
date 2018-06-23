@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.WebControls;
-using System.Xml;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Cache;
@@ -25,46 +22,20 @@ namespace SiteServer.CMS.StlParser.StlElement
         public static readonly Attr MaxPage = new Attr("maxPage", "翻页中生成的静态页面最大数，剩余页面将动态获取");
 
         private readonly string _stlPageContentsElement;
-        private readonly XmlNode _node;
         private readonly PageInfo _pageInfo;
         private readonly ContextInfo _contextInfo;
 
-        public StlPageContents(string stlPageContentsElement, PageInfo pageInfo, ContextInfo contextInfo, bool isXmlContent)
+        public StlPageContents(string stlPageContentsElement, PageInfo pageInfo, ContextInfo contextInfo)
         {
+            _stlPageContentsElement = stlPageContentsElement;
             _pageInfo = pageInfo;
             _contextInfo = contextInfo;
-            var xmlDocument = StlParserUtility.GetXmlDocument(stlPageContentsElement, isXmlContent);
-            _node = xmlDocument.DocumentElement;
-            if (_node != null)
-            {
-                _stlPageContentsElement = _node.InnerXml;
-                _node = _node.FirstChild;
 
-                var attributes = new Dictionary<string, string>();
-                var ie = _node?.Attributes?.GetEnumerator();
-                if (ie != null)
-                {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
+            var stlElementInfo = StlParserUtility.ParseStlElement(stlPageContentsElement);
 
-                        var key = attr.Name;
-                        if (!string.IsNullOrEmpty(key))
-                        {
-                            var value = attr.Value;
-                            if (string.IsNullOrEmpty(value))
-                            {
-                                value = string.Empty;
-                            }
-                            attributes[key] = value;
-                        }
-                    }
-                }
+            _contextInfo = contextInfo.Clone(stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
-                _contextInfo = contextInfo.Clone(stlPageContentsElement, attributes, _node?.InnerXml, _node?.ChildNodes);
-
-                ListInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.Content);
-            }
+            ListInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.Content);
 
             var channelId = StlDataUtility.GetChannelIdByLevel(_pageInfo.SiteId, _contextInfo.ChannelId, ListInfo.UpLevel, ListInfo.TopLevel);
 
@@ -78,37 +49,12 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             _pageInfo = pageInfo;
             _contextInfo = contextInfo;
-            var xmlDocument = StlParserUtility.GetXmlDocument(stlPageContentsElement, false);
-            _node = xmlDocument.DocumentElement;
-            if (_node != null)
-            {
-                _node = _node.FirstChild;
 
-                var attributes = new Dictionary<string, string>();
-                var ie = _node?.Attributes?.GetEnumerator();
-                if (ie != null)
-                {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
+            var stlElementInfo = StlParserUtility.ParseStlElement(stlPageContentsElement);
+            _contextInfo = contextInfo.Clone(stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
-                        var key = attr.Name;
-                        if (!string.IsNullOrEmpty(key))
-                        {
-                            var value = attr.Value;
-                            if (string.IsNullOrEmpty(value))
-                            {
-                                value = string.Empty;
-                            }
-                            attributes[key] = value;
-                        }
-                    }
-                }
+            ListInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.Content);
 
-                _contextInfo = contextInfo.Clone(stlPageContentsElement, attributes, _node?.InnerXml, _node?.ChildNodes);
-
-                ListInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.Content);
-            }
             ListInfo.Scope = EScopeType.All;
 
             ListInfo.Where += whereString;
@@ -165,79 +111,76 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             try
             {
-                if (_node != null)
+                if (!string.IsNullOrEmpty(SqlString))
                 {
-                    if (!string.IsNullOrEmpty(SqlString))
+                    //var pageSqlString = DataProvider.DatabaseDao.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
+                    var pageSqlString = Database.GetStlPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
+
+                    var datasource = DataProvider.DatabaseDao.GetDataSource(pageSqlString);
+
+                    if (ListInfo.Layout == ELayout.None)
                     {
-                        //var pageSqlString = DataProvider.DatabaseDao.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
-                        var pageSqlString = Database.GetStlPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
+                        var rptContents = new Repeater();
 
-                        var datasource = DataProvider.DatabaseDao.GetDataSource(pageSqlString);
-
-                        if (ListInfo.Layout == ELayout.None)
+                        if (!string.IsNullOrEmpty(ListInfo.HeaderTemplate))
                         {
-                            var rptContents = new Repeater();
-
-                            if (!string.IsNullOrEmpty(ListInfo.HeaderTemplate))
-                            {
-                                rptContents.HeaderTemplate = new SeparatorTemplate(ListInfo.HeaderTemplate);
-                            }
-                            if (!string.IsNullOrEmpty(ListInfo.FooterTemplate))
-                            {
-                                rptContents.FooterTemplate = new SeparatorTemplate(ListInfo.FooterTemplate);
-                            }
-                            if (!string.IsNullOrEmpty(ListInfo.SeparatorTemplate))
-                            {
-                                rptContents.SeparatorTemplate = new SeparatorTemplate(ListInfo.SeparatorTemplate);
-                            }
-                            if (!string.IsNullOrEmpty(ListInfo.AlternatingItemTemplate))
-                            {
-                                rptContents.AlternatingItemTemplate = new RepeaterTemplate(ListInfo.AlternatingItemTemplate, ListInfo.SelectedItems, ListInfo.SelectedValues, ListInfo.SeparatorRepeatTemplate, ListInfo.SeparatorRepeat, _pageInfo, EContextType.Content, _contextInfo);
-                            }
-
-                            rptContents.ItemTemplate = new RepeaterTemplate(ListInfo.ItemTemplate, ListInfo.SelectedItems, ListInfo.SelectedValues, ListInfo.SeparatorRepeatTemplate, ListInfo.SeparatorRepeat, _pageInfo, EContextType.Content, _contextInfo);
-
-                            rptContents.DataSource = datasource;
-                            rptContents.DataBind();
-
-                            if (rptContents.Items.Count > 0)
-                            {
-                                parsedContent = ControlUtils.GetControlRenderHtml(rptContents);
-                            }
+                            rptContents.HeaderTemplate = new SeparatorTemplate(ListInfo.HeaderTemplate);
                         }
-                        else
+                        if (!string.IsNullOrEmpty(ListInfo.FooterTemplate))
                         {
-                            var pdlContents = new ParsedDataList();
+                            rptContents.FooterTemplate = new SeparatorTemplate(ListInfo.FooterTemplate);
+                        }
+                        if (!string.IsNullOrEmpty(ListInfo.SeparatorTemplate))
+                        {
+                            rptContents.SeparatorTemplate = new SeparatorTemplate(ListInfo.SeparatorTemplate);
+                        }
+                        if (!string.IsNullOrEmpty(ListInfo.AlternatingItemTemplate))
+                        {
+                            rptContents.AlternatingItemTemplate = new RepeaterTemplate(ListInfo.AlternatingItemTemplate, ListInfo.SelectedItems, ListInfo.SelectedValues, ListInfo.SeparatorRepeatTemplate, ListInfo.SeparatorRepeat, _pageInfo, EContextType.Content, _contextInfo);
+                        }
 
-                            //设置显示属性
-                            TemplateUtility.PutListInfoToMyDataList(pdlContents, ListInfo);
+                        rptContents.ItemTemplate = new RepeaterTemplate(ListInfo.ItemTemplate, ListInfo.SelectedItems, ListInfo.SelectedValues, ListInfo.SeparatorRepeatTemplate, ListInfo.SeparatorRepeat, _pageInfo, EContextType.Content, _contextInfo);
 
-                            pdlContents.ItemTemplate = new DataListTemplate(ListInfo.ItemTemplate, ListInfo.SelectedItems, ListInfo.SelectedValues, ListInfo.SeparatorRepeatTemplate, ListInfo.SeparatorRepeat, _pageInfo, EContextType.Content, _contextInfo);
-                            if (!string.IsNullOrEmpty(ListInfo.HeaderTemplate))
-                            {
-                                pdlContents.HeaderTemplate = new SeparatorTemplate(ListInfo.HeaderTemplate);
-                            }
-                            if (!string.IsNullOrEmpty(ListInfo.FooterTemplate))
-                            {
-                                pdlContents.FooterTemplate = new SeparatorTemplate(ListInfo.FooterTemplate);
-                            }
-                            if (!string.IsNullOrEmpty(ListInfo.SeparatorTemplate))
-                            {
-                                pdlContents.SeparatorTemplate = new SeparatorTemplate(ListInfo.SeparatorTemplate);
-                            }
-                            if (!string.IsNullOrEmpty(ListInfo.AlternatingItemTemplate))
-                            {
-                                pdlContents.AlternatingItemTemplate = new DataListTemplate(ListInfo.AlternatingItemTemplate, ListInfo.SelectedItems, ListInfo.SelectedValues, ListInfo.SeparatorRepeatTemplate, ListInfo.SeparatorRepeat, _pageInfo, EContextType.Content, _contextInfo);
-                            }
+                        rptContents.DataSource = datasource;
+                        rptContents.DataBind();
 
-                            pdlContents.DataSource = datasource;
-                            pdlContents.DataKeyField = ContentAttribute.Id;
-                            pdlContents.DataBind();
+                        if (rptContents.Items.Count > 0)
+                        {
+                            parsedContent = ControlUtils.GetControlRenderHtml(rptContents);
+                        }
+                    }
+                    else
+                    {
+                        var pdlContents = new ParsedDataList();
 
-                            if (pdlContents.Items.Count > 0)
-                            {
-                                parsedContent = ControlUtils.GetControlRenderHtml(pdlContents);
-                            }
+                        //设置显示属性
+                        TemplateUtility.PutListInfoToMyDataList(pdlContents, ListInfo);
+
+                        pdlContents.ItemTemplate = new DataListTemplate(ListInfo.ItemTemplate, ListInfo.SelectedItems, ListInfo.SelectedValues, ListInfo.SeparatorRepeatTemplate, ListInfo.SeparatorRepeat, _pageInfo, EContextType.Content, _contextInfo);
+                        if (!string.IsNullOrEmpty(ListInfo.HeaderTemplate))
+                        {
+                            pdlContents.HeaderTemplate = new SeparatorTemplate(ListInfo.HeaderTemplate);
+                        }
+                        if (!string.IsNullOrEmpty(ListInfo.FooterTemplate))
+                        {
+                            pdlContents.FooterTemplate = new SeparatorTemplate(ListInfo.FooterTemplate);
+                        }
+                        if (!string.IsNullOrEmpty(ListInfo.SeparatorTemplate))
+                        {
+                            pdlContents.SeparatorTemplate = new SeparatorTemplate(ListInfo.SeparatorTemplate);
+                        }
+                        if (!string.IsNullOrEmpty(ListInfo.AlternatingItemTemplate))
+                        {
+                            pdlContents.AlternatingItemTemplate = new DataListTemplate(ListInfo.AlternatingItemTemplate, ListInfo.SelectedItems, ListInfo.SelectedValues, ListInfo.SeparatorRepeatTemplate, ListInfo.SeparatorRepeat, _pageInfo, EContextType.Content, _contextInfo);
+                        }
+
+                        pdlContents.DataSource = datasource;
+                        pdlContents.DataKeyField = ContentAttribute.Id;
+                        pdlContents.DataBind();
+
+                        if (pdlContents.Items.Count > 0)
+                        {
+                            parsedContent = ControlUtils.GetControlRenderHtml(pdlContents);
                         }
                     }
                 }
@@ -246,8 +189,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, _stlPageContentsElement, ex);
             }
-
-            parsedContent = StlParserUtility.GetBackHtml(parsedContent, _pageInfo);
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex
             _contextInfo.PageItemIndex = 0;

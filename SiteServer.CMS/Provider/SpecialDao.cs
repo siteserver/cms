@@ -13,35 +13,35 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_Special";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SpecialInfo.Id),
+                AttributeName = nameof(SpecialInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SpecialInfo.SiteId),
+                AttributeName = nameof(SpecialInfo.SiteId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SpecialInfo.Title),
+                AttributeName = nameof(SpecialInfo.Title),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SpecialInfo.Url),
+                AttributeName = nameof(SpecialInfo.Url),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(SpecialInfo.AddDate),
+                AttributeName = nameof(SpecialInfo.AddDate),
                 DataType = DataType.DateTime
             }
         };

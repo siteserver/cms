@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Data;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -12,32 +11,32 @@ namespace SiteServer.CMS.Provider
 	{
         public override string TableName => "siteserver_Role";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(RoleInfo.Id),
+                AttributeName = nameof(RoleInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(RoleInfo.RoleName),
+                AttributeName = nameof(RoleInfo.RoleName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(RoleInfo.CreatorUserName),
+                AttributeName = nameof(RoleInfo.CreatorUserName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(RoleInfo.Description),
+                AttributeName = nameof(RoleInfo.Description),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             }
         };
 

@@ -37,7 +37,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var queryString = string.Empty;
             var host = string.Empty; 
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
                 if (StringUtils.EqualsIgnoreCase(name, Id.Name))
@@ -125,7 +125,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 url = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, href, pageInfo.IsLocal);
 
-                var innerBuilder = new StringBuilder(contextInfo.InnerXml);
+                var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
                 stlAnchor.InnerHtml = innerBuilder.ToString();
             }
@@ -146,7 +146,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
                         url = PageUtility.GetContentUrl(pageInfo.SiteInfo, nodeInfo, contextInfo.ContentId, pageInfo.IsLocal);
                     }
-                    if (string.IsNullOrEmpty(contextInfo.InnerXml))
+                    if (string.IsNullOrEmpty(contextInfo.InnerHtml))
                     {
                         var title = contextInfo.ContentInfo?.Title;
                         title = ContentUtility.FormatTitle(contextInfo.ContentInfo?.GetString("BackgroundContentAttribute.TitleFormatString"), title);
@@ -160,7 +160,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     else
                     {
-                        var innerBuilder = new StringBuilder(contextInfo.InnerXml);
+                        var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                         StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
                         stlAnchor.InnerHtml = innerBuilder.ToString();
                     }
@@ -172,13 +172,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
 
                     url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, channel, pageInfo.IsLocal);
-                    if (contextInfo.InnerXml.Trim().Length == 0)
+                    if (string.IsNullOrWhiteSpace(contextInfo.InnerHtml))
                     {
                         stlAnchor.InnerHtml = channel.ChannelName;
                     }
                     else
                     {
-                        var innerBuilder = new StringBuilder(contextInfo.InnerXml);
+                        var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                         StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
                         stlAnchor.InnerHtml = innerBuilder.ToString();
                     }

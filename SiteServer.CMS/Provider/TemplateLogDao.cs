@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
@@ -12,44 +11,44 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_TemplateLog";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateLogInfo.Id),
+                AttributeName = nameof(TemplateLogInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateLogInfo.TemplateId),
+                AttributeName = nameof(TemplateLogInfo.TemplateId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateLogInfo.SiteId),
+                AttributeName = nameof(TemplateLogInfo.SiteId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateLogInfo.AddDate),
+                AttributeName = nameof(TemplateLogInfo.AddDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateLogInfo.AddUserName),
+                AttributeName = nameof(TemplateLogInfo.AddUserName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateLogInfo.ContentLength),
+                AttributeName = nameof(TemplateLogInfo.ContentLength),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TemplateLogInfo.TemplateContent),
+                AttributeName = nameof(TemplateLogInfo.TemplateContent),
                 DataType = DataType.Text
             }
         };

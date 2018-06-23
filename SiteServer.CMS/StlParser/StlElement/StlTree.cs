@@ -47,7 +47,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var isShowTreeLine = true;
             var currentFormatString = "<strong>{0}</strong>";
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -639,7 +639,7 @@ var stltree_isNodeTree = {isNodeTree};
                 _level = nodeInfo.ParentsCount - topParentsCount;
                 _currentChannelId = currentChannelId;
 
-                var treeDirectoryUrl = SiteFilesAssets.GetUrl(ApiManager.OuterApiUrl, "tree");
+                var treeDirectoryUrl = SiteFilesAssets.GetUrl(ApiManager.ApiUrl, "tree");
                 _iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
                 _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
                 _iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");

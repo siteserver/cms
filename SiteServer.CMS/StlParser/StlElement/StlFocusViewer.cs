@@ -96,7 +96,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var bgColor = string.Empty;
             var genericControl = new HtmlGenericControl("div");
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
