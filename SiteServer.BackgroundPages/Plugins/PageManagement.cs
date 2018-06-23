@@ -113,7 +113,7 @@ namespace SiteServer.BackgroundPages.Plugins
 //            var ltlCmd = (Literal)e.Item.FindControl("ltlCmd");
 
 //            ltlLogo.Text = $@"<img src=""{PluginManager.GetPluginIconUrl(pluginInfo.Service)}"" width=""48"" height=""48"" />";
-//            ltlPluginId.Text = $@"<a href=""{PageView.GetRedirectUrl(pluginInfo.Id, GetRedirectUrl())}"">{pluginInfo.Id}</a>";
+//            ltlPluginId.Text = $@"<a href=""{PageView.GetPageUrl(pluginInfo.Id, GetPageUrl())}"">{pluginInfo.Id}</a>";
 //            ltlPluginName.Text = pluginInfo.Plugin.Title;
 //            ltlVersion.Text = pluginInfo.Plugin.Version;
 //            if (pluginInfo.Plugin.Owners != null)
@@ -163,7 +163,7 @@ namespace SiteServer.BackgroundPages.Plugins
 //            var ltlErrorMessage = (Literal)e.Item.FindControl("ltlErrorMessage");
 //            var ltlCmd = (Literal)e.Item.FindControl("ltlCmd");
 
-//            ltlPluginId.Text = $@"<a href=""{PageView.GetRedirectUrl(pluginInfo.Id, GetRedirectUrl())}"">{pluginInfo.Id}</a>";
+//            ltlPluginId.Text = $@"<a href=""{PageView.GetPageUrl(pluginInfo.Id, GetPageUrl())}"">{pluginInfo.Id}</a>";
 
 //            ltlErrorMessage.Text = pluginInfo.ErrorMessage;
 

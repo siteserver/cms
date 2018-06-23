@@ -15,7 +15,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace SiteServer.Utils
 {
-    public class TranslateUtils
+    public static class TranslateUtils
     {
 
         //添加枚举：(fileAttributes | FileAttributes.ReadOnly)   判断枚举：((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)   去除枚举：(fileAttributes ^ FileAttributes.ReadOnly)
@@ -1199,6 +1199,13 @@ namespace SiteServer.Utils
             }
 
             return rows;
+        }
+
+        public static NameValueCollection NewIgnoreCaseNameValueCollection()
+        {
+            var comparer = StringComparer.OrdinalIgnoreCase;
+            var caseInsensitiveDictionary = new NameValueCollection(comparer);
+            return caseInsensitiveDictionary;
         }
     }
 }

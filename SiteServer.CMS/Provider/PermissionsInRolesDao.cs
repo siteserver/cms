@@ -12,24 +12,24 @@ namespace SiteServer.CMS.Provider
 	{
         public override string TableName => "siteserver_PermissionsInRoles";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(PermissionsInRolesInfo.Id),
+                AttributeName = nameof(PermissionsInRolesInfo.Id),
                 DataType = DataType.Integer,
                 IsPrimaryKey = true,
                 IsIdentity = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(PermissionsInRolesInfo.RoleName),
+                AttributeName = nameof(PermissionsInRolesInfo.RoleName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(PermissionsInRolesInfo.GeneralPermissions),
+                AttributeName = nameof(PermissionsInRolesInfo.GeneralPermissions),
                 DataType = DataType.Text
             }
         };

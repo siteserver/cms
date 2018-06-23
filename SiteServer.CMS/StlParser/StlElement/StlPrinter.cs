@@ -26,7 +26,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var locationId = string.Empty;
             var stlAnchor = new HtmlAnchor();
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -129,13 +129,13 @@ function stlLoadPrintJs()
 ");
             }
 
-            if (string.IsNullOrEmpty(contextInfo.InnerXml))
+            if (string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
                 stlAnchor.InnerHtml = "打印";
             }
             else
             {
-                var innerBuilder = new StringBuilder(contextInfo.InnerXml);
+                var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
                 stlAnchor.InnerHtml = innerBuilder.ToString();
             }

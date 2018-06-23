@@ -17,158 +17,158 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_Channel";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.Id),
+                AttributeName = nameof(ChannelInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.ChannelName),
+                AttributeName = nameof(ChannelInfo.ChannelName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.SiteId),
+                AttributeName = nameof(ChannelInfo.SiteId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.ContentModelPluginId),
+                AttributeName = nameof(ChannelInfo.ContentModelPluginId),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.ContentRelatedPluginIds),
+                AttributeName = nameof(ChannelInfo.ContentRelatedPluginIds),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.ParentId),
+                AttributeName = nameof(ChannelInfo.ParentId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.ParentsPath),
+                AttributeName = nameof(ChannelInfo.ParentsPath),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.ParentsCount),
+                AttributeName = nameof(ChannelInfo.ParentsCount),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.ChildrenCount),
+                AttributeName = nameof(ChannelInfo.ChildrenCount),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.IsLastNode),
+                AttributeName = nameof(ChannelInfo.IsLastNode),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.IndexName),
+                AttributeName = nameof(ChannelInfo.IndexName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.GroupNameCollection),
+                AttributeName = nameof(ChannelInfo.GroupNameCollection),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.Taxis),
+                AttributeName = nameof(ChannelInfo.Taxis),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.AddDate),
+                AttributeName = nameof(ChannelInfo.AddDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.ImageUrl),
+                AttributeName = nameof(ChannelInfo.ImageUrl),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.Content),
+                AttributeName = nameof(ChannelInfo.Content),
                 DataType = DataType.Text
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.ContentNum),
+                AttributeName = nameof(ChannelInfo.ContentNum),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.FilePath),
+                AttributeName = nameof(ChannelInfo.FilePath),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.ChannelFilePathRule),
+                AttributeName = nameof(ChannelInfo.ChannelFilePathRule),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.ContentFilePathRule),
+                AttributeName = nameof(ChannelInfo.ContentFilePathRule),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.LinkUrl),
+                AttributeName = nameof(ChannelInfo.LinkUrl),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.LinkType),
+                AttributeName = nameof(ChannelInfo.LinkType),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.ChannelTemplateId),
+                AttributeName = nameof(ChannelInfo.ChannelTemplateId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.ContentTemplateId),
+                AttributeName = nameof(ChannelInfo.ContentTemplateId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.Keywords),
+                AttributeName = nameof(ChannelInfo.Keywords),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ChannelInfo.Description),
+                AttributeName = nameof(ChannelInfo.Description),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "ExtendValues",
+                AttributeName = "ExtendValues",
                 DataType = DataType.Text
             }
         };

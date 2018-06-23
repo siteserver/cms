@@ -81,19 +81,24 @@ namespace SiteServer.BackgroundPages
         {
             if (IsForbidden) return;
 
-            var siteId = SiteId;
+            var isLeft = false;
 
-            if (siteId == 0)
+            var siteId = 0;
+
+            var siteIdList = AuthRequest.AdminPermissions.SiteIdList;
+            if (siteIdList.Contains(SiteId))
+            {
+                siteId = SiteId;
+            }
+            else if (siteIdList.Contains(AuthRequest.AdminInfo.SiteId))
             {
                 siteId = AuthRequest.AdminInfo.SiteId;
             }
 
-            var siteIdList = AuthRequest.AdminPermissions.SiteIdList;
-
             //站点要判断是否存在，是否有权限
             if (siteId == 0 || !SiteManager.IsExists(siteId) || !siteIdList.Contains(siteId))
             {
-                if (siteIdList != null && siteIdList.Count > 0)
+                if (siteIdList.Count > 0)
                 {
                     siteId = siteIdList[0];
                 }
@@ -109,16 +114,14 @@ namespace SiteServer.BackgroundPages
                     return;
                 }
 
-                var showSite = false;
-
                 var permissionList = new List<string>(AuthRequest.AdminPermissions.PermissionList);
-                
+
                 if (AuthRequest.AdminPermissions.HasSitePermissions(_siteInfo.Id))
                 {
                     var websitePermissionList = AuthRequest.AdminPermissions.GetSitePermissions(_siteInfo.Id);
                     if (websitePermissionList != null)
                     {
-                        showSite = true;
+                        isLeft = true;
                         permissionList.AddRange(websitePermissionList);
                     }
                 }
@@ -126,33 +129,11 @@ namespace SiteServer.BackgroundPages
                 var channelPermissions = AuthRequest.AdminPermissions.GetChannelPermissions(_siteInfo.Id);
                 if (channelPermissions.Count > 0)
                 {
-                    showSite = true;
+                    isLeft = true;
                     permissionList.AddRange(channelPermissions);
                 }
 
-                var siteIdHashtable = new Hashtable();
-                if (siteIdList != null)
-                {
-                    foreach (var theSiteId in siteIdList)
-                    {
-                        siteIdHashtable.Add(theSiteId, theSiteId);
-                    }
-                }
-
-                if (!siteIdHashtable.Contains(SiteId))
-                {
-                    showSite = false;
-                }
-
-                if (!showSite)
-                {
-                    PageUtils.RedirectToErrorPage("您没有此发布系统的操作权限！");
-                    return;
-                }
-
-                LtlTopMenus.Text = GetTopMenuSitesHtml() + GetTopMenuLinksHtml() + GetTopMenusHtml();
-
-                PhSite.Visible = true;
+                PhSite.Visible = isLeft;
 
                 LtlCreateStatus.Text = $@"
 <script type=""text/javascript"">
@@ -188,6 +169,27 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             if (_siteInfo != null && _siteInfo.Id > 0 && AuthRequest.AdminInfo.SiteId != _siteInfo.Id)
             {
                 DataProvider.AdministratorDao.UpdateSiteId(AuthRequest.AdminName, _siteInfo.Id);
+            }
+
+            if (isLeft)
+            {
+                LtlTopMenus.Text = $@"
+<a href=""javascript:;"" class=""position-fixed"" onclick=""toggleMenu()"" style=""margin-top: 10px;margin-left: 30px;"">
+    <i class=""ion-navicon"" style=""font-size: 28px;color: #fff;""></i>
+</a>
+<ul id=""topMenus"" class=""navigation-menu"">
+    {GetTopMenuSitesHtml() + GetTopMenuLinksHtml() + GetTopMenusHtml()}
+</ul>
+";
+            }
+            else
+            {
+                LtlTopMenus.Text = $@"
+<script>toggleMenu();</script>
+<ul id=""topMenus"" class=""navigation-menu"" style=""margin-left: 210px;"">
+    {GetTopMenusHtml()}
+</ul>
+";
             }
         }
 
@@ -357,6 +359,11 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             foreach (var tab in topMenuTabs)
             {
                 if (!IsConsoleAdministrator && !TabManager.IsValid(tab, permissionList)) continue;
+
+                if (tab.Id == "Account")
+                {
+                    tab.Text = AuthRequest.AdminName;
+                }
 
                 var tabs = TabManager.GetTabList(tab.Id, 0);
                 var tabsBuilder = new StringBuilder();

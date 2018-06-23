@@ -3,22 +3,19 @@ using System.Web;
 
 namespace SiteServer.Utils
 {
-    public class CookieUtils
+    public static class CookieUtils
     {
-        private CookieUtils()
-        {
-        }
-
         public static void SetCookie(string name, string value, DateTime expires)
         {
             SetCookie(new HttpCookie(name)
             {
                 Value = value,
-                Expires = expires
+                Expires = expires,
+                Domain = PageUtils.HttpContextRootDomain
             });
         }
 
-        public static void SetCookie(HttpCookie cookie)
+        private static void SetCookie(HttpCookie cookie)
         {
             cookie.Value = TranslateUtils.EncryptStringBySecretKey(cookie.Value);
             cookie.HttpOnly = false;

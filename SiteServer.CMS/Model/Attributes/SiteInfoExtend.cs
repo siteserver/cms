@@ -7,9 +7,6 @@ namespace SiteServer.CMS.Model.Attributes
     [Serializable]
     public class SiteInfoExtend : ExtendedAttributes
     {
-        public const string DefaultApiUrl = "/api";
-        public const string DefaultHomeUrl = "/home";
-
         private readonly string _siteDir;
 
         public SiteInfoExtend(string siteDir, string settingsXml)
@@ -22,484 +19,465 @@ namespace SiteServer.CMS.Model.Attributes
 
         public string Charset
         {
-            get { return GetString("Charset", ECharsetUtils.GetValue(ECharset.utf_8)); }
-            set { Set("Charset", value); }
+            get => GetString(nameof(Charset), ECharsetUtils.GetValue(ECharset.utf_8));
+            set => Set(nameof(Charset), value);
         }
 
         public int PageSize
         {
-            get { return GetInt("PageSize", 30); }
-            set { Set("PageSize", value.ToString()); }
+            get => GetInt(nameof(PageSize), 30);
+            set => Set(nameof(PageSize), value.ToString());
         }
 
         public bool IsCheckContentLevel
         {
-            get { return GetBool("IsCheckContentLevel"); }
-            set { Set("IsCheckContentLevel", value.ToString()); }
+            get => GetBool(nameof(IsCheckContentLevel));
+            set => Set(nameof(IsCheckContentLevel), value.ToString());
         }
 
         public int CheckContentLevel {
-            get
-            {
-                return IsCheckContentLevel ? GetInt("CheckContentLevel") : 1;
-            }
-            set { Set("CheckContentLevel", value.ToString()); }
-        }
-
-        public bool IsCountDownload
-        {
-            get { return GetBool("IsCountDownload", true); }
-            set { Set("IsCountDownload", value.ToString()); }
-        }
-
-        public bool IsCountHits
-        {
-            get { return GetBool("IsCountHits"); }
-            set { Set("IsCountHits", value.ToString()); }
-        }
-
-        public bool IsCountHitsByDay
-        {
-            get { return GetBool("IsCountHitsByDay"); }
-            set { Set("IsCountHitsByDay", value.ToString()); }
+            get => IsCheckContentLevel ? GetInt(nameof(CheckContentLevel)) : 1;
+            set => Set(nameof(CheckContentLevel), value.ToString());
         }
 
         public bool IsSaveImageInTextEditor
         {
-            get { return GetBool("IsSaveImageInTextEditor", true); }
-            set { Set("IsSaveImageInTextEditor", value.ToString()); }
+            get => GetBool(nameof(IsSaveImageInTextEditor), true);
+            set => Set(nameof(IsSaveImageInTextEditor), value.ToString());
         }
 
         public bool IsAutoPageInTextEditor
         {
-            get { return GetBool("IsAutoPageInTextEditor"); }
-            set { Set("IsAutoPageInTextEditor", value.ToString()); }
+            get => GetBool(nameof(IsAutoPageInTextEditor));
+            set => Set(nameof(IsAutoPageInTextEditor), value.ToString());
         }
 
         public int AutoPageWordNum
         {
-            get { return GetInt("AutoPageWordNum", 1500); }
-            set { Set("AutoPageWordNum", value.ToString()); }
+            get => GetInt(nameof(AutoPageWordNum), 1500);
+            set => Set(nameof(AutoPageWordNum), value.ToString());
         }
 
         public bool IsContentTitleBreakLine
         {
-            get { return GetBool("IsContentTitleBreakLine"); }
-            set { Set("IsContentTitleBreakLine", value.ToString()); }
+            get => GetBool(nameof(IsContentTitleBreakLine));
+            set => Set(nameof(IsContentTitleBreakLine), value.ToString());
         }
 
-        /// <summary>
-        /// 敏感词自动检测
-        /// </summary>
         public bool IsAutoCheckKeywords
         {
-            get { return GetBool("lIsAutoCheckKeywords"); }
-            set { Set("lIsAutoCheckKeywords", value.ToString()); }
+            get => GetBool(nameof(IsAutoCheckKeywords));
+            set => Set(nameof(IsAutoCheckKeywords), value.ToString());
         }
 
         public int PhotoSmallWidth
         {
-            get { return GetInt("PhotoSmallWidth", 70); }
-            set { Set("PhotoSmallWidth", value.ToString()); }
+            get => GetInt(nameof(PhotoSmallWidth), 70);
+            set => Set(nameof(PhotoSmallWidth), value.ToString());
         }
 
         public int PhotoMiddleWidth
         {
-            get { return GetInt("PhotoMiddleWidth", 400); }
-            set { Set("PhotoMiddleWidth", value.ToString()); }
+            get => GetInt(nameof(PhotoMiddleWidth), 400);
+            set => Set(nameof(PhotoMiddleWidth), value.ToString());
         }
 
         /****************图片水印设置********************/
 
         public bool IsWaterMark
         {
-            get { return GetBool("IsWaterMark"); }
-            set { Set("IsWaterMark", value.ToString()); }
+            get => GetBool(nameof(IsWaterMark));
+            set => Set(nameof(IsWaterMark), value.ToString());
         }
 
         public bool IsImageWaterMark
         {
-            get { return GetBool("IsImageWaterMark"); }
-            set { Set("IsImageWaterMark", value.ToString()); }
+            get => GetBool(nameof(IsImageWaterMark));
+            set => Set(nameof(IsImageWaterMark), value.ToString());
         }
 
         public int WaterMarkPosition
         {
-            get { return GetInt("WaterMarkPosition", 9); }
-            set { Set("WaterMarkPosition", value.ToString()); }
+            get => GetInt(nameof(WaterMarkPosition), 9);
+            set => Set(nameof(WaterMarkPosition), value.ToString());
         }
 
         public int WaterMarkTransparency
         {
-            get { return GetInt("WaterMarkTransparency", 5); }
-            set { Set("WaterMarkTransparency", value.ToString()); }
+            get => GetInt(nameof(WaterMarkTransparency), 5);
+            set => Set(nameof(WaterMarkTransparency), value.ToString());
         }
 
         public int WaterMarkMinWidth
         {
-            get { return GetInt("WaterMarkMinWidth", 200); }
-            set { Set("WaterMarkMinWidth", value.ToString()); }
+            get => GetInt(nameof(WaterMarkMinWidth), 200);
+            set => Set(nameof(WaterMarkMinWidth), value.ToString());
         }
 
         public int WaterMarkMinHeight
         {
-            get { return GetInt("WaterMarkMinHeight", 200); }
-            set { Set("WaterMarkMinHeight", value.ToString()); }
+            get => GetInt(nameof(WaterMarkMinHeight), 200);
+            set => Set(nameof(WaterMarkMinHeight), value.ToString());
         }
 
         public string WaterMarkFormatString
         {
-            get { return GetString("WaterMarkFormatString", string.Empty); }
-            set { Set("WaterMarkFormatString", value); }
+            get => GetString(nameof(WaterMarkFormatString), string.Empty);
+            set => Set(nameof(WaterMarkFormatString), value);
         }
 
         public string WaterMarkFontName
         {
-            get { return GetString("WaterMarkFontName", string.Empty); }
-            set { Set("WaterMarkFontName", value); }
+            get => GetString(nameof(WaterMarkFontName), string.Empty);
+            set => Set(nameof(WaterMarkFontName), value);
         }
 
         public int WaterMarkFontSize
         {
-            get { return GetInt("WaterMarkFontSize", 12); }
-            set { Set("WaterMarkFontSize", value.ToString()); }
+            get => GetInt(nameof(WaterMarkFontSize), 12);
+            set => Set(nameof(WaterMarkFontSize), value.ToString());
         }
 
         public string WaterMarkImagePath
         {
-            get { return GetString("WaterMarkImagePath", string.Empty); }
-            set { Set("WaterMarkImagePath", value); }
+            get => GetString(nameof(WaterMarkImagePath), string.Empty);
+            set => Set(nameof(WaterMarkImagePath), value);
         }
 
         /****************生成页面设置********************/
 
         public bool IsSeparatedWeb
         {
-            get { return GetBool("IsSeparatedWeb"); }
-            set { Set("IsSeparatedWeb", value.ToString()); }
+            get => GetBool(nameof(IsSeparatedWeb));
+            set => Set(nameof(IsSeparatedWeb), value.ToString());
         }
 
         public string SeparatedWebUrl
         {
-            get { return GetString("SeparatedWebUrl"); }
-            set { Set("SeparatedWebUrl", value); }
+            get => GetString(nameof(SeparatedWebUrl));
+            set => Set(nameof(SeparatedWebUrl), value);
         }
 
         public string WebUrl => IsSeparatedWeb ? SeparatedWebUrl : PageUtils.ParseNavigationUrl($"~/{_siteDir}");
 
         public bool IsSeparatedAssets
         {
-            get { return GetBool("IsSeparatedAssets"); }
-            set { Set("IsSeparatedAssets", value.ToString()); }
+            get => GetBool(nameof(IsSeparatedAssets));
+            set => Set(nameof(IsSeparatedAssets), value.ToString());
         }
 
         public string SeparatedAssetsUrl
         {
-            get { return GetString("SeparatedAssetsUrl"); }
-            set { Set("SeparatedAssetsUrl", value); }
+            get => GetString(nameof(SeparatedAssetsUrl));
+            set => Set(nameof(SeparatedAssetsUrl), value);
         }
 
         public string AssetsDir
         {
-            get { return GetString("AssetsDir", "upload"); }
-            set { Set("AssetsDir", value); }
+            get => GetString(nameof(AssetsDir), "upload");
+            set => Set(nameof(AssetsDir), value);
         }
 
         public string AssetsUrl => IsSeparatedAssets ? SeparatedAssetsUrl : PageUtils.ParseNavigationUrl($"~/{_siteDir}/{AssetsDir}/");
 
         public string ChannelFilePathRule
         {
-            get { return GetString("ChannelFilePathRule", "/channels/{@ChannelID}.html"); }
-            set { Set("ChannelFilePathRule", value); }
+            get => GetString(nameof(ChannelFilePathRule), "/channels/{@ChannelID}.html");
+            set => Set(nameof(ChannelFilePathRule), value);
         }
 
         public string ContentFilePathRule
         {
-            get { return GetString("ContentFilePathRule", "/contents/{@ChannelID}/{@ContentID}.html"); }
-            set { Set("ContentFilePathRule", value); }
+            get => GetString(nameof(ContentFilePathRule), "/contents/{@ChannelID}/{@ContentID}.html");
+            set => Set(nameof(ContentFilePathRule), value);
         }
 
         public bool IsCreateContentIfContentChanged
         {
-            get { return GetBool("IsCreateContentIfContentChanged", true); }
-            set { Set("IsCreateContentIfContentChanged", value.ToString()); }
+            get => GetBool(nameof(IsCreateContentIfContentChanged), true);
+            set => Set(nameof(IsCreateContentIfContentChanged), value.ToString());
         }
 
         public bool IsCreateChannelIfChannelChanged
         {
-            get { return GetBool("IsCreateChannelIfChannelChanged", true); }
-            set { Set("IsCreateChannelIfChannelChanged", value.ToString()); }
+            get => GetBool(nameof(IsCreateChannelIfChannelChanged), true);
+            set => Set(nameof(IsCreateChannelIfChannelChanged), value.ToString());
         }
 
         public bool IsCreateShowPageInfo
         {
-            get { return GetBool("IsCreateShowPageInfo"); }
-            set { Set("IsCreateShowPageInfo", value.ToString()); }
+            get => GetBool(nameof(IsCreateShowPageInfo));
+            set => Set(nameof(IsCreateShowPageInfo), value.ToString());
         }
 
         public bool IsCreateIe8Compatible
         {
-            get { return GetBool("IsCreateIe8Compatible"); }
-            set { Set("IsCreateIe8Compatible", value.ToString()); }
+            get => GetBool(nameof(IsCreateIe8Compatible));
+            set => Set(nameof(IsCreateIe8Compatible), value.ToString());
         }
 
         public bool IsCreateBrowserNoCache
         {
-            get { return GetBool("IsCreateBrowserNoCache"); }
-            set { Set("IsCreateBrowserNoCache", value.ToString()); }
+            get => GetBool(nameof(IsCreateBrowserNoCache));
+            set => Set(nameof(IsCreateBrowserNoCache), value.ToString());
         }
 
         public bool IsCreateJsIgnoreError
         {
-            get { return GetBool("IsCreateJsIgnoreError"); }
-            set { Set("IsCreateJsIgnoreError", value.ToString()); }
+            get => GetBool(nameof(IsCreateJsIgnoreError));
+            set => Set(nameof(IsCreateJsIgnoreError), value.ToString());
         }
 
         public bool IsCreateWithJQuery
         {
-            get { return GetBool("IsCreateWithJQuery", true); }
-            set { Set("IsCreateWithJQuery", value.ToString()); }
+            get => GetBool(nameof(IsCreateWithJQuery));
+            set => Set(nameof(IsCreateWithJQuery), value.ToString());
         }
 
         public bool IsCreateDoubleClick
         {
-            get { return GetBool("IsCreateDoubleClick"); }
-            set { Set("IsCreateDoubleClick", value.ToString()); }
+            get => GetBool(nameof(IsCreateDoubleClick));
+            set => Set(nameof(IsCreateDoubleClick), value.ToString());
         }
 
         public int CreateStaticMaxPage
         {
-            get { return GetInt("CreateStaticMaxPage", 10); }
-            set { Set("CreateStaticMaxPage", value.ToString()); }
+            get => GetInt(nameof(CreateStaticMaxPage), 10);
+            set => Set(nameof(CreateStaticMaxPage), value.ToString());
+        }
+
+        public bool IsCreateUseDefaultFileName
+        {
+            get => GetBool(nameof(IsCreateUseDefaultFileName));
+            set => Set(nameof(IsCreateUseDefaultFileName), value.ToString());
+        }
+
+        public string CreateDefaultFileName
+        {
+            get => GetString(nameof(CreateDefaultFileName), "index.html");
+            set => Set(nameof(CreateDefaultFileName), value);
         }
 
         public bool IsCreateStaticContentByAddDate
         {
-            get { return GetBool("IsCreateStaticContentByAddDate"); }
-            set { Set("IsCreateStaticContentByAddDate", value.ToString()); }
+            get => GetBool(nameof(IsCreateStaticContentByAddDate));
+            set => Set(nameof(IsCreateStaticContentByAddDate), value.ToString());
         }
 
         public DateTime CreateStaticContentAddDate
         {
-            get { return GetDateTime("CreateStaticContentAddDate", DateTime.MinValue); }
-            set { Set("CreateStaticContentAddDate", DateUtils.GetDateString(value)); }
+            get => GetDateTime(nameof(CreateStaticContentAddDate), DateTime.MinValue);
+            set => Set(nameof(CreateStaticContentAddDate), DateUtils.GetDateString(value));
         }
 
         /****************跨站转发设置********************/
 
         public bool IsCrossSiteTransChecked
         {
-            get { return GetBool("IsCrossSiteTransChecked"); }
-            set { Set("IsCrossSiteTransChecked", value.ToString()); }
+            get => GetBool(nameof(IsCrossSiteTransChecked));
+            set => Set(nameof(IsCrossSiteTransChecked), value.ToString());
         }
 
         /****************记录系统操作设置********************/
 
         public bool ConfigTemplateIsCodeMirror
         {
-            get { return GetBool("ConfigTemplateIsCodeMirror", true); }
-            set { Set("ConfigTemplateIsCodeMirror", value.ToString()); }
+            get => GetBool(nameof(ConfigTemplateIsCodeMirror), true);
+            set => Set(nameof(ConfigTemplateIsCodeMirror), value.ToString());
         }
 
         public int ConfigVideoContentInsertWidth
         {
-            get { return GetInt("ConfigVideoContentInsertWidth", 420); }
-            set { Set("ConfigVideoContentInsertWidth", value.ToString()); }
+            get => GetInt(nameof(ConfigVideoContentInsertWidth), 420);
+            set => Set(nameof(ConfigVideoContentInsertWidth), value.ToString());
         }
 
         public int ConfigVideoContentInsertHeight
         {
-            get { return GetInt("ConfigVideoContentInsertHeight", 280); }
-            set { Set("ConfigVideoContentInsertHeight", value.ToString()); }
+            get => GetInt(nameof(ConfigVideoContentInsertHeight), 280);
+            set => Set(nameof(ConfigVideoContentInsertHeight), value.ToString());
         }
 
         public string ConfigExportType
         {
-            get { return GetString("ConfigExportType", string.Empty); }
-            set { Set("ConfigExportType", value); }
+            get => GetString(nameof(ConfigExportType), string.Empty);
+            set => Set(nameof(ConfigExportType), value);
         }
 
         public string ConfigExportPeriods
         {
-            get { return GetString("ConfigExportPeriods", string.Empty); }
-            set { Set("ConfigExportPeriods", value); }
+            get => GetString(nameof(ConfigExportPeriods), string.Empty);
+            set => Set(nameof(ConfigExportPeriods), value);
         }
 
         public string ConfigExportDisplayAttributes
         {
-            get { return GetString("ConfigExportDisplayAttributes", string.Empty); }
-            set { Set("ConfigExportDisplayAttributes", value); }
+            get => GetString(nameof(ConfigExportDisplayAttributes), string.Empty);
+            set => Set(nameof(ConfigExportDisplayAttributes), value);
         }
 
         public string ConfigExportIsChecked
         {
-            get { return GetString("ConfigExportIsChecked", string.Empty); }
-            set { Set("ConfigExportIsChecked", value); }
+            get => GetString(nameof(ConfigExportIsChecked), string.Empty);
+            set => Set(nameof(ConfigExportIsChecked), value);
         }
 
         public string ConfigSelectImageCurrentUrl
         {
-            get { return GetString("ConfigSelectImageCurrentUrl", "@/" + ImageUploadDirectoryName); }
-            set { Set("ConfigSelectImageCurrentUrl", value); }
+            get => GetString(nameof(ConfigSelectImageCurrentUrl), "@/" + ImageUploadDirectoryName);
+            set => Set(nameof(ConfigSelectImageCurrentUrl), value);
         }
 
         public string ConfigSelectVideoCurrentUrl
         {
-            get { return GetString("ConfigSelectVideoCurrentUrl", "@/" + VideoUploadDirectoryName); }
-            set { Set("ConfigSelectVideoCurrentUrl", value); }
+            get => GetString(nameof(ConfigSelectVideoCurrentUrl), "@/" + VideoUploadDirectoryName);
+            set => Set(nameof(ConfigSelectVideoCurrentUrl), value);
         }
 
         public string ConfigSelectFileCurrentUrl
         {
-            get { return GetString("ConfigSelectFileCurrentUrl", "@/" + FileUploadDirectoryName); }
-            set { Set("ConfigSelectFileCurrentUrl", value); }
+            get => GetString(nameof(ConfigSelectFileCurrentUrl), "@/" + FileUploadDirectoryName);
+            set => Set(nameof(ConfigSelectFileCurrentUrl), value);
         }
 
         public string ConfigUploadImageIsTitleImage
         {
-            get { return GetString("ConfigUploadImageIsTitleImage", "True"); }
-            set { Set("ConfigUploadImageIsTitleImage", value); }
+            get => GetString(nameof(ConfigUploadImageIsTitleImage), "True");
+            set => Set(nameof(ConfigUploadImageIsTitleImage), value);
         }
 
         public string ConfigUploadImageTitleImageWidth
         {
-            get { return GetString("ConfigUploadImageTitleImageWidth", "300"); }
-            set { Set("ConfigUploadImageTitleImageWidth", value); }
+            get => GetString(nameof(ConfigUploadImageTitleImageWidth), "300");
+            set => Set(nameof(ConfigUploadImageTitleImageWidth), value);
         }
 
         public string ConfigUploadImageTitleImageHeight
         {
-            get { return GetString("ConfigUploadImageTitleImageHeight", string.Empty); }
-            set { Set("ConfigUploadImageTitleImageHeight", value); }
+            get => GetString(nameof(ConfigUploadImageTitleImageHeight), string.Empty);
+            set => Set(nameof(ConfigUploadImageTitleImageHeight), value);
         }
 
         public string ConfigUploadImageIsShowImageInTextEditor
         {
-            get { return GetString("ConfigUploadImageIsShowImageInTextEditor", "True"); }
-            set { Set("ConfigUploadImageIsShowImageInTextEditor", value); }
+            get => GetString(nameof(ConfigUploadImageIsShowImageInTextEditor), "True");
+            set => Set(nameof(ConfigUploadImageIsShowImageInTextEditor), value);
         }
 
         public string ConfigUploadImageIsLinkToOriginal
         {
-            get { return GetString("ConfigUploadImageIsLinkToOriginal", string.Empty); }
-            set { Set("ConfigUploadImageIsLinkToOriginal", value); }
+            get => GetString(nameof(ConfigUploadImageIsLinkToOriginal), string.Empty);
+            set => Set(nameof(ConfigUploadImageIsLinkToOriginal), value);
         }
 
         public string ConfigUploadImageIsSmallImage
         {
-            get { return GetString("ConfigUploadImageIsSmallImage", "True"); }
-            set { Set("ConfigUploadImageIsSmallImage", value); }
+            get => GetString(nameof(ConfigUploadImageIsSmallImage), "True");
+            set => Set(nameof(ConfigUploadImageIsSmallImage), value);
         }
 
         public string ConfigUploadImageSmallImageWidth
         {
-            get { return GetString("ConfigUploadImageSmallImageWidth", "500"); }
-            set { Set("ConfigUploadImageSmallImageWidth", value); }
+            get => GetString(nameof(ConfigUploadImageSmallImageWidth), "500");
+            set => Set(nameof(ConfigUploadImageSmallImageWidth), value);
         }
 
         public string ConfigUploadImageSmallImageHeight
         {
-            get { return GetString("ConfigUploadImageSmallImageHeight", string.Empty); }
-            set { Set("ConfigUploadImageSmallImageHeight", value); }
-        }
-
-        /****************站点基本设置********************/
-        public string SiteSettingsCollection
-        {
-            get { return GetString("SiteSettingsCollection", string.Empty); }
-            set { Set("SiteSettingsCollection", value); }
+            get => GetString(nameof(ConfigUploadImageSmallImageHeight), string.Empty);
+            set => Set(nameof(ConfigUploadImageSmallImageHeight), value);
         }
 
         /****************上传设置*************************/
 
         public string ImageUploadDirectoryName
         {
-            get { return GetString("ImageUploadDirectoryName", "upload/images"); }
-            set { Set("ImageUploadDirectoryName", value); }
+            get => GetString(nameof(ImageUploadDirectoryName), "upload/images");
+            set => Set(nameof(ImageUploadDirectoryName), value);
         }
 
         public string ImageUploadDateFormatString
         {
-            get { return GetString("ImageUploadDateFormatString", EDateFormatTypeUtils.GetValue(EDateFormatType.Month)); }
-            set { Set("ImageUploadDateFormatString", value); }
+            get => GetString(nameof(ImageUploadDateFormatString), EDateFormatTypeUtils.GetValue(EDateFormatType.Month));
+            set => Set(nameof(ImageUploadDateFormatString), value);
         }
 
         public bool IsImageUploadChangeFileName
         {
-            get { return GetBool("IsImageUploadChangeFileName", true); }
-            set { Set("IsImageUploadChangeFileName", value.ToString()); }
+            get => GetBool(nameof(IsImageUploadChangeFileName), true);
+            set => Set(nameof(IsImageUploadChangeFileName), value.ToString());
         }
 
         public string ImageUploadTypeCollection
         {
-            get { return GetString("ImageUploadTypeCollection", "gif|jpg|jpeg|bmp|png|pneg|swf"); }
-            set { Set("ImageUploadTypeCollection", value); }
+            get => GetString(nameof(ImageUploadTypeCollection), "gif|jpg|jpeg|bmp|png|pneg|swf");
+            set => Set(nameof(ImageUploadTypeCollection), value);
         }
 
         public int ImageUploadTypeMaxSize
         {
-            get { return GetInt("ImageUploadTypeMaxSize", 15360); }
-            set { Set("ImageUploadTypeMaxSize", value.ToString()); }
+            get => GetInt(nameof(ImageUploadTypeMaxSize), 15360);
+            set => Set(nameof(ImageUploadTypeMaxSize), value.ToString());
         }
 
         public string VideoUploadDirectoryName
         {
-            get { return GetString("VideoUploadDirectoryName", "upload/videos"); }
-            set { Set("VideoUploadDirectoryName", value); }
+            get => GetString(nameof(VideoUploadDirectoryName), "upload/videos");
+            set => Set(nameof(VideoUploadDirectoryName), value);
         }
 
         public string VideoUploadDateFormatString
         {
-            get { return GetString("VideoUploadDateFormatString", EDateFormatTypeUtils.GetValue(EDateFormatType.Month)); }
-            set { Set("VideoUploadDateFormatString", value); }
+            get => GetString(nameof(VideoUploadDateFormatString), EDateFormatTypeUtils.GetValue(EDateFormatType.Month));
+            set => Set(nameof(VideoUploadDateFormatString), value);
         }
 
         public bool IsVideoUploadChangeFileName
         {
-            get { return GetBool("IsVideoUploadChangeFileName", true); }
-            set { Set("IsVideoUploadChangeFileName", value.ToString()); }
+            get => GetBool(nameof(IsVideoUploadChangeFileName), true);
+            set => Set(nameof(IsVideoUploadChangeFileName), value.ToString());
         }
 
         public string VideoUploadTypeCollection
         {
-            get { return GetString("VideoUploadTypeCollection", "asf|asx|avi|flv|mid|midi|mov|mp3|mp4|mpg|mpeg|ogg|ra|rm|rmb|rmvb|rp|rt|smi|swf|wav|webm|wma|wmv|viv"); }
-            set { Set("VideoUploadTypeCollection", value); }
+            get => GetString(nameof(VideoUploadTypeCollection), "asf|asx|avi|flv|mid|midi|mov|mp3|mp4|mpg|mpeg|ogg|ra|rm|rmb|rmvb|rp|rt|smi|swf|wav|webm|wma|wmv|viv");
+            set => Set(nameof(VideoUploadTypeCollection), value);
         }
 
         public int VideoUploadTypeMaxSize
         {
-            get { return GetInt("VideoUploadTypeMaxSize", 307200); }
-            set { Set("VideoUploadTypeMaxSize", value.ToString()); }
+            get => GetInt(nameof(VideoUploadTypeMaxSize), 307200);
+            set => Set(nameof(VideoUploadTypeMaxSize), value.ToString());
         }
 
         public string FileUploadDirectoryName
         {
-            get { return GetString("FileUploadDirectoryName", "upload/files"); }
-            set { Set("FileUploadDirectoryName", value); }
+            get => GetString(nameof(FileUploadDirectoryName), "upload/files");
+            set => Set(nameof(FileUploadDirectoryName), value);
         }
 
         public string FileUploadDateFormatString
         {
-            get { return GetString("FileUploadDateFormatString", EDateFormatTypeUtils.GetValue(EDateFormatType.Month)); }
-            set { Set("FileUploadDateFormatString", value); }
+            get => GetString(nameof(FileUploadDateFormatString), EDateFormatTypeUtils.GetValue(EDateFormatType.Month));
+            set => Set(nameof(FileUploadDateFormatString), value);
         }
 
         public bool IsFileUploadChangeFileName
         {
-            get { return GetBool("IsFileUploadChangeFileName", true); }
-            set { Set("IsFileUploadChangeFileName", value.ToString()); }
+            get => GetBool(nameof(IsFileUploadChangeFileName), true);
+            set => Set(nameof(IsFileUploadChangeFileName), value.ToString());
         }
 
         public string FileUploadTypeCollection
         {
-            get { return GetString("FileUploadTypeCollection", "zip,rar,7z,js,css,txt,doc,docx,ppt,pptx,xls,xlsx,pdf"); }
-            set { Set("FileUploadTypeCollection", value); }
+            get => GetString(nameof(FileUploadTypeCollection), "zip,rar,7z,js,css,txt,doc,docx,ppt,pptx,xls,xlsx,pdf");
+            set => Set(nameof(FileUploadTypeCollection), value);
         }
 
         public int FileUploadTypeMaxSize
         {
-            get { return GetInt("FileUploadTypeMaxSize", 307200); }
-            set { Set("FileUploadTypeMaxSize", value.ToString()); }
+            get => GetInt(nameof(FileUploadTypeMaxSize), 307200);
+            set => Set(nameof(FileUploadTypeMaxSize), value.ToString());
         }
     }
 }

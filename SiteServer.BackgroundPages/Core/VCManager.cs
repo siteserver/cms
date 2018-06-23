@@ -5,9 +5,7 @@ namespace SiteServer.BackgroundPages.Core
 {
     public class VcManager
     {
-        protected const string AdminLoginCookieName = "BAIRONG.VC.ADMINLOGIN";
-
-        public const string AttributeName = "validateCode";
+        private const string AdminLoginCookieName = "SITESERVER.VC.ADMINLOGIN";
 
         private string _cookieName;
 
@@ -16,8 +14,6 @@ namespace SiteServer.BackgroundPages.Core
             var vc = new VcManager {_cookieName = AdminLoginCookieName};
             return vc;
         }
-
-        protected VcManager() { }
 
         public string GetCookieName()
         {

@@ -96,7 +96,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (AuthRequest.IsQueryExists("searchType"))
             {
                 pagerParam.WhereSqlString = DataProvider.ContentDao.GetPagerWhereSqlString(allLowerAttributeNameList,
-                    SiteId, channelId, AuthRequest.AdminPermissions.IsSystemAdministrator, new List<int>
+                    SiteId, _channelInfo, AuthRequest.AdminPermissions.IsSystemAdministrator, new List<int>
                     {
                         channelId
                     }, AuthRequest.GetQueryString("searchType"), AuthRequest.GetQueryString("keyword"),

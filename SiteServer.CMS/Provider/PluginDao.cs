@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Data;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
@@ -13,30 +12,30 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_Plugin";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(PluginInfo.Id),
+                AttributeName = nameof(PluginInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(PluginInfo.PluginId),
+                AttributeName = nameof(PluginInfo.PluginId),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(PluginInfo.IsDisabled),
+                AttributeName = nameof(PluginInfo.IsDisabled),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(PluginInfo.Taxis),
+                AttributeName = nameof(PluginInfo.Taxis),
                 DataType = DataType.Integer
             }
         };

@@ -23,7 +23,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
             contextInfo.IsStlEntity = true;
             try
             {
-                var stlElement = StlParserUtility.HtmlToXml($"<{stlEntity.Trim(' ', '{', '}')} />");
+                var stlElement = $"<{stlEntity.Trim(' ', '{', '}')} />";
 
                 var innerBuilder = new StringBuilder(stlElement);
                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);

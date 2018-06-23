@@ -79,11 +79,6 @@ namespace SiteServer.BackgroundPages.Core
             if (!string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.FileUrl)))
             {
                 image += "&nbsp;<img src='../pic/icon/attachment.gif' title='附件' align='absmiddle' border=0 />";
-                if (siteInfo.Additional.IsCountDownload)
-                {
-                    var count = CountManager.GetCount(siteInfo.TableName, contentInfo.Id.ToString(), ECountType.Download);
-                    image += $"下载次数:<strong>{count}</strong>";
-                }
             }
             if (!string.IsNullOrEmpty(contentInfo.WritingUserName))
             {
@@ -379,7 +374,7 @@ function getWordSpliter(){{
             $('.nav-pills').children('li').eq(1).find('a').click();
 			$('#TbTags').val(data).focus();
 		}}else{{
-            {AlertUtils.Error("敏感词检测", "对不起，内容不足，无法提取关键字")}
+            {AlertUtils.Error("提取关键字", "对不起，内容不足，无法提取关键字")}
         }}
 	}});	
 }}

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.IO;
 
@@ -11,7 +11,7 @@ namespace SiteServer.CMS.Core
         private static class TableColumnManagerCache
         {
             private static readonly object LockObject = new object();
-            private const string CacheKey = "BaiRong.Core.Table.TableColumnManager";
+            private const string CacheKey = "SiteServer.CMS.Core.TableColumnManager";
             private static readonly FileWatcherClass FileWatcher;
 
             static TableColumnManagerCache()
@@ -31,7 +31,7 @@ namespace SiteServer.CMS.Core
                 FileWatcher.UpdateCacheFile();
             }
 
-            private static void Update(Dictionary<string, List<TableColumnInfo>> allDict, List<TableColumnInfo> list,
+            private static void Update(Dictionary<string, List<TableColumn>> allDict, List<TableColumn> list,
                 string key)
             {
                 lock (LockObject)
@@ -40,40 +40,40 @@ namespace SiteServer.CMS.Core
                 }
             }
 
-            private static Dictionary<string, List<TableColumnInfo>> GetAllDictionary()
+            private static Dictionary<string, List<TableColumn>> GetAllDictionary()
             {
-                var allDict = CacheUtils.Get(CacheKey) as Dictionary<string, List<TableColumnInfo>>;
+                var allDict = CacheUtils.Get(CacheKey) as Dictionary<string, List<TableColumn>>;
                 if (allDict != null) return allDict;
 
-                allDict = new Dictionary<string, List<TableColumnInfo>>();
+                allDict = new Dictionary<string, List<TableColumn>>();
                 CacheUtils.InsertHours(CacheKey, allDict, 24);
                 return allDict;
             }
 
-            public static List<TableColumnInfo> GetTableColumnInfoListLowercase(string tableName)
+            public static List<TableColumn> GetTableColumnInfoList(string tableName)
             {
                 var allDict = GetAllDictionary();
 
-                List<TableColumnInfo> list;
+                List<TableColumn> list;
                 allDict.TryGetValue(tableName, out list);
 
                 if (list != null) return list;
 
-                list = DataProvider.DatabaseDao.GetTableColumnInfoListLowercase(WebConfigUtils.ConnectionString, tableName);
+                list = DataProvider.DatabaseDao.GetTableColumnInfoList(WebConfigUtils.ConnectionString, tableName);
                 Update(allDict, list, tableName);
                 return list;
             }
         }
 
-        public static List<TableColumnInfo> GetTableColumnInfoListLowercase(string tableName, List<string> excludeAttributeNameListLowercase = null)
+        public static List<TableColumn> GetTableColumnInfoList(string tableName, List<string> excludeAttributeNameList = null)
         {
-            var list = TableColumnManagerCache.GetTableColumnInfoListLowercase(tableName);
-            if (excludeAttributeNameListLowercase == null || excludeAttributeNameListLowercase.Count == 0) return list;
+            var list = TableColumnManagerCache.GetTableColumnInfoList(tableName);
+            if (excludeAttributeNameList == null || excludeAttributeNameList.Count == 0) return list;
 
-            var retval = new List<TableColumnInfo>();
+            var retval = new List<TableColumn>();
             foreach (var tableColumnInfo in list)
             {
-                if (!excludeAttributeNameListLowercase.Contains(tableColumnInfo.ColumnName.ToLower()))
+                if (!StringUtils.ContainsIgnoreCase(excludeAttributeNameList, tableColumnInfo.AttributeName))
                 {
                     retval.Add(tableColumnInfo);
                 }
@@ -82,15 +82,15 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static List<string> GetTableColumnNameListLowercase(string tableName, List<string> excludeAttributeNameListLowercase = null)
+        public static List<string> GetTableColumnNameList(string tableName, List<string> excludeAttributeNameList = null)
         {
-            var allTableColumnInfoList = GetTableColumnInfoListLowercase(tableName, excludeAttributeNameListLowercase);
+            var allTableColumnInfoList = GetTableColumnInfoList(tableName, excludeAttributeNameList);
 
             var columnNameList = new List<string>();
 
             foreach (var tableColumnInfo in allTableColumnInfoList)
             {
-                columnNameList.Add(tableColumnInfo.ColumnName);
+                columnNameList.Add(tableColumnInfo.AttributeName);
             }
 
             return columnNameList;

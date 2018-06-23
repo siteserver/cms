@@ -242,31 +242,31 @@ namespace SiteServer.CMS.Core
         //    dataTable.Columns.Add(new DataColumn
         //    {
         //        DataType = System.Type.GetType("System.Int32"),
-        //        ColumnName = "TableStyleItemID"
+        //        AttributeName = "TableStyleItemID"
         //    });
 
         //    dataTable.Columns.Add(new DataColumn
         //    {
         //        DataType = System.Type.GetType("System.Int32"),
-        //        ColumnName = "TableStyleID"
+        //        AttributeName = "TableStyleID"
         //    });
 
         //    dataTable.Columns.Add(new DataColumn
         //    {
         //        DataType = System.Type.GetType("System.String"),
-        //        ColumnName = "ItemTitle"
+        //        AttributeName = "ItemTitle"
         //    });
 
         //    dataTable.Columns.Add(new DataColumn
         //    {
         //        DataType = System.Type.GetType("System.String"),
-        //        ColumnName = "ItemValue"
+        //        AttributeName = "ItemValue"
         //    });
 
         //    dataTable.Columns.Add(new DataColumn
         //    {
         //        DataType = System.Type.GetType("System.String"),
-        //        ColumnName = "IsSelected"
+        //        AttributeName = "IsSelected"
         //    });
 
         //    for (var i = 0; i < styleItemCount; i++)

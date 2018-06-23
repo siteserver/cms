@@ -12,26 +12,26 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_AdministratorsInRoles";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorsInRolesInfo.Id),
+                AttributeName = nameof(AdministratorsInRolesInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorsInRolesInfo.RoleName),
+                AttributeName = nameof(AdministratorsInRolesInfo.RoleName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorsInRolesInfo.UserName),
+                AttributeName = nameof(AdministratorsInRolesInfo.UserName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             }
         };
 

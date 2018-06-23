@@ -12,76 +12,76 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_TableStyle";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableStyleInfo.Id),
+                AttributeName = nameof(TableStyleInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableStyleInfo.RelatedIdentity),
+                AttributeName = nameof(TableStyleInfo.RelatedIdentity),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableStyleInfo.TableName),
+                AttributeName = nameof(TableStyleInfo.TableName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableStyleInfo.AttributeName),
+                AttributeName = nameof(TableStyleInfo.AttributeName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableStyleInfo.Taxis),
+                AttributeName = nameof(TableStyleInfo.Taxis),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableStyleInfo.DisplayName),
+                AttributeName = nameof(TableStyleInfo.DisplayName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableStyleInfo.HelpText),
+                AttributeName = nameof(TableStyleInfo.HelpText),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableStyleInfo.IsVisibleInList),
+                AttributeName = nameof(TableStyleInfo.IsVisibleInList),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableStyleInfo.InputType),
+                AttributeName = nameof(TableStyleInfo.InputType),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableStyleInfo.DefaultValue),
+                AttributeName = nameof(TableStyleInfo.DefaultValue),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableStyleInfo.IsHorizontal),
+                AttributeName = nameof(TableStyleInfo.IsHorizontal),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableStyleInfo.ExtendValues),
+                AttributeName = nameof(TableStyleInfo.ExtendValues),
                 DataType = DataType.Text
             }
         };

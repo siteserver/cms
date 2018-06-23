@@ -2,6 +2,7 @@
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Api;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages
@@ -13,7 +14,6 @@ namespace SiteServer.BackgroundPages
         public TextBox TbPassword;
         public TextBox TbValidateCode;
         public Literal LtlValidateCodeImage;
-        public CheckBox CbRememberMe;
 	    public PlaceHolder PhFindPassword;
 
         private VcManager _vcManager; // 验证码类
@@ -70,7 +70,7 @@ namespace SiteServer.BackgroundPages
 
             string userName;
             string errorMessage;
-            if (!DataProvider.AdministratorDao.ValidateAccount(account, password, out userName, out errorMessage)) // 检测密码是否正确
+            if (!DataProvider.AdministratorDao.Validate(account, password, false, out userName, out errorMessage)) // 检测密码是否正确
             {
                 LogUtils.AddAdminLog(userName, "后台管理员登录失败");
                 DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfFailedLogin(userName); // 记录最后登录时间、失败次数+1
@@ -80,7 +80,7 @@ namespace SiteServer.BackgroundPages
 
             DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLogin(userName); // 记录最后登录时间、失败次数清零
             AuthRequest.AdminLogin(userName); // 写Cookie并记录管理员操作日志
-            PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty)); // 跳转到登录成功的后台页
+		    PageUtils.Redirect(PageInitialization.GetRedirectUrl()); // 跳转到系统初始化页面
         }
 
         private string GetMessageHtml(string message) => $@"<div class=""alert alert-danger"">{message}</div>";

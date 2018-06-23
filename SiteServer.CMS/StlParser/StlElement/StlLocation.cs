@@ -27,7 +27,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var wordNum = 0;
             var isContainSelf = true;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -58,9 +58,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string separator, string target, string linkClass, int wordNum, bool isContainSelf)
         {
-            if (!string.IsNullOrEmpty(contextInfo.InnerXml))
+            if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
-                separator = contextInfo.InnerXml;
+                separator = contextInfo.InnerHtml;
             }
 
             var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);

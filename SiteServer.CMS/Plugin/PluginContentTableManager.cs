@@ -6,6 +6,7 @@ using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
+using TableColumn = SiteServer.Plugin.TableColumn;
 
 namespace SiteServer.CMS.Plugin
 {

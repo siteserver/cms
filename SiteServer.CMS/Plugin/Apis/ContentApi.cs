@@ -5,6 +5,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
+using TableColumn = SiteServer.Plugin.TableColumn;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
@@ -32,7 +33,7 @@ namespace SiteServer.CMS.Plugin.Apis
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
-            return DataProvider.ContentDao.GetListByLimitAndOffset(tableName, channelId, whereString, orderString, limit, offset);
+            return DataProvider.ContentDao.GetListByLimitAndOffset(tableName, whereString, orderString, limit, offset);
         }
 
         public int GetCount(int siteId, int channelId, string whereString)
@@ -42,7 +43,7 @@ namespace SiteServer.CMS.Plugin.Apis
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
-            return DataProvider.ContentDao.GetCount(tableName, channelId, whereString);
+            return DataProvider.ContentDao.GetCount(tableName, whereString);
         }
 
         public string GetTableName(int siteId, int channelId)

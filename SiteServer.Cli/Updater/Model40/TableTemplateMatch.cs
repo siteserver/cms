@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Model40
 {
@@ -34,17 +35,27 @@ namespace SiteServer.Cli.Updater.Model40
 
     public partial class TableTemplateMatch
     {
-        public const string OldTableName = "siteserver_TemplateMatch";
+        public const string OldTableName = "TemplateMatch";
 
-        public static readonly string NewTableName = DataProvider.TemplateMatchDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumnInfo> NewColumns = DataProvider.TemplateMatchDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.TemplateMatchDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        private static readonly List<TableColumn> NewColumns = DataProvider.TemplateMatchDao.TableColumns;
+
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(TemplateMatchInfo.ChannelId), nameof(NodeId)},
                 {nameof(TemplateMatchInfo.SiteId), nameof(PublishmentSystemId)}
             };
+
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

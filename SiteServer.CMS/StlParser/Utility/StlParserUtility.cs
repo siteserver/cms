@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml;
+using HtmlAgilityPack;
 using SiteServer.Utils;
-using SiteServer.Utils.ThirdParty.Sgml;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Model;
+using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.Utility
@@ -27,12 +26,6 @@ namespace SiteServer.CMS.StlParser.Utility
         public const string OrderHitsByWeek = "HitsByWeek";	//周点击量
         public const string OrderHitsByMonth = "HitsByMonth";	//月点击量
         public const string OrderRandom = "Random";            //随机
-
-        private const string XmlDeclaration = "<?xml version='1.0'?>";
-
-        private const string XmlNamespaceStart = "<stl:document xmlns=\"http://www.siteserver.cn/stl\" xmlns:stl=\"http://www.siteserver.cn/stl\" xmlns:STL=\"http://www.siteserver.cn/stl\" xmlns:sTL=\"http://www.siteserver.cn/stl\" xmlns:stL=\"http://www.siteserver.cn/stl\" xmlns:sTl=\"http://www.siteserver.cn/stl\" xmlns:Stl=\"http://www.siteserver.cn/stl\" xmlns:StL=\"http://www.siteserver.cn/stl\" xmlns:asp=\"http://www.siteserver.cn/stl\" xmlns:ext=\"http://www.siteserver.cn/stl\" xmlns:v-bind=\"http://www.siteserver.cn/stl\" xmlns:v-on=\"http://www.siteserver.cn/stl\">";
-
-        private const string XmlNamespaceEnd = "</stl:document>";
 
         //http://weblogs.asp.net/whaggard/archive/2005/02/20/377025.aspx
         //        public static Regex REGEX_STL_ELEMENT = new Regex(@"
@@ -59,122 +52,6 @@ namespace SiteServer.CMS.StlParser.Utility
   (?(LEVEL)(?!))
 </stl:\1[^>]*>|<stl:(\w+?)[^>]*/>
 ", ((RegexOptions.Singleline | RegexOptions.IgnoreCase) | RegexOptions.IgnorePatternWhitespace) | RegexOptions.Compiled);
-
-        public static string ReplaceXmlNamespace(string content)
-        {
-            if (!string.IsNullOrEmpty(content))
-            {
-                return content.Replace(@" xmlns=""http://www.siteserver.cn/stl""", string.Empty).Replace(@" xmlns:stl=""http://www.siteserver.cn/stl""", string.Empty);
-            }
-            return string.Empty;
-        }
-
-        public static XmlDocument GetXmlDocument(string element, bool isXmlContent)
-        {
-            var xmlDocument = new XmlDocument
-            {
-                PreserveWhitespace = true,
-                Prefix = ""
-            };
-
-            try
-            {
-                if (isXmlContent)
-                {
-                    xmlDocument.LoadXml(XmlDeclaration + XmlNamespaceStart + element + XmlNamespaceEnd);
-                }
-                else
-                {
-                    xmlDocument.LoadXml(XmlDeclaration + XmlNamespaceStart + HtmlToXml(element) + XmlNamespaceEnd);
-                }
-            }
-            catch
-            {
-                // ignored
-            }
-            //catch(Exception e)
-            //{
-            //    TraceUtils.Warn(e.ToString());
-            //    throw e;
-            //}
-            return xmlDocument;
-        }
-
-        //还原Html转换为Xml时无法保留的特定字符
-        public static string GetBackHtml(string content, PageInfo pageInfo)
-        {
-            if (string.IsNullOrEmpty(content)) return string.Empty;
-
-            content = content.Replace(ContentUtility.PagePlaceHolder, string.Empty);
-            content = content.Replace("&quot;", "'");
-            content = content.Replace("&gt;", ">");
-            content = content.Replace("&lt;", "<");
-            content = content.Replace("&amp;", "&");
-            content = content.Replace(" xmlns=\"http://www.siteserver.cn/stl\"", string.Empty);
-            content = content.Replace(" xmlns:stl=\"http://www.siteserver.cn/stl\"", string.Empty);
-            content = content.Replace(" xmlns:asp=\"http://www.siteserver.cn/stl\"", string.Empty);
-            content = content.Replace("&amp;#", "&#");
-            content = content.Replace(" hexadecimal-value-0x40", " @");//vuejs shorthand @click
-            content = content.Replace(" hexadecimal-value-0x3a", " :");//vuejs shorthand :href
-            if (pageInfo?.TemplateInfo == null) return content;
-
-            content = content.Replace("<![CDATA[", string.Empty);
-            content = content.Replace("]]>", string.Empty);
-            return content;
-        }
-
-        public static string Amp(string content)
-        {
-            return content?.Replace("&", "&amp;");
-        }
-
-        public static void XmlToHtml(StringBuilder builder)
-        {
-            builder?.Replace("&quot;", "'").Replace("&gt;", ">").Replace("&lt;", "<").Replace("&amp;", "&");
-        }
-
-        public static string XmlToHtml(string xml)
-        {
-            return string.IsNullOrWhiteSpace(xml) ? string.Empty : xml.Replace("&quot;", "'").Replace("&gt;", ">").Replace("&lt;", "<").Replace("&amp;", "&");
-        }
-
-        /// <summary>
-        /// 将html代码转换为xml代码，需要在try-catch块中调用。
-        /// </summary>
-        public static string HtmlToXml(string html)
-        {
-            if (string.IsNullOrWhiteSpace(html)) return string.Empty;
-
-            html = StringUtils.ReplaceIgnoreCase(html, "<br>", "<br />");
-            html = StringUtils.ReplaceIgnoreCase(html, "&#", "&amp;#");
-            html = html.Replace(" @", " hexadecimal-value-0x40");//vuejs shorthand @click
-            html = html.Replace(" :", " hexadecimal-value-0x3a");//vuejs shorthand :href
-            //strInputHtml = StringUtils.ReplaceNewline(strInputHtml, NEWLINE_REPLACEMENT);
-            var reader = new SgmlReader
-            {
-                DocType = "HTML"
-            };
-            var sr = new System.IO.StringReader(html);
-            reader.InputStream = sr;
-            var sw = new System.IO.StringWriter();
-            var w = new XmlTextWriter(sw);
-            reader.Read();
-            while (!reader.EOF)
-            {
-                w.WriteNode(reader, true);
-            }
-
-            w.Flush();
-            w.Close();
-            var xml = sw.ToString();
-            //xml = xml.Replace(NEWLINE_REPLACEMENT, "\r\n");
-            return xml;
-        }
-
-        public static bool IsStlEntityExists(string stlEntityName, string insertedLabelCollection)
-        {
-            return insertedLabelCollection.IndexOf(stlEntityName.Substring(0, stlEntityName.Length - 1), StringComparison.Ordinal) != -1;
-        }
 
         public static List<string> GetStlLabelList(string templateContent)
         {
@@ -208,21 +85,6 @@ namespace SiteServer.CMS.StlParser.Utility
                 return true;
             }
             return false;
-        }
-
-        public static string GetStlEntity(string stlEntityName, string insertedLabelCollection)
-        {
-            var stlEntity = string.Empty;
-            var labelList = TranslateUtils.StringCollectionToStringList(insertedLabelCollection);
-            foreach (var labelWithDisplayModeEnNameAndChannelId in labelList)
-            {
-                if (labelWithDisplayModeEnNameAndChannelId.StartsWith(stlEntityName.Substring(0, stlEntityName.Length - 1)))
-                {
-                    stlEntity = labelWithDisplayModeEnNameAndChannelId;
-                    break;
-                }
-            }
-            return stlEntity;
         }
 
         public static string GetStlElement(string stlElementName, List<string> labelList)
@@ -280,39 +142,11 @@ namespace SiteServer.CMS.StlParser.Utility
             return value;
         }
 
-        /// <summary>
-        /// 判断此标签是否为Stl实体
-        /// </summary>
-        /// <param name="label"></param>
-        /// <returns></returns>
-        public static bool IsStlEntity(string label)
-        {
-            if (label == null) return false;
-            label = label.ToLower();
-            return (label.StartsWith("{stl.") || label.StartsWith("{content.") || label.StartsWith("{channel.")) && label.EndsWith("}");
-        }
-
         public static bool IsStlEntityInclude(string content)
         {
             if (content == null) return false;
             content = content.ToLower();
             return StringUtils.Contains(content, "}") && (StringUtils.Contains(content, "{stl.") || StringUtils.Contains(content, "{content.") || StringUtils.Contains(content, "{channel."));
-        }
-
-        public static bool IsSpecifiedStlEntity(EStlEntityType entityType, string stlEntity)
-        {
-            return stlEntity != null && stlEntity.TrimStart('{').ToLower().StartsWith(EStlEntityTypeUtils.GetValue(entityType).ToLower());
-        }
-
-        /// <summary>
-        /// 判断此标签是否为Stl元素
-        /// </summary>
-        /// <param name="label"></param>
-        /// <returns></returns>
-        public static bool IsStlElement(string label)
-        {
-            if (label == null) return false;
-            return label.ToLower().StartsWith("<stl:") && label.IndexOf(">", StringComparison.Ordinal) != -1;
         }
 
         public static bool IsSpecifiedStlElement(string stlElement, string elementName)
@@ -372,43 +206,6 @@ namespace SiteServer.CMS.StlParser.Utility
             return stlEntityList;
         }
 
-        public static List<string> GetStlSqlEntityList(string content)
-        {
-            //首先需要去除<stl:项
-            //content = RegexUtils.Replace(@"<stl:(\w+)[^>]*>.*?<\/stl:\1>", content, string.Empty);
-            content = RegexStlElement.Replace(content, string.Empty);
-
-            var stlEntityList = new List<string>();
-
-            //Regex regex = new Regex(@"{[^{}]*}", RegexOptions.Singleline | RegexOptions.IgnoreCase);
-            var regex = new Regex(EStlEntityTypeUtils.RegexStringSql, RegexOptions.Singleline | RegexOptions.IgnoreCase);
-            var mc = regex.Matches(content);
-            for (var i = 0; i < mc.Count; i++)
-            {
-                var stlEntity = mc[i].Value;
-                stlEntityList.Add(stlEntity);
-            }
-
-            return stlEntityList;
-        }
-
-        public static List<string> GetStlUserEntityList(string content)
-        {
-            content = RegexStlElement.Replace(content, string.Empty);
-
-            var stlEntityList = new List<string>();
-
-            var regex = new Regex(EStlEntityTypeUtils.RegexStringUser, RegexOptions.Singleline | RegexOptions.IgnoreCase);
-            var mc = regex.Matches(content);
-            for (var i = 0; i < mc.Count; i++)
-            {
-                var stlEntity = mc[i].Value;
-                stlEntityList.Add(stlEntity);
-            }
-
-            return stlEntityList;
-        }
-
         //判断属于某种类型（type）的<stl:content>元素是否存在
         public static bool IsStlContentElement(string labelString, string type)
         {
@@ -421,60 +218,50 @@ namespace SiteServer.CMS.StlParser.Utility
             return RegexUtils.IsMatch($@"<stl:channel[^>]+type=""{type}""[^>]*>", labelString);
         }
 
-        public static string GetInnerXml(string stlElement, bool isInnerElement)
-        {
-            return GetInnerXml(stlElement, isInnerElement, null);
-        }
-
-        public static string GetInnerXml(string stlElement, bool isInnerElement, LowerNameValueCollection attributes)
+        public static string GetInnerHtml(string stlElement)
         {
             var retval = string.Empty;
+
             try
             {
-                var xmlDocument = GetXmlDocument(stlElement, isInnerElement);
-                XmlNode node = xmlDocument.DocumentElement;
-                if (node != null)
+                var htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(stlElement);
+                var docNode = htmlDoc.DocumentNode;
+                if (docNode?.FirstChild != null)
                 {
-                    node = node.FirstChild;
-                    retval = node.InnerXml;
+                    var stlNode = docNode.FirstChild;
 
-                    if (attributes != null && node.Attributes != null)
-                    {
-                        foreach (XmlAttribute attribute in node.Attributes)
-                        {
-                            attributes.Set(attribute.Name, attribute.Value);
-                        }
-                    }
+                    retval = stlNode.InnerHtml;
                 }
             }
             catch
             {
                 // ignored
             }
+
             return retval;
         }
 
-        public static string GetAttribute(string stlElement, string attributeName)
+        public static string GetInnerHtml(string stlElement, NameValueCollection attributes)
         {
-            return RegexUtils.GetAttributeContent(attributeName, stlElement);
-        }
+            var retval = string.Empty;
 
-        public static LowerNameValueCollection GetAttributes(string stlElement, bool isInnerElement)
-        {
-            var attributes = new LowerNameValueCollection();
             try
             {
-                var xmlDocument = GetXmlDocument(stlElement, isInnerElement);
-                XmlNode node = xmlDocument.DocumentElement;
-                if (node != null)
+                var htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(stlElement);
+                var docNode = htmlDoc.DocumentNode;
+                if (docNode?.FirstChild != null)
                 {
-                    node = node.FirstChild;
+                    var stlNode = docNode.FirstChild;
 
-                    if (node.Attributes != null)
+                    retval = stlNode.InnerHtml;
+
+                    if (attributes != null && stlNode.Attributes != null)
                     {
-                        foreach (XmlAttribute attribute in node.Attributes)
+                        foreach (var attribute in stlNode.Attributes)
                         {
-                            attributes.Set(attribute.Name, attribute.Value);
+                            attributes[attribute.Name] = attribute.Value;
                         }
                     }
                 }
@@ -483,26 +270,39 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 // ignored
             }
-            return attributes;
+
+            return retval;
         }
 
-        public static NameValueCollection GetStlAttributes(string stlElement)
+        public static StlElementInfo ParseStlElement(string stlElement)
         {
-            var attributes = new NameValueCollection();
+            StlElementInfo retval = null;
+
             try
             {
-                var xmlDocument = GetXmlDocument(stlElement, false);
-                XmlNode node = xmlDocument.DocumentElement;
-                if (node != null)
+                var htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(stlElement);
+                var docNode = htmlDoc.DocumentNode;
+                if (docNode?.FirstChild != null)
                 {
-                    node = node.FirstChild;
+                    var stlNode = docNode.FirstChild;
 
-                    if (node.Attributes != null)
+                    var name = stlNode.Name;
+                    var outerHtml = stlNode.OuterHtml;
+                    var innerHtml = stlNode.InnerHtml;
+                    var attributesIgnoreCase = TranslateUtils.NewIgnoreCaseNameValueCollection();
+
+                    if (attributesIgnoreCase != null && stlNode.Attributes != null)
                     {
-                        foreach (XmlAttribute attribute in node.Attributes)
+                        foreach (var attribute in stlNode.Attributes)
                         {
-                            attributes.Set(attribute.Name, attribute.Value);
+                            attributesIgnoreCase[attribute.Name] = attribute.Value;
                         }
+                    }
+
+                    if (!string.IsNullOrEmpty(name))
+                    {
+                        retval = new StlElementInfo(name.ToLower(), attributesIgnoreCase, outerHtml, innerHtml);
                     }
                 }
             }
@@ -510,7 +310,8 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 // ignored
             }
-            return attributes;
+
+            return retval;
         }
 
         public const string ItemIndex = "ItemIndex";
@@ -577,17 +378,6 @@ stl: {stlContent}
             return "ajaxElement_" + updaterId + "_" + StringUtils.GetRandomInt(100, 1000);
         }
 
-        public static string GetStlElement(string stlElementName, NameValueCollection attributes, string innerContent)
-        {
-            if (string.IsNullOrEmpty(innerContent))
-            {
-                return $@"<{stlElementName} {TranslateUtils.ToAttributesString(attributes)}></{stlElementName}>";
-            }
-            return $@"<{stlElementName} {TranslateUtils.ToAttributesString(attributes)}>
-{innerContent}
-</{stlElementName}>";
-        }
-
         public static string GetStlCurrentUrl(SiteInfo siteInfo, int channelId, int contentId, IContentInfo contentInfo, TemplateType templateType, int templateId, bool isLocal)
         {
             var currentUrl = string.Empty;
@@ -618,6 +408,102 @@ stl: {stlContent}
             //currentUrl是当前页面的地址，前后台分离的时候，不允许带上protocol
             //return PageUtils.AddProtocolToUrl(currentUrl);
             return currentUrl;
+        }
+
+        public static void GetYesNo(string innerHtml, out string yes, out string no)
+        {
+            yes = string.Empty;
+            no = string.Empty;
+            if (string.IsNullOrEmpty(innerHtml)) return;
+
+            var stlElementList = GetStlElementList(innerHtml);
+            if (stlElementList.Count > 0)
+            {
+                foreach (var theStlElement in stlElementList)
+                {
+                    if (IsSpecifiedStlElement(theStlElement, StlYes.ElementName) || IsSpecifiedStlElement(theStlElement, StlYes.ElementName2))
+                    {
+                        yes = GetInnerHtml(theStlElement);
+                    }
+                    else if (IsSpecifiedStlElement(theStlElement, StlNo.ElementName) || IsSpecifiedStlElement(theStlElement, StlNo.ElementName2))
+                    {
+                        no = GetInnerHtml(theStlElement);
+                    }
+                }
+            }
+
+            if (string.IsNullOrEmpty(yes) && string.IsNullOrEmpty(no))
+            {
+                yes = innerHtml;
+            }
+
+            yes = StringUtils.Trim(yes);
+            no = StringUtils.Trim(no);
+        }
+
+        public static void GetLoadingYesNo(string innerHtml, out string loading, out string yes, out string no)
+        {
+            loading = string.Empty;
+            yes = string.Empty;
+            no = string.Empty;
+            if (string.IsNullOrEmpty(innerHtml)) return;
+
+            var stlElementList = GetStlElementList(innerHtml);
+            if (stlElementList.Count > 0)
+            {
+                foreach (var theStlElement in stlElementList)
+                {
+                    if (IsSpecifiedStlElement(theStlElement, StlLoading.ElementName))
+                    {
+                        loading = GetInnerHtml(theStlElement);
+                    }
+                    else if (IsSpecifiedStlElement(theStlElement, StlYes.ElementName) || IsSpecifiedStlElement(theStlElement, StlYes.ElementName2))
+                    {
+                        yes = GetInnerHtml(theStlElement);
+                    }
+                    else if (IsSpecifiedStlElement(theStlElement, StlNo.ElementName) || IsSpecifiedStlElement(theStlElement, StlNo.ElementName2))
+                    {
+                        no = GetInnerHtml(theStlElement);
+                    }
+                }
+            }
+
+            if (string.IsNullOrEmpty(loading) && string.IsNullOrEmpty(yes) && string.IsNullOrEmpty(no))
+            {
+                yes = innerHtml;
+            }
+
+            loading = StringUtils.Trim(loading);
+            yes = StringUtils.Trim(yes);
+            no = StringUtils.Trim(no);
+        }
+
+        public static Dictionary<string, string> GetStlElements(string innerHtml, List<string> stlElementNames)
+        {
+            var dic = new Dictionary<string, string>();
+            foreach (var stlElementName in stlElementNames)
+            {
+                dic[stlElementName] = string.Empty;
+            }
+            if (string.IsNullOrEmpty(innerHtml)) return dic;
+
+            var stlElementList = GetStlElementList(innerHtml);
+            if (stlElementList.Count > 0)
+            {
+                foreach (var theStlElement in stlElementList)
+                {
+                    foreach (var stlElementName in stlElementNames)
+                    {
+                        if (IsSpecifiedStlElement(theStlElement, stlElementName))
+                        {
+                            var template = GetInnerHtml(theStlElement);
+                            dic[stlElementName] = template;
+                        }
+                    }
+                }
+            }
+
+            return dic;
         }
     }
 }

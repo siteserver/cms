@@ -2469,6 +2469,11 @@ namespace SiteServer.CMS.Data
             return SqlUtils.GetComparableDate(dateTime);
         }
 
+        public string ToBooleanSqlString(bool val)
+        {
+            return val ? "1" : "0";
+        }
+
         public string Encrypt(string inputString)
         {
             return TranslateUtils.EncryptStringBySecretKey(inputString);

@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Web.UI;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils
@@ -87,18 +87,6 @@ namespace SiteServer.Utils
             return url;
         }
 
-        public static string RemovePortFromUrl(string url)
-        {
-            var retval = string.Empty;
-
-            if (!string.IsNullOrEmpty(url))
-            {
-                var regex = new Regex(@":\d+");
-                retval = regex.Replace(url, "");
-            }
-            return retval;
-        }
-
         public static string RemoveFileNameFromUrl(string url)
         {
             if (string.IsNullOrEmpty(url)) return string.Empty;
@@ -138,11 +126,6 @@ namespace SiteServer.Utils
 
             url = url.Trim();
             return url.StartsWith("/") || url.IndexOf("://", StringComparison.Ordinal) != -1 || url.StartsWith("javascript:");
-        }
-
-        public static string GetAbsoluteUrl()
-        {
-            return HttpContext.Current.Request.Url.AbsoluteUri;
         }
 
         public static string PathDifference(string path1, string path2, bool compareCase)
@@ -261,9 +244,17 @@ namespace SiteServer.Utils
             return Combine(ApplicationPath, relatedUrl);
         }
 
-        public static string GetTemporaryFilesUrl(string relatedUrl)
+        public static string HttpContextRootDomain
         {
-            return Combine(ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedUrl);
+            get
+            {
+                var url = HttpContext.Current.Request.Url;
+
+                if (url.HostNameType != UriHostNameType.Dns) return url.Host;
+
+                var match = Regex.Match(url.Host, "([^.]+\\.[^.]{1,3}(\\.[^.]{1,3})?)$");
+                return match.Groups[1].Success ? match.Groups[1].Value : null;
+            }
         }
 
         public static NameValueCollection GetQueryString(string url)
@@ -396,6 +387,23 @@ namespace SiteServer.Utils
             }
             var attributes = GetQueryString(url);
             attributes.Remove(queryString);
+            url = url.Substring(0, url.IndexOf("?", StringComparison.Ordinal));
+            return AddQueryString(url, attributes);
+        }
+
+        public static string RemoveQueryString(string url, List<string> queryNames)
+        {
+            if (queryNames == null || queryNames.Count == 0 || url == null) return url;
+
+            if (url.IndexOf("?", StringComparison.Ordinal) == -1 || url.EndsWith("?"))
+            {
+                return url;
+            }
+            var attributes = GetQueryString(url);
+            foreach (var queryName in queryNames)
+            {
+                attributes.Remove(queryName);
+            }
             url = url.Substring(0, url.IndexOf("?", StringComparison.Ordinal));
             return AddQueryString(url, attributes);
         }
@@ -853,9 +861,19 @@ namespace SiteServer.Utils
             return GetSiteFilesUrl(Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, url));
         }
 
+        public static string GetSiteServerUrl(string className)
+        {
+            return GetAdminDirectoryUrl(className.ToCamelCase() + ".cshtml");
+        }
+
         public static string GetSiteServerUrl(string className, NameValueCollection queryString)
         {
             return AddQueryString(GetAdminDirectoryUrl(className.ToLower() + ".aspx"), queryString);
+        }
+
+        public static string GetPluginsUrl(string className)
+        {
+            return GetAdminDirectoryUrl(Combine("plugins", className.ToCamelCase() + ".cshtml"));
         }
 
         public static string GetPluginsUrl(string className, NameValueCollection queryString)
@@ -863,9 +881,19 @@ namespace SiteServer.Utils
             return AddQueryString(GetAdminDirectoryUrl(Combine("plugins", className.ToLower() + ".aspx")), queryString);
         }
 
+        public static string GetSettingsUrl(string className)
+        {
+            return GetAdminDirectoryUrl(Combine("settings", className.ToCamelCase() + ".cshtml"));
+        }
+
         public static string GetSettingsUrl(string className, NameValueCollection queryString)
         {
             return AddQueryString(GetAdminDirectoryUrl(Combine("settings", className.ToLower() + ".aspx")), queryString);
+        }
+
+        public static string GetCmsUrl(string className)
+        {
+            return GetAdminDirectoryUrl(Combine("cms", className.ToCamelCase() + ".cshtml"));
         }
 
         public static string GetCmsUrl(int siteId, string className, NameValueCollection queryString)
@@ -894,25 +922,6 @@ namespace SiteServer.Utils
                 return ParseNavigationUrl(relatedUrl);
             }
             return Combine(ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.UserFiles, userName, relatedUrl);
-        }
-
-        public static string GetUserFileSystemManagementDirectoryUrl(string userName, string currentRootPath)
-        {
-            var directoryUrl = string.Empty;
-            if (string.IsNullOrEmpty(currentRootPath) || !(currentRootPath.StartsWith("~/")))
-            {
-                currentRootPath = "~/" + currentRootPath;
-            }
-            var directoryNames = currentRootPath.Split('/');
-            foreach (var directoryName in directoryNames)
-            {
-                if (!string.IsNullOrEmpty(directoryName))
-                {
-                    directoryUrl = directoryName.Equals("~") ? GetUserFilesUrl(string.Empty, userName) : Combine(directoryUrl, directoryName);
-                }
-
-            }
-            return directoryUrl;
         }
 
         public static void RedirectToErrorPage(int logId)
@@ -947,30 +956,14 @@ namespace SiteServer.Utils
             }
         }
 
+        public static string GetLoginUrl()
+        {
+            return GetAdminDirectoryUrl("pageLogin.cshtml");
+        }
+
         public static void RedirectToLoginPage()
         {
-            RedirectToLoginPage(string.Empty);
-        }
-
-        public static void RedirectToLoginPage(string error)
-        {
-            var pageUrl = GetAdminDirectoryUrl("login.aspx");
-
-            if (!string.IsNullOrEmpty(error))
-            {
-                pageUrl = pageUrl + "?error=" + error;
-            }
-            Redirect(pageUrl);
-        }
-
-        public static void RedirectToLoadingPage(string pageUrl)
-        {
-            Redirect(GetLoadingUrl(pageUrl));
-        }
-
-        public static string AddReturnUrl(string url, string returnUrl)
-        {
-            return AddQueryString(url, "ReturnUrl", returnUrl);
+            Redirect(GetLoginUrl());
         }
 
         public static string GetRootUrlByPhysicalPath(string physicalPath)
@@ -983,35 +976,6 @@ namespace SiteServer.Utils
         public static string ParseConfigRootUrl(string url)
         {
             return ParseNavigationUrl(url);
-        }
-
-        public static string GetFileSystemManagementDirectoryUrl(string currentRootPath, string publishementSystemDir)
-        {
-            var directoryUrl = string.Empty;
-            if (string.IsNullOrEmpty(currentRootPath) || !(currentRootPath.StartsWith("~/") || currentRootPath.StartsWith("@/")))
-            {
-                currentRootPath = "@/" + currentRootPath;
-            }
-            var directoryNames = currentRootPath.Split('/');
-            foreach (var directoryName in directoryNames)
-            {
-                if (!string.IsNullOrEmpty(directoryName))
-                {
-                    if (directoryName.Equals("~"))
-                    {
-                        directoryUrl = ApplicationPath;
-                    }
-                    else if (directoryName.Equals("@"))
-                    {
-                        directoryUrl = Combine(ApplicationPath, publishementSystemDir);
-                    }
-                    else
-                    {
-                        directoryUrl = Combine(directoryUrl, directoryName);
-                    }
-                }
-            }
-            return directoryUrl;
         }
 
         public static bool IsVirtualUrl(string url)
@@ -1029,11 +993,6 @@ namespace SiteServer.Utils
         public static string GetLoadingUrl(string url)
         {
             return GetAdminDirectoryUrl($"loading.aspx?redirectUrl={TranslateUtils.EncryptStringBySecretKey(url)}");
-        }
-
-        public static string GetSafeHtmlFragment(string content)
-        {
-            return Microsoft.Security.Application.AntiXss.GetSafeHtmlFragment(content);
         }
 
         /// <summary> 
@@ -1147,50 +1106,6 @@ namespace SiteServer.Utils
             return objStr.Replace("_sqlquote_", "'").Replace("_sqldoulbeline_", "--").Replace("_sqlleftparenthesis_", "\\(").Replace("_sqlrightparenthesis_", "\\)");
         }
 
-        public static void ResponseToJson(string jsonString)
-        {
-            HttpContext.Current.Response.Clear();
-            HttpContext.Current.Response.ContentType = "text/html";
-            HttpContext.Current.Response.Write(jsonString);
-            HttpContext.Current.Response.End();
-        }
-
-        public class Api
-        {
-            private static string GetUrl(string relatedPath, string proco)
-            {
-                return Combine(string.IsNullOrEmpty(proco) ? GetRootUrl("api") : proco, relatedPath);
-            }
-
-            public static string GetSiteClearCacheUrl()
-            {
-                return GetUrl("cache/clearSiteCache", string.Empty);
-            }
-
-            public static string GetUserClearCacheUrl()
-            {
-                return GetUrl("cache/removeUserCache", string.Empty);
-            }
-
-            public static string GetTableStyleClearCacheUrl()
-            {
-                return GetUrl("cache/RemoveTableManagerCache", string.Empty);
-            }
-
-            public static string GetUserConfigClearCacheUrl()
-            {
-                return GetUrl("cache/RemoveUserConfigCache", string.Empty);
-            }
-        }
-
-        public static void ResponseScripts(Page page, string scripts)
-        {
-            page.Response.Clear();
-            page.Response.Write($"<script language=\"javascript\">{scripts}</script>");
-            //page.Response.End();
-        }
-
-
         public static string GetRedirectStringWithCheckBoxValue(string redirectUrl, string checkBoxServerId, string checkBoxClientId, string emptyAlertText)
         {
             return
@@ -1206,11 +1121,6 @@ namespace SiteServer.Utils
         public static string GetRedirectStringWithConfirm(string redirectUrl, string confirmString)
         {
             return $@"_confirm('{confirmString}', '{redirectUrl}');return false;";
-        }
-
-        public static string GetRedirectString(string redirectUrl)
-        {
-            return $@"window.location.href='{redirectUrl}';return false;";
         }
     }
 }

@@ -51,11 +51,11 @@ namespace SiteServer.Utils
 		/// </summary>
 		/// <param name="accessor">控件</param>
 		/// <param name="attributes">属性集合</param>
-		public static void AddAttributesIfNotExists(IAttributeAccessor accessor, Dictionary<string, string> attributes)
+		public static void AddAttributesIfNotExists(IAttributeAccessor accessor, NameValueCollection attributes)
 		{
 		    if (accessor == null || attributes == null) return;
 
-		    foreach (var key in attributes.Keys)
+		    foreach (var key in attributes.AllKeys)
 		    {
 		        if (accessor.GetAttribute(key) == null)
 		        {
@@ -338,8 +338,25 @@ namespace SiteServer.Utils
 		    }
 		}
 
+	    public static void SelectMultiItemsIgnoreCase(ListControl listControl, List<string> values)
+	    {
+	        if (listControl == null) return;
 
-		public static string SelectedItemsValueToStringCollection(ListItemCollection items)
+	        listControl.ClearSelection();
+	        foreach (ListItem item in listControl.Items)
+	        {
+	            foreach (var value in values)
+	            {
+	                if (StringUtils.EqualsIgnoreCase(item.Value, value))
+	                {
+	                    item.Selected = true;
+	                    break;
+	                }
+	            }
+	        }
+	    }
+
+        public static string SelectedItemsValueToStringCollection(ListItemCollection items)
 		{
 			var builder = new StringBuilder();
 			if (items!= null)

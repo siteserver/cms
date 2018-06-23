@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
@@ -41,7 +40,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var width = "100%";
             var height = "180";
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -183,17 +182,17 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     picUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, picUrl, pageInfo.IsLocal);
 
-                    if (!contextInfo.Attributes.ContainsKey("quality"))
+                    if (string.IsNullOrEmpty(contextInfo.Attributes["quality"]))
                     {
                         contextInfo.Attributes["quality"] = "high";
                     }
-                    if (!contextInfo.Attributes.ContainsKey("wmode"))
+                    if (string.IsNullOrEmpty(contextInfo.Attributes["wmode"]))
                     {
                         contextInfo.Attributes["wmode"] = "transparent";
                     }
                     var paramBuilder = new StringBuilder();
                     var uniqueId = pageInfo.UniqueId;
-                    foreach (var key in contextInfo.Attributes.Keys)
+                    foreach (var key in contextInfo.Attributes.AllKeys)
                     {
                         paramBuilder.Append($@"    so_{uniqueId}.addParam(""{key}"", ""{contextInfo.Attributes[key]}"");").Append(StringUtils.Constants.ReturnAndNewline);
                     }

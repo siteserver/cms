@@ -33,7 +33,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var leftText = string.Empty;
             var rightText = string.Empty;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -72,11 +72,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, int no, string src, bool isFilesize, bool isCount, string leftText, string rightText)
         {
-            if (!string.IsNullOrEmpty(contextInfo.InnerXml))
+            if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
-                var innerBuilder = new StringBuilder(contextInfo.InnerXml);
+                var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                contextInfo.InnerXml = innerBuilder.ToString();
+                contextInfo.InnerHtml = innerBuilder.ToString();
             }
 
             var fileUrl = string.Empty;
@@ -130,7 +130,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            var parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.SiteInfo, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, contextInfo.IsStlEntity);
+            var parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.SiteInfo, fileUrl, contextInfo.Attributes, contextInfo.InnerHtml, contextInfo.IsStlEntity);
 
             if (isFilesize)
             {
@@ -141,11 +141,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (isCount && contextInfo.ContentInfo != null)
                 {
-                    parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contextInfo.ContentInfo.ChannelId, contextInfo.ContentInfo.Id, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, contextInfo.IsStlEntity);
+                    parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contextInfo.ContentInfo.ChannelId, contextInfo.ContentInfo.Id, fileUrl, contextInfo.Attributes, contextInfo.InnerHtml, contextInfo.IsStlEntity);
                 }
                 else
                 {
-                    parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.SiteInfo, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, contextInfo.IsStlEntity);
+                    parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.SiteInfo, fileUrl, contextInfo.Attributes, contextInfo.InnerHtml, contextInfo.IsStlEntity);
                 }                
             }
 

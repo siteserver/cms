@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Dapper;
+using Dapper.Contrib.Extensions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
@@ -15,111 +18,113 @@ namespace SiteServer.CMS.Provider
 {
     public class AdministratorDao : DataProviderBase
     {
-        public override string TableName => "siteserver_Administrator";
+        public const string DatabaseTableName = "siteserver_Administrator";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override string TableName => DatabaseTableName;
+
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.Id),
+                AttributeName = nameof(AdministratorInfoDatabase.Id),
                 DataType = DataType.Integer,
                 IsPrimaryKey = true,
                 IsIdentity = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.UserName),
+                AttributeName = nameof(AdministratorInfoDatabase.UserName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.Password),
+                AttributeName = nameof(AdministratorInfoDatabase.Password),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.PasswordFormat),
+                AttributeName = nameof(AdministratorInfoDatabase.PasswordFormat),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.PasswordSalt),
+                AttributeName = nameof(AdministratorInfoDatabase.PasswordSalt),
                 DataType = DataType.VarChar,
-                Length = 128
+                DataLength = 128
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.CreationDate),
+                AttributeName = nameof(AdministratorInfoDatabase.CreationDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.LastActivityDate),
+                AttributeName = nameof(AdministratorInfoDatabase.LastActivityDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.CountOfLogin),
+                AttributeName = nameof(AdministratorInfoDatabase.CountOfLogin),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.CountOfFailedLogin),
+                AttributeName = nameof(AdministratorInfoDatabase.CountOfFailedLogin),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.CreatorUserName),
+                AttributeName = nameof(AdministratorInfoDatabase.CreatorUserName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.IsLockedOut),
+                AttributeName = nameof(AdministratorInfoDatabase.IsLockedOut),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.SiteIdCollection),
+                AttributeName = nameof(AdministratorInfoDatabase.SiteIdCollection),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.SiteId),
+                AttributeName = nameof(AdministratorInfoDatabase.SiteId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.DepartmentId),
+                AttributeName = nameof(AdministratorInfoDatabase.DepartmentId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.AreaId),
+                AttributeName = nameof(AdministratorInfoDatabase.AreaId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.DisplayName),
+                AttributeName = nameof(AdministratorInfoDatabase.DisplayName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.Email),
+                AttributeName = nameof(AdministratorInfoDatabase.Email),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(AdministratorInfo.Mobile),
+                AttributeName = nameof(AdministratorInfoDatabase.Mobile),
                 DataType = DataType.VarChar,
-                Length = 20
+                DataLength = 20
             }
         };
 
@@ -194,36 +199,6 @@ namespace SiteServer.CMS.Provider
         private const string ParmDisplayname = "@DisplayName";
         private const string ParmEmail = "@Email";
         private const string ParmMobile = "@Mobile";
-
-        private void Insert(AdministratorInfo info)
-        {
-            IDataParameter[] insertParms =
-            {
-                GetParameter(ParmUsername, DataType.VarChar, 255, info.UserName),
-                GetParameter(ParmPassword, DataType.VarChar, 255, info.Password),
-                GetParameter(ParmPasswordFormat, DataType.VarChar, 50,
-                    EPasswordFormatUtils.GetValue(info.PasswordFormat)),
-                GetParameter(ParmPasswordSalt, DataType.VarChar, 128, info.PasswordSalt),
-                GetParameter(ParmCreationDate, DataType.DateTime, info.CreationDate),
-                GetParameter(ParmLastActivityDate, DataType.DateTime, info.LastActivityDate),
-                GetParameter(ParmCountOfLogin, DataType.Integer, info.CountOfLogin),
-                GetParameter(ParmCountOfFailedLogin, DataType.Integer, info.CountOfFailedLogin),
-                GetParameter(ParmCreatorUsername, DataType.VarChar, 255, info.CreatorUserName),
-                GetParameter(ParmIsLockedOut, DataType.VarChar, 18, info.IsLockedOut.ToString()),
-                GetParameter(ParmSiteIdCollection, DataType.VarChar, 50, info.SiteIdCollection),
-                GetParameter(ParmSiteId, DataType.Integer, info.SiteId),
-                GetParameter(ParmDepartmentId, DataType.Integer, info.DepartmentId),
-                GetParameter(ParmAreaId, DataType.Integer, info.AreaId),
-                GetParameter(ParmDisplayname, DataType.VarChar, 255, info.DisplayName),
-                GetParameter(ParmEmail, DataType.VarChar, 255, info.Email),
-                GetParameter(ParmMobile, DataType.VarChar, 20, info.Mobile)
-            };
-
-            ExecuteNonQuery(SqlInsertUser, insertParms);
-
-            DataProvider.DepartmentDao.UpdateCountOfAdmin();
-            DataProvider.AreaDao.UpdateCountOfAdmin();
-        }
 
         public void Update(IAdministratorInfo info)
         {
@@ -415,7 +390,7 @@ namespace SiteServer.CMS.Provider
                 {
                     var i = 0;
                     info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
-                        EPasswordFormatUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
+                        GetString(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
                 }
                 rdr.Close();
             }
@@ -440,7 +415,7 @@ namespace SiteServer.CMS.Provider
                 {
                     var i = 0;
                     info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
-                        EPasswordFormatUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
+                        GetString(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
                         GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
                         GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i));
@@ -924,37 +899,130 @@ namespace SiteServer.CMS.Provider
             return Convert.ToBase64String(data);
         }
 
-        public bool Insert(AdministratorInfo userInfo, out string errorMessage)
+        public bool IsEmailExists(string email)
+        {
+            if (string.IsNullOrEmpty(email)) return false;
+
+            var exists = false;
+
+            var sqlSelect = $"SELECT {nameof(AdministratorInfoDatabase.Email)} FROM {TableName} WHERE {nameof(AdministratorInfoDatabase.Email)} = @{nameof(AdministratorInfoDatabase.Email)}";
+
+            var parms = new IDataParameter[]
+            {
+                GetParameter(ParmEmail, DataType.VarChar, 200, email)
+            };
+
+            using (var rdr = ExecuteReader(sqlSelect, parms))
+            {
+                if (rdr.Read())
+                {
+                    exists = true;
+                }
+                rdr.Close();
+            }
+
+            return exists;
+        }
+
+        public bool IsMobileExists(string mobile)
+        {
+            if (string.IsNullOrEmpty(mobile)) return false;
+
+            var exists = false;
+            var sqlString = $"SELECT {nameof(AdministratorInfoDatabase.Mobile)} FROM {TableName} WHERE {nameof(AdministratorInfoDatabase.Mobile)} = @{nameof(AdministratorInfoDatabase.Mobile)}";
+
+            var parms = new IDataParameter[]
+            {
+                GetParameter(ParmMobile, DataType.VarChar, 20, mobile)
+            };
+
+            using (var rdr = ExecuteReader(sqlString, parms))
+            {
+                if (rdr.Read())
+                {
+                    exists = true;
+                }
+                rdr.Close();
+            }
+
+            return exists;
+        }
+
+        private bool UpdateValidate(AdministratorInfoCreateUpdate adminInfoToUpdate, string userName, string email, string mobile, out string errorMessage)
         {
             errorMessage = string.Empty;
-            if (string.IsNullOrEmpty(userInfo.UserName))
+
+            if (adminInfoToUpdate.UserName != null && adminInfoToUpdate.UserName != userName)
+            {
+                if (string.IsNullOrEmpty(adminInfoToUpdate.UserName))
+                {
+                    errorMessage = "用户名不能为空";
+                    return false;
+                }
+                if (adminInfoToUpdate.UserName.Length < ConfigManager.SystemConfigInfo.AdminUserNameMinLength)
+                {
+                    errorMessage = $"用户名长度必须大于等于{ConfigManager.SystemConfigInfo.AdminUserNameMinLength}";
+                    return false;
+                }
+                if (IsAdminNameExists(adminInfoToUpdate.UserName))
+                {
+                    errorMessage = "用户名已存在，请更换用户名";
+                    return false;
+                }
+            }
+
+            if (adminInfoToUpdate.Email != null && adminInfoToUpdate.Email != email)
+            {
+                if (!string.IsNullOrEmpty(adminInfoToUpdate.Email) && IsEmailExists(adminInfoToUpdate.Email))
+                {
+                    errorMessage = "电子邮件地址已被注册，请更换邮箱";
+                    return false;
+                }
+            }
+
+            if (adminInfoToUpdate.Mobile != null && adminInfoToUpdate.Mobile != mobile)
+            {
+                if (!string.IsNullOrEmpty(adminInfoToUpdate.Mobile) && IsMobileExists(adminInfoToUpdate.Mobile))
+                {
+                    errorMessage = "手机号码已被注册，请更换手机号码";
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool InsertValidate(string userName, string password, string email, string mobile, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+            if (string.IsNullOrEmpty(userName))
             {
                 errorMessage = "用户名不能为空";
                 return false;
             }
-            if (userInfo.UserName.Length < ConfigManager.SystemConfigInfo.AdminUserNameMinLength)
+            if (userName.Length < ConfigManager.SystemConfigInfo.AdminUserNameMinLength)
             {
                 errorMessage = $"用户名长度必须大于等于{ConfigManager.SystemConfigInfo.AdminUserNameMinLength}";
                 return false;
             }
-            if (IsAdminNameExists(userInfo.UserName))
+            if (IsAdminNameExists(userName))
             {
                 errorMessage = "用户名已存在，请更换用户名";
                 return false;
             }
 
-            if (string.IsNullOrEmpty(userInfo.Password))
+            if (string.IsNullOrEmpty(password))
             {
                 errorMessage = "密码不能为空";
                 return false;
             }
-            if (userInfo.Password.Length < ConfigManager.SystemConfigInfo.AdminPasswordMinLength)
+            if (password.Length < ConfigManager.SystemConfigInfo.AdminPasswordMinLength)
             {
                 errorMessage = $"密码长度必须大于等于{ConfigManager.SystemConfigInfo.AdminPasswordMinLength}";
                 return false;
             }
             if (
-                !EUserPasswordRestrictionUtils.IsValid(userInfo.Password,
+                !EUserPasswordRestrictionUtils.IsValid(password,
                     ConfigManager.SystemConfigInfo.AdminPasswordRestriction))
             {
                 errorMessage =
@@ -962,12 +1030,56 @@ namespace SiteServer.CMS.Provider
                 return false;
             }
 
+            if (!string.IsNullOrEmpty(email) && IsEmailExists(email))
+            {
+                errorMessage = "电子邮件地址已被注册，请更换邮箱";
+                return false;
+            }
+            if (!string.IsNullOrEmpty(mobile) && IsMobileExists(mobile))
+            {
+                errorMessage = "手机号码已被注册，请更换手机号码";
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool Insert(AdministratorInfo adminInfo, out string errorMessage)
+        {
+            if (!InsertValidate(adminInfo.UserName, adminInfo.Password, adminInfo.Email, adminInfo.Mobile, out errorMessage)) return false;
+
             try
             {
                 string passwordSalt;
-                userInfo.Password = EncodePassword(userInfo.Password, userInfo.PasswordFormat, out passwordSalt);
-                userInfo.PasswordSalt = passwordSalt;
-                Insert(userInfo);
+                adminInfo.Password = EncodePassword(adminInfo.Password, EPasswordFormatUtils.GetEnumType(adminInfo.PasswordFormat), out passwordSalt);
+                adminInfo.PasswordSalt = passwordSalt;
+
+                IDataParameter[] insertParms =
+                {
+                    GetParameter(ParmUsername, DataType.VarChar, 255, adminInfo.UserName),
+                    GetParameter(ParmPassword, DataType.VarChar, 255, adminInfo.Password),
+                    GetParameter(ParmPasswordFormat, DataType.VarChar, 50, adminInfo.PasswordFormat),
+                    GetParameter(ParmPasswordSalt, DataType.VarChar, 128, adminInfo.PasswordSalt),
+                    GetParameter(ParmCreationDate, DataType.DateTime, adminInfo.CreationDate),
+                    GetParameter(ParmLastActivityDate, DataType.DateTime, adminInfo.LastActivityDate),
+                    GetParameter(ParmCountOfLogin, DataType.Integer, adminInfo.CountOfLogin),
+                    GetParameter(ParmCountOfFailedLogin, DataType.Integer, adminInfo.CountOfFailedLogin),
+                    GetParameter(ParmCreatorUsername, DataType.VarChar, 255, adminInfo.CreatorUserName),
+                    GetParameter(ParmIsLockedOut, DataType.VarChar, 18, adminInfo.IsLockedOut.ToString()),
+                    GetParameter(ParmSiteIdCollection, DataType.VarChar, 50, adminInfo.SiteIdCollection),
+                    GetParameter(ParmSiteId, DataType.Integer, adminInfo.SiteId),
+                    GetParameter(ParmDepartmentId, DataType.Integer, adminInfo.DepartmentId),
+                    GetParameter(ParmAreaId, DataType.Integer, adminInfo.AreaId),
+                    GetParameter(ParmDisplayname, DataType.VarChar, 255, adminInfo.DisplayName),
+                    GetParameter(ParmEmail, DataType.VarChar, 255, adminInfo.Email),
+                    GetParameter(ParmMobile, DataType.VarChar, 20, adminInfo.Mobile)
+                };
+
+                ExecuteNonQuery(SqlInsertUser, insertParms);
+
+                DataProvider.DepartmentDao.UpdateCountOfAdmin();
+                DataProvider.AreaDao.UpdateCountOfAdmin();
+
                 return true;
             }
             catch (Exception ex)
@@ -1004,7 +1116,7 @@ namespace SiteServer.CMS.Provider
             return ChangePassword(userName, EPasswordFormat.Encrypted, passwordSalt, password);
         }
 
-        public bool ValidateAccount(string account, string password, out string userName, out string errorMessage)
+        public bool Validate(string account, string password, bool isPasswordMd5, out string userName, out string errorMessage)
         {
             userName = string.Empty;
             errorMessage = string.Empty;
@@ -1060,7 +1172,7 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            if (CheckPassword(password, adminInfo.Password, adminInfo.PasswordFormat, adminInfo.PasswordSalt))
+            if (CheckPassword(password, isPasswordMd5, adminInfo.Password, EPasswordFormatUtils.GetEnumType(adminInfo.PasswordFormat), adminInfo.PasswordSalt))
                 return true;
 
             errorMessage = "账号或密码不正确";
@@ -1092,13 +1204,145 @@ namespace SiteServer.CMS.Provider
             return retval;
         }
 
-        public bool CheckPassword(string password, string dbpassword, EPasswordFormat passwordFormat,
+        public bool CheckPassword(string password, bool isPasswordMd5, string dbpassword, EPasswordFormat passwordFormat,
             string passwordSalt)
         {
-            var pass1 = password;
-            var pass2 = DecodePassword(dbpassword, passwordFormat, passwordSalt);
+            var decodePassword = DecodePassword(dbpassword, passwordFormat, passwordSalt);
+            if (isPasswordMd5)
+            {
+                return password == AuthUtils.Md5ByString(decodePassword);
+            }
+            return password == decodePassword;
+        }
 
-            return pass1 == pass2;
+        public int ApiGetCount()
+        {
+            return DataProvider.DatabaseDao.GetCount(TableName);
+        }
+
+        public List<AdministratorInfo> ApiGetAdministrators(int offset, int limit)
+        {
+            var list = new List<AdministratorInfo>();
+            List<AdministratorInfoDatabase> dbList;
+
+            var sqlString =
+                DataProvider.DatabaseDao.GetPageSqlString(TableName, "*", string.Empty, "ORDER BY Id", offset, limit);
+
+            using (var connection = GetConnection())
+            {
+                dbList = connection.Query<AdministratorInfoDatabase>(sqlString).ToList();
+            }
+
+            if (dbList.Count > 0)
+            {
+                foreach (var dbInfo in dbList)
+                {
+                    if (dbInfo != null)
+                    {
+                        list.Add(dbInfo.ToAdministratorInfo());
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        public AdministratorInfo ApiGetAdministrator(int id)
+        {
+            AdministratorInfo adminInfo = null;
+
+            var sqlString = $"SELECT * FROM {TableName} WHERE Id = @Id";
+
+            using (var connection = GetConnection())
+            {
+                var dbInfo = connection.QuerySingleOrDefault<AdministratorInfoDatabase>(sqlString, new { Id = id });
+                if (dbInfo != null)
+                {
+                    adminInfo = dbInfo.ToAdministratorInfo();
+                }
+            }
+
+            return adminInfo;
+        }
+
+        public bool ApiIsExists(int id)
+        {
+            var sqlString = $"SELECT count(1) FROM {TableName} WHERE Id = @Id";
+
+            using (var connection = GetConnection())
+            {
+                return connection.ExecuteScalar<bool>(sqlString, new { Id = id });
+            }
+        }
+
+        public AdministratorInfo ApiUpdate(int id, AdministratorInfoCreateUpdate adminInfoToUpdate, out string errorMessage)
+        {
+            var adminInfo = ApiGetAdministrator(id);
+
+            if (!UpdateValidate(adminInfoToUpdate, adminInfo.UserName, adminInfo.Email, adminInfo.Mobile, out errorMessage)) return null;
+
+            var dbUserInfo = new AdministratorInfoDatabase(adminInfo);
+
+            adminInfoToUpdate.Load(dbUserInfo);
+
+            dbUserInfo.Password = adminInfo.Password;
+            dbUserInfo.PasswordFormat = adminInfo.PasswordFormat;
+            dbUserInfo.PasswordSalt = adminInfo.PasswordSalt;
+
+            using (var connection = GetConnection())
+            {
+                connection.Update(dbUserInfo);
+            }
+
+            return dbUserInfo.ToAdministratorInfo();
+        }
+
+        public AdministratorInfo ApiDelete(int id)
+        {
+            var adminInfoToDelete = ApiGetAdministrator(id);
+
+            using (var connection = GetConnection())
+            {
+                connection.Delete(new AdministratorInfoDatabase(adminInfoToDelete));
+            }
+
+            return adminInfoToDelete;
+        }
+
+        public AdministratorInfo ApiInsert(AdministratorInfoCreateUpdate adminInfoToInsert, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            try
+            {
+                var dbAdminInfo = new AdministratorInfoDatabase();
+
+                adminInfoToInsert.Load(dbAdminInfo);
+
+                if (!InsertValidate(dbAdminInfo.UserName, dbAdminInfo.Password, dbAdminInfo.Email, dbAdminInfo.Mobile, out errorMessage)) return null;
+
+                string passwordSalt;
+                dbAdminInfo.Password = EncodePassword(dbAdminInfo.Password, EPasswordFormatUtils.GetEnumType(dbAdminInfo.PasswordFormat), out passwordSalt);
+                dbAdminInfo.PasswordSalt = passwordSalt;
+                dbAdminInfo.CreationDate = DateTime.Now;
+                dbAdminInfo.LastActivityDate = DateTime.Now;
+
+                using (var connection = GetConnection())
+                {
+                    var identity = connection.Insert(dbAdminInfo);
+                    if (identity > 0)
+                    {
+                        dbAdminInfo.Id = Convert.ToInt32(identity);
+                    }
+                }
+
+                return dbAdminInfo.ToAdministratorInfo();
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                return null;
+            }
         }
     }
 }

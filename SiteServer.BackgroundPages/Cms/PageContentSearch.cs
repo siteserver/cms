@@ -115,7 +115,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             pagerParam.WhereSqlString = DataProvider.ContentDao.GetPagerWhereSqlString(allLowerAttributeNameList,
-                SiteId, _channelId, AuthRequest.AdminPermissions.IsSystemAdministrator, searchChannelIdList, searchType, keyword,
+                SiteId, _channelInfo, AuthRequest.AdminPermissions.IsSystemAdministrator, searchChannelIdList, searchType, keyword,
                 dateFrom, dateTo, true, stateType, false, _isWritingOnly, administratorName);
             pagerParam.TotalCount =
                 DataProvider.DatabaseDao.GetPageTotalCount(tableName, pagerParam.WhereSqlString);

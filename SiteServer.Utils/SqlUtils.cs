@@ -1537,7 +1537,17 @@ SELECT * FROM (
         public static string EvalString(object dataItem, string name)
         {
             var o = Eval(dataItem, name);
-            return o?.ToString() ?? string.Empty;
+            var value =  o?.ToString() ?? string.Empty;
+
+            if (!string.IsNullOrEmpty(value))
+            {
+                value = PageUtils.UnFilterSql(value);
+            }
+            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && value == SqlUtils.OracleEmptyValue)
+            {
+                value = string.Empty;
+            }
+            return value;
         }
 
         public static DateTime EvalDateTime(object dataItem, string name)

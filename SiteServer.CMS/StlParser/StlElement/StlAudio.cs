@@ -1,6 +1,5 @@
 ﻿using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
@@ -27,7 +26,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var isPreLoad = true;
             var isLoop = false;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 

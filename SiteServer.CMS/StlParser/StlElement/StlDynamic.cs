@@ -31,7 +31,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var isPageRefresh = false;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -45,7 +45,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, contextInfo.InnerXml, isPageRefresh);
+            return ParseImpl(pageInfo, contextInfo, contextInfo.InnerHtml, isPageRefresh);
         }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string templateContent, bool isPageRefresh)
@@ -124,7 +124,7 @@ function {functionName}(pageNum)
                 var stlPageContentsElement = stlElement;
                 var stlPageContentsElementReplaceString = stlElement;
 
-                var pageContentsElementParser = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, true);
+                var pageContentsElementParser = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo);
                 int totalNum;
                 var pageCount = pageContentsElementParser.GetPageCount(out totalNum);
 
@@ -148,7 +148,7 @@ function {functionName}(pageNum)
                 var stlPageChannelsElement = stlElement;
                 var stlPageChannelsElementReplaceString = stlElement;
 
-                var pageChannelsElementParser = new StlPageChannels(stlPageChannelsElement, pageInfo, contextInfo, true);
+                var pageChannelsElementParser = new StlPageChannels(stlPageChannelsElement, pageInfo, contextInfo);
                 int totalNum;
                 var pageCount = pageChannelsElementParser.GetPageCount(out totalNum);
 
@@ -211,7 +211,7 @@ function {functionName}(pageNum)
 
             //var parsedContent = StlParserUtility.GetBackHtml(contentBuilder.ToString(), pageInfo);
             //return pageInfo.HeadCodesHtml + pageInfo.BodyCodesHtml + parsedContent + pageInfo.FootCodesHtml;
-            return StlParserUtility.GetBackHtml(contentBuilder.ToString(), pageInfo);
+            return contentBuilder.ToString();
         }
     }
 }

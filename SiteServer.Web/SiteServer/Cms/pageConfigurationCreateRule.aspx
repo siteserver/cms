@@ -31,7 +31,7 @@
           <div class="panel panel-default">
             <div class="panel-body p-0">
               <div class="table-responsive">
-                <table id="contents" class="table tablesaw table-hover m-0">
+                <table id="contents" class="table-tree table tablesaw table-hover m-0">
                   <thead>
                     <tr>
                       <th>栏目名 </th>

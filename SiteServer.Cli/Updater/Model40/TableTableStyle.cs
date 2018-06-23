@@ -1,7 +1,12 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using SiteServer.Cli.Core;
+using SiteServer.Cli.Updater.Plugins.GovInteract;
+using SiteServer.Cli.Updater.Plugins.GovPublic;
+using SiteServer.Cli.Updater.Plugins.Jobs;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Model40
 {
@@ -55,16 +60,33 @@ namespace SiteServer.Cli.Updater.Model40
 
     public partial class TableTableStyle
     {
-        public const string OldTableName = "bairong_TableStyle";
+        public const string OldTableName = "TableStyle";
 
-        public static readonly string NewTableName = DataProvider.TableStyleDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumnInfo> NewColumns = DataProvider.TableStyleDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.TableStyleDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        private static readonly List<TableColumn> NewColumns = DataProvider.TableStyleDao.TableColumns;
+
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(TableStyleInfo.Id), nameof(TableStyleId)}
+                {nameof(TableStyleInfo.Id), nameof(TableStyleId)},
+                {nameof(TableStyleInfo.TableName), nameof(TableName)}
+            };
+
+        private static readonly Dictionary<string, string> ConvertValueDict =
+            new Dictionary<string, string>
+            {
+                {UpdateUtils.GetConvertValueDictKey(nameof(TableStyleInfo.TableName), TableGovInteractContent.OldTableName), TableGovInteractContent.NewTableName},
+                {UpdateUtils.GetConvertValueDictKey(nameof(TableStyleInfo.TableName), TableGovPublicContent.OldTableName), TableGovPublicContent.NewTableName},
+                {UpdateUtils.GetConvertValueDictKey(nameof(TableStyleInfo.TableName), TableJobsContent.OldTableName), TableJobsContent.NewTableName}
             };
     }
 }

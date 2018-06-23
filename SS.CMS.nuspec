@@ -12,7 +12,7 @@
     <copyright>Copyright © SiteServer CMS 2018</copyright>
     <tags>SiteServer CMS</tags>
     <releaseNotes>
-      6.2正式版，新增专题功能，提升翻页数据库性能，清除数十项Bug以及其他功能增强
+      6.3版本补丁，修正空格解析问题以及管理员显示问题
     </releaseNotes>
   </metadata>
 </package>

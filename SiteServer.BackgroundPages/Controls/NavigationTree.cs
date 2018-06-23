@@ -22,22 +22,24 @@ namespace SiteServer.BackgroundPages.Controls
         {
             var builder = new StringBuilder();
             var tabList = TabManager.GetTabList(TopId, SiteId);
-            if (tabList != null && tabList.Count > 0)
+            var treeContent = BuildNavigationTree(tabList);
+            if (!string.IsNullOrEmpty(treeContent))
             {
                 var linkHtml = string.Empty;
                 if (string.IsNullOrEmpty(TopId) && PermissionList.Contains(ConfigManager.PluginsPermissions.Management))
                 {
                     linkHtml = $@"<a id=""updatePackagesLink"" href=""{PageUtils.GetLoadingUrl(PageManagement.GetRedirectUrl(4))}"" onclick=""closeMenu()"" class=""badge badge-warning"" style=""display: none"" target=""right""></a>";
                 }
-                builder.Append($@"<li class=""text-muted menu-title"">{Title}{linkHtml}</li>");
-                BuildNavigationTree(builder, tabList, 0, true);
+                builder.Append($@"<li class=""text-muted menu-title"">{Title}{linkHtml}</li>{treeContent}");
             }
             writer.Write(builder);
         }
 
-        protected void BuildNavigationTree(StringBuilder builder, List<Tab> tabs, int parentsCount, bool isDisplay)
+        private string BuildNavigationTree(List<Tab> tabs)
         {
-            if (tabs == null) return;
+            if (tabs == null || tabs.Count == 0) return string.Empty;
+
+            var builder = new StringBuilder();
 
             foreach (var parent in tabs)
             {
@@ -105,6 +107,8 @@ namespace SiteServer.BackgroundPages.Controls
 </li>");
                 }
             }
+
+            return builder.ToString();
         }
     }
 }

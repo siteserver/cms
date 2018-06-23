@@ -60,14 +60,17 @@
     <Reference Include="Microsoft.Owin.Security, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.Security.3.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=1.6.56.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.6.56-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.7.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.7.7\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
@@ -84,6 +87,9 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
     </Reference>
@@ -95,6 +101,18 @@
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.6\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
@@ -108,14 +126,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="favicon.ico" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="安装向导.html" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\PluginController.cs" />
+    <Compile Include="Controllers\Plugins\PluginController.cs" />
     <Compile Include="Controllers\Preview\PreviewController.cs" />
+    <Compile Include="Controllers\V1\CaptchaController.cs" />
+    <Compile Include="Controllers\Sys\Settings\Admin\AccessTokensController.cs" />
     <Compile Include="Controllers\Sys\Administrators\AdministratorsActionsLoginController.cs" />
     <Compile Include="Controllers\Sys\Administrators\AdministratorsSiteCheckListController.cs" />
     <Compile Include="Controllers\Sys\Errors\ErrorController.cs" />
@@ -125,7 +146,6 @@
     <Compile Include="Controllers\Sys\Packaging\PackagingSyncDatabaseController.cs" />
     <Compile Include="Controllers\Sys\Packaging\PackagingDownloadController.cs" />
     <Compile Include="Controllers\Sys\Editors\UEditorController.cs" />
-    <Compile Include="Controllers\Sys\Stl\StlActionsAddContentHitsController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsDownloadController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsDynamicController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsIfController.cs" />
@@ -136,12 +156,15 @@
     <Compile Include="Controllers\Sys\Stl\StlActionsTriggerController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsUploadController.cs" />
     <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Controllers\V1\AdministratorsController.cs" />
+    <Compile Include="Controllers\V1\UsersController.cs" />
     <Compile Include="Controllers\V1\PingController.cs" />
     <Compile Include="Controllers\V1\StlController.cs" />
     <Compile Include="CreateHub.cs" />
     <Compile Include="ErrorRedirectModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="WebApiConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SiteServer.BackgroundPages\SiteServer.BackgroundPages.csproj">

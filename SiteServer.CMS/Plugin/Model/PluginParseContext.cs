@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Plugin;
 
@@ -6,7 +7,7 @@ namespace SiteServer.CMS.Plugin.Model
 {
     public class PluginParseContext: IParseContext
     {
-        public PluginParseContext(Dictionary<string, string> stlAttributes, string stlInnerXml, PageInfo pageInfo, ContextInfo contextInfo)
+        public PluginParseContext(string stlOuterHtml, string stlInnerHtml, NameValueCollection stlAttributes, PageInfo pageInfo, ContextInfo contextInfo)
         {
             SiteId = contextInfo.SiteInfo.Id;
             ChannelId = contextInfo.ChannelId;
@@ -18,10 +19,12 @@ namespace SiteServer.CMS.Plugin.Model
             StlPageHead = pageInfo.HeadCodes;
             StlPageBody = pageInfo.BodyCodes;
             StlPageFoot = pageInfo.FootCodes;
+            StlOuterHtml = stlOuterHtml;
+            StlInnerHtml = stlInnerHtml;
             StlAttributes = stlAttributes;
-            StlInnerXml = stlInnerXml;
+            
             StlItems = pageInfo.PluginItems;
-            IsStlEntity = contextInfo.IsStlEntity;
+            IsStlElement = !contextInfo.IsStlEntity;
         }
 
         public int SiteId  { get; set; }
@@ -42,12 +45,14 @@ namespace SiteServer.CMS.Plugin.Model
 
         public SortedDictionary<string, string> StlPageFoot { get; }
 
-        public Dictionary<string, string> StlAttributes { get; set; }
+        public string StlOuterHtml { get; set; }
 
-        public string StlInnerXml { get; set; }
+        public string StlInnerHtml { get; set; }
+
+        public NameValueCollection StlAttributes { get; set; }
 
         public Dictionary<string, object> StlItems { get; }
 
-        public bool IsStlEntity { get; }
+        public bool IsStlElement { get; }
     }
 }

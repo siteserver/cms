@@ -21,7 +21,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var fontSize = 16;
             var stlAnchor = new HtmlAnchor();
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -70,13 +70,13 @@ function stlDoZoom(zoomId, size){
 ");
             }
 
-            if (string.IsNullOrEmpty(contextInfo.InnerXml))
+            if (string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
                 stlAnchor.InnerHtml = "缩放";
             }
             else
             {
-                var innerBuilder = new StringBuilder(contextInfo.InnerXml);
+                var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
                 stlAnchor.InnerHtml = innerBuilder.ToString();
             }

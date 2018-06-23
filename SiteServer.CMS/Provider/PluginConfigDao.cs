@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Data;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -11,35 +10,35 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_PluginConfig";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(PluginConfigInfo.Id),
+                AttributeName = nameof(PluginConfigInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(PluginConfigInfo.PluginId),
+                AttributeName = nameof(PluginConfigInfo.PluginId),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(PluginConfigInfo.SiteId),
+                AttributeName = nameof(PluginConfigInfo.SiteId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(PluginConfigInfo.ConfigName),
+                AttributeName = nameof(PluginConfigInfo.ConfigName),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(PluginConfigInfo.ConfigValue),
+                AttributeName = nameof(PluginConfigInfo.ConfigValue),
                 DataType = DataType.Text
             }
         };

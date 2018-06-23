@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SiteServer.Cli.Core;
-using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.Cli.Updater.Model36;
+using SiteServer.Cli.Updater.Plugins.GovInteract;
+using SiteServer.Cli.Updater.Plugins.GovPublic;
 
 namespace SiteServer.Cli.Updater
 {
@@ -12,191 +14,172 @@ namespace SiteServer.Cli.Updater
 
         public Updater36(TreeInfo oldTreeInfo, TreeInfo newTreeInfo) : base(oldTreeInfo, newTreeInfo)
         {
-
         }
 
-        public override KeyValuePair<string, TableInfo> UpdateTableInfo(string oldTableName, TableInfo oldTableInfo, List<string> contentTableNameList)
+        public override bool UpdateTableInfo(string oldTableName, TableInfo oldTableInfo, List<string> contentTableNameList, out string newTableName, out TableInfo newTableInfo)
         {
-            string newTableName = null;
-            List<TableColumnInfo> newColumns = null;
-            Dictionary<string, string> convertDict = null;
+            ConvertInfo converter = null;
 
-            if (StringUtils.ContainsIgnoreCase(contentTableNameList, oldTableName))
+            var oldTableNameWithoutPrefix = oldTableName.Substring(oldTableName.IndexOf("_", StringComparison.Ordinal) + 1);
+
+            if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableAdministrator.OldTableName))
             {
-                newTableName = oldTableName;
-                newColumns = TableContent.GetNewColumns(oldTableInfo.Columns);
-                convertDict = TableContent.ConvertDict;
+                converter = TableAdministrator.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableAdministrator.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableAdministratorsInRoles.OldTableName))
             {
-                newTableName = TableAdministrator.NewTableName;
-                newColumns = TableAdministrator.NewColumns;
-                convertDict = TableAdministrator.ConvertDict;
+                converter = TableAdministratorsInRoles.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableAdministratorsInRoles.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableArea.OldTableName))
             {
-                newTableName = TableAdministratorsInRoles.NewTableName;
-                newColumns = TableAdministratorsInRoles.NewColumns;
-                convertDict = TableAdministratorsInRoles.ConvertDict;
+                converter = TableArea.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableArea.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableChannel.OldTableName))
             {
-                newTableName = TableArea.NewTableName;
-                newColumns = TableArea.NewColumns;
-                convertDict = TableArea.ConvertDict;
+                converter = TableChannel.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableChannel.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableChannelGroup.OldTableName))
             {
-                newTableName = TableChannel.NewTableName;
-                newColumns = TableChannel.NewColumns;
-                convertDict = TableChannel.ConvertDict;
+                converter = TableChannelGroup.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableChannelGroup.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableConfig.OldTableName))
             {
-                newTableName = TableChannelGroup.NewTableName;
-                newColumns = TableChannelGroup.NewColumns;
-                convertDict = TableChannelGroup.ConvertDict;
+                converter = TableConfig.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableConfig.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableContentCheck.OldTableName))
             {
-                newTableName = TableConfig.NewTableName;
-                newColumns = TableConfig.NewColumns;
-                convertDict = TableConfig.ConvertDict;
+                converter = TableContentCheck.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableContentCheck.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableContentGroup.OldTableName))
             {
-                newTableName = TableContentCheck.NewTableName;
-                newColumns = TableContentCheck.NewColumns;
-                convertDict = TableContentCheck.ConvertDict;
+                converter = TableContentGroup.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableContentGroup.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableDbCache.OldTableName))
             {
-                newTableName = TableContentGroup.NewTableName;
-                newColumns = TableContentGroup.NewColumns;
-                convertDict = TableContentGroup.ConvertDict;
+                converter = TableDbCache.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableCount.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableDepartment.OldTableName))
             {
-                newTableName = TableCount.NewTableName;
-                newColumns = TableCount.NewColumns;
-                convertDict = TableCount.ConvertDict;
+                converter = TableDepartment.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableDbCache.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableErrorLog.OldTableName))
             {
-                newTableName = TableDbCache.NewTableName;
-                newColumns = TableDbCache.NewColumns;
-                convertDict = TableDbCache.ConvertDict;
+                converter = TableErrorLog.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableDepartment.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableKeyword.OldTableName))
             {
-                newTableName = TableDepartment.NewTableName;
-                newColumns = TableDepartment.NewColumns;
-                convertDict = TableDepartment.ConvertDict;
+                converter = TableKeyword.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableKeyword.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableLog.OldTableName))
             {
-                newTableName = TableKeyword.NewTableName;
-                newColumns = TableKeyword.NewColumns;
-                convertDict = TableKeyword.ConvertDict;
+                converter = TableLog.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableLog.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TablePermissionsInRoles.OldTableName))
             {
-                newTableName = TableLog.NewTableName;
-                newColumns = TableLog.NewColumns;
-                convertDict = TableLog.ConvertDict;
+                converter = TablePermissionsInRoles.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TablePermissionsInRoles.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableRelatedField.OldTableName))
             {
-                newTableName = TablePermissionsInRoles.NewTableName;
-                newColumns = TablePermissionsInRoles.NewColumns;
-                convertDict = TablePermissionsInRoles.ConvertDict;
+                converter = TableRelatedField.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableRelatedField.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableRelatedFieldItem.OldTableName))
             {
-                newTableName = TableRelatedField.NewTableName;
-                newColumns = TableRelatedField.NewColumns;
-                convertDict = TableRelatedField.ConvertDict;
+                converter = TableRelatedFieldItem.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableRelatedFieldItem.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableRole.OldTableName))
             {
-                newTableName = TableRelatedFieldItem.NewTableName;
-                newColumns = TableRelatedFieldItem.NewColumns;
-                convertDict = TableRelatedFieldItem.ConvertDict;
+                converter = TableRole.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableRole.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableSite.OldTableName))
             {
-                newTableName = TableRole.NewTableName;
-                newColumns = TableRole.NewColumns;
-                convertDict = TableRole.ConvertDict;
+                converter = TableSite.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableSite.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableSiteLog.OldTableName))
             {
-                newTableName = TableSite.NewTableName;
-                newColumns = TableSite.NewColumns;
-                convertDict = TableSite.ConvertDict;
+                converter = TableSiteLog.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableSiteLog.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableSitePermissions.OldTableName))
             {
-                newTableName = TableSiteLog.NewTableName;
-                newColumns = TableSiteLog.NewColumns;
-                convertDict = TableSiteLog.ConvertDict;
+                converter = TableSitePermissions.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableSitePermissions.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableTable.OldTableName))
             {
-                newTableName = TableSitePermissions.NewTableName;
-                newColumns = TableSitePermissions.NewColumns;
-                convertDict = TableSitePermissions.ConvertDict;
+                converter = TableTable.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableTable.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableTableMetadata.OldTableName))
             {
-                newTableName = TableTable.NewTableName;
-                newColumns = TableTable.NewColumns;
-                convertDict = TableTable.ConvertDict;
+                converter = TableTableMetadata.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableTableMetadata.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableTableStyle.OldTableName))
             {
-                newTableName = TableTableMetadata.NewTableName;
-                newColumns = TableTableMetadata.NewColumns;
-                convertDict = TableTableMetadata.ConvertDict;
+                converter = TableTableStyle.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableTableStyle.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableTableStyleItem.OldTableName))
             {
-                newTableName = TableTableStyle.NewTableName;
-                newColumns = TableTableStyle.NewColumns;
-                convertDict = TableTableStyle.ConvertDict;
+                converter = TableTableStyleItem.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableTableStyleItem.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableTag.OldTableName))
             {
-                newTableName = TableTableStyleItem.NewTableName;
-                newColumns = TableTableStyleItem.NewColumns;
-                convertDict = TableTableStyleItem.ConvertDict;
+                converter = TableTag.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableTag.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableTemplate.OldTableName))
             {
-                newTableName = TableTag.NewTableName;
-                newColumns = TableTag.NewColumns;
-                convertDict = TableTag.ConvertDict;
+                converter = TableTemplate.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableTemplate.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableTemplateMatch.OldTableName))
             {
-                newTableName = TableTemplate.NewTableName;
-                newColumns = TableTemplate.NewColumns;
-                convertDict = TableTemplate.ConvertDict;
+                converter = TableTemplateMatch.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableTemplateMatch.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableUser.OldTableName))
             {
-                newTableName = TableTemplateMatch.NewTableName;
-                newColumns = TableTemplateMatch.NewColumns;
-                convertDict = TableTemplateMatch.ConvertDict;
+                converter = TableUser.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, TableUser.OldTableName))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovInteractChannel.OldTableName))
             {
-                newTableName = TableUser.NewTableName;
-                newColumns = TableUser.NewColumns;
-                convertDict = TableUser.ConvertDict;
+                converter = TableGovInteractChannel.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovInteractLog.OldTableName))
+            {
+                converter = TableGovInteractLog.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovInteractPermissions.OldTableName))
+            {
+                converter = TableGovInteractPermissions.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovInteractRemark.OldTableName))
+            {
+                converter = TableGovInteractRemark.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovInteractReply.OldTableName))
+            {
+                converter = TableGovInteractReply.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovInteractType.OldTableName))
+            {
+                converter = TableGovInteractType.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovPublicCategory.OldTableName))
+            {
+                converter = TableGovPublicCategory.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovPublicCategoryClass.OldTableName))
+            {
+                converter = TableGovPublicCategoryClass.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovPublicIdentifierRule.OldTableName))
+            {
+                converter = TableGovPublicIdentifierRule.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovPublicIdentifierSeq.OldTableName))
+            {
+                converter = TableGovPublicIdentifierSeq.Converter;
+            }
+            else if (StringUtils.ContainsIgnoreCase(contentTableNameList, oldTableName))
+            {
+                converter = TableContent.GetConverter(oldTableName, oldTableInfo.Columns);
             }
 
-            return GetNewTableInfo(oldTableName, oldTableInfo, newTableName, newColumns, convertDict);
+            return GetNewTableInfo(oldTableName, oldTableInfo, converter, out newTableName, out newTableInfo);
         }
     }
 }

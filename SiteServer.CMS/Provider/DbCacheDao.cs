@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -13,30 +12,30 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_DbCache";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(DbCacheInfo.Id),
+                AttributeName = nameof(DbCacheInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(DbCacheInfo.CacheKey),
+                AttributeName = nameof(DbCacheInfo.CacheKey),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(DbCacheInfo.CacheValue),
+                AttributeName = nameof(DbCacheInfo.CacheValue),
                 DataType = DataType.VarChar,
-                Length = 500
+                DataLength = 500
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(DbCacheInfo.AddDate),
+                AttributeName = nameof(DbCacheInfo.AddDate),
                 DataType = DataType.DateTime
             }
         };

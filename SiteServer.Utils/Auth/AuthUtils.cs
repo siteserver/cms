@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SiteServer.Utils.Auth
 {
@@ -32,6 +31,28 @@ namespace SiteServer.Utils.Auth
             };
 
             return JsonWebToken.Encode(userToken, WebConfigUtils.SecretKey, JwtHashAlgorithm.HS256);
+        }
+
+        public static string Md5ByFilePath(string filePath)
+        {
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = File.OpenRead(filePath))
+                {
+                    var hash = md5.ComputeHash(stream);
+                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                }
+            }
+        }
+
+        public static string Md5ByString(string str)
+        {
+            var bytes = Encoding.UTF8.GetBytes(str);
+            using (var md5 = MD5.Create())
+            {
+                var hash = md5.ComputeHash(bytes);
+                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+            }
         }
     }
 }

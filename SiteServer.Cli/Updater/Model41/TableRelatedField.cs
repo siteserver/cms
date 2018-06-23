@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Model41
 {
@@ -28,18 +29,28 @@ namespace SiteServer.Cli.Updater.Model41
 
     public partial class TableRelatedField
     {
-        public const string OldTableName = "siteserver_RelatedField";
+        public const string OldTableName = "RelatedField";
 
-        public static readonly string NewTableName = DataProvider.RelatedFieldDao.TableName;
+        public static ConvertInfo Converter => new ConvertInfo
+        {
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
 
-        public static readonly List<TableColumnInfo> NewColumns = DataProvider.RelatedFieldDao.TableColumns;
+        private static readonly string NewTableName = DataProvider.RelatedFieldDao.TableName;
 
-        public static readonly Dictionary<string, string> ConvertDict =
+        private static readonly List<TableColumn> NewColumns = DataProvider.RelatedFieldDao.TableColumns;
+
+        private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
                 {nameof(RelatedFieldInfo.Id), nameof(RelatedFieldId)},
                 {nameof(RelatedFieldInfo.Title), nameof(RelatedFieldName)},
                 {nameof(RelatedFieldInfo.SiteId), nameof(PublishmentSystemId)}
             };
+
+        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

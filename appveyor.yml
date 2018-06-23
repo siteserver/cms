@@ -4,7 +4,7 @@
     only:
       - master
 
-  version: 6.2.{build}
+  version: 6.3.{build}
   image: Visual Studio 2017
 
   assembly_info:
@@ -33,10 +33,10 @@
     - node_modules                        # local npm modules
 
   before_build:
-    - nuget restore siteserver.sln
+    - nuget restore siteserver-all.sln
 
   build:
-    project: siteserver.sln       # path to Visual Studio solution or project
+    project: siteserver-all.sln       # path to Visual Studio solution or project
     publish_nuget: true
 
   after_build:
@@ -85,7 +85,7 @@
     only:
       - dev
 
-  version: 6.2.{build}-beta
+  version: 6.3.{build}-beta
   image: Visual Studio 2017
 
   assembly_info:
@@ -114,10 +114,10 @@
     - node_modules                        # local npm modules
 
   before_build:
-    - nuget restore siteserver.sln
+    - nuget restore siteserver-all.sln
 
   build:
-    project: siteserver.sln       # path to Visual Studio solution or project
+    project: siteserver-all.sln       # path to Visual Studio solution or project
     publish_nuget: true
 
   after_build:

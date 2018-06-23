@@ -47,7 +47,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var isPreLoad = true;
             var isLoop = false;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -166,14 +166,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                                     videoUrl = Content.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.VideoUrl);
                                 }
                             }
-                            if (string.IsNullOrEmpty(videoUrl))
-                            {
-                                if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.FileUrl))
-                                {
-                                    //videoUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.FileUrl);
-                                    videoUrl = Content.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.FileUrl);
-                                }
-                            }
+                            //if (string.IsNullOrEmpty(videoUrl))
+                            //{
+                            //    if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.FileUrl))
+                            //    {
+                            //        //videoUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.FileUrl);
+                            //        videoUrl = Content.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.FileUrl);
+                            //    }
+                            //}
                         }
                         else
                         {
@@ -182,10 +182,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                             {
                                 videoUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.VideoUrl);
                             }
-                            if (string.IsNullOrEmpty(videoUrl))
-                            {
-                                videoUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.FileUrl);
-                            }
+                            //if (string.IsNullOrEmpty(videoUrl))
+                            //{
+                            //    videoUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.FileUrl);
+                            //}
                         }
                     }
                 }

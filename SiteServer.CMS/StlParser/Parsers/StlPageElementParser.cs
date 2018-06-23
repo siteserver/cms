@@ -52,7 +52,7 @@ namespace SiteServer.CMS.StlParser.Parsers
 			for (var i = 0; i < mc.Count; i++)
 			{
 				var stlElement = mc[i].Value;
-                var pageHtml = StlPageItem.ParseElement(stlElement, pageInfo, channelId, contentId, currentPageIndex, pageCount, totalNum, isXmlContent, contextType);
+                var pageHtml = StlPageItem.ParseElement(stlElement, pageInfo, channelId, contentId, currentPageIndex, pageCount, totalNum, contextType);
 				html = html.Replace(stlElement, pageHtml);
 			}
             
@@ -75,7 +75,7 @@ namespace SiteServer.CMS.StlParser.Parsers
             for (var i = 0; i < mc.Count; i++)
             {
                 var stlElement = mc[i].Value;
-                var pageHtml = StlPageItem.ParseElementInSearchPage(stlElement, pageInfo, ajaxDivId, channelId, currentPageIndex, pageCount, totalNum);
+                var pageHtml = StlPageItem.ParseElementInSearchPage(stlElement, pageInfo, ajaxDivId, currentPageIndex, pageCount, totalNum);
                 html = html.Replace(stlElement, pageHtml);
             }
 
@@ -109,18 +109,18 @@ namespace SiteServer.CMS.StlParser.Parsers
 		//在内容页中对“翻页”（stl:pageItem）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
 		public static string ParseStlPageItemInContentPage(string stlElement, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum)
 		{
-			return StlPageItem.ParseElement(stlElement, pageInfo, channelId, contentId, currentPageIndex, pageCount, totalNum, false, EContextType.Content);
+			return StlPageItem.ParseElement(stlElement, pageInfo, channelId, contentId, currentPageIndex, pageCount, totalNum, EContextType.Content);
 		}
 
 		//在栏目页中对“翻页”（stl:pageItem）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
 		public static string ParseStlPageItemInChannelPage(string stlElement, PageInfo pageInfo, int channelId, int currentPageIndex, int pageCount, int totalNum)
 		{
-            return StlPageItem.ParseElement(stlElement, pageInfo, channelId, 0, currentPageIndex, pageCount, totalNum, false, EContextType.Channel);
+            return StlPageItem.ParseElement(stlElement, pageInfo, channelId, 0, currentPageIndex, pageCount, totalNum, EContextType.Channel);
 		}
 
-        public static string ParseStlPageItemInSearchPage(string stlElement, PageInfo pageInfo, string ajaxDivId, int channelId, int currentPageIndex, int pageCount, int totalNum)
+        public static string ParseStlPageItemInSearchPage(string stlElement, PageInfo pageInfo, string ajaxDivId, int currentPageIndex, int pageCount, int totalNum)
         {
-            return StlPageItem.ParseElementInSearchPage(stlElement, pageInfo, ajaxDivId, channelId, currentPageIndex, pageCount, totalNum);
+            return StlPageItem.ParseElementInSearchPage(stlElement, pageInfo, ajaxDivId, currentPageIndex, pageCount, totalNum);
         }
 
         public static string ParseStlPageItemInDynamicPage(string stlElement, PageInfo pageInfo, string pageUrl, int channelId, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)

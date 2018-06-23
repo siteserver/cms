@@ -10,19 +10,21 @@ namespace SiteServer.API.Controllers.V1
     [RoutePrefix("api")]
     public class StlController : ApiController
     {
-        [HttpGet, Route(ApiStlRoute.Route)]
+        private const string Route = "v1/stl/{elementName}";
+
+        [HttpGet, Route(Route)]
         public IHttpActionResult Get(string elementName)
         {
             try
             {
-                var manager = new ApiStlManager();
+                var stlRequest = new StlRequest();
 
-                if (!manager.IsAuthorized)
+                if (!stlRequest.IsApiAuthorized)
                 {
                     return Unauthorized();
                 }
 
-                var siteInfo = manager.SiteInfo;
+                var siteInfo = stlRequest.SiteInfo;
 
                 if (siteInfo == null)
                 {
@@ -38,7 +40,7 @@ namespace SiteServer.API.Controllers.V1
                     Func<PageInfo, ContextInfo, object> func;
                     if (StlElementParser.ElementsToParseDic.TryGetValue(elementName, out func))
                     {
-                        var obj = func(manager.PageInfo, manager.ContextInfo);
+                        var obj = func(stlRequest.PageInfo, stlRequest.ContextInfo);
 
                         if (obj is string)
                         {
@@ -51,15 +53,12 @@ namespace SiteServer.API.Controllers.V1
                     }
                 }
 
-                return Ok(new
-                {
-                    Value = value
-                });
+                return Ok(new OResponse(value));
             }
             catch (Exception ex)
             {
                 LogUtils.AddErrorLog(ex);
-                return BadRequest(ex.Message);
+                return InternalServerError(ex);
             }
         }
     }
