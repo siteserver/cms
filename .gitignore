@@ -296,3 +296,4 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 /SiteServer.Web/CMS/Hinkoo
+/SiteServer.Web/Web2.config

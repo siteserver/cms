@@ -121,6 +121,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <Content Include="Web2.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web2.Release.config">
+      <DependentUpon>Web2.config</DependentUpon>
+    </Content>
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
