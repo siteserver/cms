@@ -15,6 +15,7 @@ namespace SiteServer.API.Controllers.V1
     public class CaptchaController : ApiController
     {
         private const string ApiRoute = "v1/captcha/{name}";
+        private const string ApiRouteActionsCheck = "v1/captcha/{name}/actions/check";
 
         private static readonly Color[] Colors = { Color.FromArgb(37, 72, 91), Color.FromArgb(68, 24, 25), Color.FromArgb(17, 46, 2), Color.FromArgb(70, 16, 100), Color.FromArgb(24, 88, 74) };
 
@@ -24,7 +25,7 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpGet, Route(ApiRoute)]
-        public void GetCaptcha(string name)
+        public void Get(string name)
         {
             var response = HttpContext.Current.Response;
 
@@ -75,8 +76,8 @@ namespace SiteServer.API.Controllers.V1
             response.End();
         }
 
-        [HttpPost, Route(ApiRoute)]
-        public IHttpActionResult CheckCaptcha(string name, [FromBody] CaptchaInfo captchaInfo)
+        [HttpPost, Route(ApiRouteActionsCheck)]
+        public IHttpActionResult Check(string name, [FromBody] CaptchaInfo captchaInfo)
         {
             try
             {
@@ -85,7 +86,7 @@ namespace SiteServer.API.Controllers.V1
 
                 if (!isValid)
                 {
-                    return BadRequest();
+                    return BadRequest("验证码不正确");
                 }
 
                 return Ok(new OResponse(true));

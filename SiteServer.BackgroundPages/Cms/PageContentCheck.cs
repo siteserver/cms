@@ -9,7 +9,9 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
+using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
+using Menu = SiteServer.Plugin.Menu;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -30,9 +32,10 @@ namespace SiteServer.BackgroundPages.Cms
         private StringCollection _attributesOfDisplay;
         private List<TableStyleInfo> _attributesOfDisplayStyleInfoList;
         private List<int> _relatedIdentities;
-        private ChannelInfo _nodeInfo;
+        private ChannelInfo _channelInfo;
         private string _tableName;
-        private Dictionary<string, List<HyperLink>> _pluginLinks;
+        private Dictionary<string, List<Menu>> _pluginMenus;
+        private Dictionary<string, Dictionary<string, Func<IContentContext, string>>> _pluginColumns;
         private bool _isEdit;
         private readonly Dictionary<string, string> _nameValueCacheDict = new Dictionary<string, string>();
 
@@ -49,12 +52,13 @@ namespace SiteServer.BackgroundPages.Cms
             _channelId = AuthRequest.IsQueryExists("ChannelId") ? AuthRequest.GetQueryInt("ChannelId") : SiteId;
 
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
-            _nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
-            _tableName = ChannelManager.GetTableName(SiteInfo, _nodeInfo);
+            _channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+            _tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
             _styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplay(SiteId, _channelId));
             _attributesOfDisplayStyleInfoList = ContentUtility.GetAllTableStyleInfoList(_styleInfoList);
-            _pluginLinks = PluginContentManager.GetContentLinks(_nodeInfo);
+            _pluginMenus = PluginContentManager.GetContentMenus(_channelInfo);
+            _pluginColumns = PluginContentManager.GetContentColumns(_channelInfo);
             _isEdit = TextUtility.IsEdit(SiteInfo, _channelId, AuthRequest.AdminPermissions);
 
             if (IsPostBack) return;
@@ -134,7 +138,7 @@ namespace SiteServer.BackgroundPages.Cms
             var showPopWinString = ModalContentCheck.GetOpenWindowStringForMultiChannels(SiteId, PageUrl);
             BtnCheck.Attributes.Add("onclick", showPopWinString);
 
-            LtlColumnsHead.Text = TextUtility.GetColumnsHeadHtml(_styleInfoList, _attributesOfDisplay, SiteInfo);
+            LtlColumnsHead.Text = TextUtility.GetColumnsHeadHtml(_styleInfoList, _pluginColumns, _attributesOfDisplay);
 
             if (!HasChannelPermissions(SiteId, ConfigManager.ChannelPermissions.ContentDelete))
             {
@@ -161,7 +165,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             ltlTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
 
-            ltlColumns.Text = TextUtility.GetColumnsHtml(_nameValueCacheDict, SiteInfo, contentInfo, _attributesOfDisplay, _attributesOfDisplayStyleInfoList);
+            ltlColumns.Text = TextUtility.GetColumnsHtml(_nameValueCacheDict, SiteInfo, contentInfo, _attributesOfDisplay, _attributesOfDisplayStyleInfoList, _pluginColumns);
 
             string nodeName;
             if (!_nameValueCacheDict.TryGetValue(contentInfo.ChannelId.ToString(), out nodeName))
@@ -174,7 +178,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlStatus.Text =
                 $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{ModalCheckState.GetOpenWindowString(SiteId, contentInfo, PageUrl)}"">{CheckManager.GetCheckState(SiteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
 
-            ltlCommands.Text = TextUtility.GetCommandsHtml(SiteInfo, _pluginLinks, contentInfo, PageUrl, AuthRequest.AdminName, _isEdit);
+            ltlCommands.Text = TextUtility.GetCommandsHtml(SiteInfo, _pluginMenus, contentInfo, PageUrl, AuthRequest.AdminName, _isEdit);
 
             ltlSelect.Text = $@"<input type=""checkbox"" name=""IDsCollection"" value=""{contentInfo.ChannelId}_{contentInfo.Id}"" />";
         }

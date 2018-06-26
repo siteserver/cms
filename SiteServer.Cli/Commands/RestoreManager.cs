@@ -120,7 +120,7 @@ namespace SiteServer.Cli.Commands
                 }
                 if (configInfo.RestoreConfig.Excludes != null)
                 {
-                    if (StringUtils.ContainsIgnoreCase(configInfo.RestoreConfig.Includes, tableName)) continue;
+                    if (StringUtils.ContainsIgnoreCase(configInfo.RestoreConfig.Excludes, tableName)) continue;
                 }
 
                 var metadataFilePath = treeInfo.GetTableMetadataFilePath(tableName);

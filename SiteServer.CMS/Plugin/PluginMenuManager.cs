@@ -94,12 +94,13 @@ namespace SiteServer.CMS.Plugin
                 {"siteId", siteId.ToString()},
                 {"channelId", channelId.ToString()},
                 {"contentId", contentId.ToString()},
+                {"apiUrl", ApiManager.ApiUrl},
                 {"returnUrl", returnUrl},
                 {"v", StringUtils.GetRandomInt(1, 1000).ToString()}
             });
         }
 
-        internal static Menu GetMenu(string pluginId, int siteId, Menu metadataMenu, int i)
+        private static Menu GetMenu(string pluginId, int siteId, Menu metadataMenu, int i)
         {
             var menu = new Menu
             {

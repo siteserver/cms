@@ -19,7 +19,7 @@ namespace SiteServer.CMS.Plugin.Model
 
         public List<TableColumn> ContentTableColumns { get; private set; }
         public Dictionary<string, List<TableColumn>> DatabaseTables { get; private set; }
-        public List<HyperLink> ContentLinks { get; private set; }
+        public List<Menu> ContentMenus { get; private set; }
 
         public event EventHandler<ContentEventArgs> ContentAddCompleted;
 
@@ -57,6 +57,8 @@ namespace SiteServer.CMS.Plugin.Model
         }
 
         public Dictionary<string, Func<IParseContext, string>> StlElementsToParse { get; private set; }
+
+        public Dictionary<string, Func<IContentContext, string>> ContentColumns { get; private set; }
 
         public PluginService(IMetadata metadata)
         {
@@ -96,14 +98,44 @@ namespace SiteServer.CMS.Plugin.Model
             return this;
         }
 
+        [Obsolete]
         public IService AddContentLink(HyperLink link)
         {
-            if (ContentLinks == null)
+            if (ContentMenus == null)
             {
-                ContentLinks = new List<HyperLink>();
+                ContentMenus = new List<Menu>();
             }
 
-            ContentLinks.Add(link);
+            ContentMenus.Add(new Menu
+            {
+                Text = link.Text,
+                Href = link.NavigateUrl,
+                Target = link.Target
+            });
+
+            return this;
+        }
+
+        public IService AddContentMenu(Menu link)
+        {
+            if (ContentMenus == null)
+            {
+                ContentMenus = new List<Menu>();
+            }
+
+            ContentMenus.Add(link);
+
+            return this;
+        }
+
+        public IService AddContentColumn(string columnName, Func<IContentContext, string> columnFunc)
+        {
+            if (ContentColumns == null)
+            {
+                ContentColumns = new Dictionary<string, Func<IContentContext, string>>();
+            }
+
+            ContentColumns[columnName] = columnFunc;
 
             return this;
         }

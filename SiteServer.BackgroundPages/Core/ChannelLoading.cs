@@ -55,11 +55,11 @@ namespace SiteServer.BackgroundPages.Core
                         downLink =
                             $@"<a href=""{urlAdd}""><img src=""../Pic/icon/down.gif"" border=""0"" alt=""下降"" /></a>";
                     }
-                    checkBoxHtml = $"<input type='checkbox' name='ChannelIDCollection' value='{nodeInfo.Id}' />";
+                    checkBoxHtml = $@"<input type=""checkbox"" name=""ChannelIDCollection"" value=""{nodeInfo.Id}"" />";
                 }
 
                 rowHtml = $@"
-<tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
+<tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"" onclick=""activeRow(this);return false;"">
     <td>{title}</td>
     <td class=""text-nowrap"">{nodeInfo.GroupNameCollection}</td>
     <td class=""text-nowrap"">{nodeInfo.IndexName}</td>

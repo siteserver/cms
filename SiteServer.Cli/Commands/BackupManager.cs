@@ -72,6 +72,13 @@ namespace SiteServer.Cli.Commands
                 return;
             }
 
+            if (configInfo.BackupConfig.Excludes == null)
+            {
+                configInfo.BackupConfig.Excludes = new List<string>();
+            }
+            configInfo.BackupConfig.Excludes.Add("bairong_ErrorLog");
+            configInfo.BackupConfig.Excludes.Add("siteserver_ErrorLog");
+
             if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
             {
                 CliUtils.PrintError("Error, connection string is empty");
@@ -104,7 +111,7 @@ namespace SiteServer.Cli.Commands
                 }
                 if (configInfo.BackupConfig.Excludes != null)
                 {
-                    if (StringUtils.ContainsIgnoreCase(configInfo.BackupConfig.Includes, tableName)) continue;
+                    if (StringUtils.ContainsIgnoreCase(configInfo.BackupConfig.Excludes, tableName)) continue;
                 }
 
                 var tableInfo = new TableInfo

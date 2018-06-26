@@ -43,7 +43,8 @@ namespace SiteServer.BackgroundPages.Cms
         private List<TableStyleInfo> _styleInfoList;
         private StringCollection _attributesOfDisplay;
         private List<TableStyleInfo> _allStyleInfoList;
-        private Dictionary<string, List<HyperLink>> _pluginLinks;
+        private Dictionary<string, List<Plugin.Menu>> _pluginMenus;
+        private Dictionary<string, Dictionary<string, Func<IContentContext, string>>> _pluginColumns;
         private bool _isEdit;
         private readonly Dictionary<string, string> _nameValueCacheDict = new Dictionary<string, string>();
 
@@ -74,7 +75,8 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, _relatedIdentities);
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplay(SiteId, _channelId));
             _allStyleInfoList = ContentUtility.GetAllTableStyleInfoList(_styleInfoList);
-            _pluginLinks = PluginContentManager.GetContentLinks(_channelInfo);
+            _pluginMenus = PluginContentManager.GetContentMenus(_channelInfo);
+            _pluginColumns = PluginContentManager.GetContentColumns(_channelInfo);
             _isEdit = TextUtility.IsEdit(SiteInfo, _channelId, AuthRequest.AdminPermissions);
 
             var stateType = AuthRequest.IsQueryExists("state") ? ETriStateUtils.GetEnumType(AuthRequest.GetQueryString("state")) : ETriState.All;
@@ -151,7 +153,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var showPopWinString = ModalAddToGroup.GetOpenWindowStringToContentForMultiChannels(SiteId);
                 BtnAddToGroup.Attributes.Add("onclick", showPopWinString);
 
-                showPopWinString = ModalSelectColumns.GetOpenWindowString(SiteId, _channelId, true);
+                showPopWinString = ModalSelectColumns.GetOpenWindowString(SiteId, _channelId);
                 BtnSelect.Attributes.Add("onclick", showPopWinString);
 
                 if (HasChannelPermissions(SiteId, ConfigManager.ChannelPermissions.ContentCheck))
@@ -164,7 +166,7 @@ namespace SiteServer.BackgroundPages.Cms
                     PhCheck.Visible = false;
                 }
 
-                LtlColumnsHead.Text = TextUtility.GetColumnsHeadHtml(_styleInfoList, _attributesOfDisplay, SiteInfo);
+                LtlColumnsHead.Text = TextUtility.GetColumnsHeadHtml(_styleInfoList, _pluginColumns, _attributesOfDisplay);
             }
 
             if (!HasChannelPermissions(_channelId, ConfigManager.ChannelPermissions.ContentAdd)) BtnAddContent.Visible = false;
@@ -202,7 +204,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             ltlTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
 
-            ltlColumns.Text = TextUtility.GetColumnsHtml(_nameValueCacheDict, SiteInfo, contentInfo, _attributesOfDisplay, _allStyleInfoList);
+            ltlColumns.Text = TextUtility.GetColumnsHtml(_nameValueCacheDict, SiteInfo, contentInfo, _attributesOfDisplay, _allStyleInfoList, _pluginColumns);
 
             string nodeName;
             if (!_nameValueCacheDict.TryGetValue(contentInfo.ChannelId.ToString(), out nodeName))
@@ -216,7 +218,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlStatus.Text =
                 $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{ModalCheckState.GetOpenWindowString(SiteId, contentInfo, PageUrl)}"">{CheckManager.GetCheckState(SiteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
 
-            ltlCommands.Text = TextUtility.GetCommandsHtml(SiteInfo, _pluginLinks, contentInfo, PageUrl, AuthRequest.AdminName, _isEdit);
+            ltlCommands.Text = TextUtility.GetCommandsHtml(SiteInfo, _pluginMenus, contentInfo, PageUrl, AuthRequest.AdminName, _isEdit);
 
             ltlSelect.Text = $@"<input type=""checkbox"" name=""IDsCollection"" value=""{contentInfo.ChannelId}_{contentInfo.Id}"" />";
         }

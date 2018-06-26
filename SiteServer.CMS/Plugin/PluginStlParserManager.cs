@@ -4,7 +4,7 @@ using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.CMS.Plugin
 {
-    public class PluginStlParserContentManager
+    public static class PluginStlParserContentManager
     {
         public static Dictionary<string, Func<PluginParseContext, string>> GetParses()
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
@@ -11,22 +12,9 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class PageChannel : BasePageCms
     {
+        public Literal LtlButtonsHead;
+        public Literal LtlButtonsFoot;
         public Repeater RptContents;
-
-        public PlaceHolder PhAddChannel;
-        public Button BtnAddChannel1;
-        public Button BtnAddChannel2;
-        public PlaceHolder PhChannelEdit;
-        public Button BtnAddToGroup;
-        public PlaceHolder PhTranslate;
-        public Button BtnTranslate;
-        public PlaceHolder PhImport;
-        public Button BtnImport;
-        public Button BtnExport;
-        public PlaceHolder PhDelete;
-        public Button BtnDelete;
-        public PlaceHolder PhCreate;
-        public Button BtnCreate;
 
         private int _currentChannelId;
 
@@ -78,55 +66,71 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            PhAddChannel.Visible = HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.ChannelAdd);
-            if (PhAddChannel.Visible)
-            {
-                BtnAddChannel1.Attributes.Add("onclick", ModalChannelsAdd.GetOpenWindowString(SiteId, SiteId, GetRedirectUrl(SiteId, SiteId)));
-                BtnAddChannel2.Attributes.Add("onclick",
-                    $"location.href='{PageChannelAdd.GetRedirectUrl(SiteId, SiteId, GetRedirectUrl(SiteId, 0))}';return false;");
-            }
-
-            PhChannelEdit.Visible = HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.ChannelEdit);
-            if (PhChannelEdit.Visible)
-            {
-                var showPopWinString = ModalAddToGroup.GetOpenWindowStringToChannel(SiteId);
-                BtnAddToGroup.Attributes.Add("onclick", showPopWinString);
-            }
-
-            PhTranslate.Visible = HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.ChannelTranslate);
-            if (PhTranslate.Visible)
-            {
-                BtnTranslate.Attributes.Add("onclick",
-                    PageUtils.GetRedirectStringWithCheckBoxValue(
-                        PageChannelTranslate.GetRedirectUrl(SiteId,
-                            GetRedirectUrl(SiteId, _currentChannelId)), "ChannelIDCollection",
-                        "ChannelIDCollection", "请选择需要转移的栏目！"));
-            }
-
-            PhDelete.Visible = HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.ChannelDelete);
-            if (PhDelete.Visible)
-            {
-                BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValue(PageChannelDelete.GetRedirectUrl(SiteId, GetRedirectUrl(SiteId, SiteId)), "ChannelIDCollection", "ChannelIDCollection", "请选择需要删除的栏目！"));
-            }
-
-            PhCreate.Visible = HasSitePermissions(ConfigManager.WebSitePermissions.Create) || HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.CreatePage);
-            if (PhCreate.Visible)
-            {
-                BtnCreate.Attributes.Add("onclick", ModalCreateChannels.GetOpenWindowString(SiteId));
-            }
-
-            PhImport.Visible = PhAddChannel.Visible;
-            if (PhImport.Visible)
-            {
-                BtnImport.Attributes.Add("onclick", ModalChannelImport.GetOpenWindowString(SiteId, SiteId));
-            }
-            BtnExport.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToChannel(SiteId, "ChannelIDCollection", "请选择需要导出的栏目！"));
+            LtlButtonsHead.Text = LtlButtonsFoot.Text = GetButtonsHtml();
 
             var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, SiteId), EScopeType.SelfAndChildren, string.Empty, string.Empty, string.Empty);
 
             RptContents.DataSource = channelIdList;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
+        }
+
+        private string GetButtonsHtml()
+        {
+            var builder = new StringBuilder();
+
+            if (HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.ChannelAdd))
+            {
+                builder.Append($@"
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalChannelsAdd.GetOpenWindowString(SiteId, SiteId, GetRedirectUrl(SiteId, SiteId))}"">快速添加</a>
+<a href=""{PageChannelAdd.GetRedirectUrl(SiteId, SiteId, GetRedirectUrl(SiteId, 0))}"" class=""btn btn-light text-secondary"">添加栏目</a>
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalChannelImport.GetOpenWindowString(SiteId, SiteId)}"">导 入</a>
+");
+            }
+
+            builder.Append($@"
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalExportMessage.GetOpenWindowStringToChannel(SiteId, "ChannelIDCollection", "请选择需要导出的栏目！")}"">导 出</a>
+");
+
+            if (HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.ChannelEdit))
+            {
+                builder.Append($@"
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalAddToGroup.GetOpenWindowStringToChannel(SiteId)}"">设置栏目组</a>
+");
+            }
+
+            if (HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.ChannelTranslate))
+            {
+                builder.Append($@"
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{
+                        PageUtils.GetRedirectStringWithCheckBoxValue(
+                            PageChannelTranslate.GetRedirectUrl(SiteId,
+                                GetRedirectUrl(SiteId, _currentChannelId)), "ChannelIDCollection",
+                            "ChannelIDCollection", "请选择需要转移的栏目！")
+                    }"">转 移</a>
+");
+            }
+
+            if (HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.ChannelDelete))
+            {
+                builder.Append($@"
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{
+                        PageUtils.GetRedirectStringWithCheckBoxValue(
+                            PageChannelDelete.GetRedirectUrl(SiteId, GetRedirectUrl(SiteId, SiteId)), "ChannelIDCollection",
+                            "ChannelIDCollection", "请选择需要删除的栏目！")
+                    }"">删 除</a>
+");
+            }
+
+            if (HasSitePermissions(ConfigManager.WebSitePermissions.Create) ||
+                HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.CreatePage))
+            {
+                builder.Append($@"
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalCreateChannels.GetOpenWindowString(SiteId)}"">生 成</a>
+");
+            }
+
+            return builder.ToString();
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)

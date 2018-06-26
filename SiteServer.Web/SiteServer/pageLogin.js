@@ -1,7 +1,7 @@
 var $api = new apiUtils.Api($apiConfig.apiUrl + '/v1/administrators/actions/login');
 var $innerApi = new apiUtils.Api($apiConfig.innerApiUrl + '/v1/administrators/actions/login');
-var $captchaApiUrl = $apiConfig.innerApiUrl + '/v1/captcha/LOGIN-CAPTCHA';
-var $captchaApi = new apiUtils.Api($captchaApiUrl);
+var $captchaGetUrl = $apiConfig.innerApiUrl + '/v1/captcha/LOGIN-CAPTCHA';
+var $captchaCheckApi = new apiUtils.Api($apiConfig.innerApiUrl + '/v1/captcha/LOGIN-CAPTCHA/actions/check');
 
 if (window.top != self) {
   window.top.location = self.location;
@@ -28,13 +28,13 @@ var $vue = new Vue({
   methods: {
     reload: function () {
       this.pageLoad = true;
-      this.captchaUrl = $captchaApiUrl + '?r=' + new Date().getTime();
+      this.captchaUrl = $captchaGetUrl + '?r=' + new Date().getTime();
     },
     checkCaptcha: function(account, password, captcha) {
       var $this = this;
 
       pageUtils.loading(true);
-      $captchaApi.post({
+      $captchaCheckApi.post({
         captcha: captcha
       }, function (err, res) {
         pageUtils.loading(false);

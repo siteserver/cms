@@ -4,27 +4,26 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalSelectColumns : BasePageCms
     {
-        public CheckBoxList CblDisplayAttributes;
+        protected CheckBoxList CblDisplayAttributes;
 
-        private int _relatedIdentity;
+        private int _channelId;
         private List<int> _relatedIdentities;
-        private bool _isList;
+        private Dictionary<string, Dictionary<string, Func<IContentContext, string>>> _pluginColumns;
 
-        public static string GetOpenWindowString(int siteId, int relatedIdentity, bool isList)
+        public static string GetOpenWindowString(int siteId, int channelId)
         {
-            return LayerUtils.GetOpenScript("选择需要显示的项", PageUtils.GetCmsUrl(siteId, nameof(ModalSelectColumns), new NameValueCollection
+            return LayerUtils.GetOpenScript("设置显示项", PageUtils.GetCmsUrl(siteId, nameof(ModalSelectColumns), new NameValueCollection
             {
-                {"RelatedIdentity", relatedIdentity.ToString()},
-                {"IsList", isList.ToString()}
-            }), 0, 550);
+                {"channelId", channelId.ToString()}
+            }));
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -33,13 +32,13 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId");
 
-            _relatedIdentity = AuthRequest.GetQueryInt("RelatedIdentity");
-            _isList = AuthRequest.GetQueryBool("IsList");
+            _channelId = AuthRequest.GetQueryInt("channelId");
 
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _relatedIdentity);
-            var tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
-            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _relatedIdentity);
-            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(nodeInfo.Additional.ContentAttributesOfDisplay);
+            var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+            var tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
+            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
+            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.Additional.ContentAttributesOfDisplay);
+            _pluginColumns = PluginContentManager.GetContentColumns(channelInfo);
 
             if (IsPostBack) return;
 
@@ -55,14 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    if (_isList)
-                    {
-                        if (attributesOfDisplay.Contains(styleInfo.AttributeName))
-                        {
-                            listitem.Selected = true;
-                        }
-                    }
-                    else
+                    if (attributesOfDisplay.Contains(styleInfo.AttributeName))
                     {
                         listitem.Selected = true;
                     }
@@ -70,26 +62,37 @@ namespace SiteServer.BackgroundPages.Cms
 
                 CblDisplayAttributes.Items.Add(listitem);
             }
+
+            foreach (var pluginId in _pluginColumns.Keys)
+            {
+                var contentColumns = _pluginColumns[pluginId];
+                if (contentColumns == null || contentColumns.Count == 0) continue;
+
+                foreach (var columnName in contentColumns.Keys)
+                {
+                    var attributeName = $"{pluginId}:{columnName}";
+                    var listitem = new ListItem($"{columnName}({pluginId})", attributeName);
+                    if (attributesOfDisplay.Contains(attributeName))
+                    {
+                        listitem.Selected = true;
+                    }
+
+                    CblDisplayAttributes.Items.Add(listitem);
+                }
+            }
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _relatedIdentity);
+            var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
             var attributesOfDisplay = ControlUtils.SelectedItemsValueToStringCollection(CblDisplayAttributes.Items);
-            nodeInfo.Additional.ContentAttributesOfDisplay = attributesOfDisplay;
+            channelInfo.Additional.ContentAttributesOfDisplay = attributesOfDisplay;
 
-            DataProvider.ChannelDao.Update(nodeInfo);
+            DataProvider.ChannelDao.Update(channelInfo);
 
             AuthRequest.AddSiteLog(SiteId, "设置内容显示项", $"显示项:{attributesOfDisplay}");
 
-            if (!_isList)
-            {
-                LayerUtils.CloseWithoutRefresh(Page);
-            }
-            else
-            {
-                LayerUtils.Close(Page);
-            }
+            LayerUtils.Close(Page);
         }
 
     }

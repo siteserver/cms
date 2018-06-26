@@ -89,31 +89,6 @@ namespace SiteServer.BackgroundPages.Core
             return url + image;
         }
 
-        public static string GetChannelListBoxTitle(int siteId, int channelId, string nodeName, int parentsCount, bool isLastNode, bool[] isLastNodeArray)
-        {
-            var str = string.Empty;
-            if (channelId == siteId)
-            {
-                isLastNode = true;
-            }
-            if (isLastNode == false)
-            {
-                isLastNodeArray[parentsCount] = false;
-            }
-            else
-            {
-                isLastNodeArray[parentsCount] = true;
-            }
-            for (var i = 0; i < parentsCount; i++)
-            {
-                str = string.Concat(str, isLastNodeArray[i] ? "　" : "│");
-            }
-            str = string.Concat(str, isLastNode ? "└" : "├");
-            str = string.Concat(str, StringUtils.MaxLengthText(nodeName, 8));
-
-            return str;
-        }
-
         public static string GetContentAddUploadWordUrl(int siteId, ChannelInfo nodeInfo, bool isFirstLineTitle, bool isFirstLineRemove, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, int contentLevel, string fileName, string returnUrl)
         {
             return
@@ -130,90 +105,90 @@ namespace SiteServer.BackgroundPages.Core
             return PageContentAdd.GetRedirectUrlOfEdit(siteId, nodeInfo.Id, id, returnUrl);
         }
 
-        public static string GetContentCommands(PermissionManager permissionManager, SiteInfo siteInfo, ChannelInfo nodeInfo, string pageUrl)
+        public static string GetContentCommands(PermissionManager permissionManager, SiteInfo siteInfo, ChannelInfo channelInfo, string pageUrl)
         {
             var builder = new StringBuilder();
 
-            if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && nodeInfo.Additional.IsContentAddable)
+            if (permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.Additional.IsContentAddable)
             {
                 builder.Append($@"
-<a href=""{GetContentAddAddUrl(siteInfo.Id, nodeInfo, pageUrl)}"" class=""btn btn-light text-secondary"">
+<a href=""{GetContentAddAddUrl(siteInfo.Id, channelInfo, pageUrl)}"" class=""btn btn-light text-secondary"">
     <i class=""ion-plus""></i>
     添加
 </a>");
 
                 builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalUploadWord.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, StringUtils.ValueToUrl(pageUrl))}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalUploadWord.GetOpenWindowString(siteInfo.Id, channelInfo.Id, StringUtils.ValueToUrl(pageUrl))}"">
     导入Word
 </a>");
             }
 
-            if (nodeInfo.ContentNum > 0 && permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ContentDelete))
+            if (channelInfo.ContentNum > 0 && permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete))
             {
                 builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{PageContentDelete.GetRedirectClickStringForSingleChannel(siteInfo.Id, nodeInfo.Id, false, pageUrl)}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{PageContentDelete.GetRedirectClickStringForSingleChannel(siteInfo.Id, channelInfo.Id, false, pageUrl)}"">
     <i class=""ion-trash-a""></i>
     删 除
 </a>");
             }
 
-            if (nodeInfo.ContentNum > 0)
+            if (channelInfo.ContentNum > 0)
             {
-                if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ContentEdit))
+                if (permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentEdit))
                 {
                     builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalContentAttributes.GetOpenWindowString(siteInfo.Id, nodeInfo.Id)}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalContentAttributes.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
     <i class=""ion-flag""></i>
     属性
 </a>");
                     builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalAddToGroup.GetOpenWindowStringToContent(siteInfo.Id, nodeInfo.Id)}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalAddToGroup.GetOpenWindowStringToContent(siteInfo.Id, channelInfo.Id)}"">
     内容组
 </a>");
                 }
-                if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ContentTranslate))
+                if (permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentTranslate))
                 {
-                    var redirectUrl = PageContentTranslate.GetRedirectUrl(siteInfo.Id, nodeInfo.Id, pageUrl);
+                    var redirectUrl = PageContentTranslate.GetRedirectUrl(siteInfo.Id, channelInfo.Id, pageUrl);
                     var clickString = PageUtils.GetRedirectStringWithCheckBoxValue(redirectUrl, "contentIdCollection", "contentIdCollection", "请选择需要转移的内容！");
                     builder.Append($@"
 <a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{clickString}"">
     转 移
 </a>");
                 }
-                if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ContentEdit))
+                if (permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentEdit))
                 {
                     builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalContentTaxis.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, pageUrl)}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalContentTaxis.GetOpenWindowString(siteInfo.Id, channelInfo.Id, pageUrl)}"">
     排 序
 </a>");
                 }
-                if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ContentCheck))
+                if (permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentCheck))
                 {
                     builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalContentCheck.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, pageUrl)}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalContentCheck.GetOpenWindowString(siteInfo.Id, channelInfo.Id, pageUrl)}"">
     审 核
 </a>");
                 }
-                if (permissionManager.HasSitePermissions(siteInfo.Id, ConfigManager.WebSitePermissions.Create) || permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.CreatePage))
+                if (permissionManager.HasSitePermissions(siteInfo.Id, ConfigManager.WebSitePermissions.Create) || permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.CreatePage))
                 {
                     builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateContentsOneByOne(siteInfo.Id, nodeInfo.Id)}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateContentsOneByOne(siteInfo.Id, channelInfo.Id)}"">
     <i class=""ion-wand""></i>
     生 成
 </a>");
                 }
             }
 
-            if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit))
+            if (permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit))
             {
                 builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalSelectColumns.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, true)}"">
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalSelectColumns.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
     <i class=""ion-ios-list-outline""></i>
     显示项
 </a>");
             }
 
-            if (nodeInfo.ContentNum > 0)
+            if (channelInfo.ContentNum > 0)
             {
                 builder.Append(@"
 <a href=""javascript:;;"" class=""btn btn-light text-secondary text-secondary"" onClick=""$('#contentSearch').toggle(); return false"">
@@ -266,100 +241,6 @@ namespace SiteServer.BackgroundPages.Core
                 }
             }
 
-            return builder.ToString();
-        }
-
-        public static string GetChannelCommands(PermissionManager permissionManager, SiteInfo siteInfo, ChannelInfo nodeInfo, string pageUrl, string currentFileName)
-        {
-            var iconUrl = SiteServerAssets.GetIconUrl(string.Empty);
-            var builder = new StringBuilder();
-            //添加栏目
-            if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ChannelAdd) && nodeInfo.Additional.IsChannelAddable)
-            {
-                builder.Append(
-                    $@"<a href=""{PageChannelAdd.GetRedirectUrl(siteInfo.Id,
-                        nodeInfo.Id, pageUrl)}""><img style=""MARGIN-RIGHT: 3px"" src=""{iconUrl}/add.gif"" align=""absMiddle"" />添加栏目</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-                builder.Append(
-                    $@"<a href=""javascript:;"" onclick=""{ModalChannelsAdd.GetOpenWindowString(
-                        siteInfo.Id, nodeInfo.Id, pageUrl)}"">快速添加</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-            }
-            if (nodeInfo.ChildrenCount > 0)
-            {
-                //删除栏目
-                if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ChannelDelete))
-                {
-                    builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{PageUtils.GetRedirectStringWithCheckBoxValue(
-                            PageChannelDelete.GetRedirectUrl(siteInfo.Id, pageUrl),
-                            "ChannelIDCollection", "ChannelIDCollection", "请选择需要删除的栏目！")}"">删除栏目</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-                }
-                //清空内容
-                if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ContentDelete))
-                {
-                    builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{PageUtils.GetRedirectStringWithCheckBoxValue(
-                            PageChannelDelete.GetRedirectUrl(siteInfo.Id, pageUrl),
-                            "ChannelIDCollection", "ChannelIDCollection", "请选择需要删除内容的栏目！")}"">清空内容</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-                }
-
-                if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ChannelAdd))
-                {
-                    //导 入
-                    if (nodeInfo.Additional.IsChannelAddable)
-                    {
-                        builder.Append(
-                           $@"<a href=""javascript:;"" onclick=""{ModalChannelImport.GetOpenWindowString(
-                               siteInfo.Id, nodeInfo.Id)}"">导 入</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-                    }
-                    //导 出
-                    builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{Cms.ModalExportMessage.GetOpenWindowStringToChannel(
-                            siteInfo.Id, "ChannelIDCollection", "请选择需要导出的栏目！")}"">导 出</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-                }
-
-                //设置栏目组
-                if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit))
-                {
-                    builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{ModalAddToGroup.GetOpenWindowStringToChannel(
-                            siteInfo.Id)}"">设置栏目组</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-                }
-                //转 移
-                if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ChannelTranslate))
-                {
-                    builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{PageUtils.GetRedirectStringWithCheckBoxValue(
-                            PageChannelTranslate.GetRedirectUrl(siteInfo.Id,
-                                nodeInfo.Id, pageUrl), "ChannelIDCollection", "ChannelIDCollection", "请选择需要转移的栏目！")}"">转 移</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-                }
-
-                //生 成
-                if (permissionManager.HasSitePermissions(siteInfo.Id, ConfigManager.WebSitePermissions.Create) || permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.CreatePage))
-                {
-                    builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{ModalCreateChannels.GetOpenWindowString(
-                            siteInfo.Id)}"">生 成</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-                }
-            }
-            else
-            {
-                //导 入
-                if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ChannelAdd) && nodeInfo.Additional.IsChannelAddable)
-                {
-                    builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{ModalChannelImport.GetOpenWindowString(
-                            siteInfo.Id, nodeInfo.Id)}"">导 入</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-                }
-            }
-            if (siteInfo.Id != nodeInfo.Id)
-            {
-                builder.Append(
-                    $@"<a href=""{$"{currentFileName}?siteId={siteInfo.Id}&channelId={nodeInfo.ParentId}"}""><img style=""MARGIN-RIGHT: 3px"" src=""{iconUrl}/upfolder.gif"" align=""absMiddle"" />向 上</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-            }
-            if (builder.Length > 0)
-            {
-                builder.Length = builder.Length - 15;
-            }
             return builder.ToString();
         }
 
