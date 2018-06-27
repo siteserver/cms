@@ -72,7 +72,7 @@ namespace SiteServer.BackgroundPages.Core
 
             if (_channelInfo.Id > 0)
             {
-                contentModelIconHtml = $@"<a href=""{PageRedirect.GetRedirectUrlToChannel(_channelInfo.SiteId, _channelInfo.Id)}"" target=""_blank"" title=""浏览页面"">{contentModelIconHtml}</a>";
+                contentModelIconHtml = $@"<a href=""{PageRedirect.GetRedirectUrlToChannel(_channelInfo.SiteId, _channelInfo.Id)}"" target=""_blank"" title=""浏览页面"" onclick=""event.stopPropagation()"">{contentModelIconHtml}</a>";
             }
 
             htmlBuilder.Append(contentModelIconHtml);
