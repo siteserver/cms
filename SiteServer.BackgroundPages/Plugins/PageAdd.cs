@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Plugins
@@ -8,6 +10,18 @@ namespace SiteServer.BackgroundPages.Plugins
     public class PageAdd : BasePage
     {
         public Button BtnUpload;
+
+        public string PackageIds
+        {
+            get
+            {
+                var dict = PluginManager.GetPluginIdAndVersionDict();
+
+                var list = dict.Keys.ToList();
+
+                return TranslateUtils.ObjectCollectionToString(list);
+            }
+        }
 
         public static string GetRedirectUrl()
         {
