@@ -79,11 +79,11 @@ namespace SiteServer.Utils
             {
                 if (!StringUtils.ContainsIgnoreCase(connectionString, "SslMode="))
                 {
-                    connectionString += "SslMode=none;";
+                    connectionString += ";SslMode=none;";
                 }
                 if (!StringUtils.ContainsIgnoreCase(connectionString, "CharSet="))
                 {
-                    connectionString += "CharSet=utf8;";
+                    connectionString += ";CharSet=utf8;";
                 }
             }
 
@@ -643,13 +643,24 @@ SELECT * FROM (
             return retval;
         }
 
-        public static string GetAutoIncrementDataType()
+        public static string GetAutoIncrementDataType(bool alterTable = false)
         {
             var retval = string.Empty;
 
+            //if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            //{
+            //    retval = "INT AUTO_INCREMENT PRIMARY KEY";
+            //}
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = "INT AUTO_INCREMENT";
+                if (alterTable)
+                {
+                    retval = "INTEGER AUTO_INCREMENT UNIQUE KEY";
+                }
+                else
+                {
+                    retval = "INTEGER AUTO_INCREMENT";
+                }
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {

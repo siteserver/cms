@@ -1236,7 +1236,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
             var list = new List<TableColumn>();
 
             string sqlString =
-                $"select COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLUMN_KEY from information_schema.columns where table_schema = '{databaseName}' and table_name = '{tableName}' order by table_name,ordinal_position; ";
+                $"select COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLUMN_KEY, EXTRA from information_schema.columns where table_schema = '{databaseName}' and table_name = '{tableName}' order by table_name,ordinal_position; ";
             using (var rdr = ExecuteReader(connectionString, sqlString))
             {
                 while (rdr.Read())
@@ -1245,8 +1245,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
                     var dataType = SqlUtils.ToDataType(DatabaseType.MySql, rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
                     var length = rdr.IsDBNull(2) || dataType == DataType.Text ? 0 : Convert.ToInt32(rdr.GetValue(2));
                     var isPrimaryKey = Convert.ToString(rdr.GetValue(3)) == "PRI";
-
-                    var isIdentity = isPrimaryKey && StringUtils.EqualsIgnoreCase(columnName, "Id");
+                    var isIdentity = Convert.ToString(rdr.GetValue(4)) == "auto_increment";
 
                     var info = new TableColumn
                     {
@@ -1676,7 +1675,7 @@ FROM (SELECT TOP {totalNum} *
             {
                 identityColumnName = "Id";
                 var sqlString =
-                    SqlUtils.GetAddColumnsSqlString(tableName, $"{identityColumnName} {SqlUtils.GetAutoIncrementDataType()}");
+                    SqlUtils.GetAddColumnsSqlString(tableName, $"{identityColumnName} {SqlUtils.GetAutoIncrementDataType(true)}");
                 DataProvider.DatabaseDao.ExecuteSql(sqlString);
 
                 columns.Insert(0, new TableColumn

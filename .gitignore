@@ -1,4 +1,6 @@
 *.zip
+backup/
+update/
 build/
 *.exe
 *.exe.config
