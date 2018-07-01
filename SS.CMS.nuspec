@@ -12,7 +12,7 @@
     <copyright>Copyright © SiteServer CMS 2018</copyright>
     <tags>SiteServer CMS</tags>
     <releaseNotes>
-      6.3版本补丁，修正空格解析问题以及管理员显示问题
+      SiteServer CMS V6.4正式版
     </releaseNotes>
   </metadata>
 </package>

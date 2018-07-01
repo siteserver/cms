@@ -4,7 +4,7 @@
     only:
       - master
 
-  version: 6.3.{build}
+  version: 6.4.{build}
   image: Visual Studio 2017
 
   assembly_info:
@@ -85,7 +85,7 @@
     only:
       - dev
 
-  version: 6.3.{build}-beta
+  version: 6.4.{build}-beta
   image: Visual Studio 2017
 
   assembly_info:
