@@ -190,10 +190,9 @@ namespace SiteServer.API.Controllers.V1
             try
             {
                 var request = new AuthRequest();
-
+                var response = new OResponse(request.IsAdminLoggin ? request.AdminInfo : null);
                 request.AdminLogout();
-
-                return Ok(new OResponse(true));
+                return Ok(response);
             }
             catch (Exception ex)
             {

@@ -248,10 +248,9 @@ namespace SiteServer.API.Controllers.V1
             try
             {
                 var request = new AuthRequest();
-
+                var response = new OResponse(request.IsUserLoggin ? request.UserInfo : null);
                 request.UserLogout();
-
-                return Ok(new OResponse(true));
+                return Ok(response);
             }
             catch (Exception ex)
             {

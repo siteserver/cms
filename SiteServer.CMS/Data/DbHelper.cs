@@ -914,6 +914,51 @@ namespace SiteServer.CMS.Data
             return id;
         }
 
+        public virtual int ExecuteReturnId(string tableName, string idColumnName, IDbTransaction trans)
+        {
+            var id = 0;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                var sequence = DataProvider.DatabaseDao.GetOracleSequence(tableName, idColumnName);
+
+                if (!string.IsNullOrEmpty(sequence))
+                {
+                    using (var rdr = ExecuteReader(trans, $"SELECT {sequence}.currval from dual"))
+                    {
+                        if (rdr.Read() && !rdr.IsDBNull(0))
+                        {
+                            id = Convert.ToInt32(rdr[0]);
+                        }
+                        rdr.Close();
+                    }
+                }
+
+                if (id == 0)
+                {
+                    trans.Rollback();
+                }
+            }
+            else
+            {
+                using (var rdr = ExecuteReader(trans, $"SELECT @@IDENTITY AS '{idColumnName}'"))
+                {
+                    if (rdr.Read() && !rdr.IsDBNull(0))
+                    {
+                        id = rdr.GetInt32(0);
+                    }
+                    rdr.Close();
+                }
+
+                if (id == 0)
+                {
+                    trans.Rollback();
+                }
+            }
+
+            return id;
+        }
+
         /// <summary>
         /// Execute an IDbCommand (that returns no resultset and takes no parameters) against the provided IDbConnection. 
         /// </summary>

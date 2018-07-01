@@ -206,6 +206,10 @@ namespace SiteServer.CMS.Data
             return DataProvider.DataApi.ExecuteNonQueryAndReturnId(tableName, idColumnName, trans, commandText, commandParameters);
         }
 
+        protected int ExecuteReturnId(string tableName, string idColumnName, IDbTransaction trans)
+        {
+            return DataProvider.DataApi.ExecuteReturnId(tableName, idColumnName, trans);
+        }
 
         protected object ExecuteScalar(IDbConnection conn, string commandText, params IDataParameter[] commandParameters)
         {

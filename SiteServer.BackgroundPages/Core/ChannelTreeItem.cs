@@ -58,9 +58,9 @@ namespace SiteServer.BackgroundPages.Core
             {
                 htmlBuilder.Append(
                     _channelInfo.SiteId == _channelInfo.Id
-                        ? $@"<img align=""absmiddle"" style=""cursor:pointer; margin-top: -5px; margin-right: 2px;"" onClick=""displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_channelInfo
+                        ? $@"<img align=""absmiddle"" style=""cursor:pointer; margin-top: -5px; margin-right: 2px;"" onClick=""event.stopPropagation();displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_channelInfo
                             .Id}"" src=""{_iconMinusUrl}"" />"
-                        : $@"<img align=""absmiddle"" style=""cursor:pointer; margin-top: -5px; margin-right: 2px;"" onClick=""displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_channelInfo
+                        : $@"<img align=""absmiddle"" style=""cursor:pointer; margin-top: -5px; margin-right: 2px;"" onClick=""event.stopPropagation();displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_channelInfo
                             .Id}"" src=""{_iconPlusUrl}"" />");
             }
             else
