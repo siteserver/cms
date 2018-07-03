@@ -135,6 +135,7 @@
   <ItemGroup>
     <Compile Include="Controllers\Plugins\PluginController.cs" />
     <Compile Include="Controllers\Preview\PreviewController.cs" />
+    <Compile Include="Controllers\V1\ContentsController.cs" />
     <Compile Include="Controllers\V1\CaptchaController.cs" />
     <Compile Include="Controllers\Sys\Settings\Admin\AccessTokensController.cs" />
     <Compile Include="Controllers\Sys\Administrators\AdministratorsActionsLoginController.cs" />

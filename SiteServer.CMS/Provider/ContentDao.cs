@@ -11,6 +11,7 @@ using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
+using Dapper;
 
 namespace SiteServer.CMS.Provider
 {
@@ -813,6 +814,29 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             new Action(() =>
             {
                 DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(siteId), channelId, true);
+            }).BeginInvoke(null, null);
+
+            Content.ClearCache();
+        }
+
+        public void DeleteContent(string tableName, SiteInfo siteInfo, int channelId, int contentId)
+        {
+            if (string.IsNullOrEmpty(tableName)) return;
+
+            if (!string.IsNullOrEmpty(tableName) && contentId > 0)
+            {
+                TagUtils.RemoveTags(siteInfo.Id, contentId);
+
+                string sqlString =
+                    $"DELETE FROM {tableName} WHERE SiteId = {siteInfo.Id} AND Id = {contentId}";
+                ExecuteNonQuery(sqlString);
+            }
+
+            if (channelId <= 0) return;
+
+            new Action(() =>
+            {
+                DataProvider.ChannelDao.UpdateContentNum(siteInfo, channelId, true);
             }).BeginInvoke(null, null);
 
             Content.ClearCache();
@@ -2746,5 +2770,15 @@ group by tmp.userName";
         //}
 
         //----------------------------pager end----------------------------------------//
+
+        public bool ApiIsExists(string tableName, int id)
+        {
+            var sqlString = $"SELECT count(1) FROM {tableName} WHERE Id = @Id";
+
+            using (var connection = GetConnection())
+            {
+                return connection.ExecuteScalar<bool>(sqlString, new { Id = id });
+            }
+        }
     }
 }

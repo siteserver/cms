@@ -8,7 +8,6 @@
       <!--#include file="../inc/head.html"-->
       <style type="text/css">
         .CodeMirror-line-numbers {
-          width: 22px;
           color: #aaa;
           background-color: #eee;
           text-align: right;

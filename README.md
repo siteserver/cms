@@ -16,6 +16,8 @@ SiteServer CMS 基于.NET平台，能够以最低的成本、最少的人力投�
 
 ## 迭代计划
 
+[2018年7月迭代计划](https://github.com/siteserver/cms/issues/956)
+
 [2018年6月迭代计划](https://github.com/siteserver/cms/issues/719)
 
 [2018年5月迭代计划](https://github.com/siteserver/cms/issues/518)
