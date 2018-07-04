@@ -250,8 +250,12 @@ namespace SiteServer.CMS.Plugin
                 accessTokenStr = HttpRequest.QueryString[AuthKeyAdminQuery];
             }
 
-            AdminName = string.IsNullOrEmpty(accessTokenStr) ? AdminManager.AnonymousUserName : GetAdministratorToken(accessTokenStr).AdministratorName;
+            SetAdmin(string.IsNullOrEmpty(accessTokenStr) ? AdminManager.AnonymousUserName : GetAdministratorToken(accessTokenStr).AdministratorName);
+        }
 
+        private void SetAdmin(string adminName)
+        {
+            AdminName = string.IsNullOrEmpty(adminName) ? AdminManager.AnonymousUserName : adminName;
             AdminPermissions = PermissionManager.GetInstance(AdminName);
         }
 
@@ -290,7 +294,8 @@ namespace SiteServer.CMS.Plugin
         {
             if (string.IsNullOrEmpty(adminName)) return null;
 
-            AdminName = adminName;
+            SetAdmin(adminName);
+
             var accessToken = GetAdminTokenByAdminName(adminName);
 
             LogUtils.AddAdminLog(adminName, "管理员登录");
@@ -324,7 +329,16 @@ namespace SiteServer.CMS.Plugin
             {
                 ApiToken = CookieUtils.GetCookie(AuthKeyApiCookie);
             }
+
+            if (!string.IsNullOrEmpty(ApiToken))
+            {
+                var tokenInfo = AccessTokenManager.GetAccessTokenInfo(ApiToken);
+                SetAdmin(tokenInfo?.AdminName);
+                IsApiAuthenticated = tokenInfo != null;
+            }
         }
+
+        public bool IsApiAuthenticated { get; private set; }
 
         public bool IsApiAuthorized => !string.IsNullOrEmpty(_scope) && AccessTokenManager.IsScope(ApiToken, _scope);
 

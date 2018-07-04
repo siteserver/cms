@@ -63,21 +63,24 @@ namespace SiteServer.BackgroundPages.Cms
                 CblDisplayAttributes.Items.Add(listitem);
             }
 
-            foreach (var pluginId in _pluginColumns.Keys)
+            if (_pluginColumns != null)
             {
-                var contentColumns = _pluginColumns[pluginId];
-                if (contentColumns == null || contentColumns.Count == 0) continue;
-
-                foreach (var columnName in contentColumns.Keys)
+                foreach (var pluginId in _pluginColumns.Keys)
                 {
-                    var attributeName = $"{pluginId}:{columnName}";
-                    var listitem = new ListItem($"{columnName}({pluginId})", attributeName);
-                    if (attributesOfDisplay.Contains(attributeName))
-                    {
-                        listitem.Selected = true;
-                    }
+                    var contentColumns = _pluginColumns[pluginId];
+                    if (contentColumns == null || contentColumns.Count == 0) continue;
 
-                    CblDisplayAttributes.Items.Add(listitem);
+                    foreach (var columnName in contentColumns.Keys)
+                    {
+                        var attributeName = $"{pluginId}:{columnName}";
+                        var listitem = new ListItem($"{columnName}({pluginId})", attributeName);
+                        if (attributesOfDisplay.Contains(attributeName))
+                        {
+                            listitem.Selected = true;
+                        }
+
+                        CblDisplayAttributes.Items.Add(listitem);
+                    }
                 }
             }
         }

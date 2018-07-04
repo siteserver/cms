@@ -118,13 +118,16 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
+            PgContents.DataBind();
+
             var btnHtmls = WebUtils.GetContentCommands(AuthRequest.AdminPermissions, SiteInfo, _channelInfo, PageUrl);
             var btnDropDownsHtml =
                 WebUtils.GetContentMoreCommands(AuthRequest.AdminPermissions, SiteInfo, _channelInfo, PageUrl);
             LtlButtonsHead.Text = GetButtonsHtml(true, btnHtmls, btnDropDownsHtml);
-            LtlButtonsFoot.Text = GetButtonsHtml(false, btnHtmls, btnDropDownsHtml);
-
-            PgContents.DataBind();
+            if (pagerParam.TotalCount > 10)
+            {
+                LtlButtonsFoot.Text = GetButtonsHtml(false, btnHtmls, btnDropDownsHtml);
+            }
 
             foreach (var styleInfo in _allStyleInfoList)
             {

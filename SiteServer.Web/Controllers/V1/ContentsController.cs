@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Web.Http;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
-using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.V1
 {
@@ -17,12 +16,13 @@ namespace SiteServer.API.Controllers.V1
         private const string RouteContent = "v1/contents/{siteId:int}/{channelId:int}/{id:int}";
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Create(int siteId, int channelId, [FromBody] IContentInfo contentInfo)
+        public IHttpActionResult Create(int siteId, int channelId, [FromBody] ContentInfo contentInfo)
         {
             try
             {
-                var oRequest = new ORequest(AccessTokenManager.ScopeContents);
-                if (!oRequest.IsApiAuthorized) return Unauthorized();
+                var request = new AuthRequest(AccessTokenManager.ScopeContents);
+                if (request.IsApiAuthenticated && !request.IsApiAuthorized) return Unauthorized();
+                if (!request.IsAdminLoggin) return Unauthorized();
 
                 if (contentInfo == null) return BadRequest("无法从body中获取内容实体");
                 contentInfo.SiteId = siteId;
@@ -33,6 +33,19 @@ namespace SiteServer.API.Controllers.V1
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+
+                if (!channelInfo.Additional.IsContentAddable) return BadRequest("此栏目不能添加内容");
+
+                contentInfo.AddUserName = request.AdminName;
+
+                if (!request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                    ConfigManager.ChannelPermissions.ContentAdd)) return Unauthorized();
+
+                if (!request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                    ConfigManager.ChannelPermissions.ContentCheck))
+                {
+                    contentInfo.IsChecked = false;
+                }
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
@@ -52,8 +65,9 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var oRequest = new ORequest(AccessTokenManager.ScopeContents);
-                if (!oRequest.IsApiAuthorized) return Unauthorized();
+                var request = new AuthRequest(AccessTokenManager.ScopeContents);
+                if (request.IsApiAuthenticated && !request.IsApiAuthorized) return Unauthorized();
+                if (!request.IsAdminLoggin) return Unauthorized();
 
                 if (contentInfo == null) return BadRequest("无法从body中获取内容实体");
                 contentInfo.SiteId = siteId;
@@ -65,6 +79,15 @@ namespace SiteServer.API.Controllers.V1
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+
+                if (!request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                    ConfigManager.ChannelPermissions.ContentEdit)) return Unauthorized();
+
+                if (!request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                    ConfigManager.ChannelPermissions.ContentCheck))
+                {
+                    contentInfo.IsChecked = false;
+                }
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
@@ -86,14 +109,18 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var oRequest = new ORequest(AccessTokenManager.ScopeContents);
-                if (!oRequest.IsApiAuthorized) return Unauthorized();
+                var request = new AuthRequest(AccessTokenManager.ScopeContents);
+                if (request.IsApiAuthenticated && !request.IsApiAuthorized) return Unauthorized();
+                if (!request.IsAdminLoggin) return Unauthorized();
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+
+                if (!request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                    ConfigManager.ChannelPermissions.ContentDelete)) return Unauthorized();
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
@@ -116,14 +143,18 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var oRequest = new ORequest(AccessTokenManager.ScopeContents);
-                if (!oRequest.IsApiAuthorized) return Unauthorized();
+                var request = new AuthRequest(AccessTokenManager.ScopeContents);
+                if (request.IsApiAuthenticated && !request.IsApiAuthorized) return Unauthorized();
+                if (!request.IsAdminLoggin) return Unauthorized();
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+
+                if (!request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                    ConfigManager.ChannelPermissions.ContentView)) return Unauthorized();
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
@@ -152,6 +183,9 @@ namespace SiteServer.API.Controllers.V1
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+
+                if (!oRequest.AuthRequest.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                    ConfigManager.ChannelPermissions.ContentView)) return Unauthorized();
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
