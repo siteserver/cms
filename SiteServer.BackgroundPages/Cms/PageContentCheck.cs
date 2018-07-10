@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Data;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
@@ -154,7 +155,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var contentInfo = new ContentInfo(e.Item.DataItem);
+            var contentInfo = new ContentInfo((IDataRecord)e.Item.DataItem);
 
             var ltlTitle = (Literal)e.Item.FindControl("ltlTitle");
             var ltlChannel = (Literal)e.Item.FindControl("ltlChannel");

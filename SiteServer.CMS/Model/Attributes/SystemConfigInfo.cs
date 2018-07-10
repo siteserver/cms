@@ -12,40 +12,40 @@ namespace SiteServer.CMS.Model.Attributes
 
         public bool IsSeparatedApi
         {
-            get { return GetBool("IsSeparatedApi"); }
-            set { Set("IsSeparatedApi", value.ToString()); }
+            get => GetBool("IsSeparatedApi");
+            set => Set("IsSeparatedApi", value);
         }
 
         public string SeparatedApiUrl
         {
-            get { return GetString("SeparatedApiUrl"); }
-            set { Set("SeparatedApiUrl", value); }
+            get => GetString("SeparatedApiUrl");
+            set => Set("SeparatedApiUrl", value);
         }
 
         public string ApiUrl => IsSeparatedApi ? SeparatedApiUrl : PageUtils.ParseNavigationUrl("~/api");
 
         public bool IsLogSite
         {
-            get { return GetBool("IsLogSite", true); }
-            set { Set("IsLogSite", value.ToString()); }
+            get => GetBool("IsLogSite", true);
+            set => Set("IsLogSite", value);
         }
 
         public bool IsLogAdmin
         {
-            get { return GetBool("IsLogAdmin", true); }
-            set { Set("IsLogAdmin", value.ToString()); }
+            get => GetBool("IsLogAdmin", true);
+            set => Set("IsLogAdmin", value);
         }
 
         public bool IsLogUser
         {
-            get { return GetBool("IsLogUser", true); }
-            set { Set("IsLogUser", value.ToString()); }
+            get => GetBool("IsLogUser", true);
+            set => Set("IsLogUser", value);
         }
 
         public bool IsLogError
         {
-            get { return GetBool("IsLogError", true); }
-            set { Set("IsLogError", value.ToString()); }
+            get => GetBool("IsLogError", true);
+            set => Set("IsLogError", value);
         }
 
         /// <summary>
@@ -57,157 +57,127 @@ namespace SiteServer.CMS.Model.Attributes
         /// </summary>
         public bool IsViewContentOnlySelf
         {
-            get { return GetBool("IsViewContentOnlySelf"); }
-            set { Set("IsViewContentOnlySelf", value.ToString()); }
+            get => GetBool("IsViewContentOnlySelf");
+            set => Set("IsViewContentOnlySelf", value);
         }
 
         // 是否开启时间阈值
         public bool IsTimeThreshold
         {
-            get { return GetBool("IsTimeThreshold"); }
-            set { Set("IsTimeThreshold", value.ToString()); }
+            get => GetBool("IsTimeThreshold");
+            set => Set("IsTimeThreshold", value);
         }
 
         public int TimeThreshold
         {
-            get { return GetInt("TimeThreshold", 60); }
-            set { Set("TimeThreshold", value.ToString()); }
-        }
-
-        public ESmsProviderType SmsProviderType
-        {
-            get { return ESmsProviderTypeUtils.GetEnumType(GetString("SmsProviderType", ESmsProviderTypeUtils.GetValue(ESmsProviderType.None))); }
-            set { Set("SmsProviderType", ESmsProviderTypeUtils.GetValue(value)); }
-        }
-
-        public string SmsAppKey
-        {
-            get { return GetString("SmsAppKey", string.Empty); }
-            set { Set("SmsAppKey", value); }
-        }
-
-        public string IntegrationPayConfigJson
-        {
-            get { return GetString("IntegrationPayConfigJson", string.Empty); }
-            set { Set("IntegrationPayConfigJson", value); }
+            get => GetInt("TimeThreshold", 60);
+            set => Set("TimeThreshold", value);
         }
 
         /****************管理员设置********************/
 
         public int AdminUserNameMinLength
         {
-            get { return GetInt("AdminUserNameMinLength"); }
-            set { Set("AdminUserNameMinLength", value.ToString()); }
+            get => GetInt("AdminUserNameMinLength");
+            set => Set("AdminUserNameMinLength", value);
         }
 
         public int AdminPasswordMinLength
         {
-            get { return GetInt("AdminPasswordMinLength", 6); }
-            set { Set("AdminPasswordMinLength", value.ToString()); }
+            get => GetInt("AdminPasswordMinLength", 6);
+            set => Set("AdminPasswordMinLength", value);
         }
 
         public string AdminPasswordRestriction
         {
-            get { return GetString("AdminPasswordRestriction", EUserPasswordRestrictionUtils.GetValue(EUserPasswordRestriction.LetterAndDigit)); }
-            set { Set("AdminPasswordRestriction", value); }
+            get => GetString("AdminPasswordRestriction", EUserPasswordRestrictionUtils.GetValue(EUserPasswordRestriction.LetterAndDigit));
+            set => Set("AdminPasswordRestriction", value);
         }
 
         public bool IsAdminLockLogin
         {
-            get { return GetBool("IsAdminLockLogin"); }
-            set { Set("IsAdminLockLogin", value.ToString()); }
+            get => GetBool("IsAdminLockLogin");
+            set => Set("IsAdminLockLogin", value);
         }
 
         public int AdminLockLoginCount
         {
-            get { return GetInt("AdminLockLoginCount", 3); }
-            set { Set("AdminLockLoginCount", value.ToString()); }
+            get => GetInt("AdminLockLoginCount", 3);
+            set => Set("AdminLockLoginCount", value);
         }
 
         public string AdminLockLoginType
         {
-            get { return GetString("AdminLockLoginType", EUserLockTypeUtils.GetValue(EUserLockType.Hours)); }
-            set { Set("AdminLockLoginType", value); }
+            get => GetString("AdminLockLoginType", EUserLockTypeUtils.GetValue(EUserLockType.Hours));
+            set => Set("AdminLockLoginType", value);
         }
 
         public int AdminLockLoginHours
         {
-            get { return GetInt("AdminLockLoginHours", 3); }
-            set { Set("AdminLockLoginHours", value.ToString()); }
-        }
-
-        public bool IsAdminFindPassword
-        {
-            get { return GetBool("IsAdminFindPassword"); }
-            set { Set("IsAdminFindPassword", value.ToString()); }
-        }
-
-        public string AdminFindPasswordSmsTplId
-        {
-            get { return GetString("AdminFindPasswordSmsTplId", string.Empty); }
-            set { Set("AdminFindPasswordSmsTplId", value); }
+            get => GetInt("AdminLockLoginHours", 3);
+            set => Set("AdminLockLoginHours", value);
         }
 
         /****************用户设置********************/
 
         public bool IsUserRegistrationAllowed
         {
-            get { return GetBool("IsUserRegistrationAllowed", true); }
-            set { Set("IsUserRegistrationAllowed", value.ToString()); }
+            get => GetBool("IsUserRegistrationAllowed", true);
+            set => Set("IsUserRegistrationAllowed", value);
         }
 
         public int UserPasswordMinLength
         {
-            get { return GetInt("UserPasswordMinLength", 6); }
-            set { Set("UserPasswordMinLength", value.ToString()); }
+            get => GetInt("UserPasswordMinLength", 6);
+            set => Set("UserPasswordMinLength", value);
         }
 
         public string UserPasswordRestriction
         {
-            get { return GetString("UserPasswordRestriction", EUserPasswordRestrictionUtils.GetValue(EUserPasswordRestriction.LetterAndDigit)); }
-            set { Set("UserPasswordRestriction", value); }
+            get => GetString("UserPasswordRestriction", EUserPasswordRestrictionUtils.GetValue(EUserPasswordRestriction.LetterAndDigit));
+            set => Set("UserPasswordRestriction", value);
         }
 
         public int UserRegistrationMinMinutes
         {
-            get { return GetInt("UserRegistrationMinMinutes"); }
-            set { Set("UserRegistrationMinMinutes", value.ToString()); }
+            get => GetInt("UserRegistrationMinMinutes");
+            set => Set("UserRegistrationMinMinutes", value);
         }
 
         public bool IsUserFindPassword
         {
-            get { return GetBool("IsUserFindPassword"); }
-            set { Set("IsUserFindPassword", value.ToString()); }
+            get => GetBool("IsUserFindPassword");
+            set => Set("IsUserFindPassword", value);
         }
 
         public string UserFindPasswordSmsTplId
         {
-            get { return GetString("UserFindPasswordSmsTplId", string.Empty); }
-            set { Set("UserFindPasswordSmsTplId", value); }
+            get => GetString("UserFindPasswordSmsTplId", string.Empty);
+            set => Set("UserFindPasswordSmsTplId", value);
         }
 
         public bool IsUserLockLogin
         {
-            get { return GetBool("IsUserLockLogin"); }
-            set { Set("IsUserLockLogin", value.ToString()); }
+            get => GetBool("IsUserLockLogin");
+            set => Set("IsUserLockLogin", value);
         }
 
         public int UserLockLoginCount
         {
-            get { return GetInt("UserLockLoginCount", 3); }
-            set { Set("UserLockLoginCount", value.ToString()); }
+            get => GetInt("UserLockLoginCount", 3);
+            set => Set("UserLockLoginCount", value);
         }
 
         public string UserLockLoginType
         {
-            get { return GetString("UserLockLoginType", "Hours"); }
-            set { Set("UserLockLoginType", value); }
+            get => GetString("UserLockLoginType", "Hours");
+            set => Set("UserLockLoginType", value);
         }
 
         public int UserLockLoginHours
         {
-            get { return GetInt("UserLockLoginHours", 3); }
-            set { Set("UserLockLoginHours", value.ToString()); }
+            get => GetInt("UserLockLoginHours", 3);
+            set => Set("UserLockLoginHours", value);
         }
     }
 }

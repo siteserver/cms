@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.Linq;
 using System.Text;
 using System.Web.UI;
 using SiteServer.Plugin;
@@ -15,21 +16,25 @@ namespace SiteServer.CMS.Model.Attributes
     [Serializable]
     public class ExtendedAttributes : IAttributes
     {
-        private object _dataObj;
-        private readonly NameValueCollection _dataNvc = new NameValueCollection();
+        private readonly Dictionary<string, object> _dataDict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
         public ExtendedAttributes()
         {
         }
 
-        public ExtendedAttributes(object dataItem)
+        public ExtendedAttributes(IDataReader reader)
         {
-            Load(dataItem);
+            Load(reader);
         }
 
-        public ExtendedAttributes(IDataReader rdr)
+        public ExtendedAttributes(IDataRecord record)
         {
-            Load(rdr);
+            Load(record);
+        }
+
+        public ExtendedAttributes(DataRow row)
+        {
+            Load(row);
         }
 
         public ExtendedAttributes(NameValueCollection attributes)
@@ -37,25 +42,54 @@ namespace SiteServer.CMS.Model.Attributes
             Load(attributes);
         }
 
-        public ExtendedAttributes(string str)
+        public ExtendedAttributes(Dictionary<string, object> dict)
         {
-            Load(str);
+            Load(dict);
         }
 
-        public void Load(object dataItem)
+        public ExtendedAttributes(string json)
         {
-            _dataObj = dataItem;
+            Load(json);
         }
 
-        public void Load(IDataReader rdr)
+        public void Load(DataRow row)
         {
-            if (rdr == null) return;
+            if (row == null) return;
 
-            for (var i = 0; i < rdr.FieldCount; i++)
+            var dict = row.Table.Columns
+                .Cast<DataColumn>()
+                .ToDictionary(c => c.ColumnName, c => row[c]);
+
+            Load(dict);
+        }
+
+        public void Load(IDataReader reader)
+        {
+            if (reader == null) return;
+
+            for (var i = 0; i < reader.FieldCount; i++)
             {
-                var name = rdr.GetName(i);
-                var value = Convert.ToString(rdr.GetValue(i));
-                if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && value == SqlUtils.OracleEmptyValue)
+                var name = reader.GetName(i);
+                var value = reader.GetValue(i);
+                
+                if (value is string && WebConfigUtils.DatabaseType == DatabaseType.Oracle && (string)value == SqlUtils.OracleEmptyValue)
+                {
+                    value = string.Empty;
+                }
+                Set(name, value);
+            }
+        }
+
+        public void Load(IDataRecord record)
+        {
+            if (record == null) return;
+
+            for (var i = 0; i < record.FieldCount; i++)
+            {
+                var name = record.GetName(i);
+                var value = record.GetValue(i);
+
+                if (value is string && WebConfigUtils.DatabaseType == DatabaseType.Oracle && (string)value == SqlUtils.OracleEmptyValue)
                 {
                     value = string.Empty;
                 }
@@ -74,159 +108,136 @@ namespace SiteServer.CMS.Model.Attributes
             }
         }
 
-        public void Load(string str)
+        public void Load(Dictionary<string, object> dict)
         {
-            if (string.IsNullOrEmpty(str)) return;
+            if (dict == null) return;
 
-            var nameValues = Utils.ToNameValueCollection(str);
-            foreach (string key in nameValues.Keys)
+            foreach (var key in dict.Keys)
             {
-                Set(key, nameValues[key]);
+                Set(key, dict[key]);
             }
         }
 
-        public string Get(string name)
+        public void Load(string json)
         {
-            name = name.ToLower();
-            var returnValue = _dataNvc[name];
+            if (string.IsNullOrEmpty(json)) return;
 
-            if (string.IsNullOrEmpty(returnValue) && _dataObj != null)
+            if (json.StartsWith("{") && json.EndsWith("}"))
             {
-                var obj = Utils.Eval(_dataObj, name);
-                if (obj != null)
+                var dict = TranslateUtils.JsonDeserialize<Dictionary<string, object>>(json);
+                foreach (var key in dict.Keys)
                 {
-                    if (obj is string)
-                    {
-                        returnValue = _dataNvc[name] = obj as string;
-                        if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && returnValue == SqlUtils.OracleEmptyValue)
-                        {
-                            returnValue = string.Empty;
-                        }
-                    }
-                    else
-                    {
-                        returnValue = _dataNvc[name] = obj.ToString();
-                    }
+                    _dataDict[key] = dict[key];
                 }
             }
+            else
+            {
+                var nameValues = Utils.ToNameValueCollection(json);
+                foreach (string key in nameValues.Keys)
+                {
+                    Set(key, nameValues[key]);
+                }
+            }
+        }
 
-            return returnValue;
+        public object Get(string name)
+        {
+            object value;
+            if (_dataDict.TryGetValue(name, out value))
+            {
+                return value;
+            }
+
+            return null;
         }
 
         public string GetString(string name, string defaultValue = "")
         {
             var value = Get(name);
-            if (!string.IsNullOrEmpty(value))
-            {
-                value = Utils.UnFilterSql(value);
-            }
-            return string.IsNullOrEmpty(value) ? defaultValue : value;
+            if (value == null) return defaultValue;
+            if (value is string) return (string)value;
+            return value.ToString();
         }
 
         public bool GetBool(string name, bool defaultValue = false)
         {
-            name = name.ToLower();
             var value = Get(name);
-            return string.IsNullOrWhiteSpace(value) ? defaultValue : TranslateUtils.ToBool(value, defaultValue);
+            if (value == null) return defaultValue;
+            if (value is bool) return (bool)value;
+            return TranslateUtils.ToBool(value.ToString(), defaultValue);
         }
 
         public int GetInt(string name, int defaultValue = 0)
         {
-            name = name.ToLower();
             var value = Get(name);
-            return string.IsNullOrWhiteSpace(value) ? defaultValue : TranslateUtils.ToIntWithNagetive(value, defaultValue);
+            if (value == null) return defaultValue;
+            if (value is int) return (int)value;
+            return TranslateUtils.ToIntWithNagetive(value.ToString(), defaultValue);
         }
 
         public decimal GetDecimal(string name, decimal defaultValue = 0)
         {
-            name = name.ToLower();
             var value = Get(name);
-            return string.IsNullOrWhiteSpace(value) ? defaultValue : TranslateUtils.ToDecimalWithNagetive(value, defaultValue);
+            if (value == null) return defaultValue;
+            if (value is decimal) return (decimal)value;
+            return TranslateUtils.ToDecimalWithNagetive(value.ToString(), defaultValue);
         }
 
         public DateTime GetDateTime(string name, DateTime defaultValue)
         {
-            name = name.ToLower();
             var value = Get(name);
-            return string.IsNullOrWhiteSpace(value) ? defaultValue : TranslateUtils.ToDateTime(value, defaultValue);
+            if (value == null) return defaultValue;
+            if (value is DateTime) return (DateTime)value;
+            return TranslateUtils.ToDateTime(value.ToString(), defaultValue);
         }
 
         public void Remove(string name)
         {
-            name = name.ToLower();
-            _dataNvc.Remove(name);
+            _dataDict.Remove(name);
         }
 
         public void Set(string name, object value)
         {
-            name = name.ToLower();
-
             if (value == null)
             {
-                _dataNvc.Remove(name);
+                _dataDict.Remove(name);
             }
             else
             {
-                _dataNvc[name] = value.ToString();
+                _dataDict[name] = value;
             }
         }
 
         public bool ContainsKey(string name)
         {
-            name = name.ToLower();
-            var returnValue = _dataNvc[name];
-
-            if (returnValue == null && _dataObj != null)
-            {
-                var obj = Utils.Eval(_dataObj, name);
-                if (obj != null)
-                {
-                    if (obj is string)
-                    {
-                        returnValue = _dataNvc[name] = obj as string;
-                        if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && returnValue == SqlUtils.OracleEmptyValue)
-                        {
-                            returnValue = string.Empty;
-                        }
-                    }
-                    else
-                    {
-                        returnValue = _dataNvc[name] = obj.ToString();
-                    }
-                }
-            }
-
-            return returnValue != null;
+            return _dataDict.ContainsKey(name);
         }
 
         public override string ToString()
         {
-            if (_dataNvc != null && _dataNvc.Count > 0)
-            {
-                return Utils.NameValueCollectionToString(_dataNvc);
-            }
-            return string.Empty;
+            return TranslateUtils.JsonSerialize(_dataDict);
         }
 
-        public string ToString(List<string> lowerCaseExcludeAttributeNames)
+        public string ToString(List<string> excludeAttributeNames)
         {
-            if (_dataNvc == null || _dataNvc.Count <= 0 || lowerCaseExcludeAttributeNames == null)
-                return string.Empty;
+            if (excludeAttributeNames == null || excludeAttributeNames.Count == 0) return ToString();
 
-            var nvc = new NameValueCollection();
-            foreach (string key in _dataNvc.Keys)
+            var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            foreach (var key in _dataDict.Keys)
             {
-                if (!lowerCaseExcludeAttributeNames.Contains(key))
+                if (!StringUtils.ContainsIgnoreCase(excludeAttributeNames, key))
                 {
-                    nvc[key] = _dataNvc[key];
+                    dict[key] = _dataDict[key];
                 }
             }
-            return Utils.NameValueCollectionToString(nvc);
+            return TranslateUtils.JsonSerialize(dict);
         }
 
-        public NameValueCollection ToNameValueCollection()
+        public int Count => _dataDict.Count;
+
+        public Dictionary<string, object> ToDictionary()
         {
-            return new NameValueCollection(_dataNvc);
+            return _dataDict;
         }
 
         #region private utils

@@ -2780,5 +2780,69 @@ group by tmp.userName";
                 return connection.ExecuteScalar<bool>(sqlString, new { Id = id });
             }
         }
+
+        public List<int> ApiGetContentIdList(string tableName, int siteId, int channelId, NameValueCollection queryString)
+        {
+            var list = new List<int>();
+
+            var sqlString = $"SELECT Id FROM {tableName} WHERE SiteId = {siteId} AND ChannelId = {channelId}";
+
+            if (queryString != null && queryString.Count > 0)
+            {
+                var lowerColumnNameList = TableMetadataManager.GetAllLowerAttributeNameList(tableName);
+
+                foreach (string attributeName in queryString)
+                {
+                    if (!lowerColumnNameList.Contains(attributeName.ToLower())) continue;
+
+                    var value = queryString[attributeName];
+
+                    if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsChecked) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsRecommend) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsTop))
+                    {
+                        sqlString += $" AND {attributeName} = '{TranslateUtils.ToBool(value)}'";
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Id) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.ReferenceId) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.SourceId) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.CheckedLevel))
+                    {
+                        sqlString += $" AND {attributeName} = {TranslateUtils.ToInt(value)}";
+                    }
+                    else
+                    {
+                        sqlString += $" AND {attributeName} = N'{PageUtils.FilterSql(value)}'";
+                    }
+                }
+            }
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                while (rdr.Read())
+                {
+                    list.Add(GetInt(rdr, 0));
+                }
+                rdr.Close();
+            }
+            return list;
+        }
+
+        public Dictionary<string, object> ApiGetContentInfo(string tableName, int contentId)
+        {
+            if (string.IsNullOrEmpty(tableName) || contentId <= 0) return null;
+
+            Dictionary<string, object> info = null;
+
+            string sqlWhere = $"WHERE Id = {contentId}";
+            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
+
+            using (var rdr = ExecuteReader(sqlSelect))
+            {
+                if (rdr.Read())
+                {
+                    var contentInfo = GetContentInfo(rdr);
+                    info = contentInfo.ToDictionary();
+                }
+                rdr.Close();
+            }
+
+            return info;
+        }
     }
 }

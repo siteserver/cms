@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Data;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
@@ -152,7 +153,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlItemEditUrl = (Literal)e.Item.FindControl("ltlItemEditUrl");
             var ltlSelect = (Literal)e.Item.FindControl("ltlSelect");
 
-            var contentInfo = new ContentInfo(e.Item.DataItem);
+            var contentInfo = new ContentInfo((IDataRecord)e.Item.DataItem);
             contentInfo.ChannelId = -contentInfo.ChannelId;
 
             ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);

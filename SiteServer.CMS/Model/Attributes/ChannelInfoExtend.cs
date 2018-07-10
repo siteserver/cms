@@ -14,94 +14,82 @@ namespace SiteServer.CMS.Model.Attributes
         //是否可以添加栏目
         public bool IsChannelAddable
         {
-            get { return GetBool("IsChannelAddable", true); }
-            set { Set("IsChannelAddable", value.ToString()); }
+            get => GetBool("IsChannelAddable", true);
+            set => Set("IsChannelAddable", value);
         }
 
         //是否可以添加内容
         public bool IsContentAddable
         {
-            get { return GetBool("IsContentAddable", true); }
-            set { Set("IsContentAddable", value.ToString()); }
-        }
-
-        public bool IsChannelCreatable
-        {
-            get { return GetBool("IsChannelCreatable", true); }
-            set { Set("IsChannelCreatable", value.ToString()); }
-        }
-
-        public bool IsContentCreatable
-        {
-            get { return GetBool("IsContentCreatable", true); }
-            set { Set("IsContentCreatable", value.ToString()); }
+            get => GetBool("IsContentAddable", true);
+            set => Set("IsContentAddable", value);
         }
 
         public bool IsCreateChannelIfContentChanged
         {
-            get { return GetBool("IsCreateChannelIfContentChanged", true); }
-            set { Set("IsCreateChannelIfContentChanged", value.ToString()); }
+            get => GetBool("IsCreateChannelIfContentChanged", true);
+            set => Set("IsCreateChannelIfContentChanged", value);
         }
 
         public string CreateChannelIDsIfContentChanged
         {
-            get { return GetString("CreateChannelIDsIfContentChanged"); }
-            set { Set("CreateChannelIDsIfContentChanged", value); }
+            get => GetString("CreateChannelIDsIfContentChanged");
+            set => Set("CreateChannelIDsIfContentChanged", value);
         }
 
         public string ContentAttributesOfDisplay
         {
-            get { return GetString("ContentAttributesOfDisplay"); }
-            set { Set("ContentAttributesOfDisplay", value); }
+            get => GetString("ContentAttributesOfDisplay");
+            set => Set("ContentAttributesOfDisplay", value);
         }
 
         public ECrossSiteTransType TransType
         {
-            get { return ECrossSiteTransTypeUtils.GetEnumType(GetString("TransType")); }
-            set { Set("TransType", ECrossSiteTransTypeUtils.GetValue(value)); }
+            get => ECrossSiteTransTypeUtils.GetEnumType(GetString("TransType"));
+            set => Set("TransType", ECrossSiteTransTypeUtils.GetValue(value));
         }
 
         public int TransSiteId
         {
-            get { return TranslateUtils.ToInt(GetString("TransSiteId")); }
-            set { Set("TransSiteId", value.ToString()); }
+            get => TranslateUtils.ToInt(GetString("TransSiteId"));
+            set => Set("TransSiteId", value);
         }
 
         public string TransChannelIds
         {
-            get { return GetString("TransChannelIds"); }
-            set { Set("TransChannelIds", value); }
+            get => GetString("TransChannelIds");
+            set => Set("TransChannelIds", value);
         }
 
         public string TransChannelNames
         {
-            get { return GetString("TransChannelNames"); }
-            set { Set("TransChannelNames", value); }
+            get => GetString("TransChannelNames");
+            set => Set("TransChannelNames", value);
         }
 
         public bool TransIsAutomatic
         {
-            get { return GetBool("TransIsAutomatic"); }
-            set { Set("TransIsAutomatic", value.ToString()); }
+            get => GetBool("TransIsAutomatic");
+            set => Set("TransIsAutomatic", value);
         }
 
         //跨站转发操作类型：复制 引用地址 引用内容
         public ETranslateContentType TransDoneType
         {
-            get { return ETranslateContentTypeUtils.GetEnumType(GetString("TransDoneType")); }
-            set { Set("TransDoneType", ETranslateContentTypeUtils.GetValue(value)); }
+            get => ETranslateContentTypeUtils.GetEnumType(GetString("TransDoneType"));
+            set => Set("TransDoneType", ETranslateContentTypeUtils.GetValue(value));
         }
 
         public bool IsPreviewContents
         {
-            get { return GetBool("IsPreviewContents"); }
-            set { Set("IsPreviewContents", value.ToString()); }
+            get => GetBool("IsPreviewContents");
+            set => Set("IsPreviewContents", value);
         }
 
         public string DefaultTaxisType
         {
-            get { return GetString("DefaultTaxisType", ETaxisTypeUtils.GetValue(ETaxisType.OrderByTaxisDesc)); }
-            set { Set("DefaultTaxisType", value); }
+            get => GetString("DefaultTaxisType", ETaxisTypeUtils.GetValue(ETaxisType.OrderByTaxisDesc));
+            set => Set("DefaultTaxisType", value);
         }
     }
 }

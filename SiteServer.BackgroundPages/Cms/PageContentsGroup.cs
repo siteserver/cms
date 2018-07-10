@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Data;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
@@ -82,7 +83,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlItemEditUrl = (Literal) e.Item.FindControl("ltlItemEditUrl");
             var ltlItemDeleteUrl = (Literal) e.Item.FindControl("ltlItemDeleteUrl");
 
-            var contentInfo = new ContentInfo(e.Item.DataItem);
+            var contentInfo = new ContentInfo((IDataRecord)e.Item.DataItem);
 
             ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
             ltlItemChannel.Text = ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId);

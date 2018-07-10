@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
@@ -175,34 +173,6 @@ namespace SiteServer.CMS.Plugin.Apis
         public IContentInfo NewInstance()
         {
             return new ContentInfo();
-        }
-
-        public IContentInfo Parse(object dataItem)
-        {
-            var contentInfo = NewInstance();
-            contentInfo.Load(dataItem);
-            return contentInfo;
-        }
-
-        public IContentInfo Parse(IDataReader rdr)
-        {
-            var contentInfo = NewInstance();
-            contentInfo.Load(rdr);
-            return contentInfo;
-        }
-
-        public IContentInfo Parse(NameValueCollection attributes)
-        {
-            var contentInfo = NewInstance();
-            contentInfo.Load(attributes);
-            return contentInfo;
-        }
-
-        public IContentInfo Parse(string str)
-        {
-            var contentInfo = NewInstance();
-            contentInfo.Load(str);
-            return contentInfo;
         }
 
         //public void SetValuesToContentInfo(int siteId, int channelId, NameValueCollection form, IContentInfo contentInfo)

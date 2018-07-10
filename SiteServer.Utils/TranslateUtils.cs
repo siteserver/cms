@@ -688,6 +688,23 @@ namespace SiteServer.Utils
             return builder.ToString();
         }
 
+        public static NameValueCollection DictionaryToNameValueCollection(Dictionary<string, object> attributes)
+        {
+            var nvc = new NameValueCollection(StringComparer.OrdinalIgnoreCase);
+            if (attributes != null && attributes.Count > 0)
+            {
+                foreach (var key in attributes.Keys)
+                {
+                    var value = attributes[key];
+                    if (value != null)
+                    {
+                        nvc[key] = attributes[key].ToString();
+                    }
+                }
+            }
+            return nvc;
+        }
+
         public static bool DictGetValue(Dictionary<int, bool> dict, int key)
         {
             bool retval;

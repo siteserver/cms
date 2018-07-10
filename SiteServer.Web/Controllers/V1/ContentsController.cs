@@ -5,7 +5,6 @@ using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin;
 
 namespace SiteServer.API.Controllers.V1
 {
@@ -16,7 +15,7 @@ namespace SiteServer.API.Controllers.V1
         private const string RouteContent = "v1/contents/{siteId:int}/{channelId:int}/{id:int}";
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Create(int siteId, int channelId, [FromBody] ContentInfo contentInfo)
+        public IHttpActionResult Create(int siteId, int channelId)
         {
             try
             {
@@ -24,7 +23,12 @@ namespace SiteServer.API.Controllers.V1
                 if (request.IsApiAuthenticated && !request.IsApiAuthorized) return Unauthorized();
                 if (!request.IsAdminLoggin) return Unauthorized();
 
-                if (contentInfo == null) return BadRequest("无法从body中获取内容实体");
+                var attributes = request.GetPostCollection();
+                if (attributes == null) return BadRequest("无法从body中获取内容实体");
+
+                var contentInfo = new ContentInfo();
+                contentInfo.Load(attributes);
+
                 contentInfo.SiteId = siteId;
                 contentInfo.ChannelId = channelId;
 
@@ -61,7 +65,7 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPut, Route(RouteContent)]
-        public IHttpActionResult Update(int siteId, int channelId, int id, [FromBody] IContentInfo contentInfo)
+        public IHttpActionResult Update(int siteId, int channelId, int id)
         {
             try
             {
@@ -69,7 +73,12 @@ namespace SiteServer.API.Controllers.V1
                 if (request.IsApiAuthenticated && !request.IsApiAuthorized) return Unauthorized();
                 if (!request.IsAdminLoggin) return Unauthorized();
 
-                if (contentInfo == null) return BadRequest("无法从body中获取内容实体");
+                var attributes = request.GetPostCollection();
+                if (attributes == null) return BadRequest("无法从body中获取内容实体");
+
+                var contentInfo = new ContentInfo();
+                contentInfo.Load(attributes);
+
                 contentInfo.SiteId = siteId;
                 contentInfo.ChannelId = channelId;
                 contentInfo.Id = id;
@@ -161,7 +170,7 @@ namespace SiteServer.API.Controllers.V1
                 var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, id);
                 if (contentInfo == null) return NotFound();
 
-                return Ok(new OResponse(contentInfo));
+                return Ok(new OResponse(contentInfo.ToDictionary()));
             }
             catch (Exception ex)
             {
@@ -175,8 +184,9 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var oRequest = new ORequest(AccessTokenManager.ScopeContents);
-                if (!oRequest.IsApiAuthorized) return Unauthorized();
+                var request = new AuthRequest(AccessTokenManager.ScopeContents);
+                if (request.IsApiAuthenticated && !request.IsApiAuthorized) return Unauthorized();
+                if (!request.IsAdminLoggin) return Unauthorized();
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
@@ -184,16 +194,20 @@ namespace SiteServer.API.Controllers.V1
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                if (!oRequest.AuthRequest.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                if (!request.AdminPermissions.HasChannelPermissions(siteId, channelId,
                     ConfigManager.ChannelPermissions.ContentView)) return Unauthorized();
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-                var contentIdList = DataProvider.ContentDao.GetContentIdListCheckedByChannelId(tableName, siteId, channelId);
-                var value = new List<IContentInfo>();
+                var contentIdList = DataProvider.ContentDao.ApiGetContentIdList(tableName, siteId, channelId, request.QueryString);
+                var value = new List<Dictionary<string, object>>();
                 foreach(var contentId in contentIdList)
                 {
-                    value.Add(DataProvider.ContentDao.GetContentInfo(tableName, contentId));
+                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+                    if (contentInfo != null)
+                    {
+                        value.Add(contentInfo.ToDictionary());
+                    }
                 }
 
                 return Ok(new OResponse(value));

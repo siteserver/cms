@@ -1,5 +1,4 @@
-﻿using System.Collections.Specialized;
-using SiteServer.Utils;
+﻿using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
@@ -384,14 +383,13 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var attributeName = type;
 
-                var formCollection = channel.Additional.ToNameValueCollection();
-                if (formCollection != null && formCollection.Count > 0)
+                if (channel.Additional.Count > 0)
                 {
                     var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.ChannelDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, channel.Id));
                     // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                     if (styleInfo.Id > 0)
                     {
-                        parsedContent = GetValue(attributeName, formCollection, false, styleInfo.DefaultValue);
+                        parsedContent = GetValue(attributeName, channel.Additional, false, styleInfo.DefaultValue);
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
                             parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
@@ -407,18 +405,14 @@ namespace SiteServer.CMS.StlParser.StlElement
             return leftText + parsedContent + rightText;
         }
 
-        private static string GetValue(string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, string defaultValue)
+        private static string GetValue(string attributeName, IAttributes attributes, bool isAddAndNotPostBack, string defaultValue)
         {
-            var value = string.Empty;
-            if (formCollection?[attributeName] != null)
-            {
-                value = formCollection[attributeName];
-            }
-            if (isAddAndNotPostBack && string.IsNullOrEmpty(value))
+            var value = attributes.Get(attributeName);
+            if (isAddAndNotPostBack && value == null)
             {
                 value = defaultValue;
             }
-            return value;
+            return value.ToString();
         }
     }
 }

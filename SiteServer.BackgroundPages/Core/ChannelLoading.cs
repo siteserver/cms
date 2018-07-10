@@ -118,7 +118,7 @@ namespace SiteServer.BackgroundPages.Core
                     editChannelLink = $"<a href=\"javascript:;\" onclick=\"{showPopWinString}\">触发栏目</a>";
                 }
 
-                if (nodeInfo.Additional.ToNameValueCollection().Count > 0)
+                if (nodeInfo.Additional.Count > 0)
                 {
                     var nodeNameBuilder = new StringBuilder();
                     var channelIdList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.CreateChannelIDsIfContentChanged);

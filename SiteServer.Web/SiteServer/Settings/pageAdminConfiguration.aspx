@@ -88,23 +88,6 @@
           </asp:PlaceHolder>
 
           <div class="form-group">
-            <label class="col-form-label">是否开启管理员找回密码功能</label>
-            <asp:RadioButtonList ID="RblIsFindPassword" class="radio radio-primary" OnSelectedIndexChanged="RblIsFindPassword_SelectedIndexChanged"
-              runat="server" RepeatDirection="Horizontal" AutoPostBack="true">
-            </asp:RadioButtonList>
-          </div>
-
-          <asp:PlaceHolder ID="PhFindPassword" runat="server">
-            <div class="form-group">
-              <label class="col-form-label">发送验证码短信模板Id
-                <asp:RequiredFieldValidator ControlToValidate="TbFindPasswordSmsTplId" runat="server" ErrorMessage="*" foreColor="Red"></asp:RequiredFieldValidator>
-              </label>
-              <asp:TextBox ID="TbFindPasswordSmsTplId" class="form-control" runat="server"></asp:TextBox>
-              <small class="form-text text-muted">需进入短信供应商模板管理界面，添加验证码类短信模板并获取模板Id</small>
-            </div>
-          </asp:PlaceHolder>
-
-          <div class="form-group">
             <label class="col-form-label">管理员是否可以查看其他人添加的内容</label>
             <asp:RadioButtonList ID="RblIsViewContentOnlySelf" runat="server" class="radio radio-primary" RepeatDirection="Horizontal"></asp:RadioButtonList>
             <small class="form-text text-muted">注意：超级管理员、站点管理员、具有审核权限的管理员，此设置无效。</small>

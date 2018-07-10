@@ -19,10 +19,6 @@ namespace SiteServer.BackgroundPages.Settings
         public PlaceHolder PhLoginLockingHours;
         public TextBox TbLoginLockingHours;
 
-        public RadioButtonList RblIsFindPassword;
-        public PlaceHolder PhFindPassword;
-        public TextBox TbFindPasswordSmsTplId;
-
         public RadioButtonList RblIsViewContentOnlySelf;
 
         public void Page_Load(object sender, EventArgs e)
@@ -55,11 +51,6 @@ namespace SiteServer.BackgroundPages.Settings
                 TbLoginLockingHours.Text = ConfigManager.SystemConfigInfo.AdminLockLoginHours.ToString();
             }
 
-            EBooleanUtils.AddListItems(RblIsFindPassword, "启用", "禁用");
-            ControlUtils.SelectSingleItemIgnoreCase(RblIsFindPassword, ConfigManager.SystemConfigInfo.IsAdminFindPassword.ToString());
-            PhFindPassword.Visible = ConfigManager.SystemConfigInfo.IsAdminFindPassword;
-            TbFindPasswordSmsTplId.Text = ConfigManager.SystemConfigInfo.AdminFindPasswordSmsTplId;
-
             EBooleanUtils.AddListItems(RblIsViewContentOnlySelf, "不可以", "可以");
             ControlUtils.SelectSingleItemIgnoreCase(RblIsViewContentOnlySelf, ConfigManager.SystemConfigInfo.IsViewContentOnlySelf.ToString());
         }
@@ -74,11 +65,6 @@ namespace SiteServer.BackgroundPages.Settings
             PhLoginLockingHours.Visible = !EUserLockTypeUtils.Equals(EUserLockType.Forever, DdlLoginLockingType.SelectedValue);
         }
 
-        public void RblIsFindPassword_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            PhFindPassword.Visible = TranslateUtils.ToBool(RblIsFindPassword.SelectedValue);
-        }
-
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             try
@@ -91,9 +77,6 @@ namespace SiteServer.BackgroundPages.Settings
                 ConfigManager.SystemConfigInfo.AdminLockLoginCount = TranslateUtils.ToInt(TbLoginFailToLockCount.Text, 3);
                 ConfigManager.SystemConfigInfo.AdminLockLoginType = DdlLoginLockingType.SelectedValue;
                 ConfigManager.SystemConfigInfo.AdminLockLoginHours = TranslateUtils.ToInt(TbLoginLockingHours.Text);
-
-                ConfigManager.SystemConfigInfo.IsAdminFindPassword = TranslateUtils.ToBool(RblIsFindPassword.SelectedValue);
-                ConfigManager.SystemConfigInfo.AdminFindPasswordSmsTplId = TbFindPasswordSmsTplId.Text;
 
                 ConfigManager.SystemConfigInfo.IsViewContentOnlySelf = TranslateUtils.ToBool(RblIsViewContentOnlySelf.SelectedValue);
 

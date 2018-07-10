@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Data;
 using System.Text;
 using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
@@ -231,7 +232,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var navigationUrls = new StringCollection();
                     var titleCollection = new StringCollection();
 
-                    foreach (var dataItem in dataSource.Tables[0].Rows)
+                    foreach (DataRow dataItem in dataSource.Tables[0].Rows)
                     {
                         var contentInfo = new ContentInfo(dataItem);
                         var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
@@ -318,7 +319,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     var navigationUrls = new StringCollection();
                     var titleCollection = new StringCollection();
 
-                    foreach (var dataItem in dataSource.Tables[0].Rows)
+                    foreach (DataRow dataItem in dataSource.Tables[0].Rows)
                     {
                         var contentInfo = new ContentInfo(dataItem);
                         var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
@@ -379,7 +380,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     var imageUrls = new StringCollection();
                     var navigationUrls = new StringCollection();
 
-                    foreach (var dataItem in dataSource.Tables[0].Rows)
+                    foreach (DataRow dataItem in dataSource.Tables[0].Rows)
                     {
                         var contentInfo = new ContentInfo(dataItem);
                         var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
@@ -498,7 +499,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     var navigationUrls = new StringCollection();
                     var titleCollection = new StringCollection();
 
-                    foreach (var dataItem in dataSource.Tables[0].Rows)
+                    foreach (DataRow dataItem in dataSource.Tables[0].Rows)
                     {
                         var contentInfo = new ContentInfo(dataItem);
                         var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);

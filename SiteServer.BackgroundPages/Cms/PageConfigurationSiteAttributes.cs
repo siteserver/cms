@@ -40,7 +40,9 @@ namespace SiteServer.BackgroundPages.Cms
 
                 TbSiteName.Text = SiteInfo.SiteName;
 
-                LtlAttributes.Text = GetAttributesHtml(SiteInfo.Additional.ToNameValueCollection());
+			    var nameValueCollection = TranslateUtils.DictionaryToNameValueCollection(SiteInfo.Additional.ToDictionary());
+
+                LtlAttributes.Text = GetAttributesHtml(nameValueCollection);
 
                 BtnSubmit.Attributes.Add("onclick", InputParserUtils.GetValidateSubmitOnClickScript("myForm"));
             }

@@ -1,4 +1,5 @@
-﻿using System.Web.UI.HtmlControls;
+﻿using System.Data;
+using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
@@ -257,7 +258,7 @@ selObj.selectedIndex=0;
 
                 if (dataSource != null)
                 {
-                    foreach (var dataItem in dataSource.Tables[0].Rows)
+                    foreach (DataRow dataItem in dataSource.Tables[0].Rows)
                     {
                         var contentInfo = new ContentInfo(dataItem);
                         if (contentInfo != null)

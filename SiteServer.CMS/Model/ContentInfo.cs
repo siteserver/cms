@@ -3,7 +3,6 @@ using System.Data;
 using Newtonsoft.Json;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
-using SiteServer.Utils;
 
 namespace SiteServer.CMS.Model
 {
@@ -14,218 +13,230 @@ namespace SiteServer.CMS.Model
 			
 		}
 
-        public ContentInfo(object dataItem) : base(dataItem)
-        {
-            Load(SettingsXml);
-        }
-
         public ContentInfo(IDataReader rdr) : base(rdr)
         {
             Load(SettingsXml);
         }
 
+	    public ContentInfo(IDataRecord record) : base(record)
+	    {
+	        Load(SettingsXml);
+	    }
+
+        public ContentInfo(DataRow row) : base(row)
+	    {
+	        Load(SettingsXml);
+	    }
+
         public int Id
 		{
-            get { return GetInt(ContentAttribute.Id); }
-            set { Set(ContentAttribute.Id, value.ToString()); }
-		}
+            get => GetInt(ContentAttribute.Id);
+            set => Set(ContentAttribute.Id, value);
+        }
 
         public int ChannelId
         {
-            get { return GetInt(ContentAttribute.ChannelId); }
-            set { Set(ContentAttribute.ChannelId, value.ToString()); }
+            get => GetInt(ContentAttribute.ChannelId);
+            set => Set(ContentAttribute.ChannelId, value);
         }
 
         public int SiteId
         {
-            get { return GetInt(ContentAttribute.SiteId); }
-            set { Set(ContentAttribute.SiteId, value.ToString()); }
-		}
+            get => GetInt(ContentAttribute.SiteId);
+            set => Set(ContentAttribute.SiteId, value);
+        }
 
         public string AddUserName
 		{
-            get { return GetString(ContentAttribute.AddUserName); }
-            set { Set(ContentAttribute.AddUserName, value); }
-		}
+            get => GetString(ContentAttribute.AddUserName);
+            set => Set(ContentAttribute.AddUserName, value);
+        }
 
         public string LastEditUserName
 		{
-            get { return GetString(ContentAttribute.LastEditUserName); }
-            set { Set(ContentAttribute.LastEditUserName, value); }
-		}
+            get => GetString(ContentAttribute.LastEditUserName);
+            set => Set(ContentAttribute.LastEditUserName, value);
+        }
 
         public string WritingUserName
         {
-            get { return GetString(ContentAttribute.WritingUserName); }
-            set { Set(ContentAttribute.WritingUserName, value); }
+            get => GetString(ContentAttribute.WritingUserName);
+            set => Set(ContentAttribute.WritingUserName, value);
         }
 
         public DateTime LastEditDate
 		{
-            get { return GetDateTime(ContentAttribute.LastEditDate, DateTime.Now); }
-            set { Set(ContentAttribute.LastEditDate, DateUtils.GetDateAndTimeString(value)); }
-		}
+            get => GetDateTime(ContentAttribute.LastEditDate, DateTime.Now);
+            set => Set(ContentAttribute.LastEditDate, value);
+        }
 
         public int Taxis
         {
-            get { return GetInt(ContentAttribute.Taxis); }
-            set { Set(ContentAttribute.Taxis, value.ToString()); }
+            get => GetInt(ContentAttribute.Taxis);
+            set => Set(ContentAttribute.Taxis, value);
         }
 
         public string GroupNameCollection
         {
-            get { return GetString(ContentAttribute.GroupNameCollection); }
-            set { Set(ContentAttribute.GroupNameCollection, value); }
-		}
+            get => GetString(ContentAttribute.GroupNameCollection);
+            set => Set(ContentAttribute.GroupNameCollection, value);
+        }
 
         public string Tags
         {
-            get { return GetString(ContentAttribute.Tags); }
-            set { Set(ContentAttribute.Tags, value); }
+            get => GetString(ContentAttribute.Tags);
+            set => Set(ContentAttribute.Tags, value);
         }
 
         public int SourceId
         {
-            get { return GetInt(ContentAttribute.SourceId); }
-            set { Set(ContentAttribute.SourceId, value.ToString()); }
+            get => GetInt(ContentAttribute.SourceId);
+            set => Set(ContentAttribute.SourceId, value);
         }
 
         public int ReferenceId
         {
-            get { return GetInt(ContentAttribute.ReferenceId); }
-            set { Set(ContentAttribute.ReferenceId, value.ToString()); }
+            get => GetInt(ContentAttribute.ReferenceId);
+            set => Set(ContentAttribute.ReferenceId, value);
         }
 
         public bool IsChecked
 		{
-            get { return GetBool(ContentAttribute.IsChecked); }
-            set { Set(ContentAttribute.IsChecked, value.ToString()); }
-		}
+            get => GetBool(ContentAttribute.IsChecked);
+            set => Set(ContentAttribute.IsChecked, value);
+        }
 
         public int CheckedLevel
 		{
-            get { return GetInt(ContentAttribute.CheckedLevel); }
-            set { Set(ContentAttribute.CheckedLevel, value.ToString()); }
-		}
+            get => GetInt(ContentAttribute.CheckedLevel);
+            set => Set(ContentAttribute.CheckedLevel, value);
+        }
 
         public int Hits
         {
-            get { return GetInt(ContentAttribute.Hits); }
-            set { Set(ContentAttribute.Hits, value.ToString()); }
+            get => GetInt(ContentAttribute.Hits);
+            set => Set(ContentAttribute.Hits, value);
         }
 
         public int HitsByDay
         {
-            get { return GetInt(ContentAttribute.HitsByDay); }
-            set { Set(ContentAttribute.HitsByDay, value.ToString()); }
+            get => GetInt(ContentAttribute.HitsByDay);
+            set => Set(ContentAttribute.HitsByDay, value);
         }
 
         public int HitsByWeek
         {
-            get { return GetInt(ContentAttribute.HitsByWeek); }
-            set { Set(ContentAttribute.HitsByWeek, value.ToString()); }
+            get => GetInt(ContentAttribute.HitsByWeek);
+            set => Set(ContentAttribute.HitsByWeek, value);
         }
 
         public int HitsByMonth
         {
-            get { return GetInt(ContentAttribute.HitsByMonth); }
-            set { Set(ContentAttribute.HitsByMonth, value.ToString()); }
+            get => GetInt(ContentAttribute.HitsByMonth);
+            set => Set(ContentAttribute.HitsByMonth, value);
         }
 
         public DateTime LastHitsDate
         {
-            get { return GetDateTime(ContentAttribute.LastHitsDate, DateTime.Now); }
-            set { Set(ContentAttribute.LastHitsDate, DateUtils.GetDateAndTimeString(value)); }
+            get => GetDateTime(ContentAttribute.LastHitsDate, DateTime.Now);
+            set => Set(ContentAttribute.LastHitsDate, value);
         }
 
         public string Title
 		{
-            get { return GetString(ContentAttribute.Title); }
-            set { Set(ContentAttribute.Title, value); }
-		}
+            get => GetString(ContentAttribute.Title);
+            set => Set(ContentAttribute.Title, value);
+        }
       
         public bool IsTop
         {
-            get { return GetBool(ContentAttribute.IsTop); }
-            set { Set(ContentAttribute.IsTop, value.ToString()); }
+            get => GetBool(ContentAttribute.IsTop);
+            set => Set(ContentAttribute.IsTop, value);
         }
 
         public bool IsRecommend
         {
-            get { return GetBool(ContentAttribute.IsRecommend); }
-            set { Set(ContentAttribute.IsRecommend, value.ToString()); }
+            get => GetBool(ContentAttribute.IsRecommend);
+            set => Set(ContentAttribute.IsRecommend, value);
         }
 
         public bool IsHot
         {
-            get { return GetBool(ContentAttribute.IsHot); }
-            set { Set(ContentAttribute.IsHot, value.ToString()); }
+            get => GetBool(ContentAttribute.IsHot);
+            set => Set(ContentAttribute.IsHot, value);
         }
 
         public bool IsColor
         {
-            get { return GetBool(ContentAttribute.IsColor); }
-            set { Set(ContentAttribute.IsColor, value.ToString()); }
+            get => GetBool(ContentAttribute.IsColor);
+            set => Set(ContentAttribute.IsColor, value);
         }
 
         public DateTime AddDate
         {
-            get { return GetDateTime(ContentAttribute.AddDate, DateTime.Now); }
-            set { Set(ContentAttribute.AddDate, DateUtils.GetDateAndTimeString(value)); }
+            get => GetDateTime(ContentAttribute.AddDate, DateTime.Now);
+            set => Set(ContentAttribute.AddDate, value);
         }
 
         public string LinkUrl
         {
-            get { return GetString(ContentAttribute.LinkUrl); }
-            set { Set(ContentAttribute.LinkUrl, value); }
+            get => GetString(ContentAttribute.LinkUrl);
+            set => Set(ContentAttribute.LinkUrl, value);
         }
 
 	    public string SubTitle
 	    {
-	        get { return GetString(BackgroundContentAttribute.SubTitle); }
-	        set { Set(BackgroundContentAttribute.SubTitle, value); }
+	        get => GetString(BackgroundContentAttribute.SubTitle);
+	        set => Set(BackgroundContentAttribute.SubTitle, value);
 	    }
+
 	    public string ImageUrl
 	    {
-	        get { return GetString(BackgroundContentAttribute.ImageUrl); }
-	        set { Set(BackgroundContentAttribute.ImageUrl, value); }
+	        get => GetString(BackgroundContentAttribute.ImageUrl);
+	        set => Set(BackgroundContentAttribute.ImageUrl, value);
 	    }
+
 	    public string VideoUrl
 	    {
-	        get { return GetString(BackgroundContentAttribute.VideoUrl); }
-	        set { Set(BackgroundContentAttribute.VideoUrl, value); }
+	        get => GetString(BackgroundContentAttribute.VideoUrl);
+	        set => Set(BackgroundContentAttribute.VideoUrl, value);
 	    }
+
 	    public string FileUrl
 	    {
-	        get { return GetString(BackgroundContentAttribute.FileUrl); }
-	        set { Set(BackgroundContentAttribute.FileUrl, value); }
+	        get => GetString(BackgroundContentAttribute.FileUrl);
+	        set => Set(BackgroundContentAttribute.FileUrl, value);
 	    }
+
 	    public string Author
 	    {
-	        get { return GetString(BackgroundContentAttribute.Author); }
-	        set { Set(BackgroundContentAttribute.Author, value); }
+	        get => GetString(BackgroundContentAttribute.Author);
+	        set => Set(BackgroundContentAttribute.Author, value);
 	    }
+
 	    public string Source
 	    {
-	        get { return GetString(BackgroundContentAttribute.Source); }
-	        set { Set(BackgroundContentAttribute.Source, value); }
+	        get => GetString(BackgroundContentAttribute.Source);
+	        set => Set(BackgroundContentAttribute.Source, value);
 	    }
+
 	    public string Summary
 	    {
-	        get { return GetString(BackgroundContentAttribute.Summary); }
-	        set { Set(BackgroundContentAttribute.Summary, value); }
+	        get => GetString(BackgroundContentAttribute.Summary);
+	        set => Set(BackgroundContentAttribute.Summary, value);
 	    }
+
 	    public string Content
 	    {
-	        get { return GetString(BackgroundContentAttribute.Content); }
-	        set { Set(BackgroundContentAttribute.Content, value); }
+	        get => GetString(BackgroundContentAttribute.Content);
+	        set => Set(BackgroundContentAttribute.Content, value);
 	    }
 
         [JsonIgnore]
         public string SettingsXml
         {
-            get { return GetString(ContentAttribute.SettingsXml); }
-            set { Set(ContentAttribute.SettingsXml, value); }
+            get => GetString(ContentAttribute.SettingsXml);
+            set => Set(ContentAttribute.SettingsXml, value);
         }
 	}
 }

@@ -2,12 +2,8 @@
 
 namespace SiteServer.CMS.Model.Attributes
 {
-    public class SiteAttribute
+    public static class SiteAttribute
     {
-        protected SiteAttribute()
-        {
-        }
-
         public const string Id = nameof(ISiteInfo.Id);
         public const string SiteName = nameof(ISiteInfo.SiteName);
         public const string SiteDir = nameof(ISiteInfo.SiteDir);

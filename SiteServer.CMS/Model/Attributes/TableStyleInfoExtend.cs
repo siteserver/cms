@@ -12,8 +12,8 @@ namespace SiteServer.CMS.Model.Attributes
 
         public int Height
         {
-            get { return GetInt("Height"); }
-            set { Set("Height", value.ToString()); }
+            get => GetInt("Height");
+            set => Set("Height", value);
         }
 
         public string Width
@@ -23,85 +23,85 @@ namespace SiteServer.CMS.Model.Attributes
                 var width = GetString("Width");
                 return width == "0" ? string.Empty : width;
             }
-            set { Set("Width", value); }
+            set => Set("Width", value);
         }
 
         public int Columns
         {
-            get { return GetInt("Columns"); }
-            set { Set("Columns", value.ToString()); }
+            get => GetInt("Columns");
+            set => Set("Columns", value);
         }
 
         public bool IsFormatString
         {
-            get { return GetBool("IsFormatString"); }
-            set { Set("IsFormatString", value.ToString()); }
+            get => GetBool("IsFormatString");
+            set => Set("IsFormatString", value);
         }
 
         public int RelatedFieldId
         {
-            get { return GetInt("RelatedFieldID"); }
-            set { Set("RelatedFieldID", value.ToString()); }
+            get => GetInt("RelatedFieldID");
+            set => Set("RelatedFieldID", value);
         }
 
         public string RelatedFieldStyle
         {
-            get { return GetString("RelatedFieldStyle"); }
-            set { Set("RelatedFieldStyle", value); }
+            get => GetString("RelatedFieldStyle");
+            set => Set("RelatedFieldStyle", value);
         }
 
         public string CustomizeLeft
         {
-            get { return GetString("CustomizeLeft"); }
-            set { Set("CustomizeLeft", value); }
+            get => GetString("CustomizeLeft");
+            set => Set("CustomizeLeft", value);
         }
 
         public string CustomizeRight
         {
-            get { return GetString("CustomizeRight"); }
-            set { Set("CustomizeRight", value); }
+            get => GetString("CustomizeRight");
+            set => Set("CustomizeRight", value);
         }
 
         public bool IsValidate
         {
-            get { return GetBool("IsValidate"); }
-            set { Set("IsValidate", value.ToString()); }
+            get => GetBool("IsValidate");
+            set => Set("IsValidate", value);
         }
 
         public bool IsRequired
         {
-            get { return GetBool("IsRequired"); }
-            set { Set("IsRequired", value.ToString()); }
+            get => GetBool("IsRequired");
+            set => Set("IsRequired", value);
         }
 
         public int MinNum
         {
-            get { return GetInt("MinNum"); }
-            set { Set("MinNum", value.ToString()); }
+            get => GetInt("MinNum");
+            set => Set("MinNum", value);
         }
 
         public int MaxNum
         {
-            get { return GetInt("MaxNum"); }
-            set { Set("MaxNum", value.ToString()); }
+            get => GetInt("MaxNum");
+            set => Set("MaxNum", value);
         }
 
         public ValidateType ValidateType
         {
-            get { return ValidateTypeUtils.GetEnumType(GetString("ValidateType")); }
-            set { Set("ValidateType", value != null ? value.Value : ValidateType.None.Value); }
+            get => ValidateTypeUtils.GetEnumType(GetString("ValidateType"));
+            set => Set("ValidateType", value != null ? value.Value : ValidateType.None.Value);
         }
 
         public string RegExp
         {
-            get { return GetString("RegExp"); }
-            set { Set("RegExp", value); }
+            get => GetString("RegExp");
+            set => Set("RegExp", value);
         }
 
         public string ErrorMessage
         {
-            get { return GetString("ErrorMessage"); }
-            set { Set("ErrorMessage", value); }
+            get => GetString("ErrorMessage");
+            set => Set("ErrorMessage", value);
         }
     }
 }

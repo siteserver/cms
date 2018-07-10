@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Data;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
@@ -114,7 +115,7 @@ yArrayHitsMonth.push('{yValueHitsMonth}');
             var ltlHitsByMonth = (Literal)e.Item.FindControl("ltlHitsByMonth");
             var ltlLastHitsDate = (Literal)e.Item.FindControl("ltlLastHitsDate");
 
-            var contentInfo = new ContentInfo(e.Item.DataItem);
+            var contentInfo = new ContentInfo((IDataRecord)e.Item.DataItem);
 
             ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, _pageUrl);
 
