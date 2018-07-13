@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Web.UI;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -32,6 +30,11 @@ namespace SiteServer.CMS.Model.Attributes
             Load(record);
         }
 
+        public ExtendedAttributes(DataRowView view)
+        {
+            Load(view);
+        }
+
         public ExtendedAttributes(DataRow row)
         {
             Load(row);
@@ -50,6 +53,13 @@ namespace SiteServer.CMS.Model.Attributes
         public ExtendedAttributes(string json)
         {
             Load(json);
+        }
+
+        public void Load(DataRowView rowView)
+        {
+            if (rowView == null) return;
+
+            Load(rowView.Row);
         }
 
         public void Load(DataRow row)
@@ -235,64 +245,20 @@ namespace SiteServer.CMS.Model.Attributes
 
         public int Count => _dataDict.Count;
 
-        public Dictionary<string, object> ToDictionary()
+        public virtual Dictionary<string, object> ToDictionary()
         {
-            return _dataDict;
+            var ret = new Dictionary<string, object>(_dataDict.Count, _dataDict.Comparer);
+            foreach (KeyValuePair<string, object> entry in _dataDict)
+            {
+                ret.Add(entry.Key, entry.Value);
+            }
+            return ret;
         }
 
         #region private utils
 
         private static class Utils
         {
-            public static object Eval(object dataItem, string name)
-            {
-                object o = null;
-                try
-                {
-                    o = DataBinder.Eval(dataItem, name);
-                }
-                catch
-                {
-                    // ignored
-                }
-                if (o == DBNull.Value)
-                {
-                    o = null;
-                }
-                return o;
-            }
-
-            public static string UnFilterSql(string objStr)
-            {
-                if (string.IsNullOrEmpty(objStr)) return string.Empty;
-
-                return objStr.Replace("_sqlquote_", "'").Replace("_sqldoulbeline_", "--").Replace("_sqlleftparenthesis_", "\\(").Replace("_sqlrightparenthesis_", "\\)");
-            }
-
-            public static string NameValueCollectionToString(NameValueCollection attributes, char seperator = '&')
-            {
-                if (attributes == null || attributes.Count <= 0) return string.Empty;
-
-                var builder = new StringBuilder();
-                foreach (string key in attributes.Keys)
-                {
-                    builder.Append(
-                        $@"{ValueToUrl(key)}={ValueToUrl(attributes[key])}{seperator}");
-                }
-                builder.Length--;
-                return builder.ToString();
-            }
-
-            private static string ValueToUrl(string value)
-            {
-                var retval = string.Empty;
-                if (!string.IsNullOrEmpty(value))
-                {
-                    retval = value.Replace("=", "_equals_").Replace("&", "_and_").Replace("?", "_question_").Replace("'", "_quote_").Replace("+", "_add_").Replace("\r", "_return_").Replace("\n", "_newline_");
-                }
-                return retval;
-            }
-
             private static string ValueFromUrl(string value)
             {
                 var retval = string.Empty;

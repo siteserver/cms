@@ -15,7 +15,7 @@
         <div class="form-group form-row">
             <label class="col-3 col-form-label text-right">内容标题</label>
             <div class="col-8">
-              <asp:Literal ID="LtlTitles" runat="server"></asp:Literal>
+              <h6><asp:Literal ID="LtlTitles" runat="server"></asp:Literal></h6>
             </div>
             <div class="col-1"></div>
           </div>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.Linq;
 using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
@@ -1452,15 +1453,6 @@ group by tmp.userName";
             return list;
         }
 
-        public string GetSelectedCommendByCheck(string tableName, int siteId, List<int> channelIdList, List<int> checkLevelList)
-        {
-            var whereString = channelIdList.Count == 1
-                ? $"WHERE SiteId = {siteId} AND ChannelId = {channelIdList[0]} AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) "
-                : $"WHERE SiteId = {siteId} AND ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) ";
-
-            return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString);
-        }
-
         public string GetStlWhereString(int siteId, string group, string groupNot, string tags, bool isTopExists, bool isTop, string where)
         {
             var whereStringBuilder = new StringBuilder();
@@ -2631,11 +2623,54 @@ group by tmp.userName";
 
         //----------------------------pager start----------------------------------------//
 
-        public string GetPagerWhereSqlString(List<string> allLowerAttributeNameList, int siteId, ChannelInfo channelInfo, bool isSystemAdministrator, List<int> owningChannelIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isTrashContent, bool isWritingOnly, string userNameOnly)
+        public string GetSelectedCommendByCheck(string tableName, int siteId, List<int> channelIdList, List<int> checkLevelList)
         {
+            var whereString = channelIdList.Count == 1
+                ? $"WHERE SiteId = {siteId} AND ChannelId = {channelIdList[0]} AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) "
+                : $"WHERE SiteId = {siteId} AND ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) ";
+
+            return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString);
+        }
+
+        public string GetPagerWhereSqlString(SiteInfo siteInfo, ChannelInfo channelInfo, string searchType, string keyword, string dateFrom, string dateTo, int checkLevel, bool isCheckOnly, bool isSelfOnly, bool isTrashOnly, bool isWritingOnly, bool isAdminOnly, PermissionManager adminPermissions, List<string> allLowerAttributeNameList)
+        {
+            var searchChannelIdList = new List<int>();
+
+            if (isSelfOnly)
+            {
+                searchChannelIdList = new List<int>
+                {
+                    channelInfo.Id
+                };
+                
+            }
+            else
+            {
+                var channelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.All, string.Empty, string.Empty, channelInfo.ContentModelPluginId);
+
+                if (adminPermissions.IsSystemAdministrator)
+                {
+                    searchChannelIdList = channelIdList;
+                }
+                else
+                {
+                    foreach (var theChannelId in channelIdList)
+                    {
+                        if (adminPermissions.OwningChannelIdList.Contains(theChannelId))
+                        {
+                            searchChannelIdList.Add(theChannelId);
+                        }
+                    }
+                }
+            }
+            if (isTrashOnly)
+            {
+                searchChannelIdList = searchChannelIdList.Select(i => -i).ToList();
+            }
+
             var whereList = new List<string>
             {
-                $"{nameof(ContentAttribute.SiteId)} = {siteId}",
+                $"{nameof(ContentAttribute.SiteId)} = {siteInfo.Id}",
                 $"{nameof(ContentAttribute.SourceId)} != {SourceManager.Preview}"
             };
 
@@ -2648,47 +2683,17 @@ group by tmp.userName";
                 whereList.Add($"{nameof(ContentAttribute.AddDate)} <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo).AddDays(1))}");
             }
 
-            if (isSearchChildren)
+            if (searchChannelIdList.Count == 0)
             {
-                if (isSystemAdministrator)
-                {
-                    whereList.Add(isTrashContent
-                        ? $"{nameof(ContentAttribute.ChannelId)} < 0"
-                        : $"{nameof(ContentAttribute.ChannelId)} > 0");
-                }
-                else
-                {
-                    var channelIdList = new List<int>();
-                    foreach (var i in owningChannelIdList)
-                    {
-                        channelIdList.Add(i);
-                    }
-                    if (channelIdList.Count > 0)
-                    {
-                        if (isTrashContent)
-                        {
-                            for (var i = 0; i < channelIdList.Count; i++)
-                            {
-                                var theChannelId = channelIdList[i];
-                                channelIdList[i] = -theChannelId;
-                            }
-                        }
-
-                        whereList.Add(channelIdList.Count == 1
-                            ? $"{nameof(ContentAttribute.ChannelId)} = {channelIdList[0]}"
-                            : $"{nameof(ContentAttribute.ChannelId)} IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)})");
-                    }
-                    else
-                    {
-                        whereList.Add($"{nameof(ContentAttribute.ChannelId)} = 0");
-                    }
-                }
+                whereList.Add($"{nameof(ContentAttribute.ChannelId)} = 0");
+            }
+            else if (searchChannelIdList.Count == 1)
+            {
+                whereList.Add($"{nameof(ContentAttribute.ChannelId)} = {channelInfo.Id}");
             }
             else
             {
-                whereList.Add(isTrashContent
-                    ? $"{nameof(ContentAttribute.ChannelId)} = -{channelInfo.Id}"
-                    : $"{nameof(ContentAttribute.ChannelId)} = {channelInfo.Id}");
+                whereList.Add($"{nameof(ContentAttribute.ChannelId)} IN ({TranslateUtils.ToSqlInStringWithoutQuote(searchChannelIdList)})");
             }
 
             if (StringUtils.EqualsIgnoreCase(searchType, ContentAttribute.IsTop) || StringUtils.EqualsIgnoreCase(searchType, ContentAttribute.IsRecommend) || StringUtils.EqualsIgnoreCase(searchType, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(searchType, ContentAttribute.IsHot))
@@ -2706,19 +2711,27 @@ group by tmp.userName";
                     : $"{nameof(ContentAttribute.SettingsXml)} LIKE '%{searchType}={keyword}%'");
             }
 
-            if (checkedState == ETriState.True)
+            if (isCheckOnly)
             {
-                whereList.Add($"{nameof(ContentAttribute.IsChecked)} = '{true}'");
+                whereList.Add(checkLevel == CheckManager.LevelInt.All
+                    ? $"{nameof(ContentAttribute.IsChecked)} = '{false}'"
+                    : $"{nameof(ContentAttribute.IsChecked)} = '{false}' AND {nameof(ContentAttribute.CheckedLevel)} = {checkLevel}");
             }
-            else if (checkedState == ETriState.False)
+            else
             {
-                whereList.Add($"{nameof(ContentAttribute.IsChecked)} = '{false}'");
+                if (checkLevel != CheckManager.LevelInt.All)
+                {
+                    whereList.Add(checkLevel == siteInfo.Additional.CheckContentLevel
+                        ? $"{nameof(ContentAttribute.IsChecked)} = '{true}'"
+                        : $"{nameof(ContentAttribute.IsChecked)} = '{false}' AND {nameof(ContentAttribute.CheckedLevel)} = {checkLevel}");
+                }
             }
 
-            if (!string.IsNullOrEmpty(userNameOnly))
+            if (isAdminOnly || adminPermissions.IsViewContentOnlySelf(siteInfo.Id, channelInfo.Id))
             {
-                whereList.Add($"{nameof(ContentAttribute.AddUserName)} = '{userNameOnly}'");
+                whereList.Add($"{nameof(ContentAttribute.AddUserName)} = '{adminPermissions.UserName}'");
             }
+
             if (isWritingOnly)
             {
                 whereList.Add($"{nameof(ContentAttribute.WritingUserName)} <> ''");

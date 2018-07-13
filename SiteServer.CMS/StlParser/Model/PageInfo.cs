@@ -50,14 +50,8 @@ namespace SiteServer.CMS.StlParser.Model
 
         public int UniqueId
         {
-            get
-            {
-                return _uniqueId++;
-            }
-            set
-            {
-                _uniqueId = value;
-            }
+            get => _uniqueId++;
+            set => _uniqueId = value;
         }
 
         public PageInfo Clone()
@@ -228,13 +222,16 @@ namespace SiteServer.CMS.StlParser.Model
 
             if (pageJsName == Const.Jquery)
             {
-                retval =
-                        $"<script src=\"{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Jquery)}\" type=\"text/javascript\"></script>";
+                if (SiteInfo.Additional.IsCreateWithJQuery)
+                {
+                    retval =
+                        $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Jquery)}"" type=""text/javascript""></script>";
+                }
             }
             else if (pageJsName == Const.Vue)
             {
                 retval =
-                    $"<script src=\"{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Vue)}\" type=\"text/javascript\"></script>";
+                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Vue)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.JsCookie)
             {
@@ -249,17 +246,17 @@ namespace SiteServer.CMS.StlParser.Model
             else if (pageJsName == Const.BAjaxUpload)
             {
                 retval =
-                    $"<script src=\"{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.AjaxUpload.Js)}\" type=\"text/javascript\"></script>";
+                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.AjaxUpload.Js)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BQueryString)
             {
                 retval =
-                    $"<script src=\"{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.QueryString.Js)}\" type=\"text/javascript\"></script>";
+                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.QueryString.Js)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BjQueryForm)
             {
                 retval =
-                    $"<script src=\"{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.JQueryForm.Js)}\" type=\"text/javascript\"></script>";
+                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.JQueryForm.Js)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BShowLoading)
             {

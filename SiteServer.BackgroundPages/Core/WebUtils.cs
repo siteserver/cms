@@ -20,11 +20,7 @@ namespace SiteServer.BackgroundPages.Core
 
             var displayString = contentInfo.IsColor ? $"<span style='color:#ff0000;text-decoration:none' title='醒目'>{title}</span>" : title;
 
-            if (contentInfo.ChannelId < 0)
-            {
-                url = displayString;
-            }
-            else if (contentInfo.IsChecked)
+            if (contentInfo.IsChecked && contentInfo.ChannelId > 0)
             {
                 url =
                     $"<a href='{PageRedirect.GetRedirectUrlToContent(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id)}' target='blank'>{displayString}</a>";
@@ -32,7 +28,7 @@ namespace SiteServer.BackgroundPages.Core
             else
             {
                 url =
-                    $"<a href='{PageContentView.GetContentViewUrl(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl)}'>{displayString}</a>";
+                    $@"<a href=""javascript:;"" onclick=""{ModalContentView.GetOpenWindowString(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl)}"">{displayString}</a>";
             }
 
             var image = string.Empty;

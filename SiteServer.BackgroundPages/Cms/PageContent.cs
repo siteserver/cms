@@ -99,13 +99,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (AuthRequest.IsQueryExists("searchType"))
             {
-                pagerParam.WhereSqlString = DataProvider.ContentDao.GetPagerWhereSqlString(allLowerAttributeNameList,
-                    SiteId, _channelInfo, AuthRequest.AdminPermissions.IsSystemAdministrator, new List<int>
-                    {
-                        channelId
-                    }, AuthRequest.GetQueryString("searchType"), AuthRequest.GetQueryString("keyword"),
-                    AuthRequest.GetQueryString("dateFrom"), string.Empty, false, ETriState.All, false, false,
-                    administratorName);
+                pagerParam.WhereSqlString = DataProvider.ContentDao.GetPagerWhereSqlString(SiteInfo, _channelInfo, AuthRequest.GetQueryString("searchType"), AuthRequest.GetQueryString("keyword"),
+                    AuthRequest.GetQueryString("dateFrom"), string.Empty, CheckManager.LevelInt.All, false, true, false, false, false, AuthRequest.AdminPermissions, allLowerAttributeNameList);
                 pagerParam.TotalCount =
                     DataProvider.DatabaseDao.GetPageTotalCount(_tableName, pagerParam.WhereSqlString);
             }

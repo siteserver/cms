@@ -55,7 +55,7 @@ namespace SiteServer.API.Controllers.V1
 
                 contentInfo.Id = DataProvider.ContentDao.Insert(tableName, siteInfo, contentInfo);
 
-                return Ok(new OResponse(contentInfo));
+                return Ok(new OResponse(contentInfo.ToDictionary()));
             }
             catch (Exception ex)
             {
@@ -104,7 +104,7 @@ namespace SiteServer.API.Controllers.V1
 
                 DataProvider.ContentDao.Update(tableName, siteInfo, contentInfo);
 
-                return Ok(new OResponse(contentInfo));
+                return Ok(new OResponse(contentInfo.ToDictionary()));
             }
             catch (Exception ex)
             {
@@ -138,7 +138,7 @@ namespace SiteServer.API.Controllers.V1
 
                 DataProvider.ContentDao.DeleteContent(tableName, siteInfo, channelId, id);
 
-                return Ok(new OResponse(contentInfo));
+                return Ok(new OResponse(contentInfo.ToDictionary()));
             }
             catch (Exception ex)
             {

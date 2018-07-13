@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using Newtonsoft.Json;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
 
@@ -23,7 +25,12 @@ namespace SiteServer.CMS.Model
 	        Load(SettingsXml);
 	    }
 
-        public ContentInfo(DataRow row) : base(row)
+        public ContentInfo(DataRowView view) : base(view)
+	    {
+	        Load(SettingsXml);
+	    }
+
+	    public ContentInfo(DataRow row) : base(row)
 	    {
 	        Load(SettingsXml);
 	    }
@@ -238,5 +245,32 @@ namespace SiteServer.CMS.Model
             get => GetString(ContentAttribute.SettingsXml);
             set => Set(ContentAttribute.SettingsXml, value);
         }
+
+	    public override Dictionary<string, object> ToDictionary()
+	    {
+	        var dict = base.ToDictionary();
+
+	        var siteInfo = SiteManager.GetSiteInfo(SiteId);
+
+	        if (dict.ContainsKey(BackgroundContentAttribute.ImageUrl))
+	        {
+	            var imageUrl = (string)dict[BackgroundContentAttribute.ImageUrl];
+	            if (!string.IsNullOrEmpty(imageUrl))
+	            {
+                    dict[BackgroundContentAttribute.ImageUrl] = PageUtility.ParseNavigationUrl(siteInfo, imageUrl, false);
+	            }
+	        }
+	        if (dict.ContainsKey(BackgroundContentAttribute.FileUrl))
+	        {
+	            var fileUrl = (string)dict[BackgroundContentAttribute.FileUrl];
+	            if (!string.IsNullOrEmpty(fileUrl))
+	            {
+	                dict[BackgroundContentAttribute.FileUrl] = PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false);
+	            }
+	        }
+            dict[BackgroundContentAttribute.NavigationUrl] = PageUtility.GetContentUrl(siteInfo, this, false);
+
+            return dict;
+	    }
 	}
 }

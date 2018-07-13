@@ -163,7 +163,7 @@ namespace SiteServer.CMS.Plugin
             {
                 if (service.SiteMenuFunc != null)
                 {
-                    permissions.Add(new PermissionConfigManager.PermissionConfig(service.PluginId, $"{service.Metadata.Title}（插件）"));
+                    permissions.Add(new PermissionConfigManager.PermissionConfig(service.PluginId, $"{service.Metadata.Title}"));
                 }
             }
 

@@ -116,7 +116,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var ltlTitle = (Literal)e.Item.FindControl("ltlTitle");
                 var ltlSelect = (Literal)e.Item.FindControl("ltlSelect");
 
-                var contentInfo = new ContentInfo((IDataRecord)e.Item.DataItem);
+                var contentInfo = new ContentInfo((DataRowView)e.Item.DataItem);
 
                 var nodeName = _valueHashtable[contentInfo.ChannelId] as string;
                 if (nodeName == null)

@@ -64,6 +64,12 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
+            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, true, true, AuthRequest.AdminPermissions);
+            if (!string.IsNullOrEmpty(AuthRequest.GetQueryString("channelId")))
+            {
+                ControlUtils.SelectSingleItem(DdlChannelId, AuthRequest.GetQueryString("channelId"));
+            }
+
             var checkedLevel = 5;
             var isChecked = true;
             foreach (var owningChannelId in AuthRequest.AdminPermissions.OwningChannelIdList)
@@ -79,15 +85,8 @@ namespace SiteServer.BackgroundPages.Cms
                     isChecked = false;
                 }
             }
-
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, true, true, AuthRequest.AdminPermissions);
-            CheckManager.LoadContentLevelToList(DdlState, SiteInfo, SiteId, isChecked, checkedLevel);
+            CheckManager.LoadContentLevelToList(DdlState, SiteInfo, true, isChecked, checkedLevel);
             var checkLevelList = new List<int>();
-
-            if (!string.IsNullOrEmpty(AuthRequest.GetQueryString("channelId")))
-            {
-                ControlUtils.SelectSingleItem(DdlChannelId, AuthRequest.GetQueryString("channelId"));
-            }
             if (!string.IsNullOrEmpty(AuthRequest.GetQueryString("state")))
             {
                 ControlUtils.SelectSingleItem(DdlState, AuthRequest.GetQueryString("state"));
@@ -155,7 +154,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var contentInfo = new ContentInfo((IDataRecord)e.Item.DataItem);
+            var contentInfo = new ContentInfo((DataRowView)e.Item.DataItem);
 
             var ltlTitle = (Literal)e.Item.FindControl("ltlTitle");
             var ltlChannel = (Literal)e.Item.FindControl("ltlChannel");

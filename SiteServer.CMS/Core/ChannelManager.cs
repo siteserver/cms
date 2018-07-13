@@ -83,16 +83,16 @@ namespace SiteServer.CMS.Core
 
         public static ChannelInfo GetChannelInfo(int siteId, int channelId)
         {
-            ChannelInfo nodeInfo = null;
+            ChannelInfo channelInfo = null;
             var dict = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
-            dict?.TryGetValue(channelId, out nodeInfo);
-            return nodeInfo;
+            dict?.TryGetValue(channelId, out channelInfo);
+            return channelInfo;
         }
 
         public static List<ChannelInfo> GetChannelInfoList(int siteId)
         {
             var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
-            return dic.Values.Where(nodeInfo => nodeInfo != null).ToList();
+            return dic.Values.Where(channelInfo => channelInfo != null).ToList();
         }
 
         public static List<int> GetChannelIdList(int siteId)

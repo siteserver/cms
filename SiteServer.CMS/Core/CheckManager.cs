@@ -26,8 +26,9 @@ namespace SiteServer.CMS.Core
 	        public const int Fail5 = -5;//终审退稿
 
 	        public const int NotChange = -100;//保持不变
+	        public const int All = -200;//全部
 
-	        public static List<int> GetFailLevelList()
+            public static List<int> GetFailLevelList()
 	        {
 	            return new List<int>
 	            {
@@ -207,7 +208,8 @@ namespace SiteServer.CMS.Core
 
 	    public class Level
 	    {
-	        public const string CaoGao = "草稿";//草稿
+	        public const string All = "全部";//全部
+            public const string CaoGao = "草稿";//草稿
 	        public const string DaiShen = "待审核";//待审
 	        public const string YiShenHe = "已审核";//已审核
 
@@ -397,7 +399,7 @@ namespace SiteServer.CMS.Core
 	        }
 	    }
 
-	    public static void LoadContentLevelToList(ListControl listControl, SiteInfo siteInfo, int siteId, bool isChecked, int checkedLevel)
+	    public static void LoadContentLevelToList(ListControl listControl, SiteInfo siteInfo, bool isCheckOnly, bool isChecked, int checkedLevel)
 	    {
 	        var checkContentLevel = siteInfo.Additional.CheckContentLevel;
 
@@ -406,183 +408,183 @@ namespace SiteServer.CMS.Core
 	            checkedLevel = checkContentLevel;
 	        }
 
-	        var listItem = new ListItem("全部", String.Empty);
-	        listControl.Items.Add(listItem);
-
-	        listItem = new ListItem(Level.DaiShen, LevelInt.DaiShen.ToString());
-	        listControl.Items.Add(listItem);
+	        listControl.Items.Add(new ListItem(Level.All, LevelInt.All.ToString()));
+	        listControl.Items.Add(new ListItem(Level.CaoGao, LevelInt.CaoGao.ToString()));
+            listControl.Items.Add(new ListItem(Level.DaiShen, LevelInt.DaiShen.ToString()));
 
 	        if (checkContentLevel == 1)
 	        {
 	            if (isChecked)
 	            {
-	                listItem = new ListItem(Level1.Fail1, LevelInt.Fail1.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level1.Fail1, LevelInt.Fail1.ToString()));
 	            }
 	        }
 	        else if (checkContentLevel == 2)
 	        {
 	            if (checkedLevel >= 1)
 	            {
-	                listItem = new ListItem(Level2.Fail1, LevelInt.Fail1.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level2.Fail1, LevelInt.Fail1.ToString()));
 	            }
 
 	            if (isChecked)
 	            {
-	                listItem = new ListItem(Level2.Fail2, LevelInt.Fail2.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level2.Fail2, LevelInt.Fail2.ToString()));
 	            }
 	        }
 	        else if (checkContentLevel == 3)
 	        {
 	            if (checkedLevel >= 1)
 	            {
-	                listItem = new ListItem(Level3.Fail1, LevelInt.Fail1.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level3.Fail1, LevelInt.Fail1.ToString()));
 	            }
 
 	            if (checkedLevel >= 2)
 	            {
-	                listItem = new ListItem(Level3.Fail2, LevelInt.Fail2.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level3.Fail2, LevelInt.Fail2.ToString()));
 	            }
 
 	            if (isChecked)
 	            {
-	                listItem = new ListItem(Level3.Fail3, LevelInt.Fail3.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level3.Fail3, LevelInt.Fail3.ToString()));
 	            }
 	        }
 	        else if (checkContentLevel == 4)
 	        {
 	            if (checkedLevel >= 1)
 	            {
-	                listItem = new ListItem(Level4.Fail1, LevelInt.Fail1.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level4.Fail1, LevelInt.Fail1.ToString()));
 	            }
 
 	            if (checkedLevel >= 2)
 	            {
-	                listItem = new ListItem(Level4.Fail2, LevelInt.Fail2.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level4.Fail2, LevelInt.Fail2.ToString()));
 	            }
 
 	            if (checkedLevel >= 3)
 	            {
-	                listItem = new ListItem(Level4.Fail3, LevelInt.Fail3.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level4.Fail3, LevelInt.Fail3.ToString()));
 	            }
 
 	            if (isChecked)
 	            {
-	                listItem = new ListItem(Level4.Fail4, LevelInt.Fail4.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level4.Fail4, LevelInt.Fail4.ToString()));
 	            }
 	        }
 	        else if (checkContentLevel == 5)
 	        {
 	            if (checkedLevel >= 1)
 	            {
-	                listItem = new ListItem(Level5.Fail1, LevelInt.Fail1.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level5.Fail1, LevelInt.Fail1.ToString()));
 	            }
 
 	            if (checkedLevel >= 2)
 	            {
-	                listItem = new ListItem(Level5.Fail2, LevelInt.Fail2.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level5.Fail2, LevelInt.Fail2.ToString()));
 	            }
 
 	            if (checkedLevel >= 3)
 	            {
-	                listItem = new ListItem(Level5.Fail3, LevelInt.Fail3.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level5.Fail3, LevelInt.Fail3.ToString()));
 	            }
 
 	            if (checkedLevel >= 4)
 	            {
-	                listItem = new ListItem(Level5.Fail4, LevelInt.Fail4.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level5.Fail4, LevelInt.Fail4.ToString()));
 	            }
 
 	            if (isChecked)
 	            {
-	                listItem = new ListItem(Level5.Fail5, LevelInt.Fail5.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level5.Fail5, LevelInt.Fail5.ToString()));
 	            }
 	        }
 
-	        if (checkContentLevel == 2)
+	        if (isCheckOnly) return;
+
+            if (checkContentLevel == 1)
+	        {
+	            if (isChecked)
+	            {
+	                listControl.Items.Add(new ListItem(Level1.Pass1, LevelInt.Pass1.ToString()));
+                }
+            }
+            if (checkContentLevel == 2)
 	        {
 	            if (checkedLevel >= 1)
 	            {
-	                listItem = new ListItem(Level2.Pass1, LevelInt.Pass1.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level2.Pass1, LevelInt.Pass1.ToString()));
+	            }
+
+	            if (isChecked)
+	            {
+	                listControl.Items.Add(new ListItem(Level2.Pass2, LevelInt.Pass2.ToString()));
 	            }
 	        }
 	        else if (checkContentLevel == 3)
 	        {
 	            if (checkedLevel >= 1)
 	            {
-	                listItem = new ListItem(Level3.Pass1, LevelInt.Pass1.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level3.Pass1, LevelInt.Pass1.ToString()));
 	            }
 
 	            if (checkedLevel >= 2)
 	            {
-	                listItem = new ListItem(Level3.Pass2, LevelInt.Pass2.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level3.Pass2, LevelInt.Pass2.ToString()));
 	            }
-	        }
+
+	            if (isChecked)
+	            {
+	                listControl.Items.Add(new ListItem(Level3.Pass3, LevelInt.Pass3.ToString()));
+                }
+            }
 	        else if (checkContentLevel == 4)
 	        {
 	            if (checkedLevel >= 1)
 	            {
-	                listItem = new ListItem(Level4.Pass1, LevelInt.Pass1.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level4.Pass1, LevelInt.Pass1.ToString()));
 	            }
 
 	            if (checkedLevel >= 2)
 	            {
-	                listItem = new ListItem(Level4.Pass2, LevelInt.Pass2.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level4.Pass2, LevelInt.Pass2.ToString()));
 	            }
 
 	            if (checkedLevel >= 3)
 	            {
-	                listItem = new ListItem(Level4.Pass3, LevelInt.Pass3.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level4.Pass3, LevelInt.Pass3.ToString()));
 	            }
-	        }
+
+	            if (isChecked)
+	            {
+	                listControl.Items.Add(new ListItem(Level4.Pass4, LevelInt.Pass4.ToString()));
+	            }
+            }
 	        else if (checkContentLevel == 5)
 	        {
 	            if (checkedLevel >= 2)
 	            {
-	                listItem = new ListItem(Level5.Pass1, LevelInt.Pass1.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level5.Pass1, LevelInt.Pass1.ToString()));
 	            }
 
 	            if (checkedLevel >= 3)
 	            {
-	                listItem = new ListItem(Level5.Pass2, LevelInt.Pass2.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level5.Pass2, LevelInt.Pass2.ToString()));
 	            }
 
 	            if (checkedLevel >= 4)
 	            {
-	                listItem = new ListItem(Level5.Pass3, LevelInt.Pass3.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level5.Pass3, LevelInt.Pass3.ToString()));
 	            }
 
 	            if (checkedLevel >= 5)
 	            {
-	                listItem = new ListItem(Level5.Pass4, LevelInt.Pass4.ToString());
-	                listControl.Items.Add(listItem);
+	                listControl.Items.Add(new ListItem(Level5.Pass4, LevelInt.Pass4.ToString()));
 	            }
-	        }
 
-	        ControlUtils.SelectSingleItem(listControl, string.Empty);
+	            if (isChecked)
+	            {
+	                listControl.Items.Add(new ListItem(Level5.Pass5, LevelInt.Pass5.ToString()));
+	            }
+            }
 	    }
 
 	    public static void LoadContentLevelToCheck(ListControl listControl, SiteInfo siteInfo, bool isChecked, int checkedLevel)

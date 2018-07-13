@@ -115,7 +115,7 @@ yArrayHitsMonth.push('{yValueHitsMonth}');
             var ltlHitsByMonth = (Literal)e.Item.FindControl("ltlHitsByMonth");
             var ltlLastHitsDate = (Literal)e.Item.FindControl("ltlLastHitsDate");
 
-            var contentInfo = new ContentInfo((IDataRecord)e.Item.DataItem);
+            var contentInfo = new ContentInfo((DataRowView)e.Item.DataItem);
 
             ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, _pageUrl);
 

@@ -83,7 +83,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlItemEditUrl = (Literal) e.Item.FindControl("ltlItemEditUrl");
             var ltlItemDeleteUrl = (Literal) e.Item.FindControl("ltlItemDeleteUrl");
 
-            var contentInfo = new ContentInfo((IDataRecord)e.Item.DataItem);
+            var contentInfo = new ContentInfo((DataRowView)e.Item.DataItem);
 
             ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
             ltlItemChannel.Text = ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId);

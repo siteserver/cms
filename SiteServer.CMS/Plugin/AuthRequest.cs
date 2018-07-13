@@ -87,12 +87,12 @@ namespace SiteServer.CMS.Plugin
 
         public int GetQueryInt(string name, int defaultValue = 0)
         {
-            return !string.IsNullOrEmpty(HttpRequest.QueryString[name]) ? TranslateUtils.ToInt(HttpRequest.QueryString[name]) : defaultValue;
+            return !string.IsNullOrEmpty(HttpRequest.QueryString[name]) ? TranslateUtils.ToIntWithNagetive(HttpRequest.QueryString[name]) : defaultValue;
         }
 
         public decimal GetQueryDecimal(string name, decimal defaultValue = 0)
         {
-            return !string.IsNullOrEmpty(HttpRequest.QueryString[name]) ? TranslateUtils.ToDecimal(HttpRequest.QueryString[name]) : defaultValue;
+            return !string.IsNullOrEmpty(HttpRequest.QueryString[name]) ? TranslateUtils.ToDecimalWithNagetive(HttpRequest.QueryString[name]) : defaultValue;
         }
 
         public bool GetQueryBool(string name, bool defaultValue = false)
