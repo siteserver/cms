@@ -42,11 +42,9 @@ namespace SiteServer.Utils
 
         public static void Erase(string name)
         {
-            var cookie = HttpContext.Current.Response.Cookies[name];
-            if (cookie != null)
+            if (HttpContext.Current.Request.Cookies[name] != null)
             {
-                cookie.Expires = DateTime.Now.AddDays(-1);
-                cookie.Values.Clear();
+                SetCookie(name, string.Empty, DateTime.Now.AddDays(-1d));
             }
         }
     }
