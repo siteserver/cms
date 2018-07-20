@@ -26,6 +26,14 @@ namespace SiteServer.Utils
             return text;
         }
 
+	    public static async Task<string> ReadTextAsync(string filePath, Encoding encoding)
+	    {
+	        var sr = new StreamReader(filePath, encoding);
+	        var text = await sr.ReadToEndAsync();
+	        sr.Close();
+	        return text;
+	    }
+
         public static async Task WriteTextAsync(string filePath, Encoding encoding, string content)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
@@ -88,6 +96,21 @@ namespace SiteServer.Utils
 	            file.Close();
 	        }
         }
+
+	    public static async Task AppendTextAsync(string filePath, Encoding encoding, string content)
+	    {
+	        DirectoryUtils.CreateDirectoryIfNotExists(filePath);
+
+	        var file = new FileStream(filePath, FileMode.Append, FileAccess.Write);
+	        using (var writer = new StreamWriter(file, encoding))
+	        {
+	            await writer.WriteAsync(content);
+	            writer.Flush();
+	            writer.Close();
+
+	            file.Close();
+	        }
+	    }
 
         public static void RemoveReadOnlyAndHiddenIfExists(string filePath)
         {
@@ -187,7 +210,6 @@ namespace SiteServer.Utils
 		        DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
 
 		        File.Copy(sourceFilePath, destFilePath, isOverride);
-
 		    }
 		    catch
 		    {

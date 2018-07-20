@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Utility);
+                VerifySystemPermissions(ConfigManager.SettingsPermissions.Utility);
             }
         }
 

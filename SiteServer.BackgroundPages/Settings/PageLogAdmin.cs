@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Log);
+            VerifySystemPermissions(ConfigManager.SettingsPermissions.Log);
 
             if (AuthRequest.IsQueryExists("Keyword"))
             {

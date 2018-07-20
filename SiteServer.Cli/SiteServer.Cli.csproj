@@ -54,8 +54,11 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=1.7.18.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.7.18\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="Quartz, Version=3.0.6.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Quartz.3.0.6\lib\net452\Quartz.dll</HintPath>
+    </Reference>
+    <Reference Include="SiteServer.Plugin, Version=1.8.20.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.8.20\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -68,6 +71,7 @@
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Management" />
     <Reference Include="System.Runtime" />
+    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.3.0\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
@@ -80,14 +84,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\BackupManager.cs" />
-    <Compile Include="Commands\TestManager.cs" />
-    <Compile Include="Commands\VersionManager.cs" />
-    <Compile Include="Commands\UpdateManager.cs" />
-    <Compile Include="Commands\RestoreManager.cs" />
+    <Compile Include="Core\JobExecutionContextImpl.cs" />
+    <Compile Include="Jobs\BackupJob.cs" />
+    <Compile Include="Jobs\TestJob.cs" />
+    <Compile Include="Jobs\VersionJob.cs" />
+    <Compile Include="Jobs\UpdateJob.cs" />
+    <Compile Include="Jobs\RestoreJob.cs" />
     <Compile Include="Core\CliUtils.cs" />
     <Compile Include="Core\ConfigInfo.cs" />
     <Compile Include="Core\ProgressBar.cs" />
+    <Compile Include="Core\SchedJob.cs" />
     <Compile Include="Core\TreeInfo.cs" />
     <Compile Include="Core\TableInfo.cs" />
     <Compile Include="Core\TextLogInfo.cs" />

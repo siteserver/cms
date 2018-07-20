@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using NDesk.Options;
 using SiteServer.Utils;
 
@@ -14,7 +15,7 @@ namespace SiteServer.Cli.Core
 
         private const int ConsoleTableWidth = 77;
 
-        public static ConfigInfo LoadConfigByFile(string configFileName)
+        public static async Task<ConfigInfo> LoadConfigByFileAsync(string configFileName)
         {
             ConfigInfo configInfo = null;
 
@@ -26,7 +27,7 @@ namespace SiteServer.Cli.Core
             if (FileUtils.IsFileExists(PathUtils.Combine(PhysicalApplicationPath, configFileName)))
             {
                 configInfo = TranslateUtils.JsonDeserialize<ConfigInfo>(
-                    FileUtils.ReadText(PathUtils.Combine(PhysicalApplicationPath, configFileName), Encoding.UTF8));
+                    await FileUtils.ReadTextAsync(PathUtils.Combine(PhysicalApplicationPath, configFileName), Encoding.UTF8));
 
                 if (configInfo != null)
                 {
@@ -97,7 +98,31 @@ namespace SiteServer.Cli.Core
             }
         }
 
-        public static void PrintLine()
+        public static async Task PrintRowLineAsync()
+        {
+            await Console.Out.WriteLineAsync(new string('-', ConsoleTableWidth));
+        }
+
+        public static async Task PrintRowAsync(params string[] columns)
+        {
+            int width = (ConsoleTableWidth - columns.Length) / columns.Length;
+            string row = "|";
+
+            foreach (string column in columns)
+            {
+                row += AlignCentre(column, width) + "|";
+            }
+
+            await Console.Out.WriteLineAsync(row);
+        }
+
+        public static async Task PrintErrorAsync(string errorMessage)
+        {
+            await Console.Out.WriteLineAsync();
+            await Console.Out.WriteLineAsync(errorMessage);
+        }
+
+        public static void PrintRowLine()
         {
             Console.WriteLine(new string('-', ConsoleTableWidth));
         }
@@ -128,13 +153,13 @@ namespace SiteServer.Cli.Core
             return filePath;
         }
 
-        public static void AppendErrorLogs(string filePath, List<TextLogInfo> logs)
+        public static async Task AppendErrorLogsAsync(string filePath, List<TextLogInfo> logs)
         {
             if (logs == null || logs.Count <= 0) return;
 
             if (!FileUtils.IsFileExists(filePath))
             {
-                FileUtils.WriteText(filePath, Encoding.UTF8, string.Empty);
+                await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, string.Empty);
             }
 
             var builder = new StringBuilder();
@@ -146,7 +171,7 @@ namespace SiteServer.Cli.Core
                 builder.AppendLine();
             }
 
-            FileUtils.AppendText(filePath, Encoding.UTF8, builder.ToString());
+            await FileUtils.AppendTextAsync(filePath, Encoding.UTF8, builder.ToString());
         }
     }
 }

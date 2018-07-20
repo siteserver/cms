@@ -213,7 +213,7 @@
                           <th class="text-nowrap">新版本</th>
                           <th>更新说明</th>
                           <th class="text-center text-nowrap">发布时间</th>
-                          <th class="text-center text-nowrap"></th>
+                          <th></th>
                         </tr>
                       </thead>
                       <tbody>
@@ -222,7 +222,7 @@
                             <img v-bind:src="package.updatePackage.iconUrl" width="48" height="48">
                           </td>
                           <td class="text-nowrap">
-                            <a v-bind:href="'pageview.aspx?pluginId=' + package.id + '&returnUrl=pageManagement.aspx'">{{ package.id }}</a>
+                            <a v-bind:href="'pageView.aspx?pluginId=' + package.id + '&returnUrl=pageManagement.aspx'">{{ package.id }}</a>
                           </td>
                           <td class="text-nowrap">
                             {{ package.updatePackage.title }}
@@ -240,7 +240,7 @@
                             {{ package.updatePackage.published }}
                           </td>
                           <td class="text-center text-nowrap">
-                            <a v-bind:href="'pageInstall.aspx?type=update&packageId=' + package.id" class="btn btn-warning btn-md">升级插件</a>
+                            <a v-bind:href="'install.cshtml?isUpdate=true&packageIds=' + package.id" class="btn btn-warning btn-md">插件升级</a>
                           </td>
                         </tr>
                       </tbody>
@@ -248,6 +248,10 @@
                   </div>
                 </div>
               </div>
+
+              <hr />
+
+              <a v-bind:href="'install.cshtml?isUpdate=true&packageIds=' + updatePackageIds.join(',')" class="btn btn-warning btn-md">一键升级所有插件</a>
 
             </div>
 
@@ -274,6 +278,7 @@
         disabledPackages: [],
         errorPackages: [],
         updatePackages: [],
+        updatePackageIds: [],
         packageIds: '<%=PackageIds%>',
         referencePackageIds: []
       };
@@ -328,9 +333,11 @@
                   if (installedPackage.metadata && installedPackage.metadata.version) {
                     if (compareversion(installedPackage.metadata.version, package.version) == -1) {
                       $this.updatePackages.push(installedPackage);
+                      $this.updatePackageIds.push(installedPackage.id);
                     }
                   } else {
                     $this.updatePackages.push(installedPackage);
+                    $this.updatePackageIds.push(installedPackage.id);
                   }
                 }
               }

@@ -21,7 +21,7 @@ namespace SiteServer.API.Controllers.Plugins
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, null, null, null)));
+                return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(null, null, null), null, null, null)));
             }
             catch (Exception ex)
             {
@@ -31,14 +31,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpGet, Route(ApiRoutePlugin.RouteAction)]
-        public IHttpActionResult GetAction(string pluginId, string act)
+        public IHttpActionResult GetAction(string pluginId, string routeAction)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, null, null, act)));
+                return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(null, null, routeAction), null, null, routeAction)));
             }
             catch (Exception ex)
             {
@@ -48,14 +48,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpGet, Route(ApiRoutePlugin.RouteResource)]
-        public IHttpActionResult GetResource(string pluginId, string resource)
+        public IHttpActionResult GetResource(string pluginId, string routeResource)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, resource, null, null)));
+                return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(routeResource, null, null), routeResource, null, null)));
             }
             catch (Exception ex)
             {
@@ -65,14 +65,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpGet, Route(ApiRoutePlugin.RouteResourceAction)]
-        public IHttpActionResult GetResourceAction(string pluginId, string resource, string act)
+        public IHttpActionResult GetResourceAction(string pluginId, string routeResource, string routeAction)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, resource, null, act)));
+                return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(routeResource, null, routeAction), routeResource, null, routeAction)));
             }
             catch (Exception ex)
             {
@@ -82,14 +82,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpGet, Route(ApiRoutePlugin.RouteResourceId)]
-        public IHttpActionResult GetResourceId(string pluginId, string resource, string id)
+        public IHttpActionResult GetResourceId(string pluginId, string routeResource, string routeId)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, resource, id, null)));
+                return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(routeResource, routeId, null), routeResource, routeId, null)));
             }
             catch (Exception ex)
             {
@@ -99,14 +99,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpGet, Route(ApiRoutePlugin.RouteResourceIdAction)]
-        public IHttpActionResult GetResourceIdAction(string pluginId, string resource, string id, string act)
+        public IHttpActionResult GetResourceIdAction(string pluginId, string routeResource, string routeId, string routeAction)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, resource, id, act)));
+                return GetHttpActionResult(service.OnApiGet(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(routeResource, routeId, routeAction), routeResource, routeId, routeAction)));
             }
             catch (Exception ex)
             {
@@ -123,7 +123,7 @@ namespace SiteServer.API.Controllers.Plugins
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, null, null, null)));
+                return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(null, null, null), null, null, null)));
             }
             catch (Exception ex)
             {
@@ -133,14 +133,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpPost, Route(ApiRoutePlugin.RouteAction)]
-        public IHttpActionResult PostAction(string pluginId, string act)
+        public IHttpActionResult PostAction(string pluginId, string routeAction)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, null, null, act)));
+                return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(null, null, routeAction), null, null, routeAction)));
             }
             catch (Exception ex)
             {
@@ -150,14 +150,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpPost, Route(ApiRoutePlugin.RouteResource)]
-        public IHttpActionResult PostResource(string pluginId, string resource)
+        public IHttpActionResult PostResource(string pluginId, string routeResource)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, resource, null, null)));
+                return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(routeResource, null, null), routeResource, null, null)));
             }
             catch (Exception ex)
             {
@@ -167,14 +167,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpPost, Route(ApiRoutePlugin.RouteResourceAction)]
-        public IHttpActionResult PostResourceAction(string pluginId, string resource, string act)
+        public IHttpActionResult PostResourceAction(string pluginId, string routeResource, string routeAction)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, resource, null, act)));
+                return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(routeResource, null, routeAction), routeResource, null, routeAction)));
             }
             catch (Exception ex)
             {
@@ -184,14 +184,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpPost, Route(ApiRoutePlugin.RouteResourceId)]
-        public IHttpActionResult PostResourceId(string pluginId, string resource, string id)
+        public IHttpActionResult PostResourceId(string pluginId, string routeResource, string routeId)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, resource, id, null)));
+                return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(routeResource, routeId, null), routeResource, routeId, null)));
             }
             catch (Exception ex)
             {
@@ -201,14 +201,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpPost, Route(ApiRoutePlugin.RouteResourceIdAction)]
-        public IHttpActionResult PostResourceIdAction(string pluginId, string resource, string id, string act)
+        public IHttpActionResult PostResourceIdAction(string pluginId, string routeResource, string routeId, string routeAction)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, resource, id, act)));
+                return GetHttpActionResult(service.OnApiPost(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(routeResource, routeId, routeAction), routeResource, routeId, routeAction)));
             }
             catch (Exception ex)
             {
@@ -225,7 +225,7 @@ namespace SiteServer.API.Controllers.Plugins
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, null, null, null)));
+                return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(null, null, null), null, null, null)));
             }
             catch (Exception ex)
             {
@@ -235,14 +235,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpPut, Route(ApiRoutePlugin.RouteAction)]
-        public IHttpActionResult PutAction(string pluginId, string act)
+        public IHttpActionResult PutAction(string pluginId, string routeAction)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, null, null, act)));
+                return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(null, null, routeAction), null, null, routeAction)));
             }
             catch (Exception ex)
             {
@@ -252,14 +252,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpPut, Route(ApiRoutePlugin.RouteResource)]
-        public IHttpActionResult PutResource(string pluginId, string resource)
+        public IHttpActionResult PutResource(string pluginId, string routeResource)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, resource, null, null)));
+                return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(routeResource, null, null), routeResource, null, null)));
             }
             catch (Exception ex)
             {
@@ -269,14 +269,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpPut, Route(ApiRoutePlugin.RouteResourceAction)]
-        public IHttpActionResult PutResourceAction(string pluginId, string resource, string act)
+        public IHttpActionResult PutResourceAction(string pluginId, string routeResource, string routeAction)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, resource, null, act)));
+                return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(routeResource, null, routeAction), routeResource, null, routeAction)));
             }
             catch (Exception ex)
             {
@@ -286,14 +286,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpPut, Route(ApiRoutePlugin.RouteResourceId)]
-        public IHttpActionResult PutResourceId(string pluginId, string resource, string id)
+        public IHttpActionResult PutResourceId(string pluginId, string routeResource, string routeId)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, resource, id, null)));
+                return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(routeResource, routeId, null), routeResource, routeId, null)));
             }
             catch (Exception ex)
             {
@@ -303,14 +303,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpPut, Route(ApiRoutePlugin.RouteResourceIdAction)]
-        public IHttpActionResult PutResourceIdAction(string pluginId, string resource, string id, string act)
+        public IHttpActionResult PutResourceIdAction(string pluginId, string routeResource, string routeId, string routeAction)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, resource, id, act)));
+                return GetHttpActionResult(service.OnApiPut(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(routeResource, routeId, routeAction), routeResource, routeId, routeAction)));
             }
             catch (Exception ex)
             {
@@ -327,7 +327,7 @@ namespace SiteServer.API.Controllers.Plugins
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, null, null, null)));
+                return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(null, null, null), null, null, null)));
             }
             catch (Exception ex)
             {
@@ -337,14 +337,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpDelete, Route(ApiRoutePlugin.RouteAction)]
-        public IHttpActionResult DeleteAction(string pluginId, string act)
+        public IHttpActionResult DeleteAction(string pluginId, string routeAction)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, null, null, act)));
+                return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(null, null, routeAction), null, null, routeAction)));
             }
             catch (Exception ex)
             {
@@ -354,14 +354,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpDelete, Route(ApiRoutePlugin.RouteResource)]
-        public IHttpActionResult DeleteResource(string pluginId, string resource)
+        public IHttpActionResult DeleteResource(string pluginId, string routeResource)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, resource, null, null)));
+                return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(routeResource, null, null), routeResource, null, null)));
             }
             catch (Exception ex)
             {
@@ -371,14 +371,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpDelete, Route(ApiRoutePlugin.RouteResourceAction)]
-        public IHttpActionResult DeleteResourceAction(string pluginId, string resource, string act)
+        public IHttpActionResult DeleteResourceAction(string pluginId, string routeResource, string routeAction)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, resource, null, act)));
+                return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(routeResource, null, routeAction), routeResource, null, routeAction)));
             }
             catch (Exception ex)
             {
@@ -388,14 +388,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpDelete, Route(ApiRoutePlugin.RouteResourceId)]
-        public IHttpActionResult DeleteResourceId(string pluginId, string resource, string id)
+        public IHttpActionResult DeleteResourceId(string pluginId, string routeResource, string routeId)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, resource, id, null)));
+                return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(routeResource, routeId, null), routeResource, routeId, null)));
             }
             catch (Exception ex)
             {
@@ -405,14 +405,14 @@ namespace SiteServer.API.Controllers.Plugins
         }
 
         [HttpDelete, Route(ApiRoutePlugin.RouteResourceIdAction)]
-        public IHttpActionResult DeleteResourceIdAction(string pluginId, string resource, string id, string act)
+        public IHttpActionResult DeleteResourceIdAction(string pluginId, string routeResource, string routeId, string routeAction)
         {
             try
             {
                 var request = new AuthRequest(pluginId);
                 var service = PluginManager.GetService(pluginId);
 
-                return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, resource, id, act)));
+                return GetHttpActionResult(service.OnApiDelete(new ApiEventArgs(request, ApiRoutePlugin.GetRoute(routeResource, routeId, routeAction), routeResource, routeId, routeAction)));
             }
             catch (Exception ex)
             {

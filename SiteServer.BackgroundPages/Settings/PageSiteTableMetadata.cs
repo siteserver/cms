@@ -174,7 +174,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
+            VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
             RptContents.DataSource = DataProvider.TableMetadataDao.GetDataSource(_tableName);
             RptContents.ItemDataBound += RptContents_ItemDataBound;

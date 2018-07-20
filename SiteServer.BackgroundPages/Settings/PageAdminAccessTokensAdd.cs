@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Admin);
+            VerifySystemPermissions(ConfigManager.SettingsPermissions.Admin);
 
             LtlPageTitle.Text = _id > 0 ? "修改API密钥" : "新增API密钥";
 

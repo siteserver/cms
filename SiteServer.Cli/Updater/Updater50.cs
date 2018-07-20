@@ -5,6 +5,7 @@ using SiteServer.Cli.Updater.Model50;
 using SiteServer.Cli.Updater.Plugins.GovInteract;
 using SiteServer.Cli.Updater.Plugins.GovPublic;
 using System;
+using System.Threading.Tasks;
 
 namespace SiteServer.Cli.Updater
 {
@@ -17,7 +18,7 @@ namespace SiteServer.Cli.Updater
 
         }
 
-        public override bool UpdateTableInfo(string oldTableName, TableInfo oldTableInfo, List<string> contentTableNameList, out string newTableName, out TableInfo newTableInfo)
+        public override async Task<Tuple<string, TableInfo>> UpdateTableInfoAsync(string oldTableName, TableInfo oldTableInfo, List<string> contentTableNameList)
         {
             ConvertInfo converter = null;
 
@@ -188,7 +189,7 @@ namespace SiteServer.Cli.Updater
                 converter = TableContent.GetConverter(oldTableName, oldTableInfo.Columns);
             }
 
-            return GetNewTableInfo(oldTableName, oldTableInfo, converter, out newTableName, out newTableInfo);
+            return await GetNewTableInfoAsync(oldTableName, oldTableInfo, converter);
         }
     }
 }

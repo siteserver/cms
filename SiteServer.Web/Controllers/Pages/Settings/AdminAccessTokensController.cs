@@ -5,26 +5,23 @@ using SiteServer.CMS.Api;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
-using SiteServer.Utils;
 
-namespace SiteServer.API.Controllers.Sys.Settings.Admin
+namespace SiteServer.API.Controllers.Pages.Settings
 {
-    [RoutePrefix("api")]
-    public class AccessTokensController : ApiController
+    [RoutePrefix("api/pages/settings/adminAccessTokens")]
+    public class AdminAccessTokensController : ApiController
     {
-        private const string ApiRoute = "sys/settings/admin/accessTokens";
-        private const string ApiRouteGetAdminNamesAndScopes = "sys/settings/admin/accessTokens/action/getAdminNamesAndScopes";
-        private const string ApiRouteGetAccessToken = "sys/settings/admin/accessTokens/action/getAccessToken/{id:int}";
-        private const string ApiRouteRegenerate = "sys/settings/admin/accessTokens/action/regenerate/{id:int}";
+        private const string Route = "";
+        private const string RouteAdminNamesAndScopes = "adminNamesAndScopes";
 
-        [HttpGet, Route(ApiRoute)]
+        [HttpGet, Route(Route)]
         public IHttpActionResult GetItems()
         {
             try
             {
                 var request = new AuthRequest();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasAdministratorPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -41,14 +38,14 @@ namespace SiteServer.API.Controllers.Sys.Settings.Admin
             }
         }
 
-        [HttpGet, Route(ApiRouteGetAdminNamesAndScopes)]
+        [HttpGet, Route(RouteAdminNamesAndScopes)]
         public IHttpActionResult GetAdminNamesAndScopes()
         {
             try
             {
                 var request = new AuthRequest();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasAdministratorPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -76,11 +73,8 @@ namespace SiteServer.API.Controllers.Sys.Settings.Admin
 
                 return Ok(new
                 {
-                    Value = new
-                    {
-                        adminNames,
-                        scopes
-                    }
+                    adminNames,
+                    scopes
                 });
             }
             catch (Exception ex)
@@ -89,40 +83,14 @@ namespace SiteServer.API.Controllers.Sys.Settings.Admin
             }
         }
 
-        [HttpGet, Route(ApiRouteGetAccessToken)]
-        public IHttpActionResult GetAccessToken(int id)
-        {
-            try
-            {
-                var request = new AuthRequest();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasAdministratorPermissions(ConfigManager.SettingsPermissions.Admin))
-                {
-                    return Unauthorized();
-                }
-
-                var tokenInfo = DataProvider.AccessTokenDao.GetAccessTokenInfo(id);
-                var accessToken = TranslateUtils.DecryptStringBySecretKey(tokenInfo.Token);
-
-                return Ok(new
-                {
-                    Value = accessToken
-                });
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
-
-        [HttpDelete, Route(ApiRoute)]
+        [HttpDelete, Route(Route)]
         public IHttpActionResult Delete([FromBody] IdObj delObj)
         {
             try
             {
                 var request = new AuthRequest();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasAdministratorPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -140,14 +108,14 @@ namespace SiteServer.API.Controllers.Sys.Settings.Admin
             }
         }
 
-        [HttpPost, Route(ApiRoute)]
+        [HttpPost, Route(Route)]
         public IHttpActionResult Submit([FromBody] AccessTokenInfo itemObj)
         {
             try
             {
                 var request = new AuthRequest();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasAdministratorPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -191,31 +159,6 @@ namespace SiteServer.API.Controllers.Sys.Settings.Admin
                 return Ok(new
                 {
                     Value = DataProvider.AccessTokenDao.GetAccessTokenInfoList()
-                });
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
-
-        [HttpPost, Route(ApiRouteRegenerate)]
-        public IHttpActionResult Regenerate(int id)
-        {
-            try
-            {
-                var request = new AuthRequest();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasAdministratorPermissions(ConfigManager.SettingsPermissions.Admin))
-                {
-                    return Unauthorized();
-                }
-
-                var accessToken = TranslateUtils.DecryptStringBySecretKey(DataProvider.AccessTokenDao.Regenerate(id));
-
-                return Ok(new
-                {
-                    Value = accessToken
                 });
             }
             catch (Exception ex)

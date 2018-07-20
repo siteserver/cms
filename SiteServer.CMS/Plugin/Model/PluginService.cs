@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web.UI.WebControls;
 using SiteServer.Plugin;
 using Menu = SiteServer.Plugin.Menu;
 
@@ -98,24 +97,6 @@ namespace SiteServer.CMS.Plugin.Model
             return this;
         }
 
-        [Obsolete]
-        public IService AddContentLink(HyperLink link)
-        {
-            if (ContentMenus == null)
-            {
-                ContentMenus = new List<Menu>();
-            }
-
-            ContentMenus.Add(new Menu
-            {
-                Text = link.Text,
-                Href = link.NavigateUrl,
-                Target = link.Target
-            });
-
-            return this;
-        }
-
         public IService AddContentMenu(Menu link)
         {
             if (ContentMenus == null)
@@ -150,6 +131,11 @@ namespace SiteServer.CMS.Plugin.Model
             StlElementsToParse[elementName] = parse;
 
             return this;
+        }
+
+        public IService AddJob(string command, IJob job)
+        {
+            throw new NotImplementedException();
         }
 
         public IService AddApiAuthorization()

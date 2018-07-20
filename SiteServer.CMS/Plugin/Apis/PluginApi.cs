@@ -42,12 +42,6 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string PluginApiUrl => ApiManager.GetApiUrl($"plugins/{_metadata.Id}");
 
-        [Obsolete]
-        public string GetPluginApiUrl(string name = "", string id = "")
-        {
-            return ApiRoutePlugin.GetUrl(_metadata.Id, name, id);
-        }
-
         public string GetPluginPath(string relatedPath = "")
         {
             var path = PathUtils.Combine(PathUtils.GetPluginPath(_metadata.Id), relatedPath);

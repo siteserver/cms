@@ -13,6 +13,11 @@ namespace SiteServer.CMS.Plugin.Apis
         private static UserApi _instance;
         public static UserApi Instance => _instance ?? (_instance = new UserApi());
 
+        public IUserInfo NewInstance()
+        {
+            return new UserInfo();
+        }
+
         public IUserInfo GetUserInfoByUserId(int userId)
         {
             return DataProvider.UserDao.GetUserInfo(userId);
@@ -33,9 +38,9 @@ namespace SiteServer.CMS.Plugin.Apis
             return DataProvider.UserDao.GetUserInfoByMobile(mobile);
         }
 
-        public string GetMobileByAccount(string account)
+        public IUserInfo GetUserInfoByAccount(string account)
         {
-            return DataProvider.UserDao.GetMobileByAccount(account);
+            return DataProvider.UserDao.GetUserInfoByAccount(account);
         }
 
         public bool IsUserNameExists(string userName)
@@ -51,11 +56,6 @@ namespace SiteServer.CMS.Plugin.Apis
         public bool IsMobileExists(string mobile)
         {
             return DataProvider.UserDao.IsMobileExists(mobile);
-        }
-
-        public IUserInfo NewInstance()
-        {
-            return new UserInfo();
         }
 
         public bool Insert(IUserInfo userInfo, string password, out string errorMessage)

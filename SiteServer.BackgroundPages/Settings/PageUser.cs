@@ -123,7 +123,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.User);
+            VerifySystemPermissions(ConfigManager.SettingsPermissions.User);
 
             //添加隐藏属性
             DdlSearchType.Items.Add(new ListItem("用户ID", "userID"));

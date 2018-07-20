@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Admin);
+            VerifySystemPermissions(ConfigManager.SettingsPermissions.Admin);
 
             RptContents.DataSource = AuthRequest.AdminPermissions.IsConsoleAdministrator
                 ? DataProvider.RoleDao.GetRoleNameList()

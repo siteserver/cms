@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using NDesk.Options;
 using SiteServer.Cli.Core;
 using SiteServer.Cli.Updater;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
-namespace SiteServer.Cli.Commands
+namespace SiteServer.Cli.Jobs
 {
-    public static class UpdateManager
+    public class UpdateJob : IJob
     {
         public const string CommandName = "update";
         private const string Folder = "update";
@@ -33,9 +35,9 @@ namespace SiteServer.Cli.Commands
             Console.WriteLine();
         }
 
-        public static void Execute(string[] args)
+        public async Task Execute(IJobExecutionContext context)
         {
-            if (!CliUtils.ParseArgs(Options, args)) return;
+            if (!CliUtils.ParseArgs(Options, context.Args)) return;
 
             if (_isHelp)
             {
@@ -45,13 +47,13 @@ namespace SiteServer.Cli.Commands
 
             if (string.IsNullOrEmpty(_version))
             {
-                Console.WriteLine("Error, the {version} to update is empty");
+                await CliUtils.PrintErrorAsync("Error, the {version} to update is empty");
                 return;
             }
 
             if (string.IsNullOrEmpty(_directory))
             {
-                CliUtils.PrintError("Error, the update {directory} name is empty");
+                await CliUtils.PrintErrorAsync("Error, the update {directory} name is empty");
                 return;
             }
 
@@ -60,7 +62,7 @@ namespace SiteServer.Cli.Commands
 
             if (!DirectoryUtils.IsDirectoryExists(oldTreeInfo.DirectoryPath))
             {
-                CliUtils.PrintError($"Error, directory {oldTreeInfo.DirectoryPath} not exists");
+                await CliUtils.PrintErrorAsync($"Error, directory {oldTreeInfo.DirectoryPath} not exists");
                 return;
             }
             DirectoryUtils.CreateDirectoryIfNotExists(newTreeInfo.DirectoryPath);
@@ -85,21 +87,21 @@ namespace SiteServer.Cli.Commands
             }
             if (updater == null)
             {
-                Console.WriteLine($"Error, the currently supported update versions are {Updater36.Version},{Updater40.Version},{Updater41.Version},{Updater50.Version}");
+                await Console.Out.WriteLineAsync($"Error, the currently supported update versions are {Updater36.Version},{Updater40.Version},{Updater41.Version},{Updater50.Version}");
                 return;
             }
 
             var newVersion = "latest";
 
-            Console.WriteLine($"Old Version: {_version}, Old Directory: {oldTreeInfo.DirectoryPath}");
-            Console.WriteLine($"New Version: {newVersion}, New Directory: {newTreeInfo.DirectoryPath}");
+            await Console.Out.WriteLineAsync($"Old Version: {_version}, Old Directory: {oldTreeInfo.DirectoryPath}");
+            await Console.Out.WriteLineAsync($"New Version: {newVersion}, New Directory: {newTreeInfo.DirectoryPath}");
 
-            var oldTableNames = TranslateUtils.JsonDeserialize<List<string>>(FileUtils.ReadText(oldTreeInfo.TablesFilePath, Encoding.UTF8));
+            var oldTableNames = TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(oldTreeInfo.TablesFilePath, Encoding.UTF8));
             var newTableNames = new List<string>();
 
-            CliUtils.PrintLine();
-            CliUtils.PrintRow("Old Table Name", "New Table Name", "Total Count");
-            CliUtils.PrintLine();
+            await CliUtils.PrintRowLineAsync();
+            await CliUtils.PrintRowAsync("Old Table Name", "New Table Name", "Total Count");
+            await CliUtils.PrintRowLineAsync();
 
             var contentTableNameList = new List<string>();
             UpdateUtils.LoadContentTableNameList(oldTreeInfo, "siteserver_PublishmentSystem",
@@ -113,22 +115,21 @@ namespace SiteServer.Cli.Commands
 
                 if (!FileUtils.IsFileExists(oldMetadataFilePath)) continue;
 
-                var oldTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(oldMetadataFilePath, Encoding.UTF8));
+                var oldTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(await FileUtils.ReadTextAsync(oldMetadataFilePath, Encoding.UTF8));
 
-                string newTableName;
-                TableInfo newTableInfo;
-                if (updater.UpdateTableInfo(oldTableName, oldTableInfo, contentTableNameList, out newTableName, out newTableInfo))
+                var tuple = await updater.UpdateTableInfoAsync(oldTableName, oldTableInfo, contentTableNameList);
+                if (tuple != null)
                 {
-                    newTableNames.Add(newTableName);
+                    newTableNames.Add(tuple.Item1);
 
-                    FileUtils.WriteText(newTreeInfo.GetTableMetadataFilePath(newTableName), Encoding.UTF8, TranslateUtils.JsonSerialize(newTableInfo));
+                    await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(tuple.Item1), Encoding.UTF8, TranslateUtils.JsonSerialize(tuple.Item2));
                 }
             }
 
-            FileUtils.WriteText(newTreeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newTableNames));
+            await FileUtils.WriteTextAsync(newTreeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newTableNames));
 
-            CliUtils.PrintLine();
-            Console.WriteLine("Well done! Thanks for Using SiteServer Cli Tool");
+            await CliUtils.PrintRowLineAsync();
+            await Console.Out.WriteLineAsync("Well done! Thanks for Using SiteServer Cli Tool");
         }
     }
 }

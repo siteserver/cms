@@ -200,9 +200,9 @@ setTimeout(function() {{
             return ControlUtils.FindControlBySelfAndChildren(controlId, this);
         }
 
-        public void VerifyAdministratorPermissions(params string[] permissionArray)
+        public void VerifySystemPermissions(params string[] permissionArray)
         {
-            if (AuthRequest.AdminPermissions.HasAdministratorPermissions(permissionArray))
+            if (AuthRequest.AdminPermissions.HasSystemPermissions(permissionArray))
             {
                 return;
             }

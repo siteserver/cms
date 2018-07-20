@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using NDesk.Options;
 using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
 using SiteServer.CMS.Core;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
-namespace SiteServer.Cli.Commands
+namespace SiteServer.Cli.Jobs
 {
-    public static class RestoreManager
+    public class RestoreJob : IJob
     {
         public const string CommandName = "restore";
 
@@ -39,9 +41,9 @@ namespace SiteServer.Cli.Commands
             Console.WriteLine();
         }
 
-        public static void Execute(string[] args)
+        public async Task Execute(IJobExecutionContext context)
         {
-            if (!CliUtils.ParseArgs(Options, args)) return;
+            if (!CliUtils.ParseArgs(Options, context.Args)) return;
 
             if (_isHelp)
             {
@@ -51,7 +53,7 @@ namespace SiteServer.Cli.Commands
 
             if (string.IsNullOrEmpty(_directory))
             {
-                CliUtils.PrintError("Error, the restore {directory} name is empty");
+                await CliUtils.PrintErrorAsync("Error, the restore {directory} name is empty");
                 return;
             }
 
@@ -59,14 +61,14 @@ namespace SiteServer.Cli.Commands
 
             if (!DirectoryUtils.IsDirectoryExists(treeInfo.DirectoryPath))
             {
-                CliUtils.PrintError($"Error, directory {treeInfo.DirectoryPath} not exists");
+                await CliUtils.PrintErrorAsync($"Error, directory {treeInfo.DirectoryPath} not exists");
                 return;
             }
 
             var tablesFilePath = treeInfo.TablesFilePath;
             if (!FileUtils.IsFileExists(tablesFilePath))
             {
-                CliUtils.PrintError($"Error, file {treeInfo.TablesFilePath} not exists");
+                await CliUtils.PrintErrorAsync($"Error, file {treeInfo.TablesFilePath} not exists");
                 return;
             }
 
@@ -77,36 +79,36 @@ namespace SiteServer.Cli.Commands
             }
             else
             {
-                configInfo = CliUtils.LoadConfigByFile(_configFileName);
+                configInfo = await CliUtils.LoadConfigByFileAsync(_configFileName);
             }
 
             if (configInfo == null)
             {
-                CliUtils.PrintError("Error, config not exists");
+                await CliUtils.PrintErrorAsync("Error, config not exists");
                 return;
             }
 
             if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
             {
-                CliUtils.PrintError("Error, connection string is empty");
+                await CliUtils.PrintErrorAsync("Error, connection string is empty");
                 return;
             }
 
             if (!DataProvider.DatabaseDao.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             {
-                CliUtils.PrintError("Error, can not connect to the database");
+                await CliUtils.PrintErrorAsync("Error, can not connect to the database");
                 return;
             }
 
-            Console.WriteLine($"Database Type: {WebConfigUtils.DatabaseType.Value}");
-            Console.WriteLine($"Connection String: {WebConfigUtils.ConnectionString}");
-            Console.WriteLine($"Restore Directory: {treeInfo.DirectoryPath}");
+            await Console.Out.WriteLineAsync($"Database Type: {WebConfigUtils.DatabaseType.Value}");
+            await Console.Out.WriteLineAsync($"Connection String: {WebConfigUtils.ConnectionString}");
+            await Console.Out.WriteLineAsync($"Restore Directory: {treeInfo.DirectoryPath}");
 
-            var tableNames = TranslateUtils.JsonDeserialize<List<string>>(FileUtils.ReadText(tablesFilePath, Encoding.UTF8));
+            var tableNames = TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(tablesFilePath, Encoding.UTF8));
 
-            CliUtils.PrintLine();
-            CliUtils.PrintRow("Import Table Name", "Total Count");
-            CliUtils.PrintLine();
+            await CliUtils.PrintRowLineAsync();
+            await CliUtils.PrintRowAsync("Import Table Name", "Total Count");
+            await CliUtils.PrintRowLineAsync();
 
             var errorLogFilePath = CliUtils.CreateErrorLogFile(CommandName);
 
@@ -127,9 +129,9 @@ namespace SiteServer.Cli.Commands
 
                 if (!FileUtils.IsFileExists(metadataFilePath)) continue;
 
-                var tableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(metadataFilePath, Encoding.UTF8));
+                var tableInfo = TranslateUtils.JsonDeserialize<TableInfo>(await FileUtils.ReadTextAsync(metadataFilePath, Encoding.UTF8));
 
-                CliUtils.PrintRow(tableName, tableInfo.TotalCount.ToString("#,0"));
+                await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
                 if (!DataProvider.DatabaseDao.IsTableExists(tableName))
                 {
@@ -158,7 +160,9 @@ namespace SiteServer.Cli.Commands
 
                         var fileName = tableInfo.RowFiles[i];
 
-                        var objects = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8));
+                        var objects = TranslateUtils.JsonDeserialize<List<JObject>>(
+                            await FileUtils.ReadTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName),
+                                Encoding.UTF8));
 
                         try
                         {
@@ -176,17 +180,17 @@ namespace SiteServer.Cli.Commands
                     }
                 }
 
-                CliUtils.AppendErrorLogs(errorLogFilePath, logs);
+                await CliUtils.AppendErrorLogsAsync(errorLogFilePath, logs);
             }
 
-            CliUtils.PrintLine();
+            await CliUtils.PrintRowLineAsync();
 
             if (configInfo.RestoreConfig.SyncDatabase)
             {
                 SystemManager.SyncDatabase();
             }
 
-            Console.WriteLine("Well done! Thanks for Using SiteServer Cli Tool");
+            await Console.Out.WriteLineAsync("Well done! Thanks for Using SiteServer Cli Tool");
         }
     }
 }

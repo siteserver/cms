@@ -86,7 +86,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
             if (Page.IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.PluginsPermissions.Management);
+            VerifySystemPermissions(ConfigManager.PluginsPermissions.Management);
         }
 
         public void BtnReload_Click(object sender, EventArgs e)

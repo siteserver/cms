@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Threading;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin.Apis;
 using SiteServer.CMS.Plugin.Model;
@@ -145,7 +144,7 @@ namespace SiteServer.CMS.Plugin
                 var plugin = (PluginBase)Activator.CreateInstance(type);
                 plugin.Initialize(metadata, Environment, new PluginApiCollection
                 {
-                    AdminApi = new AdminApi(metadata),
+                    AdminApi = AdminApi.Instance,
                     ConfigApi = new ConfigApi(metadata),
                     ContentApi = ContentApi.Instance,
                     DataApi = DataProvider.DataApi,

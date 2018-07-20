@@ -71,8 +71,7 @@ namespace SiteServer.CMS.Packaging
                     Directory.CreateDirectory(directoryPath);
                 }
 
-                var localFilePath = PathUtils.Combine(directoryPath, idWithVersion + ".nupkg");                
-
+                var localFilePath = PathUtils.Combine(directoryPath, idWithVersion + ".nupkg");
                 WebClientUtils.SaveRemoteFileToLocal(
                     $"https://api.siteserver.cn/downloads/update/{version}", localFilePath);
 

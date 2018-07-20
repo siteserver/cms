@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading.Tasks;
 using NDesk.Options;
 using SiteServer.Cli.Core;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
-namespace SiteServer.Cli.Commands
+namespace SiteServer.Cli.Jobs
 {
-    public static class VersionManager
+    public class VersionJob : IJob
     {
         public const string CommandName = "version";
 
@@ -28,9 +30,9 @@ namespace SiteServer.Cli.Commands
             Console.WriteLine();
         }
 
-        public static void Execute(string[] args)
+        public async Task Execute(IJobExecutionContext context)
         {
-            if (!CliUtils.ParseArgs(Options, args)) return;
+            if (!CliUtils.ParseArgs(Options, context.Args)) return;
 
             if (_isHelp)
             {
@@ -39,9 +41,9 @@ namespace SiteServer.Cli.Commands
             }
 
             var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            Console.WriteLine($"SiteServer CLI Version: {version.Substring(0, version.Length - 2)}");
-            Console.WriteLine($"Work Directory: {CliUtils.PhysicalApplicationPath}");
-            Console.WriteLine();
+            await Console.Out.WriteLineAsync($"SiteServer CLI Version: {version.Substring(0, version.Length - 2)}");
+            await Console.Out.WriteLineAsync($"Work Directory: {CliUtils.PhysicalApplicationPath}");
+            await Console.Out.WriteLineAsync();
 
             if (string.IsNullOrEmpty(_webConfigFileName))
             {
@@ -55,16 +57,16 @@ namespace SiteServer.Cli.Commands
                 try
                 {
                     var cmsVersion = FileVersionInfo.GetVersionInfo(PathUtils.Combine(CliUtils.PhysicalApplicationPath, "Bin", "SiteServer.CMS.dll")).ProductVersion;
-                    Console.WriteLine($"SitServer CMS Version: {cmsVersion}");
+                    await Console.Out.WriteLineAsync($"SitServer CMS Version: {cmsVersion}");
                 }
                 catch
                 {
                     // ignored
                 }
 
-                Console.WriteLine($"Database Type: {WebConfigUtils.DatabaseType.Value}");
-                Console.WriteLine($"Connection String Decode: {WebConfigUtils.ConnectionString}");
-                Console.WriteLine($"Connection String Encode: {TranslateUtils.EncryptStringBySecretKey(WebConfigUtils.ConnectionString, WebConfigUtils.SecretKey)}");
+                await Console.Out.WriteLineAsync($"Database Type: {WebConfigUtils.DatabaseType.Value}");
+                await Console.Out.WriteLineAsync($"Connection String Decode: {WebConfigUtils.ConnectionString}");
+                await Console.Out.WriteLineAsync($"Connection String Encode: {TranslateUtils.EncryptStringBySecretKey(WebConfigUtils.ConnectionString, WebConfigUtils.SecretKey)}");
             }
         }
     }

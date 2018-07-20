@@ -5,12 +5,10 @@ namespace SiteServer.CMS.Plugin.Apis
 {
     public class AdminApi : IAdminApi
     {
-        private readonly IMetadata _metadata;
+        private AdminApi() { }
 
-        public AdminApi(IMetadata metadata)
-        {
-            _metadata = metadata;
-        }
+        private static AdminApi _instance;
+        public static AdminApi Instance => _instance ?? (_instance = new AdminApi());
 
         public bool IsAdminNameExists(string adminName)
         {
@@ -26,19 +24,10 @@ namespace SiteServer.CMS.Plugin.Apis
             }
         }
 
-        public bool IsPluginAuthorized
-        {
-            get
-            {
-                var request = new AuthRequest();
-                return request.AdminPermissions.HasAdministratorPermissions(_metadata.Id);
-            }
-        }
-
-        public bool IsSiteAuthorized(int siteId)
+        public bool HasSystemPermissions(params string[] systemPermissions)
         {
             var request = new AuthRequest();
-            return request.AdminPermissions.HasSitePermissions(siteId, _metadata.Id);
+            return request.AdminPermissions.HasSystemPermissions(systemPermissions);
         }
 
         public bool HasSitePermissions(int siteId, params string[] sitePermissions)

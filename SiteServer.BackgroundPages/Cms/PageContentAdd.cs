@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
         public DateTimeTextBox TbAddDate;
         public Button BtnSubmit;
 
-        private ChannelInfo _nodeInfo;
+        private ChannelInfo _channelInfo;
         private List<TableStyleInfo> _styleInfoList;
         private string _tableName;
 
@@ -79,9 +79,9 @@ namespace SiteServer.BackgroundPages.Cms
                 ReturnUrl = PageContent.GetRedirectUrl(SiteId, channelId);
             }
 
-            _nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+            _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, channelId);
-            _tableName = ChannelManager.GetTableName(SiteInfo, _nodeInfo);
+            _tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
             ContentInfo contentInfo = null;
             _styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, relatedIdentities);
 
@@ -93,10 +93,11 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             var titleFormat = IsPostBack ? Request.Form[ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)] : contentInfo?.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title));
-            LtlTitleHtml.Text = ContentUtility.GetTitleHtml(titleFormat, AjaxCmsService.GetTitlesUrl(SiteId, _nodeInfo.Id));
+            LtlTitleHtml.Text = ContentUtility.GetTitleHtml(titleFormat, AjaxCmsService.GetTitlesUrl(SiteId, _channelInfo.Id));
 
             AcAttributes.SiteInfo = SiteInfo;
-            AcAttributes.ChannelId = _nodeInfo.Id;
+            AcAttributes.ChannelId = _channelInfo.Id;
+            AcAttributes.ContentId = contentId;
             AcAttributes.StyleInfoList = _styleInfoList;
 
             if (!IsPostBack)
@@ -105,7 +106,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 LtlPageTitle.Text = pageTitle;
 
-                if (HasChannelPermissions(_nodeInfo.Id, ConfigManager.ChannelPermissions.ContentTranslate))
+                if (HasChannelPermissions(_channelInfo.Id, ConfigManager.ChannelPermissions.ContentTranslate))
                 {
                     PhTranslate.Visible = true;
                     BtnTranslate.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
@@ -136,11 +137,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                 LtlTags.Text = ContentUtility.GetTagsHtml(AjaxCmsService.GetTagsUrl(SiteId));
 
-                if (HasChannelPermissions(_nodeInfo.Id, ConfigManager.ChannelPermissions.ContentCheck))
+                if (HasChannelPermissions(_channelInfo.Id, ConfigManager.ChannelPermissions.ContentCheck))
                 {
                     PhStatus.Visible = true;
                     int checkedLevel;
-                    var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, _nodeInfo.Id, out checkedLevel);
+                    var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, _channelInfo.Id, out checkedLevel);
                     if (AuthRequest.IsQueryExists("contentLevel"))
                     {
                         checkedLevel = TranslateUtils.ToIntWithNagetive(AuthRequest.GetQueryString("contentLevel"));
@@ -150,7 +151,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, _nodeInfo.Id, contentInfo, isChecked, checkedLevel);
+                    CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, _channelInfo.Id, contentInfo, isChecked, checkedLevel);
                 }
                 else
                 {
@@ -235,7 +236,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentInfo = new ContentInfo();
                 try
                 {
-                    contentInfo.ChannelId = _nodeInfo.Id;
+                    contentInfo.ChannelId = _channelInfo.Id;
                     contentInfo.SiteId = SiteId;
                     contentInfo.AddUserName = AuthRequest.AdminName;
                     contentInfo.LastEditUserName = contentInfo.AddUserName;
@@ -274,8 +275,8 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         try
                         {
-                            service.OnContentFormSubmit(new ContentFormSubmitEventArgs(SiteId, _nodeInfo.Id,
-                                contentInfo, new ExtendedAttributes(Request.Form)));
+                            service.OnContentFormSubmit(new ContentFormSubmitEventArgs(SiteId, _channelInfo.Id,
+                                contentInfo.Id, new ExtendedAttributes(Request.Form), contentInfo));
                         }
                         catch (Exception ex)
                         {
@@ -301,14 +302,14 @@ namespace SiteServer.BackgroundPages.Cms
                     FailMessage($"内容添加失败：{ex.Message}");
                 }
 
-                CreateManager.CreateContentAndTrigger(SiteId, _nodeInfo.Id, contentInfo.Id);
+                CreateManager.CreateContentAndTrigger(SiteId, _channelInfo.Id, contentInfo.Id);
 
-                AuthRequest.AddSiteLog(SiteId, _nodeInfo.Id, contentInfo.Id, "添加内容",
+                AuthRequest.AddSiteLog(SiteId, _channelInfo.Id, contentInfo.Id, "添加内容",
                     $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
-                ContentUtility.Translate(SiteInfo, _nodeInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName);
+                ContentUtility.Translate(SiteInfo, _channelInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName);
 
-                redirectUrl = PageContentAddAfter.GetRedirectUrl(SiteId, _nodeInfo.Id, contentInfo.Id,
+                redirectUrl = PageContentAddAfter.GetRedirectUrl(SiteId, _channelInfo.Id, contentInfo.Id,
                     ReturnUrl);
             }
             else
@@ -354,8 +355,8 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         try
                         {
-                            service.OnContentFormSubmit(new ContentFormSubmitEventArgs(SiteId, _nodeInfo.Id,
-                                contentInfo, new ExtendedAttributes(Request.Form)));
+                            service.OnContentFormSubmit(new ContentFormSubmitEventArgs(SiteId, _channelInfo.Id,
+                                contentInfo.Id, new ExtendedAttributes(Request.Form), contentInfo));
                         }
                         catch (Exception ex)
                         {
@@ -367,7 +368,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     TagUtils.UpdateTags(tagsLast, contentInfo.Tags, tagCollection, SiteId, contentId);
 
-                    ContentUtility.Translate(SiteInfo, _nodeInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName);
+                    ContentUtility.Translate(SiteInfo, _channelInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName);
 
                     //更新引用该内容的信息
                     //如果不是异步自动保存，那么需要将引用此内容的content修改
@@ -443,9 +444,9 @@ namespace SiteServer.BackgroundPages.Cms
                     return;
                 }
 
-                CreateManager.CreateContentAndTrigger(SiteId, _nodeInfo.Id, contentId);
+                CreateManager.CreateContentAndTrigger(SiteId, _channelInfo.Id, contentId);
 
-                AuthRequest.AddSiteLog(SiteId, _nodeInfo.Id, contentId, "修改内容",
+                AuthRequest.AddSiteLog(SiteId, _channelInfo.Id, contentId, "修改内容",
                     $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
                 redirectUrl = ReturnUrl;
@@ -458,13 +459,13 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (contentId == 0)
             {
-                if (_nodeInfo == null || _nodeInfo.Additional.IsContentAddable == false)
+                if (_channelInfo == null || _channelInfo.Additional.IsContentAddable == false)
                 {
                     PageUtils.RedirectToErrorPage("此栏目不能添加内容！");
                     return false;
                 }
 
-                if (!HasChannelPermissions(_nodeInfo.Id, ConfigManager.ChannelPermissions.ContentAdd))
+                if (!HasChannelPermissions(_channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     if (!AuthRequest.IsAdminLoggin)
                     {
@@ -478,7 +479,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                if (!HasChannelPermissions(_nodeInfo.Id, ConfigManager.ChannelPermissions.ContentEdit))
+                if (!HasChannelPermissions(_channelInfo.Id, ConfigManager.ChannelPermissions.ContentEdit))
                 {
                     if (!AuthRequest.IsAdminLoggin)
                     {

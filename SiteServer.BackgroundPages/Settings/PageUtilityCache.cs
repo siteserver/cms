@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Utility);
+            VerifySystemPermissions(ConfigManager.SettingsPermissions.Utility);
 
             LtlCount.Text = CacheUtils.Count.ToString();
 

@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
             if (Page.IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.PluginsPermissions.Add);
+            VerifySystemPermissions(ConfigManager.PluginsPermissions.Add);
 
             BtnUpload.OnClientClick = ModalManualInstall.GetOpenWindowString();
         }

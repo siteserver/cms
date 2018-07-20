@@ -77,7 +77,7 @@ namespace SiteServer.BackgroundPages.Settings
                 DdlPluginId.Items.Add(new ListItem(pluginInfo.Id, pluginInfo.Id));
             }
 
-            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Log);
+            VerifySystemPermissions(ConfigManager.SettingsPermissions.Log);
 
             if (AuthRequest.IsQueryExists("Keyword"))
             {

@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using NDesk.Options;
 using SiteServer.Cli.Core;
 using SiteServer.CMS.Core;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
-namespace SiteServer.Cli.Commands
+namespace SiteServer.Cli.Jobs
 {
-    public static class BackupManager
+    public class BackupJob: IJob
     {
         public const string CommandName = "backup";
 
@@ -38,9 +40,9 @@ namespace SiteServer.Cli.Commands
             Console.WriteLine();
         }
 
-        public static void Execute(string[] args)
+        public async Task Execute(IJobExecutionContext context)
         {
-            if (!CliUtils.ParseArgs(Options, args)) return;
+            if (!CliUtils.ParseArgs(Options, context.Args)) return;
 
             if (_isHelp)
             {
@@ -63,12 +65,12 @@ namespace SiteServer.Cli.Commands
             }
             else
             {
-                configInfo = CliUtils.LoadConfigByFile(_configFileName);
+                configInfo = await CliUtils.LoadConfigByFileAsync(_configFileName);
             }
             
             if (configInfo == null)
             {
-                CliUtils.PrintError("Error, config not exists");
+                await CliUtils.PrintErrorAsync("Error, config not exists");
                 return;
             }
 
@@ -81,27 +83,27 @@ namespace SiteServer.Cli.Commands
 
             if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
             {
-                CliUtils.PrintError("Error, connection string is empty");
+                await CliUtils.PrintErrorAsync("Error, connection string is empty");
                 return;
             }
 
             if (!DataProvider.DatabaseDao.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             {
-                CliUtils.PrintError("Error, can not connect to the database");
+                await CliUtils.PrintErrorAsync("Error, can not connect to the database");
                 return;
             }
 
-            Console.WriteLine($"Database Type: {WebConfigUtils.DatabaseType.Value}");
-            Console.WriteLine($"Connection String: {WebConfigUtils.ConnectionString}");
-            Console.WriteLine($"Backup Directory: {treeInfo.DirectoryPath}");
+            await Console.Out.WriteLineAsync($"Database Type: {WebConfigUtils.DatabaseType.Value}");
+            await Console.Out.WriteLineAsync($"Connection String: {WebConfigUtils.ConnectionString}");
+            await Console.Out.WriteLineAsync($"Backup Directory: {treeInfo.DirectoryPath}");
 
             var tableNames = DataProvider.DatabaseDao.GetTableNameList();
 
-            FileUtils.WriteText(treeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(tableNames));
+            await FileUtils.WriteTextAsync(treeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(tableNames));
 
-            CliUtils.PrintLine();
-            CliUtils.PrintRow("Backup Table Name", "Total Count");
-            CliUtils.PrintLine();
+            await CliUtils.PrintRowLineAsync();
+            await CliUtils.PrintRowAsync("Backup Table Name", "Total Count");
+            await CliUtils.PrintRowLineAsync();
 
             foreach (var tableName in tableNames)
             {
@@ -121,7 +123,7 @@ namespace SiteServer.Cli.Commands
                     RowFiles = new List<string>()
                 };
 
-                CliUtils.PrintRow(tableName, tableInfo.TotalCount.ToString("#,0"));
+                await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
                 var identityColumnName = DataProvider.DatabaseDao.AddIdentityColumnIdIfNotExists(tableName, tableInfo.Columns);
 
@@ -145,7 +147,7 @@ namespace SiteServer.Cli.Commands
 
                                 var rows = DataProvider.DatabaseDao.GetPageObjects(tableName, identityColumnName, offset, limit);
 
-                                FileUtils.WriteText(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
+                                await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
                             }
                         }
                     }
@@ -155,15 +157,15 @@ namespace SiteServer.Cli.Commands
                         tableInfo.RowFiles.Add(fileName);
                         var rows = DataProvider.DatabaseDao.GetObjects(tableName);
 
-                        FileUtils.WriteText(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
+                        await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
                     }
                 }
 
-                FileUtils.WriteText(treeInfo.GetTableMetadataFilePath(tableName), Encoding.UTF8, TranslateUtils.JsonSerialize(tableInfo));
+                await FileUtils.WriteTextAsync(treeInfo.GetTableMetadataFilePath(tableName), Encoding.UTF8, TranslateUtils.JsonSerialize(tableInfo));
             }
 
-            CliUtils.PrintLine();
-            Console.WriteLine("Well done! Thanks for Using SiteServer Cli Tool");
+            await CliUtils.PrintRowLineAsync();
+            await Console.Out.WriteLineAsync("Well done! Thanks for Using SiteServer Cli Tool");
         }
     }
 }

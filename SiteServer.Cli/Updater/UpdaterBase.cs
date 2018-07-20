@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
 using SiteServer.Utils;
@@ -18,11 +20,8 @@ namespace SiteServer.Cli.Updater
 
         protected TreeInfo NewTreeInfo { get; }
 
-        protected bool GetNewTableInfo(string oldTableName, TableInfo oldTableInfo, ConvertInfo converter, out string newTableName, out TableInfo newTableInfo)
+        protected async Task<Tuple<string, TableInfo>> GetNewTableInfoAsync(string oldTableName, TableInfo oldTableInfo, ConvertInfo converter)
         {
-            newTableName = null;
-            newTableInfo = null;
-
             if (converter == null)
             {
                 converter = new ConvertInfo();
@@ -30,8 +29,8 @@ namespace SiteServer.Cli.Updater
 
             if (converter.IsAbandon)
             {
-                CliUtils.PrintRow(oldTableName, "Abandon", "--");
-                return false;
+                await CliUtils.PrintRowAsync(oldTableName, "Abandon", "--");
+                return null;
             }
 
             if (string.IsNullOrEmpty(converter.NewTableName))
@@ -43,14 +42,14 @@ namespace SiteServer.Cli.Updater
                 converter.NewColumns = oldTableInfo.Columns;
             }
 
-            newTableInfo = new TableInfo
+            var newTableInfo = new TableInfo
             {
                 Columns = converter.NewColumns,
                 TotalCount = oldTableInfo.TotalCount,
                 RowFiles = oldTableInfo.RowFiles
             };
 
-            CliUtils.PrintRow(oldTableName, converter.NewTableName, oldTableInfo.TotalCount.ToString("#,0"));
+            await CliUtils.PrintRowAsync(oldTableName, converter.NewTableName, oldTableInfo.TotalCount.ToString("#,0"));
 
             var i = 0;
 
@@ -66,11 +65,11 @@ namespace SiteServer.Cli.Updater
                     if (converter.ConvertKeyDict != null)
                     {
                         var oldRows =
-                            TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(oldFilePath, Encoding.UTF8));
+                            TranslateUtils.JsonDeserialize<List<JObject>>(await FileUtils.ReadTextAsync(oldFilePath, Encoding.UTF8));
 
                         var newRows = UpdateUtils.UpdateRows(oldRows, converter.ConvertKeyDict, converter.ConvertValueDict);
 
-                        FileUtils.WriteText(newFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newRows));
+                        await FileUtils.WriteTextAsync(newFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newRows));
                     }
                     else
                     {
@@ -79,11 +78,9 @@ namespace SiteServer.Cli.Updater
                 }
             }
 
-            newTableName = converter.NewTableName;
-
-            return true;
+            return new Tuple<string, TableInfo>(converter.NewTableName, newTableInfo);
         }
 
-        public abstract bool UpdateTableInfo(string oldTableName, TableInfo oldTableInfo, List<string> contentTableNameList, out string newTableName, out TableInfo newTableInfo);
+        public abstract Task<Tuple<string, TableInfo>> UpdateTableInfoAsync(string oldTableName, TableInfo oldTableInfo, List<string> contentTableNameList);
     }
 }

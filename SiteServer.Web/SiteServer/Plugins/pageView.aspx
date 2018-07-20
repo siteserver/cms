@@ -34,12 +34,12 @@
 
               <div class="alert alert-warning" v-bind:style="{ display: installed && isShouldUpdate ? '' : 'none' }">
                 系统检测到插件新版本，当前版本：{{ installedVersion }}，新版本：{{ package.version }}
-                <input v-on:click="location.href='pageView.aspx?update=true&pluginId=' + package.id;return false;" type="button" value="立即升级"
+                <input v-on:click="location.href='install.cshtml?isUpdate=true&packageIds=' + package.id;return false;" type="button" value="升级插件"
                   class="btn btn-primary">
               </div>
 
               <div>
-                <input v-on:click="location.href='pageView.aspx?install=true&pluginId=' + package.id + '&version=' + package.version;return false;"
+                <input v-on:click="location.href='install.cshtml?packageIds=' + package.id;return false;"
                   type="button" value="安装插件" class="btn btn-primary" v-bind:style="{ display: !installed ? '' : 'none' }">
                 <input type="button" disabled="disabled" value="插件已安装" class="btn m-l-5" v-bind:style="{ display: installed && installedVersion == package.version ? '' : 'none' }">
 

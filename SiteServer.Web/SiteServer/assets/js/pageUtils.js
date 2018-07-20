@@ -1,22 +1,30 @@
 var pageUtils = {
-  loading: function (isLoading){
+  getQueryStringByName: function (name) {
+    var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
+    if (!result || result.length < 1) {
+      return "";
+    }
+    return decodeURIComponent(result[1]);
+  },
+
+  loading: function (isLoading) {
     if (isLoading) {
       return layer.load(1, {
-        shade: [0.2,'#000'] //0.1透明度的白色背景
+        shade: [0.2, '#000'] //0.1透明度的白色背景
       });
     } else {
       layer.close(layer.index);
     }
   },
-  
-  closeLayer: function() {
-    layer.close(layer.index);
+
+  closeLayer: function () {
+    parent.layer.closeAll();
     return false;
   },
 
-  openLayer: function(config) {
-    if (!config) return false;
-  
+  openLayer: function (config) {
+    if (!config || !config.url) return false;
+
     if (!config.width) {
       config.width = $(window).width() - 50;
     }
@@ -24,58 +32,46 @@ var pageUtils = {
       config.height = $(window).height() - 50;
     }
 
-    var type = 0;
-    var content = '';
-    if (config.url) {
-      type = 2;
-      content = config.url;
-    } else if (config.domId) {
-      type = 1;
-      content = $('#' + config.domId);
-    } else if (config.html) {
-      content = config.html;
-    }
-  
     layer.open({
-      type: type,
+      type: 2,
       btn: null,
       title: config.title,
       area: [config.width + 'px', config.height + 'px'],
       fixed: false,
       maxmin: true,
       shadeClose: true,
-      content: content
+      content: config.url
     });
-  
+
     return false;
   },
-  
-  alertDelete: function(config) {
+
+  alertDelete: function (config) {
     if (!config) return false;
-  
+
     swal({
-      title: config.title,
-      text: config.text,
-      icon: 'warning',
-      buttons: {
-    cancel: {
-        text: '取 消',
-        visible: true,
-        className: 'btn'
-        },
-        confirm: {
-        text: '确认删除',
-        visible: true,
-        className: 'btn btn-danger'
+        title: config.title,
+        text: config.text,
+        icon: 'warning',
+        buttons: {
+          cancel: {
+            text: '取 消',
+            visible: true,
+            className: 'btn'
+          },
+          confirm: {
+            text: '确认删除',
+            visible: true,
+            className: 'btn btn-danger'
+          }
         }
-      }
-    })
-    .then(function(isConfirm){
-      if (isConfirm) {
-        config.callback();
-      }
-    });
-  
+      })
+      .then(function (isConfirm) {
+        if (isConfirm) {
+          config.callback();
+        }
+      });
+
     return false;
   }
 };
