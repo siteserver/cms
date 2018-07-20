@@ -13,7 +13,7 @@ var data = {
   pageStep: 1,
   isNightly: false,
   version: null,
-  installedPackages: null,
+  downloadPlugins: null,
   downloadApi: null,
   updateApi: null,
   clearCacheApi: null,
@@ -38,7 +38,7 @@ var methods = {
 
       $this.isNightly = res.isNightly;
       $this.version = res.version;
-      $this.installedPackages = res.installedPackages;
+      $this.downloadPlugins = res.downloadPlugins;
       $this.downloadApi = new apiUtils.Api(res.downloadApiUrl);
       $this.updateApi = new apiUtils.Api(res.updateApiUrl);
       $this.clearCacheApi = new apiUtils.Api(res.clearCacheApiUrl);
@@ -82,7 +82,7 @@ var methods = {
       var installedPluginReference = $.grep($this.currentPackages, function (e) {
         return e.id == pluginReference.id;
       });
-      if (installedPluginReference.length == 0) {
+      if (installedPluginReference.length === 0) {
         referencePackageIds.push(pluginReference.id);
       }
     }
@@ -91,12 +91,12 @@ var methods = {
       var installedPackageReference = $.grep($this.currentPackages, function (e) {
         return e.id == packageReference.id;
       });
-      if (installedPackageReference.length == 0) {
+      if (installedPackageReference.length === 0) {
         referencePackageIds.push(packageReference.id);
       }
     }
     
-    if (referencePackageIds.length == 0) {
+    if (referencePackageIds.length === 0) {
       $this.download();
       return;
     }
@@ -110,8 +110,8 @@ var methods = {
 
       for (var i = 0; i < res.value.length; i++) {
         var package = res.value[i];
-        for (var j = 0; j < $this.installedPackages.length; j++) {
-          var installedPackage = $this.installedPackages[j];
+        for (var j = 0; j < $this.downloadPlugins.length; j++) {
+          var installedPackage = $this.downloadPlugins[j];
           if (installedPackage === (package.id + '.' + package.version)) {
             $this.currentDownloadIds.push(package.id);
             break;

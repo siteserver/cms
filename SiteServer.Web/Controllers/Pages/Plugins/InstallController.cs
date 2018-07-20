@@ -29,7 +29,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
                 {
                     IsNightly = WebConfigUtils.IsNightlyUpdate,
                     Version = SystemManager.PluginVersion,
-                    PluginManager.PackagesIdAndVersionList,
+                    DownloadPlugins = PluginManager.PackagesIdAndVersionList,
                     DownloadApiUrl = ApiRouteDownload.GetUrl(ApiManager.InnerApiUrl),
                     UpdateApiUrl = ApiRouteUpdate.GetUrl(ApiManager.InnerApiUrl),
                     ClearCacheApiUrl = ApiRouteClearCache.GetUrl(ApiManager.InnerApiUrl)
