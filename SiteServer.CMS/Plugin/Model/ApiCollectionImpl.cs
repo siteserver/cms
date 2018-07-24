@@ -2,7 +2,7 @@
 
 namespace SiteServer.CMS.Plugin.Model
 {
-    public class PluginApiCollection: IApiCollection
+    public class ApiCollectionImpl: IApiCollection
     {
         public IAdminApi AdminApi { get; set; }
 
@@ -10,9 +10,7 @@ namespace SiteServer.CMS.Plugin.Model
 
         public IContentApi ContentApi { get; set; }
 
-        public IDataApi DataApi { get; set; }
-
-        public IFilesApi FilesApi { get; set; }
+        public IDatabaseApi DatabaseApi { get; set; }
 
         public IChannelApi ChannelApi { get; set; }
 
@@ -23,5 +21,7 @@ namespace SiteServer.CMS.Plugin.Model
         public ISiteApi SiteApi { get; set; }
 
         public IUserApi UserApi { get; set; }
+
+        public IUtilsApi UtilsApi { get; set; }
     }
 }

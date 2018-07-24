@@ -15,6 +15,7 @@ var $vue = new Vue({
     pageAlert: null,
     account: null,
     password: null,
+    isAutoLogin: false,
     captcha: null, 
     captchaUrl: null
   },
@@ -30,12 +31,12 @@ var $vue = new Vue({
       this.pageLoad = true;
       this.captchaUrl = $captchaGetUrl + '?r=' + new Date().getTime();
     },
-    checkCaptcha: function(account, password, captcha) {
+    checkCaptcha: function() {
       var $this = this;
 
       pageUtils.loading(true);
       $captchaCheckApi.post({
-        captcha: captcha
+        captcha: $this.captcha
       }, function (err, res) {
         pageUtils.loading(false);
         if (err) {
@@ -46,16 +47,17 @@ var $vue = new Vue({
           return;
         }
 
-        $this.login(account, password);
+        $this.login();
       });
     },
-    login: function (account, password) {
+    login: function () {
       var $this = this;
 
       pageUtils.loading(true);
       $innerApi.post({
-        account: account,
-        password: md5(password)
+        account: $this.account,
+        password: md5($this.password),
+        isAutoLogin: $this.isAutoLogin
       }, function (err, res) {
         pageUtils.loading(false);
         if (err) {
@@ -67,19 +69,20 @@ var $vue = new Vue({
         }
 
         if ($apiConfig.isSeparatedApi) {
-          $this.loginSeparatedApi(account, password);
+          $this.loginSeparatedApi();
         } else {
           $this.redirect();
         }
       });
     },
-    loginSeparatedApi: function (account, password) {
+    loginSeparatedApi: function () {
       var $this = this;
 
       pageUtils.loading(true);
       $api.post({
-        account: account,
-        password: md5(password)
+        account: $this.account,
+        password: md5($this.password),
+        isAutoLogin: $this.isAutoLogin
       }, function (err, res) {
         pageUtils.loading(false);
 
@@ -103,7 +106,7 @@ var $vue = new Vue({
       this.pageSubmit = true;
       this.pageAlert = null;
       if (!this.account || !this.password || !this.captcha) return;
-      this.checkCaptcha(this.account, this.password, this.captcha);
+      this.checkCaptcha();
     }
   }
 });

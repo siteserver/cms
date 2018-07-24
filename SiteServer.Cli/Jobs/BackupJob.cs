@@ -10,7 +10,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.Cli.Jobs
 {
-    public class BackupJob: IJob
+    public static class BackupJob
     {
         public const string CommandName = "backup";
 
@@ -40,7 +40,7 @@ namespace SiteServer.Cli.Jobs
             Console.WriteLine();
         }
 
-        public async Task Execute(IJobExecutionContext context)
+        public static async Task Execute(IJobContext context)
         {
             if (!CliUtils.ParseArgs(Options, context.Args)) return;
 

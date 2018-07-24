@@ -1,16 +1,36 @@
 ﻿using System.Collections.Generic;
-using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
-    public class FilesApi : IFilesApi
+    public class UtilsApi : IUtilsApi
     {
-        private FilesApi() { }
+        private UtilsApi() { }
 
-        private static FilesApi _instance;
-        public static FilesApi Instance => _instance ?? (_instance = new FilesApi());
+        private static UtilsApi _instance;
+        public static UtilsApi Instance => _instance ?? (_instance = new UtilsApi());
+
+        public string Encrypt(string inputString)
+        {
+            return TranslateUtils.EncryptStringBySecretKey(inputString);
+        }
+
+        public string Decrypt(string inputString)
+        {
+            return TranslateUtils.DecryptStringBySecretKey(inputString);
+        }
+
+        public string FilterXss(string html)
+        {
+            return PageUtils.FilterXss(html);
+        }
+
+        public string FilterSql(string sql)
+        {
+            return PageUtils.FilterSql(sql);
+        }
 
         public void MoveFiles(int sourceSiteId, int targetSiteId, List<string> relatedUrls)
         {
@@ -43,34 +63,9 @@ namespace SiteServer.CMS.Plugin.Apis
             return PathUtils.Combine(localDirectoryPath, localFileName);
         }
 
-        public string GetSitePath(int siteId, string virtualPath)
-        {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            return PathUtility.MapPath(siteInfo, virtualPath);
-        }
-
         public string GetTemporaryFilesPath(string relatedPath)
         {
             return PathUtils.GetTemporaryFilesPath(relatedPath);
-        }
-
-        public string GetSiteUrl(int siteId)
-        {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            return PageUtility.GetSiteUrl(siteInfo, false);
-        }
-
-        public string GetSiteUrl(int siteId, string virtualPath)
-        {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            return PageUtility.ParseNavigationUrl(siteInfo, virtualPath, false);
-        }
-
-        public string GetSiteUrlByFilePath(string filePath)
-        {
-            var siteId = SiteApi.Instance.GetSiteIdByFilePath(filePath);
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            return PageUtility.GetSiteUrlByPhysicalPath(siteInfo, filePath, false);
         }
 
         public string GetRootUrl(string relatedUrl)
@@ -81,18 +76,6 @@ namespace SiteServer.CMS.Plugin.Apis
         public string GetAdminDirectoryUrl(string relatedUrl)
         {
             return PageUtils.GetAdminDirectoryUrl(relatedUrl);
-        }
-
-        public string GetChannelUrl(int siteId, int channelId)
-        {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            return PageUtility.GetChannelUrl(siteInfo, ChannelManager.GetChannelInfo(siteId, channelId), false);
-        }
-
-        public string GetContentUrl(int siteId, int channelId, int contentId)
-        {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            return PageUtility.GetContentUrl(siteInfo, ChannelManager.GetChannelInfo(siteId, channelId), contentId, false);
         }
 
         public void CreateZip(string zipFilePath, string directoryPath)

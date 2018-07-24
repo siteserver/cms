@@ -154,10 +154,10 @@ namespace SiteServer.CMS.StlParser.Parsers
                         {
                             try
                             {
-                                Func<PluginParseContext, string> func;
+                                Func<ParseContextImpl, string> func;
                                 if (parsers.TryGetValue(elementName, out func))
                                 {
-                                    var context = new PluginParseContext(stlElementInfo.OuterHtml, stlElementInfo.InnerHtml, stlElementInfo.Attributes, pageInfo, contextInfo);
+                                    var context = new ParseContextImpl(stlElementInfo.OuterHtml, stlElementInfo.InnerHtml, stlElementInfo.Attributes, pageInfo, contextInfo);
                                     parsedContent = func(context);
                                 }
                             }

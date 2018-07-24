@@ -97,148 +97,148 @@ namespace SiteServer.CMS.Data
 
         protected IDataReader ExecuteReader(string commandText, params IDataParameter[] commandParameters)
         {
-            return DataProvider.DataApi.ExecuteReader(ConnectionString, commandText, commandParameters);
+            return DataProvider.DatabaseApi.ExecuteReader(ConnectionString, commandText, commandParameters);
         }
 
 
         protected IDataReader ExecuteReader(string commandText)
         {
-            return DataProvider.DataApi.ExecuteReader(ConnectionString, commandText);
+            return DataProvider.DatabaseApi.ExecuteReader(ConnectionString, commandText);
         }
 
 
         protected IDataReader ExecuteReader(IDbConnection conn, string commandText, params IDataParameter[] commandParameters)
         {
-            return DataProvider.DataApi.ExecuteReader(conn, commandText, commandParameters);
+            return DataProvider.DatabaseApi.ExecuteReader(conn, commandText, commandParameters);
         }
 
 
         protected IDataReader ExecuteReader(IDbConnection conn, string commandText)
         {
-            return DataProvider.DataApi.ExecuteReader(conn, commandText);
+            return DataProvider.DatabaseApi.ExecuteReader(conn, commandText);
         }
 
 
         protected IDataReader ExecuteReader(IDbTransaction trans, string commandText, params IDataParameter[] commandParameters)
         {
-            return DataProvider.DataApi.ExecuteReader(trans, commandText, commandParameters);
+            return DataProvider.DatabaseApi.ExecuteReader(trans, commandText, commandParameters);
         }
 
 
         protected IDataReader ExecuteReader(IDbTransaction trans, string commandText)
         {
-            return DataProvider.DataApi.ExecuteReader(trans, commandText);
+            return DataProvider.DatabaseApi.ExecuteReader(trans, commandText);
         }
 
 
         protected IDataReader ExecuteReader(string connectionString, string commandText)
         {
-            return DataProvider.DataApi.ExecuteReader(connectionString, commandText);
+            return DataProvider.DatabaseApi.ExecuteReader(connectionString, commandText);
         }
 
         protected IDataReader ExecuteReader(string connectionString, string commandText, params IDataParameter[] commandParameters)
         {
-            return DataProvider.DataApi.ExecuteReader(connectionString, commandText, commandParameters);
+            return DataProvider.DatabaseApi.ExecuteReader(connectionString, commandText, commandParameters);
         }
 
 
         protected DataSet ExecuteDataset(string commandText, params IDataParameter[] commandParameters)
         {
-            return DataProvider.DataApi.ExecuteDataset(ConnectionString, commandText, commandParameters);
+            return DataProvider.DatabaseApi.ExecuteDataset(ConnectionString, commandText, commandParameters);
         }
 
 
         protected DataSet ExecuteDataset(string commandText)
         {
-            return DataProvider.DataApi.ExecuteDataset(ConnectionString, commandText);
+            return DataProvider.DatabaseApi.ExecuteDataset(ConnectionString, commandText);
         }
 
         protected DataSet ExecuteDataset(string connectionString, string commandText)
         {
-            return DataProvider.DataApi.ExecuteDataset(connectionString, commandText);
+            return DataProvider.DatabaseApi.ExecuteDataset(connectionString, commandText);
         }
 
         protected int ExecuteNonQuery(IDbConnection conn, string commandText, params IDataParameter[] commandParameters)
         {
-            return DataProvider.DataApi.ExecuteNonQuery(conn, commandText, commandParameters);
+            return DataProvider.DatabaseApi.ExecuteNonQuery(conn, commandText, commandParameters);
         }
 
 
         protected int ExecuteNonQuery(IDbConnection conn, string commandText)
         {
-            return DataProvider.DataApi.ExecuteNonQuery(conn, commandText);
+            return DataProvider.DatabaseApi.ExecuteNonQuery(conn, commandText);
         }
 
 
         protected int ExecuteNonQuery(IDbTransaction trans, string commandText, params IDataParameter[] commandParameters)
         {
-            return DataProvider.DataApi.ExecuteNonQuery(trans, commandText, commandParameters);
+            return DataProvider.DatabaseApi.ExecuteNonQuery(trans, commandText, commandParameters);
         }
 
 
         protected int ExecuteNonQuery(IDbTransaction trans, string commandText)
         {
-            return DataProvider.DataApi.ExecuteNonQuery(trans, commandText);
+            return DataProvider.DatabaseApi.ExecuteNonQuery(trans, commandText);
         }
 
         protected int ExecuteNonQuery(string connectionString, string commandText, params IDataParameter[] commandParameters)
         {
-            return DataProvider.DataApi.ExecuteNonQuery(connectionString, commandText, commandParameters);
+            return DataProvider.DatabaseApi.ExecuteNonQuery(connectionString, commandText, commandParameters);
         }
 
         protected int ExecuteNonQuery(string commandText, params IDataParameter[] commandParameters)
         {
-            return DataProvider.DataApi.ExecuteNonQuery(ConnectionString, commandText, commandParameters);
+            return DataProvider.DatabaseApi.ExecuteNonQuery(ConnectionString, commandText, commandParameters);
         }
 
         protected int ExecuteNonQuery(string commandText)
         {
-            return DataProvider.DataApi.ExecuteNonQuery(ConnectionString, commandText);
+            return DataProvider.DatabaseApi.ExecuteNonQuery(ConnectionString, commandText);
         }
 
         protected int ExecuteNonQueryAndReturnId(string tableName, string idColumnName, string commandText, params IDataParameter[] commandParameters)
         {
-            return DataProvider.DataApi.ExecuteNonQueryAndReturnId(tableName, idColumnName, ConnectionString, commandText, commandParameters);
+            return DataProvider.DatabaseApi.ExecuteNonQueryAndReturnId(tableName, idColumnName, ConnectionString, commandText, commandParameters);
         }
 
         protected int ExecuteNonQueryAndReturnId(string tableName, string idColumnName, IDbTransaction trans, string commandText, params IDataParameter[] commandParameters)
         {
-            return DataProvider.DataApi.ExecuteNonQueryAndReturnId(tableName, idColumnName, trans, commandText, commandParameters);
+            return DataProvider.DatabaseApi.ExecuteNonQueryAndReturnId(tableName, idColumnName, trans, commandText, commandParameters);
         }
 
-        protected int ExecuteReturnId(string tableName, string idColumnName, IDbTransaction trans)
+        protected int ExecuteCurrentId(IDbTransaction trans, string tableName, string idColumnName)
         {
-            return DataProvider.DataApi.ExecuteReturnId(tableName, idColumnName, trans);
+            return DataProvider.DatabaseApi.ExecuteCurrentId(trans, tableName, idColumnName);
         }
 
         protected object ExecuteScalar(IDbConnection conn, string commandText, params IDataParameter[] commandParameters)
         {
-            return DataProvider.DataApi.ExecuteScalar(conn, commandText, commandParameters);
+            return DataProvider.DatabaseApi.ExecuteScalar(conn, commandText, commandParameters);
         }
 
         protected object ExecuteScalar(IDbConnection conn, string commandText)
         {
-            return DataProvider.DataApi.ExecuteScalar(conn, commandText);
+            return DataProvider.DatabaseApi.ExecuteScalar(conn, commandText);
         }
 
         protected object ExecuteScalar(IDbTransaction trans, string commandText, params IDataParameter[] commandParameters)
         {
-            return DataProvider.DataApi.ExecuteScalar(trans, commandText, commandParameters);
+            return DataProvider.DatabaseApi.ExecuteScalar(trans, commandText, commandParameters);
         }
 
         protected object ExecuteScalar(IDbTransaction trans, string commandText)
         {
-            return DataProvider.DataApi.ExecuteScalar(trans, commandText);
+            return DataProvider.DatabaseApi.ExecuteScalar(trans, commandText);
         }
 
         protected object ExecuteScalar(string commandText, params IDataParameter[] commandParameters)
         {
-            return DataProvider.DataApi.ExecuteScalar(ConnectionString, commandText, commandParameters);
+            return DataProvider.DatabaseApi.ExecuteScalar(ConnectionString, commandText, commandParameters);
         }
 
         protected object ExecuteScalar(string commandText)
         {
-            return DataProvider.DataApi.ExecuteScalar(ConnectionString, commandText);
+            return DataProvider.DatabaseApi.ExecuteScalar(ConnectionString, commandText);
         }
 
         protected string GetString(IDataReader rdr, int i)

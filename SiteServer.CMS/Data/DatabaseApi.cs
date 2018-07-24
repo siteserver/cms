@@ -39,7 +39,7 @@ namespace SiteServer.CMS.Data
     /// to any ADO.NET provider.  The current implementation provides helpers for SQL Server, ODBC,
     /// OLEDB, and Oracle.
     /// </summary>
-    public abstract class DbHelper
+    public abstract class DatabaseApi
     {
         /// <summary>
         /// This enum is used to indicate whether the connection was provided by the caller, or created by AdoHelper, so that
@@ -165,13 +165,13 @@ namespace SiteServer.CMS.Data
         /// <example><code>
         /// AdoHelper helper = AdoHelper.CreateHelper("GotDotNet.ApplicationBlocks.Data", "GotDotNet.ApplicationBlocks.Data.OleDb");
         /// </code></example>
-        public static DbHelper CreateHelper(string providerAssembly, string providerType)
+        public static DatabaseApi CreateHelper(string providerAssembly, string providerType)
         {
             var assembly = Assembly.Load(providerAssembly);
             var provider = assembly.CreateInstance(providerType);
-            if (provider is DbHelper)
+            if (provider is DatabaseApi)
             {
-                return provider as DbHelper;
+                return provider as DatabaseApi;
             }
             else
             {
@@ -914,7 +914,77 @@ namespace SiteServer.CMS.Data
             return id;
         }
 
-        public virtual int ExecuteReturnId(string tableName, string idColumnName, IDbTransaction trans)
+        public virtual int ExecuteCurrentId(string connectionString, string tableName, string idColumnName)
+        {
+            var id = 0;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                var sequence = DataProvider.DatabaseDao.GetOracleSequence(tableName, idColumnName);
+
+                if (!string.IsNullOrEmpty(sequence))
+                {
+                    using (var rdr = ExecuteReader(connectionString, $"SELECT {sequence}.currval from dual"))
+                    {
+                        if (rdr.Read() && !rdr.IsDBNull(0))
+                        {
+                            id = Convert.ToInt32(rdr[0]);
+                        }
+                        rdr.Close();
+                    }
+                }
+            }
+            else
+            {
+                using (var rdr = ExecuteReader(connectionString, $"SELECT @@IDENTITY AS '{idColumnName}'"))
+                {
+                    if (rdr.Read() && !rdr.IsDBNull(0))
+                    {
+                        id = rdr.GetInt32(0);
+                    }
+                    rdr.Close();
+                }
+            }
+
+            return id;
+        }
+
+        public virtual int ExecuteCurrentId(IDbConnection connection, string tableName, string idColumnName)
+        {
+            var id = 0;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                var sequence = DataProvider.DatabaseDao.GetOracleSequence(tableName, idColumnName);
+
+                if (!string.IsNullOrEmpty(sequence))
+                {
+                    using (var rdr = ExecuteReader(connection, $"SELECT {sequence}.currval from dual"))
+                    {
+                        if (rdr.Read() && !rdr.IsDBNull(0))
+                        {
+                            id = Convert.ToInt32(rdr[0]);
+                        }
+                        rdr.Close();
+                    }
+                }
+            }
+            else
+            {
+                using (var rdr = ExecuteReader(connection, $"SELECT @@IDENTITY AS '{idColumnName}'"))
+                {
+                    if (rdr.Read() && !rdr.IsDBNull(0))
+                    {
+                        id = rdr.GetInt32(0);
+                    }
+                    rdr.Close();
+                }
+            }
+
+            return id;
+        }
+
+        public virtual int ExecuteCurrentId(IDbTransaction trans, string tableName, string idColumnName)
         {
             var id = 0;
 
@@ -2519,25 +2589,7 @@ namespace SiteServer.CMS.Data
             return val ? "1" : "0";
         }
 
-        public string Encrypt(string inputString)
-        {
-            return TranslateUtils.EncryptStringBySecretKey(inputString);
-        }
-
-        public string Decrypt(string inputString)
-        {
-            return TranslateUtils.DecryptStringBySecretKey(inputString);
-        }
-
-        public string FilterXss(string html)
-        {
-            return PageUtils.FilterXss(html);
-        }
-
-        public string FilterSql(string sql)
-        {
-            return PageUtils.FilterSql(sql);
-        }
+        
 
         #endregion Utility Functions
 

@@ -16,11 +16,6 @@ namespace SiteServer.CMS.Plugin.Apis
             _metadata = metadata;
         }
 
-        public IRequest AuthRequest(HttpRequest httpRequest)
-        {
-            return new AuthRequest(httpRequest);
-        }
-
         public string GetPluginUrl(string relatedUrl = "")
         {
             if (string.IsNullOrEmpty(relatedUrl)) return string.Empty;

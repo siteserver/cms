@@ -1,10 +1,11 @@
-﻿using SiteServer.Plugin;
+﻿using System.Web;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Model
 {
-    public class PluginEnvironment: IEnvironment
+    public class EnvironmentImpl: IEnvironment
     {
-        public PluginEnvironment(DatabaseType databaseType, string connectionString, string adminDirectory, string physicalApplicationPath)
+        public EnvironmentImpl(DatabaseType databaseType, string connectionString, string adminDirectory, string physicalApplicationPath)
         {
             DatabaseType = databaseType;
             ConnectionString = connectionString;
@@ -19,5 +20,7 @@ namespace SiteServer.CMS.Plugin.Model
         public string AdminDirectory { get; }
 
         public string PhysicalApplicationPath { get; }
+
+        public IRequest Request => HttpContext.Current != null ? new AuthRequest(HttpContext.Current.Request) : null;
     }
 }

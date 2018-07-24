@@ -169,7 +169,7 @@ namespace SiteServer.API.Controllers.V1
                 var adminInfo = DataProvider.AdministratorDao.GetByUserName(userName);
 
                 DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLogin(userName); // 记录最后登录时间、失败次数清零
-                var accessToken = request.AdminLogin(userName);
+                var accessToken = request.AdminLogin(userName, body.IsAutoLogin);
 
                 return Ok(new
                 {
@@ -236,6 +236,7 @@ namespace SiteServer.API.Controllers.V1
         {
             public string Account { get; set; }
             public string Password { get; set; }
+            public bool IsAutoLogin { get; set; }
         }
 
         public class ActionsResetPasswordBody

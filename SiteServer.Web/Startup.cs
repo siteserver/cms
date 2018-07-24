@@ -18,8 +18,7 @@ namespace SiteServer.API
 
             GlobalConfiguration.Configure(WebApiConfig.Register);
 
-            WebConfigUtils.Load(HostingEnvironment.ApplicationPhysicalPath);
-            var c = PluginManager.PluginInfoListRunnable;
+            PluginManager.LoadPlugins(HostingEnvironment.ApplicationPhysicalPath);
         }
     }
 }

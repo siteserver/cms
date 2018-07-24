@@ -194,6 +194,11 @@ namespace SiteServer.CMS.Plugin
 
         #region Cookie
 
+        public void SetCookie(string name, string value)
+        {
+            CookieUtils.SetCookie(name, value);
+        }
+
         public void SetCookie(string name, string value, DateTime expires)
         {
             CookieUtils.SetCookie(name, value, expires);
@@ -290,7 +295,7 @@ namespace SiteServer.CMS.Plugin
             return AuthUtils.GetAdminTokenByAdminName(adminName, DateTime.Now);
         }
 
-        public string AdminLogin(string adminName)
+        public string AdminLogin(string adminName, bool isAutoLogin)
         {
             if (string.IsNullOrEmpty(adminName)) return null;
 
@@ -299,7 +304,15 @@ namespace SiteServer.CMS.Plugin
             var accessToken = GetAdminTokenByAdminName(adminName);
 
             LogUtils.AddAdminLog(adminName, "管理员登录");
-            CookieUtils.SetCookie(AuthKeyAdminCookie, accessToken, DateTime.Now.AddDays(AccessTokenExpireDays));
+
+            if (isAutoLogin)
+            {
+                CookieUtils.SetCookie(AuthKeyAdminCookie, accessToken, DateTime.Now.AddDays(AccessTokenExpireDays));
+            }
+            else
+            {
+                CookieUtils.SetCookie(AuthKeyAdminCookie, accessToken);
+            }
 
             return accessToken;
         }
@@ -417,7 +430,7 @@ namespace SiteServer.CMS.Plugin
             return AuthUtils.GetUserTokenByUserName(userName);
         }
 
-        public string UserLogin(string userName)
+        public string UserLogin(string userName, bool isAutoLogin)
         {
             if (string.IsNullOrEmpty(userName)) return null;
 
@@ -426,7 +439,15 @@ namespace SiteServer.CMS.Plugin
             var accessToken = GetUserTokenByUserName(userName);
 
             LogUtils.AddUserLoginLog(userName);
-            CookieUtils.SetCookie(AuthKeyUserCookie, accessToken, DateTime.Now.AddDays(AccessTokenExpireDays));
+
+            if (isAutoLogin)
+            {
+                CookieUtils.SetCookie(AuthKeyUserCookie, accessToken, DateTime.Now.AddDays(AccessTokenExpireDays));
+            }
+            else
+            {
+                CookieUtils.SetCookie(AuthKeyUserCookie, accessToken);
+            }
 
             return accessToken;
         }

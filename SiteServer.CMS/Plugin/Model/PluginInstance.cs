@@ -22,7 +22,7 @@ namespace SiteServer.CMS.Plugin.Model
             ErrorMessage = errorMessage;
         }
 
-        public PluginInstance(PackageMetadata metadata, PluginService service, PluginBase plugin, long initTime)
+        public PluginInstance(PackageMetadata metadata, ServiceImpl service, PluginBase plugin, long initTime)
         {
             Id = plugin.Id;
             Metadata = metadata;
@@ -47,7 +47,7 @@ namespace SiteServer.CMS.Plugin.Model
         public PluginBase Plugin { get; }
 
         [JsonIgnore]
-        public PluginService Service { get; }
+        public ServiceImpl Service { get; }
 
         public long InitTime { get; }
 

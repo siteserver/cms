@@ -227,7 +227,7 @@ namespace SiteServer.API.Controllers.V1
 
                 var userInfo = DataProvider.UserDao.GetUserInfoByUserName(userName);
 
-                var accessToken = request.UserLogin(userName);
+                var accessToken = request.UserLogin(userName, body.IsAutoLogin);
 
                 return Ok(new
                 {
@@ -358,6 +358,7 @@ namespace SiteServer.API.Controllers.V1
         {
             public string Account { get; set; }
             public string Password { get; set; }
+            public bool IsAutoLogin { get; set; }
         }
 
         public class ActionsResetPasswordBody

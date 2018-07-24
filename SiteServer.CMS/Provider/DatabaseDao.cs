@@ -1649,7 +1649,7 @@ FROM (SELECT TOP {totalNum} *
             IEnumerable<dynamic> objects;
             var sqlString = $"select * from {tableName}";
 
-            using (var connection = DataProvider.DataApi.GetConnection(WebConfigUtils.ConnectionString))
+            using (var connection = GetConnection())
             {
                 connection.Open();
 
@@ -1696,7 +1696,7 @@ FROM (SELECT TOP {totalNum} *
             IEnumerable<dynamic> objects;
             var sqlString = GetPageSqlString(tableName, "*", string.Empty, $"ORDER BY {identityColumnName}", offset, limit);
 
-            using (var connection = DataProvider.DataApi.GetConnection(WebConfigUtils.ConnectionString))
+            using (var connection = GetConnection())
             {
                 connection.Open();
 

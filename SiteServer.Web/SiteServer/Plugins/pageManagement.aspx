@@ -51,6 +51,7 @@
                 </ul>
               </div>
               <div class="col-4">
+                  <a class="btn btn-default m-l-5 float-right btn-md" href="pageAdd.aspx">添加插件</a>
                 <asp:Button onClick="BtnReload_Click" class="btn btn-primary float-right btn-md" Text="重新加载所有插件" runat="server" />
               </div>
             </div>

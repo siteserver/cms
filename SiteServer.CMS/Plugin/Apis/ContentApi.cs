@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
@@ -170,9 +171,14 @@ namespace SiteServer.CMS.Plugin.Apis
             return DataProvider.ContentDao.GetValue(tableName, contentId, attributeName);
         }
 
-        public IContentInfo NewInstance()
+        public IContentInfo NewInstance(int siteId, int channelId)
         {
-            return new ContentInfo();
+            return new ContentInfo
+            {
+                SiteId = siteId,
+                ChannelId = channelId,
+                AddDate = DateTime.Now
+            };
         }
 
         //public void SetValuesToContentInfo(int siteId, int channelId, NameValueCollection form, IContentInfo contentInfo)
@@ -224,6 +230,12 @@ namespace SiteServer.CMS.Plugin.Apis
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelId);
             return DataProvider.ContentDao.GetContentIdListCheckedByChannelId(tableName, siteId, channelId);
+        }
+
+        public string GetContentUrl(int siteId, int channelId, int contentId)
+        {
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            return PageUtility.GetContentUrl(siteInfo, ChannelManager.GetChannelInfo(siteId, channelId), contentId, false);
         }
     }
 }

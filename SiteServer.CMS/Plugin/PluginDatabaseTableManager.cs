@@ -5,7 +5,7 @@ namespace SiteServer.CMS.Plugin
 {
     public class PluginDatabaseTableManager
     {
-        public static void SyncTable(PluginService service)
+        public static void SyncTable(ServiceImpl service)
         {
             if (service.DatabaseTables == null || service.DatabaseTables.Count <= 0) return;
 

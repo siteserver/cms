@@ -33,7 +33,7 @@
                 </div>
               </div>
               <div class="col-2">
-                <asp:Button id="BtnUpload" class="btn btn-primary float-right btn-md" Text="手动安装插件" runat="server" />
+                <a class="btn btn-default float-right btn-md" href="pageManagement.aspx">管理插件</a>
               </div>
             </div>
 

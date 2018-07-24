@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiteServer.Plugin;
 using Menu = SiteServer.Plugin.Menu;
 
 namespace SiteServer.CMS.Plugin.Model
 {
-    public class PluginService: IService
+    public class ServiceImpl: IService
     {
         public string PluginId { get; }
 
@@ -57,15 +58,17 @@ namespace SiteServer.CMS.Plugin.Model
 
         public Dictionary<string, Func<IParseContext, string>> StlElementsToParse { get; private set; }
 
+        public Dictionary<string, Func<IJobContext, Task>> Jobs { get; private set; }
+
         public Dictionary<string, Func<IContentContext, string>> ContentColumns { get; private set; }
 
-        public PluginService(IMetadata metadata)
+        public ServiceImpl(IMetadata metadata)
         {
             PluginId = metadata.Id;
             Metadata = metadata;
         }
 
-        public IService AddPluginMenu(Menu menu)
+        public IService AddSystemMenu(Menu menu)
         {
             PluginMenu = menu;
             return this;
@@ -133,9 +136,16 @@ namespace SiteServer.CMS.Plugin.Model
             return this;
         }
 
-        public IService AddJob(string command, IJob job)
+        public IService AddJob(string command, Func<IJobContext, Task> job)
         {
-            throw new NotImplementedException();
+            if (Jobs == null)
+            {
+                Jobs = new Dictionary<string, Func<IJobContext, Task>>(StringComparer.CurrentCultureIgnoreCase);
+            }
+
+            Jobs[command] = job;
+
+            return this;
         }
 
         public IService AddApiAuthorization()

@@ -8,27 +8,36 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link href="../assets/images/favicon.png" rel="icon" type="image/png">
-  <link href="../assets/css/bootstrap-4.0.0.min.css" rel="stylesheet" type="text/css" />
   <link href="../assets/css/ionicons-2.0.0.min.css" rel="stylesheet" type="text/css" />
-  <link href="../assets/css/core.css" rel="stylesheet" type="text/css" />
-  <link href="../assets/css/components.css" rel="stylesheet" type="text/css" />
-  <link href="../assets/css/pages.css" rel="stylesheet" type="text/css" />
-  <link href="../assets/css/menu.css" rel="stylesheet" type="text/css" />
-  <link href="../assets/css/responsive.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/font-awesome-4.7.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/bootstrap-4.1.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/siteserver-1.0.6.min.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
   <div id="main" class="m-t-15 m-b-15 m-l-15 m-r-15">
 
     <template v-if="pageLoad">
-      @if (IsSectionDefined("Navs")){ @RenderSection("Navs") }
+      @if (IsSectionDefined("Navs")){
+      <div class="card-box">
+        <ul class="nav nav-tabs tabs-bordered nav-justified m-b-15">
+          @RenderSection("Navs")
+        </ul>
+        <div v-if="pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
+          <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
+          <span v-html="pageAlert.html"></span>
+        </div>
 
+        @RenderBody()
+      </div>
+      } else {
       <div v-if="pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
         <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
         <span v-html="pageAlert.html"></span>
       </div>
 
-      @RenderBody()
+      @RenderBody() }
+
     </template>
     <template v-else>
       <div class="text-center" style="margin-top: 100px">

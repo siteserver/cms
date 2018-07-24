@@ -11,7 +11,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.Cli.Jobs
 {
-    public class RestoreJob : IJob
+    public static class RestoreJob
     {
         public const string CommandName = "restore";
 
@@ -41,7 +41,7 @@ namespace SiteServer.Cli.Jobs
             Console.WriteLine();
         }
 
-        public async Task Execute(IJobExecutionContext context)
+        public static async Task Execute(IJobContext context)
         {
             if (!CliUtils.ParseArgs(Options, context.Args)) return;
 

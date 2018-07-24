@@ -95,7 +95,7 @@ var methods = {
     pageUtils.openLayer({
       title: '获取密钥',
       url: 'adminAccessTokensViewLayer.cshtml?id=' + item.id,
-      height: 390
+      height: 410
     });
   },
   btnDeleteClick: function (item) {

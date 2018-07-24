@@ -15,6 +15,15 @@ namespace SiteServer.Utils
             });
         }
 
+        public static void SetCookie(string name, string value)
+        {
+            SetCookie(new HttpCookie(name)
+            {
+                Value = value,
+                Domain = PageUtils.HttpContextRootDomain
+            });
+        }
+
         private static void SetCookie(HttpCookie cookie)
         {
             cookie.Value = TranslateUtils.EncryptStringBySecretKey(cookie.Value);

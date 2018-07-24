@@ -9,8 +9,6 @@ namespace SiteServer.BackgroundPages.Plugins
 {
     public class PageAdd : BasePage
     {
-        public Button BtnUpload;
-
         public string PackageIds
         {
             get
@@ -35,8 +33,6 @@ namespace SiteServer.BackgroundPages.Plugins
             if (Page.IsPostBack) return;
 
             VerifySystemPermissions(ConfigManager.PluginsPermissions.Add);
-
-            BtnUpload.OnClientClick = ModalManualInstall.GetOpenWindowString();
         }
     }
 }

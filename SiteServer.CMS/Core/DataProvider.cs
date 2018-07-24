@@ -8,31 +8,31 @@ namespace SiteServer.CMS.Core
 {
     public static class DataProvider
     {
-        private static IDataApi _dataApi;
-        public static IDataApi DataApi
+        private static IDatabaseApi _databaseApi;
+        public static IDatabaseApi DatabaseApi
         {
             get
             {
-                if (_dataApi != null) return _dataApi;
+                if (_databaseApi != null) return _databaseApi;
 
                 if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
                 {
-                    _dataApi = new Data.MySql();
+                    _databaseApi = new Data.MySql();
                 }
                 else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
                 {
-                    _dataApi = new SqlServer();
+                    _databaseApi = new SqlServer();
                 }
                 else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
                 {
-                    _dataApi = new PostgreSql();
+                    _databaseApi = new PostgreSql();
                 }
                 else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
                 {
-                    _dataApi = new Data.Oracle();
+                    _databaseApi = new Data.Oracle();
                 }
 
-                return _dataApi;
+                return _databaseApi;
             }
         }
 
@@ -149,7 +149,7 @@ namespace SiteServer.CMS.Core
 
         public static void Reset()
         {
-            _dataApi = null;
+            _databaseApi = null;
 
             _accessTokenDao = null;
             _administratorDao = null;

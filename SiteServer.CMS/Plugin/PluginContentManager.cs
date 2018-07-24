@@ -50,9 +50,9 @@ namespace SiteServer.CMS.Plugin
             return list;
         }
 
-        public static List<PluginService> GetContentPlugins(ChannelInfo channelInfo, bool includeContentTable)
+        public static List<ServiceImpl> GetContentPlugins(ChannelInfo channelInfo, bool includeContentTable)
         {
-            var list = new List<PluginService>();
+            var list = new List<ServiceImpl>();
             var pluginIds = TranslateUtils.StringCollectionToStringList(channelInfo.ContentRelatedPluginIds);
             if (!string.IsNullOrEmpty(channelInfo.ContentModelPluginId))
             {

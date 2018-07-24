@@ -1,39 +1,41 @@
 ﻿@{ Layout = "../Shared/_LayoutLayer.cshtml"; }
 
-<div class="form-group form-row">
-  <label class="col-3 text-right col-form-label">名称</label>
-  <h6 class="col-5 text-left">
-    {{ tokenInfo && tokenInfo.title }}
-  </h6>
-  <div class="col-4 help-block"></div>
-</div>
-
-<div class="form-group form-row">
-  <label class="col-3 text-right col-form-label">API密钥</label>
-  <div class="col-5 form-control-plaintext">
-    <code style="font-size: 16px">
-      {{ accessToken }}
-    </code>
+<div class="form-horizontal">
+  <div class="form-group row">
+    <label class="col-3 text-right col-form-label">名称</label>
+    <p class="col-5 form-control-plaintext">
+      {{ tokenInfo && tokenInfo.title }}
+    </p>
+    <div class="col-4 help-block"></div>
   </div>
-  <div class="col-4 help-block">
-    <button v-on:click="btnRegenerateClick" class="btn btn-success m-l-5">重 设</button>
+
+  <div class="form-group row">
+    <label class="col-3 text-right col-form-label">API密钥</label>
+    <div class="col-5 form-control-plaintext">
+      <code style="font-size: 16px">
+        {{ accessToken }}
+      </code>
+    </div>
+    <div class="col-4 help-block">
+      <button v-on:click="btnRegenerateClick" class="btn btn-success m-l-5">重 设</button>
+    </div>
   </div>
-</div>
 
-<div class="form-group form-row">
-  <label class="col-3 text-right col-form-label">添加时间</label>
-  <h6 class="col-5 text-left">
-    {{ tokenInfo && tokenInfo.addDate }}
-  </h6>
-  <div class="col-4 help-block"></div>
-</div>
+  <div class="form-group row">
+    <label class="col-3 text-right col-form-label">添加时间</label>
+    <p class="col-5 form-control-plaintext">
+      {{ tokenInfo && tokenInfo.addDate }}
+    </p>
+    <div class="col-4 help-block"></div>
+  </div>
 
-<div class="form-group form-row">
-  <label class="col-3 text-right col-form-label">更新时间</label>
-  <h6 class="col-5 text-left">
-    {{ tokenInfo && tokenInfo.updatedDate }}
-  </h6>
-  <div class="col-4 help-block"></div>
+  <div class="form-group row">
+    <label class="col-3 text-right col-form-label">更新时间</label>
+    <p class="col-5 form-control-plaintext">
+      {{ tokenInfo && tokenInfo.updatedDate }}
+    </p>
+    <div class="col-4 help-block"></div>
+  </div>
 </div>
 
 <hr />

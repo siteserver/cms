@@ -7,7 +7,7 @@ using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Jobs
 {
-    public class TestJob : IJob
+    public static class TestJob
     {
         public const string CommandName = "test add";
 
@@ -26,7 +26,7 @@ namespace SiteServer.Cli.Jobs
             }
         };
 
-        public async Task Execute(IJobExecutionContext context)
+        public static async Task Execute(IJobContext context)
         {
             if (!CliUtils.ParseArgs(Options, context.Args)) return;
 

@@ -26,7 +26,7 @@ namespace SiteServer.CMS.Plugin
 
             private static SortedList<string, PluginInstance> Load()
             {
-                Environment = new PluginEnvironment(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath);
+                Environment = new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath);
                 var dict = new SortedList<string, PluginInstance>();
 
                 Thread.Sleep(2000);
@@ -142,21 +142,21 @@ namespace SiteServer.CMS.Plugin
                 //var plugin = (IPlugin)Activator.CreateInstance(type);
 
                 var plugin = (PluginBase)Activator.CreateInstance(type);
-                plugin.Initialize(metadata, Environment, new PluginApiCollection
+                plugin.Initialize(metadata, Environment, new ApiCollectionImpl
                 {
                     AdminApi = AdminApi.Instance,
                     ConfigApi = new ConfigApi(metadata),
                     ContentApi = ContentApi.Instance,
-                    DataApi = DataProvider.DataApi,
-                    FilesApi = FilesApi.Instance,
+                    DatabaseApi = DataProvider.DatabaseApi,
                     ChannelApi = ChannelApi.Instance,
                     ParseApi = ParseApi.Instance,
                     PluginApi = new PluginApi(metadata),
                     SiteApi = SiteApi.Instance,
-                    UserApi = UserApi.Instance
+                    UserApi = UserApi.Instance,
+                    UtilsApi = UtilsApi.Instance
                 });
 
-                var service = new PluginService(metadata);
+                var service = new ServiceImpl(metadata);
 
                 plugin.Startup(service);
 
@@ -190,7 +190,15 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        public static PluginEnvironment Environment { get; private set; }
+        public static EnvironmentImpl Environment { get; private set; }
+
+        private static List<PluginInstance> _pluginInfoListRunnable;
+
+        public static void LoadPlugins(string applicationPhysicalPath)
+        {
+            WebConfigUtils.Load(applicationPhysicalPath);
+            _pluginInfoListRunnable = PluginInfoListRunnable;
+        }
 
         public static void ClearCache()
         {
@@ -247,7 +255,7 @@ namespace SiteServer.CMS.Plugin
                         .ToList();
         }
 
-        public static List<PluginService> Services
+        public static List<ServiceImpl> Services
         {
             get
             {
@@ -404,7 +412,7 @@ namespace SiteServer.CMS.Plugin
             return pluginInfos.Select(pluginInfo => (T)pluginInfo.Plugin).ToList();
         }
 
-        public static PluginService GetService(string pluginId)
+        public static ServiceImpl GetService(string pluginId)
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
@@ -727,7 +735,7 @@ namespace SiteServer.CMS.Plugin
             return string.Empty;
         }
 
-        public static string GetPluginIconUrl(PluginService service)
+        public static string GetPluginIconUrl(ServiceImpl service)
         {
             var url = string.Empty;
             if (service.Metadata.IconUrl != null)

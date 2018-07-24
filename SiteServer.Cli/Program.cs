@@ -8,6 +8,8 @@ using Quartz;
 using Quartz.Impl;
 using SiteServer.Cli.Core;
 using SiteServer.Cli.Jobs;
+using SiteServer.CMS.Plugin;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli
@@ -16,6 +18,7 @@ namespace SiteServer.Cli
     {
         private static bool IsHelp { get; set; }
         private static string Schedule { get; set; }
+        private static Dictionary<string, Func<IJobContext, Task>> Jobs { get; set; }
         public static string CommandName { get; private set; }
         public static string[] CommandArgs { get; private set; }
 
@@ -56,7 +59,29 @@ namespace SiteServer.Cli
             Console.WriteLine("Welcome to SiteServer Cli Tool");
             Console.WriteLine();
 
-            if (!IsRunnable(CommandName))
+            Jobs = new Dictionary<string, Func<IJobContext, Task>>(StringComparer.CurrentCultureIgnoreCase)
+            {
+                {BackupJob.CommandName, BackupJob.Execute},
+                {RestoreJob.CommandName, RestoreJob.Execute},
+                {UpdateJob.CommandName, UpdateJob.Execute},
+                {VersionJob.CommandName, VersionJob.Execute},
+                {TestJob.CommandName, TestJob.Execute}
+            };
+
+            PluginManager.LoadPlugins(CliUtils.PhysicalApplicationPath);
+            var pluginJobs = PluginJobManager.GetJobs();
+            if (pluginJobs != null && pluginJobs.Count > 0)
+            {
+                foreach (var command in pluginJobs.Keys)
+                {
+                    if (!Jobs.ContainsKey(command))
+                    {
+                        Jobs.Add(command, pluginJobs[command]);
+                    }
+                }
+            }
+
+            if (!Jobs.ContainsKey(CommandName))
             {
                 if (IsHelp)
                 {
@@ -122,42 +147,18 @@ namespace SiteServer.Cli
             }
         }
 
-        private static bool IsRunnable(string commandName)
-        {
-            return commandName == BackupJob.CommandName || commandName == RestoreJob.CommandName || commandName == UpdateJob.CommandName || commandName == VersionJob.CommandName || commandName == TestJob.CommandName;
-        }
-
         public static async Task RunExecuteAsync(string commandName, string[] commandArgs, IJobExecutionContext jobContext)
         {
             try
             {
-                Plugin.IJob job = null;
-
-                if (StringUtils.EqualsIgnoreCase(commandName, BackupJob.CommandName))
+                Func<IJobContext, Task> job;
+                if (Jobs.TryGetValue(commandName, out job))
                 {
-                    job = new BackupJob();
-                }
-                else if (StringUtils.EqualsIgnoreCase(commandName, RestoreJob.CommandName))
-                {
-                    job = new RestoreJob();
-                }
-                else if (StringUtils.EqualsIgnoreCase(commandName, UpdateJob.CommandName))
-                {
-                    job = new UpdateJob();
-                }
-                else if (StringUtils.EqualsIgnoreCase(commandName, VersionJob.CommandName))
-                {
-                    job = new VersionJob();
-                }
-                else if (StringUtils.EqualsIgnoreCase(commandName, TestJob.CommandName))
-                {
-                    job = new TestJob();
-                }
-
-                if (job != null)
-                {
-                    var context = new Core.JobExecutionContextImpl(commandName, commandArgs, job, jobContext);
-                    await context.JobInstance.Execute(context);
+                    if (job != null)
+                    {
+                        var context = new JobContextImpl(commandName, commandArgs, jobContext);
+                        await job(context);
+                    }
                 }
             }
             catch (Exception ex)

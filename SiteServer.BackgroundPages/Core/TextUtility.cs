@@ -187,7 +187,7 @@ namespace SiteServer.BackgroundPages.Core
                         try
                         {
                             var func = contentColumns[columnName];
-                            var value = func(new PluginContentContext
+                            var value = func(new ContentContextImpl
                             {
                                 SiteId = contentInfo.SiteId,
                                 ChannelId = contentInfo.ChannelId,

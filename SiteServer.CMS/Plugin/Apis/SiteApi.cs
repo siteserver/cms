@@ -35,10 +35,35 @@ namespace SiteServer.CMS.Plugin.Apis
             return SiteManager.GetSiteInfo(siteId);
         }
 
-        public List<ISiteInfo> GetSiteInfoList(string adminName)
+        public List<int> GetSiteIdListByAdminName(string adminName)
         {
             var permissionManager = PermissionManager.GetInstance(adminName);
-            return SiteManager.GetWritingSiteInfoList(permissionManager);
+            return SiteManager.GetWritingSiteIdList(permissionManager);
+        }
+
+        public string GetSitePath(int siteId, string virtualPath)
+        {
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            return PathUtility.MapPath(siteInfo, virtualPath);
+        }
+
+        public string GetSiteUrl(int siteId)
+        {
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            return PageUtility.GetSiteUrl(siteInfo, false);
+        }
+
+        public string GetSiteUrl(int siteId, string virtualPath)
+        {
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            return PageUtility.ParseNavigationUrl(siteInfo, virtualPath, false);
+        }
+
+        public string GetSiteUrlByFilePath(string filePath)
+        {
+            var siteId = Instance.GetSiteIdByFilePath(filePath);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            return PageUtility.GetSiteUrlByPhysicalPath(siteInfo, filePath, false);
         }
     }
 }

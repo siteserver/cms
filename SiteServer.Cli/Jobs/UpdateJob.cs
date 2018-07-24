@@ -10,7 +10,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.Cli.Jobs
 {
-    public class UpdateJob : IJob
+    public static class UpdateJob
     {
         public const string CommandName = "update";
         private const string Folder = "update";
@@ -35,7 +35,7 @@ namespace SiteServer.Cli.Jobs
             Console.WriteLine();
         }
 
-        public async Task Execute(IJobExecutionContext context)
+        public static async Task Execute(IJobContext context)
         {
             if (!CliUtils.ParseArgs(Options, context.Args)) return;
 

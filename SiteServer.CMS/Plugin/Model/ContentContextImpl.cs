@@ -5,7 +5,7 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Model
 {
-    public class PluginContentContext: IContentContext
+    public class ContentContextImpl: IContentContext
     {
         public int SiteId  { get; set; }
 

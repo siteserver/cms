@@ -80,8 +80,8 @@
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=1.8.20.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.8.20\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=1.9.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.1.9.2\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -188,11 +188,10 @@
     <Compile Include="Core\VisualInfo.cs" />
     <Compile Include="Core\WordSpliter.cs" />
     <Compile Include="Data\DataProviderBase.cs" />
-    <Compile Include="Data\DbHelper.cs" />
+    <Compile Include="Data\DatabaseApi.cs" />
     <Compile Include="Data\MySql.cs" />
     <Compile Include="Data\Oracle.cs" />
     <Compile Include="Data\PostgreSql.cs" />
-    <Compile Include="Data\SqlHelper.cs" />
     <Compile Include="Data\SqlServer.cs" />
     <Compile Include="ImportExport\AtomUtility.cs" />
     <Compile Include="ImportExport\BackupUtility.cs" />
@@ -289,17 +288,17 @@
     <Compile Include="Plugin\Apis\ChannelApi.cs" />
     <Compile Include="Plugin\Apis\ConfigApi.cs" />
     <Compile Include="Plugin\Apis\ContentApi.cs" />
-    <Compile Include="Plugin\Apis\FilesApi.cs" />
+    <Compile Include="Plugin\Apis\UtilsApi.cs" />
     <Compile Include="Plugin\Apis\PluginApi.cs" />
     <Compile Include="Plugin\Apis\ParseApi.cs" />
     <Compile Include="Plugin\Apis\SiteApi.cs" />
     <Compile Include="Plugin\Apis\UserApi.cs" />
-    <Compile Include="Plugin\Model\PluginApiCollection.cs" />
-    <Compile Include="Plugin\Model\PluginEnvironment.cs" />
+    <Compile Include="Plugin\Model\ApiCollectionImpl.cs" />
+    <Compile Include="Plugin\Model\EnvironmentImpl.cs" />
     <Compile Include="Plugin\Model\PluginInstance.cs" />
-    <Compile Include="Plugin\Model\PluginContentContext.cs" />
-    <Compile Include="Plugin\Model\PluginParseContext.cs" />
-    <Compile Include="Plugin\Model\PluginService.cs" />
+    <Compile Include="Plugin\Model\ContentContextImpl.cs" />
+    <Compile Include="Plugin\Model\ParseContextImpl.cs" />
+    <Compile Include="Plugin\Model\ServiceImpl.cs" />
     <Compile Include="Plugin\AuthRequest.cs" />
     <Compile Include="Plugin\PluginContentManager.cs" />
     <Compile Include="Plugin\PluginContentTableManager.cs" />
@@ -307,6 +306,7 @@
     <Compile Include="Plugin\PluginDebugger.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Plugin\PluginMenuManager.cs" />
+    <Compile Include="Plugin\PluginJobManager.cs" />
     <Compile Include="Plugin\PluginStlParserManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\AdministratorDao.cs" />

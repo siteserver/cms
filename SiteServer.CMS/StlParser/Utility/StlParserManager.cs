@@ -3,6 +3,7 @@ using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.StlElement;
@@ -60,7 +61,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return builder.ToString();
         }
 
-        public static string ParseInnerContent(string template, IParseContext context)
+        public static string ParseInnerContent(string template, ParseContextImpl context)
         {
             if (string.IsNullOrEmpty(template)) return string.Empty;
 
@@ -71,7 +72,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 Id = context.TemplateId,
                 TemplateType = context.TemplateType
             };
-            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, siteInfo, templateInfo, context.StlItems);
+            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, siteInfo, templateInfo, context.PluginItems);
             var contextInfo = new ContextInfo(pageInfo);
             ParseInnerContent(builder, pageInfo, contextInfo);
             return builder.ToString();
