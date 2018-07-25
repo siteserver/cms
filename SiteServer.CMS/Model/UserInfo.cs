@@ -246,7 +246,6 @@ namespace SiteServer.CMS.Model
                 Signature = Signature
             };
 
-
             return userInfo;
         }
 

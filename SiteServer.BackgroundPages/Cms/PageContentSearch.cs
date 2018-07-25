@@ -54,11 +54,6 @@ namespace SiteServer.BackgroundPages.Cms
         private bool _isEdit;
         private readonly Dictionary<string, string> _nameValueCacheDict = new Dictionary<string, string>();
 
-        public static string GetRedirectUrl(int siteId)
-        {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageContentSearch), null);
-        }
-
         public static string GetRedirectUrlCheck(int siteId)
         {
             return PageUtils.GetCmsUrl(siteId, nameof(PageContentSearch), new NameValueCollection
@@ -114,7 +109,13 @@ namespace SiteServer.BackgroundPages.Cms
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
             var allLowerAttributeNameList = TableMetadataManager.GetAllLowerAttributeNameListExcludeText(tableName);
-            var pagerParam = new PagerParam
+            var whereString = DataProvider.ContentDao.GetPagerWhereSqlString(SiteInfo, _channelInfo,
+                searchType, keyword,
+                dateFrom, dateTo, state, _isCheckOnly, false, _isTrashOnly, _isWritingOnly, _isAdminOnly,
+                AuthRequest.AdminPermissions,
+                allLowerAttributeNameList);
+
+            PgContents.Param = new PagerParam
             {
                 ControlToPaginate = RptContents,
                 TableName = tableName,
@@ -122,17 +123,38 @@ namespace SiteServer.BackgroundPages.Cms
                 Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
                 OrderSqlString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc),
                 ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allLowerAttributeNameList),
-                WhereSqlString = DataProvider.ContentDao.GetPagerWhereSqlString(SiteInfo, _channelInfo, searchType, keyword,
-                    dateFrom, dateTo, state, _isCheckOnly, false, _isTrashOnly, _isWritingOnly, _isAdminOnly, AuthRequest.AdminPermissions,
-                    allLowerAttributeNameList)
+                WhereSqlString = whereString,
+                TotalCount = DataProvider.DatabaseDao.GetPageTotalCount(tableName, whereString)
             };
 
-            pagerParam.TotalCount =
-                DataProvider.DatabaseDao.GetPageTotalCount(tableName, pagerParam.WhereSqlString);
-
-            PgContents.Param = pagerParam;
-
             if (IsPostBack) return;
+
+            if (_isTrashOnly)
+            {
+                if (AuthRequest.IsQueryExists("IsDeleteAll"))
+                {
+                    DataProvider.ContentDao.DeleteContentsByTrash(SiteId, tableName);
+                    AuthRequest.AddSiteLog(SiteId, "清空回收站");
+                    SuccessMessage("成功清空回收站!");
+                }
+                else if (AuthRequest.IsQueryExists("IsRestore"))
+                {
+                    var idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
+                    foreach (var channelId in idsDictionary.Keys)
+                    {
+                        var contentIdArrayList = idsDictionary[channelId];
+                        DataProvider.ContentDao.TrashContents(SiteId, ChannelManager.GetTableName(SiteInfo, channelId), contentIdArrayList);
+                    }
+                    AuthRequest.AddSiteLog(SiteId, "从回收站还原内容");
+                    SuccessMessage("成功还原内容!");
+                }
+                else if (AuthRequest.IsQueryExists("IsRestoreAll"))
+                {
+                    DataProvider.ContentDao.RestoreContentsByTrash(SiteId, tableName);
+                    AuthRequest.AddSiteLog(SiteId, "从回收站还原所有内容");
+                    SuccessMessage("成功还原所有内容!");
+                }
+            }
 
             ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, true, true, AuthRequest.AdminPermissions);
 

@@ -479,5 +479,25 @@ namespace SiteServer.CMS.Model.Attributes
             get => GetInt(nameof(FileUploadTypeMaxSize), 307200);
             set => Set(nameof(FileUploadTypeMaxSize), value);
         }
+
+        /****************模板资源文件夹设置*************************/
+
+        public string TemplatesAssetsIncludeDir
+        {
+            get => GetString(nameof(TemplatesAssetsIncludeDir), "include");
+            set => Set(nameof(TemplatesAssetsIncludeDir), value);
+        }
+
+        public string TemplatesAssetsJsDir
+        {
+            get => GetString(nameof(TemplatesAssetsJsDir), "js");
+            set => Set(nameof(TemplatesAssetsJsDir), value);
+        }
+
+        public string TemplatesAssetsCssDir
+        {
+            get => GetString(nameof(TemplatesAssetsCssDir), "css");
+            set => Set(nameof(TemplatesAssetsCssDir), value);
+        }
     }
 }

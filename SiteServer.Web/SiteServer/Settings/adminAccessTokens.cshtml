@@ -94,7 +94,7 @@
                 {{ item.adminName }}
               </td>
               <td class="text-nowrap">
-                {{ item.scopes }}
+                {{ getItemScopes(item) }}
               </td>
               <td class="text-center text-nowrap">
                 <a href="javascript:;" v-on:click="btnViewClick(item)" class="btn btn-primary m-r-5">获取密钥</a>

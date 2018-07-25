@@ -85,7 +85,7 @@ namespace SiteServer.CMS.Core
         {
             ChannelInfo channelInfo = null;
             var dict = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
-            dict?.TryGetValue(channelId, out channelInfo);
+            dict?.TryGetValue(Math.Abs(channelId), out channelInfo);
             return channelInfo;
         }
 

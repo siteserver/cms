@@ -8,11 +8,11 @@ using SiteServer.CMS.Plugin;
 
 namespace SiteServer.API.Controllers.V1
 {
-    [RoutePrefix("api")]
+    [RoutePrefix("api/v1/contents")]
     public class ContentsController : ApiController
     {
-        private const string Route = "v1/contents/{siteId:int}/{channelId:int}";
-        private const string RouteContent = "v1/contents/{siteId:int}/{channelId:int}/{id:int}";
+        private const string Route = "{siteId:int}/{channelId:int}";
+        private const string RouteContent = "{siteId:int}/{channelId:int}/{id:int}";
 
         [HttpPost, Route(Route)]
         public IHttpActionResult Create(int siteId, int channelId)

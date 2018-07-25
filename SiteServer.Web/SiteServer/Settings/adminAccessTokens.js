@@ -9,36 +9,37 @@ var data = {
   },
   pageType: null,
   items: null,
-  adminName: null,
-  item: null,
   adminNames: null,
-  scopes: null
+  scopes: null,
+  adminName: null,
+  item: null
 };
 
 var methods = {
-  getItems: function () {
+  getList: function () {
     var $this = this;
 
     $api.get(null, function (err, res) {
       if (err || !res || !res.value) return;
 
       $this.items = res.value;
+      $this.adminNames = res.adminNames;
+      $this.scopes = res.scopes;
       $this.adminName = res.adminName;
       $this.pageLoad = true;
     });
   },
-  getAdminNamesAndScopes: function () {
-    if (this.adminNames && this.scopes) return;
-    var $this = this;
-
-    pageUtils.loading(true);
-    $api.get(null, function (err, res) {
-      pageUtils.loading(false);
-      if (err || !res) return;
-
-      $this.adminNames = res.adminNames;
-      $this.scopes = res.scopes;
-    }, 'adminNamesAndScopes');
+  getItemScopes: function(item) {
+    if (!item.scopes) return '';
+    var itemScopes = item.scopes.split(',');
+    var retval = [];
+    for(var i = 0; i < this.scopes.length; i++) {
+      if (itemScopes.indexOf(this.scopes[i]) !== -1) {
+        retval.push(this.scopes[i]);
+      }
+    }
+    
+    return retval.join(',');
   },
   delete: function (item) {
     var $this = this;
@@ -83,7 +84,6 @@ var methods = {
     this.item = item;
     this.item.adminName = this.item.adminName ? this.item.adminName : this.adminName;
     this.item.scopeList = this.item.scopes ? this.item.scopes.split(',') : [];
-    this.getAdminNamesAndScopes();
   },
   btnSubmitClick: function () {
     this.submit(this.item);
@@ -118,4 +118,4 @@ var $vue = new Vue({
   methods: methods
 });
 
-$vue.getItems();
+$vue.getList();

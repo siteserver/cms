@@ -86,6 +86,9 @@
     <Compile Include="BasePageCms.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Cms\ModalTemplateAssetsConfig.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Cms\ModalSpecialUpload.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -399,22 +402,10 @@
     <Compile Include="Cms\PageTemplateAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTemplateCss.cs">
+    <Compile Include="Cms\PageTemplateAssets.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTemplateCssAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageTemplateInclude.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageTemplateIncludeAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageTemplateJs.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageTemplateJsAdd.cs">
+    <Compile Include="Cms\PageTemplateAssetsAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageTemplateLeft.cs">

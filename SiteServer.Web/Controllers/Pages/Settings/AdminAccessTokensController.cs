@@ -12,34 +12,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
     public class AdminAccessTokensController : ApiController
     {
         private const string Route = "";
-        private const string RouteAdminNamesAndScopes = "adminNamesAndScopes";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetItems()
-        {
-            try
-            {
-                var request = new AuthRequest();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
-                {
-                    return Unauthorized();
-                }
-
-                return Ok(new
-                {
-                    Value = DataProvider.AccessTokenDao.GetAccessTokenInfoList(),
-                    request.AdminName
-                });
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
-
-        [HttpGet, Route(RouteAdminNamesAndScopes)]
-        public IHttpActionResult GetAdminNamesAndScopes()
+        public IHttpActionResult GetList()
         {
             try
             {
@@ -73,8 +48,10 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 return Ok(new
                 {
+                    Value = DataProvider.AccessTokenDao.GetAccessTokenInfoList(),
                     adminNames,
-                    scopes
+                    scopes,
+                    request.AdminName
                 });
             }
             catch (Exception ex)

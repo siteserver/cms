@@ -577,7 +577,7 @@ namespace SiteServer.CMS.Core
             {
                 foreach (var ids in TranslateUtils.StringCollectionToStringList(queryString["IDsCollection"]))
                 {
-                    var channelId = TranslateUtils.ToInt(ids.Split('_')[0]);
+                    var channelId = TranslateUtils.ToIntWithNagetive(ids.Split('_')[0]);
                     var contentId = TranslateUtils.ToInt(ids.Split('_')[1]);
                     var contentIdList = new List<int>();
                     if (dic.ContainsKey(channelId))
@@ -599,32 +599,6 @@ namespace SiteServer.CMS.Core
             }
 
             return dic;
-        }
-
-        public static Dictionary<string, object> ContentToDictionary(ContentInfo contentInfo, string tableName, List<int> relatedIdentities)
-        {
-            var dict = TranslateUtils.ObjectToDictionary(contentInfo);
-            dict.Remove("Attributes");
-
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
-            foreach (var styleInfo in styleInfoList)
-            {
-                if (!dict.ContainsKey(styleInfo.AttributeName))
-                {
-                    dict[styleInfo.AttributeName] = contentInfo.GetString(styleInfo.AttributeName);
-                }
-                if (styleInfo.InputType == InputType.Image)
-                {
-                    var extendName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
-                    var extendValue = contentInfo.GetString(extendName);
-                    if (!string.IsNullOrEmpty(extendValue))
-                    {
-                        dict[extendName] = extendValue;
-                    }
-                }
-            }
-
-            return dict;
         }
 
         public static string GetTitleHtml(string titleFormat, string titleAjaxUrl)

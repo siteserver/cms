@@ -8,6 +8,7 @@
       <!--#include file="../inc/head.html"-->
       <style type="text/css">
         .CodeMirror-line-numbers {
+          min-width: 22px;
           color: #aaa;
           background-color: #eee;
           text-align: right;
@@ -94,7 +95,6 @@
             <asp:PlaceHolder id="PhCodeMirror" runat="server">
               <script type="text/javascript">
                 $(document).ready(function () {
-                  var isTextArea = false;
                   var editor = CodeMirror.fromTextArea('TbContent', {
                     height: "500px",
                     parserfile: ["parsecss.js", "tokenizejavascript.js", "parsejavascript.js", "parsexml.js", "parsehtmlmixed.js"],
@@ -103,8 +103,9 @@
                     continuousScanning: 500,
                     lineNumbers: true
                   });
-                  $('#reindent').show().click(function () {
-                    if (!isTextArea) editor.reindent();
+                  $('#reindent').show().click(function (e) {
+                    editor.reindent();
+                    e.preventDefault();
                   });
                 });
               </script>

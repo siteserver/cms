@@ -173,7 +173,7 @@
 
         if (isToOpen && isByAjax) {
           var div = document.createElement('div');
-          div.innerHTML = "<img align='absmiddle' width='30' height='12' border='0' src='../assets/images/loading.gif' />";
+          div.innerHTML = "<img align='absmiddle' width='30' height='12' border='0' src='../assets/layer/skin/default/xubox_loading0.gif' />";
           img.parentNode.appendChild(div);
           $(div).addClass('loading');
           loadingChannels(tr, img, div, templateType);
