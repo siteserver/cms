@@ -379,18 +379,18 @@ GO");
 
             foreach (var contentId in contentIdList)
             {
-                var settingsXml = GetValue(tableName, contentId, ContentAttribute.SettingsXml);
-                var attributes = TranslateUtils.ToNameValueCollection(settingsXml);
-                attributes[ContentAttribute.CheckUserName] = userName;
-                attributes[ContentAttribute.CheckCheckDate] = DateUtils.GetDateAndTimeString(checkDate);
-                attributes[ContentAttribute.CheckReasons] = reasons;
+                var json = GetValue(tableName, contentId, ContentAttribute.SettingsXml);
+                var attributes = new ExtendedAttributes(json);
+                attributes.Set(ContentAttribute.CheckUserName, userName);
+                attributes.Set(ContentAttribute.CheckCheckDate, DateUtils.GetDateAndTimeString(checkDate));
+                attributes.Set(ContentAttribute.CheckReasons, reasons);
 
-                string sqlString =
-                    $"UPDATE {tableName} SET IsChecked = '{isChecked}', CheckedLevel = {checkedLevel}, SettingsXML = '{TranslateUtils.NameValueCollectionToString(attributes)}' WHERE Id = {contentId}";
+                var sqlString =
+                    $"UPDATE {tableName} SET {nameof(ContentInfo.IsChecked)} = '{isChecked}', {nameof(ContentInfo.CheckedLevel)} = {checkedLevel}, {nameof(ContentInfo.SettingsXml)} = '{attributes}' WHERE {nameof(ContentInfo.Id)} = {contentId}";
                 if (translateChannelId > 0)
                 {
                     sqlString =
-                        $"UPDATE {tableName} SET IsChecked = '{isChecked}', CheckedLevel = {checkedLevel}, SettingsXML = '{TranslateUtils.NameValueCollectionToString(attributes)}', ChannelId = {translateChannelId} WHERE Id = {contentId}";
+                        $"UPDATE {tableName} SET {nameof(ContentInfo.IsChecked)} = '{isChecked}', {nameof(ContentInfo.CheckedLevel)} = {checkedLevel}, {nameof(ContentInfo.SettingsXml)} = '{attributes}', {nameof(ContentInfo.ChannelId)} = {translateChannelId} WHERE {nameof(ContentInfo.Id)} = {contentId}";
                 }
                 ExecuteNonQuery(sqlString);
 
@@ -1754,7 +1754,7 @@ group by tmp.userName";
             }
 
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-            var styleInfoList = RelatedIdentities.GetTableStyleInfoList(siteInfo, channelInfo.Id);
+            //var styleInfoList = RelatedIdentities.GetTableStyleInfoList(siteInfo, channelInfo.Id);
 
             foreach (string key in form.Keys)
             {
@@ -1769,18 +1769,18 @@ group by tmp.userName";
                     whereBuilder.Append(" AND ");
                     whereBuilder.Append($"({key} LIKE '%{value}%')");
                 }
-                else
-                {
-                    foreach (var tableStyleInfo in styleInfoList)
-                    {
-                        if (StringUtils.EqualsIgnoreCase(tableStyleInfo.AttributeName, key))
-                        {
-                            whereBuilder.Append(" AND ");
-                            whereBuilder.Append($"({ContentAttribute.SettingsXml} LIKE '%{key}={value}%')");
-                            break;
-                        }
-                    }
-                }
+                //else
+                //{
+                //    foreach (var tableStyleInfo in styleInfoList)
+                //    {
+                //        if (StringUtils.EqualsIgnoreCase(tableStyleInfo.AttributeName, key))
+                //        {
+                //            whereBuilder.Append(" AND ");
+                //            whereBuilder.Append($"({ContentAttribute.SettingsXml} LIKE '%{key}={value}%')");
+                //            break;
+                //        }
+                //    }
+                //}
             }
 
             return whereBuilder.ToString();
@@ -2331,9 +2331,10 @@ group by tmp.userName";
             else if (!string.IsNullOrEmpty(keyword))
             {
                 var list = TableMetadataManager.GetAllLowerAttributeNameList(tableName);
-                whereString.Append(list.Contains(searchType.ToLower())
-                    ? $"AND ({searchType} LIKE '%{keyword}%') "
-                    : $"AND (SettingsXML LIKE '%{searchType}={keyword}%') ");
+                if (list.Contains(searchType.ToLower()))
+                {
+                    whereString.Append($"AND ({searchType} LIKE '%{keyword}%') ");
+                }   
             }
 
             whereString.Append(dateString);
@@ -2706,9 +2707,13 @@ group by tmp.userName";
             }
             else if (!string.IsNullOrEmpty(keyword))
             {
-                whereList.Add(allLowerAttributeNameList.Contains(searchType.ToLower())
-                    ? $"{searchType} LIKE '%{keyword}%'"
-                    : $"{nameof(ContentAttribute.SettingsXml)} LIKE '%{searchType}={keyword}%'");
+                if (allLowerAttributeNameList.Contains(searchType.ToLower()))
+                {
+                    whereList.Add($"{searchType} LIKE '%{keyword}%'");
+                }
+                //whereList.Add(allLowerAttributeNameList.Contains(searchType.ToLower())
+                //    ? $"{searchType} LIKE '%{keyword}%'"
+                //    : $"{nameof(ContentAttribute.SettingsXml)} LIKE '%{searchType}={keyword}%'");
             }
 
             if (isCheckOnly)

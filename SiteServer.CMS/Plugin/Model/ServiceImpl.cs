@@ -155,29 +155,29 @@ namespace SiteServer.CMS.Plugin.Model
             return this;
         }
 
-        public event ApiEventHandler ApiGet;
-        public event ApiEventHandler ApiPost;
-        public event ApiEventHandler ApiPut;
-        public event ApiEventHandler ApiDelete;
+        public event RestApiEventHandler RestApiGet;
+        public event RestApiEventHandler RestApiPost;
+        public event RestApiEventHandler RestApiPut;
+        public event RestApiEventHandler RestApiDelete;
 
-        public object OnApiGet(ApiEventArgs e)
+        public object OnRestApiGet(RestApiEventArgs e)
         {
-            return ApiGet?.Invoke(this, e);
+            return RestApiGet?.Invoke(this, e);
         }
 
-        public object OnApiPost(ApiEventArgs e)
+        public object OnRestApiPost(RestApiEventArgs e)
         {
-            return ApiPost?.Invoke(this, e);
+            return RestApiPost?.Invoke(this, e);
         }
 
-        public object OnApiPut(ApiEventArgs e)
+        public object OnRestApiPut(RestApiEventArgs e)
         {
-            return ApiPut?.Invoke(this, e);
+            return RestApiPut?.Invoke(this, e);
         }
 
-        public object OnApiDelete(ApiEventArgs e)
+        public object OnRestApiDelete(RestApiEventArgs e)
         {
-            return ApiDelete?.Invoke(this, e);
+            return RestApiDelete?.Invoke(this, e);
         }
 
         public event EventHandler<ParseEventArgs> BeforeStlParse;

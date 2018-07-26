@@ -132,7 +132,6 @@ namespace SiteServer.CMS.Plugin
                 }
             }
 
-            // TODO: 增加SINGLETON约束
             private static PluginInstance ActiveAndAdd(PackageMetadata metadata, Type type)
             {
                 if (metadata == null || type == null) return null;

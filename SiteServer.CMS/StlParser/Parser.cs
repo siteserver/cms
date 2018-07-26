@@ -19,7 +19,20 @@ namespace SiteServer.CMS.StlParser
             {
                 try
                 {
-                    service.OnBeforeStlParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.PageContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, filePath, pageInfo.HeadCodes, pageInfo.BodyCodes, pageInfo.FootCodes, contentBuilder));
+                    service.OnBeforeStlParse(new ParseEventArgs
+                    (
+                        pageInfo.SiteId,
+                        pageInfo.PageChannelId,
+                        pageInfo.PageContentId,
+                        contextInfo.ContentInfo,
+                        pageInfo.TemplateInfo.TemplateType,
+                        pageInfo.TemplateInfo.Id,
+                        filePath,
+                        pageInfo.HeadCodes,
+                        pageInfo.BodyCodes,
+                        pageInfo.FootCodes,
+                        contentBuilder
+                    ));
                 }
                 catch (Exception ex)
                 {

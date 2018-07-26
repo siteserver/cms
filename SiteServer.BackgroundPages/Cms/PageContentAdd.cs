@@ -284,15 +284,23 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    contentInfo.Id = DataProvider.ContentDao.Insert(_tableName, SiteInfo, contentInfo);
+                    
                     //判断是不是有审核权限
                     int checkedLevelOfUser;
                     var isCheckedOfUser = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, contentInfo.ChannelId, out checkedLevelOfUser);
                     if (CheckManager.IsCheckable(SiteInfo, contentInfo.ChannelId, contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                     {
-                        //添加审核记录
-                        DataProvider.ContentDao.UpdateIsChecked(_tableName, SiteId, contentInfo.ChannelId, new List<int> { contentInfo.Id }, 0, AuthRequest.AdminName, contentInfo.IsChecked, contentInfo.CheckedLevel, "");
+                        if (contentInfo.IsChecked)
+                        {
+                            contentInfo.CheckedLevel = 0;
+                        }
+
+                        contentInfo.Set(ContentAttribute.CheckUserName, AuthRequest.AdminName);
+                        contentInfo.Set(ContentAttribute.CheckCheckDate, DateUtils.GetDateAndTimeString(DateTime.Now));
+                        contentInfo.Set(ContentAttribute.CheckReasons, string.Empty);
                     }
+
+                    contentInfo.Id = DataProvider.ContentDao.Insert(_tableName, SiteInfo, contentInfo);
 
                     TagUtils.AddTags(tagCollection, SiteId, contentInfo.Id);
                 }
