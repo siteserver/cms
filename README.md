@@ -32,6 +32,8 @@ SiteServer CMS 基于.NET平台，能够以最低的成本、最少的人力投�
 
 ## 开发文档
 
+[《插件开发参考手册》](https://docs.siteserver.cn/plugins)
+
 [《STL 语言参考手册》](https://stl.siteserver.cn)
 
 [《CLI 命令行参考手册》](https://docs.siteserver.cn/cli)

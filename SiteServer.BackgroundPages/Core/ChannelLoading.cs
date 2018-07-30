@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.Core
                                 {"channelId", nodeInfo.Id.ToString()}
                             })}"" onclick=""event.stopPropagation()""><img src=""../Pic/icon/down.gif"" border=""0"" alt=""下降"" /></a>";
                     }
-                    checkBoxHtml = $@"<input type=""checkbox"" name=""ChannelIDCollection"" value=""{nodeInfo.Id}"" />";
+                    checkBoxHtml = $@"<input type=""checkbox"" name=""ChannelIDCollection"" value=""{nodeInfo.Id}"" onclick=""checkboxClick(this)"" />";
                 }
 
                 rowHtml = $@"

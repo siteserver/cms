@@ -1467,7 +1467,7 @@ SELECT * FROM (
                     }
 
                     if (lineOfText.StartsWith("--")) continue;
-                    lineOfText = lineOfText.Replace(")ENGINE=INNODB", ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
+                    lineOfText = lineOfText.Replace(")ENGINE=INNODB", ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
                     if (lineOfText.TrimEnd().ToUpper() == "GO")
                     {

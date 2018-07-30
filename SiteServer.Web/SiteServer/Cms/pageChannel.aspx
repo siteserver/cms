@@ -87,4 +87,21 @@
           }
         }
       }
+
+      function checkboxClick(e) {
+        event.stopPropagation();
+        var cb = $(e);
+        var checked = cb.is(':checked');
+        var tr = cb.parent().parent();
+        checked ?  tr.addClass('table-active') : tr.removeClass('table-active');
+        return true;
+      }
+
+      function cancelSelectRow(e) {
+        var tr = $(e);
+        var cb = tr.find('input:checkbox:first');
+        var checked = cb.is(':checked');
+        cb[0].checked = false;
+        tr.removeClass('table-active');
+      }
     </script>

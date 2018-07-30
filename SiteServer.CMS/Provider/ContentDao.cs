@@ -337,7 +337,7 @@ namespace SiteServer.CMS.Provider
             {
                 sqlBuilder.Append($@"
 PRIMARY KEY ({nameof(ContentInfo.Id)})
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 GO
 CREATE INDEX `IX_{tableName}` ON `{tableName}`(`{nameof(ContentInfo.IsTop)}` DESC, `{nameof(ContentInfo.Taxis)}` DESC, `{nameof(ContentInfo.Id)}` DESC)
 GO

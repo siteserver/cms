@@ -178,7 +178,7 @@ namespace SiteServer.CMS.Model.Attributes
             set => Set(nameof(AssetsDir), value);
         }
 
-        public string AssetsUrl => IsSeparatedAssets ? SeparatedAssetsUrl : PageUtils.ParseNavigationUrl($"~/{_siteDir}/{AssetsDir}/");
+        public string AssetsUrl => IsSeparatedAssets ? SeparatedAssetsUrl : PageUtils.Combine(WebUrl, AssetsDir);
 
         public string ChannelFilePathRule
         {

@@ -91,9 +91,8 @@ namespace SiteServer.Cli.Core
                 options.Parse(args);
                 return true;
             }
-            catch (OptionException ex)
+            catch
             {
-                PrintError(ex.Message);
                 return false;
             }
         }
@@ -122,12 +121,12 @@ namespace SiteServer.Cli.Core
             await Console.Out.WriteLineAsync(errorMessage);
         }
 
-        public static void PrintRowLine()
+        public static async Task PrintRowLine()
         {
-            Console.WriteLine(new string('-', ConsoleTableWidth));
+            await Console.Out.WriteLineAsync(new string('-', ConsoleTableWidth));
         }
 
-        public static void PrintRow(params string[] columns)
+        public static async Task PrintRow(params string[] columns)
         {
             int width = (ConsoleTableWidth - columns.Length) / columns.Length;
             string row = "|";
@@ -137,13 +136,13 @@ namespace SiteServer.Cli.Core
                 row += AlignCentre(column, width) + "|";
             }
 
-            Console.WriteLine(row);
+            await Console.Out.WriteLineAsync(row);
         }
 
-        public static void PrintError(string errorMessage)
+        public static async Task PrintError(string errorMessage)
         {
-            Console.WriteLine();
-            Console.Error.WriteLine(errorMessage);
+            await Console.Out.WriteLineAsync();
+            await Console.Out.WriteLineAsync(errorMessage);
         }
 
         public static string CreateErrorLogFile(string commandName)

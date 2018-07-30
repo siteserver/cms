@@ -377,6 +377,18 @@ namespace SiteServer.Utils
             return AddQueryString(url, queryString);
         }
 
+        public static string RemoveQueryString(string url)
+        {
+            if (url == null) return null;
+
+            if (url.IndexOf("?", StringComparison.Ordinal) == -1 || url.EndsWith("?"))
+            {
+                return url;
+            }
+            
+            return url.Substring(0, url.IndexOf("?", StringComparison.Ordinal));
+        }
+
         public static string RemoveQueryString(string url, string queryString)
         {
             if (queryString == null || url == null) return url;

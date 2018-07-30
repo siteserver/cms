@@ -676,7 +676,7 @@ SELECT * FROM (
                     : $@"CONSTRAINT PK_{tableName} PRIMARY KEY (Id)").AppendLine();
 
                 sqlBuilder.Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
-                    ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8"
+                    ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
                     : ")");
 
                 ExecuteNonQuery(sqlBuilder.ToString());
@@ -766,7 +766,7 @@ SELECT * FROM (
                 }
 
                 sqlBuilder.AppendLine().Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
-                    ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8"
+                    ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
                     : ")");
 
                 ExecuteNonQuery(sqlBuilder.ToString());

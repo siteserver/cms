@@ -80,7 +80,7 @@
                     <tbody>
                       <tr v-for="package in enabledPackages">
                         <td class="text-center text-nowrap">
-                          <img v-bind:src="package.metadata.iconUrl" width="48" height="48">
+                          <img v-bind:src="package.metadata.iconUrl || '../assets/icons/favicon.png'" width="48" height="48">
                         </td>
                         <td class="text-nowrap">
                           <a v-bind:href="'pageview.aspx?pluginId=' + package.id + '&returnUrl=pageManagement.aspx'">{{ package.id }}</a>
@@ -132,7 +132,7 @@
                     <tbody>
                       <tr v-for="package in disabledPackages">
                         <td class="text-center text-nowrap">
-                          <img v-bind:src="package.metadata.iconUrl" width="48" height="48">
+                          <img v-bind:src="package.metadata.iconUrl || '../assets/icons/favicon.png'" width="48" height="48">
                         </td>
                         <td class="text-nowrap">
                           <a v-bind:href="'pageview.aspx?pluginId=' + package.id + '&returnUrl=pageManagement.aspx'">{{ package.id }}</a>
@@ -220,7 +220,7 @@
                       <tbody>
                         <tr v-for="package in updatePackages">
                           <td class="text-center text-nowrap">
-                            <img v-bind:src="package.updatePackage.iconUrl" width="48" height="48">
+                            <img v-bind:src="package.updatePackage.iconUrl || '../assets/icons/favicon.png'" width="48" height="48">
                           </td>
                           <td class="text-nowrap">
                             <a v-bind:href="'pageView.aspx?pluginId=' + package.id + '&returnUrl=pageManagement.aspx'">{{ package.id }}</a>

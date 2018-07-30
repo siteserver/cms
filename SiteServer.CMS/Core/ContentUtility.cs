@@ -29,10 +29,14 @@ namespace SiteServer.CMS.Core
             var builder = new StringBuilder(content);
 
             var url = siteInfo.Additional.WebUrl;
-            if (!string.IsNullOrEmpty(url))
+            if (!string.IsNullOrEmpty(url) && url != "/")
             {
                 StringUtils.ReplaceHrefOrSrc(builder, url, "@");
             }
+            //if (!string.IsNullOrEmpty(url))
+            //{
+            //    StringUtils.ReplaceHrefOrSrc(builder, url, "@");
+            //}
 
             var relatedSiteUrl = PageUtils.ParseNavigationUrl($"~/{siteInfo.SiteDir}");
             StringUtils.ReplaceHrefOrSrc(builder, relatedSiteUrl, "@");

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using NDesk.Options;
@@ -17,14 +18,14 @@ namespace SiteServer.Cli
     internal static class Program
     {
         private static bool IsHelp { get; set; }
-        private static string Schedule { get; set; }
+        private static string Repeat { get; set; }
         private static Dictionary<string, Func<IJobContext, Task>> Jobs { get; set; }
         public static string CommandName { get; private set; }
         public static string[] CommandArgs { get; private set; }
 
         private static readonly OptionSet Options = new OptionSet {
-            { "s|schedule=", "schedule CRON expression",
-                v => Schedule = v },
+            { "r|repeat=", "schedule CRON expression",
+                v => Repeat = v },
             { "h|help",  "show this message and exit",
                 v => IsHelp = v != null }
         };
@@ -83,30 +84,11 @@ namespace SiteServer.Cli
 
             if (!Jobs.ContainsKey(CommandName))
             {
-                if (IsHelp)
-                {
-                    CliUtils.PrintRowLine();
-                    CliUtils.PrintRow("Usage");
-                    CliUtils.PrintRowLine();
-                    BackupJob.PrintUsage();
-                    RestoreJob.PrintUsage();
-                    UpdateJob.PrintUsage();
-                    VersionJob.PrintUsage();
-                    CliUtils.PrintRowLine();
-                    CliUtils.PrintRow("https://www.siteserver.cn/docs/cli");
-                    CliUtils.PrintRowLine();
-                    Console.ReadLine();
-                }
-                else
-                {
-                    Console.WriteLine($"'{CommandName}' is not a siteserver command. See 'sitserver --help'");
-                }
-                return;
+                RunHelpAsync(IsHelp, CommandName).GetAwaiter().GetResult();
             }
-
-            if (!string.IsNullOrEmpty(Schedule))
+            else if (!string.IsNullOrEmpty(Repeat))
             {
-                RunScheduleAsync(Schedule).GetAwaiter().GetResult();
+                RunRepeatAsync(Repeat).GetAwaiter().GetResult();
             }
             else
             {
@@ -114,7 +96,35 @@ namespace SiteServer.Cli
             }
         }
 
-        private static async Task RunScheduleAsync(string schedule)
+        private static async Task RunHelpAsync(bool isHelp, string commandName)
+        {
+            if (isHelp || string.IsNullOrEmpty(commandName))
+            {
+                var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                await Console.Out.WriteLineAsync($"SiteServer CLI Version: {version.Substring(0, version.Length - 2)}");
+                await Console.Out.WriteLineAsync($"Work Directory: {CliUtils.PhysicalApplicationPath}");
+                await Console.Out.WriteLineAsync($"siteserver.exe Path: {Assembly.GetExecutingAssembly().Location}");
+                await Console.Out.WriteLineAsync();
+
+                await CliUtils.PrintRowLine();
+                await CliUtils.PrintRow("Usage");
+                await CliUtils.PrintRowLine();
+                BackupJob.PrintUsage();
+                RestoreJob.PrintUsage();
+                UpdateJob.PrintUsage();
+                VersionJob.PrintUsage();
+                await CliUtils.PrintRowLine();
+                await CliUtils.PrintRow("https://www.siteserver.cn/docs/cli");
+                await CliUtils.PrintRowLine();
+                Console.ReadLine();
+            }
+            else
+            {
+                Console.WriteLine($"'{commandName}' is not a siteserver command. See 'sitserver --help'");
+            }
+        }
+
+        private static async Task RunRepeatAsync(string schedule)
         {
             try
             {

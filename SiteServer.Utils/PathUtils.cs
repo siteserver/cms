@@ -76,6 +76,7 @@ namespace SiteServer.Utils
             var retval = string.Empty;
             if (!string.IsNullOrEmpty(path))
             {
+                path = PageUtils.RemoveQueryString(path);
                 path = path.Trim('/', '\\').Trim();
                 try
                 {

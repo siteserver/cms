@@ -205,6 +205,15 @@ function fontWeightLink(element){
     }
 }
 
+function unSelectRow(tr) {
+    tr = $(tr);
+    var cb = tr.find('input:checkbox:first');
+    if (cb.length  === 0) return;
+    var checked = cb.is(':checked');
+    cb[0].checked = false;
+    tr.removeClass('table-active');
+}
+
 var completedChannelId = null;
 function displayChildren(img){
 	if (!img) return;
@@ -246,6 +255,7 @@ function displayChildren(img){
 		        if (currentLevel <= level) break;
 		        if(e.style.display == '') {
 			        e.style.display = 'none';
+                    unSelectRow(e);
 		        }else{
 			        if (currentLevel != level + 1) continue;
 			        e.style.display = '';
