@@ -160,6 +160,17 @@ namespace SiteServer.API.Controllers.V1
                     postFile.SaveAs(PathUtils.Combine(directoryPath, fileName));
 
                     userInfo.AvatarUrl = PageUtils.AddProtocolToUrl(PageUtils.GetUserFilesUrl(userInfo.UserName, fileName));
+
+                    string errorMessage;
+                    var user = DataProvider.UserDao.ApiUpdate(id, new UserInfoCreateUpdate
+                    {
+                        AvatarUrl = userInfo.AvatarUrl
+                    }, out errorMessage);
+
+                    if (user == null)
+                    {
+                        return BadRequest(errorMessage);
+                    }
                 }
 
                 var oResponse = new OResponse(userInfo);
