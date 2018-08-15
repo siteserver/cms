@@ -1266,6 +1266,30 @@ SELECT * FROM (
             return retval;
         }
 
+        public static string GetComparableString(string value)
+        {
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                retval = $"'{PageUtils.FilterSql(value)}'";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"N'{PageUtils.FilterSql(value)}'";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"'{PageUtils.FilterSql(value)}'";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"'{PageUtils.FilterSql(value)}'";
+            }
+
+            return retval;
+        }
+
         public static string GetComparableNow()
         {
             var retval = string.Empty;

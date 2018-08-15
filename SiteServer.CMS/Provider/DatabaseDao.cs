@@ -1865,6 +1865,18 @@ SET IDENTITY_INSERT {tableName} OFF
             return GetIntResult($@"SELECT COUNT(*) FROM {tableName} {whereSqlString}");
         }
 
+        public int GetPageTotalCount(string tableName, string whereSqlString, Dictionary<string, object> parameters)
+        {
+            var totalCount = 0;
+
+            using (var connection = GetConnection())
+            {
+                totalCount = connection.QueryFirstOrDefault<int>($@"SELECT COUNT(*) FROM {tableName} {whereSqlString}", parameters);
+            }
+
+            return totalCount;
+        }
+
         public string GetPageSqlString(string tableName, string columnNames, string whereSqlString, string orderSqlString, int offset, int limit)
         {
             var retval = string.Empty;

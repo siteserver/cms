@@ -11,10 +11,11 @@ namespace SiteServer.API.Controllers.V1
     [RoutePrefix("api/v1/contents")]
     public class ContentsController : ApiController
     {
-        private const string Route = "{siteId:int}/{channelId:int}";
+        private const string RouteSite = "{siteId:int}";
+        private const string RouteChannel = "{siteId:int}/{channelId:int}";
         private const string RouteContent = "{siteId:int}/{channelId:int}/{id:int}";
 
-        [HttpPost, Route(Route)]
+        [HttpPost, Route(RouteChannel)]
         public IHttpActionResult Create(int siteId, int channelId)
         {
             try
@@ -179,12 +180,50 @@ namespace SiteServer.API.Controllers.V1
             }
         }
 
-        [HttpGet, Route(Route)]
-        public IHttpActionResult List(int siteId, int channelId)
+        [HttpGet, Route(RouteSite)]
+        public IHttpActionResult GetSiteContents(int siteId)
         {
             try
             {
-                var request = new AuthRequest(AccessTokenManager.ScopeContents);
+                var request = new ORequest(AccessTokenManager.ScopeContents);
+                if (request.IsApiAuthenticated && !request.IsApiAuthorized) return Unauthorized();
+                if (!request.IsAdminLoggin) return Unauthorized();
+
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+
+                if (!request.AdminPermissions.HasChannelPermissions(siteId, siteId,
+                    ConfigManager.ChannelPermissions.ContentView)) return Unauthorized();
+
+                var tableName = siteInfo.TableName;
+
+                int count;
+                var contentIdList = DataProvider.ContentDao.ApiGetContentIdListBySiteId(tableName, siteId, request.Top, request.Skip, request.Like, request.OrderBy, request.QueryString, out count);
+                var value = new List<Dictionary<string, object>>();
+                foreach (var contentId in contentIdList)
+                {
+                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+                    if (contentInfo != null)
+                    {
+                        value.Add(contentInfo.ToDictionary());
+                    }
+                }
+
+                return Ok(new OResponse(request, value) {Count = count});
+            }
+            catch (Exception ex)
+            {
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpGet, Route(RouteChannel)]
+        public IHttpActionResult GetChannelContents(int siteId, int channelId)
+        {
+            try
+            {
+                var request = new ORequest(AccessTokenManager.ScopeContents);
                 if (request.IsApiAuthenticated && !request.IsApiAuthorized) return Unauthorized();
                 if (!request.IsAdminLoggin) return Unauthorized();
 
@@ -199,7 +238,8 @@ namespace SiteServer.API.Controllers.V1
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-                var contentIdList = DataProvider.ContentDao.ApiGetContentIdList(tableName, siteId, channelId, request.QueryString);
+                int count;
+                var contentIdList = DataProvider.ContentDao.ApiGetContentIdListByChannelId(tableName, siteId, channelId, request.Top, request.Skip, request.Like, request.OrderBy, request.QueryString, out count);
                 var value = new List<Dictionary<string, object>>();
                 foreach(var contentId in contentIdList)
                 {
@@ -210,7 +250,7 @@ namespace SiteServer.API.Controllers.V1
                     }
                 }
 
-                return Ok(new OResponse(value));
+                return Ok(new OResponse(request, value) { Count = count });
             }
             catch (Exception ex)
             {

@@ -152,6 +152,8 @@ namespace SiteServer.CMS.Model.Attributes
 
         public object Get(string name)
         {
+            if (string.IsNullOrEmpty(name)) return null;
+
             object value;
             if (_dataDict.TryGetValue(name, out value))
             {
@@ -203,11 +205,15 @@ namespace SiteServer.CMS.Model.Attributes
 
         public void Remove(string name)
         {
+            if (string.IsNullOrEmpty(name)) return;
+
             _dataDict.Remove(name);
         }
 
         public void Set(string name, object value)
         {
+            if (string.IsNullOrEmpty(name)) return;
+
             if (value == null)
             {
                 _dataDict.Remove(name);
@@ -220,6 +226,8 @@ namespace SiteServer.CMS.Model.Attributes
 
         public bool ContainsKey(string name)
         {
+            if (string.IsNullOrEmpty(name)) return false;
+
             return _dataDict.ContainsKey(name);
         }
 

@@ -3,10 +3,8 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Api.V1
 {
-    public class ORequest
+    public class ORequest: AuthRequest
     {
-        public AuthRequest AuthRequest { get; }
-
         //{"select", "ID,Name"},
         //{"expand", "ProductDetail"},
         //{"filter", "Categories/any(d:d/ID gt 1)"},
@@ -16,28 +14,28 @@ namespace SiteServer.CMS.Api.V1
         //{"count", "true"},
         //{"search", "tom"}
 
-        public ORequest(string scope)
+        public ORequest(string scope) : base(scope)
         {
-            AuthRequest = new AuthRequest(scope);
+            
         }
 
-        public OFilter Filter => OUtils.ParseFilter(AuthRequest.QueryString["filter"]);
+        public OFilter Filter => OUtils.ParseFilter(QueryString["filter"]);
 
         public int Top
         {
             get
             {
-                var top = TranslateUtils.ToInt(AuthRequest.QueryString["top"], 20);
+                var top = TranslateUtils.ToInt(QueryString["top"], 20);
                 return top > 0 ? top : 20;
             }
         }
 
-        public int Skip => TranslateUtils.ToInt(AuthRequest.QueryString["skip"]);
+        public int Skip => TranslateUtils.ToInt(QueryString["skip"]);
 
-        public bool Count => TranslateUtils.ToBool(AuthRequest.QueryString["count"]);
+        public string Like => QueryString["like"];
 
-        public string RawUrl => AuthRequest.HttpRequest.Url.AbsoluteUri;
+        public string OrderBy => QueryString["orderBy"];
 
-        public bool IsApiAuthorized => AuthRequest.IsApiAuthorized;
+        public string RawUrl => HttpRequest.Url.AbsoluteUri;
     }
 }

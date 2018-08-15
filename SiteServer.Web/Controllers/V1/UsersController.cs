@@ -193,27 +193,9 @@ namespace SiteServer.API.Controllers.V1
                 if (!oRequest.IsApiAuthorized) return Unauthorized();
 
                 var users = DataProvider.UserDao.ApiGetUsers(oRequest.Skip, oRequest.Top);
-                var oResponse = new OResponse(users);
-
                 var count = DataProvider.UserDao.ApiGetCount();
-                if (oRequest.Count)
-                {
-                    oResponse.Count = count;
-                }
 
-                if (oRequest.Top + oRequest.Skip < count)
-                {
-                    oResponse.Next =
-                        PageUtils.AddQueryString(
-                            PageUtils.RemoveQueryString(oRequest.RawUrl, new List<string> {"top", "skip"}),
-                            new NameValueCollection
-                            {
-                                {"top", oRequest.Top.ToString()},
-                                {"skip", (oRequest.Top + oRequest.Skip).ToString()}
-                            });
-                }
-
-                return Ok(oResponse);
+                return Ok(new OResponse(oRequest, users) { Count = count });
             }
             catch (Exception ex)
             {
@@ -336,27 +318,8 @@ namespace SiteServer.API.Controllers.V1
                 if (string.IsNullOrEmpty(userName)) return NotFound();
 
                 var logs = DataProvider.UserLogDao.ApiGetLogs(userName, oRequest.Skip, oRequest.Top);
-                var oResponse = new OResponse(logs);
 
-                var count = DataProvider.UserDao.ApiGetCount();
-                if (oRequest.Count)
-                {
-                    oResponse.Count = count;
-                }
-
-                if (oRequest.Top + oRequest.Skip < count)
-                {
-                    oResponse.Next =
-                        PageUtils.AddQueryString(
-                            PageUtils.RemoveQueryString(oRequest.RawUrl, new List<string> { "top", "skip" }),
-                            new NameValueCollection
-                            {
-                                {"top", oRequest.Top.ToString()},
-                                {"skip", (oRequest.Top + oRequest.Skip).ToString()}
-                            });
-                }
-
-                return Ok(oResponse);
+                return Ok(new OResponse(oRequest, logs) { Count = DataProvider.UserDao.ApiGetCount() });
             }
             catch (Exception ex)
             {

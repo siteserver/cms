@@ -2799,11 +2799,18 @@ group by tmp.userName";
             }
         }
 
-        public List<int> ApiGetContentIdList(string tableName, int siteId, int channelId, NameValueCollection queryString)
+        public List<int> ApiGetContentIdListBySiteId(string tableName, int siteId, int top, int skip, string like, string orderby, NameValueCollection queryString, out int totalCount)
         {
+            totalCount = 0;
             var list = new List<int>();
 
-            var sqlString = $"SELECT Id FROM {tableName} WHERE SiteId = {siteId} AND ChannelId = {channelId}";
+            var whereString = $"WHERE {ContentAttribute.SiteId} = {siteId} AND {ContentAttribute.ChannelId} > 0 AND {ContentAttribute.IsChecked} = '{true}'";
+
+            var likeList = TranslateUtils.StringCollectionToStringList(StringUtils.TrimAndToLower(like));
+            var orderByString = string.IsNullOrEmpty(orderby)
+                ? $"{ContentAttribute.AddDate} DESC"
+                : PageUtils.FilterSql(orderby);
+            var dbArgs = new Dictionary<string, object>();
 
             if (queryString != null && queryString.Count > 0)
             {
@@ -2817,27 +2824,93 @@ group by tmp.userName";
 
                     if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsChecked) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsRecommend) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsTop))
                     {
-                        sqlString += $" AND {attributeName} = '{TranslateUtils.ToBool(value)}'";
+                        whereString += $" AND {attributeName} = '{TranslateUtils.ToBool(value)}'";
                     }
                     else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Id) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.ReferenceId) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.SourceId) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.CheckedLevel))
                     {
-                        sqlString += $" AND {attributeName} = {TranslateUtils.ToInt(value)}";
+                        whereString += $" AND {attributeName} = {TranslateUtils.ToInt(value)}";
+                    }
+                    else if (likeList.Contains(attributeName))
+                    {
+                        whereString += $" AND {attributeName} LIKE '%{PageUtils.FilterSql(value)}%'";
                     }
                     else
                     {
-                        sqlString += $" AND {attributeName} = N'{PageUtils.FilterSql(value)}'";
+                        whereString += $" AND {attributeName} = @{attributeName}";
+                        dbArgs.Add(attributeName, value);
                     }
                 }
             }
 
-            using (var rdr = ExecuteReader(sqlString))
+            totalCount = DataProvider.DatabaseDao.GetPageTotalCount(tableName, whereString, dbArgs);
+            if (totalCount > 0 && skip < totalCount)
             {
-                while (rdr.Read())
+                var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, ContentAttribute.Id, whereString, $"ORDER BY {orderByString}", skip, top);
+
+                using (var connection = GetConnection())
                 {
-                    list.Add(GetInt(rdr, 0));
+                    list = connection.Query<int>(sqlString, dbArgs).ToList();
                 }
-                rdr.Close();
             }
+
+            return list;
+        }
+
+        public List<int> ApiGetContentIdListByChannelId(string tableName, int siteId, int channelId, int top, int skip, string like, string orderby, NameValueCollection queryString, out int totalCount)
+        {
+            var list = new List<int>();
+
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var channelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.All, string.Empty, string.Empty, string.Empty);
+            var whereString = $"WHERE {ContentAttribute.SiteId} = {siteId} AND {ContentAttribute.ChannelId} IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND {ContentAttribute.IsChecked} = '{true}'";
+
+            var likeList = TranslateUtils.StringCollectionToStringList(StringUtils.TrimAndToLower(like));
+            var orderByString = string.IsNullOrEmpty(orderby)
+                ? $"{ContentAttribute.AddDate} DESC"
+                : PageUtils.FilterSql(orderby);
+            var dbArgs = new Dictionary<string, object>();
+
+            if (queryString != null && queryString.Count > 0)
+            {
+                var lowerColumnNameList = TableMetadataManager.GetAllLowerAttributeNameList(tableName);
+
+                foreach (string attributeName in queryString)
+                {
+                    if (!lowerColumnNameList.Contains(attributeName.ToLower())) continue;
+
+                    var value = queryString[attributeName];
+
+                    if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsChecked) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsRecommend) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsTop))
+                    {
+                        whereString += $" AND {attributeName} = '{TranslateUtils.ToBool(value)}'";
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Id) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.ReferenceId) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.SourceId) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.CheckedLevel))
+                    {
+                        whereString += $" AND {attributeName} = {TranslateUtils.ToInt(value)}";
+                    }
+                    else if (likeList.Contains(attributeName))
+                    {
+                        whereString += $" AND {attributeName} LIKE '%{PageUtils.FilterSql(value)}%'";
+                    }
+                    else
+                    {
+                        whereString += $" AND {attributeName} = @{attributeName}";
+                        dbArgs.Add(attributeName, value);
+                    }
+                }
+            }
+
+            totalCount = DataProvider.DatabaseDao.GetPageTotalCount(tableName, whereString, dbArgs);
+            if (totalCount > 0 && skip < totalCount)
+            {
+                var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, ContentAttribute.Id, whereString, $"ORDER BY {orderByString}", skip, top);
+
+                using (var connection = GetConnection())
+                {
+                    list = connection.Query<int>(sqlString, dbArgs).ToList();
+                }
+            }
+
             return list;
         }
 

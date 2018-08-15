@@ -122,27 +122,9 @@ namespace SiteServer.API.Controllers.V1
                 if (!oRequest.IsApiAuthorized) return Unauthorized();
 
                 var administrators = DataProvider.AdministratorDao.ApiGetAdministrators(oRequest.Skip, oRequest.Top);
-                var oResponse = new OResponse(administrators);
-
                 var count = DataProvider.AdministratorDao.ApiGetCount();
-                if (oRequest.Count)
-                {
-                    oResponse.Count = count;
-                }
 
-                if (oRequest.Top + oRequest.Skip < count)
-                {
-                    oResponse.Next =
-                        PageUtils.AddQueryString(
-                            PageUtils.RemoveQueryString(oRequest.RawUrl, new List<string> {"top", "skip"}),
-                            new NameValueCollection
-                            {
-                                {"top", oRequest.Top.ToString()},
-                                {"skip", (oRequest.Top + oRequest.Skip).ToString()}
-                            });
-                }
-
-                return Ok(oResponse);
+                return Ok(new OResponse(oRequest, administrators) { Count = count });
             }
             catch (Exception ex)
             {
