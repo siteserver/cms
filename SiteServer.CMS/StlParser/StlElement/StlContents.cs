@@ -117,7 +117,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static object ParseEntity(PageInfo pageInfo, DataSet dataSource)
         {
-            var contentInfoList = new List<ContentInfo>();
+            var contentInfoList = new List<Dictionary<string, object>>();
 
             var table = dataSource.Tables[0];
             foreach (DataRow row in table.Rows)
@@ -130,7 +130,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 if (contentInfo != null)
                 {
-                    contentInfoList.Add(contentInfo);
+                    contentInfoList.Add(contentInfo.ToDictionary());
                 }
             }
 

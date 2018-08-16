@@ -133,7 +133,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))
             {
-                return contentInfo;
+                return contentInfo.ToDictionary();
             }
 
             var parsedContent = ParseImpl(pageInfo, contextInfo, leftText, rightText, formatString, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBrStr, isLower, isUpper, isOriginal, type, contentInfo, contentId);
