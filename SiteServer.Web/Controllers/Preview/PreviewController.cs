@@ -253,7 +253,7 @@ namespace SiteServer.API.Controllers.Preview
                     var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
                     var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
-                    var pageSqlContentsElementParser = new StlPageSqlContents(stlElement, pageInfo, contextInfo, false);
+                    var pageSqlContentsElementParser = new StlPageSqlContents(stlElement, pageInfo, contextInfo);
                     int totalNum;
                     var pageCount = pageSqlContentsElementParser.GetPageCount(out totalNum);
 
@@ -388,7 +388,7 @@ namespace SiteServer.API.Controllers.Preview
                     var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
                     var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
-                    var pageSqlContentsElementParser = new StlPageSqlContents(stlElement, pageInfo, contextInfo, false);
+                    var pageSqlContentsElementParser = new StlPageSqlContents(stlElement, pageInfo, contextInfo);
                     int totalNum;
                     var pageCount = pageSqlContentsElementParser.GetPageCount(out totalNum);
 

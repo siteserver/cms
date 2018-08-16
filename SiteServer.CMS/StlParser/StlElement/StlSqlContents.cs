@@ -35,7 +35,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.SqlContent);
+            var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.SqlContent);
             var dataSource = StlDataUtility.GetSqlContentsDataSource(listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString);
 
             if (contextInfo.IsStlEntity)

@@ -43,7 +43,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.Content);
+            var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.Content);
 
             return ParseImpl(pageInfo, contextInfo, listInfo);
         }

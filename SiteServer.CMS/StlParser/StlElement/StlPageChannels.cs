@@ -32,7 +32,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             _contextInfo = contextInfo.Clone(stlPageChannelsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
-            DisplayInfo = ListInfo.GetListInfoByXmlNode(pageInfo, _contextInfo, EContextType.Channel);
+            DisplayInfo = ListInfo.GetListInfo(pageInfo, _contextInfo, EContextType.Channel);
 
             var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, _contextInfo.ChannelId, DisplayInfo.UpLevel, DisplayInfo.TopLevel);
 

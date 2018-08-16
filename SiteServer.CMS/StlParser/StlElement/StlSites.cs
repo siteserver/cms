@@ -42,7 +42,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.Site);
+            var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.Site);
             var siteName = listInfo.Others.Get(SiteName.Name);
             var siteDir = listInfo.Others.Get(SiteDir.Name);
             var since = listInfo.Others.Get(Since.Name);

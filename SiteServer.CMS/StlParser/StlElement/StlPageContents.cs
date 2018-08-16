@@ -35,7 +35,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             _contextInfo = contextInfo.Clone(stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
-            ListInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.Content);
+            ListInfo = ListInfo.GetListInfo(_pageInfo, _contextInfo, EContextType.Content);
 
             var channelId = StlDataUtility.GetChannelIdByLevel(_pageInfo.SiteId, _contextInfo.ChannelId, ListInfo.UpLevel, ListInfo.TopLevel);
 
@@ -53,7 +53,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var stlElementInfo = StlParserUtility.ParseStlElement(stlPageContentsElement);
             _contextInfo = contextInfo.Clone(stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
-            ListInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.Content);
+            ListInfo = ListInfo.GetListInfo(_pageInfo, _contextInfo, EContextType.Content);
 
             ListInfo.Scope = EScopeType.All;
 

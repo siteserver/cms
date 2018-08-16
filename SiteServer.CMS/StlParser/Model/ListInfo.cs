@@ -27,7 +27,7 @@ namespace SiteServer.CMS.StlParser.Model
         private bool _isVideo;
         private bool _isFile;
 
-        public static ListInfo GetListInfoByXmlNode(PageInfo pageInfo, ContextInfo contextInfo, EContextType contextType)
+        public static ListInfo GetListInfo(PageInfo pageInfo, ContextInfo contextInfo, EContextType contextType)
         {
             var listInfo = new ListInfo
             {

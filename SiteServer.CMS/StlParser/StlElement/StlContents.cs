@@ -19,7 +19,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.Content);
+            var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.Content);
             var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
 
             if (contextInfo.IsStlEntity)

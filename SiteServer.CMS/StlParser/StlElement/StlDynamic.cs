@@ -172,7 +172,7 @@ function {functionName}(pageNum)
                 var stlPageSqlContentsElement = stlElement;
                 var stlPageSqlContentsElementReplaceString = stlElement;
 
-                var pageSqlContentsElementParser = new StlPageSqlContents(stlPageSqlContentsElement, pageInfo, contextInfo, true);
+                var pageSqlContentsElementParser = new StlPageSqlContents(stlPageSqlContentsElement, pageInfo, contextInfo);
                 int totalNum;
                 var pageCount = pageSqlContentsElementParser.GetPageCount(out totalNum);
 
