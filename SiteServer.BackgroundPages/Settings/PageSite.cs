@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             _hqSiteId = DataProvider.SiteDao.GetIdByIsRoot();
 
-            RptContents.DataSource = SiteManager.GetSiteIdList();
+            RptContents.DataSource = SiteManager.GetSiteIdListOrderByLevel();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }

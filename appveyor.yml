@@ -1,6 +1,5 @@
 # configuration for "master" branch
--
-  branches:
+- branches:
     only:
       - master
 
@@ -30,13 +29,13 @@
 
   cache:
     - packages -> **\packages.config
-    - node_modules                        # local npm modules
+    - node_modules # local npm modules
 
   before_build:
     - nuget restore siteserver-all.sln
 
   build:
-    project: siteserver-all.sln       # path to Visual Studio solution or project
+    project: siteserver-all.sln # path to Visual Studio solution or project
     publish_nuget: true
 
   after_build:
@@ -51,12 +50,12 @@
     - path: siteserver.exe
       name: siteserver.exe
 
-    - path: '*.nupkg'
+    - path: "*.nupkg"
 
   deploy:
     - provider: GitHub
       release: siteserver-v$(appveyor_build_version)
-      description: 'SiteServer CMS'
+      description: "SiteServer CMS"
       auth_token:
         secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
       artifact: /.*\.[zip|exe]/
@@ -67,11 +66,11 @@
         appveyor_repo_tag: false
 
     - provider: NuGet
-      server:                  # remove to push to NuGet.org
+      server: # remove to push to NuGet.org
       api_key:
         secure: B9umZPwBVx2TMfYt7G1Eppy7XX0FkqWioXxwR+lKv5XVRc6ezjOXP8D9iuisOWBF
       skip_symbols: false
-      symbol_server:           # remove to push symbols to SymbolSource.org
+      symbol_server: # remove to push symbols to SymbolSource.org
       artifact: /.*\.nupkg/
 
   notifications:
@@ -80,8 +79,7 @@
       on_build_failure: true
 
 # configuration for "dev" branch
--
-  branches:
+- branches:
     only:
       - dev
 
@@ -101,29 +99,37 @@
   environment:
     nodejs_version: "6"
     TreatWarningsAsErrors: false
+    DOCKER_USER:
+      secure: plV6NmiOZal0f3H/xNFuoA==
+    DOCKER_PASS:
+      secure: AzfvhYL4heX1Acqv5C3Oug==
 
   install:
     - ps: Install-Product node $env:nodejs_version
     - npm install gulp -g
     - npm install
+    - docker version
 
   skip_tags: true
 
   cache:
     - packages -> **\packages.config
-    - node_modules                        # local npm modules
+    - node_modules # local npm modules
 
   before_build:
     - nuget restore siteserver-all.sln
 
   build:
-    project: siteserver-all.sln       # path to Visual Studio solution or project
+    project: siteserver-all.sln # path to Visual Studio solution or project
     publish_nuget: true
 
   after_build:
     - gulp build
     - nuget pack build/SS.CMS.nuspec
     - gulp zip
+    - docker build -t siteserver/cms:latest -t siteserver/cms:v6.5.{build}-beta .
+    - docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+    - docker push siteserver/cms
 
   artifacts:
     - path: siteserver_install.zip
@@ -132,12 +138,12 @@
     - path: siteserver.exe
       name: siteserver.exe
 
-    - path: '*.nupkg'
+    - path: "*.nupkg"
 
   deploy:
     - provider: GitHub
       release: siteserver-v$(appveyor_build_version)
-      description: 'SiteServer CMS'
+      description: "SiteServer CMS"
       auth_token:
         secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
       artifact: /.*\.[zip|exe]/
@@ -148,11 +154,11 @@
         appveyor_repo_tag: false
 
     - provider: NuGet
-      server: https://www.myget.org/F/siteserver/api/v2/package                 # remove to push to NuGet.org
+      server: https://www.myget.org/F/siteserver/api/v2/package # remove to push to NuGet.org
       api_key:
         secure: i9vISdFyCeWbRUQw+jhcF748i4oWdeatGBrx+dJ07SDTpt7Hsk9YCRp/ha3ZXfZF
       skip_symbols: false
-      symbol_server:           # remove to push symbols to SymbolSource.org
+      symbol_server: # remove to push symbols to SymbolSource.org
       artifact: /.*\.nupkg/
 
   notifications:
