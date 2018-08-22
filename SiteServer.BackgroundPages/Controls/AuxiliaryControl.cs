@@ -19,6 +19,8 @@ namespace SiteServer.BackgroundPages.Controls
 
         public int ChannelId { get; set; }
 
+        public int ContentId { get; set; }
+
         public List<TableStyleInfo> StyleInfoList { get; set; }
 
         protected override void Render(HtmlTextWriter output)
@@ -67,16 +69,12 @@ namespace SiteServer.BackgroundPages.Controls
 
                     if (styleInfo.InputType == InputType.Customize)
                     {
-                        var eventArgs = new ContentFormLoadEventArgs(SiteInfo.Id, ChannelId, styleInfo.AttributeName, Attributes);
+                        var eventArgs = new ContentFormLoadEventArgs(SiteInfo.Id, ChannelId, ContentId, Attributes, styleInfo.AttributeName, html);
                         foreach (var service in PluginManager.Services)
                         {
                             try
                             {
-                                var serviceReturnedHtml = service.OnContentFormLoad(eventArgs);
-                                if (!string.IsNullOrEmpty(serviceReturnedHtml))
-                                {
-                                    html = serviceReturnedHtml;
-                                }
+                                html = service.OnContentFormLoad(eventArgs);
                             }
                             catch (Exception ex)
                             {

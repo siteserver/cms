@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Dapper;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
@@ -10,189 +12,192 @@ using SiteServer.Utils.Auth;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
+using Dapper.Contrib.Extensions;
 
 namespace SiteServer.CMS.Provider
 {
     public class UserDao : DataProviderBase
     {
-        public override string TableName => "siteserver_User";
+        public const string DatabaseTableName = "siteserver_User";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override string TableName => DatabaseTableName;
+
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.Id),
+                AttributeName = nameof(UserInfoDatabase.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.UserName),
+                AttributeName = nameof(UserInfoDatabase.UserName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.Password),
+                AttributeName = nameof(UserInfoDatabase.Password),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.PasswordFormat),
+                AttributeName = nameof(UserInfoDatabase.PasswordFormat),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.PasswordSalt),
+                AttributeName = nameof(UserInfoDatabase.PasswordSalt),
                 DataType = DataType.VarChar,
-                Length = 128
+                DataLength = 128
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.CreateDate),
+                AttributeName = nameof(UserInfoDatabase.CreateDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.LastResetPasswordDate),
+                AttributeName = nameof(UserInfoDatabase.LastResetPasswordDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.LastActivityDate),
+                AttributeName = nameof(UserInfoDatabase.LastActivityDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.CountOfLogin),
+                AttributeName = nameof(UserInfoDatabase.CountOfLogin),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.CountOfFailedLogin),
+                AttributeName = nameof(UserInfoDatabase.CountOfFailedLogin),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.CountOfWriting),
+                AttributeName = nameof(UserInfoDatabase.CountOfWriting),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.IsChecked),
+                AttributeName = nameof(UserInfoDatabase.IsChecked),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.IsLockedOut),
+                AttributeName = nameof(UserInfoDatabase.IsLockedOut),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.DisplayName),
+                AttributeName = nameof(UserInfoDatabase.DisplayName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.Email),
+                AttributeName = nameof(UserInfoDatabase.Email),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.Mobile),
+                AttributeName = nameof(UserInfoDatabase.Mobile),
                 DataType = DataType.VarChar,
-                Length = 20
+                DataLength = 20
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.AvatarUrl),
+                AttributeName = nameof(UserInfoDatabase.AvatarUrl),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.Organization),
+                AttributeName = nameof(UserInfoDatabase.Organization),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.Department),
+                AttributeName = nameof(UserInfoDatabase.Department),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.Position),
+                AttributeName = nameof(UserInfoDatabase.Position),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.Gender),
+                AttributeName = nameof(UserInfoDatabase.Gender),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.Birthday),
+                AttributeName = nameof(UserInfoDatabase.Birthday),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.Education),
+                AttributeName = nameof(UserInfoDatabase.Education),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.Graduation),
+                AttributeName = nameof(UserInfoDatabase.Graduation),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.Address),
+                AttributeName = nameof(UserInfoDatabase.Address),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.WeiXin),
+                AttributeName = nameof(UserInfoDatabase.WeiXin),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.Qq),
+                AttributeName = nameof(UserInfoDatabase.Qq),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.WeiBo),
+                AttributeName = nameof(UserInfoDatabase.WeiBo),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.Interests),
+                AttributeName = nameof(UserInfoDatabase.Interests),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserInfo.Signature),
+                AttributeName = nameof(UserInfoDatabase.Signature),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             }
         };
 
@@ -234,7 +239,7 @@ namespace SiteServer.CMS.Provider
             {
                 return true;
             }
-            var obj = CacheUtils.Get($"BaiRong.Core.Provider.UserDao.Insert.IpAddress.{ipAddress}");
+            var obj = CacheUtils.Get($"SiteServer.CMS.Provider.UserDao.Insert.IpAddress.{ipAddress}");
             return obj == null;
         }
 
@@ -242,13 +247,14 @@ namespace SiteServer.CMS.Provider
         {
             if (ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes > 0 && !string.IsNullOrEmpty(ipAddress))
             {
-                CacheUtils.InsertMinutes($"BaiRong.Core.Provider.UserDao.Insert.IpAddress.{ipAddress}", ipAddress, ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes);
+                CacheUtils.InsertMinutes($"SiteServer.CMS.Provider.UserDao.Insert.IpAddress.{ipAddress}", ipAddress, ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes);
             }
         }
 
-        public bool Insert(IUserInfo userInfo, string password, string ipAddress, out string errorMessage)
+        private bool InsertValidate(string userName, string email, string mobile, string password, string ipAddress, out string errorMessage)
         {
             errorMessage = string.Empty;
+
             if (!IpAddressIsRegisterAllowed(ipAddress))
             {
                 errorMessage = $"同一IP在{ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes}分钟内只能注册一次";
@@ -270,26 +276,79 @@ namespace SiteServer.CMS.Provider
                     $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserPasswordRestriction))}";
                 return false;
             }
-            if (!IsUserNameCompliant(userInfo.UserName.Replace("@", string.Empty).Replace(".", string.Empty)))
+            if (string.IsNullOrEmpty(userName))
             {
-                errorMessage = "用户名包含不规则字符，请更换用户名";
+                errorMessage = "用户名为空，请填写用户名";
                 return false;
             }
-            if (!string.IsNullOrEmpty(userInfo.Email) && IsEmailExists(userInfo.Email))
-            {
-                errorMessage = "电子邮件地址已被注册，请更换邮箱";
-                return false;
-            }
-            if (!string.IsNullOrEmpty(userInfo.Mobile) && IsMobileExists(userInfo.Mobile))
-            {
-                errorMessage = "手机号码已被注册，请更换手机号码";
-                return false;
-            }
-            if (!string.IsNullOrEmpty(userInfo.UserName) && IsUserNameExists(userInfo.UserName))
+            if (!string.IsNullOrEmpty(userName) && IsUserNameExists(userName))
             {
                 errorMessage = "用户名已被注册，请更换用户名";
                 return false;
             }
+            if (!IsUserNameCompliant(userName.Replace("@", string.Empty).Replace(".", string.Empty)))
+            {
+                errorMessage = "用户名包含不规则字符，请更换用户名";
+                return false;
+            }
+            
+            if (!string.IsNullOrEmpty(email) && IsEmailExists(email))
+            {
+                errorMessage = "电子邮件地址已被注册，请更换邮箱";
+                return false;
+            }
+            if (!string.IsNullOrEmpty(mobile) && IsMobileExists(mobile))
+            {
+                errorMessage = "手机号码已被注册，请更换手机号码";
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool UpdateValidate(UserInfoCreateUpdate userInfoToUpdate, string userName, string email, string mobile, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            if (userInfoToUpdate.UserName != null && userInfoToUpdate.UserName != userName)
+            {
+                if (!IsUserNameCompliant(userInfoToUpdate.UserName.Replace("@", string.Empty).Replace(".", string.Empty)))
+                {
+                    errorMessage = "用户名包含不规则字符，请更换用户名";
+                    return false;
+                }
+                if (!string.IsNullOrEmpty(userInfoToUpdate.UserName) && IsUserNameExists(userInfoToUpdate.UserName))
+                {
+                    errorMessage = "用户名已被注册，请更换用户名";
+                    return false;
+                }
+            }
+
+            if (userInfoToUpdate.Email != null && userInfoToUpdate.Email != email)
+            {
+                if (!string.IsNullOrEmpty(userInfoToUpdate.Email) && IsEmailExists(userInfoToUpdate.Email))
+                {
+                    errorMessage = "电子邮件地址已被注册，请更换邮箱";
+                    return false;
+                }
+            }
+
+            if (userInfoToUpdate.Mobile != null && userInfoToUpdate.Mobile != mobile)
+            {
+                if (!string.IsNullOrEmpty(userInfoToUpdate.Mobile) && IsMobileExists(userInfoToUpdate.Mobile))
+                {
+                    errorMessage = "手机号码已被注册，请更换手机号码";
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool Insert(IUserInfo userInfo, string password, string ipAddress, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+            if (!InsertValidate(userInfo.UserName, userInfo.Email, userInfo.Mobile, password, ipAddress, out errorMessage)) return false;
 
             try
             {
@@ -311,11 +370,11 @@ namespace SiteServer.CMS.Provider
 
         private void InsertWithoutValidation(IUserInfo userInfo, string password, EPasswordFormat passwordFormat, string passwordSalt)
         {
-            const string sqlString = "INSERT INTO siteserver_User (UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreateDate, @LastResetPasswordDate, @LastActivityDate, @CountOfLogin, @CountOfFailedLogin, @CountOfWriting, @IsChecked, @IsLockedOut, @DisplayName, @Email, @Mobile, @AvatarUrl, @Organization, @Department, @Position, @Gender, @Birthday, @Education, @Graduation, @Address, @WeiXin, @QQ, @WeiBo, @Interests, @Signature)";
+            var sqlString = $"INSERT INTO {TableName} (UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreateDate, @LastResetPasswordDate, @LastActivityDate, @CountOfLogin, @CountOfFailedLogin, @CountOfWriting, @IsChecked, @IsLockedOut, @DisplayName, @Email, @Mobile, @AvatarUrl, @Organization, @Department, @Position, @Gender, @Birthday, @Education, @Graduation, @Address, @WeiXin, @QQ, @WeiBo, @Interests, @Signature)";
 
             userInfo.CreateDate = DateTime.Now;
             userInfo.LastActivityDate = DateTime.Now;
-            userInfo.LastResetPasswordDate = DateUtils.SqlMinValue;
+            userInfo.LastResetPasswordDate = DateTime.Now;
 
             var parameters = new IDataParameter[]
             {
@@ -377,7 +436,7 @@ namespace SiteServer.CMS.Provider
 
         public void Update(IUserInfo userInfo)
         {
-            const string sqlString = "UPDATE siteserver_User SET UserName = @UserName, CreateDate = @CreateDate, LastResetPasswordDate = @LastResetPasswordDate, LastActivityDate = @LastActivityDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin, CountOfWriting = @CountOfWriting, IsChecked = @IsChecked, IsLockedOut = @IsLockedOut, DisplayName = @DisplayName, Email = @Email, Mobile = @Mobile, AvatarUrl = @AvatarUrl, Organization = @Organization, Department = @Department, Position = @Position, Gender = @Gender, Birthday = @Birthday, Education = @Education, Graduation = @Graduation, Address = @Address, WeiXin = @WeiXin, QQ = @QQ, WeiBo = @WeiBo, Interests = @Interests, Signature = @Signature WHERE Id = @Id";
+            var sqlString = $"UPDATE {TableName} SET UserName = @UserName, CreateDate = @CreateDate, LastResetPasswordDate = @LastResetPasswordDate, LastActivityDate = @LastActivityDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin, CountOfWriting = @CountOfWriting, IsChecked = @IsChecked, IsLockedOut = @IsLockedOut, DisplayName = @DisplayName, Email = @Email, Mobile = @Mobile, AvatarUrl = @AvatarUrl, Organization = @Organization, Department = @Department, Position = @Position, Gender = @Gender, Birthday = @Birthday, Education = @Education, Graduation = @Graduation, Address = @Address, WeiXin = @WeiXin, QQ = @QQ, WeiBo = @WeiBo, Interests = @Interests, Signature = @Signature WHERE Id = @Id";
 
             var updateParms = new IDataParameter[]
             {
@@ -415,7 +474,7 @@ namespace SiteServer.CMS.Provider
 
         public void UpdateLastActivityDate(string userName)
         {
-            const string sqlString = "UPDATE siteserver_User SET LastActivityDate = @LastActivityDate WHERE UserName = @UserName";
+            var sqlString = $"UPDATE {TableName} SET LastActivityDate = @LastActivityDate WHERE UserName = @UserName";
 
             var updateParms = new IDataParameter[]
             {
@@ -518,7 +577,7 @@ namespace SiteServer.CMS.Provider
         {
             var isSuccess = false;
 
-            const string sqlString = "UPDATE siteserver_User SET Password = @Password, PasswordFormat = @PasswordFormat, PasswordSalt = @PasswordSalt, LastResetPasswordDate = @LastResetPasswordDate WHERE UserName = @UserName";
+            var sqlString = $"UPDATE {TableName} SET Password = @Password, PasswordFormat = @PasswordFormat, PasswordSalt = @PasswordSalt, LastResetPasswordDate = @LastResetPasswordDate WHERE UserName = @UserName";
 
             var updateParms = new IDataParameter[]
             {
@@ -544,7 +603,7 @@ namespace SiteServer.CMS.Provider
 
         public void Delete(int id)
         {
-            const string sqlString = "DELETE FROM siteserver_User WHERE Id = @Id";
+            var sqlString = $"DELETE FROM {TableName} WHERE Id = @Id";
 
             var deleteParms = new IDataParameter[]
             {
@@ -556,31 +615,31 @@ namespace SiteServer.CMS.Provider
 
         public void Check(List<int> idList)
         {
-            string sqlString =
-                $"UPDATE siteserver_User SET IsChecked = '{true}' WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
+            var sqlString =
+                $"UPDATE {TableName} SET IsChecked = '{true}' WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
 
             ExecuteNonQuery(sqlString);
         }
 
         public void Check(int id)
         {
-            string sqlString = $"UPDATE siteserver_User SET IsChecked = '{true}' WHERE Id = {id}";
+            var sqlString = $"UPDATE {TableName} SET IsChecked = '{true}' WHERE Id = {id}";
 
             ExecuteNonQuery(sqlString);
         }
 
         public void Lock(List<int> idList)
         {
-            string sqlString =
-                $"UPDATE siteserver_User SET IsLockedOut = '{true}' WHERE Id IN ({TranslateUtils.ToSqlInStringWithQuote(idList)})";
+            var sqlString =
+                $"UPDATE {TableName} SET IsLockedOut = '{true}' WHERE Id IN ({TranslateUtils.ToSqlInStringWithQuote(idList)})";
 
             ExecuteNonQuery(sqlString);
         }
 
         public void UnLock(List<int> idList)
         {
-            string sqlString =
-                $"UPDATE siteserver_User SET IsLockedOut = '{false}', CountOfFailedLogin = 0 WHERE Id IN ({TranslateUtils.ToSqlInStringWithQuote(idList)})";
+            var sqlString =
+                $"UPDATE {TableName} SET IsLockedOut = '{false}', CountOfFailedLogin = 0 WHERE Id IN ({TranslateUtils.ToSqlInStringWithQuote(idList)})";
 
             ExecuteNonQuery(sqlString);
         }
@@ -651,7 +710,7 @@ namespace SiteServer.CMS.Provider
             if (string.IsNullOrEmpty(userName)) return null;
 
             UserInfo userInfo = null;
-            const string sqlString = "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature FROM siteserver_User WHERE UserName = @UserName";
+            var sqlString = $"SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature FROM {TableName} WHERE UserName = @UserName";
 
             var parms = new IDataParameter[]
             {
@@ -674,7 +733,7 @@ namespace SiteServer.CMS.Provider
             if (string.IsNullOrEmpty(email)) return null;
 
             UserInfo userInfo = null;
-            const string sqlString = "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature FROM siteserver_User WHERE Email = @Email";
+            var sqlString = $"SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature FROM {TableName} WHERE Email = @Email";
 
             var parms = new IDataParameter[]
             {
@@ -697,7 +756,7 @@ namespace SiteServer.CMS.Provider
             if (string.IsNullOrEmpty(mobile)) return null;
 
             UserInfo userInfo = null;
-            const string sqlString = "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature FROM siteserver_User WHERE Mobile = @Mobile";
+            var sqlString = $"SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature FROM {TableName} WHERE Mobile = @Mobile";
 
             var parms = new IDataParameter[]
             {
@@ -720,7 +779,7 @@ namespace SiteServer.CMS.Provider
             if (string.IsNullOrEmpty(mobile)) return string.Empty;
 
             var userName = string.Empty;
-            const string sqlString = "SELECT UserName FROM siteserver_User WHERE Mobile = @Mobile";
+            var sqlString = $"SELECT UserName FROM {TableName} WHERE Mobile = @Mobile";
 
             var parms = new IDataParameter[]
             {
@@ -743,7 +802,7 @@ namespace SiteServer.CMS.Provider
             if (id <= 0) return null;
 
             UserInfo userInfo = null;
-            const string sqlString = "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature FROM siteserver_User WHERE Id = @Id";
+            var sqlString = $"SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature FROM {TableName} WHERE Id = @Id";
 
             var parms = new IDataParameter[]
             {
@@ -767,7 +826,7 @@ namespace SiteServer.CMS.Provider
 
             var exists = false;
 
-            const string sqlString = "SELECT Id FROM siteserver_User WHERE UserName = @UserName";
+            var sqlString = $"SELECT Id FROM {TableName} WHERE UserName = @UserName";
 
             var parms = new IDataParameter[]
             {
@@ -801,7 +860,7 @@ namespace SiteServer.CMS.Provider
 
             var exists = false;
 
-            const string sqlSelect = "SELECT Email FROM siteserver_User WHERE Email = @Email";
+            var sqlSelect = $"SELECT Email FROM {TableName} WHERE Email = @Email";
 
             var parms = new IDataParameter[]
             {
@@ -825,7 +884,7 @@ namespace SiteServer.CMS.Provider
             if (string.IsNullOrEmpty(mobile)) return false;
 
             var exists = false;
-            const string sqlString = "SELECT Mobile FROM siteserver_User WHERE Mobile = @Mobile";
+            var sqlString = $"SELECT Mobile FROM {TableName} WHERE Mobile = @Mobile";
 
             var parms = new IDataParameter[]
             {
@@ -848,7 +907,7 @@ namespace SiteServer.CMS.Provider
         {
             var userName = string.Empty;
 
-            const string sqlString = "SELECT UserName FROM siteserver_User WHERE Id = @Id";
+            var sqlString = $"SELECT UserName FROM {TableName} WHERE Id = @Id";
 
             var parms = new IDataParameter[]
             {
@@ -870,7 +929,7 @@ namespace SiteServer.CMS.Provider
         {
             var email = string.Empty;
 
-            const string sqlString = "SELECT Email FROM siteserver_User WHERE Id = @Id";
+            var sqlString = $"SELECT Email FROM {TableName} WHERE Id = @Id";
 
             var parms = new IDataParameter[]
             {
@@ -892,7 +951,7 @@ namespace SiteServer.CMS.Provider
         {
             var id = 0;
 
-            const string sqlString = "SELECT Id FROM siteserver_User WHERE UserName = @UserName";
+            var sqlString = $"SELECT Id FROM {TableName} WHERE UserName = @UserName";
 
             var parms = new IDataParameter[]
             {
@@ -915,7 +974,7 @@ namespace SiteServer.CMS.Provider
             if (string.IsNullOrEmpty(userName)) return string.Empty;
             var displayName = string.Empty;
 
-            const string sqlString = "SELECT DisplayName FROM siteserver_User WHERE UserName = @UserName";
+            var sqlString = $"SELECT DisplayName FROM {TableName} WHERE UserName = @UserName";
 
             var parms = new IDataParameter[]
             {
@@ -945,7 +1004,7 @@ namespace SiteServer.CMS.Provider
 
             if (!string.IsNullOrEmpty(email))
             {
-                const string sqlString = @"SELECT Id FROM siteserver_User WHERE Email = @Email";
+                var sqlString = $"SELECT Id FROM {TableName} WHERE Email = @Email";
 
                 var parms = new IDataParameter[]
                 {
@@ -963,7 +1022,7 @@ namespace SiteServer.CMS.Provider
             }
             else if (!string.IsNullOrEmpty(mobile))
             {
-                const string sqlString = "SELECT Id FROM siteserver_User WHERE Mobile = @Mobile";
+                var sqlString = $"SELECT Id FROM {TableName} WHERE Mobile = @Mobile";
 
                 var parms = new IDataParameter[]
                 {
@@ -987,7 +1046,7 @@ namespace SiteServer.CMS.Provider
         {
             var mobile = string.Empty;
 
-            const string sqlString = "SELECT Mobile FROM siteserver_User WHERE Id = @Id";
+            var sqlString = $"SELECT Mobile FROM {TableName} WHERE Id = @Id";
 
             var parms = new IDataParameter[]
             {
@@ -1016,7 +1075,7 @@ namespace SiteServer.CMS.Provider
 
             if (StringUtils.IsMobile(account))
             {
-                sqlString = "SELECT Mobile FROM siteserver_User WHERE Mobile = @Mobile";
+                sqlString = $"SELECT Mobile FROM {TableName} WHERE Mobile = @Mobile";
                 parms = new IDataParameter[]
                 {
                     GetParameter(ParmMobile, DataType.VarChar, 20, account)
@@ -1024,7 +1083,7 @@ namespace SiteServer.CMS.Provider
             }
             else if (StringUtils.IsEmail(account))
             {
-                sqlString = "SELECT Mobile FROM siteserver_User WHERE Email = @Email";
+                sqlString = $"SELECT Mobile FROM {TableName} WHERE Email = @Email";
                 parms = new IDataParameter[]
                 {
                     GetParameter(ParmEmail, DataType.VarChar, 200, account)
@@ -1032,7 +1091,7 @@ namespace SiteServer.CMS.Provider
             }
             else
             {
-                sqlString = "SELECT Mobile FROM siteserver_User WHERE UserName = @UserName";
+                sqlString = $"SELECT Mobile FROM {TableName} WHERE UserName = @UserName";
                 parms = new IDataParameter[]
                 {
                     GetParameter(ParmUserName, DataType.VarChar, 255, account)
@@ -1055,7 +1114,7 @@ namespace SiteServer.CMS.Provider
         {
             var count = 0;
 
-            using (var rdr = ExecuteReader("SELECT COUNT(*) AS TotalNum FROM siteserver_User"))
+            using (var rdr = ExecuteReader($"SELECT COUNT(*) AS TotalNum FROM {TableName}"))
             {
                 if (rdr.Read())
                 {
@@ -1069,8 +1128,8 @@ namespace SiteServer.CMS.Provider
         public List<string> GetUserNameList(bool isChecked)
         {
             var userNameList = new List<string>();
-            string sqlSelect =
-                $"SELECT UserName FROM siteserver_User WHERE IsChecked = '{isChecked}' ORDER BY Id DESC";
+            var sqlSelect =
+                $"SELECT UserName FROM {TableName} WHERE IsChecked = '{isChecked}' ORDER BY Id DESC";
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -1087,8 +1146,8 @@ namespace SiteServer.CMS.Provider
         {
             var idList = new List<int>();
 
-            string sqlSelect =
-                $"SELECT Id FROM siteserver_User WHERE IsChecked = '{isChecked}' ORDER BY Id DESC";
+            var sqlSelect =
+                $"SELECT Id FROM {TableName} WHERE IsChecked = '{isChecked}' ORDER BY Id DESC";
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -1123,8 +1182,8 @@ namespace SiteServer.CMS.Provider
                 var word = PageUtils.FilterSql(searchWord);
                 whereString += $" AND (UserName LIKE '%{word}%' OR EMAIL LIKE '%{word}%' OR MOBILE = '{word}') ";
             }
-            string sqlString =
-                $"SELECT UserName FROM siteserver_User WHERE IsChecked = '{isChecked}' {whereString} ORDER BY Id DESC";
+            var sqlString =
+                $"SELECT UserName FROM {TableName} WHERE IsChecked = '{isChecked}' {whereString} ORDER BY Id DESC";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -1219,9 +1278,13 @@ namespace SiteServer.CMS.Provider
             return enumerable;
         }
 
-        public bool CheckPassword(string password, string dbpassword, EPasswordFormat passwordFormat, string passwordSalt)
+        private bool CheckPassword(string password, bool isPasswordMd5, string dbpassword, EPasswordFormat passwordFormat, string passwordSalt)
         {
             var decodePassword = DecodePassword(dbpassword, passwordFormat, passwordSalt);
+            if (isPasswordMd5)
+            {
+                return password == AuthUtils.Md5ByString(decodePassword);
+            }
             return password == decodePassword;
         }
 
@@ -1255,7 +1318,7 @@ namespace SiteServer.CMS.Provider
         {
             if (string.IsNullOrEmpty(userName)) return;
 
-            var sqlString = $"UPDATE siteserver_User SET LastActivityDate = @LastActivityDate, {SqlUtils.ToPlusSqlString("CountOfFailedLogin")} WHERE UserName = @UserName";
+            var sqlString = $"UPDATE {TableName} SET LastActivityDate = @LastActivityDate, {SqlUtils.ToPlusSqlString("CountOfFailedLogin")} WHERE UserName = @UserName";
 
             IDataParameter[] updateParms = {
                 GetParameter(ParmLastActivityDate, DataType.DateTime, DateTime.Now),
@@ -1269,7 +1332,7 @@ namespace SiteServer.CMS.Provider
         {
             if (string.IsNullOrEmpty(userName)) return;
 
-            var sqlString = $"UPDATE siteserver_User SET LastActivityDate = @LastActivityDate, {SqlUtils.ToPlusSqlString("CountOfLogin")}, CountOfFailedLogin = 0 WHERE UserName = @UserName";
+            var sqlString = $"UPDATE {TableName} SET LastActivityDate = @LastActivityDate, {SqlUtils.ToPlusSqlString("CountOfLogin")}, CountOfFailedLogin = 0 WHERE UserName = @UserName";
 
             IDataParameter[] updateParms = {
                 GetParameter(ParmLastActivityDate, DataType.DateTime, DateTime.Now),
@@ -1279,7 +1342,7 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString, updateParms);
         }
 
-        public bool Validate(string account, string password, out string userName, out string errorMessage)
+        public bool Validate(string account, string password, bool isPasswordMd5, out string userName, out string errorMessage)
         {
             userName = string.Empty;
             errorMessage = string.Empty;
@@ -1341,7 +1404,7 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            if (!CheckPassword(password, userInfo.Password, EPasswordFormatUtils.GetEnumType(userInfo.PasswordFormat), userInfo.PasswordSalt))
+            if (!CheckPassword(password, isPasswordMd5, userInfo.Password, EPasswordFormatUtils.GetEnumType(userInfo.PasswordFormat), userInfo.PasswordSalt))
             {
                 LogUtils.AddUserLog(userInfo.UserName, "用户登录失败", "帐号或密码错误");
                 errorMessage = "帐号或密码错误";
@@ -1368,7 +1431,7 @@ namespace SiteServer.CMS.Provider
             string sqlString = $@"
 SELECT COUNT(*) AS AddNum, AddYear, AddMonth, AddDay FROM (
     SELECT {SqlUtils.GetDatePartYear("CreateDate")} AS AddYear, {SqlUtils.GetDatePartMonth("CreateDate")} AS AddMonth, {SqlUtils.GetDatePartDay("CreateDate")} AS AddDay 
-    FROM siteserver_User 
+    FROM {TableName} 
     WHERE {SqlUtils.GetDateDiffLessThanDays("CreateDate", 30.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear, AddMonth, AddDay ORDER BY AddYear, AddMonth, AddDay
 ";//添加日统计
@@ -1378,7 +1441,7 @@ SELECT COUNT(*) AS AddNum, AddYear, AddMonth, AddDay FROM (
                 sqlString = $@"
 SELECT COUNT(*) AS AddNum, AddYear, AddMonth FROM (
     SELECT {SqlUtils.GetDatePartYear("CreateDate")} AS AddYear, {SqlUtils.GetDatePartMonth("CreateDate")} AS AddMonth 
-    FROM siteserver_User 
+    FROM {TableName} 
     WHERE {SqlUtils.GetDateDiffLessThanMonths("CreateDate", 12.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear, AddMonth ORDER BY AddYear, AddMonth
 ";//添加月统计
@@ -1388,7 +1451,7 @@ SELECT COUNT(*) AS AddNum, AddYear, AddMonth FROM (
                 sqlString = $@"
 SELECT COUNT(*) AS AddNum, AddYear FROM (
     SELECT {SqlUtils.GetDatePartYear("CreateDate")} AS AddYear
-    FROM siteserver_User 
+    FROM {TableName} 
     WHERE {SqlUtils.GetDateDiffLessThanYears("CreateDate", 10.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear ORDER BY AddYear
 ";//添加年统计
@@ -1425,6 +1488,138 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
                 rdr.Close();
             }
             return dict;
+        }
+
+        public int ApiGetCount()
+        {
+            return DataProvider.DatabaseDao.GetCount(TableName);
+        }
+
+        public List<UserInfo> ApiGetUsers(int offset, int limit)
+        {
+            var list = new List<UserInfo>();
+            List<UserInfoDatabase> dbList;
+
+            var sqlString =
+                DataProvider.DatabaseDao.GetPageSqlString(TableName, "*", string.Empty, "ORDER BY Id", offset, limit);
+
+            using (var connection = GetConnection())
+            {
+                dbList = connection.Query<UserInfoDatabase>(sqlString).ToList();
+            }
+
+            if (dbList.Count > 0)
+            {
+                foreach (var dbUserInfo in dbList)
+                {
+                    if (dbUserInfo != null)
+                    {
+                        list.Add(dbUserInfo.ToUserInfo());
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        public UserInfo ApiGetUser(int id)
+        {
+            UserInfo userInfo = null;
+
+            var sqlString = $"SELECT * FROM {TableName} WHERE Id = @Id";
+
+            using (var connection = GetConnection())
+            {
+                var dbUserInfo = connection.QuerySingleOrDefault<UserInfoDatabase>(sqlString, new { Id = id });
+                if (dbUserInfo != null)
+                {
+                    userInfo = dbUserInfo.ToUserInfo();
+                }
+            }
+
+            return userInfo;
+        }
+
+        public bool ApiIsExists(int id)
+        {
+            var sqlString = $"SELECT count(1) FROM {TableName} WHERE Id = @Id";
+
+            using (var connection = GetConnection())
+            {
+                return connection.ExecuteScalar<bool>(sqlString, new { Id = id });
+            }
+        }
+
+        public UserInfo ApiUpdate(int id, UserInfoCreateUpdate userInfoToUpdate, out string errorMessage)
+        {
+            var userInfo = ApiGetUser(id);
+
+            if (!UpdateValidate(userInfoToUpdate, userInfo.UserName, userInfo.Email, userInfo.Mobile, out errorMessage)) return null;
+
+            var dbUserInfo = new UserInfoDatabase(userInfo);
+
+            userInfoToUpdate.Load(dbUserInfo);
+
+            dbUserInfo.Password = userInfo.Password;
+            dbUserInfo.PasswordFormat = userInfo.PasswordFormat;
+            dbUserInfo.PasswordSalt = userInfo.PasswordSalt;
+
+            using (var connection = GetConnection())
+            {
+                connection.Update(dbUserInfo);
+            }
+
+            return dbUserInfo.ToUserInfo();
+        }
+
+        public UserInfo ApiDelete(int id)
+        {
+            var userInfoToDelete = ApiGetUser(id);
+
+            using (var connection = GetConnection())
+            {
+                connection.Delete(new UserInfoDatabase(userInfoToDelete));
+            }
+
+            return userInfoToDelete;
+        }
+
+        public UserInfo ApiInsert(UserInfoCreateUpdate userInfoToInsert, string ipAddress, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            try
+            {
+                var dbUserInfo = new UserInfoDatabase();
+
+                userInfoToInsert.Load(dbUserInfo);
+
+                if (!InsertValidate(dbUserInfo.UserName, dbUserInfo.Email, dbUserInfo.Mobile, dbUserInfo.Password, ipAddress, out errorMessage)) return null;
+
+                dbUserInfo.PasswordSalt = GenerateSalt();
+                dbUserInfo.Password = EncodePassword(dbUserInfo.Password, EPasswordFormatUtils.GetEnumType(dbUserInfo.PasswordFormat), dbUserInfo.PasswordSalt);
+                dbUserInfo.CreateDate = DateTime.Now;
+                dbUserInfo.LastActivityDate = DateTime.Now;
+                dbUserInfo.LastResetPasswordDate = DateTime.Now;
+
+                using (var connection = GetConnection())
+                {
+                    var identity = connection.Insert(dbUserInfo);
+                    if (identity > 0)
+                    {
+                        dbUserInfo.Id = Convert.ToInt32(identity);
+                    }
+                }
+
+                IpAddressCache(ipAddress);
+
+                return dbUserInfo.ToUserInfo();
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                return null;
+            }
         }
     }
 }

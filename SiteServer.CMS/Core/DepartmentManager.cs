@@ -4,7 +4,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
 {
-    public class DepartmentManager
+    public static class DepartmentManager
     {
         public static DepartmentInfo GetDepartmentInfo(int departmentId)
         {

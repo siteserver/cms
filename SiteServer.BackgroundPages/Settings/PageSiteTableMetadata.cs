@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Settings
                     var tableMetadataInfo = DataProvider.TableMetadataDao.GetTableMetadataInfo(tableMetadataId);
                     DataProvider.TableMetadataDao.Delete(tableMetadataId);
 
-                    AuthRequest.AddAdminLog("删除辅助表字段", $"辅助表:{_tableName},字段名:{tableMetadataInfo.AttributeName}");
+                    AuthRequest.AddAdminLog("删除内容表字段", $"内容表:{_tableName},字段名:{tableMetadataInfo.AttributeName}");
 
                     SuccessDeleteMessage();
                     PageUtils.Redirect(_redirectUrl);
@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Settings
                     {
                         TableStyleManager.Delete(0, _tableName, attributeName);
 
-                        AuthRequest.AddAdminLog("删除辅助表字段样式", $"辅助表:{_tableName},字段名:{attributeName}");
+                        AuthRequest.AddAdminLog("删除内容表字段样式", $"内容表:{_tableName},字段名:{attributeName}");
 
                         SuccessDeleteMessage();
                         PageUtils.Redirect(_redirectUrl);
@@ -91,14 +91,14 @@ namespace SiteServer.BackgroundPages.Settings
                     DataProvider.TableDao.CreateDbTable(_tableName);
                     tableInfo.IsChangedAfterCreatedInDb = false;
 
-                    AuthRequest.AddAdminLog("创建辅助表", $"辅助表:{_tableName}");
+                    AuthRequest.AddAdminLog("创建内容表", $"内容表:{_tableName}");
 
-                    SuccessMessage("辅助表创建成功！");
+                    SuccessMessage("内容表创建成功！");
                     PageUtils.Redirect(_redirectUrl);
                 }
                 catch (Exception ex)
                 {
-                    FailMessage(ex, "<br>辅助表创建失败，失败原因为：" + ex.Message + "<br>请检查创建表SQL命令");
+                    FailMessage(ex, "<br>内容表创建失败，失败原因为：" + ex.Message + "<br>请检查创建表SQL命令");
                     var sqlString = DataProvider.ContentDao.GetCreateTableCollectionInfoSqlString(_tableName);
                     LtlSqlString.Text = sqlString.Replace("\r\n", "<br>").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
                     _showSqlTable = true;
@@ -111,15 +111,15 @@ namespace SiteServer.BackgroundPages.Settings
                     DataProvider.TableDao.DeleteDbTable(_tableName);
                     tableInfo.IsChangedAfterCreatedInDb = false;
 
-                    AuthRequest.AddAdminLog("删除辅助表", $"辅助表:{_tableName}");
+                    AuthRequest.AddAdminLog("删除内容表", $"内容表:{_tableName}");
 
-                    SuccessMessage("辅助表删除成功！");
+                    SuccessMessage("内容表删除成功！");
                     PageUtils.Redirect(_redirectUrl);
                 }
                 catch (Exception ex)
                 {
 
-                    FailMessage(ex, "<br>辅助表删除失败，失败原因为：" + ex.Message + "<br>");
+                    FailMessage(ex, "<br>内容表删除失败，失败原因为：" + ex.Message + "<br>");
                 }
             }
             else if (AuthRequest.IsQueryExists("ReCreateDB"))
@@ -130,15 +130,15 @@ namespace SiteServer.BackgroundPages.Settings
                     DataProvider.ChannelDao.UpdateContentNumToZero(_tableName);
                     tableInfo.IsChangedAfterCreatedInDb = false;
 
-                    AuthRequest.AddAdminLog("重建辅助表", $"辅助表:{_tableName}");
+                    AuthRequest.AddAdminLog("重建内容表", $"内容表:{_tableName}");
 
-                    SuccessMessage("辅助表重建成功！");
+                    SuccessMessage("内容表重建成功！");
                     PageUtils.Redirect(_redirectUrl);
                 }
                 catch (Exception ex)
                 {
 
-                    FailMessage(ex, "<br>辅助表重建失败，失败原因为：" + ex.Message + "<br>请检查创建表SQL命令");
+                    FailMessage(ex, "<br>内容表重建失败，失败原因为：" + ex.Message + "<br>请检查创建表SQL命令");
                     var sqlString = DataProvider.ContentDao.GetCreateTableCollectionInfoSqlString(_tableName);
                     LtlSqlString.Text = sqlString.Replace("\r\n", "<br>").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
                     _showSqlTable = true;
@@ -174,7 +174,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
+            VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
             RptContents.DataSource = DataProvider.TableMetadataDao.GetDataSource(_tableName);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
@@ -213,7 +213,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
             if (isBtnDelete)
             {
-                BtnDelete.Attributes.Add("onclick", $"if (confirm('此操作将删除辅助表“{_tableName}”，确认吗？'))location.href='{redirectUrl}&DeleteDB={true}';return false;");
+                BtnDelete.Attributes.Add("onclick", $"if (confirm('此操作将删除内容表“{_tableName}”，确认吗？'))location.href='{redirectUrl}&DeleteDB={true}';return false;");
             }
             else
             {
@@ -222,7 +222,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (isBtnCreateDb)
             {
-                BtnReCreateDb.Attributes.Add("onclick", $"if (confirm('此操作将覆盖已建立的辅助表，表中已存数据将丢失，确认吗？'))location.href='{redirectUrl}&ReCreateDB={true}';return false;");
+                BtnReCreateDb.Attributes.Add("onclick", $"if (confirm('此操作将覆盖已建立的内容表，表中已存数据将丢失，确认吗？'))location.href='{redirectUrl}&ReCreateDB={true}';return false;");
             }
             else
             {
@@ -303,7 +303,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             DataProvider.TableDao.SyncDbTable(_tableName);
             PhSyncTable.Visible = false;
-            SuccessMessage("同步辅助表成功！");
+            SuccessMessage("同步内容表成功！");
             PageUtils.Redirect(_redirectUrl);
         }
 

@@ -6,30 +6,6 @@
     <head>
       <meta charset="utf-8">
       <!--#include file="../inc/head.html"-->
-      <style>
-        .scroll {
-          overflow-x: scroll !important
-        }
-
-        .list-group {
-          margin-bottom: 0;
-        }
-
-        .table>tbody>tr>td,
-        .table>tbody>tr>th,
-        .table>tfoot>tr>td,
-        .table>tfoot>tr>th,
-        .table>thead>tr>td,
-        .table>thead>tr>th {
-          border-top: none;
-        }
-
-        .table a,
-        .table span,
-        .table div {
-          font-size: 12px !important;
-        }
-      </style>
       <script type="text/javascript">
         $(document).ready(function () {
           $('body').height($(window).height());
@@ -38,37 +14,38 @@
       </script>
     </head>
 
-    <body style="margin: 0; padding: 0; background-color: #fff;">
+    <body style="margin: 0; padding: 0; background-color: #eeeeee;">
       <form class="m-0" runat="server">
         <div class="list-group mail-list">
-          <div onclick="location.reload(true);" style="cursor: pointer;" class="list-group-item b-0 active">
+          <div onclick="location.reload(true);" style="cursor: pointer;background-color: #dddddd;" class="list-group-item b-0">
             模板列表
           </div>
         </div>
-        <table class="table table-sm table-hover">
+        <table class="table table-sm table-hover table-tree">
           <tbody>
-            <tr treeitemlevel="1">
-              <td align="left" nowrap>
-                <img align="absmiddle" style="cursor: pointer" onclick="displayChildren(this);" isajax="false" isopen="true" src="../assets/icons/tree/minus.png"
-                />
-                <img align="absmiddle" border="0" src="../assets/Icons/tree/folder.gif" />
-                <a href='pageTemplate.aspx?SiteID=<%=base.Request.QueryString["SiteID"]%>' islink='true' onclick='fontWeightLink(this)'
-                  target='management'>所有模板</a>
-                </a>
-                <span style="font-size: 8pt; font-family: arial" class="gray">
+
+            <tr treeItemLevel="1">
+              <td nowrap>
+                <img align="absmiddle" style="cursor:pointer; margin-top: -5px;" onClick="displayChildren(this);" isAjax="false" isOpen="true"
+                  src="../assets/icons/tree/minus.png" />
+                <i class="ion-folder"></i>
+                <a href='pageTemplate.aspx?SiteID=<%=base.Request.QueryString["SiteID"]%>' isLink='true' onclick='fontWeightLink(this)' target='management'>所有模板</a>
+                <span style="font-size:8pt;font-family:arial" class="gray">
                   <asp:Literal id="LtlTotalCount" runat="server" />
                 </span>
               </td>
             </tr>
 
+
+
             <tr treeitemlevel="2">
-              <td align="left" nowrap>
+              <td nowrap>
                 <img align="absmiddle" src="../assets/icons/tree/empty.gif" />
-                <img align="absmiddle" style="cursor: pointer" onclick="displayChildren(this);" isajax="true" isopen="false" templatetype="IndexPageTemplate"
+                <img align="absmiddle" style="cursor:pointer; margin-top: -5px;" onclick="displayChildren(this);" isajax="true" isopen="false" templatetype="IndexPageTemplate"
                   src="../assets/icons/tree/plus.png" />
-                <img align="absmiddle" border="0" src="../assets/icons/tree/folder.gif" />
-                <a href='pageTemplate.aspx?SiteID=<%=base.Request.QueryString["SiteID"]%>&TemplateType=IndexPageTemplate'
-                  islink='true' onclick='fontWeightLink(this)' target='management'>首页模板</a>
+                <i class="ion-folder"></i>
+                <a href='pageTemplate.aspx?SiteID=<%=base.Request.QueryString["SiteID"]%>&TemplateType=IndexPageTemplate' islink='true' onclick='fontWeightLink(this)'
+                  target='management'>首页模板</a>
                 <span style="font-size: 8pt; font-family: arial" class="gray">
                   <asp:Literal id="LtlIndexPageCount" runat="server" />
                 </span>
@@ -78,11 +55,11 @@
             <tr treeitemlevel="2">
               <td align="left" nowrap>
                 <img align="absmiddle" src="../assets/icons/tree/empty.gif" />
-                <img align="absmiddle" style="cursor: pointer" onclick="displayChildren(this);" isajax="true" isopen="false" templatetype="ChannelTemplate"
+                <img align="absmiddle" style="cursor:pointer; margin-top: -5px;" onclick="displayChildren(this);" isajax="true" isopen="false" templatetype="ChannelTemplate"
                   src="../assets/icons/tree/plus.png" />
-                <img align="absmiddle" border="0" src="../assets/icons/tree/folder.gif" />
-                <a href='pageTemplate.aspx?SiteID=<%=base.Request.QueryString["SiteID"]%>&TemplateType=ChannelTemplate'
-                  islink='true' onclick='fontWeightLink(this)' target='management'>栏目模板</a>
+                <i class="ion-folder"></i>
+                <a href='pageTemplate.aspx?SiteID=<%=base.Request.QueryString["SiteID"]%>&TemplateType=ChannelTemplate' islink='true' onclick='fontWeightLink(this)'
+                  target='management'>栏目模板</a>
                 <span style="font-size: 8pt; font-family: arial" class="gray">
                   <asp:Literal id="LtlChannelCount" runat="server" />
                 </span>
@@ -92,11 +69,11 @@
             <tr treeitemlevel="2">
               <td align="left" nowrap>
                 <img align="absmiddle" src="../assets/icons/tree/empty.gif" />
-                <img align="absmiddle" style="cursor: pointer" onclick="displayChildren(this);" isajax="true" isopen="false" templatetype="ContentTemplate"
+                <img align="absmiddle" style="cursor:pointer; margin-top: -5px;" onclick="displayChildren(this);" isajax="true" isopen="false" templatetype="ContentTemplate"
                   src="../assets/icons/tree/plus.png" />
-                <img align="absmiddle" border="0" src="../assets/icons/tree/folder.gif" />
-                <a href='pageTemplate.aspx?SiteID=<%=base.Request.QueryString["SiteID"]%>&TemplateType=ContentTemplate'
-                  islink='true' onclick='fontWeightLink(this)' target='management'>内容模板</a>
+                <i class="ion-folder"></i>
+                <a href='pageTemplate.aspx?SiteID=<%=base.Request.QueryString["SiteID"]%>&TemplateType=ContentTemplate' islink='true' onclick='fontWeightLink(this)'
+                  target='management'>内容模板</a>
                 <span style="font-size: 8pt; font-family: arial" class="gray">
                   <asp:Literal id="LtlContentCount" runat="server" />
                 </span>
@@ -106,16 +83,18 @@
             <tr treeitemlevel="2">
               <td align="left" nowrap>
                 <img align="absmiddle" src="../assets/icons/tree/empty.gif" />
-                <img align="absmiddle" style="cursor: pointer" onclick="displayChildren(this);" isajax="true" isopen="false" templatetype="FileTemplate"
+                <img align="absmiddle" style="cursor:pointer; margin-top: -5px;" onclick="displayChildren(this);" isajax="true" isopen="false" templatetype="FileTemplate"
                   src="../assets/icons/tree/plus.png" />
-                <img align="absmiddle" border="0" src="../assets/icons/tree/folder.gif" />
-                <a href='pageTemplate.aspx?SiteID=<%=base.Request.QueryString["SiteID"]%>&TemplateType=FileTemplate'
-                  islink='true' onclick='fontWeightLink(this)' target='management'>单页模板</a>
+                <i class="ion-folder"></i>
+                <a href='pageTemplate.aspx?SiteID=<%=base.Request.QueryString["SiteID"]%>&TemplateType=FileTemplate' islink='true' onclick='fontWeightLink(this)'
+                  target='management'>单页模板</a>
                 <span style="font-size: 8pt; font-family: arial" class="gray">
                   <asp:Literal id="LtlFileCount" runat="server" />
                 </span>
               </td>
             </tr>
+
+
           </tbody>
         </table>
       </form>
@@ -135,7 +114,7 @@
 
       function getTrElement(element) {
         if (isNull(element)) return;
-        for (element = element.parentNode;;) {
+        for (element = element.parentNode; ;) {
           if (element != null && element.tagName == 'TR') {
             break;
           } else {
@@ -163,15 +142,14 @@
       }
 
       var activeTrElement = null;
-      function fontWeightLink(element){
-          if (activeTrElement)
-          {
-              activeTrElement.setAttribute('class', '');
-          }
-          activeTrElement = getTrElement(element);
-          if (activeTrElement) {
-              activeTrElement.setAttribute('class', 'table-active');
-          }
+      function fontWeightLink(element) {
+        if (activeTrElement) {
+          activeTrElement.setAttribute('class', '');
+        }
+        activeTrElement = getTrElement(element);
+        if (activeTrElement) {
+          activeTrElement.setAttribute('class', 'table-active');
+        }
       }
 
       function displayChildren(img) {
@@ -195,7 +173,7 @@
 
         if (isToOpen && isByAjax) {
           var div = document.createElement('div');
-          div.innerHTML = "<img align='absmiddle' border='0' src='../assets/icons/loading.gif' /> 栏目加载中，请稍候...";
+          div.innerHTML = "<img align='absmiddle' width='30' height='12' border='0' src='../assets/layer/skin/default/xubox_loading0.gif' />";
           img.parentNode.appendChild(div);
           $(div).addClass('loading');
           loadingChannels(tr, img, div, templateType);

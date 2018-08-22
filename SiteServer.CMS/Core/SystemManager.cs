@@ -25,7 +25,7 @@ namespace SiteServer.CMS.Core
             //var version = assemblyVersion.ToString();
             //if (StringUtils.EndsWith(version, ".0"))
             //{
-            //    version = version.Substring(0, version.Length - 2);
+            //    version = version.Substring(0, version.DataLength - 2);
             //}
             //Version = version;
         }
@@ -46,8 +46,7 @@ namespace SiteServer.CMS.Core
                     Password = adminPassword
                 };
 
-                string errorMessage;
-                AdminManager.CreateAdministrator(administratorInfo, out errorMessage);
+                AdminManager.CreateAdministrator(administratorInfo, out _);
                 DataProvider.AdministratorsInRolesDao.AddUserToRole(adminName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
             }
         }
@@ -62,7 +61,7 @@ namespace SiteServer.CMS.Core
 
                 if (!DataProvider.DatabaseDao.IsTableExists(provider.TableName))
                 {
-                    DataProvider.DatabaseDao.CreateSystemTable(provider.TableName, provider.TableColumns);
+                    DataProvider.DatabaseDao.CreateSystemTable(provider.TableName, provider.TableColumns, out _, out _);
                 }
                 else
                 {
@@ -75,7 +74,7 @@ namespace SiteServer.CMS.Core
             {
                 if (!DataProvider.DatabaseDao.IsTableExists(tableName))
                 {
-                    DataProvider.DatabaseDao.CreateSystemTable(tableName, DataProvider.ContentDao.TableColumns);
+                    DataProvider.DatabaseDao.CreateSystemTable(tableName, DataProvider.ContentDao.TableColumns, out _, out _);
                 }
                 else
                 {
@@ -115,11 +114,11 @@ namespace SiteServer.CMS.Core
             return isNeedInstall;
         }
 
-        public static bool DetermineRedirectToInstaller()
-        {
-            if (!IsNeedInstall()) return false;
-            PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl("Installer"));
-            return true;
-        }
+        //public static bool DetermineRedirectToInstaller()
+        //{
+        //    if (!IsNeedInstall()) return false;
+        //    PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl("Installer"));
+        //    return true;
+        //}
     }
 }

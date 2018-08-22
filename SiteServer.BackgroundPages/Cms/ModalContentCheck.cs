@@ -7,6 +7,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -162,7 +163,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
                 var contentIdList = idsDictionaryToCheck[channelId];
-                DataProvider.ContentDao.UpdateIsChecked(tableName, SiteId, channelId, contentIdList, translateChannelId, true, AuthRequest.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
+                DataProvider.ContentDao.UpdateIsChecked(tableName, SiteId, channelId, contentIdList, translateChannelId, AuthRequest.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
 
                 DataProvider.ChannelDao.UpdateContentNum(SiteInfo, channelId, true);
             }

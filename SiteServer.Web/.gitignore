@@ -9,6 +9,9 @@ SiteFiles/packages/
 SiteFiles/SiteTemplates/
 SiteFiles/TemporaryFiles/
 SiteFiles/UserFiles/test/
+Template
+
+## sqlserver
 test1/
 test2/
 test3/
@@ -18,6 +21,8 @@ test6/
 test7/
 test8/
 test9/
+
+## mysql
 test10/
 test11/
 test12/
@@ -28,6 +33,8 @@ test16/
 test17/
 test18/
 test19/
+
+## postgresql
 test20/
 test21/
 test22/
@@ -38,3 +45,17 @@ test26/
 test27/
 test28/
 test29/
+
+## oracle
+test30/
+test31/
+test32/
+test33/
+test34/
+test35/
+test36/
+test37/
+test38/
+test39/
+upload
+T_*.html

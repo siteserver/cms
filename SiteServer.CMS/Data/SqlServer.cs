@@ -36,7 +36,7 @@ namespace SiteServer.CMS.Data
 	/// The SqlServer class is intended to encapsulate high performance, scalable best practices for 
 	/// common uses of the SqlClient ADO.NET provider.  It is created using the abstract factory in AdoHelper.
 	/// </summary>
-	public class SqlServer : DbHelper, IDataApi
+	public class SqlServer : DatabaseApi, IDatabaseApi
     {
 		#region Overrides
 		/// <summary>
@@ -665,12 +665,12 @@ namespace SiteServer.CMS.Data
 			return cmdType;
 		}
 
-		/// <summary>
-		/// Converts the OleDb parameter direction
-		/// </summary>
-		/// <param name="oledbDirection">The integer parameter direction</param>
-		/// <returns>A ParameterDirection</returns>
-		private static ParameterDirection GetParameterDirection( short oledbDirection) 
+        /// <summary>
+        /// Converts the OleDb parameter direction
+        /// </summary>
+        /// <param name="oledbDirection">The integer parameter direction</param>
+        /// <returns>A ParameterDirection</returns>
+        private static ParameterDirection GetParameterDirection( short oledbDirection) 
 		{
 			ParameterDirection pd;
 			switch (oledbDirection) 

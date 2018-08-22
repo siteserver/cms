@@ -1,4 +1,10 @@
-﻿using System.Web.UI.WebControls;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Web.UI.WebControls;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
@@ -34,20 +40,26 @@ namespace SiteServer.CMS.StlParser.StlElement
         private static readonly Attr ItemClass = new Attr("itemClass", "排序");
         private static readonly Attr Layout = new Attr("layout", "时间段");
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.Site);
-
-            return ParseImpl(pageInfo, contextInfo, listInfo);
-        }
-
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
-        {
-            var parsedContent = string.Empty;
-
+            var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.Site);
             var siteName = listInfo.Others.Get(SiteName.Name);
             var siteDir = listInfo.Others.Get(SiteDir.Name);
             var since = listInfo.Others.Get(Since.Name);
+
+            var dataSource = StlDataUtility.GetSitesDataSource(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString, since);
+
+            if (contextInfo.IsStlEntity)
+            {
+                return ParseEntity(dataSource);
+            }
+
+            return ParseElement(pageInfo, contextInfo, listInfo, dataSource);
+        }
+
+        private static string ParseElement(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, IDataReader dataSource)
+        {
+            var parsedContent = string.Empty;
 
             if (listInfo.Layout == ELayout.None)
             {
@@ -76,7 +88,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     rptContents.AlternatingItemTemplate = new RepeaterTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Site, contextInfo);
                 }
 
-                rptContents.DataSource = StlDataUtility.GetSitesDataSource(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString, since);
+                rptContents.DataSource = dataSource;
                 rptContents.DataBind();
 
                 if (rptContents.Items.Count > 0)
@@ -108,7 +120,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     pdlContents.AlternatingItemTemplate = new DataListTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Site, contextInfo);
                 }
 
-                pdlContents.DataSource = StlDataUtility.GetSitesDataSource(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString, since);
+                pdlContents.DataSource = dataSource;
                 pdlContents.DataBind();
 
                 if (pdlContents.Items.Count > 0)
@@ -118,6 +130,24 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             return parsedContent;
+        }
+
+        private static List<SiteInfo> ParseEntity(IDataReader dataSource)
+        {
+            var siteInfoList = new List<SiteInfo>();
+
+            while (dataSource.Read())
+            {
+                var siteId = dataSource.GetInt32(0);
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+
+                if (siteInfo != null)
+                {
+                    siteInfoList.Add(siteInfo);
+                }
+            }
+
+            return siteInfoList;
         }
     }
 }

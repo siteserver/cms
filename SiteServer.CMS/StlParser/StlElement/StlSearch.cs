@@ -2,7 +2,7 @@
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -30,7 +30,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public static readonly Attr Since = new Attr("since", "搜索时间段");
         public static readonly Attr PageNum = new Attr("pageNum", "每页显示的内容数目");
         public static readonly Attr IsHighlight = new Attr("isHighlight", "是否关键字高亮");
-        public static readonly Attr IsDefaultDisplay = new Attr("isDefaultDisplay", "是否默认显示");
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -49,9 +48,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             var since = string.Empty;
             var pageNum = 0;
             var isHighlight = false;
-            var isDefaultDisplay = false;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -115,16 +113,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     isHighlight = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsDefaultDisplay.Name))
-                {
-                    isDefaultDisplay = TranslateUtils.ToBool(value);
-                }
             }
 
             string loading;
             string yes;
             string no;
-            StlInnerUtility.GetLoadingYesNo(contextInfo.InnerXml, out loading, out yes, out no);
+            StlParserUtility.GetLoadingYesNo(contextInfo.InnerHtml, out loading, out yes, out no);
 
             if (string.IsNullOrEmpty(loading))
             {
@@ -143,7 +137,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
             var apiUrl = ApiRouteActionsSearch.GetUrl(pageInfo.ApiUrl);
-            var apiParameters = ApiRouteActionsSearch.GetParameters(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, isDefaultDisplay, pageInfo.SiteId, ajaxDivId, yes);
+            var apiParameters = ApiRouteActionsSearch.GetParameters(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, pageInfo.SiteId, ajaxDivId, yes);
 
             var builder = new StringBuilder();
             builder.Append($@"
@@ -200,7 +194,7 @@ jQuery(document).ready(function(){{
     }} else {{
         jQuery(""#{ajaxDivId} .stl_loading"").hide();
         jQuery(""#{ajaxDivId} .stl_yes"").hide();
-        jQuery(""#{ajaxDivId} .stl_no"").show();
+        jQuery(""#{ajaxDivId} .stl_no"").hide();
     }}
 }});
 

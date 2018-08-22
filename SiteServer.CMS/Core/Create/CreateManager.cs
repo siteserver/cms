@@ -1,5 +1,6 @@
 ﻿using SiteServer.Utils;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin;
 
@@ -8,7 +9,7 @@ namespace SiteServer.CMS.Core.Create
     public static class CreateManager
     {
         private static string GetTaskName(ECreateType createType, int siteId, int channelId, int contentId,
-            int templateId, out int pageCount)
+            int fileTemplateId, int specialId, out int pageCount)
         {
             pageCount = 0;
             var name = string.Empty;
@@ -43,7 +44,15 @@ namespace SiteServer.CMS.Core.Create
             }
             else if (createType == ECreateType.File)
             {
-                name = TemplateManager.GetTemplateName(siteId, templateId);
+                name = TemplateManager.GetTemplateName(siteId, fileTemplateId);
+                if (!string.IsNullOrEmpty(name))
+                {
+                    pageCount = 1;
+                }
+            }
+            else if (createType == ECreateType.Special)
+            {
+                name = SpecialManager.GetTitle(siteId, specialId);
                 if (!string.IsNullOrEmpty(name))
                 {
                     pageCount = 1;
@@ -63,9 +72,14 @@ namespace SiteServer.CMS.Core.Create
                 CreateAllContent(siteId, channelId);
             }
 
-            foreach (var templateId in TemplateManager.GetAllFileTemplateIdList(siteId))
+            foreach (var fileTemplateId in TemplateManager.GetAllFileTemplateIdList(siteId))
             {
-                CreateFile(siteId, templateId);
+                CreateFile(siteId, fileTemplateId);
+            }
+
+            foreach (var specialId in SpecialManager.GetAllSpecialIdList(siteId))
+            {
+                CreateSpecial(siteId, specialId);
             }
         }
 
@@ -104,10 +118,10 @@ namespace SiteServer.CMS.Core.Create
             if (siteId <= 0 || channelId <= 0) return;
 
             int pageCount;
-            var taskName = GetTaskName(ECreateType.Channel, siteId, channelId, 0, 0, out pageCount);
+            var taskName = GetTaskName(ECreateType.Channel, siteId, channelId, 0, 0, 0, out pageCount);
             if (pageCount == 0) return;
 
-            var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.Channel, siteId, channelId, 0, 0, pageCount);
+            var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.Channel, siteId, channelId, 0, 0, 0, pageCount);
             CreateTaskManager.Instance.AddPendingTask(taskInfo);
         }
 
@@ -116,10 +130,10 @@ namespace SiteServer.CMS.Core.Create
             if (siteId <= 0 || channelId <= 0 || contentId <= 0) return;
 
             int pageCount;
-            var taskName = GetTaskName(ECreateType.Content, siteId, channelId, contentId, 0, out pageCount);
+            var taskName = GetTaskName(ECreateType.Content, siteId, channelId, contentId, 0, 0, out pageCount);
             if (pageCount == 0) return;
 
-            var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.Content, siteId, channelId, contentId, 0, pageCount);
+            var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.Content, siteId, channelId, contentId, 0, 0, pageCount);
             CreateTaskManager.Instance.AddPendingTask(taskInfo);
         }
 
@@ -128,22 +142,34 @@ namespace SiteServer.CMS.Core.Create
             if (siteId <= 0 || channelId <= 0) return;
 
             int pageCount;
-            var taskName = GetTaskName(ECreateType.AllContent, siteId, channelId, 0, 0, out pageCount);
+            var taskName = GetTaskName(ECreateType.AllContent, siteId, channelId, 0, 0, 0, out pageCount);
             if (pageCount == 0) return;
 
-            var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.AllContent, siteId, channelId, 0, 0, pageCount);
+            var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.AllContent, siteId, channelId, 0, 0, 0, pageCount);
             CreateTaskManager.Instance.AddPendingTask(taskInfo);
         }
 
-        public static void CreateFile(int siteId, int templateId)
+        public static void CreateFile(int siteId, int fileTemplateId)
         {
-            if (siteId <= 0 || templateId <= 0) return;
+            if (siteId <= 0 || fileTemplateId <= 0) return;
 
             int pageCount;
-            var taskName = GetTaskName(ECreateType.File, siteId, 0, 0, templateId, out pageCount);
+            var taskName = GetTaskName(ECreateType.File, siteId, 0, 0, fileTemplateId, 0, out pageCount);
             if (pageCount == 0) return;
 
-            var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.File, siteId, 0, 0, templateId, pageCount);
+            var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.File, siteId, 0, 0, fileTemplateId, 0, pageCount);
+            CreateTaskManager.Instance.AddPendingTask(taskInfo);
+        }
+
+        public static void CreateSpecial(int siteId, int specialId)
+        {
+            if (siteId <= 0 || specialId <= 0) return;
+
+            int pageCount;
+            var taskName = GetTaskName(ECreateType.Special, siteId, 0, 0, 0, specialId, out pageCount);
+            if (pageCount == 0) return;
+
+            var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.Special, siteId, 0, 0, 0, specialId, pageCount);
             CreateTaskManager.Instance.AddPendingTask(taskInfo);
         }
 

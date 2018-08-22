@@ -13,57 +13,34 @@ namespace SiteServer.CMS.Plugin.Apis
         private static UserApi _instance;
         public static UserApi Instance => _instance ?? (_instance = new UserApi());
 
+        public IUserInfo NewInstance()
+        {
+            return new UserInfo();
+        }
+
         public IUserInfo GetUserInfoByUserId(int userId)
         {
-            var userInfo = DataProvider.UserDao.GetUserInfo(userId);
-            if (userInfo != null)
-            {
-                userInfo.Password = string.Empty;
-                userInfo.PasswordFormat = string.Empty;
-                userInfo.PasswordSalt = string.Empty;
-            }
-            return userInfo;
+            return DataProvider.UserDao.GetUserInfo(userId);
         }
 
         public IUserInfo GetUserInfoByUserName(string userName)
         {
-            var userInfo = DataProvider.UserDao.GetUserInfoByUserName(userName);
-            if (userInfo != null)
-            {
-                userInfo.Password = string.Empty;
-                userInfo.PasswordFormat = string.Empty;
-                userInfo.PasswordSalt = string.Empty;
-            }
-            return userInfo;
+            return DataProvider.UserDao.GetUserInfoByUserName(userName);
         }
 
         public IUserInfo GetUserInfoByEmail(string email)
         {
-            var userInfo =  DataProvider.UserDao.GetUserInfoByEmail(email);
-            if (userInfo != null)
-            {
-                userInfo.Password = string.Empty;
-                userInfo.PasswordFormat = string.Empty;
-                userInfo.PasswordSalt = string.Empty;
-            }
-            return userInfo;
+            return DataProvider.UserDao.GetUserInfoByEmail(email);
         }
 
         public IUserInfo GetUserInfoByMobile(string mobile)
         {
-            var userInfo = DataProvider.UserDao.GetUserInfoByMobile(mobile);
-            if (userInfo != null)
-            {
-                userInfo.Password = string.Empty;
-                userInfo.PasswordFormat = string.Empty;
-                userInfo.PasswordSalt = string.Empty;
-            }
-            return userInfo;
+            return DataProvider.UserDao.GetUserInfoByMobile(mobile);
         }
 
-        public string GetMobileByAccount(string account)
+        public IUserInfo GetUserInfoByAccount(string account)
         {
-            return DataProvider.UserDao.GetMobileByAccount(account);
+            return DataProvider.UserDao.GetUserInfoByAccount(account);
         }
 
         public bool IsUserNameExists(string userName)
@@ -81,11 +58,6 @@ namespace SiteServer.CMS.Plugin.Apis
             return DataProvider.UserDao.IsMobileExists(mobile);
         }
 
-        public IUserInfo NewInstance()
-        {
-            return new UserInfo();
-        }
-
         public bool Insert(IUserInfo userInfo, string password, out string errorMessage)
         {
             return DataProvider.UserDao.Insert(userInfo, password, PageUtils.GetIpAddress(), out errorMessage);
@@ -93,7 +65,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public bool Validate(string account, string password, out string userName, out string errorMessage)
         {
-            return DataProvider.UserDao.Validate(account, password, out userName, out errorMessage);
+            return DataProvider.UserDao.Validate(account, password, false, out userName, out errorMessage);
         }
 
         public void UpdateLastActivityDateAndCountOfFailedLogin(string userName)

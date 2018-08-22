@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Web;
 using System.Web.Http;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
@@ -27,7 +26,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
             try
             {
                 var request = new AuthRequest();
-                var form = HttpContext.Current.Request.Form;
+                var form = request.GetPostCollection();
 
                 var isAllSites = request.GetPostBool(StlSearch.IsAllSites.Name.ToLower());
                 var siteName = PageUtils.FilterSqlAndXss(request.GetPostString(StlSearch.SiteName.Name.ToLower()));
@@ -44,7 +43,6 @@ namespace SiteServer.API.Controllers.Sys.Stl
                 var since = PageUtils.FilterSqlAndXss(request.GetPostString(StlSearch.Since.Name.ToLower()));
                 var pageNum = request.GetPostInt(StlSearch.PageNum.Name.ToLower());
                 var isHighlight = request.GetPostBool(StlSearch.IsHighlight.Name.ToLower());
-                var isDefaultDisplay = request.GetPostBool(StlSearch.IsDefaultDisplay.Name.ToLower());
                 var siteId = request.GetPostInt("siteid");
                 var ajaxDivId = PageUtils.FilterSqlAndXss(request.GetPostString("ajaxdivid"));
                 var template = TranslateUtils.DecryptStringBySecretKey(request.GetPostString("template"));
@@ -67,14 +65,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
                     var stlPageContentsElement = stlElement;
                     var stlPageContentsElementReplaceString = stlElement;
 
-                    bool isDefaultCondition;
-                    var whereString = DataProvider.ContentDao.GetWhereStringByStlSearch(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, siteId, ApiRouteActionsSearch.ExlcudeAttributeNames, form, out isDefaultCondition);
-
-                    //没搜索条件时不显示搜索结果
-                    if (isDefaultCondition && !isDefaultDisplay)
-                    {
-                        return NotFound();
-                    }
+                    var whereString = DataProvider.ContentDao.GetWhereStringByStlSearch(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, siteId, ApiRouteActionsSearch.ExlcudeAttributeNames, form);
 
                     var stlPageContents = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, pageNum, siteInfo.TableName, whereString);
 
@@ -104,12 +95,12 @@ namespace SiteServer.API.Controllers.Sys.Stl
                                 $"<span style='color:#cc0000'>{word}</span>"));
                         }
 
-                        Parser.Parse(siteInfo, pageInfo, contextInfo, pagedBuilder, string.Empty, false);
+                        Parser.Parse(pageInfo, contextInfo, pagedBuilder, string.Empty, false);
                         return Ok(pagedBuilder.ToString());
                     }
                 }
 
-                Parser.Parse(siteInfo, pageInfo, contextInfo, contentBuilder, string.Empty, false);
+                Parser.Parse(pageInfo, contextInfo, contentBuilder, string.Empty, false);
                 return Ok(contentBuilder.ToString());
             }
             catch (Exception ex)

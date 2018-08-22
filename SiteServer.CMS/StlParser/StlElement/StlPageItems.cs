@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Xml;
-using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -22,25 +20,10 @@ namespace SiteServer.CMS.StlParser.StlElement
             string parsedContent;
             try
             {
-                var xmlDocument = StlParserUtility.GetXmlDocument(stlElement, false);
-                XmlNode node = xmlDocument.DocumentElement;
-                node = node?.FirstChild;
-
-                var ie = node?.Attributes?.GetEnumerator();
-                if (ie != null)
+                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
+                if (stlElementInfo.Attributes[Context.Name] != null)
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-                        if (attr == null) continue;
-
-                        var name = attr.Name;
-
-                        if (StringUtils.EqualsIgnoreCase(name, Context.Name))
-                        {
-                            contextType = EContextTypeUtils.GetEnumType(attr.Value);
-                        }
-                    }
+                    contextType = EContextTypeUtils.GetEnumType(stlElementInfo.Attributes[Context.Name]);
                 }
 
                 if (pageCount <= 1)
@@ -53,7 +36,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var length = stlElement.LastIndexOf("<", StringComparison.Ordinal) - index;
                 if (index <= 0 || length <= 0)
                 {
-                    stlElement = node?.InnerXml;
+                    stlElement = stlElementInfo.InnerHtml;
                     isXmlContent = true;
                 }
                 else
@@ -77,9 +60,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             string parsedContent;
             try
             {
-                var xmlDocument = StlParserUtility.GetXmlDocument(stlElement, false);
-                XmlNode node = xmlDocument.DocumentElement;
-                node = node?.FirstChild;
+                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
 
                 if (pageCount <= 1)
                 {
@@ -91,7 +72,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var length = stlElement.LastIndexOf("<", StringComparison.Ordinal) - index;
                 if (index <= 0 || length <= 0)
                 {
-                    stlElement = node?.InnerXml;
+                    stlElement = stlElementInfo.InnerHtml;
                     //isXmlContent = true;
                 }
                 else
@@ -115,9 +96,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             string parsedContent;
             try
             {
-                var xmlDocument = StlParserUtility.GetXmlDocument(stlElement, false);
-                XmlNode node = xmlDocument.DocumentElement;
-                node = node?.FirstChild;
+                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
 
                 if (pageCount <= 1)
                 {
@@ -128,7 +107,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var length = stlElement.LastIndexOf("<", StringComparison.Ordinal) - index;
                 if (index <= 0 || length <= 0)
                 {
-                    stlElement = node?.InnerXml;
+                    stlElement = stlElementInfo.InnerHtml;
                 }
                 else
                 {

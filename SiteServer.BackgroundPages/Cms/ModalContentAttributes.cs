@@ -6,6 +6,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -52,11 +53,10 @@ namespace SiteServer.BackgroundPages.Cms
         public override void Submit_OnClick(object sender, EventArgs e)
         {
 			var isChanged = false;
-				
-            try
+
+            switch (HihType.Value)
             {
-                if (HihType.Value == "1")
-                {
+                case "1":
                     if (CbIsRecommend.Checked || CbIsHot.Checked || CbIsColor.Checked || CbIsTop.Checked)
                     {
                         foreach (var contentId in _idList)
@@ -88,9 +88,9 @@ namespace SiteServer.BackgroundPages.Cms
 
                         isChanged = true;
                     }
-                }
-                else if (HihType.Value == "2")
-                {
+
+                    break;
+                case "2":
                     if (CbIsRecommend.Checked || CbIsHot.Checked || CbIsColor.Checked || CbIsTop.Checked)
                     {
                         foreach (var contentId in _idList)
@@ -122,9 +122,9 @@ namespace SiteServer.BackgroundPages.Cms
 
                         isChanged = true;
                     }
-                }
-                else if (HihType.Value == "3")
-                {
+
+                    break;
+                case "3":
                     var hits = TranslateUtils.ToInt(TbHits.Text);
 
                     foreach (var contentId in _idList)
@@ -135,15 +135,10 @@ namespace SiteServer.BackgroundPages.Cms
                     AuthRequest.AddSiteLog(SiteId, "设置内容点击量");
 
                     isChanged = true;
-                }
+                    break;
             }
-			catch(Exception ex)
-			{
-                FailMessage(ex, ex.Message);
-			    isChanged = false;
-			}
 
-			if (isChanged)
+            if (isChanged)
 			{
                 LayerUtils.Close(Page);
 			}

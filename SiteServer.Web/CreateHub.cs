@@ -36,7 +36,7 @@ namespace SiteServer.API
             {
                 var start = DateTime.Now;
                 await FileSystemObjectAsync.ExecuteAsync(pendingTask.SiteId, pendingTask.CreateType, pendingTask.ChannelId,
-                    pendingTask.ContentId, pendingTask.TemplateId);
+                    pendingTask.ContentId, pendingTask.FileTemplateId, pendingTask.SpecialId);
                 var timeSpan = DateUtils.GetRelatedDateTimeString(start);
                 instance.AddSuccessLog(pendingTask, timeSpan);
             }
@@ -56,17 +56,10 @@ namespace SiteServer.API
         {
             try
             {
-                if (siteId > 0)
-                {
-                    var summary = CreateTaskManager.Instance.GetTaskSummary(siteId);
-                    Clients.Client(Context.ConnectionId).show(true, summary.Tasks, summary.ChannelsCount, summary.ContentsCount, summary.FilesCount);
+                var summary = CreateTaskManager.Instance.GetTaskSummary(siteId);
+                Clients.Client(Context.ConnectionId).show(summary.Tasks, summary.ChannelsCount, summary.ContentsCount, summary.FilesCount, summary.SpecialsCount);
 
-                    await Execute(siteId);
-                }
-                else
-                {
-                    Clients.Client(Context.ConnectionId).show(false, null, 0, 0, 0, 0);
-                }
+                await Execute(siteId);
             }
             catch (Exception ex)
             {

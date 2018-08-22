@@ -2,7 +2,7 @@
 
 namespace SiteServer.CMS.Core
 {
-	public class ArchiveManager
+    public static class ArchiveManager
 	{
         public static void CreateArchiveTableIfNotExists(SiteInfo siteInfo, string tableName)
         {

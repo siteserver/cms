@@ -4,16 +4,6 @@ namespace SiteServer.CMS.Model
 {
 	public class ErrorLogInfo
 	{
-	    public ErrorLogInfo()
-		{
-            Id = 0;
-            PluginId = string.Empty;
-            Message = string.Empty;
-            Stacktrace = string.Empty;
-            Summary = string.Empty;
-            AddDate = DateTime.Now;
-        }
-
         public ErrorLogInfo(int id, string pluginId, string message, string stacktrace, string summary, DateTime addDate) 
 		{
             Id = id;

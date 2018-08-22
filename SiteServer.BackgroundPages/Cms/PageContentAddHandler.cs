@@ -4,6 +4,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -71,8 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 try
                 {
-                    service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId,
-                        contentInfo, new ExtendedAttributes(form)));
+                    service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, new ExtendedAttributes(form), contentInfo));
                 }
                 catch (Exception ex)
                 {

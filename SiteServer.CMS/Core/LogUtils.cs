@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 
@@ -12,10 +13,7 @@ namespace SiteServer.CMS.Core
             {
                 if (!ConfigManager.SystemConfigInfo.IsLogError) return 0;
 
-                if (ConfigManager.SystemConfigInfo.IsTimeThreshold)
-                {
-                    DataProvider.ErrorLogDao.Delete(ConfigManager.SystemConfigInfo.TimeThreshold);
-                }
+                DataProvider.ErrorLogDao.DeleteIfThreshold();
 
                 return DataProvider.ErrorLogDao.Insert(logInfo);
             }
@@ -29,21 +27,16 @@ namespace SiteServer.CMS.Core
 
         public static void AddErrorLogAndRedirect(Exception ex, string summary = "")
         {
-            if (ex.HResult == -2147467259) // 文件名不存在
+            if (ex == null || ex.StackTrace.Contains("System.Web.HttpResponse.set_StatusCode(Int32 value)")) return;
+
+            var logId = AddErrorLog(ex, summary);
+            if (logId > 0)
             {
-                PageUtils.RedirectToErrorPage(ex.Message);
+                PageUtils.RedirectToErrorPage(logId);
             }
             else
             {
-                var logId = AddErrorLog(ex, summary);
-                if (logId > 0)
-                {
-                    PageUtils.RedirectToErrorPage(logId);
-                }
-                else
-                {
-                    PageUtils.RedirectToErrorPage(ex.Message);
-                }
+                PageUtils.RedirectToErrorPage(ex.Message);
             }
         }
 
@@ -57,16 +50,50 @@ namespace SiteServer.CMS.Core
             return AddErrorLog(new ErrorLogInfo(0, pluginId, ex.Message, ex.StackTrace, summary, DateTime.Now));
         }
 
-        public static void AddAdminLog(string userName, string action, string summary = "")
+        public static void AddSiteLog(int siteId, int channelId, int contentId, string adminName, string action, string summary)
+        {
+            if (!ConfigManager.SystemConfigInfo.IsLogSite) return;
+
+            if (siteId <= 0)
+            {
+                AddAdminLog(adminName, action, summary);
+            }
+            else
+            {
+                try
+                {
+                    DataProvider.SiteLogDao.DeleteIfThreshold();
+
+                    if (!string.IsNullOrEmpty(action))
+                    {
+                        action = StringUtils.MaxLengthText(action, 250);
+                    }
+                    if (!string.IsNullOrEmpty(summary))
+                    {
+                        summary = StringUtils.MaxLengthText(summary, 250);
+                    }
+                    if (channelId < 0)
+                    {
+                        channelId = -channelId;
+                    }
+                    var siteLogInfo = new SiteLogInfo(0, siteId, channelId, contentId, adminName, PageUtils.GetIpAddress(), DateTime.Now, action, summary);
+
+                    DataProvider.SiteLogDao.Insert(siteLogInfo);
+                }
+                catch (Exception ex)
+                {
+                    AddErrorLog(ex);
+                }
+            }
+        }
+
+        public static void AddAdminLog(string adminName, string action, string summary = "")
         {
             if (!ConfigManager.SystemConfigInfo.IsLogAdmin) return;
 
             try
             {
-                if (ConfigManager.SystemConfigInfo.IsTimeThreshold)
-                {
-                    DataProvider.LogDao.Delete(ConfigManager.SystemConfigInfo.TimeThreshold);
-                }
+                DataProvider.LogDao.DeleteIfThreshold();
 
                 if (!string.IsNullOrEmpty(action))
                 {
@@ -76,7 +103,7 @@ namespace SiteServer.CMS.Core
                 {
                     summary = StringUtils.MaxLengthText(summary, 250);
                 }
-                var logInfo = new LogInfo(0, userName, PageUtils.GetIpAddress(), DateTime.Now, action, summary);
+                var logInfo = new LogInfo(0, adminName, PageUtils.GetIpAddress(), DateTime.Now, action, summary);
 
                 DataProvider.LogDao.Insert(logInfo);
             }
@@ -97,16 +124,17 @@ namespace SiteServer.CMS.Core
 
             try
             {
-                if (ConfigManager.SystemConfigInfo.IsTimeThreshold)
-                {
-                    DataProvider.UserLogDao.Delete(ConfigManager.SystemConfigInfo.TimeThreshold);
-                }
+                DataProvider.UserLogDao.DeleteIfThreshold();
 
                 if (!string.IsNullOrEmpty(summary))
                 {
                     summary = StringUtils.MaxLengthText(summary, 250);
                 }
-                DataProvider.UserLogDao.Insert(new UserLogInfo(0, userName, PageUtils.GetIpAddress(), DateTime.Now, actionType, summary));
+
+                var userLogInfo = new UserLogInfo(0, userName, PageUtils.GetIpAddress(), DateTime.Now, actionType,
+                    summary);
+
+                DataProvider.UserLogDao.Insert(userLogInfo);
             }
             catch (Exception ex)
             {

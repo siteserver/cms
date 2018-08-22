@@ -33,6 +33,7 @@ namespace SiteServer.Utils
                 {
                     connectionString += $"Database={database};";
                 }
+                connectionString += "SslMode=none;CharSet=utf8;";
             }
             else if (databaseType == DatabaseType.SqlServer)
             {
@@ -70,6 +71,45 @@ namespace SiteServer.Utils
             }
 
             return connectionString;
+        }
+
+        public static string GetConnectionString(DatabaseType databaseType, string connectionString)
+        {
+            if (databaseType == DatabaseType.MySql)
+            {
+                if (!StringUtils.ContainsIgnoreCase(connectionString, "SslMode="))
+                {
+                    connectionString += ";SslMode=none;";
+                }
+                if (!StringUtils.ContainsIgnoreCase(connectionString, "CharSet="))
+                {
+                    connectionString += ";CharSet=utf8;";
+                }
+            }
+
+            return connectionString;
+        }
+
+        public static string GetConnectionStringUserId(string connectionString)
+        {
+            var userId = string.Empty;
+
+            foreach (var pair in TranslateUtils.StringCollectionToStringList(connectionString, ';'))
+            {
+                if (!string.IsNullOrEmpty(pair) && pair.IndexOf("=", StringComparison.Ordinal) != -1)
+                {
+                    var key = pair.Substring(0, pair.IndexOf("=", StringComparison.Ordinal));
+                    var value = pair.Substring(pair.IndexOf("=", StringComparison.Ordinal) + 1);
+                    if (StringUtils.EqualsIgnoreCase(key, "Uid") ||
+                        StringUtils.EqualsIgnoreCase(key, "Username") ||
+                        StringUtils.EqualsIgnoreCase(key, "User ID"))
+                    {
+                        return value;
+                    }
+                }
+            }
+
+            return userId;
         }
 
         public static IDbConnection GetIDbConnection(DatabaseType databaseType, string connectionString)
@@ -603,13 +643,24 @@ SELECT * FROM (
             return retval;
         }
 
-        public static string GetAutoIncrementDataType()
+        public static string GetAutoIncrementDataType(bool alterTable = false)
         {
             var retval = string.Empty;
 
+            //if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            //{
+            //    retval = "INT AUTO_INCREMENT PRIMARY KEY";
+            //}
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = "INT AUTO_INCREMENT";
+                if (alterTable)
+                {
+                    retval = "INTEGER AUTO_INCREMENT UNIQUE KEY";
+                }
+                else
+                {
+                    retval = "INTEGER AUTO_INCREMENT";
+                }
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
@@ -946,19 +997,6 @@ SELECT * FROM (
             return $"{attributeName} varchar({length})";
         }
 
-        public static string GetConnectionStringUserId(string connectionString)
-        {
-            try
-            {
-                var csb = new SqlConnectionStringBuilder(connectionString);
-                return csb.UserID;
-            }
-            catch
-            {
-                return string.Empty;
-            }
-        }
-
         public static string ToOracleColumnString(DataType type, string attributeName, int length)
         {
             if (type == DataType.Boolean)
@@ -1228,6 +1266,30 @@ SELECT * FROM (
             return retval;
         }
 
+        public static string GetComparableString(string value)
+        {
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                retval = $"'{PageUtils.FilterSql(value)}'";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"N'{PageUtils.FilterSql(value)}'";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"'{PageUtils.FilterSql(value)}'";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"'{PageUtils.FilterSql(value)}'";
+            }
+
+            return retval;
+        }
+
         public static string GetComparableNow()
         {
             var retval = string.Empty;
@@ -1429,7 +1491,7 @@ SELECT * FROM (
                     }
 
                     if (lineOfText.StartsWith("--")) continue;
-                    lineOfText = lineOfText.Replace(")ENGINE=INNODB", ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
+                    lineOfText = lineOfText.Replace(")ENGINE=INNODB", ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
                     if (lineOfText.TrimEnd().ToUpper() == "GO")
                     {
@@ -1510,7 +1572,17 @@ SELECT * FROM (
         public static string EvalString(object dataItem, string name)
         {
             var o = Eval(dataItem, name);
-            return o?.ToString() ?? string.Empty;
+            var value =  o?.ToString() ?? string.Empty;
+
+            if (!string.IsNullOrEmpty(value))
+            {
+                value = PageUtils.UnFilterSql(value);
+            }
+            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && value == SqlUtils.OracleEmptyValue)
+            {
+                value = string.Empty;
+            }
+            return value;
         }
 
         public static DateTime EvalDateTime(object dataItem, string name)

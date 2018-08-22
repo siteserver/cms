@@ -31,7 +31,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         private static readonly Attr IsLower = new Attr("isLower", "是否转换为小写");
         private static readonly Attr IsUpper = new Attr("isUpper", "是否转换为大写");
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
 		    var connectionString = string.Empty;
             var queryString = string.Empty;
@@ -51,7 +51,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var isUpper = false;
             var type = string.Empty;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -128,10 +128,30 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, connectionString, queryString, leftText, rightText, formatString, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, type);
+		    if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))
+		    {
+		        object dataItem = null;
+		        if (contextInfo.ItemContainer?.SqlItem != null)
+		        {
+		            dataItem = contextInfo.ItemContainer?.SqlItem.DataItem;
+		        }
+		        else if (!string.IsNullOrEmpty(queryString))
+		        {
+		            var dataTable = Database.GetDataTable(connectionString, queryString);
+		            var dictList = TranslateUtils.DataTableToDictionaryList(dataTable);
+		            if (dictList != null && dictList.Count >= 1)
+		            {
+		                dataItem = dictList[0];
+		            }
+		        }
+
+		        return dataItem;
+		    }
+
+            return ParseImpl(contextInfo, connectionString, queryString, leftText, rightText, formatString, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, type);
 		}
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string connectionString, string queryString, string leftText, string rightText, string formatString, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string type)
+        private static string ParseImpl(ContextInfo contextInfo, string connectionString, string queryString, string leftText, string rightText, string formatString, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string type)
         {
             var parsedContent = string.Empty;
 

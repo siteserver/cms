@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
+using Dapper;
+using Dapper.Contrib.Extensions;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -13,43 +17,43 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_UserLog";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserLogInfo.Id),
+                AttributeName = nameof(UserLogInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserLogInfo.UserName),
+                AttributeName = nameof(UserLogInfo.UserName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserLogInfo.IpAddress),
+                AttributeName = nameof(UserLogInfo.IpAddress),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserLogInfo.AddDate),
+                AttributeName = nameof(UserLogInfo.AddDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserLogInfo.Action),
+                AttributeName = nameof(UserLogInfo.Action),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(UserLogInfo.Summary),
+                AttributeName = nameof(UserLogInfo.Summary),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             }
         };
 
@@ -75,10 +79,14 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString, parms);
         }
 
-        public void Delete(int days)
+        public void DeleteIfThreshold()
         {
+            if (!ConfigManager.SystemConfigInfo.IsTimeThreshold) return;
+
+            var days = ConfigManager.SystemConfigInfo.TimeThreshold;
             if (days <= 0) return;
-            ExecuteNonQuery($@"DELETE FROM siteserver_UserLog WHERE AddDate < '{DateUtils.GetDateAndTimeString(DateTime.Now.AddDays(-days))}'");
+
+            ExecuteNonQuery($@"DELETE FROM siteserver_UserLog WHERE AddDate < {SqlUtils.GetComparableDateTime(DateTime.Now.AddDays(-days))}");
         }
 
         public void Delete(List<int> idList)
@@ -265,6 +273,35 @@ namespace SiteServer.CMS.Provider
             }
 
             return list;
+        }
+
+        public List<UserLogInfo> ApiGetLogs(string userName, int offset, int limit)
+        {
+            var sqlString =
+                DataProvider.DatabaseDao.GetPageSqlString(TableName, "*", $"WHERE {nameof(UserLogInfo.UserName)} = @{nameof(UserLogInfo.UserName)}", "ORDER BY Id DESC", offset, limit);
+
+            using (var connection = GetConnection())
+            {
+                return connection.Query<UserLogInfo>(sqlString, new {UserName = userName}).ToList();
+            }
+        }
+
+        public UserLogInfo ApiInsert(string userName, UserLogInfo logInfo)
+        {
+            logInfo.UserName = userName;
+            logInfo.IpAddress = PageUtils.GetIpAddress();
+            logInfo.AddDate = DateTime.Now;
+
+            using (var connection = GetConnection())
+            {
+                var identity = connection.Insert(logInfo);
+                if (identity > 0)
+                {
+                    logInfo.Id = Convert.ToInt32(identity);
+                }
+            }
+
+            return logInfo;
         }
     }
 }

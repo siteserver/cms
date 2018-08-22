@@ -7,7 +7,7 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Data
 {
-    public class PostgreSql : DbHelper, IDataApi
+    public class PostgreSql : DatabaseApi, IDatabaseApi
     {
         /// <summary>
         /// Returns an array of SqlParameters of the specified size

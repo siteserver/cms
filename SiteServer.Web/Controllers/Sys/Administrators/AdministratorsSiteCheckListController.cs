@@ -47,7 +47,7 @@ namespace SiteServer.API.Controllers.Sys.Administrators
 
                 list.Add(new
                 {
-                    Url = PageContentCheck.GetRedirectUrl(siteId),
+                    Url = PageContentSearch.GetRedirectUrlCheck(siteId),
                     SiteManager.GetSiteInfo(siteId).SiteName,
                     Count = count
                 });

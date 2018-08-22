@@ -38,28 +38,25 @@ namespace SiteServer.BackgroundPages.Core
                 {
                     if (permissionManager.HasChannelPermissions(nodeInfo.SiteId, nodeInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit))
                     {
-                        var urlEdit = PageChannelEdit.GetRedirectUrl(nodeInfo.SiteId, nodeInfo.Id, PageChannel.GetRedirectUrl(nodeInfo.SiteId, nodeInfo.Id));
-                        editUrl = $"<a href=\"{urlEdit}\">编辑</a>";
-                        var urlSubtract = PageUtils.GetCmsUrl(nodeInfo.SiteId, nameof(PageChannel), new NameValueCollection
-                        {
-                            {"Subtract", true.ToString()},
-                            {"channelId", nodeInfo.Id.ToString()}
-                        });
+                        editUrl = $@"<a href=""{PageChannelEdit.GetRedirectUrl(nodeInfo.SiteId, nodeInfo.Id, PageChannel.GetRedirectUrl(nodeInfo.SiteId, nodeInfo.Id))}"" onclick=""event.stopPropagation()"">编辑</a>";
                         upLink =
-                            $@"<a href=""{urlSubtract}""><img src=""../Pic/icon/up.gif"" border=""0"" alt=""上升"" /></a>";
-                        var urlAdd = PageUtils.GetCmsUrl(nodeInfo.SiteId, nameof(PageChannel), new NameValueCollection
-                        {
-                            {"Add", true.ToString()},
-                            {"channelId", nodeInfo.Id.ToString()}
-                        });
+                            $@"<a href=""{PageUtils.GetCmsUrl(nodeInfo.SiteId, nameof(PageChannel), new NameValueCollection
+                            {
+                                {"Subtract", true.ToString()},
+                                {"channelId", nodeInfo.Id.ToString()}
+                            })}"" onclick=""event.stopPropagation()""><img src=""../Pic/icon/up.gif"" border=""0"" alt=""上升"" /></a>";
                         downLink =
-                            $@"<a href=""{urlAdd}""><img src=""../Pic/icon/down.gif"" border=""0"" alt=""下降"" /></a>";
+                            $@"<a href=""{PageUtils.GetCmsUrl(nodeInfo.SiteId, nameof(PageChannel), new NameValueCollection
+                            {
+                                {"Add", true.ToString()},
+                                {"channelId", nodeInfo.Id.ToString()}
+                            })}"" onclick=""event.stopPropagation()""><img src=""../Pic/icon/down.gif"" border=""0"" alt=""下降"" /></a>";
                     }
-                    checkBoxHtml = $"<input type='checkbox' name='ChannelIDCollection' value='{nodeInfo.Id}' />";
+                    checkBoxHtml = $@"<input type=""checkbox"" name=""ChannelIDCollection"" value=""{nodeInfo.Id}"" onclick=""checkboxClick(this)"" />";
                 }
 
                 rowHtml = $@"
-<tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
+<tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"" onclick=""activeRow(this);return false;"">
     <td>{title}</td>
     <td class=""text-nowrap"">{nodeInfo.GroupNameCollection}</td>
     <td class=""text-nowrap"">{nodeInfo.IndexName}</td>
@@ -121,7 +118,7 @@ namespace SiteServer.BackgroundPages.Core
                     editChannelLink = $"<a href=\"javascript:;\" onclick=\"{showPopWinString}\">触发栏目</a>";
                 }
 
-                if (nodeInfo.Additional.ToNameValueCollection().Count > 0)
+                if (nodeInfo.Additional.Count > 0)
                 {
                     var nodeNameBuilder = new StringBuilder();
                     var channelIdList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.CreateChannelIDsIfContentChanged);

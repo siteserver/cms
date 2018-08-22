@@ -11,35 +11,35 @@ namespace SiteServer.CMS.Provider
 	{
         public override string TableName => "siteserver_Config";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ConfigInfo.Id),
+                AttributeName = nameof(ConfigInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ConfigInfo.IsInitialized),
+                AttributeName = nameof(ConfigInfo.IsInitialized),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ConfigInfo.DatabaseVersion),
+                AttributeName = nameof(ConfigInfo.DatabaseVersion),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ConfigInfo.UpdateDate),
+                AttributeName = nameof(ConfigInfo.UpdateDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ConfigInfo.SystemConfig),
+                AttributeName = nameof(ConfigInfo.SystemConfig),
                 DataType = DataType.Text
             }
         };

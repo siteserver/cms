@@ -25,13 +25,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public const string TypeChannels = "Channels";
         public const string TypeContents = "Contents";
-        public const string TypeDownloads = "Downloads";
 
         public static SortedList<string, string> TypeList => new SortedList<string, string>
         {
             {TypeChannels, "栏目数"},
-            {TypeContents, "内容数"},
-            {TypeDownloads, "下载次数"}
+            {TypeContents, "内容数"}
         };
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
@@ -44,7 +42,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var scope = EScopeType.Self;
             var since = string.Empty;
 
-		    foreach (var name in contextInfo.Attributes.Keys)
+		    foreach (var name in contextInfo.Attributes.AllKeys)
 		    {
 		        var value = contextInfo.Attributes[name];
 
@@ -111,13 +109,6 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
                 count = nodeInfo.ChildrenCount;
-            }           
-            else if (StringUtils.EqualsIgnoreCase(type, TypeDownloads))
-            {
-                if (contextInfo.ContentId > 0)
-                {
-                    count = CountManager.GetCount(pageInfo.SiteInfo.TableName, contextInfo.ContentId.ToString(), ECountType.Download);
-                }
             }
 
             return count.ToString();

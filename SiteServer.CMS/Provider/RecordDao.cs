@@ -13,36 +13,36 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_Record";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Id",
+                AttributeName = nameof(RecordInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Text",
+                AttributeName = nameof(RecordInfo.Text),
                 DataType = DataType.VarChar,
-                Length = 2000
+                DataLength = 2000
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Summary",
+                AttributeName = nameof(RecordInfo.Summary),
                 DataType = DataType.VarChar,
-                Length = 2000
+                DataLength = 2000
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Source",
+                AttributeName = nameof(RecordInfo.Source),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "AddDate",
+                AttributeName = nameof(RecordInfo.AddDate),
                 DataType = DataType.DateTime
             }
         };

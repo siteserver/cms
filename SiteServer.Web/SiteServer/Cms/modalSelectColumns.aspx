@@ -24,7 +24,7 @@
         <div class="form-group form-row">
           <label class="col-1 text-right col-form-label"></label>
           <div id="Group" class="col-10">
-            <asp:CheckBoxList ID="CblDisplayAttributes" RepeatColumns="3" class="checkbox checkbox-primary" style="width: 100%" runat="server"
+            <asp:CheckBoxList ID="CblDisplayAttributes" RepeatColumns="3" RepeatDirection="Horizontal" class="checkbox checkbox-primary" style="width: 100%" runat="server"
             />
           </div>
           <div class="col-1"></div>

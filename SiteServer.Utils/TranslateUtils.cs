@@ -15,7 +15,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace SiteServer.Utils
 {
-    public class TranslateUtils
+    public static class TranslateUtils
     {
 
         //添加枚举：(fileAttributes | FileAttributes.ReadOnly)   判断枚举：((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)   去除枚举：(fileAttributes ^ FileAttributes.ReadOnly)
@@ -688,6 +688,23 @@ namespace SiteServer.Utils
             return builder.ToString();
         }
 
+        public static NameValueCollection DictionaryToNameValueCollection(Dictionary<string, object> attributes)
+        {
+            var nvc = new NameValueCollection(StringComparer.OrdinalIgnoreCase);
+            if (attributes != null && attributes.Count > 0)
+            {
+                foreach (var key in attributes.Keys)
+                {
+                    var value = attributes[key];
+                    if (value != null)
+                    {
+                        nvc[key] = attributes[key].ToString();
+                    }
+                }
+            }
+            return nvc;
+        }
+
         public static bool DictGetValue(Dictionary<int, bool> dict, int key)
         {
             bool retval;
@@ -1157,6 +1174,55 @@ namespace SiteServer.Utils
             encryptor.DesDecrypt();
 
             return encryptor.OutString;
+        }
+
+        public static HorizontalAlign ToHorizontalAlign(string typeStr)
+        {
+            return (HorizontalAlign)ToEnum(typeof(HorizontalAlign), typeStr, HorizontalAlign.Left);
+        }
+
+        public static VerticalAlign ToVerticalAlign(string typeStr)
+        {
+            return (VerticalAlign)ToEnum(typeof(VerticalAlign), typeStr, VerticalAlign.Middle);
+        }
+
+        public static GridLines ToGridLines(string typeStr)
+        {
+            return (GridLines)ToEnum(typeof(GridLines), typeStr, GridLines.None);
+        }
+
+        public static RepeatDirection ToRepeatDirection(string typeStr)
+        {
+            return (RepeatDirection)ToEnum(typeof(RepeatDirection), typeStr, RepeatDirection.Vertical);
+        }
+
+        public static RepeatLayout ToRepeatLayout(string typeStr)
+        {
+            return (RepeatLayout)ToEnum(typeof(RepeatLayout), typeStr, RepeatLayout.Table);
+        }
+
+        public static List<Dictionary<string, object>> DataTableToDictionaryList(DataTable dataTable)
+        {
+            var rows = new List<Dictionary<string, object>>();
+
+            foreach (DataRow dataRow in dataTable.Rows)
+            {
+                var row = new Dictionary<string, object>();
+                foreach (DataColumn col in dataTable.Columns)
+                {
+                    row.Add(col.ColumnName, dataRow[col]);
+                }
+                rows.Add(row);
+            }
+
+            return rows;
+        }
+
+        public static NameValueCollection NewIgnoreCaseNameValueCollection()
+        {
+            var comparer = StringComparer.OrdinalIgnoreCase;
+            var caseInsensitiveDictionary = new NameValueCollection(comparer);
+            return caseInsensitiveDictionary;
         }
     }
 }

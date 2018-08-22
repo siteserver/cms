@@ -8,7 +8,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Data
 {
-    public class Oracle : DbHelper, IDataApi
+    public class Oracle : DatabaseApi, IDatabaseApi
     {
         #region Overrides
         /// <summary>

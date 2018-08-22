@@ -2,12 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Data;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -61,7 +63,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Chart);
+            VerifySystemPermissions(ConfigManager.SettingsPermissions.Chart);
 
             DdlSiteId.Items.Add(new ListItem("<<全部站点>>", "0"));
             var siteIdList = SiteManager.GetSiteIdListOrderByLevel();
@@ -113,7 +115,7 @@ yArrayHitsMonth.push('{yValueHitsMonth}');
             var ltlHitsByMonth = (Literal)e.Item.FindControl("ltlHitsByMonth");
             var ltlLastHitsDate = (Literal)e.Item.FindControl("ltlLastHitsDate");
 
-            var contentInfo = new ContentInfo(e.Item.DataItem);
+            var contentInfo = new ContentInfo((DataRowView)e.Item.DataItem);
 
             ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, _pageUrl);
 

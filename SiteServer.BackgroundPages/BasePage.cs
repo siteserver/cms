@@ -16,6 +16,8 @@ namespace SiteServer.BackgroundPages
 
         protected virtual bool IsSinglePage => false; // 是否为单页（即是否需要放在框架页内运行,false表示需要）
 
+        protected virtual bool IsInstallerPage => false; // 是否为系统安装页面
+
         public string IsNightly => WebConfigUtils.IsNightlyUpdate.ToString().ToLower(); // 系统是否允许升级到最新的开发版本
 
         public string Version => SystemManager.PluginVersion; // 系统采用的插件API版本号
@@ -36,19 +38,29 @@ namespace SiteServer.BackgroundPages
 
             AuthRequest = new AuthRequest(Request);
 
-            if (!IsAccessable) // 如果页面不能直接访问且又没有登录则直接跳登录页
+            if (!IsInstallerPage)
             {
-                if (!AuthRequest.IsAdminLoggin || AuthRequest.AdminInfo == null) // 检测管理员是否登录
+                if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
                 {
-                    IsForbidden = true;
-                    PageUtils.RedirectToLoginPage();
+                    PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl("Installer"));
                     return;
                 }
 
-                if (AuthRequest.AdminInfo.IsLockedOut) // 检测管理员帐号是否被锁定
+#if !DEBUG
+                if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.Version)
+                {
+                    PageUtils.Redirect(PageSyncDatabase.GetRedirectUrl());
+                    return;
+                }
+#endif
+            }
+
+            if (!IsAccessable) // 如果页面不能直接访问且又没有登录则直接跳登录页
+            {
+                if (!AuthRequest.IsAdminLoggin || AuthRequest.AdminInfo == null || AuthRequest.AdminInfo.IsLockedOut) // 检测管理员是否登录，检测管理员帐号是否被锁定
                 {
                     IsForbidden = true;
-                    PageUtils.RedirectToLoginPage("对不起，您的账号已被锁定，无法进入系统！");
+                    PageUtils.RedirectToLoginPage();
                     return;
                 }
             }
@@ -190,9 +202,9 @@ setTimeout(function() {{
             return ControlUtils.FindControlBySelfAndChildren(controlId, this);
         }
 
-        public void VerifyAdministratorPermissions(params string[] permissionArray)
+        public void VerifySystemPermissions(params string[] permissionArray)
         {
-            if (AuthRequest.AdminPermissions.HasAdministratorPermissions(permissionArray))
+            if (AuthRequest.AdminPermissions.HasSystemPermissions(permissionArray))
             {
                 return;
             }

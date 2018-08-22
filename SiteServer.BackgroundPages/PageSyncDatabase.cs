@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web.UI;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.Utils;
@@ -6,10 +7,8 @@ using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages
 {
-    public class PageSyncDatabase : BasePage
+    public class PageSyncDatabase : Page
     {
-        protected override bool IsSinglePage => true;
-
         public static string GetRedirectUrl()
         {
             return PageUtils.GetSiteServerUrl(nameof(PageSyncDatabase), null);
@@ -25,7 +24,7 @@ namespace SiteServer.BackgroundPages
 
             if (SystemManager.IsNeedInstall())
             {
-                Page.Response.Write("系统未安装，向导被禁用");
+                Page.Response.Write("系统未安装，向导被禁用！");
                 Page.Response.End();
             }
         }

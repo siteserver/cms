@@ -4,6 +4,7 @@ using System.Text;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlEntity;
 using SiteServer.CMS.StlParser.Utility;
@@ -30,7 +31,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var isPageRefresh = false;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -44,7 +45,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, contextInfo.InnerXml, isPageRefresh);
+            return ParseImpl(pageInfo, contextInfo, contextInfo.InnerHtml, isPageRefresh);
         }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string templateContent, bool isPageRefresh)
@@ -100,6 +101,8 @@ function {functionName}(pageNum)
 
         public static string ParseDynamicContent(int siteId, int channelId, int contentId, int templateId, bool isPageRefresh, string templateContent, string pageUrl, int pageIndex, string ajaxDivId, NameValueCollection queryString, IUserInfo userInfo)
         {
+            StlCacheUtils.ClearAll();
+
             var templateInfo = TemplateManager.GetTemplateInfo(siteId, templateId);
             //TemplateManager.GetTemplateInfo(siteID, channelID, templateType);
             var siteInfo = SiteManager.GetSiteInfo(siteId);
@@ -121,7 +124,7 @@ function {functionName}(pageNum)
                 var stlPageContentsElement = stlElement;
                 var stlPageContentsElementReplaceString = stlElement;
 
-                var pageContentsElementParser = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, true);
+                var pageContentsElementParser = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo);
                 int totalNum;
                 var pageCount = pageContentsElementParser.GetPageCount(out totalNum);
 
@@ -145,7 +148,7 @@ function {functionName}(pageNum)
                 var stlPageChannelsElement = stlElement;
                 var stlPageChannelsElementReplaceString = stlElement;
 
-                var pageChannelsElementParser = new StlPageChannels(stlPageChannelsElement, pageInfo, contextInfo, true);
+                var pageChannelsElementParser = new StlPageChannels(stlPageChannelsElement, pageInfo, contextInfo);
                 int totalNum;
                 var pageCount = pageChannelsElementParser.GetPageCount(out totalNum);
 
@@ -169,7 +172,7 @@ function {functionName}(pageNum)
                 var stlPageSqlContentsElement = stlElement;
                 var stlPageSqlContentsElementReplaceString = stlElement;
 
-                var pageSqlContentsElementParser = new StlPageSqlContents(stlPageSqlContentsElement, pageInfo, contextInfo, true);
+                var pageSqlContentsElementParser = new StlPageSqlContents(stlPageSqlContentsElement, pageInfo, contextInfo);
                 int totalNum;
                 var pageCount = pageSqlContentsElementParser.GetPageCount(out totalNum);
 
@@ -208,7 +211,7 @@ function {functionName}(pageNum)
 
             //var parsedContent = StlParserUtility.GetBackHtml(contentBuilder.ToString(), pageInfo);
             //return pageInfo.HeadCodesHtml + pageInfo.BodyCodesHtml + parsedContent + pageInfo.FootCodesHtml;
-            return StlParserUtility.GetBackHtml(contentBuilder.ToString(), pageInfo);
+            return contentBuilder.ToString();
         }
     }
 }

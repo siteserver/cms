@@ -28,9 +28,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         internal static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-            if (string.IsNullOrEmpty(contextInfo.InnerXml)) return string.Empty;
+            if (string.IsNullOrEmpty(contextInfo.InnerHtml)) return string.Empty;
 
-            var innerBuilder = new StringBuilder(contextInfo.InnerXml);
+            var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
             var scrollHtml = innerBuilder.ToString();
 
@@ -39,7 +39,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var width = "width:100%;";
             var height = string.Empty;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 

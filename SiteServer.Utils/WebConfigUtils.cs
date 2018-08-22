@@ -43,7 +43,6 @@ namespace SiteServer.Utils
         {
             PhysicalApplicationPath = physicalApplicationPath;
 
-
             var isProtectData = false;
             var databaseType = string.Empty;
             var connectionString = string.Empty;
@@ -132,7 +131,7 @@ namespace SiteServer.Utils
 
             IsProtectData = isProtectData;
             DatabaseType = DatabaseTypeUtils.GetEnumType(databaseType);
-            ConnectionString = connectionString;
+            ConnectionString = SqlUtils.GetConnectionString(DatabaseType, connectionString);
             if (string.IsNullOrEmpty(AdminDirectory))
             {
                 AdminDirectory = "siteserver";
@@ -142,6 +141,13 @@ namespace SiteServer.Utils
                 SecretKey = StringUtils.GetShortGuid();
                 //SecretKey = "vEnfkn16t8aeaZKG3a4Gl9UUlzf4vgqU9xwh8ZV5";
             }
+        }
+
+        public static void Load(string physicalApplicationPath, string databaseType, string connectionString)
+        {
+            PhysicalApplicationPath = physicalApplicationPath;
+            DatabaseType = DatabaseTypeUtils.GetEnumType(databaseType);
+            ConnectionString = SqlUtils.GetConnectionString(DatabaseType, connectionString);
         }
 
         public static void ResetWebConfig()
@@ -159,12 +165,20 @@ namespace SiteServer.Utils
         public static void UpdateWebConfig(bool isProtectData, DatabaseType databaseType, string connectionString,
             string adminDirectory, string secretKey, bool isNightlyUpdate)
         {
+            connectionString = SqlUtils.GetConnectionString(databaseType, connectionString);
+
             var configPath = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
             UpdateWebConfig(configPath, isProtectData, databaseType, connectionString, adminDirectory, secretKey, isNightlyUpdate);
+
+            IsProtectData = isProtectData;
+            DatabaseType = databaseType;
+            ConnectionString = connectionString;
         }
 
         public static void UpdateWebConfig(string configPath, bool isProtectData, DatabaseType databaseType, string connectionString, string adminDirectory, string secretKey, bool isNightlyUpdate)
         {
+            connectionString = SqlUtils.GetConnectionString(databaseType, connectionString);
+
             var doc = new XmlDocument();
             doc.Load(configPath);
             var dirty = false;
@@ -255,10 +269,6 @@ namespace SiteServer.Utils
                 writer.Flush();
                 writer.Close();
             }
-
-            IsProtectData = isProtectData;
-            DatabaseType = databaseType;
-            ConnectionString = connectionString;
         }
 
         public static string GetConnectionStringByName(string name)

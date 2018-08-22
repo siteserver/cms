@@ -18,12 +18,6 @@
               <a class="nav-link" href="pageAnalysisSite.aspx">站点数据统计</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageAnalysisSiteHits.aspx">内容点击统计</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="pageAnalysisSiteDownloads.aspx">文件下载统计</a>
-            </li>
-            <li class="nav-item">
               <a class="nav-link" href="pageAnalysisAdminLogin.aspx">管理员登录统计</a>
             </li>
             <li class="nav-item">

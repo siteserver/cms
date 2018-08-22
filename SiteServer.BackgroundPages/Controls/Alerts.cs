@@ -1,10 +1,11 @@
 ﻿using System.Web.UI;
+using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Controls
 {
-	public class Alerts : Control
-	{
+	public class Alerts : HtmlContainerControl
+    {
 	    public bool IsShowImmidiatary { get; set; }
 
 	    public MessageUtils.Message.EMessageType MessageType { get; set; } = MessageUtils.Message.EMessageType.None;
@@ -32,7 +33,7 @@ namespace SiteServer.BackgroundPages.Controls
 		{
 		    writer.Write(IsShowImmidiatary
 		        ? MessageUtils.GetAlertHtml(MessageType, Content, this)
-		        : MessageUtils.GetAlertHtml(this, Text));
+		        : MessageUtils.GetAlertHtml(this, string.IsNullOrEmpty(Text) ? InnerHtml : Text));
 
 		    writer.Write(@"<div id=""alert"" class=""alert"" style=""display:none""><button type=""button"" class=""close"" data-dismiss=""alert"">&times;</button><strong>提示!</strong>&nbsp;&nbsp; <span id=""alertMessage""></span></div>");
 		}

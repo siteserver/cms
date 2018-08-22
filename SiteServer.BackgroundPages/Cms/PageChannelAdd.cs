@@ -8,6 +8,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
@@ -259,7 +260,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName, relatedIdentities);
                 BackgroundInputTypeParser.SaveAttributes(extendedAttributes, SiteInfo, styleInfoList, Request.Form, null);
-                var attributes = extendedAttributes.ToNameValueCollection();
+                var attributes = extendedAttributes.ToDictionary();
                 nodeInfo.Additional.Load(attributes);
                 //foreach (string key in attributes)
                 //{

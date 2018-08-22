@@ -1,7 +1,7 @@
-﻿using System.Collections.Specialized;
-using SiteServer.Utils;
+﻿using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
@@ -37,7 +37,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         private static readonly Attr IsLower = new Attr("isLower", "是否转换为小写", AttrType.Boolean);
         private static readonly Attr IsUpper = new Attr("isUpper", "是否转换为大写", AttrType.Boolean);
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
             var leftText = string.Empty;
             var rightText = string.Empty;
@@ -45,7 +45,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var channelName = string.Empty;
             var upLevel = 0;
             var topLevel = -1;
-            var type = ChannelAttribute.Title;
+            var type = string.Empty;
             var formatString = string.Empty;
             string separator = null;
             var startIndex = 0;
@@ -59,7 +59,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var isLower = false;
             var isUpper = false;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -148,20 +148,28 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, leftText, rightText, channelIndex, channelName, upLevel, topLevel, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
-        }
-
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string leftText, string rightText, string channelIndex, string channelName, int upLevel, int topLevel, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
-        {
-            if (string.IsNullOrEmpty(type)) return string.Empty;
-            type = type.ToLower();
-
-            var parsedContent = string.Empty;
-
             var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
             channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
             var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
+
+            if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))
+            {
+                return channel;
+            }
+
+            return ParseImpl(pageInfo, contextInfo, leftText, rightText, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, channel, channelId);
+        }
+
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string leftText, string rightText, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, ChannelInfo channel, int channelId)
+        {
+            if (string.IsNullOrEmpty(type))
+            {
+                type = ChannelAttribute.Title;
+            }
+            type = type.ToLower();
+
+            var parsedContent = string.Empty;
 
             if (!string.IsNullOrEmpty(formatString))
             {
@@ -350,7 +358,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {
-                    return contextInfo.StlElement;
+                    return contextInfo.OuterHtml;
                 }
             }
             else if (StringUtils.StartsWithIgnoreCase(type, ChannelAttribute.ItemIndex) && contextInfo.ItemContainer?.ChannelItem != null)
@@ -375,17 +383,16 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var attributeName = type;
 
-                var formCollection = channel.Additional.ToNameValueCollection();
-                if (formCollection != null && formCollection.Count > 0)
+                if (channel.Additional.Count > 0)
                 {
                     var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.ChannelDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, channel.Id));
                     // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                     if (styleInfo.Id > 0)
                     {
-                        parsedContent = GetValue(attributeName, formCollection, false, styleInfo.DefaultValue);
+                        parsedContent = GetValue(attributeName, channel.Additional, false, styleInfo.DefaultValue);
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerXml, false);
+                            parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
                             inputType = styleInfo.InputType;
                         }
                     }
@@ -398,18 +405,14 @@ namespace SiteServer.CMS.StlParser.StlElement
             return leftText + parsedContent + rightText;
         }
 
-        private static string GetValue(string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, string defaultValue)
+        private static string GetValue(string attributeName, IAttributes attributes, bool isAddAndNotPostBack, string defaultValue)
         {
-            var value = string.Empty;
-            if (formCollection?[attributeName] != null)
-            {
-                value = formCollection[attributeName];
-            }
-            if (isAddAndNotPostBack && string.IsNullOrEmpty(value))
+            var value = attributes.Get(attributeName);
+            if (isAddAndNotPostBack && value == null)
             {
                 value = defaultValue;
             }
-            return value;
+            return value.ToString();
         }
     }
 }

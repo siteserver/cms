@@ -1,13 +1,25 @@
 ﻿using System;
+using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Plugins
 {
     public class PageAdd : BasePage
     {
-        public Button BtnUpload;
+        public string PackageIds
+        {
+            get
+            {
+                var dict = PluginManager.GetPluginIdAndVersionDict();
+
+                var list = dict.Keys.ToList();
+
+                return TranslateUtils.ObjectCollectionToString(list);
+            }
+        }
 
         public static string GetRedirectUrl()
         {
@@ -20,9 +32,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
             if (Page.IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.PluginsPermissions.Add);
-
-            BtnUpload.OnClientClick = ModalManualInstall.GetOpenWindowString();
+            VerifySystemPermissions(ConfigManager.PluginsPermissions.Add);
         }
     }
 }

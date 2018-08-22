@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.IO;
 
 namespace SiteServer.CMS.Core
 {
-    public sealed class TableMetadataManager
+    public static class TableMetadataManager
     {
         private static class TableMetadataManagerCache
         {
@@ -63,6 +65,21 @@ namespace SiteServer.CMS.Core
             var list = new List<string>();
             list.AddRange(ContentAttribute.AllAttributesLowercase);
             list.AddRange(GetAttributeNameList(tableName, true));
+            return list;
+        }
+
+        public static List<string> GetAllLowerAttributeNameListExcludeText(string tableName)
+        {
+            var list = new List<string>();
+            list.AddRange(ContentAttribute.AllAttributesLowercase);
+            var metadataInfoList = GetTableMetadataInfoList(tableName);
+            foreach (var metadataInfo in metadataInfoList)
+            {
+                if (metadataInfo.DataType != DataType.Text)
+                {
+                    list.Add(metadataInfo.AttributeName.ToLower());
+                }
+            }
             return list;
         }
 

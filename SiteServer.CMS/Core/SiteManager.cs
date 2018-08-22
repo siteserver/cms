@@ -6,7 +6,6 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.Utils.IO;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
@@ -101,6 +100,23 @@ namespace SiteServer.CMS.Core
                 if (siteInfo == null) continue;
 
                 if (StringUtils.EqualsIgnoreCase(siteInfo.SiteName, siteName))
+                {
+                    return siteInfo;
+                }
+            }
+            return null;
+        }
+
+        public static SiteInfo GetSiteInfoByIsRoot()
+        {
+            var list = SiteManagerCache.GetSiteInfoKeyValuePairList();
+
+            foreach (var pair in list)
+            {
+                var siteInfo = pair.Value;
+                if (siteInfo == null) continue;
+
+                if (siteInfo.IsRoot)
                 {
                     return siteInfo;
                 }
@@ -363,45 +379,39 @@ namespace SiteServer.CMS.Core
             return PathUtils.GetDirectoryName(siteInfo.SiteDir, false);
         }
 
-        public static List<ISiteInfo> GetWritingSiteInfoList(PermissionManager permissionManager)
+        public static List<int> GetWritingSiteIdList(PermissionManager permissionManager)
         {
-            var siteInfoList = new List<ISiteInfo>();
+            var siteIdList = new List<int>();
 
             if (!string.IsNullOrEmpty(permissionManager.UserName))
             {
-                var siteIdList = new List<int>();
-
                 if (permissionManager.IsConsoleAdministrator || permissionManager.IsSystemAdministrator)//如果是超级管理员或站点管理员
                 {
-                    foreach (var itemForPsid in permissionManager.SiteIdList)
+                    foreach (var siteId in permissionManager.SiteIdList)
                     {
-                        if (!siteIdList.Contains(itemForPsid))
+                        if (!siteIdList.Contains(siteId))
                         {
-                            var siteInfo = GetSiteInfo(itemForPsid);
-                            siteInfoList.Add(siteInfo);
-                            siteIdList.Add(itemForPsid);
+                            siteIdList.Add(siteId);
                         }
                     }
                 }
                 else
                 {
-                    foreach (var itemForPsid in permissionManager.SiteIdList)
+                    foreach (var siteId in permissionManager.SiteIdList)
                     {
-                        if (!siteIdList.Contains(itemForPsid))
+                        if (!siteIdList.Contains(siteId))
                         {
-                            var channelIdCollection = DataProvider.SitePermissionsDao.GetAllPermissionList(permissionManager.Roles, itemForPsid, true);
-                            var siteInfo = GetSiteInfo(itemForPsid);
+                            var channelIdCollection = DataProvider.SitePermissionsDao.GetAllPermissionList(permissionManager.Roles, siteId, true);
                             if (channelIdCollection.Count > 0)
                             {
-                                siteInfoList.Add(siteInfo);
-                                siteIdList.Add(itemForPsid);
+                                siteIdList.Add(siteId);
                             }
                         }
                     }
                 }
             }
 
-            return siteInfoList;
+            return siteIdList;
         }
 
         public static string GetSiteName(SiteInfo siteInfo)

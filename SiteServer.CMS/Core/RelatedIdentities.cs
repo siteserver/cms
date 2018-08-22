@@ -4,12 +4,8 @@ using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.Core
 {
-	public class RelatedIdentities
+    public static class RelatedIdentities
 	{
-        private RelatedIdentities()
-		{
-		}
-
         public static List<int> GetRelatedIdentities(int siteId, int relatedIdentity)
         {
             List<int> relatedIdentities = GetChannelRelatedIdentities(siteId, relatedIdentity);

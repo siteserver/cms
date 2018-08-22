@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
                 list.Add($@"
 <tr treeitemlevel=""3"">
 	<td align=""left"" nowrap="""">
-		<img align=""absmiddle"" src=""../assets/icons/tree/empty.gif""><img align=""absmiddle"" src=""../assets/icons/tree/empty.gif""><img align=""absmiddle"" src=""../assets/icons/tree/empty.gif""><img align=""absmiddle"" src=""../assets/icons/menu/template.gif"">&nbsp;<a href=""{templateAddUrl}"" onclick=""fontWeightLink(this)"" target=""management"">{templateInfo.TemplateName}</a>
+		<img align=""absmiddle"" src=""../assets/icons/tree/empty.gif""><img align=""absmiddle"" src=""../assets/icons/tree/empty.gif""><img align=""absmiddle"" src=""../assets/icons/tree/empty.gif"">&nbsp;<a href=""{templateAddUrl}"" onclick=""fontWeightLink(this)"" target=""management"">{templateInfo.TemplateName}</a>
 	</td>
 </tr>
 ");

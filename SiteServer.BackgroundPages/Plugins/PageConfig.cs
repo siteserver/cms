@@ -19,7 +19,7 @@
 
     //    private string _pluginId;
 
-    //    public static string GetRedirectUrl(string pluginId)
+    //    public static string GetPageUrl(string pluginId)
     //    {
     //        return PageUtils.GetPluginsUrl(nameof(PageConfig), new NameValueCollection
     //        {
@@ -35,7 +35,7 @@
 
     //        if (Page.IsPostBack) return;
 
-    //        VerifyAdministratorPermissions(ConfigManager.Permissions.Plugins.Management);
+    //        VerifySystemPermissions(ConfigManager.Permissions.Plugins.Management);
 
     //        var metadata = PluginManager.GetMetadata(_pluginId);
     //        var isDefault = string.IsNullOrEmpty(metadata.DatabaseType) &&
@@ -79,7 +79,7 @@
     //                foreach (var str in connectionString.Split(';'))
     //                {
     //                    var arr = str.Split('=');
-    //                    if (arr.Length == 2)
+    //                    if (arr.DataLength == 2)
     //                    {
     //                        var name = StringUtils.Trim(arr[0]);
     //                        var value = StringUtils.Trim(arr[1]);
@@ -196,7 +196,7 @@
 
     //    public void Return_OnClick(object sender, EventArgs e)
     //    {
-    //        PageUtils.Redirect(PageManagement.GetRedirectUrl());
+    //        PageUtils.Redirect(PageManagement.GetPageUrl());
     //    }
     //}
 }

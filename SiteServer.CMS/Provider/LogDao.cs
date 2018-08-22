@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -14,43 +15,43 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_Log";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(LogInfo.Id),
+                AttributeName = nameof(LogInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(LogInfo.UserName),
+                AttributeName = nameof(LogInfo.UserName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(LogInfo.IpAddress),
+                AttributeName = nameof(LogInfo.IpAddress),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(LogInfo.AddDate),
+                AttributeName = nameof(LogInfo.AddDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(LogInfo.Action),
+                AttributeName = nameof(LogInfo.Action),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(LogInfo.Summary),
+                AttributeName = nameof(LogInfo.Summary),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             }
         };
 
@@ -87,10 +88,14 @@ namespace SiteServer.CMS.Provider
             }
         }
 
-        public void Delete(int days)
+        public void DeleteIfThreshold()
         {
+            if (!ConfigManager.SystemConfigInfo.IsTimeThreshold) return;
+
+            var days = ConfigManager.SystemConfigInfo.TimeThreshold;
             if (days <= 0) return;
-            ExecuteNonQuery($@"DELETE FROM siteserver_Log WHERE AddDate < '{DateUtils.GetDateAndTimeString(DateTime.Now.AddDays(-days))}'");
+
+            ExecuteNonQuery($@"DELETE FROM siteserver_Log WHERE AddDate < {SqlUtils.GetComparableDateTime(DateTime.Now.AddDays(-days))}");
         }
 
         public void DeleteAll()

@@ -18,6 +18,9 @@ namespace SiteServer.BackgroundPages.Cms
         public DropDownList DdlIsCreateWithJQuery;
         public DropDownList DdlIsCreateDoubleClick;
         public TextBox TbCreateStaticMaxPage;
+        public DropDownList DdlIsCreateUseDefaultFileName;
+        public PlaceHolder PhIsCreateUseDefaultFileName;
+        public TextBox TbCreateDefaultFileName;
         public DropDownList DdlIsCreateStaticContentByAddDate;
         public PlaceHolder PhIsCreateStaticContentByAddDate;
         public DateTimeTextBox TbCreateStaticContentAddDate;
@@ -58,6 +61,11 @@ namespace SiteServer.BackgroundPages.Cms
 
             TbCreateStaticMaxPage.Text = SiteInfo.Additional.CreateStaticMaxPage.ToString();
 
+            EBooleanUtils.AddListItems(DdlIsCreateUseDefaultFileName, "启用", "不启用");
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateUseDefaultFileName, SiteInfo.Additional.IsCreateUseDefaultFileName.ToString());
+            PhIsCreateUseDefaultFileName.Visible = SiteInfo.Additional.IsCreateUseDefaultFileName;
+            TbCreateDefaultFileName.Text = SiteInfo.Additional.CreateDefaultFileName;
+
             EBooleanUtils.AddListItems(DdlIsCreateStaticContentByAddDate, "启用", "不启用");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateStaticContentByAddDate, SiteInfo.Additional.IsCreateStaticContentByAddDate.ToString());
             PhIsCreateStaticContentByAddDate.Visible = SiteInfo.Additional.IsCreateStaticContentByAddDate;
@@ -65,6 +73,11 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 TbCreateStaticContentAddDate.DateTime = SiteInfo.Additional.CreateStaticContentAddDate;
             }
+        }
+
+        public void DdlIsCreateUseDefaultFileName_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PhIsCreateUseDefaultFileName.Visible = TranslateUtils.ToBool(DdlIsCreateUseDefaultFileName.SelectedValue);
         }
 
         public void DdlIsCreateStaticContentByAddDate_SelectedIndexChanged(object sender, EventArgs e)
@@ -88,7 +101,13 @@ namespace SiteServer.BackgroundPages.Cms
 		    SiteInfo.Additional.IsCreateDoubleClick = TranslateUtils.ToBool(DdlIsCreateDoubleClick.SelectedValue);
 		    SiteInfo.Additional.CreateStaticMaxPage = TranslateUtils.ToInt(TbCreateStaticMaxPage.Text);
 
-		    SiteInfo.Additional.IsCreateStaticContentByAddDate = TranslateUtils.ToBool(DdlIsCreateStaticContentByAddDate.SelectedValue);
+		    SiteInfo.Additional.IsCreateUseDefaultFileName = TranslateUtils.ToBool(DdlIsCreateUseDefaultFileName.SelectedValue);
+		    if (SiteInfo.Additional.IsCreateUseDefaultFileName)
+		    {
+		        SiteInfo.Additional.CreateDefaultFileName = TbCreateDefaultFileName.Text;
+		    }
+
+            SiteInfo.Additional.IsCreateStaticContentByAddDate = TranslateUtils.ToBool(DdlIsCreateStaticContentByAddDate.SelectedValue);
 		    if (SiteInfo.Additional.IsCreateStaticContentByAddDate)
 		    {
 		        SiteInfo.Additional.CreateStaticContentAddDate = TbCreateStaticContentAddDate.DateTime;

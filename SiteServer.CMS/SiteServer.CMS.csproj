@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.Net.Compilers.2.6.1\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.2.6.1\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="..\packages\Microsoft.Net.Compilers.2.7.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.2.7.0\build\Microsoft.Net.Compilers.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -34,14 +34,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dapper, Version=1.50.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.1.50.4\lib\net451\Dapper.dll</HintPath>
+    <Reference Include="Dapper, Version=1.50.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.5\lib\net451\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Dapper.Contrib, Version=1.50.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.Contrib.1.50.5\lib\net451\Dapper.Contrib.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Protobuf, Version=3.5.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Protobuf.3.5.1\lib\net45\Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.8.4.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.8.4\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data, Version=6.10.6.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.6.10.6\lib\net452\MySql.Data.dll</HintPath>
+    <Reference Include="MySql.Data, Version=8.0.11.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.8.0.11\lib\net452\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -71,8 +80,8 @@
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=1.6.51.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.1.6.51-beta\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.2.0.0\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -80,6 +89,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.IO.Compression" />
@@ -101,6 +111,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\IdObj.cs" />
+    <Compile Include="Api\V1\StlRequest.cs" />
     <Compile Include="Api\ApiRoutePlugin.cs" />
     <Compile Include="Api\Preview\ApiRoutePreview.cs" />
     <Compile Include="Api\Sys\Administrators\ApiRouteActionsLogin.cs" />
@@ -112,7 +124,6 @@
     <Compile Include="Api\Sys\Packaging\ApiRouteSyncDatabase.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteDownload.cs" />
     <Compile Include="Api\Sys\Editors\ApiRouteUEditor.cs" />
-    <Compile Include="Api\Sys\Stl\ApiRouteActionsAddContentHits.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsDownload.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsDynamic.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsIf.cs" />
@@ -124,6 +135,10 @@
     <Compile Include="Api\Sys\Stl\ApiRouteActionsSearch.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsTrigger.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsUpload.cs" />
+    <Compile Include="Api\V1\ORequest.cs" />
+    <Compile Include="Api\V1\OUtils.cs" />
+    <Compile Include="Api\V1\OFilter.cs" />
+    <Compile Include="Api\V1\OResponse.cs" />
     <Compile Include="Core\AdminManager.cs" />
     <Compile Include="Api\ApiManager.cs" />
     <Compile Include="Core\ArchiveManager.cs" />
@@ -133,8 +148,6 @@
     <Compile Include="Core\CheckManager.cs" />
     <Compile Include="Core\ConfigManager.cs" />
     <Compile Include="Core\ContentUtility.cs" />
-    <Compile Include="Core\Converter.cs" />
-    <Compile Include="Core\CountManager.cs" />
     <Compile Include="Core\Create\CreateManager.cs" />
     <Compile Include="Core\Create\CreateTaskManager.cs" />
     <Compile Include="Core\Create\DeleteManager.cs" />
@@ -160,25 +173,25 @@
     <Compile Include="Core\PermissionManager.cs" />
     <Compile Include="Core\SiteManager.cs" />
     <Compile Include="Core\SiteTemplateManager.cs" />
-    <Compile Include="Core\SmsManager.cs" />
     <Compile Include="Core\SourceManager.cs" />
+    <Compile Include="Core\AccessTokenManager.cs" />
     <Compile Include="Core\SystemManager.cs" />
     <Compile Include="Core\TableColumnManager.cs" />
     <Compile Include="Core\TableMetadataManager.cs" />
     <Compile Include="Core\TableStyleManager.cs" />
     <Compile Include="Core\TabManager.cs" />
     <Compile Include="Core\TagUtils.cs" />
+    <Compile Include="Core\SpecialManager.cs" />
     <Compile Include="Core\TemplateManager.cs" />
     <Compile Include="Core\TemplateTypeUtils.cs" />
     <Compile Include="Core\UEditorUploader.cs" />
     <Compile Include="Core\VisualInfo.cs" />
     <Compile Include="Core\WordSpliter.cs" />
     <Compile Include="Data\DataProviderBase.cs" />
-    <Compile Include="Data\DbHelper.cs" />
+    <Compile Include="Data\DatabaseApi.cs" />
     <Compile Include="Data\MySql.cs" />
     <Compile Include="Data\Oracle.cs" />
     <Compile Include="Data\PostgreSql.cs" />
-    <Compile Include="Data\SqlHelper.cs" />
     <Compile Include="Data\SqlServer.cs" />
     <Compile Include="ImportExport\AtomUtility.cs" />
     <Compile Include="ImportExport\BackupUtility.cs" />
@@ -195,22 +208,22 @@
     <Compile Include="ImportExport\ExportObject.cs" />
     <Compile Include="ImportExport\ImportObject.cs" />
     <Compile Include="Model\AdministratorInfo.cs" />
+    <Compile Include="Model\DbCacheInfo.cs" />
     <Compile Include="Model\AreaInfo.cs" />
-    <Compile Include="Model\BackgroundContentAttribute.cs" />
-    <Compile Include="Model\ChannelAttribute.cs" />
+    <Compile Include="Model\Attributes\BackgroundContentAttribute.cs" />
+    <Compile Include="Model\Attributes\ChannelAttribute.cs" />
     <Compile Include="Model\ChannelGroupInfo.cs" />
     <Compile Include="Model\ChannelInfo.cs" />
-    <Compile Include="Model\ChannelInfoExtend.cs" />
+    <Compile Include="Model\Attributes\ChannelInfoExtend.cs" />
     <Compile Include="Model\ConfigInfo.cs" />
-    <Compile Include="Model\ContentAttribute.cs" />
+    <Compile Include="Model\Attributes\ContentAttribute.cs" />
     <Compile Include="Model\ContentCheckInfo.cs" />
     <Compile Include="Model\ContentGroupInfo.cs" />
     <Compile Include="Model\ContentInfo.cs" />
-    <Compile Include="Model\CountInfo.cs" />
-    <Compile Include="Model\CreateTaskInfo.cs" />
-    <Compile Include="Model\CreateTaskLogInfo.cs" />
-    <Compile Include="Model\CreateTaskSummary.cs" />
-    <Compile Include="Model\CreateTaskSummaryItem.cs" />
+    <Compile Include="Core\Create\CreateTaskInfo.cs" />
+    <Compile Include="Core\Create\CreateTaskLogInfo.cs" />
+    <Compile Include="Core\Create\CreateTaskSummary.cs" />
+    <Compile Include="Core\Create\CreateTaskSummaryItem.cs" />
     <Compile Include="Model\DepartmentInfo.cs" />
     <Compile Include="Model\Enumerations\EAccessControlEntry.cs" />
     <Compile Include="Model\Enumerations\EBackupType.cs" />
@@ -236,33 +249,35 @@
     <Compile Include="Model\Enumerations\ETranslateType.cs" />
     <Compile Include="Model\Enumerations\EWriteBackMethod.cs" />
     <Compile Include="Model\ErrorLogInfo.cs" />
-    <Compile Include="Model\ExtendedAttributes.cs" />
-    <Compile Include="Model\IntegrationPayConfig.cs" />
+    <Compile Include="Model\Attributes\ExtendedAttributes.cs" />
+    <Compile Include="Model\AccessTokenInfo.cs" />
     <Compile Include="Model\KeywordInfo.cs" />
     <Compile Include="Model\LogInfo.cs" />
     <Compile Include="Model\PermissionsInRolesInfo.cs" />
+    <Compile Include="Model\AdministratorsInRolesInfo.cs" />
+    <Compile Include="Model\PluginInfo.cs" />
     <Compile Include="Model\PluginConfigInfo.cs" />
-    <Compile Include="Model\RelatedFieldlInfo.cs" />
-    <Compile Include="Model\RelatedFieldlItemInfo.cs" />
-    <Compile Include="Model\SiteAttribute.cs" />
+    <Compile Include="Model\RelatedFieldInfo.cs" />
+    <Compile Include="Model\RelatedFieldItemInfo.cs" />
+    <Compile Include="Model\Attributes\SiteAttribute.cs" />
+    <Compile Include="Model\RecordInfo.cs" />
     <Compile Include="Model\SiteInfo.cs" />
-    <Compile Include="Model\SiteInfoExtend.cs" />
+    <Compile Include="Model\Attributes\SiteInfoExtend.cs" />
     <Compile Include="Model\SiteLogInfo.cs" />
-    <Compile Include="Model\SitePageInfo.cs" />
     <Compile Include="Model\SitePermissionsInfo.cs" />
-    <Compile Include="Model\SiteTemplateInfo.cs" />
-    <Compile Include="Model\SystemConfigInfo.cs" />
-    <Compile Include="Model\TableColumnInfo.cs" />
+    <Compile Include="Core\SiteTemplateInfo.cs" />
+    <Compile Include="Model\Attributes\SystemConfigInfo.cs" />
     <Compile Include="Model\TableInfo.cs" />
-    <Compile Include="Model\TableMatchInfo.cs" />
     <Compile Include="Model\TableMetadataInfo.cs" />
     <Compile Include="Model\TableStyleInfo.cs" />
-    <Compile Include="Model\TableStyleInfoExtend.cs" />
+    <Compile Include="Model\Attributes\TableStyleInfoExtend.cs" />
     <Compile Include="Model\TableStyleItemInfo.cs" />
     <Compile Include="Model\TagInfo.cs" />
+    <Compile Include="Model\SpecialInfo.cs" />
     <Compile Include="Model\TemplateInfo.cs" />
     <Compile Include="Model\TemplateLogInfo.cs" />
     <Compile Include="Model\TemplateMatchInfo.cs" />
+    <Compile Include="Model\RoleInfo.cs" />
     <Compile Include="Model\UserInfo.cs" />
     <Compile Include="Model\UserLogInfo.cs" />
     <Compile Include="Packaging\PackageMetadata.cs" />
@@ -273,16 +288,17 @@
     <Compile Include="Plugin\Apis\ChannelApi.cs" />
     <Compile Include="Plugin\Apis\ConfigApi.cs" />
     <Compile Include="Plugin\Apis\ContentApi.cs" />
-    <Compile Include="Plugin\Apis\FilesApi.cs" />
+    <Compile Include="Plugin\Apis\UtilsApi.cs" />
     <Compile Include="Plugin\Apis\PluginApi.cs" />
     <Compile Include="Plugin\Apis\ParseApi.cs" />
     <Compile Include="Plugin\Apis\SiteApi.cs" />
     <Compile Include="Plugin\Apis\UserApi.cs" />
-    <Compile Include="Plugin\Model\PluginApiCollection.cs" />
-    <Compile Include="Plugin\Model\PluginEnvironment.cs" />
-    <Compile Include="Plugin\Model\PluginInfo.cs" />
-    <Compile Include="Plugin\Model\PluginParseContext.cs" />
-    <Compile Include="Plugin\Model\PluginService.cs" />
+    <Compile Include="Plugin\Model\ApiCollectionImpl.cs" />
+    <Compile Include="Plugin\Model\EnvironmentImpl.cs" />
+    <Compile Include="Plugin\Model\PluginInstance.cs" />
+    <Compile Include="Plugin\Model\ContentContextImpl.cs" />
+    <Compile Include="Plugin\Model\ParseContextImpl.cs" />
+    <Compile Include="Plugin\Model\ServiceImpl.cs" />
     <Compile Include="Plugin\AuthRequest.cs" />
     <Compile Include="Plugin\PluginContentManager.cs" />
     <Compile Include="Plugin\PluginContentTableManager.cs" />
@@ -290,6 +306,7 @@
     <Compile Include="Plugin\PluginDebugger.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Plugin\PluginMenuManager.cs" />
+    <Compile Include="Plugin\PluginJobManager.cs" />
     <Compile Include="Plugin\PluginStlParserManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\AdministratorDao.cs" />
@@ -301,7 +318,6 @@
     <Compile Include="Provider\ContentCheckDao.cs" />
     <Compile Include="Provider\ContentDao.cs" />
     <Compile Include="Provider\ContentGroupDao.cs" />
-    <Compile Include="Provider\CountDao.cs" />
     <Compile Include="Provider\DatabaseDao.cs" />
     <Compile Include="Provider\DbCacheDao.cs" />
     <Compile Include="Provider\DepartmentDao.cs" />
@@ -318,12 +334,13 @@
     <Compile Include="Provider\SiteDao.cs" />
     <Compile Include="Provider\SiteLogDao.cs" />
     <Compile Include="Provider\SitePermissionsDao.cs" />
+    <Compile Include="Provider\AccessTokenDao.cs" />
     <Compile Include="Provider\TableDao.cs" />
-    <Compile Include="Provider\TableMatchDao.cs" />
     <Compile Include="Provider\TableMetadataDao.cs" />
     <Compile Include="Provider\TableStyleDao.cs" />
     <Compile Include="Provider\TableStyleItemDao.cs" />
     <Compile Include="Provider\TagDao.cs" />
+    <Compile Include="Provider\SpecialDao.cs" />
     <Compile Include="Provider\TemplateDao.cs" />
     <Compile Include="Provider\TemplateLogDao.cs" />
     <Compile Include="Provider\TemplateMatchDao.cs" />
@@ -357,6 +374,7 @@
     <Compile Include="StlParser\Model\StlAll.cs" />
     <Compile Include="StlParser\Model\Attr.cs" />
     <Compile Include="StlParser\Model\AttrEnum.cs" />
+    <Compile Include="StlParser\Model\StlElementInfo.cs" />
     <Compile Include="StlParser\Model\StlListBase.cs" />
     <Compile Include="StlParser\Model\StlFieldAttribute.cs" />
     <Compile Include="StlParser\Model\StlClassAttribute.cs" />
@@ -372,7 +390,6 @@
     <Compile Include="StlParser\StlElement\StlContainer.cs" />
     <Compile Include="StlParser\StlElement\StlContent.cs" />
     <Compile Include="StlParser\StlElement\StlContents.cs" />
-    <Compile Include="StlParser\StlElement\StlCode.cs" />
     <Compile Include="StlParser\StlElement\StlCount.cs" />
     <Compile Include="StlParser\StlElement\StlDynamic.cs" />
     <Compile Include="StlParser\StlElement\StlEach.cs" />
@@ -403,7 +420,6 @@
     <Compile Include="StlParser\StlElement\StlSites.cs" />
     <Compile Include="StlParser\StlElement\StlSqlContent.cs" />
     <Compile Include="StlParser\StlElement\StlSqlContents.cs" />
-    <Compile Include="StlParser\StlElement\StlTabs.cs" />
     <Compile Include="StlParser\StlElement\StlTags.cs" />
     <Compile Include="StlParser\StlElement\StlTree.cs" />
     <Compile Include="StlParser\StlElement\StlValue.cs" />
@@ -424,8 +440,6 @@
     <Compile Include="StlParser\Utility\SeparatorTemplate.cs" />
     <Compile Include="StlParser\Utility\StlAjaxLoading.cs" />
     <Compile Include="StlParser\Utility\StlDataUtility.cs" />
-    <Compile Include="StlParser\Utility\StlHtmlUtility.cs" />
-    <Compile Include="StlParser\Utility\StlInnerUtility.cs" />
     <Compile Include="StlParser\Utility\StlParserManager.cs" />
     <Compile Include="StlParser\Utility\StlParserUtility.cs" />
     <Compile Include="StlParser\Utility\StlScriptUtility.cs" />
@@ -455,6 +469,6 @@
     <PropertyGroup>
       <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.6.1\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.6.1\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.7.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.7.0\build\Microsoft.Net.Compilers.props'))" />
   </Target>
 </Project>

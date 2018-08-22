@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -13,40 +14,40 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_ErrorLog";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ErrorLogInfo.Id),
+                AttributeName = nameof(ErrorLogInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ErrorLogInfo.PluginId),
+                AttributeName = nameof(ErrorLogInfo.PluginId),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ErrorLogInfo.Message),
+                AttributeName = nameof(ErrorLogInfo.Message),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ErrorLogInfo.Stacktrace),
+                AttributeName = nameof(ErrorLogInfo.Stacktrace),
                 DataType = DataType.Text
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ErrorLogInfo.Summary),
+                AttributeName = nameof(ErrorLogInfo.Summary),
                 DataType = DataType.Text
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ErrorLogInfo.AddDate),
+                AttributeName = nameof(ErrorLogInfo.AddDate),
                 DataType = DataType.DateTime
             }
         };
@@ -83,10 +84,14 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString);
         }
 
-        public void Delete(int days)
+        public void DeleteIfThreshold()
         {
+            if (!ConfigManager.SystemConfigInfo.IsTimeThreshold) return;
+
+            var days = ConfigManager.SystemConfigInfo.TimeThreshold;
             if (days <= 0) return;
-            ExecuteNonQuery($@"DELETE FROM {TableName} WHERE AddDate < '{DateUtils.GetDateAndTimeString(DateTime.Now.AddDays(-days))}'");
+
+            ExecuteNonQuery($@"DELETE FROM {TableName} WHERE AddDate < {SqlUtils.GetComparableDateTime(DateTime.Now.AddDays(-days))}");
         }
 
         public void DeleteAll()

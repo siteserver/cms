@@ -40,18 +40,9 @@ namespace SiteServer.BackgroundPages.Plugins
             _pluginId = AuthRequest.GetQueryString("pluginId");
             _returnUrl = AuthRequest.GetQueryString("returnUrl");
 
-            if (AuthRequest.IsQueryExists("install"))
-            {
-                PageUtils.Redirect(PageInstall.GetRedirectUrl(false, _pluginId));
-            }
-            else if (AuthRequest.IsQueryExists("update"))
-            {
-                PageUtils.Redirect(PageInstall.GetRedirectUrl(true, _pluginId));
-            }
-
             if (Page.IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.PluginsPermissions.Add, ConfigManager.PluginsPermissions.Management);
+            VerifySystemPermissions(ConfigManager.PluginsPermissions.Add, ConfigManager.PluginsPermissions.Management);
         }
 
         public void Return_Click(object sender, EventArgs e)

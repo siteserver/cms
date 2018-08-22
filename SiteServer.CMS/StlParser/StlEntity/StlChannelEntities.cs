@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -12,27 +11,23 @@ using SiteServer.Plugin;
 namespace SiteServer.CMS.StlParser.StlEntity
 {
     [StlClass(Usage = "栏目实体", Description = "通过 {channel.} 实体在模板中显示栏目值")]
-    public class StlChannelEntities
+    public static class StlChannelEntities
 	{
-        private StlChannelEntities()
-		{
-		}
-
         public const string EntityName = "channel";
 
-        public const string ChannelId = "ChannelID";
-        public const string ChannelName = "ChannelName";
-        public const string ChannelIndex = "ChannelIndex";
-		public const string Title = "Title";
-        public const string Content = "Content";
-        public const string NavigationUrl = "NavigationUrl";
-        public const string ImageUrl = "ImageUrl";
-        public const string AddDate = "AddDate";
-        public const string DirectoryName = "DirectoryName";
-        public const string Group = "Group";
-        public const string ItemIndex = "ItemIndex";
+        private const string ChannelId = nameof(ChannelId);
+	    private const string ChannelName = nameof(ChannelName);
+        private const string ChannelIndex = nameof(ChannelIndex);
+        private const string Title = nameof(Title);
+        private const string Content = nameof(Content);
+        private const string NavigationUrl = nameof(NavigationUrl);
+        private const string ImageUrl = nameof(ImageUrl);
+        private const string AddDate = nameof(AddDate);
+        private const string DirectoryName = nameof(DirectoryName);
+        private const string Group = nameof(Group);
+        private const string ItemIndex = nameof(ItemIndex);
 
-	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
 	    {
 	        {ChannelId, "栏目ID"},
 	        {Title, "栏目名称"},
@@ -159,14 +154,13 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     //var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Channel, DataProvider.ChannelDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, nodeInfo.ChannelId));
                     //parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, ",", pageInfo.SiteInfo, ETableStyle.Channel, styleInfo, string.Empty, null, string.Empty, true);
 
-                    var formCollection = nodeInfo.Additional.ToNameValueCollection();
-                    if (formCollection != null && formCollection.Count > 0)
+                    if (nodeInfo.Additional.Count > 0)
                     {
                         var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.ChannelDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, nodeInfo.Id));
                         // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                         if (styleInfo.Id > 0)
                         {
-                            parsedContent = GetValue(attributeName, formCollection, false, styleInfo.DefaultValue); 
+                            parsedContent = GetValue(attributeName, nodeInfo.Additional, false, styleInfo.DefaultValue); 
                             if (!string.IsNullOrEmpty(parsedContent))
                             {
                                 if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
@@ -190,19 +184,15 @@ namespace SiteServer.CMS.StlParser.StlEntity
             return parsedContent;
         }
 
-        private static string GetValue(string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, string defaultValue)
+        private static string GetValue(string attributeName, IAttributes attributes, bool isAddAndNotPostBack, string defaultValue)
         {
-            var value = string.Empty;
-            if (formCollection?[attributeName] != null)
-            {
-                value = formCollection[attributeName];
-            }
-            if (isAddAndNotPostBack && string.IsNullOrEmpty(value))
+            var value = attributes.Get(attributeName);
+            if (isAddAndNotPostBack && value == null)
             {
                 value = defaultValue;
             } 
 
-            return value;
+            return value.ToString();
         }
     }
 }

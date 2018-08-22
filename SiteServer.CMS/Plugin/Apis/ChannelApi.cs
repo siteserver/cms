@@ -19,6 +19,22 @@ namespace SiteServer.CMS.Plugin.Apis
             return ChannelManager.GetChannelInfo(siteId, channelId);
         }
 
+        public int GetChannelId(int siteId, string channelIndex)
+        {
+            if (string.IsNullOrEmpty(channelIndex)) return 0;
+
+            var channelInfoList = ChannelManager.GetChannelInfoList(siteId);
+            foreach (var channelInfo in channelInfoList)
+            {
+                if (channelInfo.IndexName == channelIndex)
+                {
+                    return channelInfo.Id;
+                }
+            }
+
+            return 0;
+        }
+
         public IChannelInfo NewInstance(int siteId)
         {
             return new ChannelInfo
@@ -44,7 +60,7 @@ namespace SiteServer.CMS.Plugin.Apis
             return ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, parentId == 0 ? siteId : parentId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
         }
 
-        public List<int> GetChannelIdList(int siteId, string adminName)
+        public List<int> GetChannelIdListByAdminName(int siteId, string adminName)
         {
             var channelIdList = new List<int>();
             if (string.IsNullOrEmpty(adminName)) return channelIdList;
@@ -89,6 +105,12 @@ namespace SiteServer.CMS.Plugin.Apis
         public void Delete(int siteId, int channelId)
         {
             DataProvider.ChannelDao.Delete(siteId, channelId);
+        }
+
+        public string GetChannelUrl(int siteId, int channelId)
+        {
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            return PageUtility.GetChannelUrl(siteInfo, ChannelManager.GetChannelInfo(siteId, channelId), false);
         }
     }
 }

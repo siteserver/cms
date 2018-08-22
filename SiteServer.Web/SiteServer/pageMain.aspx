@@ -14,6 +14,44 @@
       <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
       <link href="assets/css/ionicons.min.css" rel="stylesheet" type="text/css" />
       <link href="assets/icons/favicon.png" rel="icon" type="image/png">
+      <script src="assets/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+      <script type="text/javascript">
+        if (window.top != self) {
+          window.top.location = self.location;
+        }
+  
+        function redirect(url) {
+          $('#right').src = url;
+        }
+  
+        var isDesktop = $(window).width() > 1010;
+        var contentMargin = isDesktop ? 200 : 0;
+        var isMenuWin = false;
+  
+        function openMenu() {
+          isMenuWin = true;
+          !isDesktop && $('#leftMenu').show();
+        }
+  
+        function closeMenu() {
+          isMenuWin = false;
+          !isDesktop && $('#leftMenu').hide();
+        }
+  
+        function toggleMenu() {
+          if (isDesktop) {
+            contentMargin = contentMargin === 200 ? 0 : 200;
+            onresize();
+          } else {
+            isMenuWin = !isMenuWin;
+            if (isMenuWin) {
+              openMenu();
+            } else {
+              closeMenu();
+            }
+          }
+        }
+      </script>
     </head>
 
     <body class="fixed-left widescreen" style="background-color: #eee">
@@ -26,12 +64,7 @@
                 <img src="assets/icons/logo.png" />
               </a>
             </div>
-            <a href="javascript:;" class="position-fixed" onclick="toggleMenu()" style="margin-top: 10px;margin-left: 30px;">
-              <i class="ion-navicon" style="font-size: 28px;color: #fff;"></i>
-            </a>
-            <ul id="topMenus" class="navigation-menu">
-              <asp:Literal id="LtlTopMenus" runat="server" />
-            </ul>
+            <asp:Literal id="LtlTopMenus" runat="server" />
             <asp:PlaceHolder id="PhSite" runat="server" visible="false">
               <div class="menu-extras">
                 <ul class="nav navbar-nav navbar-right float-right">
@@ -107,7 +140,7 @@
 
     </html>
 
-    <script src="assets/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+    
     <script src="assets/signalR/jquery.signalR-2.2.2.min.js" type="text/javascript"></script>
     <script src="assets/layer/layer.min.js" type="text/javascript"></script>
     <script src="<%=SignalrHubsUrl%>" type="text/javascript"></script>
@@ -117,10 +150,6 @@
     <script src="assets/js/compareversion.js"></script>
 
     <script type="text/javascript">
-      if (window.top != self) {
-        window.top.location = self.location;
-      }
-
       var siteId = <%=SiteId%>;
       var create = $.connection.createHub;
 
@@ -137,14 +166,6 @@
       $.connection.hub.start().done(function () {
         create.server.execute(siteId);
       });
-
-      function redirect(url) {
-        $('#right').src = url;
-      }
-
-      var isDesktop = $(window).width() > 1010;
-      var contentMargin = isDesktop ? 200 : 0;
-      var isMenuWin = false;
 
       window.onresize = function (event) {
         isDesktop = $(window).width() > 1010;
@@ -169,30 +190,6 @@
         }
       };
 
-      function openMenu() {
-        isMenuWin = true;
-        !isDesktop && $('#leftMenu').show();
-      }
-
-      function closeMenu() {
-        isMenuWin = false;
-        !isDesktop && $('#leftMenu').hide();
-      }
-
-      function toggleMenu() {
-        if (isDesktop) {
-          contentMargin = contentMargin === 200 ? 0 : 200;
-          onresize();
-        } else {
-          isMenuWin = !isMenuWin;
-          if (isMenuWin) {
-            openMenu();
-          } else {
-            closeMenu();
-          }
-        }
-      }
-
       var ssApi = new apiUtils.Api();
       var downloadApi = new apiUtils.Api('<%=DownloadApiUrl%>');
       var isNightly = <%=IsNightly%>;
@@ -207,8 +204,6 @@
       var updatePackages = 0;
 
       function packageUpdates() {
-        if ('<%=CurrentVersion%>' == '0.0.0-dev') return;
-
         ssApi.get({
           isNightly: isNightly,
           version: version,
@@ -294,6 +289,8 @@
           color: '#dcdcdc',
           wheelStep: 5
         });
+
+        if ('<%=IsConsoleAdministrator%>' === 'False' || '<%=CurrentVersion%>' === '0.0.0-dev') return;
 
         packageUpdates();
       });

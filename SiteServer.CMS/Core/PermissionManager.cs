@@ -350,7 +350,7 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public bool HasAdministratorPermissions(params string[] permissionArray)
+        public bool HasSystemPermissions(params string[] permissionArray)
         {
             if (IsSystemAdministrator)
             {

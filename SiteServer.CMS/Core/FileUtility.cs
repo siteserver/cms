@@ -2,17 +2,14 @@ using System;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using System.Collections.Generic;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils.Enumerations;
 using SiteServer.Utils.Images;
 
 namespace SiteServer.CMS.Core
 {
-    public class FileUtility
+    public static class FileUtility
     {
-        private FileUtility()
-        {
-        }
-
         public static void AddWaterMark(SiteInfo siteInfo, string imagePath)
         {
             try

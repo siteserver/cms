@@ -275,8 +275,8 @@ namespace SiteServer.BackgroundPages.Cms
 		            $"添加{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
 		            $"模板名称:{templateInfo.TemplateName}");
 		        SuccessMessage("模板添加成功！");
-		        AddWaitAndRedirectScript(PageTemplate.GetRedirectUrl(SiteId));
-		    }
+		        AddWaitAndRedirectScript(PageTemplate.GetRedirectUrl(SiteId, _templateType));
+            }
 		}
 
         public void Return_OnClick(object sender, EventArgs e)

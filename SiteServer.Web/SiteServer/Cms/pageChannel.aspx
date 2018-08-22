@@ -13,24 +13,28 @@
         <ctrl:alerts runat="server" />
 
         <div class="card-box">
-          <div class="m-t-0 header-title">
-            栏目管理
-          </div>
-          <p class="text-muted font-13 m-b-25"></p>
 
-          <div class="panel panel-default">
+          <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group">
+              <asp:Literal id="LtlButtonsHead" runat="server" />
+            </div>
+          </div>
+
+          <div class="panel panel-default m-t-20 m-b-20">
             <div class="panel-body p-0">
               <div class="table-responsive">
-                <table class="tablesaw table table-hover m-b-0 tablesaw-stack">
+                <table id="channels" class="table-tree tablesaw table table-hover m-b-0 tablesaw-stack">
                   <thead>
-                    <tr>
+                    <tr class="thead">
                       <th>栏目名</th>
-                      <th class"text-nowrap">所属栏目组</th>
+                      <th class "text-nowrap">所属栏目组</th>
                       <th class="text-nowrap">栏目索引</th>
                       <th width="60">上升</th>
                       <th width="60">下降</th>
                       <th width="60">&nbsp;</th>
-                      <th width="20"></th>
+                      <th width="20">
+                        <input type="checkbox" onClick="activeRows(document.getElementById('channels'), this.checked);">
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -45,28 +49,11 @@
             </div>
           </div>
 
-          <hr />
-
-          <asp:PlaceHolder id="PhAddChannel" runat="server">
-            <asp:Button class="btn m-r-5" id="BtnAddChannel1" Text="快速添加" runat="server" />
-            <asp:Button class="btn m-r-5" id="BtnAddChannel2" Text="添加栏目" runat="server" />
-          </asp:PlaceHolder>
-          <asp:PlaceHolder id="PhChannelEdit" runat="server">
-            <asp:Button class="btn m-r-5" id="BtnAddToGroup" Text="设置栏目组" runat="server" />
-          </asp:PlaceHolder>
-          <asp:PlaceHolder id="PhTranslate" runat="server">
-            <asp:Button class="btn m-r-5" id="BtnTranslate" Text="转 移" runat="server" />
-          </asp:PlaceHolder>
-          <asp:PlaceHolder id="PhImport" runat="server">
-            <asp:Button class="btn m-r-5" id="BtnImport" Text="导 入" runat="server" />
-          </asp:PlaceHolder>
-          <asp:Button class="btn m-r-5" id="BtnExport" Text="导 出" runat="server" />
-          <asp:PlaceHolder id="PhDelete" runat="server">
-            <asp:Button class="btn m-r-5" id="BtnDelete" Text="删 除" runat="server" />
-          </asp:PlaceHolder>
-          <asp:PlaceHolder id="PhCreate" runat="server">
-            <asp:Button class="btn m-r-5" id="BtnCreate" Text="生 成" runat="server" />
-          </asp:PlaceHolder>
+          <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group">
+              <asp:Literal id="LtlButtonsFoot" runat="server" />
+            </div>
+          </div>
 
         </div>
 
@@ -75,3 +62,46 @@
 
     </html>
     <!--#include file="../inc/foot.html"-->
+    <script type="text/javascript">
+      function activeRow(e) {
+        var tr = $(e);
+        var cb = tr.find('input:checkbox:first');
+        var checked = cb.is(':checked');
+        cb[0].checked = !checked;
+        checked ? tr.removeClass('table-active') : tr.addClass('table-active');
+      }
+
+      function activeRows(layer, bcheck) {
+        for (var i = 0; i < layer.childNodes.length; i++) {
+          if (layer.childNodes[i].childNodes.length > 0) {
+            activeRows(layer.childNodes[i], bcheck);
+          } else {
+            if (layer.childNodes[i].type == "checkbox") {
+              layer.childNodes[i].checked = bcheck;
+              var cb = $(layer.childNodes[i]);
+              var tr = cb.closest('tr');
+              if (!tr.hasClass("thead")) {
+                cb.is(':checked') ? tr.addClass('table-active') : tr.removeClass('table-active');
+              }
+            }
+          }
+        }
+      }
+
+      function checkboxClick(e) {
+        event.stopPropagation();
+        var cb = $(e);
+        var checked = cb.is(':checked');
+        var tr = cb.parent().parent();
+        checked ?  tr.addClass('table-active') : tr.removeClass('table-active');
+        return true;
+      }
+
+      function cancelSelectRow(e) {
+        var tr = $(e);
+        var cb = tr.find('input:checkbox:first');
+        var checked = cb.is(':checked');
+        cb[0].checked = false;
+        tr.removeClass('table-active');
+      }
+    </script>

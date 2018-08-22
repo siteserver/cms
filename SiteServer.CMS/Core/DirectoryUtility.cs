@@ -5,13 +5,8 @@ using System.Collections;
 
 namespace SiteServer.CMS.Core
 {
-    public class DirectoryUtility
+    public static class DirectoryUtility
     {
-        public static string GetIndexesDirectoryPath(string siteFilesDirectoryPath)
-        {
-            return PathUtils.Combine(siteFilesDirectoryPath, "Indexes");
-        }
-
         public static void ChangeSiteDir(string parentPsPath, string oldPsDir, string newPsDir)
         {
             var oldPsPath = PathUtils.Combine(parentPsPath, oldPsDir);

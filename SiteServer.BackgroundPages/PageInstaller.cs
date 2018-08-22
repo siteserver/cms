@@ -54,6 +54,8 @@ namespace SiteServer.BackgroundPages
 
 	    protected override bool IsAccessable => true;
 
+	    protected override bool IsInstallerPage => true;
+
 	    public static string GetRedirectUrl()
 	    {
 	        return PageUtils.GetSiteServerUrl("installer/default", null);
@@ -350,8 +352,6 @@ Disallow: /SiteFiles/");
 
             try
             {
-                //var errorBuilder = new StringBuilder();
-                //DataProvider.DatabaseDao.Install(errorBuilder);
                 SystemManager.InstallDatabase(TbAdminName.Text, TbAdminPassword.Text);
                 
                 return true;
@@ -376,6 +376,8 @@ Disallow: /SiteFiles/");
                 var connectionString = GetConnectionString(true);
 
                 WebConfigUtils.UpdateWebConfig(isProtectData, databaseType, connectionString, "SiteServer", StringUtils.GetShortGuid(), false);
+
+                DataProvider.Reset();
 
                 returnValue = true;
             }

@@ -53,18 +53,6 @@
             </div>
           </div>
 
-          <hr />
-
-          <div class="form-group form-row">
-            <label class="col-sm-2 col-form-label">删除全部文件页</label>
-            <div class="col-sm-4">
-              <asp:Button class="btn" id="BtnDeleteAll" text="删 除" onclick="BtnDeleteAll_OnClick" runat="server" />
-            </div>
-            <div class="col-sm-6">
-
-            </div>
-          </div>
-
         </div>
 
       </form>

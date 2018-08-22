@@ -68,7 +68,6 @@
                       <th>内容标题(点击查看) </th>
                       <th class="text-nowrap">栏目 </th>
                       <asp:Literal id="LtlColumnsHead" runat="server"></asp:Literal>
-                      <th class="text-center text-nowrap" width="100">操作</th>
                       <th class="text-center text-nowrap" width="100">状态</th>
                       <th width="20" class="text-center text-nowrap">
                         <input type="checkbox" onClick="selectRows(document.getElementById('contents'), this.checked);">
@@ -86,9 +85,6 @@
                             <asp:Literal ID="ltlChannel" runat="server"></asp:Literal>
                           </td>
                           <asp:Literal ID="ltlColumns" runat="server"></asp:Literal>
-                          <td class="text-center text-nowrap">
-                            <asp:Literal ID="ltlCommands" runat="server"></asp:Literal>
-                          </td>
                           <td class="text-center text-nowrap">
                             <asp:Literal ID="ltlStatus" runat="server"></asp:Literal>
                           </td>
@@ -109,12 +105,16 @@
 
           <hr />
 
-          <asp:Button class="btn m-r-5" id="BtnAddContent" OnClick="AddContent_OnClick" Text="添加信息" runat="server" />
           <asp:Button class="btn m-r-5" id="BtnSelect" Text="选择显示项" runat="server" />
           <asp:Button class="btn m-r-5" id="BtnAddToGroup" Text="添加到内容组" runat="server" />
           <asp:Button class="btn m-r-5" id="BtnTranslate" Text="转 移" runat="server" />
           <asp:PlaceHolder ID="PhCheck" runat="server">
             <asp:Button class="btn m-r-5" id="BtnCheck" Text="审 核" runat="server" />
+          </asp:PlaceHolder>
+          <asp:PlaceHolder id="PhTrash" runat="server" visible="false">
+            <asp:Button class="btn m-r-5 btn-success" id="BtnRestore" Text="还 原" runat="server" />
+            <asp:Button class="btn m-r-5" id="BtnRestoreAll" Text="全部还原" runat="server" />
+            <asp:Button class="btn m-r-5" id="BtnDeleteAll" Text="清空回收站" runat="server" />
           </asp:PlaceHolder>
           <asp:Button class="btn m-r-5" id="BtnDelete" Text="删 除" runat="server" />
 

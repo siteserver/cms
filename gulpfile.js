@@ -79,7 +79,7 @@ gulp.task("build-siteserver-all", function() {
 
 gulp.task("build-siteserver-aspx", function() {
   return gulp
-      .src("./SiteServer.Web/SiteServer/**/*.aspx")
+      .src(["./SiteServer.Web/SiteServer/**/*.html", "./SiteServer.Web/SiteServer/**/*.aspx", "./SiteServer.Web/SiteServer/**/*.cshtml"])
       .pipe(replace('.css"', ".css?v=" + version + '"'))
       .pipe(replace('.js"', ".js?v=" + version + '"'))
       .pipe(gulp.dest("./build/SiteServer"));
@@ -103,7 +103,7 @@ gulp.task("build-siteserver-min", function() {
 });
 
 gulp.task("build-docs", function() {
-  return gulp.src("./SiteServer.Web/安装向导.html").pipe(gulp.dest("./build"));
+  return gulp.src(["./SiteServer.Web/安装向导.html", "./SiteServer.Web/favicon.ico"]).pipe(gulp.dest("./build"));
 });
 
 gulp.task("build-webconfig", function() {
@@ -113,23 +113,7 @@ gulp.task("build-webconfig", function() {
     .pipe(gulp.dest("./build"));
 });
 
-gulp.task("release", function(callback) {
-  console.log("build version: " + version);
-  runSequence(
-    "build-docs",
-    "build-webconfig",
-    "build-nuspec",
-    "build-bin",
-    "build-sitefiles-all",
-    "build-sitefiles-min",
-    "build-siteserver-all",
-    "build-siteserver-aspx",
-    "build-siteserver-min"
-  );
-});
-
-gulp.task("preview", function(callback) {
-  version += "-beta";
+gulp.task("build", function(callback) {
   console.log("build version: " + version);
   runSequence(
     "build-docs",

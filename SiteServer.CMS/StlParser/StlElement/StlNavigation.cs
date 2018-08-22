@@ -43,7 +43,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var wordNum = 0;
             var isKeyboard = false;
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
 
@@ -82,7 +82,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             string successTemplateString;
             string failureTemplateString;
-            StlInnerUtility.GetYesNo(contextInfo.InnerXml, out successTemplateString, out failureTemplateString);
+            StlParserUtility.GetYesNo(contextInfo.InnerHtml, out successTemplateString, out failureTemplateString);
 
             if (string.IsNullOrEmpty(successTemplateString))
             {
@@ -104,7 +104,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         stlAnchor.HRef = url;
 
-                        if (string.IsNullOrEmpty(contextInfo.InnerXml))
+                        if (string.IsNullOrEmpty(contextInfo.InnerHtml))
                         {
                             stlAnchor.InnerHtml = ChannelManager.GetChannelName(pageInfo.SiteId, siblingChannelId);
                             if (wordNum > 0)
@@ -115,7 +115,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         else
                         {
                             contextInfo.ChannelId = siblingChannelId;
-                            var innerBuilder = new StringBuilder(contextInfo.InnerXml);
+                            var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
                             stlAnchor.InnerHtml = innerBuilder.ToString();
                         }
@@ -157,7 +157,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 pageInfo.BodyCodes[nextOrPrevious] = scriptContent.ToString();
                             }
 
-                            if (string.IsNullOrEmpty(contextInfo.InnerXml))
+                            if (string.IsNullOrEmpty(contextInfo.InnerHtml))
                             {
                                 stlAnchor.InnerHtml = siblingContentInfo.Title;
                                 if (wordNum > 0)
@@ -167,7 +167,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             }
                             else
                             {
-                                var innerBuilder = new StringBuilder(contextInfo.InnerXml);
+                                var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                                 contextInfo.ContentId = siblingContentId;
                                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
                                 stlAnchor.InnerHtml = innerBuilder.ToString();

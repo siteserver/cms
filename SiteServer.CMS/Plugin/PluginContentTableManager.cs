@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
-using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
+using TableColumn = SiteServer.Plugin.TableColumn;
 
 namespace SiteServer.CMS.Plugin
 {
-    public class PluginContentTableManager
+    public static class PluginContentTableManager
     {
-        public static bool IsContentTable(PluginService service)
+        public static bool IsContentTable(ServiceImpl service)
         {
             return !string.IsNullOrEmpty(service.ContentTableName) &&
                                      service.ContentTableColumns != null && service.ContentTableColumns.Count > 0;
@@ -29,7 +30,7 @@ namespace SiteServer.CMS.Plugin
             return string.Empty;
         }
 
-        public static void SyncContentTable(PluginService service)
+        public static void SyncContentTable(ServiceImpl service)
         {
             if (!IsContentTable(service)) return;
 
@@ -222,7 +223,7 @@ namespace SiteServer.CMS.Plugin
                 if (!(styleInfo.StyleItems == null && inputStyle.ListItems == null))
                 {
                     var styleItems = styleInfo.StyleItems ?? new List<TableStyleItemInfo>();
-                    var listItems = inputStyle.ListItems ?? new List<ListItem>();
+                    var listItems = inputStyle.ListItems ?? new List<InputListItem>();
 
                     if (styleItems.Count > listItems.Count)
                     {

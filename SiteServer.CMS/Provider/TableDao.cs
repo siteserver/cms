@@ -4,6 +4,7 @@ using System.Data;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -13,53 +14,53 @@ namespace SiteServer.CMS.Provider
 	{
         public override string TableName => "siteserver_Table";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableInfo.Id),
+                AttributeName = nameof(TableInfo.Id),
                 DataType = DataType.Integer,
                 IsPrimaryKey = true,
                 IsIdentity = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableInfo.TableName),
+                AttributeName = nameof(TableInfo.TableName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableInfo.DisplayName),
+                AttributeName = nameof(TableInfo.DisplayName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableInfo.AttributeNum),
+                AttributeName = nameof(TableInfo.AttributeNum),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableInfo.IsCreatedInDb),
+                AttributeName = nameof(TableInfo.IsCreatedInDb),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableInfo.IsChangedAfterCreatedInDb),
+                AttributeName = nameof(TableInfo.IsChangedAfterCreatedInDb),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableInfo.IsDefault),
+                AttributeName = nameof(TableInfo.IsDefault),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(TableInfo.Description),
+                AttributeName = nameof(TableInfo.Description),
                 DataType = DataType.Text   
             }
         };
@@ -354,7 +355,7 @@ namespace SiteServer.CMS.Provider
         public void SyncDbTable(string tableName)
         {
             var metadataInfoList = TableMetadataManager.GetTableMetadataInfoList(tableName);
-            var columnInfolist = TableColumnManager.GetTableColumnInfoListLowercase(tableName, ContentAttribute.AllAttributesLowercase);
+            var columnInfolist = TableColumnManager.GetTableColumnInfoList(tableName, ContentAttribute.AllAttributesLowercase);
 
             var sqlList = new List<string>();
 
@@ -364,11 +365,11 @@ namespace SiteServer.CMS.Provider
                 var columnExists = false;
                 foreach (var columnInfo in columnInfolist)
                 {
-                    if (!StringUtils.EqualsIgnoreCase(columnInfo.ColumnName, metadataInfo.AttributeName)) continue;
+                    if (!StringUtils.EqualsIgnoreCase(columnInfo.AttributeName, metadataInfo.AttributeName)) continue;
 
                     columnExists = true;
 
-                    if (metadataInfo.DataType != columnInfo.DataType || metadataInfo.DataType == DataType.VarChar && metadataInfo.DataLength != columnInfo.Length)
+                    if (metadataInfo.DataType != columnInfo.DataType)
                     {
                         var dropColumnsSqlList = DataProvider.DatabaseDao.GetDropColumnsSqlString(tableName, metadataInfo.AttributeName);
                         foreach (var sql in dropColumnsSqlList)
@@ -399,7 +400,7 @@ namespace SiteServer.CMS.Provider
                 var isNeedDelete = true;
                 foreach (var metadataInfo in metadataInfoList)
                 {
-                    if (StringUtils.EqualsIgnoreCase(columnInfo.ColumnName, metadataInfo.AttributeName))
+                    if (StringUtils.EqualsIgnoreCase(columnInfo.AttributeName, metadataInfo.AttributeName))
                     {
                         isNeedDelete = false;
                         break;
@@ -407,7 +408,7 @@ namespace SiteServer.CMS.Provider
                 }
                 if (isNeedDelete)
                 {
-                    var dropColumnsSqlList = DataProvider.DatabaseDao.GetDropColumnsSqlString(tableName, columnInfo.ColumnName);
+                    var dropColumnsSqlList = DataProvider.DatabaseDao.GetDropColumnsSqlString(tableName, columnInfo.AttributeName);
                     foreach (var sql in dropColumnsSqlList)
                     {
                         sqlList.Add(sql);

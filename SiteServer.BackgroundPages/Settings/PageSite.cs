@@ -39,11 +39,11 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
+            VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
             _hqSiteId = DataProvider.SiteDao.GetIdByIsRoot();
 
-            RptContents.DataSource = SiteManager.GetSiteIdList();
+            RptContents.DataSource = SiteManager.GetSiteIdListOrderByLevel();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }
@@ -62,7 +62,6 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlSave = (Literal)e.Item.FindControl("ltlSave");
             var ltlEdit = (Literal)e.Item.FindControl("ltlEdit");
             var ltlChangeType = (Literal)e.Item.FindControl("ltlChangeType");
-            var ltlReplace = (Literal)e.Item.FindControl("ltlReplace");
             var ltlDelete = (Literal)e.Item.FindControl("ltlDelete");
             var ltlUpLink = (Literal)e.Item.FindControl("ltlUpLink");
             var ltlDownLink = (Literal)e.Item.FindControl("ltlDownLink");
@@ -74,8 +73,6 @@ namespace SiteServer.BackgroundPages.Settings
             ltlSave.Text = $@"<a href=""{PageSiteSave.GetRedirectUrl(siteId)}"">保存</a>";
 
             ltlEdit.Text = $@"<a href=""{PageSiteEdit.GetRedirectUrl(siteId)}"">修改</a>";
-
-            ltlReplace.Text = $@"<a href=""{PageSiteReplace.GetRedirectUrl(siteId)}"">替换</a>";
 
             var upUrl = PageUtils.GetSettingsUrl(nameof(PageSite), new NameValueCollection
             {

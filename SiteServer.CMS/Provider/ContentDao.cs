@@ -2,174 +2,175 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.Linq;
 using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
+using Dapper;
 
 namespace SiteServer.CMS.Provider
 {
     public class ContentDao : DataProviderBase
     {
-        public const int TaxisMaxValue = 2147483647;
-        public const int TaxisIsTopStartValue = 2147480000;
-        public const string SortFieldName = nameof(ContentAttribute.Taxis);
+        private const int TaxisIsTopStartValue = 2000000000;
 
-        public string StlColumns => $"{ContentAttribute.Id}, {ContentAttribute.ChannelId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}, {ContentAttribute.LastEditDate}, {ContentAttribute.Taxis}, {ContentAttribute.Hits}, {ContentAttribute.HitsByDay}, {ContentAttribute.HitsByWeek}, {ContentAttribute.HitsByMonth}";
+        private static string StlColumns { get; } = $"{ContentAttribute.Id}, {ContentAttribute.ChannelId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}, {ContentAttribute.LastEditDate}, {ContentAttribute.Taxis}, {ContentAttribute.Hits}, {ContentAttribute.HitsByDay}, {ContentAttribute.HitsByWeek}, {ContentAttribute.HitsByMonth}";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.Id),
+                AttributeName = nameof(ContentInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.ChannelId),
+                AttributeName = nameof(ContentInfo.ChannelId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.SiteId),
+                AttributeName = nameof(ContentInfo.SiteId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.AddUserName),
+                AttributeName = nameof(ContentInfo.AddUserName),
                 DataType = DataType.VarChar,
-                Length = 255,
+                DataLength = 255,
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.LastEditUserName),
+                AttributeName = nameof(ContentInfo.LastEditUserName),
                 DataType = DataType.VarChar,
-                Length = 255,
+                DataLength = 255,
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.WritingUserName),
+                AttributeName = nameof(ContentInfo.WritingUserName),
                 DataType = DataType.VarChar,
-                Length = 255,
+                DataLength = 255,
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.LastEditDate),
+                AttributeName = nameof(ContentInfo.LastEditDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.Taxis),
+                AttributeName = nameof(ContentInfo.Taxis),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.GroupNameCollection),
+                AttributeName = nameof(ContentInfo.GroupNameCollection),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.Tags),
+                AttributeName = nameof(ContentInfo.Tags),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.SourceId),
+                AttributeName = nameof(ContentInfo.SourceId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.ReferenceId),
+                AttributeName = nameof(ContentInfo.ReferenceId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.IsChecked),
+                AttributeName = nameof(ContentInfo.IsChecked),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.CheckedLevel),
+                AttributeName = nameof(ContentInfo.CheckedLevel),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.Hits),
+                AttributeName = nameof(ContentInfo.Hits),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.HitsByDay),
+                AttributeName = nameof(ContentInfo.HitsByDay),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.HitsByWeek),
+                AttributeName = nameof(ContentInfo.HitsByWeek),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.HitsByMonth),
+                AttributeName = nameof(ContentInfo.HitsByMonth),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.LastHitsDate),
+                AttributeName = nameof(ContentInfo.LastHitsDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.SettingsXml),
+                AttributeName = nameof(ContentInfo.SettingsXml),
                 DataType = DataType.Text
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.Title),
+                AttributeName = nameof(ContentInfo.Title),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.IsTop),
+                AttributeName = nameof(ContentInfo.IsTop),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.IsRecommend),
+                AttributeName = nameof(ContentInfo.IsRecommend),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.IsHot),
+                AttributeName = nameof(ContentInfo.IsHot),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.IsColor),
+                AttributeName = nameof(ContentInfo.IsColor),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.LinkUrl),
+                AttributeName = nameof(ContentInfo.LinkUrl),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentInfo.AddDate),
+                AttributeName = nameof(ContentInfo.AddDate),
                 DataType = DataType.DateTime
             }
         };
@@ -336,7 +337,7 @@ namespace SiteServer.CMS.Provider
             {
                 sqlBuilder.Append($@"
 PRIMARY KEY ({nameof(ContentInfo.Id)})
-)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 GO
 CREATE INDEX `IX_{tableName}` ON `{tableName}`(`{nameof(ContentInfo.IsTop)}` DESC, `{nameof(ContentInfo.Taxis)}` DESC, `{nameof(ContentInfo.Id)}` DESC)
 GO
@@ -358,8 +359,6 @@ GO");
             return sqlBuilder.ToString();
         }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
         public void SetValue(string tableName, int contentId, string name, string value)
         {
             string sqlString = $"UPDATE {tableName} SET {name} = '{value}' WHERE Id = {contentId}";
@@ -369,7 +368,7 @@ GO");
             Content.ClearCache();
         }
 
-        public void UpdateIsChecked(string tableName, int siteId, int channelId, List<int> contentIdList, int translateChannelId, bool isAdmin, string userName, bool isChecked, int checkedLevel, string reasons)
+        public void UpdateIsChecked(string tableName, int siteId, int channelId, List<int> contentIdList, int translateChannelId, string userName, bool isChecked, int checkedLevel, string reasons)
         {
             if (isChecked)
             {
@@ -380,109 +379,24 @@ GO");
 
             foreach (var contentId in contentIdList)
             {
-                var settingsXml = GetValue(tableName, contentId, ContentAttribute.SettingsXml);
-                var attributes = TranslateUtils.ToNameValueCollection(settingsXml);
-                attributes[ContentAttribute.CheckIsAdmin] = isAdmin.ToString();
-                attributes[ContentAttribute.CheckUserName] = userName;
-                attributes[ContentAttribute.CheckCheckDate] = DateUtils.GetDateAndTimeString(checkDate);
-                attributes[ContentAttribute.CheckReasons] = reasons;
+                var json = GetValue(tableName, contentId, ContentAttribute.SettingsXml);
+                var attributes = new ExtendedAttributes(json);
+                attributes.Set(ContentAttribute.CheckUserName, userName);
+                attributes.Set(ContentAttribute.CheckCheckDate, DateUtils.GetDateAndTimeString(checkDate));
+                attributes.Set(ContentAttribute.CheckReasons, reasons);
 
-                string sqlString =
-                    $"UPDATE {tableName} SET IsChecked = '{isChecked}', CheckedLevel = {checkedLevel}, SettingsXML = '{TranslateUtils.NameValueCollectionToString(attributes)}' WHERE Id = {contentId}";
+                var sqlString =
+                    $"UPDATE {tableName} SET {nameof(ContentInfo.IsChecked)} = '{isChecked}', {nameof(ContentInfo.CheckedLevel)} = {checkedLevel}, {nameof(ContentInfo.SettingsXml)} = '{attributes}' WHERE {nameof(ContentInfo.Id)} = {contentId}";
                 if (translateChannelId > 0)
                 {
                     sqlString =
-                        $"UPDATE {tableName} SET IsChecked = '{isChecked}', CheckedLevel = {checkedLevel}, SettingsXML = '{TranslateUtils.NameValueCollectionToString(attributes)}', ChannelId = {translateChannelId} WHERE Id = {contentId}";
+                        $"UPDATE {tableName} SET {nameof(ContentInfo.IsChecked)} = '{isChecked}', {nameof(ContentInfo.CheckedLevel)} = {checkedLevel}, {nameof(ContentInfo.SettingsXml)} = '{attributes}', {nameof(ContentInfo.ChannelId)} = {translateChannelId} WHERE {nameof(ContentInfo.Id)} = {contentId}";
                 }
                 ExecuteNonQuery(sqlString);
 
-                var checkInfo = new ContentCheckInfo(0, tableName, siteId, channelId, contentId, isAdmin, userName, isChecked, checkedLevel, checkDate, reasons);
+                var checkInfo = new ContentCheckInfo(0, tableName, siteId, channelId, contentId, userName, isChecked, checkedLevel, checkDate, reasons);
                 DataProvider.ContentCheckDao.Insert(checkInfo);
             }
-
-            Content.ClearCache();
-        }
-
-        public void AddHits(string tableName, bool isCountHits, bool isCountHitsByDay, int contentId)
-        {
-            if (contentId <= 0 || !isCountHits) return;
-
-            if (isCountHitsByDay)
-            {
-                var referenceId = 0;
-                var hitsByDay = 0;
-                var hitsByWeek = 0;
-                var hitsByMonth = 0;
-                var lastHitsDate = DateTime.Now;
-
-                string sqlString =
-                    $"SELECT ReferenceId, HitsByDay, HitsByWeek, HitsByMonth, LastHitsDate FROM {tableName} WHERE (Id = {contentId})";
-
-                using (var rdr = ExecuteReader(sqlString))
-                {
-                    if (rdr.Read())
-                    {
-                        var i = 0;
-                        referenceId = GetInt(rdr, i++);
-                        hitsByDay = GetInt(rdr, i++);
-                        hitsByWeek = GetInt(rdr, i++);
-                        hitsByMonth = GetInt(rdr, i++);
-                        lastHitsDate = GetDateTime(rdr, i);
-                    }
-                    rdr.Close();
-                }
-
-                if (referenceId > 0)
-                {
-                    contentId = referenceId;
-                }
-
-                var now = DateTime.Now;
-
-                hitsByDay = now.Day != lastHitsDate.Day || now.Month != lastHitsDate.Month || now.Year != lastHitsDate.Year ? 1 : hitsByDay + 1;
-                hitsByWeek = now.Month != lastHitsDate.Month || now.Year != lastHitsDate.Year || now.DayOfYear / 7 != lastHitsDate.DayOfYear / 7 ? 1 : hitsByWeek + 1;
-                hitsByMonth = now.Month != lastHitsDate.Month || now.Year != lastHitsDate.Year ? 1 : hitsByMonth + 1;
-
-                sqlString =
-                    $"UPDATE {tableName} SET {SqlUtils.ToPlusSqlString("Hits")}, HitsByDay = {hitsByDay}, HitsByWeek = {hitsByWeek}, HitsByMonth = {hitsByMonth}, LastHitsDate = '{DateUtils.GetDateAndTimeString(DateTime.Now)}' WHERE Id = {contentId}  AND ReferenceId = 0";
-                ExecuteNonQuery(sqlString);
-            }
-            else
-            {
-                string sqlString =
-                    $"UPDATE {tableName} SET {SqlUtils.ToPlusSqlString("Hits")}, LastHitsDate = '{DateUtils.GetDateAndTimeString(DateTime.Now)}' WHERE Id = {contentId} AND ReferenceId = 0";
-                var count = ExecuteNonQuery(sqlString);
-                if (count < 1)
-                {
-                    var referenceId = 0;
-
-                    sqlString = $"SELECT ReferenceId FROM {tableName} WHERE (Id = {contentId})";
-
-                    using (var rdr = ExecuteReader(sqlString))
-                    {
-                        if (rdr.Read())
-                        {
-                            referenceId = GetInt(rdr, 0);
-                        }
-                        rdr.Close();
-                    }
-
-                    if (referenceId > 0)
-                    {
-                        sqlString =
-                            $"UPDATE {tableName} SET {SqlUtils.ToPlusSqlString("Hits")}, LastHitsDate = '{DateUtils.GetDateAndTimeString(DateTime.Now)}' WHERE Id = {referenceId} AND ReferenceId = 0";
-                        ExecuteNonQuery(sqlString);
-                    }
-                }
-            }
-
-            Content.ClearCache();
-        }
-
-        public void UpdateComments(string tableName, int contentId, int comments)
-        {
-            string sqlString = $"UPDATE {tableName} SET Comments = {comments} WHERE Id = {contentId}";
-            ExecuteNonQuery(sqlString);
 
             Content.ClearCache();
         }
@@ -820,33 +734,33 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             Content.ClearCache();
         }
 
-        public void TrashContents(int siteId, string tableName, List<int> contentIdList, int channelId)
-        {
-            if (string.IsNullOrEmpty(tableName)) return;
+        //public void TrashContents(int siteId, string tableName, List<int> contentIdList, int channelId)
+        //{
+        //    if (string.IsNullOrEmpty(tableName)) return;
 
-            var referenceIdList = GetReferenceIdList(tableName, contentIdList);
-            if (referenceIdList.Count > 0)
-            {
-                DeleteContents(siteId, tableName, referenceIdList);
-            }
-            var updateNum = 0;
+        //    var referenceIdList = GetReferenceIdList(tableName, contentIdList);
+        //    if (referenceIdList.Count > 0)
+        //    {
+        //        DeleteContents(siteId, tableName, referenceIdList);
+        //    }
+        //    var updateNum = 0;
 
-            if (!string.IsNullOrEmpty(tableName) && contentIdList != null && contentIdList.Count > 0)
-            {
-                string sqlString =
-                    $"UPDATE {tableName} SET ChannelId = -ChannelId, LastEditDate = {SqlUtils.GetComparableNow()} WHERE SiteId = {siteId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
-                updateNum = ExecuteNonQuery(sqlString);
-            }
+        //    if (!string.IsNullOrEmpty(tableName) && contentIdList != null && contentIdList.Count > 0)
+        //    {
+        //        string sqlString =
+        //            $"UPDATE {tableName} SET ChannelId = -ChannelId, LastEditDate = {SqlUtils.GetComparableNow()} WHERE SiteId = {siteId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
+        //        updateNum = ExecuteNonQuery(sqlString);
+        //    }
 
-            if (updateNum <= 0) return;
+        //    if (updateNum <= 0) return;
 
-            new Action(() =>
-            {
-                DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(siteId), channelId, true);
-            }).BeginInvoke(null, null);
+        //    new Action(() =>
+        //    {
+        //        DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(siteId), channelId, true);
+        //    }).BeginInvoke(null, null);
 
-            Content.ClearCache();
-        }
+        //    Content.ClearCache();
+        //}
 
         public void TrashContents(int siteId, string tableName, List<int> contentIdList)
         {
@@ -901,6 +815,29 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             new Action(() =>
             {
                 DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(siteId), channelId, true);
+            }).BeginInvoke(null, null);
+
+            Content.ClearCache();
+        }
+
+        public void DeleteContent(string tableName, SiteInfo siteInfo, int channelId, int contentId)
+        {
+            if (string.IsNullOrEmpty(tableName)) return;
+
+            if (!string.IsNullOrEmpty(tableName) && contentId > 0)
+            {
+                TagUtils.RemoveTags(siteInfo.Id, contentId);
+
+                string sqlString =
+                    $"DELETE FROM {tableName} WHERE SiteId = {siteInfo.Id} AND Id = {contentId}";
+                ExecuteNonQuery(sqlString);
+            }
+
+            if (channelId <= 0) return;
+
+            new Action(() =>
+            {
+                DataProvider.ChannelDao.UpdateContentNum(siteInfo, channelId, true);
             }).BeginInvoke(null, null);
 
             Content.ClearCache();
@@ -1145,7 +1082,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             {
                 maxTaxis = TaxisIsTopStartValue;
 
-                string sqlString =
+                var sqlString =
                     $"SELECT MAX(Taxis) FROM {tableName} WHERE ChannelId = {channelId} AND Taxis >= {TaxisIsTopStartValue}";
 
                 using (var conn = GetConnection())
@@ -1160,14 +1097,15 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
                         rdr.Close();
                     }
                 }
-                if (maxTaxis == TaxisMaxValue)
+
+                if (maxTaxis < TaxisIsTopStartValue)
                 {
-                    maxTaxis = TaxisMaxValue - 1;
+                    maxTaxis = TaxisIsTopStartValue;
                 }
             }
             else
             {
-                string sqlString =
+                var sqlString =
                     $"SELECT MAX(Taxis) FROM {tableName} WHERE ChannelId = {channelId} AND Taxis < {TaxisIsTopStartValue}";
                 using (var conn = GetConnection())
                 {
@@ -1201,30 +1139,30 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             SetValue(tableName, contentId, ContentAttribute.GroupNameCollection, TranslateUtils.ObjectCollectionToString(list));
         }       
 
-        public int GetReferenceId(string tableName, int contentId, out string linkUrl)
-        {
-            var referenceId = 0;
-            linkUrl = string.Empty;
-            try
-            {
-                string sqlString = $"SELECT ReferenceId, LinkUrl FROM {tableName} WHERE Id = {contentId}";
+        //public int GetReferenceId(string tableName, int contentId, out string linkUrl)
+        //{
+        //    var referenceId = 0;
+        //    linkUrl = string.Empty;
+        //    try
+        //    {
+        //        string sqlString = $"SELECT ReferenceId, LinkUrl FROM {tableName} WHERE Id = {contentId}";
 
-                using (var rdr = ExecuteReader(sqlString))
-                {
-                    if (rdr.Read())
-                    {
-                        referenceId = GetInt(rdr, 0);
-                        linkUrl = GetString(rdr, 1);
-                    }
-                    rdr.Close();
-                }
-            }
-            catch
-            {
-                // ignored
-            }
-            return referenceId;
-        }
+        //        using (var rdr = ExecuteReader(sqlString))
+        //        {
+        //            if (rdr.Read())
+        //            {
+        //                referenceId = GetInt(rdr, 0);
+        //                linkUrl = GetString(rdr, 1);
+        //            }
+        //            rdr.Close();
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        // ignored
+        //    }
+        //    return referenceId;
+        //}
 
         public List<int> GetReferenceIdList(string tableName, List<int> contentIdList)
         {
@@ -1244,29 +1182,29 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             return list;
         }
 
-        public string GetSqlString(string tableName, int channelId, ETriState checkedState, string userNameOnly)
-        {
-            var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
+        //public string GetSqlString(string tableName, int channelId, ETriState checkedState, string userNameOnly)
+        //{
+        //    var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
 
-            var whereString = new StringBuilder();
-            whereString.Append($"WHERE {nameof(ContentAttribute.ChannelId)} = {channelId} AND {nameof(ContentAttribute.SourceId)} != {SourceManager.Preview} ");
+        //    var whereString = new StringBuilder();
+        //    whereString.Append($"WHERE {nameof(ContentAttribute.ChannelId)} = {channelId} AND {nameof(ContentAttribute.SourceId)} != {SourceManager.Preview} ");
 
-            if (checkedState == ETriState.True)
-            {
-                whereString.Append($"AND IsChecked='{true}' ");
-            }
-            else if (checkedState == ETriState.False)
-            {
-                whereString.Append($"AND IsChecked='{false}'");
-            }
+        //    if (checkedState == ETriState.True)
+        //    {
+        //        whereString.Append($"AND IsChecked='{true}' ");
+        //    }
+        //    else if (checkedState == ETriState.False)
+        //    {
+        //        whereString.Append($"AND IsChecked='{false}'");
+        //    }
 
-            if (!string.IsNullOrEmpty(userNameOnly))
-            {
-                whereString.Append($" AND AddUserName = '{userNameOnly}' ");
-            }
+        //    if (!string.IsNullOrEmpty(userNameOnly))
+        //    {
+        //        whereString.Append($" AND AddUserName = '{userNameOnly}' ");
+        //    }
 
-            return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString(), orderByString);
-        }
+        //    return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString(), orderByString);
+        //}
 
         public string GetSelectCommandByHitsAnalysis(string tableName, int siteId)
         {
@@ -1398,11 +1336,11 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             return contentId;
         }
 
-        public List<string> GetValueList(string tableName, int channelId, string name)
-        {
-            string sqlString = $"SELECT {name} FROM {tableName} WHERE ChannelId = {channelId}";
-            return DataProvider.DatabaseDao.GetStringList(sqlString);
-        }
+        //public List<string> GetValueList(string tableName, int channelId, string name)
+        //{
+        //    string sqlString = $"SELECT {name} FROM {tableName} WHERE ChannelId = {channelId}";
+        //    return DataProvider.DatabaseDao.GetStringList(sqlString);
+        //}
 
         public List<string> GetValueListByStartString(string tableName, int channelId, string name, string startString, int totalNum)
         {
@@ -1513,15 +1451,6 @@ group by tmp.userName";
                 rdr.Close();
             }
             return list;
-        }
-
-        public string GetSelectedCommendByCheck(string tableName, int siteId, List<int> channelIdList, List<int> checkLevelList)
-        {
-            var whereString = channelIdList.Count == 1
-                ? $"WHERE SiteId = {siteId} AND ChannelId = {channelIdList[0]} AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) "
-                : $"WHERE SiteId = {siteId} AND ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) ";
-
-            return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString);
         }
 
         public string GetStlWhereString(int siteId, string group, string groupNot, string tags, bool isTopExists, bool isTop, string where)
@@ -1701,7 +1630,7 @@ group by tmp.userName";
             return GetCountOfContentUpdate(tableName, siteId, channelIdList, begin, end, userName);
         }
 
-        public int GetCountOfContentUpdate(string tableName, int siteId, List<int> channelIdList, DateTime begin, DateTime end, string userName)
+        private int GetCountOfContentUpdate(string tableName, int siteId, List<int> channelIdList, DateTime begin, DateTime end, string userName)
         {
             string sqlString;
             if (string.IsNullOrEmpty(userName))
@@ -1720,9 +1649,8 @@ group by tmp.userName";
             return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
         
-        public string GetWhereStringByStlSearch(bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int siteId, List<string> excludeAttributes, NameValueCollection form, out bool isDefaultCondition)
+        public string GetWhereStringByStlSearch(bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int siteId, List<string> excludeAttributes, NameValueCollection form)
         {
-            isDefaultCondition = true;
             var whereBuilder = new StringBuilder();
 
             SiteInfo siteInfo = null;
@@ -1826,7 +1754,7 @@ group by tmp.userName";
             }
 
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-            var styleInfoList = RelatedIdentities.GetTableStyleInfoList(siteInfo, channelInfo.Id);
+            //var styleInfoList = RelatedIdentities.GetTableStyleInfoList(siteInfo, channelInfo.Id);
 
             foreach (string key in form.Keys)
             {
@@ -1841,23 +1769,18 @@ group by tmp.userName";
                     whereBuilder.Append(" AND ");
                     whereBuilder.Append($"({key} LIKE '%{value}%')");
                 }
-                else
-                {
-                    foreach (var tableStyleInfo in styleInfoList)
-                    {
-                        if (StringUtils.EqualsIgnoreCase(tableStyleInfo.AttributeName, key))
-                        {
-                            whereBuilder.Append(" AND ");
-                            whereBuilder.Append($"({ContentAttribute.SettingsXml} LIKE '%{key}={value}%')");
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (whereBuilder.ToString().Contains(" AND "))
-            {
-                isDefaultCondition = false;
+                //else
+                //{
+                //    foreach (var tableStyleInfo in styleInfoList)
+                //    {
+                //        if (StringUtils.EqualsIgnoreCase(tableStyleInfo.AttributeName, key))
+                //        {
+                //            whereBuilder.Append(" AND ");
+                //            whereBuilder.Append($"({ContentAttribute.SettingsXml} LIKE '%{key}={value}%')");
+                //            break;
+                //        }
+                //    }
+                //}
             }
 
             return whereBuilder.ToString();
@@ -1888,29 +1811,29 @@ group by tmp.userName";
             return GetSqlStringByCondition(tableName, siteId, list, searchType, keyword, dateFrom, dateTo, checkedState, isTrashContent);
         }
 
-        public string GetSqlString(string tableName, int siteId, int channelId, bool isSystemAdministrator, List<int> owningChannelIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isTrashContent, bool isWritingOnly, string userNameOnly)
-        {
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var channelIdList = ChannelManager.GetChannelIdList(channelInfo, isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, channelInfo.ContentModelPluginId);
+        //public string GetSqlString(string tableName, int siteId, int channelId, bool isSystemAdministrator, List<int> owningChannelIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isTrashContent, bool isWritingOnly, string userNameOnly)
+        //{
+        //    var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+        //    var channelIdList = ChannelManager.GetChannelIdList(channelInfo, isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, channelInfo.ContentModelPluginId);
 
-            var list = new List<int>();
-            if (isSystemAdministrator)
-            {
-                list = channelIdList;
-            }
-            else
-            {
-                foreach (int theChannelId in channelIdList)
-                {
-                    if (owningChannelIdList.Contains(theChannelId))
-                    {
-                        list.Add(theChannelId);
-                    }
-                }
-            }
+        //    var list = new List<int>();
+        //    if (isSystemAdministrator)
+        //    {
+        //        list = channelIdList;
+        //    }
+        //    else
+        //    {
+        //        foreach (int theChannelId in channelIdList)
+        //        {
+        //            if (owningChannelIdList.Contains(theChannelId))
+        //            {
+        //                list.Add(theChannelId);
+        //            }
+        //        }
+        //    }
 
-            return GetSqlStringByCondition(tableName, siteId, list, searchType, keyword, dateFrom, dateTo, checkedState, isTrashContent, isWritingOnly, userNameOnly);
-        }
+        //    return GetSqlStringByCondition(tableName, siteId, list, searchType, keyword, dateFrom, dateTo, checkedState, isTrashContent, isWritingOnly, userNameOnly);
+        //}
 
         public string GetSqlStringByContentGroup(string tableName, string contentGroupName, int siteId)
         {
@@ -1957,7 +1880,7 @@ group by tmp.userName";
 
             if (!string.IsNullOrEmpty(tableName))
             {
-                return DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, $"{nameof(IContentInfo.Id)}, {nameof(IContentInfo.ChannelId)}, {nameof(IContentInfo.IsTop)}, {nameof(IContentInfo.AddDate)}, {nameof(IContentInfo.LastEditDate)}, {nameof(IContentInfo.Taxis)}, {nameof(IContentInfo.Hits)}, {nameof(IContentInfo.HitsByDay)}, {nameof(IContentInfo.HitsByWeek)}, {nameof(IContentInfo.HitsByMonth)}", sqlWhereString, orderByString);
+                return DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, TranslateUtils.ObjectCollectionToString(ContentAttribute.AllAttributesLowercase), sqlWhereString, orderByString);
             }
             return string.Empty;
         }
@@ -1977,7 +1900,7 @@ group by tmp.userName";
             return list;
         }
 
-        public List<IContentInfo> GetListByLimitAndOffset(string tableName, int channelId, string whereString, string orderString, int limit, int offset)
+        public List<IContentInfo> GetListByLimitAndOffset(string tableName, string whereString, string orderString, int limit, int offset)
         {
             var list = new List<IContentInfo>();
             if (!string.IsNullOrEmpty(whereString))
@@ -2065,7 +1988,7 @@ group by tmp.userName";
             return list;
         }
 
-        public int GetCount(string tableName, int channelId, string whereString)
+        public int GetCount(string tableName, string whereString)
         {
             if (!string.IsNullOrEmpty(whereString))
             {
@@ -2133,7 +2056,7 @@ group by tmp.userName";
             return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public string GetStlWhereString(int siteId, string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
+        public string GetStlWhereString(int siteId, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
         {
             var whereBuilder = new StringBuilder();
             whereBuilder.Append($" AND SiteId = {siteId} ");
@@ -2246,7 +2169,7 @@ group by tmp.userName";
             return whereBuilder.ToString();
         }
 
-        public string GetStlWhereStringBySearch(string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
+        public string GetStlWhereStringBySearch(string group, string groupNot, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
         {
             var whereBuilder = new StringBuilder();
 
@@ -2347,18 +2270,14 @@ group by tmp.userName";
             return whereBuilder.ToString();
         }
 
-        public string GetSqlStringByDownloads(string tableName, int siteId)
-        {
-            var whereString = new StringBuilder();
-            whereString.Append(
-                $"WHERE (SiteId = {siteId} AND IsChecked='True' AND FileUrl <> '') ");
-
-            return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
-        }
+        //public string GetSqlStringByDownloads(string tableName, int siteId)
+        //{
+        //    return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, $"WHERE (SiteId = {siteId} AND IsChecked='True' AND FileUrl <> '') ");
+        //}
 
         private int GetTaxis(int selectedId, string tableName)
         {
-            string sqlString = $"SELECT Taxis FROM {tableName} WHERE (Id = {selectedId})";
+            var sqlString = $"SELECT Taxis FROM {tableName} WHERE (Id = {selectedId})";
 
             return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
@@ -2412,9 +2331,10 @@ group by tmp.userName";
             else if (!string.IsNullOrEmpty(keyword))
             {
                 var list = TableMetadataManager.GetAllLowerAttributeNameList(tableName);
-                whereString.Append(list.Contains(searchType.ToLower())
-                    ? $"AND ({searchType} LIKE '%{keyword}%') "
-                    : $"AND (SettingsXML LIKE '%{searchType}={keyword}%') ");
+                if (list.Contains(searchType.ToLower()))
+                {
+                    whereString.Append($"AND ({searchType} LIKE '%{keyword}%') ");
+                }   
             }
 
             whereString.Append(dateString);
@@ -2704,92 +2624,125 @@ group by tmp.userName";
 
         //----------------------------pager start----------------------------------------//
 
-        public string GetPagerWhereSqlString(List<string> allLowerAttributeNameList, int siteId, int channelId, bool isSystemAdministrator, List<int> owningChannelIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isTrashContent, bool isWritingOnly, string userNameOnly)
+        public string GetSelectedCommendByCheck(string tableName, int siteId, List<int> channelIdList, List<int> checkLevelList)
         {
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var channelIdListWithoutPermission = ChannelManager.GetChannelIdList(channelInfo, isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, channelInfo.ContentModelPluginId);
+            var whereString = channelIdList.Count == 1
+                ? $"WHERE SiteId = {siteId} AND ChannelId = {channelIdList[0]} AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) "
+                : $"WHERE SiteId = {siteId} AND ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) ";
 
-            var channelIdList = new List<int>();
-            if (isSystemAdministrator)
+            return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString);
+        }
+
+        public string GetPagerWhereSqlString(SiteInfo siteInfo, ChannelInfo channelInfo, string searchType, string keyword, string dateFrom, string dateTo, int checkLevel, bool isCheckOnly, bool isSelfOnly, bool isTrashOnly, bool isWritingOnly, bool isAdminOnly, PermissionManager adminPermissions, List<string> allLowerAttributeNameList)
+        {
+            var searchChannelIdList = new List<int>();
+
+            if (isSelfOnly)
             {
-                channelIdList = channelIdListWithoutPermission;
+                searchChannelIdList = new List<int>
+                {
+                    channelInfo.Id
+                };
+                
             }
             else
             {
-                foreach (var theChannelId in channelIdListWithoutPermission)
+                var channelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.All, string.Empty, string.Empty, channelInfo.ContentModelPluginId);
+
+                if (adminPermissions.IsSystemAdministrator)
                 {
-                    if (owningChannelIdList.Contains(theChannelId))
+                    searchChannelIdList = channelIdList;
+                }
+                else
+                {
+                    foreach (var theChannelId in channelIdList)
                     {
-                        channelIdList.Add(theChannelId);
+                        if (adminPermissions.OwningChannelIdList.Contains(theChannelId))
+                        {
+                            searchChannelIdList.Add(theChannelId);
+                        }
                     }
                 }
             }
-
-            if (channelIdList == null || channelIdList.Count == 0)
+            if (isTrashOnly)
             {
-                return null;
+                searchChannelIdList = searchChannelIdList.Select(i => -i).ToList();
             }
 
-            var dateString = string.Empty;
+            var whereList = new List<string>
+            {
+                $"{nameof(ContentAttribute.SiteId)} = {siteInfo.Id}",
+                $"{nameof(ContentAttribute.SourceId)} != {SourceManager.Preview}"
+            };
+
             if (!string.IsNullOrEmpty(dateFrom))
             {
-                dateString = $" AND AddDate >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))} ";
+                whereList.Add($"{nameof(ContentAttribute.AddDate)} >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))}");
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
-                dateString += $" AND AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo).AddDays(1))} ";
+                whereList.Add($"{nameof(ContentAttribute.AddDate)} <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo).AddDays(1))}");
             }
-            var whereString = new StringBuilder($"WHERE {nameof(ContentAttribute.SourceId)} != {SourceManager.Preview} AND ");
 
-            if (isTrashContent)
+            if (searchChannelIdList.Count == 0)
             {
-                for (var i = 0; i < channelIdList.Count; i++)
-                {
-                    var theChannelId = channelIdList[i];
-                    channelIdList[i] = -theChannelId;
-                }
+                whereList.Add($"{nameof(ContentAttribute.ChannelId)} = 0");
             }
-
-            whereString.Append(channelIdList.Count == 1
-                ? $"SiteId = {siteId} AND (ChannelId = {channelIdList[0]}) "
-                : $"SiteId = {siteId} AND (ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)})) ");
+            else if (searchChannelIdList.Count == 1)
+            {
+                whereList.Add($"{nameof(ContentAttribute.ChannelId)} = {channelInfo.Id}");
+            }
+            else
+            {
+                whereList.Add($"{nameof(ContentAttribute.ChannelId)} IN ({TranslateUtils.ToSqlInStringWithoutQuote(searchChannelIdList)})");
+            }
 
             if (StringUtils.EqualsIgnoreCase(searchType, ContentAttribute.IsTop) || StringUtils.EqualsIgnoreCase(searchType, ContentAttribute.IsRecommend) || StringUtils.EqualsIgnoreCase(searchType, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(searchType, ContentAttribute.IsHot))
             {
                 if (!string.IsNullOrEmpty(keyword))
                 {
-                    whereString.Append($"AND ({ContentAttribute.Title} LIKE '%{keyword}%') ");
+                    whereList.Add($"{ContentAttribute.Title} LIKE '%{keyword}%'");
                 }
-                whereString.Append($" AND {searchType} = '{true}'");
+                whereList.Add($"{searchType} = '{true}'");
             }
             else if (!string.IsNullOrEmpty(keyword))
             {
-                whereString.Append(allLowerAttributeNameList.Contains(searchType.ToLower())
-                    ? $"AND ({searchType} LIKE '%{keyword}%') "
-                    : $"AND (SettingsXML LIKE '%{searchType}={keyword}%') ");
+                if (allLowerAttributeNameList.Contains(searchType.ToLower()))
+                {
+                    whereList.Add($"{searchType} LIKE '%{keyword}%'");
+                }
+                //whereList.Add(allLowerAttributeNameList.Contains(searchType.ToLower())
+                //    ? $"{searchType} LIKE '%{keyword}%'"
+                //    : $"{nameof(ContentAttribute.SettingsXml)} LIKE '%{searchType}={keyword}%'");
             }
 
-            whereString.Append(dateString);
+            if (isCheckOnly)
+            {
+                whereList.Add(checkLevel == CheckManager.LevelInt.All
+                    ? $"{nameof(ContentAttribute.IsChecked)} = '{false}'"
+                    : $"{nameof(ContentAttribute.IsChecked)} = '{false}' AND {nameof(ContentAttribute.CheckedLevel)} = {checkLevel}");
+            }
+            else
+            {
+                if (checkLevel != CheckManager.LevelInt.All)
+                {
+                    whereList.Add(checkLevel == siteInfo.Additional.CheckContentLevel
+                        ? $"{nameof(ContentAttribute.IsChecked)} = '{true}'"
+                        : $"{nameof(ContentAttribute.IsChecked)} = '{false}' AND {nameof(ContentAttribute.CheckedLevel)} = {checkLevel}");
+                }
+            }
 
-            if (checkedState == ETriState.True)
+            if (isAdminOnly || adminPermissions.IsViewContentOnlySelf(siteInfo.Id, channelInfo.Id))
             {
-                whereString.Append("AND IsChecked='True' ");
-            }
-            else if (checkedState == ETriState.False)
-            {
-                whereString.Append("AND IsChecked='False' ");
+                whereList.Add($"{nameof(ContentAttribute.AddUserName)} = '{adminPermissions.UserName}'");
             }
 
-            if (!string.IsNullOrEmpty(userNameOnly))
-            {
-                whereString.Append($" AND AddUserName = '{userNameOnly}' ");
-            }
             if (isWritingOnly)
             {
-                whereString.Append(" AND WritingUserName <> '' ");
+                whereList.Add($"{nameof(ContentAttribute.WritingUserName)} <> ''");
             }
 
-            return whereString.ToString();
+            return $"WHERE {string.Join(" AND ", whereList)}";
         }
 
         public string GetPagerWhereSqlString(int channelId, ETriState checkedState, string userNameOnly)
@@ -2819,21 +2772,168 @@ group by tmp.userName";
             return ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channelInfo.Additional.DefaultTaxisType));
         }
 
-        public string GetPagerReturnColumnNames(List<string> allLowerAttributeNameList, StringCollection attributesOfDisplay)
+        //public string GetPagerReturnColumnNames(List<string> allLowerAttributeNameList, StringCollection attributesOfDisplay)
+        //{
+        //    var columnLowerList = new List<string>(ContentAttribute.AllAttributesLowercase);
+        //    foreach (var attribute in attributesOfDisplay)
+        //    {
+        //        var lowerAttribute = attribute;
+        //        if (!columnLowerList.Contains(lowerAttribute) && allLowerAttributeNameList.Contains(lowerAttribute))
+        //        {
+        //            columnLowerList.Add(lowerAttribute);
+        //        }
+        //    }
+
+        //    return TranslateUtils.ObjectCollectionToString(columnLowerList);
+        //}
+
+        //----------------------------pager end----------------------------------------//
+
+        public bool ApiIsExists(string tableName, int id)
         {
-            var columnLowerList = new List<string>(ContentAttribute.AllAttributesLowercase);
-            foreach (var attribute in attributesOfDisplay)
+            var sqlString = $"SELECT count(1) FROM {tableName} WHERE Id = @Id";
+
+            using (var connection = GetConnection())
             {
-                var lowerAttribute = attribute;
-                if (!columnLowerList.Contains(lowerAttribute) && allLowerAttributeNameList.Contains(lowerAttribute))
+                return connection.ExecuteScalar<bool>(sqlString, new { Id = id });
+            }
+        }
+
+        public List<int> ApiGetContentIdListBySiteId(string tableName, int siteId, int top, int skip, string like, string orderby, NameValueCollection queryString, out int totalCount)
+        {
+            totalCount = 0;
+            var list = new List<int>();
+
+            var whereString = $"WHERE {ContentAttribute.SiteId} = {siteId} AND {ContentAttribute.ChannelId} > 0 AND {ContentAttribute.IsChecked} = '{true}'";
+
+            var likeList = TranslateUtils.StringCollectionToStringList(StringUtils.TrimAndToLower(like));
+            var orderByString = string.IsNullOrEmpty(orderby)
+                ? $"{ContentAttribute.AddDate} DESC"
+                : PageUtils.FilterSql(orderby);
+            var dbArgs = new Dictionary<string, object>();
+
+            if (queryString != null && queryString.Count > 0)
+            {
+                var lowerColumnNameList = TableMetadataManager.GetAllLowerAttributeNameList(tableName);
+
+                foreach (string attributeName in queryString)
                 {
-                    columnLowerList.Add(lowerAttribute);
+                    if (!lowerColumnNameList.Contains(attributeName.ToLower())) continue;
+
+                    var value = queryString[attributeName];
+
+                    if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsChecked) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsRecommend) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsTop))
+                    {
+                        whereString += $" AND {attributeName} = '{TranslateUtils.ToBool(value)}'";
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Id) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.ReferenceId) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.SourceId) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.CheckedLevel))
+                    {
+                        whereString += $" AND {attributeName} = {TranslateUtils.ToInt(value)}";
+                    }
+                    else if (likeList.Contains(attributeName))
+                    {
+                        whereString += $" AND {attributeName} LIKE '%{PageUtils.FilterSql(value)}%'";
+                    }
+                    else
+                    {
+                        whereString += $" AND {attributeName} = @{attributeName}";
+                        dbArgs.Add(attributeName, value);
+                    }
                 }
             }
 
-            return TranslateUtils.ObjectCollectionToString(columnLowerList);
+            totalCount = DataProvider.DatabaseDao.GetPageTotalCount(tableName, whereString, dbArgs);
+            if (totalCount > 0 && skip < totalCount)
+            {
+                var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, ContentAttribute.Id, whereString, $"ORDER BY {orderByString}", skip, top);
+
+                using (var connection = GetConnection())
+                {
+                    list = connection.Query<int>(sqlString, dbArgs).ToList();
+                }
+            }
+
+            return list;
         }
 
-        //----------------------------pager end----------------------------------------//
+        public List<int> ApiGetContentIdListByChannelId(string tableName, int siteId, int channelId, int top, int skip, string like, string orderby, NameValueCollection queryString, out int totalCount)
+        {
+            var list = new List<int>();
+
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var channelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.All, string.Empty, string.Empty, string.Empty);
+            var whereString = $"WHERE {ContentAttribute.SiteId} = {siteId} AND {ContentAttribute.ChannelId} IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND {ContentAttribute.IsChecked} = '{true}'";
+
+            var likeList = TranslateUtils.StringCollectionToStringList(StringUtils.TrimAndToLower(like));
+            var orderByString = string.IsNullOrEmpty(orderby)
+                ? $"{ContentAttribute.AddDate} DESC"
+                : PageUtils.FilterSql(orderby);
+            var dbArgs = new Dictionary<string, object>();
+
+            if (queryString != null && queryString.Count > 0)
+            {
+                var lowerColumnNameList = TableMetadataManager.GetAllLowerAttributeNameList(tableName);
+
+                foreach (string attributeName in queryString)
+                {
+                    if (!lowerColumnNameList.Contains(attributeName.ToLower())) continue;
+
+                    var value = queryString[attributeName];
+
+                    if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsChecked) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsRecommend) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsTop))
+                    {
+                        whereString += $" AND {attributeName} = '{TranslateUtils.ToBool(value)}'";
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Id) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.ReferenceId) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.SourceId) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.CheckedLevel))
+                    {
+                        whereString += $" AND {attributeName} = {TranslateUtils.ToInt(value)}";
+                    }
+                    else if (likeList.Contains(attributeName))
+                    {
+                        whereString += $" AND {attributeName} LIKE '%{PageUtils.FilterSql(value)}%'";
+                    }
+                    else
+                    {
+                        whereString += $" AND {attributeName} = @{attributeName}";
+                        dbArgs.Add(attributeName, value);
+                    }
+                }
+            }
+
+            totalCount = DataProvider.DatabaseDao.GetPageTotalCount(tableName, whereString, dbArgs);
+            if (totalCount > 0 && skip < totalCount)
+            {
+                var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, ContentAttribute.Id, whereString, $"ORDER BY {orderByString}", skip, top);
+
+                using (var connection = GetConnection())
+                {
+                    list = connection.Query<int>(sqlString, dbArgs).ToList();
+                }
+            }
+
+            return list;
+        }
+
+        public Dictionary<string, object> ApiGetContentInfo(string tableName, int contentId)
+        {
+            if (string.IsNullOrEmpty(tableName) || contentId <= 0) return null;
+
+            Dictionary<string, object> info = null;
+
+            string sqlWhere = $"WHERE Id = {contentId}";
+            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
+
+            using (var rdr = ExecuteReader(sqlSelect))
+            {
+                if (rdr.Read())
+                {
+                    var contentInfo = GetContentInfo(rdr);
+                    info = contentInfo.ToDictionary();
+                }
+                rdr.Close();
+            }
+
+            return info;
+        }
     }
 }

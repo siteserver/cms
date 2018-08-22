@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using System.Text;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
 {
-    public sealed class TableStyleManager
+    public static class TableStyleManager
     {
         private static readonly object LockObject = new object();
         private static bool _async = true;//缓存与数据库不同步
@@ -241,31 +242,31 @@ namespace SiteServer.CMS.Core
         //    dataTable.Columns.Add(new DataColumn
         //    {
         //        DataType = System.Type.GetType("System.Int32"),
-        //        ColumnName = "TableStyleItemID"
+        //        AttributeName = "TableStyleItemID"
         //    });
 
         //    dataTable.Columns.Add(new DataColumn
         //    {
         //        DataType = System.Type.GetType("System.Int32"),
-        //        ColumnName = "TableStyleID"
+        //        AttributeName = "TableStyleID"
         //    });
 
         //    dataTable.Columns.Add(new DataColumn
         //    {
         //        DataType = System.Type.GetType("System.String"),
-        //        ColumnName = "ItemTitle"
+        //        AttributeName = "ItemTitle"
         //    });
 
         //    dataTable.Columns.Add(new DataColumn
         //    {
         //        DataType = System.Type.GetType("System.String"),
-        //        ColumnName = "ItemValue"
+        //        AttributeName = "ItemValue"
         //    });
 
         //    dataTable.Columns.Add(new DataColumn
         //    {
         //        DataType = System.Type.GetType("System.String"),
-        //        ColumnName = "IsSelected"
+        //        AttributeName = "IsSelected"
         //    });
 
         //    for (var i = 0; i < styleItemCount; i++)

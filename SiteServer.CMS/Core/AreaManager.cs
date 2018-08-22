@@ -4,7 +4,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
 {
-    public class AreaManager
+    public static class AreaManager
     {
         public static AreaInfo GetAreaInfo(int areaId)
         {

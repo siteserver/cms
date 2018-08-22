@@ -133,7 +133,7 @@
           <asp:PlaceHolder id="PhSubmit" visible="false" runat="server">
 
             <p class="text-muted font-13 m-b-25">
-              在此设置新建站点的名称、文件夹以及辅助表等信息
+              在此设置新建站点的名称、文件夹以及内容表等信息
             </p>
 
             <div class="form-group">
@@ -217,8 +217,8 @@
                 </label>
                 <asp:RadioButtonList ID="RblIsSiteTemplateTable" class="radio radio-primary" AutoPostBack="true" OnSelectedIndexChanged="RblIsSiteTemplateTable_SelectedIndexChanged"
                   RepeatDirection="Horizontal" runat="server">
-                  <asp:ListItem Text="使用站点模板中的辅助表" Value="True"></asp:ListItem>
-                  <asp:ListItem Text="使用指定的辅助表" Value="False" Selected="true"></asp:ListItem>
+                  <asp:ListItem Text="使用站点模板中的内容表" Value="True"></asp:ListItem>
+                  <asp:ListItem Text="使用指定的内容表" Value="False" Selected="true"></asp:ListItem>
                 </asp:RadioButtonList>
               </div>
             </asp:PlaceHolder>
@@ -226,8 +226,8 @@
             <asp:PlaceHolder ID="PhTableName" runat="server" Visible="false">
               <div class="form-group">
                 <label class="col-form-label">
-                  内容辅助表
-                  <asp:RequiredFieldValidator ControlToValidate="DdlTableName" ErrorMessage="辅助表不能为空！" foreColor="red" Display="Dynamic"
+                  内容表
+                  <asp:RequiredFieldValidator ControlToValidate="DdlTableName" ErrorMessage="内容表不能为空！" foreColor="red" Display="Dynamic"
                     runat="server" />
                 </label>
                 <asp:DropDownList ID="DdlTableName" class="form-control" runat="server"></asp:DropDownList>

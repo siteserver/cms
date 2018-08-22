@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils;
 using SiteServer.Plugin;
 
@@ -19,7 +20,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowStringToAdd(string tableName)
         {
-            return LayerUtils.GetOpenScript("添加辅助表字段", PageUtils.GetSettingsUrl(nameof(ModalTableMetadataAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("添加内容表字段", PageUtils.GetSettingsUrl(nameof(ModalTableMetadataAdd), new NameValueCollection
             {
                 {"TableName", tableName}
             }), 600, 320);
@@ -27,7 +28,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowStringToEdit(string tableName, int tableMetadataId)
         {
-            return LayerUtils.GetOpenScript("修改辅助表字段", PageUtils.GetSettingsUrl(nameof(ModalTableMetadataAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改内容表字段", PageUtils.GetSettingsUrl(nameof(ModalTableMetadataAdd), new NameValueCollection
             {
                 {"TableName", tableName},
                 {"TableMetadataID", tableMetadataId.ToString()}
@@ -93,8 +94,8 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     DataProvider.TableMetadataDao.Update(info);
 
-                    AuthRequest.AddAdminLog("修改辅助表字段",
-                        $"辅助表:{_tableName},字段名:{info.AttributeName}");
+                    AuthRequest.AddAdminLog("修改内容表字段",
+                        $"内容表:{_tableName},字段名:{info.AttributeName}");
 
                     isChanged = true;
                 }
@@ -141,8 +142,8 @@ namespace SiteServer.BackgroundPages.Settings
                     {
                         DataProvider.TableMetadataDao.Insert(info);
 
-                        AuthRequest.AddAdminLog("添加辅助表字段",
-                            $"辅助表:{_tableName},字段名:{info.AttributeName}");
+                        AuthRequest.AddAdminLog("添加内容表字段",
+                            $"内容表:{_tableName},字段名:{info.AttributeName}");
 
                         isChanged = true;
                     }

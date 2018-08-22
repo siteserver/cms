@@ -12,30 +12,30 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_DbCache";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Id",
+                AttributeName = nameof(DbCacheInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "CacheKey",
+                AttributeName = nameof(DbCacheInfo.CacheKey),
                 DataType = DataType.VarChar,
-                Length = 200
+                DataLength = 200
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "CacheValue",
+                AttributeName = nameof(DbCacheInfo.CacheValue),
                 DataType = DataType.VarChar,
-                Length = 500
+                DataLength = 500
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "AddDate",
+                AttributeName = nameof(DbCacheInfo.AddDate),
                 DataType = DataType.DateTime
             }
         };

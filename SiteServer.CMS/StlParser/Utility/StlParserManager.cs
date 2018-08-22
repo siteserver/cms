@@ -3,6 +3,7 @@ using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.StlElement;
@@ -10,12 +11,8 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
-    public class StlParserManager
+    public static class StlParserManager
     {
-        private StlParserManager()
-        {
-        }
-
         public static void ParseTemplateContent(StringBuilder parsedBuilder, PageInfo pageInfo, ContextInfo contextInfo)
         {
             var isInnerElement = contextInfo.IsInnerElement;
@@ -64,7 +61,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return builder.ToString();
         }
 
-        public static string ParseInnerContent(string template, IParseContext context)
+        public static string ParseInnerContent(string template, ParseContextImpl context)
         {
             if (string.IsNullOrEmpty(template)) return string.Empty;
 
@@ -75,7 +72,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 Id = context.TemplateId,
                 TemplateType = context.TemplateType
             };
-            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, siteInfo, templateInfo, context.StlItems);
+            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, siteInfo, templateInfo, context.PluginItems);
             var contextInfo = new ContextInfo(pageInfo);
             ParseInnerContent(builder, pageInfo, contextInfo);
             return builder.ToString();
@@ -148,7 +145,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = StlPageElementParser.ParseStlPageItemInSearchPage(stlElement, pageInfo, ajaxDivId, channelId, currentPageIndex, pageCount, totalNum);
+                    var pageHtml = StlPageElementParser.ParseStlPageItemInSearchPage(stlElement, pageInfo, ajaxDivId, currentPageIndex, pageCount, totalNum);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
             }

@@ -15,8 +15,8 @@
           }
         }
 
-        function WebsitePermissions_CheckAll(chk) {
-          var oEvent = document.getElementById('CblWebsitePermissions');
+        function WebsitePermissions_CheckAll(eleId, chk) {
+          var oEvent = document.getElementById(eleId);
           var chks = oEvent.getElementsByTagName("INPUT");
           for (var i = 0; i < chks.length; i++) {
             if (chks[i].type == "checkbox") chks[i].checked = chk.checked;
@@ -45,23 +45,46 @@
             <li class="nav-item">
               <a class="nav-link" href="pageAdminArea.aspx">所在区域管理</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="adminAccessTokens.cshtml">API密钥管理</a>
+            </li>
           </ul>
         </div>
 
         <ctrl:alerts text="本页面设置对应站点的具体权限，确认后需在在角色编辑页面再次点击确认才能最终保存" runat="server" />
 
         <div class="card-box">
-          <asp:PlaceHolder ID="PhWebsitePermissions" runat="server">
+          <asp:PlaceHolder ID="PhWebsiteSysPermissions" runat="server">
             <div class="form-group">
               <label class="col-form-label">
                 站点权限设置
                 <span class="checkbox checkbox-primary">
-                  <input type="checkbox" onClick="WebsitePermissions_CheckAll(this)" id="CheckPermissions" name="CheckPermissions">
-                  <label for="CheckPermissions">全选</label>
+                  <input type="checkbox" onClick="WebsitePermissions_CheckAll('CblWebsiteSysPermissions', this)" id="CheckSysPermissions" name="CheckSysPermissions">
+                  <label for="CheckSysPermissions">全选</label>
                 </span>
               </label>
               <div class="m-3">
-                <asp:CheckBoxList ID="CblWebsitePermissions" RepeatColumns="7" RepeatDirection="Horizontal" class="checkbox checkbox-primary"
+                <asp:CheckBoxList ID="CblWebsiteSysPermissions" RepeatColumns="7" RepeatDirection="Horizontal" class="checkbox checkbox-primary"
+                  runat="server"></asp:CheckBoxList>
+              </div>
+            </div>
+          </asp:PlaceHolder>
+
+          <asp:PlaceHolder ID="PhWebsitePluginPermissions" runat="server">
+
+            <hr />
+
+            <div class="form-group">
+              <label class="col-form-label">
+                插件权限设置
+                <span class="checkbox checkbox-primary">
+                  <input type="checkbox" onClick="WebsitePermissions_CheckAll('CblWebsitePluginPermissions', this)" id="CheckPluginPermissions"
+                    name="CheckPluginPermissions">
+                  <label for="CheckPluginPermissions">全选</label>
+                </span>
+              </label>
+              <div class="m-3">
+                <asp:CheckBoxList ID="CblWebsitePluginPermissions" RepeatColumns="7" RepeatDirection="Horizontal" class="checkbox checkbox-primary"
                   runat="server"></asp:CheckBoxList>
               </div>
             </div>
@@ -86,8 +109,8 @@
               </div>
 
               <small class="form-text text-muted">
-                  从下边选择需要管理的栏目，所选栏目下的所有子栏目都属于可管理范围
-                </small>
+                从下边选择需要管理的栏目，所选栏目下的所有子栏目都属于可管理范围
+              </small>
 
               <div class="m-3">
                 <asp:Literal ID="LtlNodeTree" runat="server"></asp:Literal>

@@ -4,6 +4,7 @@ using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -83,12 +84,6 @@ namespace SiteServer.API.Controllers.Sys.Stl
 
                     if (!string.IsNullOrEmpty(contentInfo?.GetString(BackgroundContentAttribute.FileUrl)))
                     {
-                        //string fileUrl = contentInfo.GetString(BackgroundContentAttribute.FileUrl);
-                        if (siteInfo.Additional.IsCountDownload)
-                        {
-                            CountManager.AddCount(tableName, contentId.ToString(), ECountType.Download);
-                        }
-
                         if (PageUtils.IsProtocolUrl(fileUrl))
                         {
                             isSuccess = true;

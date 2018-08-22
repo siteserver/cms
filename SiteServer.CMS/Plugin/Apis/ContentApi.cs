@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
+﻿using System;
+using System.Collections.Generic;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
+using TableColumn = SiteServer.Plugin.TableColumn;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
@@ -31,7 +32,7 @@ namespace SiteServer.CMS.Plugin.Apis
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
-            return DataProvider.ContentDao.GetListByLimitAndOffset(tableName, channelId, whereString, orderString, limit, offset);
+            return DataProvider.ContentDao.GetListByLimitAndOffset(tableName, whereString, orderString, limit, offset);
         }
 
         public int GetCount(int siteId, int channelId, string whereString)
@@ -41,7 +42,7 @@ namespace SiteServer.CMS.Plugin.Apis
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
-            return DataProvider.ContentDao.GetCount(tableName, channelId, whereString);
+            return DataProvider.ContentDao.GetCount(tableName, whereString);
         }
 
         public string GetTableName(int siteId, int channelId)
@@ -170,37 +171,14 @@ namespace SiteServer.CMS.Plugin.Apis
             return DataProvider.ContentDao.GetValue(tableName, contentId, attributeName);
         }
 
-        public IContentInfo NewInstance()
+        public IContentInfo NewInstance(int siteId, int channelId)
         {
-            return new ContentInfo();
-        }
-
-        public IContentInfo Parse(object dataItem)
-        {
-            var contentInfo = NewInstance();
-            contentInfo.Load(dataItem);
-            return contentInfo;
-        }
-
-        public IContentInfo Parse(IDataReader rdr)
-        {
-            var contentInfo = NewInstance();
-            contentInfo.Load(rdr);
-            return contentInfo;
-        }
-
-        public IContentInfo Parse(NameValueCollection attributes)
-        {
-            var contentInfo = NewInstance();
-            contentInfo.Load(attributes);
-            return contentInfo;
-        }
-
-        public IContentInfo Parse(string str)
-        {
-            var contentInfo = NewInstance();
-            contentInfo.Load(str);
-            return contentInfo;
+            return new ContentInfo
+            {
+                SiteId = siteId,
+                ChannelId = channelId,
+                AddDate = DateTime.Now
+            };
         }
 
         //public void SetValuesToContentInfo(int siteId, int channelId, NameValueCollection form, IContentInfo contentInfo)
@@ -252,6 +230,12 @@ namespace SiteServer.CMS.Plugin.Apis
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelId);
             return DataProvider.ContentDao.GetContentIdListCheckedByChannelId(tableName, siteId, channelId);
+        }
+
+        public string GetContentUrl(int siteId, int channelId, int contentId)
+        {
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            return PageUtility.GetContentUrl(siteInfo, ChannelManager.GetChannelInfo(siteId, channelId), contentId, false);
         }
     }
 }

@@ -1,11 +1,7 @@
 namespace SiteServer.CMS.Core
 {
-	public class CacheDbUtils
+    public static class CacheDbUtils
 	{
-		private CacheDbUtils()
-		{
-		}
-
 		public static void RemoveAndInsert(string cacheKey, string cacheValue)
 		{
 			if (!string.IsNullOrEmpty(cacheKey))

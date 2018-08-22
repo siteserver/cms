@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Utility);
+            VerifySystemPermissions(ConfigManager.SettingsPermissions.Utility);
             var dt = DataProvider.LogDao.GetLastRemoveLogDate(AuthRequest.AdminName);
             LtlLastExecuteDate.Text = dt == DateTime.MinValue ? "无记录" : DateUtils.GetDateAndTimeString(dt);
         }

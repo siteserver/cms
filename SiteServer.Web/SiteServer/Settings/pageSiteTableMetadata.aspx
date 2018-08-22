@@ -26,7 +26,7 @@
               <a class="nav-link" href="pageSiteUrlApi.aspx">API访问地址</a>
             </li>
             <li class="nav-item active">
-              <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">辅助表管理</a>
+              <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">内容表管理</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="pageSiteKeyword.aspx">敏感词管理</a>
@@ -100,9 +100,9 @@
           <hr />
 
           <asp:Button class="btn btn-primary" ID="BtnAdd" Text="添加字段" runat="server"></asp:Button>
-          <asp:Button class="btn" ID="BtnCreateDb" Text="创建辅助表" runat="server"></asp:Button>
-          <asp:Button class="btn" ID="BtnDelete" Text="删除辅助表" runat="server"></asp:Button>
-          <asp:Button class="btn" ID="BtnReCreateDb" Text="重新创建辅助表" runat="server"></asp:Button>
+          <asp:Button class="btn" ID="BtnCreateDb" Text="创建内容表" runat="server"></asp:Button>
+          <asp:Button class="btn" ID="BtnDelete" Text="删除内容表" runat="server"></asp:Button>
+          <asp:Button class="btn" ID="BtnReCreateDb" Text="重新创建内容表" runat="server"></asp:Button>
           <asp:Button class="btn" ID="BtnSqlString" Text="显示创建表SQL命令" runat="server"></asp:Button>
           <asp:Button class="btn m-r-5" text="返 回" onclick="Return_OnClick" runat="server" />
 
@@ -111,22 +111,22 @@
         <asp:PlaceHolder id="PhSyncTable" runat="server">
           <div class="card-box">
             <div class="m-t-0 header-title">
-              同步辅助表
+              同步内容表
             </div>
             <p class="text-muted font-13 m-b-25">
-              此辅助表在创建后被修改，与数据库中的实际表结构有差别，请同步辅助表。
+              此内容表在创建后被修改，与数据库中的实际表结构有差别，请同步内容表。
             </p>
 
             <hr />
 
-            <asp:Button class="btn btn-primary" Text="同步辅助表" OnClick="SyncTableButton_OnClick" runat="server"></asp:Button>
+            <asp:Button class="btn btn-primary" Text="同步内容表" OnClick="SyncTableButton_OnClick" runat="server"></asp:Button>
           </div>
         </asp:PlaceHolder>
 
         <asp:PlaceHolder id="PhSqlString" runat="server">
           <div class="card-box">
             <div class="m-t-0 header-title">
-              创建辅助表SQL命令
+              创建内容表SQL命令
             </div>
             <p class="text-muted font-13 m-b-25">
               <asp:Literal ID="LtlSqlString" runat="server" />

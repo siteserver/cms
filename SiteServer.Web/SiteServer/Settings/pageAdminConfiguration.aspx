@@ -28,6 +28,9 @@
             <li class="nav-item">
               <a class="nav-link" href="pageAdminArea.aspx">所在区域管理</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="adminAccessTokens.cshtml">API密钥管理</a>
+            </li>
           </ul>
         </div>
 
@@ -82,23 +85,6 @@
                 <asp:TextBox ID="TbLoginLockingHours" class="form-control" runat="server"></asp:TextBox>
               </div>
             </asp:PlaceHolder>
-          </asp:PlaceHolder>
-
-          <div class="form-group">
-            <label class="col-form-label">是否开启管理员找回密码功能</label>
-            <asp:RadioButtonList ID="RblIsFindPassword" class="radio radio-primary" OnSelectedIndexChanged="RblIsFindPassword_SelectedIndexChanged"
-              runat="server" RepeatDirection="Horizontal" AutoPostBack="true">
-            </asp:RadioButtonList>
-          </div>
-
-          <asp:PlaceHolder ID="PhFindPassword" runat="server">
-            <div class="form-group">
-              <label class="col-form-label">发送验证码短信模板Id
-                <asp:RequiredFieldValidator ControlToValidate="TbFindPasswordSmsTplId" runat="server" ErrorMessage="*" foreColor="Red"></asp:RequiredFieldValidator>
-              </label>
-              <asp:TextBox ID="TbFindPasswordSmsTplId" class="form-control" runat="server"></asp:TextBox>
-              <small class="form-text text-muted">需进入短信供应商模板管理界面，添加验证码类短信模板并获取模板Id</small>
-            </div>
           </asp:PlaceHolder>
 
           <div class="form-group">

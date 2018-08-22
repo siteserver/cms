@@ -269,10 +269,10 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static string GetStlWhereString(int siteId, string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
+        public static string GetStlWhereString(int siteId, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetStlWhereString),
-                    siteId.ToString(), tableName, group, groupNot,
+                    siteId.ToString(), group, groupNot,
                     tags, isImageExists.ToString(), isImage.ToString(), isVideoExists.ToString(), isVideo.ToString(),
                     isFileExists.ToString(), isFile.ToString(), isTopExists.ToString(), isTop.ToString(),
                     isRecommendExists.ToString(), isRecommend.ToString(), isHotExists.ToString(), isHot.ToString(),
@@ -285,7 +285,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<string>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.ContentDao.GetStlWhereString(siteId, tableName, group,
+                    retval = DataProvider.ContentDao.GetStlWhereString(siteId, group,
                     groupNot,
                     tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop,
                     isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
@@ -343,10 +343,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static string GetStlWhereStringBySearch(string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
+        public static string GetStlWhereStringBySearch(string group, string groupNot, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
         {
-            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetStlWhereStringBySearch),
-                    tableName, group, groupNot, tags, isImageExists.ToString(), isImage.ToString(),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetStlWhereStringBySearch), group, groupNot, isImageExists.ToString(), isImage.ToString(),
                     isVideoExists.ToString(), isVideo.ToString(), isFileExists.ToString(), isFile.ToString(),
                     isTopExists.ToString(), isTop.ToString(), isRecommendExists.ToString(), isRecommend.ToString(),
                     isHotExists.ToString(), isHot.ToString(), isColorExists.ToString(), isColor.ToString(), where);
@@ -358,7 +357,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<string>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.ContentDao.GetStlWhereStringBySearch(tableName, group, groupNot, tags,
+                    retval = DataProvider.ContentDao.GetStlWhereStringBySearch(group, groupNot,
                     isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop,
                     isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
                     StlCacheUtils.SetCache(cacheKey, retval);

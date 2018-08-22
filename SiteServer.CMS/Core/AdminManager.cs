@@ -6,13 +6,9 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
-    public class AdminManager
+    public static class AdminManager
     {
         private static readonly object LockObject = new object();
-
-        private AdminManager()
-        {
-        }
 
         public static AdministratorInfo GetAdminInfo(string userName)
         {
@@ -106,7 +102,7 @@ namespace SiteServer.CMS.Core
             {
                 administratorInfo.LastActivityDate = DateUtils.SqlMinValue;
                 administratorInfo.CreationDate = DateTime.Now;
-                administratorInfo.PasswordFormat = EPasswordFormat.Encrypted;
+                administratorInfo.PasswordFormat = EPasswordFormatUtils.GetValue(EPasswordFormat.Encrypted);
                 var isCreated = DataProvider.AdministratorDao.Insert(administratorInfo, out errorMessage);
                 if (isCreated == false) return false;
 

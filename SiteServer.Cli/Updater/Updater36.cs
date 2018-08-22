@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiteServer.Cli.Core;
-using SiteServer.Cli.Updater.Model36;
-using SiteServer.CMS.Model;
 using SiteServer.Utils;
-using TableInfo = SiteServer.Cli.Core.TableInfo;
+using SiteServer.Cli.Updater.Model36;
+using SiteServer.Cli.Updater.Plugins.GovInteract;
+using SiteServer.Cli.Updater.Plugins.GovPublic;
 
 namespace SiteServer.Cli.Updater
 {
@@ -15,629 +15,172 @@ namespace SiteServer.Cli.Updater
 
         public Updater36(TreeInfo oldTreeInfo, TreeInfo newTreeInfo) : base(oldTreeInfo, newTreeInfo)
         {
-
         }
 
-        public override KeyValuePair<string, TableInfo> UpdateTableInfo(string oldTableName, TableInfo oldTableInfo, List<string> contentTableNameList)
+        public override async Task<Tuple<string, TableInfo>> UpdateTableInfoAsync(string oldTableName, TableInfo oldTableInfo, List<string> contentTableNameList)
         {
-            string newTableName = null;
-            List<TableColumnInfo> newColumns = null;
-            Dictionary<string, string> convertDict = null;
+            ConvertInfo converter = null;
 
-            if (StringUtils.ContainsIgnoreCase(contentTableNameList, oldTableName))
+            var oldTableNameWithoutPrefix = oldTableName.Substring(oldTableName.IndexOf("_", StringComparison.Ordinal) + 1);
+
+            if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableAdministrator.OldTableName))
             {
-                newTableName = oldTableName;
-                newColumns = SiteServerContent.GetNewColumns(oldTableInfo.Columns);
-                convertDict = SiteServerContent.ConvertDict;
+                converter = TableAdministrator.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_Administrator"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableAdministratorsInRoles.OldTableName))
             {
-                newTableName = BairongAdministrator.NewTableName;
-                newColumns = BairongAdministrator.NewColumns;
-                convertDict = BairongAdministrator.ConvertDict;
+                converter = TableAdministratorsInRoles.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_AdministratorsInRoles"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableArea.OldTableName))
             {
-                newTableName = BairongAdministratorsInRoles.NewTableName;
-                newColumns = BairongAdministratorsInRoles.NewColumns;
-                convertDict = BairongAdministratorsInRoles.ConvertDict;
+                converter = TableArea.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_Area"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableChannel.OldTableName))
             {
-                newTableName = BairongArea.NewTableName;
-                newColumns = BairongArea.NewColumns;
-                convertDict = BairongArea.ConvertDict;
+                converter = TableChannel.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_Cache"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableChannelGroup.OldTableName))
             {
-                newTableName = BairongCache.NewTableName;
-                newColumns = BairongCache.NewColumns;
-                convertDict = BairongCache.ConvertDict;
+                converter = TableChannelGroup.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_CloudStorage"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableConfig.OldTableName))
             {
-                newTableName = BairongCloudStorage.NewTableName;
-                newColumns = BairongCloudStorage.NewColumns;
-                convertDict = BairongCloudStorage.ConvertDict;
+                converter = TableConfig.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_Config"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableContentCheck.OldTableName))
             {
-                newTableName = BairongConfig.NewTableName;
-                newColumns = BairongConfig.NewColumns;
-                convertDict = BairongConfig.ConvertDict;
+                converter = TableContentCheck.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_ContentCheck"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableContentGroup.OldTableName))
             {
-                newTableName = BairongContentCheck.NewTableName;
-                newColumns = BairongContentCheck.NewColumns;
-                convertDict = BairongContentCheck.ConvertDict;
+                converter = TableContentGroup.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_ContentModel"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableDbCache.OldTableName))
             {
-                newTableName = BairongContentModel.NewTableName;
-                newColumns = BairongContentModel.NewColumns;
-                convertDict = BairongContentModel.ConvertDict;
+                converter = TableDbCache.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_Count"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableDepartment.OldTableName))
             {
-                newTableName = BairongCount.NewTableName;
-                newColumns = BairongCount.NewColumns;
-                convertDict = BairongCount.ConvertDict;
+                converter = TableDepartment.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_Department"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableErrorLog.OldTableName))
             {
-                newTableName = BairongDepartment.NewTableName;
-                newColumns = BairongDepartment.NewColumns;
-                convertDict = BairongDepartment.ConvertDict;
+                converter = TableErrorLog.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_Digg"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableKeyword.OldTableName))
             {
-                newTableName = BairongDigg.NewTableName;
-                newColumns = BairongDigg.NewColumns;
-                convertDict = BairongDigg.ConvertDict;
+                converter = TableKeyword.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_FTPStorage"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableLog.OldTableName))
             {
-                newTableName = BairongFtpStorage.NewTableName;
-                newColumns = BairongFtpStorage.NewColumns;
-                convertDict = BairongFtpStorage.ConvertDict;
+                converter = TableLog.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_IP2City"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TablePermissionsInRoles.OldTableName))
             {
-                newTableName = BairongIp2City.NewTableName;
-                newColumns = BairongIp2City.NewColumns;
-                convertDict = BairongIp2City.ConvertDict;
+                converter = TablePermissionsInRoles.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_LocalStorage"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableRelatedField.OldTableName))
             {
-                newTableName = BairongLocalStorage.NewTableName;
-                newColumns = BairongLocalStorage.NewColumns;
-                convertDict = BairongLocalStorage.ConvertDict;
+                converter = TableRelatedField.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_Log"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableRelatedFieldItem.OldTableName))
             {
-                newTableName = BairongLog.NewTableName;
-                newColumns = BairongLog.NewColumns;
-                convertDict = BairongLog.ConvertDict;
+                converter = TableRelatedFieldItem.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_Module"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableRole.OldTableName))
             {
-                newTableName = BairongModule.NewTableName;
-                newColumns = BairongModule.NewColumns;
-                convertDict = BairongModule.ConvertDict;
+                converter = TableRole.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_PermissionsInRoles"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableSite.OldTableName))
             {
-                newTableName = BairongPermissionsInRoles.NewTableName;
-                newColumns = BairongPermissionsInRoles.NewColumns;
-                convertDict = BairongPermissionsInRoles.ConvertDict;
+                converter = TableSite.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_Roles"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableSiteLog.OldTableName))
             {
-                newTableName = BairongRoles.NewTableName;
-                newColumns = BairongRoles.NewColumns;
-                convertDict = BairongRoles.ConvertDict;
+                converter = TableSiteLog.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_SMSMessages"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableSitePermissions.OldTableName))
             {
-                newTableName = BairongSmsMessages.NewTableName;
-                newColumns = BairongSmsMessages.NewColumns;
-                convertDict = BairongSmsMessages.ConvertDict;
+                converter = TableSitePermissions.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_SSOApp"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableTable.OldTableName))
             {
-                newTableName = BairongSsoApp.NewTableName;
-                newColumns = BairongSsoApp.NewColumns;
-                convertDict = BairongSsoApp.ConvertDict;
+                converter = TableTable.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_Storage"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableTableMetadata.OldTableName))
             {
-                newTableName = BairongStorage.NewTableName;
-                newColumns = BairongStorage.NewColumns;
-                convertDict = BairongStorage.ConvertDict;
+                converter = TableTableMetadata.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_TableCollection"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableTableStyle.OldTableName))
             {
-                newTableName = BairongTableCollection.NewTableName;
-                newColumns = BairongTableCollection.NewColumns;
-                convertDict = BairongTableCollection.ConvertDict;
+                converter = TableTableStyle.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_TableMatch"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableTableStyleItem.OldTableName))
             {
-                newTableName = BairongTableMatch.NewTableName;
-                newColumns = BairongTableMatch.NewColumns;
-                convertDict = BairongTableMatch.ConvertDict;
+                converter = TableTableStyleItem.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_TableMetadata"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableTag.OldTableName))
             {
-                newTableName = BairongTableMetadata.NewTableName;
-                newColumns = BairongTableMetadata.NewColumns;
-                convertDict = BairongTableMetadata.ConvertDict;
+                converter = TableTag.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_TableStyle"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableTemplate.OldTableName))
             {
-                newTableName = BairongTableStyle.NewTableName;
-                newColumns = BairongTableStyle.NewColumns;
-                convertDict = BairongTableStyle.ConvertDict;
+                converter = TableTemplate.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_TableStyleItem"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableTemplateMatch.OldTableName))
             {
-                newTableName = BairongTableStyleItem.NewTableName;
-                newColumns = BairongTableStyleItem.NewColumns;
-                convertDict = BairongTableStyleItem.ConvertDict;
+                converter = TableTemplateMatch.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_Tags"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableUser.OldTableName))
             {
-                newTableName = BairongTags.NewTableName;
-                newColumns = BairongTags.NewColumns;
-                convertDict = BairongTags.ConvertDict;
+                converter = TableUser.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_Task"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovInteractChannel.OldTableName))
             {
-                newTableName = BairongTask.NewTableName;
-                newColumns = BairongTask.NewColumns;
-                convertDict = BairongTask.ConvertDict;
+                converter = TableGovInteractChannel.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_TaskLog"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovInteractLog.OldTableName))
             {
-                newTableName = BairongTaskLog.NewTableName;
-                newColumns = BairongTaskLog.NewColumns;
-                convertDict = BairongTaskLog.ConvertDict;
+                converter = TableGovInteractLog.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_UserBinding"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovInteractPermissions.OldTableName))
             {
-                newTableName = BairongUserBinding.NewTableName;
-                newColumns = BairongUserBinding.NewColumns;
-                convertDict = BairongUserBinding.ConvertDict;
+                converter = TableGovInteractPermissions.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_UserConfig"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovInteractRemark.OldTableName))
             {
-                newTableName = BairongUserConfig.NewTableName;
-                newColumns = BairongUserConfig.NewColumns;
-                convertDict = BairongUserConfig.ConvertDict;
+                converter = TableGovInteractRemark.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_UserContact"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovInteractReply.OldTableName))
             {
-                newTableName = BairongUserContact.NewTableName;
-                newColumns = BairongUserContact.NewColumns;
-                convertDict = BairongUserContact.ConvertDict;
+                converter = TableGovInteractReply.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_UserCreditsLog"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovInteractType.OldTableName))
             {
-                newTableName = BairongUserCreditsLog.NewTableName;
-                newColumns = BairongUserCreditsLog.NewColumns;
-                convertDict = BairongUserCreditsLog.ConvertDict;
+                converter = TableGovInteractType.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_UserDownload"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovPublicCategory.OldTableName))
             {
-                newTableName = BairongUserDownload.NewTableName;
-                newColumns = BairongUserDownload.NewColumns;
-                convertDict = BairongUserDownload.ConvertDict;
+                converter = TableGovPublicCategory.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_UserMessage"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovPublicCategoryClass.OldTableName))
             {
-                newTableName = BairongUserMessage.NewTableName;
-                newColumns = BairongUserMessage.NewColumns;
-                convertDict = BairongUserMessage.ConvertDict;
+                converter = TableGovPublicCategoryClass.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_Users"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovPublicIdentifierRule.OldTableName))
             {
-                newTableName = BairongUsers.NewTableName;
-                newColumns = BairongUsers.NewColumns;
-                convertDict = BairongUsers.ConvertDict;
+                converter = TableGovPublicIdentifierRule.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "bairong_UserType"))
+            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithoutPrefix, TableGovPublicIdentifierSeq.OldTableName))
             {
-                newTableName = BairongUserType.NewTableName;
-                newColumns = BairongUserType.NewColumns;
-                convertDict = BairongUserType.ConvertDict;
+                converter = TableGovPublicIdentifierSeq.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_Ad"))
+            else if (StringUtils.ContainsIgnoreCase(contentTableNameList, oldTableName))
             {
-                newTableName = SiteserverAd.NewTableName;
-                newColumns = SiteserverAd.NewColumns;
-                convertDict = SiteserverAd.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_Advertisement"))
-            {
-                newTableName = SiteserverAdvertisement.NewTableName;
-                newColumns = SiteserverAdvertisement.NewColumns;
-                convertDict = SiteserverAdvertisement.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_Comment"))
-            {
-                newTableName = SiteserverComment.NewTableName;
-                newColumns = SiteserverComment.NewColumns;
-                convertDict = SiteserverComment.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_CommentContent"))
-            {
-                newTableName = SiteserverCommentContent.NewTableName;
-                newColumns = SiteserverCommentContent.NewColumns;
-                convertDict = SiteserverCommentContent.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_Configuration"))
-            {
-                newTableName = SiteserverConfiguration.NewTableName;
-                newColumns = SiteserverConfiguration.NewColumns;
-                convertDict = SiteserverConfiguration.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_ContentGroup"))
-            {
-                newTableName = SiteserverContentGroup.NewTableName;
-                newColumns = SiteserverContentGroup.NewColumns;
-                convertDict = SiteserverContentGroup.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GatherDatabaseRule"))
-            {
-                newTableName = SiteserverGatherDatabaseRule.NewTableName;
-                newColumns = SiteserverGatherDatabaseRule.NewColumns;
-                convertDict = SiteserverGatherDatabaseRule.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GatherFileRule"))
-            {
-                newTableName = SiteserverGatherFileRule.NewTableName;
-                newColumns = SiteserverGatherFileRule.NewColumns;
-                convertDict = SiteserverGatherFileRule.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GatherRule"))
-            {
-                newTableName = SiteserverGatherRule.NewTableName;
-                newColumns = SiteserverGatherRule.NewColumns;
-                convertDict = SiteserverGatherRule.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GovInteractChannel"))
-            {
-                newTableName = SiteserverGovInteractChannel.NewTableName;
-                newColumns = SiteserverGovInteractChannel.NewColumns;
-                convertDict = SiteserverGovInteractChannel.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GovInteractLog"))
-            {
-                newTableName = SiteserverGovInteractLog.NewTableName;
-                newColumns = SiteserverGovInteractLog.NewColumns;
-                convertDict = SiteserverGovInteractLog.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GovInteractPermissions"))
-            {
-                newTableName = SiteserverGovInteractPermissions.NewTableName;
-                newColumns = SiteserverGovInteractPermissions.NewColumns;
-                convertDict = SiteserverGovInteractPermissions.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GovInteractRemark"))
-            {
-                newTableName = SiteserverGovInteractRemark.NewTableName;
-                newColumns = SiteserverGovInteractRemark.NewColumns;
-                convertDict = SiteserverGovInteractRemark.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GovInteractReply"))
-            {
-                newTableName = SiteserverGovInteractReply.NewTableName;
-                newColumns = SiteserverGovInteractReply.NewColumns;
-                convertDict = SiteserverGovInteractReply.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GovInteractType"))
-            {
-                newTableName = SiteserverGovInteractType.NewTableName;
-                newColumns = SiteserverGovInteractType.NewColumns;
-                convertDict = SiteserverGovInteractType.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GovPublicApply"))
-            {
-                newTableName = SiteserverGovPublicApply.NewTableName;
-                newColumns = SiteserverGovPublicApply.NewColumns;
-                convertDict = SiteserverGovPublicApply.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GovPublicApplyLog"))
-            {
-                newTableName = SiteserverGovPublicApplyLog.NewTableName;
-                newColumns = SiteserverGovPublicApplyLog.NewColumns;
-                convertDict = SiteserverGovPublicApplyLog.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GovPublicApplyRemark"))
-            {
-                newTableName = SiteserverGovPublicApplyRemark.NewTableName;
-                newColumns = SiteserverGovPublicApplyRemark.NewColumns;
-                convertDict = SiteserverGovPublicApplyRemark.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GovPublicApplyReply"))
-            {
-                newTableName = SiteserverGovPublicApplyReply.NewTableName;
-                newColumns = SiteserverGovPublicApplyReply.NewColumns;
-                convertDict = SiteserverGovPublicApplyReply.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GovPublicCategory"))
-            {
-                newTableName = SiteserverGovPublicCategory.NewTableName;
-                newColumns = SiteserverGovPublicCategory.NewColumns;
-                convertDict = SiteserverGovPublicCategory.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GovPublicCategoryClass"))
-            {
-                newTableName = SiteserverGovPublicCategoryClass.NewTableName;
-                newColumns = SiteserverGovPublicCategoryClass.NewColumns;
-                convertDict = SiteserverGovPublicCategoryClass.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GovPublicChannel"))
-            {
-                newTableName = SiteserverGovPublicChannel.NewTableName;
-                newColumns = SiteserverGovPublicChannel.NewColumns;
-                convertDict = SiteserverGovPublicChannel.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GovPublicIdentifierRule"))
-            {
-                newTableName = SiteserverGovPublicIdentifierRule.NewTableName;
-                newColumns = SiteserverGovPublicIdentifierRule.NewColumns;
-                convertDict = SiteserverGovPublicIdentifierRule.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_GovPublicIdentifierSeq"))
-            {
-                newTableName = SiteserverGovPublicIdentifierSeq.NewTableName;
-                newColumns = SiteserverGovPublicIdentifierSeq.NewColumns;
-                convertDict = SiteserverGovPublicIdentifierSeq.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_InnerLink"))
-            {
-                newTableName = SiteserverInnerLink.NewTableName;
-                newColumns = SiteserverInnerLink.NewColumns;
-                convertDict = SiteserverInnerLink.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_Input"))
-            {
-                newTableName = SiteserverInput.NewTableName;
-                newColumns = SiteserverInput.NewColumns;
-                convertDict = SiteserverInput.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_InputContent"))
-            {
-                newTableName = SiteserverInputContent.NewTableName;
-                newColumns = SiteserverInputContent.NewColumns;
-                convertDict = SiteserverInputContent.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_Keyword"))
-            {
-                newTableName = SiteserverKeyword.NewTableName;
-                newColumns = SiteserverKeyword.NewColumns;
-                convertDict = SiteserverKeyword.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_Log"))
-            {
-                newTableName = SiteserverLog.NewTableName;
-                newColumns = SiteserverLog.NewColumns;
-                convertDict = SiteserverLog.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_MailSendLog"))
-            {
-                newTableName = SiteserverMailSendLog.NewTableName;
-                newColumns = SiteserverMailSendLog.NewColumns;
-                convertDict = SiteserverMailSendLog.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_MailSubscribe"))
-            {
-                newTableName = SiteserverMailSubscribe.NewTableName;
-                newColumns = SiteserverMailSubscribe.NewColumns;
-                convertDict = SiteserverMailSubscribe.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_MenuDisplay"))
-            {
-                newTableName = SiteserverMenuDisplay.NewTableName;
-                newColumns = SiteserverMenuDisplay.NewColumns;
-                convertDict = SiteserverMenuDisplay.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_Node"))
-            {
-                newTableName = SiteserverNode.NewTableName;
-                newColumns = SiteserverNode.NewColumns;
-                convertDict = SiteserverNode.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_NodeGroup"))
-            {
-                newTableName = SiteserverNodeGroup.NewTableName;
-                newColumns = SiteserverNodeGroup.NewColumns;
-                convertDict = SiteserverNodeGroup.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_PhotoContent"))
-            {
-                newTableName = SiteserverPhotoContent.NewTableName;
-                newColumns = SiteserverPhotoContent.NewColumns;
-                convertDict = SiteserverPhotoContent.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_PublishmentSystem"))
-            {
-                newTableName = SiteserverPublishmentSystem.NewTableName;
-                newColumns = SiteserverPublishmentSystem.NewColumns;
-                convertDict = SiteserverPublishmentSystem.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_RelatedField"))
-            {
-                newTableName = SiteserverRelatedField.NewTableName;
-                newColumns = SiteserverRelatedField.NewColumns;
-                convertDict = SiteserverRelatedField.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_RelatedFieldItem"))
-            {
-                newTableName = SiteserverRelatedFieldItem.NewTableName;
-                newColumns = SiteserverRelatedFieldItem.NewColumns;
-                convertDict = SiteserverRelatedFieldItem.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_ResumeContent"))
-            {
-                newTableName = SiteserverResumeContent.NewTableName;
-                newColumns = SiteserverResumeContent.NewColumns;
-                convertDict = SiteserverResumeContent.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_SeoMeta"))
-            {
-                newTableName = SiteserverSeoMeta.NewTableName;
-                newColumns = SiteserverSeoMeta.NewColumns;
-                convertDict = SiteserverSeoMeta.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_SeoMetasInNodes"))
-            {
-                newTableName = SiteserverSeoMetasInNodes.NewTableName;
-                newColumns = SiteserverSeoMetasInNodes.NewColumns;
-                convertDict = SiteserverSeoMetasInNodes.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_SigninLog"))
-            {
-                newTableName = SiteserverSigninLog.NewTableName;
-                newColumns = SiteserverSigninLog.NewColumns;
-                convertDict = SiteserverSigninLog.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_SigninSetting"))
-            {
-                newTableName = SiteserverSigninSetting.NewTableName;
-                newColumns = SiteserverSigninSetting.NewColumns;
-                convertDict = SiteserverSigninSetting.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_SigninUserContentID"))
-            {
-                newTableName = SiteserverSigninUserContentId.NewTableName;
-                newColumns = SiteserverSigninUserContentId.NewColumns;
-                convertDict = SiteserverSigninUserContentId.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_Star"))
-            {
-                newTableName = SiteserverStar.NewTableName;
-                newColumns = SiteserverStar.NewColumns;
-                convertDict = SiteserverStar.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_StarSetting"))
-            {
-                newTableName = SiteserverStarSetting.NewTableName;
-                newColumns = SiteserverStarSetting.NewColumns;
-                convertDict = SiteserverStarSetting.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_StlTag"))
-            {
-                newTableName = SiteserverStlTag.NewTableName;
-                newColumns = SiteserverStlTag.NewColumns;
-                convertDict = SiteserverStlTag.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_SystemPermissions"))
-            {
-                newTableName = SiteserverSystemPermissions.NewTableName;
-                newColumns = SiteserverSystemPermissions.NewColumns;
-                convertDict = SiteserverSystemPermissions.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_TagStyle"))
-            {
-                newTableName = SiteserverTagStyle.NewTableName;
-                newColumns = SiteserverTagStyle.NewColumns;
-                convertDict = SiteserverTagStyle.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_Template"))
-            {
-                newTableName = SiteserverTemplate.NewTableName;
-                newColumns = SiteserverTemplate.NewColumns;
-                convertDict = SiteserverTemplate.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_TemplateMatch"))
-            {
-                newTableName = SiteserverTemplateMatch.NewTableName;
-                newColumns = SiteserverTemplateMatch.NewColumns;
-                convertDict = SiteserverTemplateMatch.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_TemplateRule"))
-            {
-                newTableName = SiteserverTemplateRule.NewTableName;
-                newColumns = SiteserverTemplateRule.NewColumns;
-                convertDict = SiteserverTemplateRule.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_TouGaoSetting"))
-            {
-                newTableName = SiteserverTouGaoSetting.NewTableName;
-                newColumns = SiteserverTouGaoSetting.NewColumns;
-                convertDict = SiteserverTouGaoSetting.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_Tracking"))
-            {
-                newTableName = SiteserverTracking.NewTableName;
-                newColumns = SiteserverTracking.NewColumns;
-                convertDict = SiteserverTracking.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_UserGroup"))
-            {
-                newTableName = SiteserverUserGroup.NewTableName;
-                newColumns = SiteserverUserGroup.NewColumns;
-                convertDict = SiteserverUserGroup.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_Users"))
-            {
-                newTableName = SiteserverUsers.NewTableName;
-                newColumns = SiteserverUsers.NewColumns;
-                convertDict = SiteserverUsers.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_VoteOperation"))
-            {
-                newTableName = SiteserverVoteOperation.NewTableName;
-                newColumns = SiteserverVoteOperation.NewColumns;
-                convertDict = SiteserverVoteOperation.ConvertDict;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableName, "siteserver_VoteOption"))
-            {
-                newTableName = SiteserverVoteOption.NewTableName;
-                newColumns = SiteserverVoteOption.NewColumns;
-                convertDict = SiteserverVoteOption.ConvertDict;
+                converter = TableContent.GetConverter(oldTableName, oldTableInfo.Columns);
             }
 
-            if (string.IsNullOrEmpty(newTableName))
-            {
-                newTableName = oldTableName;
-            }
-            if (newColumns == null || newColumns.Count == 0)
-            {
-                newColumns = oldTableInfo.Columns;
-            }
-
-            var newTableInfo = new TableInfo
-            {
-                Columns = newColumns,
-                TotalCount = oldTableInfo.TotalCount,
-                RowFiles = oldTableInfo.RowFiles
-            };
-
-            foreach (var fileName in oldTableInfo.RowFiles)
-            {
-                var oldFilePath = OldTreeInfo.GetTableContentFilePath(oldTableName, fileName);
-                var newFilePath = NewTreeInfo.GetTableContentFilePath(newTableName, fileName);
-
-                if (convertDict != null)
-                {
-                    var oldRows =
-                        TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(oldFilePath, Encoding.UTF8));
-
-                    var newRows = UpdateUtils.UpdateRows(oldRows, convertDict);
-
-                    FileUtils.WriteText(newFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newRows));
-                }
-                else
-                {
-                    FileUtils.CopyFile(oldFilePath, newFilePath);
-                }
-            }
-
-            return new KeyValuePair<string, TableInfo>(newTableName, newTableInfo);
+            return await GetNewTableInfoAsync(oldTableName, oldTableInfo, converter);
         }
     }
 }

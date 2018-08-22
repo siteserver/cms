@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Model;
@@ -14,12 +13,8 @@ namespace SiteServer.CMS.StlParser.Parsers
     /// <summary>
     /// Stl元素解析器
     /// </summary>
-    public class StlElementParser
+    public static class StlElementParser
     {
-        private StlElementParser()
-        {
-        }
-
         /// <summary>
         /// 将原始内容中的STL元素替换为实际内容
         /// </summary>
@@ -43,14 +38,13 @@ namespace SiteServer.CMS.StlParser.Parsers
             }
         }
 
-        private static readonly Dictionary<string, Func<PageInfo, ContextInfo, string>> ElementsToParseDic = new Dictionary<string, Func<PageInfo, ContextInfo, string>>
+        public static readonly Dictionary<string, Func<PageInfo, ContextInfo, object>> ElementsToParseDic = new Dictionary<string, Func<PageInfo, ContextInfo, object>>
         {
             {StlA.ElementName.ToLower(), StlA.Parse},
             {StlAction.ElementName.ToLower(), StlAction.Parse},
             {StlAudio.ElementName.ToLower(), StlAudio.Parse},
             {StlChannel.ElementName.ToLower(), StlChannel.Parse},
             {StlChannels.ElementName.ToLower(), StlChannels.Parse},
-            {StlCode.ElementName.ToLower(), StlCode.Parse},
             {StlContainer.ElementName.ToLower(), StlContainer.Parse},
             {StlContent.ElementName.ToLower(), StlContent.Parse},
             {StlContents.ElementName.ToLower(), StlContents.Parse},
@@ -76,7 +70,6 @@ namespace SiteServer.CMS.StlParser.Parsers
             {StlSites.ElementName.ToLower(), StlSites.Parse},
             {StlSqlContent.ElementName.ToLower(), StlSqlContent.Parse},
             {StlSqlContents.ElementName.ToLower(), StlSqlContents.Parse},
-            {StlTabs.ElementName.ToLower(), StlTabs.Parse},
             {StlTags.ElementName.ToLower(), StlTags.Parse},
             {StlTree.ElementName.ToLower(), StlTree.Parse},
             {StlValue.ElementName.ToLower(), StlValue.Parse},
@@ -96,68 +89,64 @@ namespace SiteServer.CMS.StlParser.Parsers
         internal static string ParseStlElement(string stlElement, PageInfo pageInfo, ContextInfo contextInfo)
         {
             string parsedContent = null;
-            //var parsedContent = StlCacheManager.ParsedContent.GetParsedContent(stlElement, pageInfo, contextInfo);
-            //if (parsedContent != null) return parsedContent;
 
-            //if (stlElement.StartsWith("<stl:form"))
-            //{
-            //    var x = 1;
-            //    var y = 2;
-            //}
+            var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
 
-            var xmlDocument = StlParserUtility.GetXmlDocument(stlElement, contextInfo.IsInnerElement);
-            XmlNode node = xmlDocument.DocumentElement;
-            if (node != null)
+            if (stlElementInfo != null)
             {
-                node = node.FirstChild;
+                var elementName = stlElementInfo.Name;
 
-                if (node?.Name != null)
+                if (ElementsToTranslateDic.ContainsKey(elementName))
                 {
-                    var elementName = node.Name.ToLower();
-
-                    if (ElementsToTranslateDic.ContainsKey(elementName))
+                    Func<string, string> func;
+                    if (ElementsToTranslateDic.TryGetValue(elementName, out func))
                     {
-                        Func<string, string> func;
-                        if (ElementsToTranslateDic.TryGetValue(elementName, out func))
-                        {
-                            parsedContent = func(stlElement);
-                        }
+                        parsedContent = func(stlElement);
                     }
-                    else if (ElementsToParseDic.ContainsKey(elementName))
+                }
+                else if (ElementsToParseDic.ContainsKey(elementName))
+                {
+                    if (stlElementInfo.IsDynamic)
                     {
-                        var isDynamic = false;
-                        var attributes = new Dictionary<string, string>();
-                        var innerXml = StringUtils.Trim(node.InnerXml);
-                        var childNodes = node.ChildNodes;
-
-                        var ie = node.Attributes?.GetEnumerator();
-                        if (ie != null)
+                        parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
+                    }
+                    else
+                    {
+                        try
                         {
-                            while (ie.MoveNext())
+                            Func<PageInfo, ContextInfo, object> func;
+                            if (ElementsToParseDic.TryGetValue(elementName, out func))
                             {
-                                var attr = (XmlAttribute) ie.Current;
+                                var contextInfoClone = contextInfo.Clone(stlElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
-                                if (StringUtils.EqualsIgnoreCase(attr.Name, "isDynamic"))
+                                var obj = func(pageInfo, contextInfoClone);
+
+                                if (obj == null)
                                 {
-                                    isDynamic = TranslateUtils.ToBool(attr.Value, false);
+                                    parsedContent = string.Empty;
+                                }
+                                else if (obj is string)
+                                {
+                                    parsedContent = (string)obj;
                                 }
                                 else
                                 {
-                                    var key = attr.Name;
-                                    if (!string.IsNullOrEmpty(key))
-                                    {
-                                        var value = attr.Value;
-                                        if (string.IsNullOrEmpty(StringUtils.Trim(value)))
-                                        {
-                                            value = string.Empty;
-                                        }
-                                        attributes[key] = value;
-                                    }
+                                    parsedContent = TranslateUtils.JsonSerialize(obj);
                                 }
                             }
                         }
-
-                        if (isDynamic)
+                        catch (Exception ex)
+                        {
+                            parsedContent = StlParserUtility.GetStlErrorMessage(elementName, stlElement, ex);
+                        }
+                    }
+                }
+                else
+                {
+                    var parsers = PluginStlParserContentManager.GetParses();
+                    if (parsers.ContainsKey(elementName))
+                    {
+                        if (stlElementInfo.IsDynamic)
                         {
                             parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
                         }
@@ -165,11 +154,11 @@ namespace SiteServer.CMS.StlParser.Parsers
                         {
                             try
                             {
-                                Func<PageInfo, ContextInfo, string> func;
-                                if (ElementsToParseDic.TryGetValue(elementName, out func))
+                                Func<ParseContextImpl, string> func;
+                                if (parsers.TryGetValue(elementName, out func))
                                 {
-                                    parsedContent = func(pageInfo,
-                                        contextInfo.Clone(stlElement, attributes, innerXml, childNodes));
+                                    var context = new ParseContextImpl(stlElementInfo.OuterHtml, stlElementInfo.InnerHtml, stlElementInfo.Attributes, pageInfo, contextInfo);
+                                    parsedContent = func(context);
                                 }
                             }
                             catch (Exception ex)
@@ -178,78 +167,10 @@ namespace SiteServer.CMS.StlParser.Parsers
                             }
                         }
                     }
-                    else
-                    {
-                        var parsers = PluginStlParserContentManager.GetParses();
-                        if (parsers.ContainsKey(elementName))
-                        {
-                            var isDynamic = false;
-                            var attributes = new Dictionary<string, string>();
-                            var innerXml = StringUtils.Trim(node.InnerXml);
-
-                            var ie = node.Attributes?.GetEnumerator();
-                            if (ie != null)
-                            {
-                                while (ie.MoveNext())
-                                {
-                                    var attr = (XmlAttribute)ie.Current;
-
-                                    if (StringUtils.EqualsIgnoreCase(attr.Name, "isDynamic"))
-                                    {
-                                        isDynamic = TranslateUtils.ToBool(attr.Value, false);
-                                    }
-                                    else
-                                    {
-                                        var key = attr.Name;
-                                        if (!string.IsNullOrEmpty(key))
-                                        {
-                                            var value = attr.Value;
-                                            if (string.IsNullOrEmpty(StringUtils.Trim(value)))
-                                            {
-                                                value = string.Empty;
-                                            }
-                                            attributes[key] = value;
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (isDynamic)
-                            {
-                                parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
-                            }
-                            else
-                            {
-                                try
-                                {
-                                    Func<PluginParseContext, string> func;
-                                    if (parsers.TryGetValue(elementName, out func))
-                                    {
-                                        var context = new PluginParseContext(attributes, innerXml, pageInfo, contextInfo);
-                                        parsedContent = func(context);
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    parsedContent = StlParserUtility.GetStlErrorMessage(elementName, stlElement, ex);
-                                }
-                            }
-                        }
-                    }
                 }
             }
 
-            if (parsedContent == null)
-            {
-                parsedContent = stlElement;
-            }
-            else
-            {
-                parsedContent = contextInfo.IsInnerElement ? parsedContent : StlParserUtility.GetBackHtml(parsedContent, pageInfo);
-            }
-
-            //StlCacheManager.ParsedContent.SetParsedContent(stlElement, pageInfo, contextInfo, parsedContent);
-            return parsedContent;
+            return parsedContent ?? stlElement;
         }
     }
 }

@@ -8,15 +8,20 @@
       <!--#include file="../inc/head.html"-->
       <script type="text/javascript">
         $(document).ready(function () {
-          $("#btnMore").click(function(event){
+          $("#btnHeadMore").click(function(event){
             event.stopPropagation();
-            $('#dropdown-more').toggle();
+            $('#dropdownHeadMore').toggle();
+          });
+          $("#btnFootMore").click(function(event){
+            event.stopPropagation();
+            $('#dropdownFootMore').toggle();
           });
           loopRows(document.getElementById('contents'), function (cur) {
             cur.onclick = chkSelect;
           });
           $(document).click(function() {
-            $('#dropdown-more').hide();
+            $('#dropdownHeadMore').hide();
+            $('#dropdownFootMore').hide();
           });
         });
       </script>
@@ -27,20 +32,9 @@
         <ctrl:alerts runat="server" />
 
         <div class="card-box">
+          
           <div class="btn-toolbar" role="toolbar">
-            <div class="btn-group">
-              <asp:Literal ID="LtlButtons" runat="server"></asp:Literal>
-            </div>
-
-            <div class="btn-group ml-1">
-              <button id="btnMore" type="button" class="btn btn-light text-secondary dropdown-toggle">
-                更多
-                <span class="caret"></span>
-              </button>
-              <div id="dropdown-more" class="dropdown-menu">
-                <asp:Literal ID="LtlMoreButtons" runat="server"></asp:Literal>
-              </div>
-            </div>
+            <asp:Literal ID="LtlButtonsHead" runat="server"></asp:Literal>
           </div>
 
           <div id="contentSearch" class="m-t-10" style="display:none">
@@ -107,6 +101,11 @@
           </div>
 
           <ctrl:pager id="PgContents" runat="server" />
+
+          <div class="btn-toolbar" role="toolbar">
+            <asp:Literal ID="LtlButtonsFoot" runat="server"></asp:Literal>
+          </div>
+          
         </div>
 
       </form>

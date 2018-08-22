@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -15,14 +16,14 @@ namespace SiteServer.CMS.Plugin.Apis
         private static ParseApi _instance;
         public static ParseApi Instance => _instance ?? (_instance = new ParseApi());
 
-        public Dictionary<string, string> GetStlElements(string innerXml, List<string> stlElementNames)
+        public Dictionary<string, string> GetStlElements(string html, List<string> stlElementNames)
         {
-            return StlInnerUtility.GetStlElements(innerXml, stlElementNames);
+            return StlParserUtility.GetStlElements(html, stlElementNames);
         }
 
-        public string ParseInnerXml(string innerXml, IParseContext context)
+        public string Parse(string html, IParseContext context)
         {
-            return StlParserManager.ParseInnerContent(innerXml, context);
+            return StlParserManager.ParseInnerContent(html, (ParseContextImpl)context);
         }
 
         public string ParseAttributeValue(string attributeValue, IParseContext context)
@@ -36,16 +37,6 @@ namespace SiteServer.CMS.Plugin.Apis
             var pageInfo = new PageInfo(context.ChannelId, context.ContentId, siteInfo, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo);
             return StlEntityParser.ReplaceStlEntitiesForAttributeValue(attributeValue, pageInfo, contextInfo);
-        }
-
-        public string HtmlToXml(string html)
-        {
-            return StlParserUtility.HtmlToXml(html);
-        }
-
-        public string XmlToHtml(string xml)
-        {
-            return StlParserUtility.XmlToHtml(xml);
         }
 
         public string GetCurrentUrl(IParseContext context)

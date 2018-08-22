@@ -1,5 +1,5 @@
-﻿using System.Text;
-using System.Web.UI.HtmlControls;
+﻿using System.Collections.Generic;
+using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
@@ -26,7 +26,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var stlAnchor = new HtmlAnchor();
+            var attributes = new Dictionary<string, string>();
             var htmlId = string.Empty;
             var channelIndex = string.Empty;
             var channelName = string.Empty;
@@ -37,7 +37,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var queryString = string.Empty;
             var host = string.Empty; 
 
-            foreach (var name in contextInfo.Attributes.Keys)
+            foreach (var name in contextInfo.Attributes.AllKeys)
             {
                 var value = contextInfo.Attributes[name];
                 if (StringUtils.EqualsIgnoreCase(name, Id.Name))
@@ -102,22 +102,28 @@ namespace SiteServer.CMS.StlParser.StlElement
                 } 
                 else
                 {
-                    ControlUtils.AddAttributeIfNotExists(stlAnchor, name, value);
+                    attributes[name] = value;
                 }
             } 
 
-            var parsedContent = ParseImpl(pageInfo, contextInfo, stlAnchor, htmlId, channelIndex, channelName, upLevel, topLevel, removeTarget, href, queryString, host);
+            var parsedContent = ParseImpl(pageInfo, contextInfo, htmlId, channelIndex, channelName, upLevel, topLevel, removeTarget, href, queryString, host, attributes);
 
             return parsedContent;
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlAnchor stlAnchor, string htmlId, string channelIndex, string channelName, int upLevel, int topLevel, bool removeTarget, string href, string queryString, string host)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string htmlId, string channelIndex, string channelName, int upLevel, int topLevel, bool removeTarget, string href, string queryString, string host, Dictionary<string, string> attributes)
         {
             if (!string.IsNullOrEmpty(htmlId) && !string.IsNullOrEmpty(contextInfo.ContainerClientId))
             {
                 htmlId = contextInfo.ContainerClientId + "_" + htmlId;
             }
-            stlAnchor.ID = htmlId;
+
+            if (!string.IsNullOrEmpty(htmlId))
+            {
+                attributes["id"] = htmlId;
+            }
+
+            var innerHtml = string.Empty;
 
             var url = string.Empty;
             var onclick = string.Empty;
@@ -125,9 +131,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 url = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, href, pageInfo.IsLocal);
 
-                var innerBuilder = new StringBuilder(contextInfo.InnerXml);
+                var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                stlAnchor.InnerHtml = innerBuilder.ToString();
+                innerHtml = innerBuilder.ToString();
             }
             else
             {
@@ -146,7 +152,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
                         url = PageUtility.GetContentUrl(pageInfo.SiteInfo, nodeInfo, contextInfo.ContentId, pageInfo.IsLocal);
                     }
-                    if (string.IsNullOrEmpty(contextInfo.InnerXml))
+                    if (string.IsNullOrEmpty(contextInfo.InnerHtml))
                     {
                         var title = contextInfo.ContentInfo?.Title;
                         title = ContentUtility.FormatTitle(contextInfo.ContentInfo?.GetString("BackgroundContentAttribute.TitleFormatString"), title);
@@ -156,13 +162,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                             title = title.Replace("  ", string.Empty);
                         }
 
-                        stlAnchor.InnerHtml = title;
+                        innerHtml = title;
                     }
                     else
                     {
-                        var innerBuilder = new StringBuilder(contextInfo.InnerXml);
+                        var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                         StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                        stlAnchor.InnerHtml = innerBuilder.ToString();
+                        innerHtml = innerBuilder.ToString();
                     }
                 }
                 else if (contextInfo.ContextType == EContextType.Channel)//获取栏目Url
@@ -172,15 +178,15 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
 
                     url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, channel, pageInfo.IsLocal);
-                    if (contextInfo.InnerXml.Trim().Length == 0)
+                    if (string.IsNullOrWhiteSpace(contextInfo.InnerHtml))
                     {
-                        stlAnchor.InnerHtml = channel.ChannelName;
+                        innerHtml = channel.ChannelName;
                     }
                     else
                     {
-                        var innerBuilder = new StringBuilder(contextInfo.InnerXml);
+                        var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                         StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                        stlAnchor.InnerHtml = innerBuilder.ToString();
+                        innerHtml = innerBuilder.ToString();
                     }
                 }
             }
@@ -201,27 +207,25 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            stlAnchor.HRef = url;
+            attributes["href"] = url;
 
             if (!string.IsNullOrEmpty(onclick))
             {
-                stlAnchor.Attributes.Add("onclick", onclick);
+                attributes["onclick"] = onclick;
             }
 
             if (removeTarget)
             {
-                stlAnchor.Target = string.Empty;
+                attributes["target"] = string.Empty;
             }
 
             // 如果是实体标签，则只返回url
             if (contextInfo.IsStlEntity)
             {
-                return stlAnchor.HRef;
+                return url;
             }
-            else
-            {
-                return ControlUtils.GetControlRenderHtml(stlAnchor);
-            }
+
+            return $@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>";
         }
     }
 }

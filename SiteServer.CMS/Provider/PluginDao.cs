@@ -12,30 +12,30 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_Plugin";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(PluginConfigInfo.Id),
+                AttributeName = nameof(PluginInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(PluginConfigInfo.PluginId),
+                AttributeName = nameof(PluginInfo.PluginId),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(PluginInfo.IsDisabled),
+                AttributeName = nameof(PluginInfo.IsDisabled),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(PluginInfo.Taxis),
+                AttributeName = nameof(PluginInfo.Taxis),
                 DataType = DataType.Integer
             }
         };
@@ -58,7 +58,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(nameof(PluginInfo.IsDisabled), DataType.VarChar, 18, isDisabled.ToString()),
+                GetParameter(nameof(PluginInstance.IsDisabled), DataType.VarChar, 18, isDisabled.ToString()),
                 GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginId)
             };
 
@@ -71,7 +71,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(nameof(PluginInfo.Taxis), DataType.Integer, taxis),
+                GetParameter(nameof(PluginInstance.Taxis), DataType.Integer, taxis),
                 GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginId)
             };
 
@@ -108,8 +108,8 @@ namespace SiteServer.CMS.Provider
                 parameters = new IDataParameter[]
                 {
                     GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginId),
-                    GetParameter(nameof(PluginInfo.IsDisabled), DataType.VarChar, 18, false.ToString()),
-                    GetParameter(nameof(PluginInfo.Taxis), DataType.Integer, 0)
+                    GetParameter(nameof(PluginInstance.IsDisabled), DataType.VarChar, 18, false.ToString()),
+                    GetParameter(nameof(PluginInstance.Taxis), DataType.Integer, 0)
                 };
 
                 ExecuteNonQuery(sqlString, parameters);

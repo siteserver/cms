@@ -7,7 +7,7 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Data
 {
-    public class MySql : DbHelper, IDataApi
+    public class MySql : DatabaseApi, IDatabaseApi
     {
         #region Overrides
         /// <summary>

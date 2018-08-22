@@ -11,15 +11,26 @@
     <script language="javascript" src="../inc/script.js"></script>
     <script type="text/javascript">
       var siteId = <%=SiteId%>;
+      function getRedirectUrl(task) {
+        var url = '<%=RedirectUrl%>';
+        if (task.channelId) {
+          url += '&channelId=' + task.channelId;
+        }
+        if (task.contentId) {
+          url += '&contentId=' + task.contentId;
+        }
+        if (task.fileTemplateId) {
+          url += '&fileTemplateId=' + task.fileTemplateId;
+        }
+        if (task.specialId) {
+          url += '&specialId=' + task.specialId;
+        }
+        return url;
+      }
 
       $(function () {
         var create = $.connection.createHub;
-        create.client.show = function (isOnline, tasks, channelsCount, contentsCount, filesCount) {
-          if (!isOnline) {
-            $('#online').hide();
-            $('#offline').show();
-            return;
-          }
+        create.client.show = function (tasks, channelsCount, contentsCount, filesCount, specialsCount) {
           $('#tasks').html('');
           $('#channelsCount').text(channelsCount);
           channelsCount ? $('#channelsCount').css('color', '#fa0') : $('#channelsCount').css('color', '#00b19d');
@@ -27,6 +38,8 @@
           contentsCount ? $('#contentsCount').css('color', '#fa0') : $('#contentsCount').css('color', '#00b19d');
           $('#filesCount').text(filesCount);
           filesCount ? $('#filesCount').css('color', '#fa0') : $('#filesCount').css('color', '#00b19d');
+          $('#specialsCount').text(specialsCount);
+          specialsCount ? $('#specialsCount').css('color', '#fa0') : $('#specialsCount').css('color', '#00b19d');
           if (tasks && tasks.length > 0) {
             for (var i = 0; i < tasks.length; i++) {
               var task = tasks[i];
@@ -47,9 +60,7 @@
                   $('#tasks').append(
                     '<div class="form-group form-row"><label for="range_01" class="col-2 col-form-label">' +
                     task.type +
-                    '<span class="font-normal text-muted clearfix">生成成功</span></label><div class="col-10"><div class="progress progress-lg m-b-5" style="margin-top: 18px"><div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="96" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"><a href="<%=SiteUrl%>&channelId=' +
-                    task.channelId + '&contentId=' + task.contentId + '&templateId=' + task.templateId +
-                    '" target="_blank" style="color:#fff;">' + task.name + '（用时：' + task.timeSpan + '）' +
+                    '<span class="font-normal text-muted clearfix">生成成功</span></label><div class="col-10"><div class="progress progress-lg m-b-5" style="margin-top: 18px"><div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="96" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"><a href="' + getRedirectUrl(task) + '" target="_blank" style="color:#fff;">' + task.name + '（用时：' + task.timeSpan + '）' +
                     '</a></div></div></div></div>');
                 } else {
                   $('#tasks').append(
@@ -80,26 +91,8 @@
 
   <body>
     <form class="m-l-15 m-r-15" runat="server">
-      <div id="offline" class="row" style="display: none; ">
-        <div class="col-12">
-          <div class="card-box">
-            <div class="row">
 
-              <div class="col-12">
-                <div class="alert alert-danger fade in m-b-0">
-                  <h4>siteserver.exe 服务组件未启动</h4>
-                  <p>
-                    siteserver.exe 服务组件未启动，请在SiteServer系统根目录下双击运行siteserver.exe程序启用服务。
-                  </p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="online" class="row">
+      <div class="row">
         <div class="col-12">
 
           <div class="card-box">
@@ -126,6 +119,12 @@
                     <span id="filesCount" style="color: #00b19d">0</span>
                     <span>
                       <b>文件页</b>
+                    </span>
+                  </div>
+                  <div>
+                    <span id="specialsCount" style="color: #00b19d">0</span>
+                    <span>
+                      <b>专题页</b>
                     </span>
                   </div>
                 </div>

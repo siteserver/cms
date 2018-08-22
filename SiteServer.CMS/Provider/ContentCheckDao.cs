@@ -11,75 +11,69 @@ namespace SiteServer.CMS.Provider
 	{
         public override string TableName => "siteserver_ContentCheck";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentCheckInfo.Id),
+                AttributeName = nameof(ContentCheckInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentCheckInfo.TableName),
+                AttributeName = nameof(ContentCheckInfo.TableName),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentCheckInfo.SiteId),
+                AttributeName = nameof(ContentCheckInfo.SiteId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentCheckInfo.ChannelId),
+                AttributeName = nameof(ContentCheckInfo.ChannelId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentCheckInfo.ContentId),
+                AttributeName = nameof(ContentCheckInfo.ContentId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentCheckInfo.IsAdmin),
+                AttributeName = nameof(ContentCheckInfo.UserName),
                 DataType = DataType.VarChar,
-                Length = 18
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentCheckInfo.UserName),
+                AttributeName = nameof(ContentCheckInfo.IsChecked),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 18
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentCheckInfo.IsChecked),
-                DataType = DataType.VarChar,
-                Length = 18
-            },
-            new TableColumnInfo
-            {
-                ColumnName = nameof(ContentCheckInfo.CheckedLevel),
+                AttributeName = nameof(ContentCheckInfo.CheckedLevel),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentCheckInfo.CheckDate),
+                AttributeName = nameof(ContentCheckInfo.CheckDate),
                 DataType = DataType.DateTime
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentCheckInfo.Reasons),
+                AttributeName = nameof(ContentCheckInfo.Reasons),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             }
         };
 
-        private const string SqlSelect = "SELECT Id, TableName, SiteId, ChannelId, ContentId, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons FROM siteserver_ContentCheck WHERE Id = @Id";
+        private const string SqlSelect = "SELECT Id, TableName, SiteId, ChannelId, ContentId, UserName, IsChecked, CheckedLevel, CheckDate, Reasons FROM siteserver_ContentCheck WHERE Id = @Id";
 
-        private const string SqlSelectAll = "SELECT Id, TableName, SiteId, ChannelId, ContentId, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons FROM siteserver_ContentCheck WHERE TableName = @TableName AND ContentId = @ContentId ORDER BY Id DESC";
+        private const string SqlSelectAll = "SELECT Id, TableName, SiteId, ChannelId, ContentId, UserName, IsChecked, CheckedLevel, CheckDate, Reasons FROM siteserver_ContentCheck WHERE TableName = @TableName AND ContentId = @ContentId ORDER BY Id DESC";
 
         private const string SqlDelete = "DELETE FROM siteserver_ContentCheck WHERE Id = @Id";
 
@@ -88,7 +82,6 @@ namespace SiteServer.CMS.Provider
 		private const string ParmSiteId = "@SiteId";
         private const string ParmChannelId = "@ChannelId";
         private const string ParmContentId = "@ContentId";
-        private const string ParmIsAdmin = "@IsAdmin";
         private const string ParmUserName = "@UserName";
         private const string ParmIsChecked = "@IsChecked";
         private const string ParmCheckedLevel = "@CheckedLevel";
@@ -97,7 +90,7 @@ namespace SiteServer.CMS.Provider
 
 		public void Insert(ContentCheckInfo checkInfo)
 		{
-            const string sqlString = "INSERT INTO siteserver_ContentCheck (TableName, SiteId, ChannelId, ContentId, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons) VALUES (@TableName, @SiteId, @ChannelId, @ContentId, @IsAdmin, @UserName, @IsChecked, @CheckedLevel, @CheckDate, @Reasons)";
+            const string sqlString = "INSERT INTO siteserver_ContentCheck (TableName, SiteId, ChannelId, ContentId, UserName, IsChecked, CheckedLevel, CheckDate, Reasons) VALUES (@TableName, @SiteId, @ChannelId, @ContentId, @UserName, @IsChecked, @CheckedLevel, @CheckDate, @Reasons)";
 
 			var parms = new IDataParameter[]
 			{
@@ -105,7 +98,6 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmSiteId, DataType.Integer, checkInfo.SiteId),
                 GetParameter(ParmChannelId, DataType.Integer, checkInfo.ChannelId),
                 GetParameter(ParmContentId, DataType.Integer, checkInfo.ContentId),
-                GetParameter(ParmIsAdmin, DataType.VarChar, 18, checkInfo.IsAdmin.ToString()),
                 GetParameter(ParmUserName, DataType.VarChar, 255, checkInfo.UserName),
                 GetParameter(ParmIsChecked, DataType.VarChar, 18, checkInfo.IsChecked.ToString()),
                 GetParameter(ParmCheckedLevel, DataType.Integer, checkInfo.CheckedLevel),
@@ -140,7 +132,7 @@ namespace SiteServer.CMS.Provider
 				if (rdr.Read())
 				{
 				    var i = 0;
-                    checkInfo = new ContentCheckInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i));
+                    checkInfo = new ContentCheckInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i));
 				}
 				rdr.Close();
 			}
@@ -152,8 +144,8 @@ namespace SiteServer.CMS.Provider
         {
             ContentCheckInfo checkInfo = null;
 
-            //var sqlString = "SELECT TOP 1 Id, TableName, SiteId, ChannelId, ContentId, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons FROM siteserver_ContentCheck WHERE TableName = @TableName AND ContentId = @ContentId ORDER BY Id DESC";
-            var sqlString = SqlUtils.ToTopSqlString(TableName, "Id, TableName, SiteId, ChannelId, ContentId, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons", "WHERE TableName = @TableName AND ContentId = @ContentId", "ORDER BY Id DESC", 1);
+            //var sqlString = "SELECT TOP 1 Id, TableName, SiteId, ChannelId, ContentId, UserName, IsChecked, CheckedLevel, CheckDate, Reasons FROM siteserver_ContentCheck WHERE TableName = @TableName AND ContentId = @ContentId ORDER BY Id DESC";
+            var sqlString = SqlUtils.ToTopSqlString(TableName, "Id, TableName, SiteId, ChannelId, ContentId, UserName, IsChecked, CheckedLevel, CheckDate, Reasons", "WHERE TableName = @TableName AND ContentId = @ContentId", "ORDER BY Id DESC", 1);
 
             var parms = new IDataParameter[]
 			{
@@ -166,7 +158,7 @@ namespace SiteServer.CMS.Provider
                 if (rdr.Read())
                 {
                     var i = 0;
-                    checkInfo = new ContentCheckInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i));
+                    checkInfo = new ContentCheckInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i));
                 }
                 rdr.Close();
             }
@@ -189,7 +181,7 @@ namespace SiteServer.CMS.Provider
 				while (rdr.Read())
 				{
 				    var i = 0;
-                    list.Add(new ContentCheckInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i)));
+                    list.Add(new ContentCheckInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i)));
 				}
 				rdr.Close();
 			}

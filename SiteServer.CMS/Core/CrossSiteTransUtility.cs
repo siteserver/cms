@@ -3,16 +3,13 @@ using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
-    public class CrossSiteTransUtility
+    public static class CrossSiteTransUtility
     {
-        private CrossSiteTransUtility()
-        {
-        }
-
         public static bool IsCrossSiteTrans(SiteInfo siteInfo, ChannelInfo channelInfo)
         {
             var isCrossSiteTrans = false;

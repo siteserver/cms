@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
+            VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
             SpContents.DataBind();
             BtnAdd.Attributes.Add("onclick", ModalKeywordAdd.GetOpenWindowStringToAdd());

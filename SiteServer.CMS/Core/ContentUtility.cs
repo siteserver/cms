@@ -5,40 +5,41 @@ using SiteServer.Utils;
 using System.Web.UI.WebControls;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
 using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
-    public class ContentUtility
+    public static class ContentUtility
     {
-        private ContentUtility()
-        {
-        }
-
-        public static string PagePlaceHolder = "[SITESERVER_PAGE]";//内容翻页展位符
+        public static string PagePlaceHolder = "[SITESERVER_PAGE]";//内容翻页占位符
 
         public static string TextEditorContentEncode(SiteInfo siteInfo, string content)
         {
             if (siteInfo == null) return content;
-
-            var url = siteInfo.Additional.WebUrl;
+            
             if (siteInfo.Additional.IsSaveImageInTextEditor && !string.IsNullOrEmpty(content))
             {
                 content = PathUtility.SaveImage(siteInfo, content);
             }
 
-            if (string.IsNullOrEmpty(url) || url == "/")
-            {
-                return content;
-            }
-
             var builder = new StringBuilder(content);
 
-            StringUtils.ReplaceHrefOrSrc(builder, url, "@");
+            var url = siteInfo.Additional.WebUrl;
+            if (!string.IsNullOrEmpty(url) && url != "/")
+            {
+                StringUtils.ReplaceHrefOrSrc(builder, url, "@");
+            }
+            //if (!string.IsNullOrEmpty(url))
+            //{
+            //    StringUtils.ReplaceHrefOrSrc(builder, url, "@");
+            //}
+
+            var relatedSiteUrl = PageUtils.ParseNavigationUrl($"~/{siteInfo.SiteDir}");
+            StringUtils.ReplaceHrefOrSrc(builder, relatedSiteUrl, "@");
 
             builder.Replace("@'@", "'@");
             builder.Replace("@\"@", "\"@");
@@ -56,8 +57,8 @@ namespace SiteServer.CMS.Core
             string assetsUrl;
             if (isLocal)
             {
-                assetsUrl = PageUtility.GetLocalSiteUrl(siteInfo,
-                    siteInfo.Additional.AssetsDir);
+                assetsUrl = PageUtility.GetSiteUrl(siteInfo,
+                    siteInfo.Additional.AssetsDir, true);
             }
             else
             {
@@ -226,13 +227,6 @@ namespace SiteServer.CMS.Core
             {
                 builder.Append(content);
             }
-        }
-
-        public static int GetRealContentId(string tableName, int contentId)
-        {
-            string linkUrl;
-            var referenceId = DataProvider.ContentDao.GetReferenceId(tableName, contentId, out linkUrl);
-            return referenceId > 0 ? referenceId : contentId;
         }
 
         public static List<TableStyleInfo> GetAllTableStyleInfoList(List<TableStyleInfo> tableStyleInfoList)
@@ -455,11 +449,11 @@ namespace SiteServer.CMS.Core
                 var targetSiteId = TranslateUtils.ToInt(translates[0]);
                 var targetChannelId = TranslateUtils.ToInt(translates[1]);
 
-                Translate(siteInfo, channelId, contentId, targetSiteId, targetChannelId, translateType, administratorName);
+                Translate(siteInfo, channelId, contentId, targetSiteId, targetChannelId, translateType);
             }
         }
 
-        public static void Translate(SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, ETranslateContentType translateType, string administratorName)
+        public static void Translate(SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, ETranslateContentType translateType)
         {
             if (siteInfo == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
 
@@ -587,7 +581,7 @@ namespace SiteServer.CMS.Core
             {
                 foreach (var ids in TranslateUtils.StringCollectionToStringList(queryString["IDsCollection"]))
                 {
-                    var channelId = TranslateUtils.ToInt(ids.Split('_')[0]);
+                    var channelId = TranslateUtils.ToIntWithNagetive(ids.Split('_')[0]);
                     var contentId = TranslateUtils.ToInt(ids.Split('_')[1]);
                     var contentIdList = new List<int>();
                     if (dic.ContainsKey(channelId))
@@ -609,32 +603,6 @@ namespace SiteServer.CMS.Core
             }
 
             return dic;
-        }
-
-        public static Dictionary<string, object> ContentToDictionary(ContentInfo contentInfo, string tableName, List<int> relatedIdentities)
-        {
-            var dict = TranslateUtils.ObjectToDictionary(contentInfo);
-            dict.Remove("Attributes");
-
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
-            foreach (var styleInfo in styleInfoList)
-            {
-                if (!dict.ContainsKey(styleInfo.AttributeName))
-                {
-                    dict[styleInfo.AttributeName] = contentInfo.GetString(styleInfo.AttributeName);
-                }
-                if (styleInfo.InputType == InputType.Image)
-                {
-                    var extendName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
-                    var extendValue = contentInfo.GetString(extendName);
-                    if (!string.IsNullOrEmpty(extendValue))
-                    {
-                        dict[extendName] = extendValue;
-                    }
-                }
-            }
-
-            return dict;
         }
 
         public static string GetTitleHtml(string titleFormat, string titleAjaxUrl)

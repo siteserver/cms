@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Model

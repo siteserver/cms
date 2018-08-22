@@ -39,12 +39,21 @@ namespace SiteServer.BackgroundPages
             });
         }
 
-        public static string GetRedirectUrlToFile(int siteId, int templateId)
+        public static string GetRedirectUrlToFile(int siteId, int fileTemplateId)
         {
             return PageUtils.GetSiteServerUrl(nameof(PageRedirect), new NameValueCollection
             {
                 {nameof(siteId), siteId.ToString() },
-                {nameof(templateId), templateId.ToString() }
+                {nameof(fileTemplateId), fileTemplateId.ToString() }
+            });
+        }
+
+        public static string GetRedirectUrlToSpecial(int siteId, int specialId)
+        {
+            return PageUtils.GetSiteServerUrl(nameof(PageRedirect), new NameValueCollection
+            {
+                {nameof(siteId), siteId.ToString() },
+                {nameof(specialId), specialId.ToString() }
             });
         }
 
@@ -53,7 +62,8 @@ namespace SiteServer.BackgroundPages
             var siteId = TranslateUtils.ToInt(Request.QueryString["siteId"]);
             var channelId = TranslateUtils.ToInt(Request.QueryString["channelId"]);
             var contentId = TranslateUtils.ToInt(Request.QueryString["contentId"]);
-            var templateId = TranslateUtils.ToInt(Request.QueryString["templateId"]);
+            var fileTemplateId = TranslateUtils.ToInt(Request.QueryString["fileTemplateId"]);
+            var specialId = TranslateUtils.ToInt(Request.QueryString["specialId"]);
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var url = string.Empty;
             var isLocal = siteInfo.Additional.IsSeparatedWeb || siteInfo.Additional.IsSeparatedAssets;
@@ -68,9 +78,13 @@ namespace SiteServer.BackgroundPages
                 var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 url = PageUtility.GetChannelUrl(siteInfo, nodeInfo, isLocal);
             }
-            else if (siteId > 0 && templateId > 0)
+            else if (siteId > 0 && fileTemplateId > 0)
             {
-                url = PageUtility.GetFileUrl(siteInfo, templateId, isLocal);
+                url = PageUtility.GetFileUrl(siteInfo, fileTemplateId, isLocal);
+            }
+            else if (siteId > 0 && specialId > 0)
+            {
+                url = PageUtility.GetSpecialUrl(siteInfo, specialId, isLocal);
             }
             else if (siteId > 0)
             {

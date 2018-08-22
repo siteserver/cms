@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using System.Xml;
+using System.Collections.Specialized;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Cache;
@@ -32,20 +31,18 @@ namespace SiteServer.CMS.StlParser.Model
             ItemContainer = contextInfo.ItemContainer;
             ContainerClientId = contextInfo.ContainerClientId;
 
-            StlElement = contextInfo.StlElement;
+            OuterHtml = contextInfo.OuterHtml;
+            InnerHtml = contextInfo.InnerHtml;
             Attributes = contextInfo.Attributes;
-            InnerXml = contextInfo.InnerXml;
-            ChildNodes = contextInfo.ChildNodes;
         }
 
-        public ContextInfo Clone(string stlElement, Dictionary<string, string> attributes, string innerXml, XmlNodeList childNodes)
+        public ContextInfo Clone(string outerHtml, string innerHtml, NameValueCollection attributes)
         {
             var contextInfo = new ContextInfo(this)
             {
-                StlElement = stlElement,
-                Attributes = attributes,
-                InnerXml = innerXml,
-                ChildNodes = childNodes
+                OuterHtml = outerHtml,
+                InnerHtml = innerHtml,
+                Attributes = attributes
             };
             return contextInfo;
         }
@@ -64,13 +61,11 @@ namespace SiteServer.CMS.StlParser.Model
 
         public int ContentId { get; set; }
 
-        public string StlElement { get; set; }
+        public string OuterHtml { get; set; }
 
-        public Dictionary<string, string> Attributes { get; set; }
+        public string InnerHtml { get; set; }
 
-        public string InnerXml { get; set; }
-
-        public XmlNodeList ChildNodes { get; set; }
+        public NameValueCollection Attributes { get; set; }
 
         public ContentInfo ContentInfo
         {

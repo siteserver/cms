@@ -17,12 +17,12 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowString()
         {
-            return LayerUtils.GetOpenScript("添加辅助表", PageUtils.GetSettingsUrl(nameof(ModalAuxiliaryTableAdd), null), 580, 450);
+            return LayerUtils.GetOpenScript("添加内容表", PageUtils.GetSettingsUrl(nameof(ModalAuxiliaryTableAdd), null), 580, 450);
         }
 
         public static string GetOpenWindowString(string tableName)
         {
-            return LayerUtils.GetOpenScript("编辑辅助表", PageUtils.GetSettingsUrl(nameof(ModalAuxiliaryTableAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("编辑内容表", PageUtils.GetSettingsUrl(nameof(ModalAuxiliaryTableAdd), new NameValueCollection
             {
                 {"tableName", tableName}
             }), 580, 450);
@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.Site);
+            VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
             if (!string.IsNullOrEmpty(_tableName))
             {
@@ -63,9 +63,9 @@ namespace SiteServer.BackgroundPages.Settings
 
                 DataProvider.TableDao.Update(info);
 
-                AuthRequest.AddAdminLog("修改辅助表", $"辅助表:{_tableName}");
+                AuthRequest.AddAdminLog("修改内容表", $"内容表:{_tableName}");
 
-                SuccessMessage("辅助表修改成功！");
+                SuccessMessage("内容表修改成功！");
                 LayerUtils.Close(Page);
             }
             else
@@ -73,11 +73,11 @@ namespace SiteServer.BackgroundPages.Settings
                 var tableNameList = DataProvider.TableDao.GetTableNameList();
                 if (tableNameList.IndexOf(TbTableName.Text) != -1)
                 {
-                    FailMessage("辅助表添加失败，辅助表标识已存在！");
+                    FailMessage("内容表添加失败，内容表标识已存在！");
                 }
                 else if (DataProvider.DatabaseDao.IsTableExists(TbTableName.Text))
                 {
-                    FailMessage("辅助表添加失败，数据库中已存在此表！");
+                    FailMessage("内容表添加失败，数据库中已存在此表！");
                 }
                 else
                 {
@@ -90,9 +90,9 @@ namespace SiteServer.BackgroundPages.Settings
 
                     DataProvider.TableDao.Insert(info, DataProvider.TableMetadataDao.GetDefaultTableMetadataInfoList(info.TableName));
 
-                    AuthRequest.AddAdminLog("添加辅助表", $"辅助表:{TbTableName.Text}");
+                    AuthRequest.AddAdminLog("添加内容表", $"内容表:{TbTableName.Text}");
 
-                    SuccessMessage("辅助表添加成功！");
+                    SuccessMessage("内容表添加成功！");
                     LayerUtils.Close(Page);
                 }
             }

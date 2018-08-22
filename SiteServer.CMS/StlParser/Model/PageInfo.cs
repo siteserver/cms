@@ -50,14 +50,8 @@ namespace SiteServer.CMS.StlParser.Model
 
         public int UniqueId
         {
-            get
-            {
-                return _uniqueId++;
-            }
-            set
-            {
-                _uniqueId = value;
-            }
+            get => _uniqueId++;
+            set => _uniqueId = value;
         }
 
         public PageInfo Clone()
@@ -78,7 +72,7 @@ namespace SiteServer.CMS.StlParser.Model
             SiteInfo = siteInfo;
             UserInfo = null;
             _uniqueId = 1;
-            ApiUrl = ApiManager.OuterApiUrl;
+            ApiUrl = ApiManager.ApiUrl;
 
             ChannelItems = new Stack<ChannelItemInfo>(5);
             ContentItems = new Stack<ContentItemInfo>(5);
@@ -209,7 +203,6 @@ namespace SiteServer.CMS.StlParser.Model
             public const string JsAcAudioJs = "Js_Ac_AudioJs";                    //audio.js
             public const string JsAcVideoJs = "Js_Ac_VideoJs";                    //video.js
 
-            public const string JsAdStlCountHits = "Js_Ad_StlCountHits";          //统计访问量
             public const string JsAeStlZoom = "Js_Ae_StlZoom";                    //文字缩放
             public const string JsAfStlPrinter = "Js_Af_StlPrinter";              //打印
             public const string JsAgStlTreeNotAjax = "Js_Ag_StlTreeNotAjax";                    //树状导航
@@ -229,13 +222,16 @@ namespace SiteServer.CMS.StlParser.Model
 
             if (pageJsName == Const.Jquery)
             {
-                retval =
-                        $"<script src=\"{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Jquery)}\" type=\"text/javascript\"></script>";
+                if (SiteInfo.Additional.IsCreateWithJQuery)
+                {
+                    retval =
+                        $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Jquery)}"" type=""text/javascript""></script>";
+                }
             }
             else if (pageJsName == Const.Vue)
             {
                 retval =
-                    $"<script src=\"{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Vue)}\" type=\"text/javascript\"></script>";
+                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Vue)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.JsCookie)
             {
@@ -250,17 +246,17 @@ namespace SiteServer.CMS.StlParser.Model
             else if (pageJsName == Const.BAjaxUpload)
             {
                 retval =
-                    $"<script src=\"{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.AjaxUpload.Js)}\" type=\"text/javascript\"></script>";
+                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.AjaxUpload.Js)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BQueryString)
             {
                 retval =
-                    $"<script src=\"{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.QueryString.Js)}\" type=\"text/javascript\"></script>";
+                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.QueryString.Js)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BjQueryForm)
             {
                 retval =
-                    $"<script src=\"{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.JQueryForm.Js)}\" type=\"text/javascript\"></script>";
+                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.JQueryForm.Js)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BShowLoading)
             {

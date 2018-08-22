@@ -49,7 +49,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifyAdministratorPermissions(ConfigManager.SettingsPermissions.User);
+            VerifySystemPermissions(ConfigManager.SettingsPermissions.User);
 
             LtlPageTitle.Text = _userId == 0 ? "添加用户" : "编辑用户";
 

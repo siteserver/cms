@@ -1,7 +1,11 @@
-﻿using System.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -18,16 +22,18 @@ namespace SiteServer.CMS.StlParser.StlElement
         protected static readonly Attr IsTotal = new Attr("isTotal", "是否从所有栏目中选择", AttrType.Boolean);						//是否从所有栏目中选择（包括首页）
         protected static readonly Attr IsAllChildren = new Attr("isAllChildren", "是否显示所有级别的子栏目", AttrType.Boolean);			//是否显示所有级别的子栏目
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            // 如果是实体标签则返回空
-            if(contextInfo.IsStlEntity)
-            {
-                return string.Empty;
-            }
-            var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.Channel);
+            var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.Channel);
 
-            return ParseImpl(pageInfo, contextInfo, listInfo);
+            var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
+
+            if (contextInfo.IsStlEntity)
+            {
+                return ParseEntity(pageInfo, dataSource);
+            }
+
+            return ParseElement(pageInfo, contextInfo, listInfo, dataSource);
         }
 
         public static DataSet GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
@@ -46,11 +52,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             return StlDataUtility.GetChannelsDataSource(pageInfo.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImageExists, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.Scope, isTotal, listInfo.Where);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
+        private static string ParseElement(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, DataSet dataSource)
         {
             var parsedContent = string.Empty;
-
-            var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
 
             if (listInfo.Layout == ELayout.None)
             {
@@ -122,6 +126,24 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             return parsedContent;
+        }
+
+        private static object ParseEntity(PageInfo pageInfo, DataSet dataSource)
+        {
+            var channelInfoList = new List<ChannelInfo>();
+            var table = dataSource.Tables[0];
+            foreach (DataRow row in table.Rows)
+            {
+                var channelId = Convert.ToInt32(row[nameof(ContentAttribute.Id)]);
+
+                var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
+                if (channelInfo != null)
+                {
+                    channelInfoList.Add(channelInfo);
+                }
+            }
+
+            return channelInfoList;
         }
     }
 }

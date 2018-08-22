@@ -26,7 +26,7 @@
               <a class="nav-link" href="pageSiteUrlApi.aspx">API访问地址</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">辅助表管理</a>
+              <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">内容表管理</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="pageSiteKeyword.aspx">敏感词管理</a>
@@ -55,7 +55,6 @@
                       <th class="text-center">保存为站点模板</th>
                       <th class="text-center">修改属性</th>
                       <th class="text-center">站点路径转移</th>
-                      <th class="text-center">整站替换</th>
                       <th class="text-center">整站删除</th>
                       <th class="text-center">上升</th>
                       <th class="text-center">下降</th>
@@ -82,9 +81,6 @@
                           </td>
                           <td class="text-center">
                             <asp:Literal ID="ltlChangeType" runat="server"></asp:Literal>
-                          </td>
-                          <td class="text-center">
-                            <asp:Literal ID="ltlReplace" runat="server"></asp:Literal>
                           </td>
                           <td class="text-center">
                             <asp:Literal ID="ltlDelete" runat="server"></asp:Literal>

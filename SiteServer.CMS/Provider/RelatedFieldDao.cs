@@ -11,42 +11,42 @@ namespace SiteServer.CMS.Provider
 	{
         public override string TableName => "siteserver_RelatedField";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(RelatedFieldInfo.Id),
+                AttributeName = nameof(RelatedFieldInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(RelatedFieldInfo.Title),
+                AttributeName = nameof(RelatedFieldInfo.Title),
                 DataType = DataType.VarChar,
-                Length = 50
+                DataLength = 50
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(RelatedFieldInfo.SiteId),
+                AttributeName = nameof(RelatedFieldInfo.SiteId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(RelatedFieldInfo.TotalLevel),
+                AttributeName = nameof(RelatedFieldInfo.TotalLevel),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(RelatedFieldInfo.Prefixes),
+                AttributeName = nameof(RelatedFieldInfo.Prefixes),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(RelatedFieldInfo.Suffixes),
+                AttributeName = nameof(RelatedFieldInfo.Suffixes),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             }
         };
 

@@ -26,7 +26,11 @@ namespace SiteServer.CMS.Core
 
 	    public List<PermissionConfig> WebsitePermissions { get; } = new List<PermissionConfig>();
 
-	    public List<PermissionConfig> ChannelPermissions { get; } = new List<PermissionConfig>();
+	    public List<PermissionConfig> WebsiteSysPermissions { get; } = new List<PermissionConfig>();
+
+	    public List<PermissionConfig> WebsitePluginPermissions { get; } = new List<PermissionConfig>();
+
+        public List<PermissionConfig> ChannelPermissions { get; } = new List<PermissionConfig>();
 
 	    private PermissionConfigManager()
 		{
@@ -69,7 +73,8 @@ namespace SiteServer.CMS.Core
 		            }
 		            else if (child.Name == "websitePermissions")
 		            {
-		                GetPermissions(child, WebsitePermissions);
+		                GetPermissions(child, WebsiteSysPermissions);
+                        GetPermissions(child, WebsitePermissions);
 		            }
 		            else if (child.Name == "channelPermissions")
 		            {
@@ -88,8 +93,10 @@ namespace SiteServer.CMS.Core
 		    }
 
             GeneralPermissions.AddRange(PluginMenuManager.GetTopPermissions());
-            WebsitePermissions.AddRange(PluginMenuManager.GetSitePermissions(0));
-		}
+		    var pluginPermissions = PluginMenuManager.GetSitePermissions(0);
+            WebsitePluginPermissions.AddRange(pluginPermissions);
+		    WebsitePermissions.AddRange(pluginPermissions);
+        }
 
         private static void GetPermissions(XmlNode node, List<PermissionConfig> list) 
 		{

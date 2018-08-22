@@ -11,32 +11,32 @@ namespace SiteServer.CMS.Provider
 	{
         public override string TableName => "siteserver_Role";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Id",
+                AttributeName = nameof(RoleInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "RoleName",
+                AttributeName = nameof(RoleInfo.RoleName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "CreatorUserName",
+                AttributeName = nameof(RoleInfo.CreatorUserName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = "Description",
+                AttributeName = nameof(RoleInfo.Description),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             }
         };
 
@@ -84,7 +84,7 @@ namespace SiteServer.CMS.Provider
 			return creatorUserName;
 		}
 
-        public List<string> GetAllRoles()
+        public List<string> GetRoleNameList()
         {
             var list = new List<string>();
             const string sqlSelect = "SELECT RoleName FROM siteserver_Role ORDER BY RoleName";
@@ -101,7 +101,7 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-		public List<string> GetAllRolesByCreatorUserName(string creatorUserName)
+		public List<string> GetRoleNameListByCreatorUserName(string creatorUserName)
 		{
 			var list = new List<string>();
 
@@ -124,17 +124,17 @@ namespace SiteServer.CMS.Provider
 		    return list;
 		}
 
-        public void InsertRole(string roleName, string creatorUserName, string description)
+        public void InsertRole(RoleInfo roleInfo)
         {
-            if (EPredefinedRoleUtils.IsPredefinedRole(roleName)) return;
+            if (EPredefinedRoleUtils.IsPredefinedRole(roleInfo.RoleName)) return;
 
             const string sqlString = "INSERT INTO siteserver_Role (RoleName, CreatorUserName, Description) VALUES (@RoleName, @CreatorUserName, @Description)";
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleName, DataType.VarChar, 255, roleName),
-                GetParameter(ParmCreatorUsername, DataType.VarChar, 255, creatorUserName),
-                GetParameter(ParmDescription, DataType.VarChar, 255, description)
+				GetParameter(ParmRoleName, DataType.VarChar, 255, roleInfo.RoleName),
+                GetParameter(ParmCreatorUsername, DataType.VarChar, 255, roleInfo.CreatorUserName),
+                GetParameter(ParmDescription, DataType.VarChar, 255, roleInfo.Description)
 			};
 
             ExecuteNonQuery(sqlString, parms);

@@ -6,35 +6,38 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
 {
-    public class DataProvider
+    public static class DataProvider
     {
-        private static IDataApi _dataApi;
-        public static IDataApi DataApi
+        private static IDatabaseApi _databaseApi;
+        public static IDatabaseApi DatabaseApi
         {
             get
             {
-                if (_dataApi != null) return _dataApi;
+                if (_databaseApi != null) return _databaseApi;
 
                 if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
                 {
-                    _dataApi = new Data.MySql();
+                    _databaseApi = new Data.MySql();
                 }
                 else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
                 {
-                    _dataApi = new SqlServer();
+                    _databaseApi = new SqlServer();
                 }
                 else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
                 {
-                    _dataApi = new PostgreSql();
+                    _databaseApi = new PostgreSql();
                 }
                 else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
                 {
-                    _dataApi = new Data.Oracle();
+                    _databaseApi = new Data.Oracle();
                 }
 
-                return _dataApi;
+                return _databaseApi;
             }
         }
+
+        private static AccessTokenDao _accessTokenDao;
+        public static AccessTokenDao AccessTokenDao => _accessTokenDao ?? (_accessTokenDao = new AccessTokenDao());
 
         private static AdministratorDao _administratorDao;
         public static AdministratorDao AdministratorDao => _administratorDao ?? (_administratorDao = new AdministratorDao());
@@ -63,9 +66,6 @@ namespace SiteServer.CMS.Core
         private static ContentGroupDao _contentGroupDao;
         public static ContentGroupDao ContentGroupDao => _contentGroupDao ?? (_contentGroupDao = new ContentGroupDao());
 
-        private static CountDao _countDao;
-        public static CountDao CountDao => _countDao ?? (_countDao = new CountDao());
-
         private static DatabaseDao _databaseDao;
         public static DatabaseDao DatabaseDao => _databaseDao ?? (_databaseDao = new DatabaseDao());
 
@@ -93,12 +93,6 @@ namespace SiteServer.CMS.Core
         private static PluginDao _pluginDao;
         public static PluginDao PluginDao => _pluginDao ?? (_pluginDao = new PluginDao());
 
-        private static SiteDao _siteDao;
-        public static SiteDao SiteDao => _siteDao ?? (_siteDao = new SiteDao());
-
-        private static SiteLogDao _siteLogDao;
-        public static SiteLogDao SiteLogDao => _siteLogDao ?? (_siteLogDao = new SiteLogDao());
-
         private static RecordDao _recordDao;
         public static RecordDao RecordDao => _recordDao ?? (_recordDao = new RecordDao());
 
@@ -111,14 +105,20 @@ namespace SiteServer.CMS.Core
         private static RoleDao _roleDao;
         public static RoleDao RoleDao => _roleDao ?? (_roleDao = new RoleDao());
 
+        private static SiteDao _siteDao;
+        public static SiteDao SiteDao => _siteDao ?? (_siteDao = new SiteDao());
+
+        private static SiteLogDao _siteLogDao;
+        public static SiteLogDao SiteLogDao => _siteLogDao ?? (_siteLogDao = new SiteLogDao());
+
         private static SitePermissionsDao _sitePermissionsDao;
         public static SitePermissionsDao SitePermissionsDao => _sitePermissionsDao ?? (_sitePermissionsDao = new SitePermissionsDao());
 
+        private static SpecialDao _specialDao;
+        public static SpecialDao SpecialDao => _specialDao ?? (_specialDao = new SpecialDao());
+
         private static TableDao _tableDao;
         public static TableDao TableDao => _tableDao ?? (_tableDao = new TableDao());
-
-        private static TableMatchDao _tableMatchDao;
-        public static TableMatchDao TableMatchDao => _tableMatchDao ?? (_tableMatchDao = new TableMatchDao());
 
         private static TableMetadataDao _tableMetadataDao;
         public static TableMetadataDao TableMetadataDao => _tableMetadataDao ?? (_tableMetadataDao = new TableMetadataDao());
@@ -147,8 +147,52 @@ namespace SiteServer.CMS.Core
         private static UserLogDao _userLogDao;
         public static UserLogDao UserLogDao => _userLogDao ?? (_userLogDao = new UserLogDao());
 
+        public static void Reset()
+        {
+            _databaseApi = null;
+
+            _accessTokenDao = null;
+            _administratorDao = null;
+            _administratorsInRolesDao = null;
+            _areaDao = null;
+            _channelDao = null;
+            _channelGroupDao = null;
+            _configDao = null;
+            _contentCheckDao = null;
+            _contentDao = null;
+            _contentGroupDao = null;
+            _databaseDao = null;
+            _dbCacheDao = null;
+            _departmentDao = null;
+            _errorLogDao = null;
+            _keywordDao = null;
+            _logDao = null;
+            _permissionsInRolesDao = null;
+            _pluginConfigDao = null;
+            _pluginDao = null;
+            _recordDao = null;
+            _relatedFieldDao = null;
+            _relatedFieldItemDao = null;
+            _roleDao = null;
+            _siteDao = null;
+            _siteLogDao = null;
+            _sitePermissionsDao = null;
+            _specialDao = null;
+            _tableDao = null;
+            _tableMetadataDao = null;
+            _tableStyleDao = null;
+            _tableStyleItemDao = null;
+            _tagDao = null;
+            _templateDao = null;
+            _templateLogDao = null;
+            _templateMatchDao = null;
+            _userDao = null;
+            _userLogDao = null;
+        }
+
         public static List<DataProviderBase> AllProviders => new List<DataProviderBase>
         {
+            AccessTokenDao,
             AdministratorDao,
             AdministratorsInRolesDao,
             AreaDao,
@@ -158,7 +202,6 @@ namespace SiteServer.CMS.Core
             ContentCheckDao,
             ContentDao,
             ContentGroupDao,
-            CountDao,
             DatabaseDao,
             DbCacheDao,
             DepartmentDao,
@@ -168,15 +211,15 @@ namespace SiteServer.CMS.Core
             PermissionsInRolesDao,
             PluginConfigDao,
             PluginDao,
-            SiteDao,
-            SiteLogDao,
             RecordDao,
             RelatedFieldDao,
             RelatedFieldItemDao,
             RoleDao,
+            SiteDao,
+            SiteLogDao,
             SitePermissionsDao,
+            SpecialDao,
             TableDao,
-            TableMatchDao,
             TableMetadataDao,
             TableStyleDao,
             TableStyleItemDao,

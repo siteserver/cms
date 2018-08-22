@@ -26,7 +26,7 @@
               <a class="nav-link" href="pageSiteUrlApi.aspx">API访问地址</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">辅助表管理</a>
+              <a class="nav-link" href="pageSiteAuxiliaryTable.aspx">内容表管理</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="pageSiteKeyword.aspx">敏感词管理</a>
@@ -159,7 +159,7 @@
           <asp:PlaceHolder id="PhSaveSiteStyles" runat="server" Visible="false">
 
             <p class="text-muted font-13 m-b-25">
-              保存站点数据，点击下一步将站点数据（包括模板、辅助表、配置信息、插件等）保存到站点模板中
+              保存站点数据，点击下一步将站点数据（包括模板、内容表、配置信息、插件等）保存到站点模板中
             </p>
 
           </asp:PlaceHolder>

@@ -83,16 +83,16 @@ namespace SiteServer.CMS.Core
 
         public static ChannelInfo GetChannelInfo(int siteId, int channelId)
         {
-            ChannelInfo nodeInfo = null;
+            ChannelInfo channelInfo = null;
             var dict = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
-            dict?.TryGetValue(channelId, out nodeInfo);
-            return nodeInfo;
+            dict?.TryGetValue(Math.Abs(channelId), out channelInfo);
+            return channelInfo;
         }
 
         public static List<ChannelInfo> GetChannelInfoList(int siteId)
         {
             var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
-            return dic.Values.Where(nodeInfo => nodeInfo != null).ToList();
+            return dic.Values.Where(channelInfo => channelInfo != null).ToList();
         }
 
         public static List<int> GetChannelIdList(int siteId)
@@ -277,37 +277,12 @@ namespace SiteServer.CMS.Core
         public static string GetNodeTreeLastImageHtml(SiteInfo siteInfo, ChannelInfo nodeInfo)
         {
             var imageHtml = string.Empty;
-            if (nodeInfo.ParentId == 0)
+            if (!string.IsNullOrEmpty(nodeInfo.ContentModelPluginId) || !string.IsNullOrEmpty(nodeInfo.ContentRelatedPluginIds))
             {
-                var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
-                if (siteInfo.IsRoot == false)
+                var list = PluginContentManager.GetContentPlugins(nodeInfo, true);
+                if (list != null && list.Count > 0)
                 {
-                    imageHtml =
-                        $@"<img align=""absmiddle"" title=""站点"" border=""0"" src=""{PageUtils.Combine(treeDirectoryUrl,
-                            "site.gif")}"" />&nbsp;";
-                }
-                else
-                {
-                    imageHtml =
-                        $@"<img align=""absmiddle"" title=""站点"" border=""0"" src=""{PageUtils.Combine(treeDirectoryUrl,
-                            "siteHQ.gif")}"" />&nbsp;";
-                }
-            }
-            if (!string.IsNullOrEmpty(nodeInfo.ContentRelatedPluginIds))
-            {
-                foreach (var service in PluginContentManager.GetContentPlugins(nodeInfo, false))
-                {
-                    var iconClass = PluginMenuManager.GetPluginIconClass(service.PluginId);
-                    if (!string.IsNullOrEmpty(iconClass))
-                    {
-                        imageHtml +=
-                            $@"<i class=""{iconClass}"" title=""{service.Metadata.Title}"" style=""color: #00b19d;display: inline-block;font-size: 18px;vertical-align: middle;width: 16px;""></i>";
-                    }
-                    else
-                    {
-                        imageHtml +=
-                        $@"<img align=""absmiddle"" title=""{service.Metadata.Title}"" border=""0"" src=""{PluginManager.GetPluginIconUrl(service)}"" width=""18"" height=""18"" />";
-                    }
+                    imageHtml += @"<i class=""ion-cube"" style=""font-size: 15px""></i>&nbsp;";
                 }
             }
             return imageHtml;

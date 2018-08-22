@@ -12,7 +12,6 @@ namespace SiteServer.BackgroundPages.Cms
     public class PageCreateFile : BasePageCms
     {
         public ListBox LbTemplateIdList;
-        public Button BtnDeleteAll;
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -31,8 +30,6 @@ namespace SiteServer.BackgroundPages.Cms
                 var listitem = new ListItem(templateInfo.CreatedFileFullName, templateInfo.Id.ToString());
                 LbTemplateIdList.Items.Add(listitem);
             }
-
-            BtnDeleteAll.Attributes.Add("onclick", "return confirm(\"此操作将删除所有已生成的文件页面，确定吗？\");");
         }
 
         public void Create_OnClick(object sender, EventArgs e)
@@ -60,14 +57,6 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             PageCreateStatus.Redirect(SiteId);
-        }
-
-        public void BtnDeleteAll_OnClick(object sender, EventArgs e)
-        {
-            if (!Page.IsPostBack || !Page.IsValid) return;
-
-            var url = PageProgressBar.GetDeleteAllPageUrl(SiteId, TemplateType.FileTemplate);
-            PageUtils.RedirectToLoadingPage(url);
         }
     }
 }

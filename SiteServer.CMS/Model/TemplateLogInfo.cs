@@ -4,17 +4,6 @@ namespace SiteServer.CMS.Model
 {
     public class TemplateLogInfo
     {
-        public TemplateLogInfo()
-        {
-            Id = 0;
-            TemplateId = 0;
-            SiteId = 0;
-            AddDate = DateTime.Now;
-            AddUserName = string.Empty;
-            ContentLength = 0;
-            TemplateContent = string.Empty;
-        }
-
         public TemplateLogInfo(int id, int templateId, int siteId, DateTime addDate, string addUserName, int contentLength, string templateContent)
         {
             Id = id;

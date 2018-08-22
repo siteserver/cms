@@ -3,22 +3,28 @@ using System.Web;
 
 namespace SiteServer.Utils
 {
-    public class CookieUtils
+    public static class CookieUtils
     {
-        private CookieUtils()
-        {
-        }
-
         public static void SetCookie(string name, string value, DateTime expires)
         {
             SetCookie(new HttpCookie(name)
             {
                 Value = value,
-                Expires = expires
+                Expires = expires,
+                Domain = PageUtils.HttpContextRootDomain
             });
         }
 
-        public static void SetCookie(HttpCookie cookie)
+        public static void SetCookie(string name, string value)
+        {
+            SetCookie(new HttpCookie(name)
+            {
+                Value = value,
+                Domain = PageUtils.HttpContextRootDomain
+            });
+        }
+
+        private static void SetCookie(HttpCookie cookie)
         {
             cookie.Value = TranslateUtils.EncryptStringBySecretKey(cookie.Value);
             cookie.HttpOnly = false;
@@ -45,11 +51,9 @@ namespace SiteServer.Utils
 
         public static void Erase(string name)
         {
-            var cookie = HttpContext.Current.Response.Cookies[name];
-            if (cookie != null)
+            if (HttpContext.Current.Request.Cookies[name] != null)
             {
-                cookie.Expires = DateTime.Now.AddDays(-1);
-                cookie.Values.Clear();
+                SetCookie(name, string.Empty, DateTime.Now.AddDays(-1d));
             }
         }
     }

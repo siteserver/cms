@@ -5,7 +5,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
-    public class OnlineTemplateManager
+    public static class OnlineTemplateManager
     {
         private const string UrlTemplatesXml = "http://templates.siteserver.cn/templates.xml";
 
@@ -89,7 +89,7 @@ namespace SiteServer.CMS.Core
 
         public static string GetDownloadUrl(string name)
         {
-            return $"http://cloud.siteserver.cn/api/downloads/template/{name}";
+            return $"https://api.siteserver.cn/downloads/template/{name}";
         }
     }
 }

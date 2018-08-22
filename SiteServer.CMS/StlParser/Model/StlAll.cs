@@ -29,10 +29,6 @@ namespace SiteServer.CMS.StlParser.Model
                 typeof(StlChannels)
             },
             {
-                StlCode.ElementName,
-                typeof(StlCode)
-            },
-            {
                 StlContainer.ElementName,
                 typeof(StlContainer)
             },
@@ -159,10 +155,6 @@ namespace SiteServer.CMS.StlParser.Model
             {
                 StlSqlContents.ElementName,
                 typeof(StlSqlContents)
-            },
-            {
-                StlTabs.ElementName,
-                typeof(StlTabs)
             },
             {
                 StlTags.ElementName,

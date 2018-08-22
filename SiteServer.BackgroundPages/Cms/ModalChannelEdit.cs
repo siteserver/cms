@@ -7,7 +7,7 @@ using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
@@ -211,9 +211,9 @@ namespace SiteServer.BackgroundPages.Cms
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName,
                     relatedIdentities);
                 BackgroundInputTypeParser.SaveAttributes(extendedAttributes, SiteInfo, styleInfoList, Request.Form, null);
-                if (extendedAttributes.ToNameValueCollection().Count > 0)
+                if (extendedAttributes.Count > 0)
                 {
-                    nodeInfo.Additional.Load(extendedAttributes.ToNameValueCollection());
+                    nodeInfo.Additional.Load(extendedAttributes.ToDictionary());
                 }
 
                 nodeInfo.ChannelName = TbNodeName.Text;

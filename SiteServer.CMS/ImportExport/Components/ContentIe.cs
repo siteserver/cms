@@ -6,6 +6,7 @@ using Atom.Core.Collections;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.ImportExport.Components
@@ -35,7 +36,7 @@ namespace SiteServer.CMS.ImportExport.Components
         }
 
         // 内部消化掉错误
-        public void ImportContents(AtomEntryCollection entries, ChannelInfo nodeInfo, int taxis, int importStart, int importCount, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, string adminName)
+        private void ImportContents(AtomEntryCollection entries, ChannelInfo nodeInfo, int taxis, int importStart, int importCount, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, string adminName)
         {
             if (importStart > 1 || importCount > 0)
             {
@@ -256,7 +257,7 @@ namespace SiteServer.CMS.ImportExport.Components
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.LinkUrl, AtomUtility.Encrypt(contentInfo.LinkUrl));
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.AddDate, contentInfo.AddDate.ToString(CultureInfo.InvariantCulture));
 
-            foreach (string attributeName in contentInfo.ToNameValueCollection().Keys)
+            foreach (var attributeName in contentInfo.ToDictionary().Keys)
             {
                 if (!ContentAttribute.AllAttributesLowercase.Contains(attributeName.ToLower()))
                 {

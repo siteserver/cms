@@ -1,18 +1,10 @@
 using System;
+using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.CMS.Model
 {
 	public class ConfigInfo
 	{
-	    public ConfigInfo()
-	    {
-	        Id = 0;
-            IsInitialized = false;
-            DatabaseVersion = string.Empty;
-            UpdateDate = DateTime.Now;
-            SystemConfig = string.Empty;
-		}
-
         public ConfigInfo(bool isInitialized, string databaseVersion, DateTime updateDate, string systemConfig) 
 		{
             IsInitialized = isInitialized;

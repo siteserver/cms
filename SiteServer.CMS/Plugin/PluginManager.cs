@@ -24,10 +24,10 @@ namespace SiteServer.CMS.Plugin
             private static readonly object LockObject = new object();
             private const string CacheKey = "SiteServer.CMS.Plugin.PluginCache";
 
-            private static SortedList<string, PluginInfo> Load()
+            private static SortedList<string, PluginInstance> Load()
             {
-                Environment = new PluginEnvironment(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath);
-                var dict = new SortedList<string, PluginInfo>();
+                Environment = new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath);
+                var dict = new SortedList<string, PluginInstance>();
 
                 Thread.Sleep(2000);
 
@@ -63,7 +63,7 @@ namespace SiteServer.CMS.Plugin
                 return dict;
             }
 
-            private static PluginInfo ActivePlugin(string directoryName)
+            private static PluginInstance ActivePlugin(string directoryName)
             {
                 PackageMetadata metadata = null;
                 string errorMessage;
@@ -106,7 +106,7 @@ namespace SiteServer.CMS.Plugin
                     LogUtils.AddErrorLog(ex, $"插件加载：{directoryName}");
                 }
 
-                return new PluginInfo(directoryName, metadata, errorMessage);
+                return new PluginInstance(directoryName, metadata, errorMessage);
             }
 
             private static void CopyDllsToBin(string pluginId, string pluginDllDirectoryPath)
@@ -132,8 +132,7 @@ namespace SiteServer.CMS.Plugin
                 }
             }
 
-            // TODO: 增加SINGLETON约束
-            private static PluginInfo ActiveAndAdd(PackageMetadata metadata, Type type)
+            private static PluginInstance ActiveAndAdd(PackageMetadata metadata, Type type)
             {
                 if (metadata == null || type == null) return null;
 
@@ -142,28 +141,28 @@ namespace SiteServer.CMS.Plugin
                 //var plugin = (IPlugin)Activator.CreateInstance(type);
 
                 var plugin = (PluginBase)Activator.CreateInstance(type);
-                plugin.Initialize(metadata, Environment, new PluginApiCollection
+                plugin.Initialize(metadata, Environment, new ApiCollectionImpl
                 {
-                    AdminApi = new AdminApi(metadata),
+                    AdminApi = AdminApi.Instance,
                     ConfigApi = new ConfigApi(metadata),
                     ContentApi = ContentApi.Instance,
-                    DataApi = DataProvider.DataApi,
-                    FilesApi = FilesApi.Instance,
+                    DatabaseApi = DataProvider.DatabaseApi,
                     ChannelApi = ChannelApi.Instance,
                     ParseApi = ParseApi.Instance,
                     PluginApi = new PluginApi(metadata),
                     SiteApi = SiteApi.Instance,
-                    UserApi = UserApi.Instance
+                    UserApi = UserApi.Instance,
+                    UtilsApi = UtilsApi.Instance
                 });
 
-                var service = new PluginService(metadata);
+                var service = new ServiceImpl(metadata);
 
                 plugin.Startup(service);
 
                 PluginContentTableManager.SyncContentTable(service);
                 PluginDatabaseTableManager.SyncTable(service);
 
-                return new PluginInfo(metadata, service, plugin, s.ElapsedMilliseconds);
+                return new PluginInstance(metadata, service, plugin, s.ElapsedMilliseconds);
             }
 
             public static void Clear()
@@ -171,14 +170,14 @@ namespace SiteServer.CMS.Plugin
                 CacheUtils.Remove(CacheKey);
             }
 
-            public static SortedList<string, PluginInfo> GetPluginSortedList()
+            public static SortedList<string, PluginInstance> GetPluginSortedList()
             {
-                var retval = CacheUtils.Get<SortedList<string, PluginInfo>>(CacheKey);
+                var retval = CacheUtils.Get<SortedList<string, PluginInstance>>(CacheKey);
                 if (retval != null) return retval;
 
                 lock (LockObject)
                 {
-                    retval = CacheUtils.Get<SortedList<string, PluginInfo>>(CacheKey);
+                    retval = CacheUtils.Get<SortedList<string, PluginInstance>>(CacheKey);
                     if (retval == null)
                     {
                         retval = Load();
@@ -190,7 +189,15 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        public static PluginEnvironment Environment { get; private set; }
+        public static EnvironmentImpl Environment { get; private set; }
+
+        private static List<PluginInstance> _pluginInfoListRunnable;
+
+        public static void LoadPlugins(string applicationPhysicalPath)
+        {
+            WebConfigUtils.Load(applicationPhysicalPath);
+            _pluginInfoListRunnable = PluginInfoListRunnable;
+        }
 
         public static void ClearCache()
         {
@@ -200,7 +207,7 @@ namespace SiteServer.CMS.Plugin
         public static IMetadata GetMetadata(string pluginId)
         {
             var dict = PluginManagerCache.GetPluginSortedList();
-            PluginInfo pluginInfo;
+            PluginInstance pluginInfo;
             if (dict.TryGetValue(pluginId, out pluginInfo))
             {
                 return pluginInfo.Plugin;
@@ -217,7 +224,7 @@ namespace SiteServer.CMS.Plugin
             return dict.ContainsKey(pluginId);
         }
 
-        public static List<PluginInfo> PluginInfoListRunnable
+        public static List<PluginInstance> PluginInfoListRunnable
         {
             get
             {
@@ -226,7 +233,7 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        public static List<PluginInfo> AllPluginInfoList
+        public static List<PluginInstance> AllPluginInfoList
         {
             get
             {
@@ -235,7 +242,7 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        public static List<PluginInfo> GetEnabledPluginInfoList<T>() where T : PluginBase
+        public static List<PluginInstance> GetEnabledPluginInfoList<T>() where T : PluginBase
         {
             var dict = PluginManagerCache.GetPluginSortedList();
             return
@@ -247,7 +254,7 @@ namespace SiteServer.CMS.Plugin
                         .ToList();
         }
 
-        public static List<PluginService> Services
+        public static List<ServiceImpl> Services
         {
             get
             {
@@ -260,13 +267,13 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        public static PluginInfo GetPluginInfo(string pluginId)
+        public static PluginInstance GetPluginInfo(string pluginId)
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
             var dict = PluginManagerCache.GetPluginSortedList();
 
-            PluginInfo pluginInfo;
+            PluginInstance pluginInfo;
             if (dict.TryGetValue(pluginId, out pluginInfo))
             {
                 return pluginInfo;
@@ -312,7 +319,7 @@ namespace SiteServer.CMS.Plugin
 
             var dict = PluginManagerCache.GetPluginSortedList();
 
-            PluginInfo pluginInfo;
+            PluginInstance pluginInfo;
             if (dict.TryGetValue(pluginId, out pluginInfo))
             {
                 return pluginInfo.Plugin;
@@ -320,13 +327,13 @@ namespace SiteServer.CMS.Plugin
             return null;
         }
 
-        public static PluginInfo GetEnabledPluginInfo<T>(string pluginId) where T : PluginBase
+        public static PluginInstance GetEnabledPluginInfo<T>(string pluginId) where T : PluginBase
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
             var dict = PluginManagerCache.GetPluginSortedList();
 
-            PluginInfo pluginInfo;
+            PluginInstance pluginInfo;
             var isGet = dict.TryGetValue(pluginId, out pluginInfo);
             if (isGet && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
                 pluginInfo.Plugin is T)
@@ -336,7 +343,7 @@ namespace SiteServer.CMS.Plugin
             return null;
         }
 
-        public static List<PluginInfo> GetEnabledPluginInfoList<T1, T2>()
+        public static List<PluginInstance> GetEnabledPluginInfoList<T1, T2>()
         {
             var dict = PluginManagerCache.GetPluginSortedList();
 
@@ -365,7 +372,7 @@ namespace SiteServer.CMS.Plugin
 
             var dict = PluginManagerCache.GetPluginSortedList();
 
-            PluginInfo pluginInfo;
+            PluginInstance pluginInfo;
             var isGet = dict.TryGetValue(pluginId, out pluginInfo);
             if (isGet && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
                 pluginInfo.Plugin is T)
@@ -381,7 +388,7 @@ namespace SiteServer.CMS.Plugin
 
             var dict = PluginManagerCache.GetPluginSortedList();
 
-            PluginInfo pluginInfo;
+            PluginInstance pluginInfo;
             var isGet = dict.TryGetValue(pluginId, out pluginInfo);
             if (isGet && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
                 pluginInfo.Plugin is T)
@@ -404,13 +411,13 @@ namespace SiteServer.CMS.Plugin
             return pluginInfos.Select(pluginInfo => (T)pluginInfo.Plugin).ToList();
         }
 
-        public static PluginService GetService(string pluginId)
+        public static ServiceImpl GetService(string pluginId)
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
             foreach (var service in Services)
             {
-                if (service.PluginId == pluginId)
+                if (StringUtils.EqualsIgnoreCase(service.PluginId, pluginId))
                 {
                     return service;
                 }
@@ -727,7 +734,7 @@ namespace SiteServer.CMS.Plugin
             return string.Empty;
         }
 
-        public static string GetPluginIconUrl(PluginService service)
+        public static string GetPluginIconUrl(ServiceImpl service)
         {
             var url = string.Empty;
             if (service.Metadata.IconUrl != null)

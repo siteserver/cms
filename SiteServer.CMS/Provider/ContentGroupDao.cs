@@ -12,34 +12,34 @@ namespace SiteServer.CMS.Provider
     {
         public override string TableName => "siteserver_ContentGroup";
 
-        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        public override List<TableColumn> TableColumns => new List<TableColumn>
         {
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentGroupInfo.Id),
+                AttributeName = nameof(ContentGroupInfo.Id),
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentGroupInfo.GroupName),
+                AttributeName = nameof(ContentGroupInfo.GroupName),
                 DataType = DataType.VarChar,
-                Length = 255
+                DataLength = 255
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentGroupInfo.SiteId),
+                AttributeName = nameof(ContentGroupInfo.SiteId),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentGroupInfo.Taxis),
+                AttributeName = nameof(ContentGroupInfo.Taxis),
                 DataType = DataType.Integer
             },
-            new TableColumnInfo
+            new TableColumn
             {
-                ColumnName = nameof(ContentGroupInfo.Description),
+                AttributeName = nameof(ContentGroupInfo.Description),
                 DataType = DataType.Text
             }
         };
