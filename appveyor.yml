@@ -128,7 +128,7 @@
     - nuget pack build/SS.CMS.nuspec
     - gulp zip
     - docker build -t siteserver/cms:latest -t siteserver/cms:v%appveyor_build_version% .
-    - echo "$env:DOCKER_PASS" | docker login -u="$env:DOCKER_USER" --password-stdin
+    - ps: echo "%DOCKER_PASS%" | docker login -u="%DOCKER_USER%" --password-stdin
     - docker push siteserver/cms
 
   artifacts:
