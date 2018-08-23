@@ -46,7 +46,7 @@ namespace SiteServer.CMS.Provider
 
         private const string SqlInsertConfig = "INSERT INTO siteserver_Config (IsInitialized, DatabaseVersion, UpdateDate, SystemConfig) VALUES (@IsInitialized, @DatabaseVersion, @UpdateDate, @SystemConfig)";
 
-        private const string SqlSelectConfig = "SELECT IsInitialized, DatabaseVersion, UpdateDate, SystemConfig FROM siteserver_Config";
+        private const string SqlSelectConfig = "SELECT Id, IsInitialized, DatabaseVersion, UpdateDate, SystemConfig FROM siteserver_Config";
 
         private const string SqlSelectIsInitialized = "SELECT IsInitialized FROM siteserver_Config";
 
@@ -142,12 +142,24 @@ namespace SiteServer.CMS.Provider
                 if (rdr.Read())
                 {
                     var i = 0;
-                    info = new ConfigInfo(GetBool(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i));
+                    info = new ConfigInfo(GetInt(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i));
                 }
                 rdr.Close();
             }
 
 			return info;
 		}
+
+	    public void DeleteAllExclude(int configId)
+	    {
+	        var sqlString = $"DELETE FROM {TableName} WHERE {nameof(ConfigInfo.Id)} != @{nameof(ConfigInfo.Id)}";
+
+	        var parms = new IDataParameter[]
+	        {
+	            GetParameter(nameof(ConfigInfo.Id), DataType.Integer, configId)
+	        };
+
+	        ExecuteNonQuery(sqlString, parms);
+        }
     }
 }

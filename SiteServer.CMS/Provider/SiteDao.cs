@@ -241,7 +241,7 @@ namespace SiteServer.CMS.Provider
         {
             var list = new List<SiteInfo>();
 
-            var sqlString = $"SELECT Id, SiteName, SiteDir, TableName, IsRoot, ParentId, Taxis, SettingsXML FROM {TableName} ORDER BY Taxis";
+            var sqlString = $"SELECT Id, SiteName, SiteDir, TableName, IsRoot, ParentId, Taxis, SettingsXML FROM {TableName} ORDER BY Taxis, Id";
 
             using (var rdr = ExecuteReader(sqlString))
             {

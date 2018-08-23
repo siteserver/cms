@@ -51,7 +51,6 @@
                     <tr class="thead">
                       <th>站点名称</th>
                       <th>文件夹</th>
-                      <th class="text-center">创建日期</th>
                       <th class="text-center">保存为站点模板</th>
                       <th class="text-center">修改属性</th>
                       <th class="text-center">站点路径转移</th>
@@ -69,9 +68,6 @@
                           </td>
                           <td>
                             <asp:Literal ID="ltlSiteDir" runat="server"></asp:Literal>
-                          </td>
-                          <td class="text-center">
-                            <asp:Literal ID="ltlAddDate" runat="server"></asp:Literal>
                           </td>
                           <td class="text-center">
                             <asp:Literal ID="ltlSave" runat="server"></asp:Literal>

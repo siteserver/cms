@@ -1867,7 +1867,7 @@ SET IDENTITY_INSERT {tableName} OFF
 
         public int GetPageTotalCount(string tableName, string whereSqlString, Dictionary<string, object> parameters)
         {
-            var totalCount = 0;
+            int totalCount;
 
             using (var connection = GetConnection())
             {

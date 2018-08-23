@@ -26,7 +26,7 @@ namespace SiteServer.Cli
         private static readonly OptionSet Options = new OptionSet {
             { "r|repeat=", "schedule CRON expression",
                 v => Repeat = v },
-            { "h|help",  "show this message and exit",
+            { "h|help",  "命令说明",
                 v => IsHelp = v != null }
         };
 
@@ -57,12 +57,13 @@ namespace SiteServer.Cli
             CommandName = string.Join(" ", commandNames);
             CommandArgs = commandArgs.ToArray();
 
-            Console.WriteLine("Welcome to SiteServer Cli Tool");
+            Console.WriteLine("欢迎使用 SiteServer Cli 命令行工具");
             Console.WriteLine();
 
             Jobs = new Dictionary<string, Func<IJobContext, Task>>(StringComparer.CurrentCultureIgnoreCase)
             {
                 {BackupJob.CommandName, BackupJob.Execute},
+                {InstallJob.CommandName, InstallJob.Execute},
                 {RestoreJob.CommandName, RestoreJob.Execute},
                 {UpdateJob.CommandName, UpdateJob.Execute},
                 {VersionJob.CommandName, VersionJob.Execute},
@@ -101,15 +102,16 @@ namespace SiteServer.Cli
             if (isHelp || string.IsNullOrEmpty(commandName))
             {
                 var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                await Console.Out.WriteLineAsync($"SiteServer CLI Version: {version.Substring(0, version.Length - 2)}");
-                await Console.Out.WriteLineAsync($"Work Directory: {CliUtils.PhysicalApplicationPath}");
-                await Console.Out.WriteLineAsync($"siteserver.exe Path: {Assembly.GetExecutingAssembly().Location}");
+                await Console.Out.WriteLineAsync($"Cli 命令行版本: {version.Substring(0, version.Length - 2)}");
+                await Console.Out.WriteLineAsync($"当前文件夹: {CliUtils.PhysicalApplicationPath}");
+                await Console.Out.WriteLineAsync($"Cli 命令行文件夹: {Assembly.GetExecutingAssembly().Location}");
                 await Console.Out.WriteLineAsync();
 
                 await CliUtils.PrintRowLine();
                 await CliUtils.PrintRow("Usage");
                 await CliUtils.PrintRowLine();
                 BackupJob.PrintUsage();
+                InstallJob.PrintUsage();
                 RestoreJob.PrintUsage();
                 UpdateJob.PrintUsage();
                 VersionJob.PrintUsage();

@@ -141,7 +141,7 @@ Disallow: /SiteFiles/");
 
                 if (!isRootWritable || !isSiteFilesWritable)
                 {
-                    FailMessage("系统检测到文件夹权限不足，您需要赋予可写权限");
+                    FailMessage("系统检测到文件夹权限不足，您需要赋予根目录 NETWORK SERVICE 以及 IIS_IUSRS 读写权限");
                     BtnStep2.Visible = false;
                 }
 

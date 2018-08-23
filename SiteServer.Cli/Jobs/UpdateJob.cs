@@ -20,17 +20,17 @@ namespace SiteServer.Cli.Jobs
         private static string _version;
 
         private static readonly OptionSet Options = new OptionSet() {
-            { "d|directory=", "the update {directory} name.",
+            { "d|directory=", "指定需要转换至最新版本的备份数据文件夹",
                 v => _directory = v },
-            { "v|version=", "the {version} to update.",
+            { "v|version=", "指定需要转换的备份数据版本号",
                 v => _version = v },
-            { "h|help",  "show this message and exit",
+            { "h|help",  "命令说明",
                 v => _isHelp = v != null }
         };
 
         public static void PrintUsage()
         {
-            Console.WriteLine("Update command usage: siteserver update");
+            Console.WriteLine("升级备份数据: siteserver update");
             Options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }
@@ -47,13 +47,13 @@ namespace SiteServer.Cli.Jobs
 
             if (string.IsNullOrEmpty(_version))
             {
-                await CliUtils.PrintErrorAsync("Error, the {version} to update is empty");
+                await CliUtils.PrintErrorAsync("未指定需要转换的备份数据版本号： version");
                 return;
             }
 
             if (string.IsNullOrEmpty(_directory))
             {
-                await CliUtils.PrintErrorAsync("Error, the update {directory} name is empty");
+                await CliUtils.PrintErrorAsync("未指定需要转换至最新版本的备份数据文件夹：directory");
                 return;
             }
 
@@ -62,7 +62,7 @@ namespace SiteServer.Cli.Jobs
 
             if (!DirectoryUtils.IsDirectoryExists(oldTreeInfo.DirectoryPath))
             {
-                await CliUtils.PrintErrorAsync($"Error, directory {oldTreeInfo.DirectoryPath} not exists");
+                await CliUtils.PrintErrorAsync($"备份数据的文件夹 {oldTreeInfo.DirectoryPath} 不存在");
                 return;
             }
             DirectoryUtils.CreateDirectoryIfNotExists(newTreeInfo.DirectoryPath);
@@ -87,20 +87,20 @@ namespace SiteServer.Cli.Jobs
             }
             if (updater == null)
             {
-                await Console.Out.WriteLineAsync($"Error, the currently supported update versions are {Updater36.Version},{Updater40.Version},{Updater41.Version},{Updater50.Version}");
+                await Console.Out.WriteLineAsync($"当前支持的升级版本号必须是 {Updater36.Version},{Updater40.Version},{Updater41.Version},{Updater50.Version} 中的一项");
                 return;
             }
 
             var newVersion = "latest";
 
-            await Console.Out.WriteLineAsync($"Old Version: {_version}, Old Directory: {oldTreeInfo.DirectoryPath}");
-            await Console.Out.WriteLineAsync($"New Version: {newVersion}, New Directory: {newTreeInfo.DirectoryPath}");
+            await Console.Out.WriteLineAsync($"备份版本: {_version}, 备份数据文件夹: {oldTreeInfo.DirectoryPath}");
+            await Console.Out.WriteLineAsync($"升级版本: {newVersion}, 升级数据文件夹: {newTreeInfo.DirectoryPath}");
 
             var oldTableNames = TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(oldTreeInfo.TablesFilePath, Encoding.UTF8));
             var newTableNames = new List<string>();
 
             await CliUtils.PrintRowLineAsync();
-            await CliUtils.PrintRowAsync("Old Table Name", "New Table Name", "Total Count");
+            await CliUtils.PrintRowAsync("备份表名称", "升级表名称", "总条数");
             await CliUtils.PrintRowLineAsync();
 
             var contentTableNameList = new List<string>();
@@ -129,7 +129,7 @@ namespace SiteServer.Cli.Jobs
             await FileUtils.WriteTextAsync(newTreeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newTableNames));
 
             await CliUtils.PrintRowLineAsync();
-            await Console.Out.WriteLineAsync("Well done! Thanks for Using SiteServer Cli Tool");
+            await Console.Out.WriteLineAsync($"恭喜，成功从备份文件夹：{oldTreeInfo.DirectoryPath} 升级至新版本：{newTreeInfo.DirectoryPath} ！");
         }
     }
 }

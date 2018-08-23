@@ -86,12 +86,12 @@
   <ItemGroup>
     <Compile Include="Core\JobContextImpl.cs" />
     <Compile Include="Jobs\BackupJob.cs" />
+    <Compile Include="Jobs\InstallJob.cs" />
     <Compile Include="Jobs\TestJob.cs" />
     <Compile Include="Jobs\VersionJob.cs" />
     <Compile Include="Jobs\UpdateJob.cs" />
     <Compile Include="Jobs\RestoreJob.cs" />
     <Compile Include="Core\CliUtils.cs" />
-    <Compile Include="Core\ConfigInfo.cs" />
     <Compile Include="Core\ProgressBar.cs" />
     <Compile Include="Core\SchedJob.cs" />
     <Compile Include="Core\TreeInfo.cs" />

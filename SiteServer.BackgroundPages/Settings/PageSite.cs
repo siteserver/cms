@@ -58,7 +58,6 @@ namespace SiteServer.BackgroundPages.Settings
 
             var ltlSiteName = (Literal)e.Item.FindControl("ltlSiteName");
             var ltlSiteDir = (Literal)e.Item.FindControl("ltlSiteDir");
-            var ltlAddDate = (Literal)e.Item.FindControl("ltlAddDate");
             var ltlSave = (Literal)e.Item.FindControl("ltlSave");
             var ltlEdit = (Literal)e.Item.FindControl("ltlEdit");
             var ltlChangeType = (Literal)e.Item.FindControl("ltlChangeType");
@@ -68,7 +67,6 @@ namespace SiteServer.BackgroundPages.Settings
 
             ltlSiteName.Text = GetSiteNameHtml(siteInfo);
             ltlSiteDir.Text = siteInfo.SiteDir;
-            ltlAddDate.Text = DateUtils.GetDateString(ChannelManager.GetAddDate(siteId, siteId));
 
             ltlSave.Text = $@"<a href=""{PageSiteSave.GetRedirectUrl(siteId)}"">保存</a>";
 

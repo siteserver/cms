@@ -14,18 +14,15 @@ namespace SiteServer.Cli.Jobs
         public const string CommandName = "version";
 
         private static bool _isHelp;
-        private static string _webConfigFileName;
 
-        private static readonly OptionSet Options = new OptionSet() {
-            { "c|config=", "the {web.config} file name.",
-                v => _webConfigFileName = v },
-            { "h|help",  "show this message and exit",
+        private static readonly OptionSet Options = new OptionSet {
+            { "h|help",  "命令说明",
                 v => _isHelp = v != null }
         };
 
         public static void PrintUsage()
         {
-            Console.WriteLine("Version command usage: siteserver version");
+            Console.WriteLine("当前版本: siteserver version");
             Options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }
@@ -41,18 +38,13 @@ namespace SiteServer.Cli.Jobs
             }
 
             var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            await Console.Out.WriteLineAsync($"SiteServer CLI Version: {version.Substring(0, version.Length - 2)}");
-            await Console.Out.WriteLineAsync($"Work Directory: {CliUtils.PhysicalApplicationPath}");
+            await Console.Out.WriteLineAsync($"SiteServer CLI 版本号: {version.Substring(0, version.Length - 2)}");
+            await Console.Out.WriteLineAsync($"当前文件夹: {CliUtils.PhysicalApplicationPath}");
             await Console.Out.WriteLineAsync();
 
-            if (string.IsNullOrEmpty(_webConfigFileName))
+            if (FileUtils.IsFileExists(PathUtils.Combine(CliUtils.PhysicalApplicationPath, "web.config")))
             {
-                _webConfigFileName = "web.config";
-            }
-
-            if (FileUtils.IsFileExists(PathUtils.Combine(CliUtils.PhysicalApplicationPath, _webConfigFileName)))
-            {
-                WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, _webConfigFileName);
+                WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, "web.config");
 
                 try
                 {
@@ -64,9 +56,9 @@ namespace SiteServer.Cli.Jobs
                     // ignored
                 }
 
-                await Console.Out.WriteLineAsync($"Database Type: {WebConfigUtils.DatabaseType.Value}");
-                await Console.Out.WriteLineAsync($"Connection String Decode: {WebConfigUtils.ConnectionString}");
-                await Console.Out.WriteLineAsync($"Connection String Encode: {TranslateUtils.EncryptStringBySecretKey(WebConfigUtils.ConnectionString, WebConfigUtils.SecretKey)}");
+                await Console.Out.WriteLineAsync($"数据库类型: {WebConfigUtils.DatabaseType.Value}");
+                await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
+                await Console.Out.WriteLineAsync($"连接字符串（加密）: {TranslateUtils.EncryptStringBySecretKey(WebConfigUtils.ConnectionString, WebConfigUtils.SecretKey)}");
             }
         }
     }

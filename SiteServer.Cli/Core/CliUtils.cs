@@ -15,65 +15,6 @@ namespace SiteServer.Cli.Core
 
         private const int ConsoleTableWidth = 77;
 
-        public static async Task<ConfigInfo> LoadConfigByFileAsync(string configFileName)
-        {
-            ConfigInfo configInfo = null;
-
-            if (string.IsNullOrEmpty(configFileName))
-            {
-                configFileName = "cli.json";
-            }
-
-            if (FileUtils.IsFileExists(PathUtils.Combine(PhysicalApplicationPath, configFileName)))
-            {
-                configInfo = TranslateUtils.JsonDeserialize<ConfigInfo>(
-                    await FileUtils.ReadTextAsync(PathUtils.Combine(PhysicalApplicationPath, configFileName), Encoding.UTF8));
-
-                if (configInfo != null)
-                {
-                    WebConfigUtils.Load(PhysicalApplicationPath, configInfo.DatabaseType, configInfo.ConnectionString);
-
-                    if (configInfo.BackupConfig == null)
-                    {
-                        configInfo.BackupConfig = new BackupConfigInfo();
-                    }
-                    if (configInfo.RestoreConfig == null)
-                    {
-                        configInfo.RestoreConfig = new RestoreConfigInfo();
-                    }
-                }
-            }
-            else if (FileUtils.IsFileExists(PathUtils.Combine(PhysicalApplicationPath, "web.config")))
-            {
-                WebConfigUtils.Load(PhysicalApplicationPath, "web.config");
-
-                configInfo = new ConfigInfo
-                {
-                    DatabaseType = WebConfigUtils.DatabaseType.Value,
-                    ConnectionString = WebConfigUtils.ConnectionString,
-                    BackupConfig = new BackupConfigInfo(),
-                    RestoreConfig = new RestoreConfigInfo(),
-                };
-            }
-
-            return configInfo;
-        }
-
-        public static ConfigInfo LoadConfigByArgs(string databaseType, string connectionString)
-        {
-            var configInfo = new ConfigInfo
-            {
-                DatabaseType = databaseType,
-                ConnectionString = connectionString,
-                BackupConfig = new BackupConfigInfo(),
-                RestoreConfig = new RestoreConfigInfo(),
-            };
-
-            WebConfigUtils.Load(PhysicalApplicationPath, configInfo.DatabaseType, configInfo.ConnectionString);
-
-            return configInfo;
-        }
-
         private static string AlignCentre(string text, int width)
         {
             text = text.Length > width ? text.Substring(0, width - 3) + "..." : text;

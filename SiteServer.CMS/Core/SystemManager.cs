@@ -51,10 +51,8 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void SyncDatabase()
+        public static void CreateSiteServerTables()
         {
-            CacheUtils.ClearAll();
-
             foreach (var provider in DataProvider.AllProviders)
             {
                 if (string.IsNullOrEmpty(provider.TableName) || provider.TableColumns == null || provider.TableColumns.Count <= 0) continue;
@@ -68,7 +66,10 @@ namespace SiteServer.CMS.Core
                     DataProvider.DatabaseDao.AlterSystemTable(provider.TableName, provider.TableColumns);
                 }
             }
+        }
 
+        public static void SyncContentTables()
+        {
             var tableNameList = DataProvider.TableDao.GetTableNameListCreatedInDb();
             foreach (var tableName in tableNameList)
             {
@@ -82,22 +83,43 @@ namespace SiteServer.CMS.Core
                 }
             }
 
+            DataProvider.TableDao.CreateAllTableCollectionInfoIfNotExists();
+        }
+
+        public static void UpdateConfigVersion()
+        {
             var configInfo = DataProvider.ConfigDao.GetConfigInfo();
             if (configInfo == null)
             {
-                configInfo = new ConfigInfo(true, Version, DateTime.Now, string.Empty);
+                configInfo = new ConfigInfo(0, true, Version, DateTime.Now, string.Empty);
                 DataProvider.ConfigDao.Insert(configInfo);
             }
             else
             {
+                var count = DataProvider.DatabaseDao.GetCount(DataProvider.ConfigDao.TableName);
+                if (count > 1)
+                {
+                    DataProvider.ConfigDao.DeleteAllExclude(configInfo.Id);
+                }
+
                 configInfo.DatabaseVersion = Version;
                 configInfo.IsInitialized = true;
                 configInfo.UpdateDate = DateTime.Now;
                 DataProvider.ConfigDao.Update(configInfo);
             }
-
-            DataProvider.TableDao.CreateAllTableCollectionInfoIfNotExists();
         }
+
+        public static void SyncDatabase()
+        {
+            CacheUtils.ClearAll();
+
+            CreateSiteServerTables();
+
+            SyncContentTables();
+
+            UpdateConfigVersion();
+        }
+
 
         public static bool IsNeedUpdate()
         {
