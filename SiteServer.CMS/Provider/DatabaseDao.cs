@@ -444,7 +444,7 @@ namespace SiteServer.CMS.Provider
                 var value = Convert.ToString(rdr.GetValue(i));
                 if (!string.IsNullOrEmpty(value))
                 {
-                    value = PageUtils.UnFilterSql(value);
+                    value = AttackUtils.UnFilterSql(value);
                 }
                 attributes.Set(columnName, value);
             }

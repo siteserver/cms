@@ -82,7 +82,7 @@ namespace SiteServer.CMS.Plugin
 
         public string GetQueryString(string name)
         {
-            return !string.IsNullOrEmpty(HttpRequest.QueryString[name]) ? PageUtils.FilterSql(HttpRequest.QueryString[name]) : null;
+            return !string.IsNullOrEmpty(HttpRequest.QueryString[name]) ? AttackUtils.FilterSql(HttpRequest.QueryString[name]) : null;
         }
 
         public int GetQueryInt(string name, int defaultValue = 0)

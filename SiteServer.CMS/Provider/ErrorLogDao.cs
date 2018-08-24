@@ -166,7 +166,7 @@ namespace SiteServer.CMS.Provider
 
             if (!string.IsNullOrEmpty(pluginId))
             {
-                whereString.Append($"PluginId = '{PageUtils.FilterSql(pluginId)}'");
+                whereString.Append($"PluginId = '{AttackUtils.FilterSql(pluginId)}'");
             }
 
             if (!string.IsNullOrEmpty(keyword))
@@ -175,7 +175,7 @@ namespace SiteServer.CMS.Provider
                 {
                     whereString.Append(" AND ");
                 }
-                var filterKeyword = PageUtils.FilterSql(keyword);
+                var filterKeyword = AttackUtils.FilterSql(keyword);
                 var keywordId = TranslateUtils.ToInt(keyword);
                 whereString.Append(keywordId > 0
                     ? $"Id = {keywordId}"

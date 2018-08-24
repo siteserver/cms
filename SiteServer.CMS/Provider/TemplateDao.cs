@@ -305,7 +305,7 @@ namespace SiteServer.CMS.Provider
             {
                 var whereString = (string.IsNullOrEmpty(templateTypeString)) ? string.Empty :
                     $"AND TemplateType = '{templateTypeString}' ";
-                searchText = PageUtils.FilterSql(searchText);
+                searchText = AttackUtils.FilterSql(searchText);
                 whereString +=
                     $"AND (TemplateName LIKE '%{searchText}%' OR RelatedFileName LIKE '%{searchText}%' OR CreatedFileFullName LIKE '%{searchText}%' OR CreatedFileExtName LIKE '%{searchText}%')";
                 string sqlString =

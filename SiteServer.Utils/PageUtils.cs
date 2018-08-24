@@ -275,7 +275,7 @@ namespace SiteServer.Utils
             var originals = TranslateUtils.ToNameValueCollection(querystring);
             foreach (string key in originals.Keys)
             {
-                attributes[key] = FilterXss(originals[key]);
+                attributes[key] = AttackUtils.FilterXss(originals[key]);
             }
             return attributes;
         }
@@ -1005,117 +1005,6 @@ namespace SiteServer.Utils
         public static string GetLoadingUrl(string url)
         {
             return GetAdminDirectoryUrl($"loading.aspx?redirectUrl={TranslateUtils.EncryptStringBySecretKey(url)}");
-        }
-
-        /// <summary> 
-        ///sql和xss脚本过滤
-        /// </summary> 
-        public static string FilterSqlAndXss(string objStr)
-        {
-            return FilterXss(FilterSql(objStr));
-        }
-
-        /// <summary>     
-        /// 过滤xss攻击脚本     
-        /// </summary>      
-        public static string FilterXss(string html)
-        {
-            var retval = html;
-            if (!string.IsNullOrEmpty(retval))
-            {
-                retval = retval.Replace("@", "_at_");
-                retval = retval.Replace("&", "_and_");
-                retval = retval.Replace("#", "_sharp_");
-                retval = retval.Replace(";", "_semicolon_");
-                retval = retval.Replace(":", "_colon_");
-                retval = retval.Replace("=", "_equal_");
-                retval = retval.Replace("，", "_cn_comma_");
-                retval = retval.Replace("“", "_quotel_");
-                retval = retval.Replace("”", "_quoter_");
-                retval = retval.Replace("/", "_slash_");
-                retval = retval.Replace("|", "_or_");
-                retval = retval.Replace("-", "_shortOne_");
-                retval = retval.Replace(",", "_comma_");
-                retval = retval.Replace("\r", "_return_");
-                retval = retval.Replace("\n", "_newline_");
-
-                //中文标点符号
-                retval = retval.Replace("；", "_cn_semicolon_");
-                retval = retval.Replace("：", "_cn_colon_");
-                retval = retval.Replace("。", "_cn_stop_");
-                retval = retval.Replace("、", "_cn_tempstop_");
-                retval = retval.Replace("？", "_cn_question_");
-                retval = retval.Replace("《", "_cn_lbracket_");
-                retval = retval.Replace("》", "_cn_rbracket_");
-                retval = retval.Replace("‘", "_cn_rmark_");
-                retval = retval.Replace("’", "_cn_lmark_");
-                retval = retval.Replace("【", "_cn_slbracket_");
-                retval = retval.Replace("】", "_cn_srbracket_");
-                retval = retval.Replace("——", "_cn_extension_");
-                retval = Microsoft.Security.Application.AntiXss.HtmlEncode(retval);
-                //中文标点符号
-                retval = retval.Replace("_cn_semicolon_", "；");
-                retval = retval.Replace("_cn_colon_", "：");
-                retval = retval.Replace("_cn_stop_", "。");
-                retval = retval.Replace("_cn_tempstop_", "、");
-                retval = retval.Replace("_cn_question_", "？");
-                retval = retval.Replace("_cn_lbracket_", "《");
-                retval = retval.Replace("_cn_rbracket_", "》");
-                retval = retval.Replace("_cn_rmark_", "‘");
-                retval = retval.Replace("_cn_lmark_", "’");
-                retval = retval.Replace("_cn_slbracket_", "【");
-                retval = retval.Replace("_cn_srbracket_", "】");
-                retval = retval.Replace("_cn_extension_", "——");
-
-                retval = retval.Replace("_at_", "@");
-                retval = retval.Replace("_and_", "&");
-                retval = retval.Replace("_sharp_", "#");
-                retval = retval.Replace("_semicolon_", ";");
-                retval = retval.Replace("_colon_", ":");
-                retval = retval.Replace("_equal_", "=");
-                retval = retval.Replace("_cn_comma_", "，");
-                retval = retval.Replace("_quotel_", "“");
-                retval = retval.Replace("_quoter_", "”");
-                retval = retval.Replace("_slash_", "/");
-                retval = retval.Replace("_or_", "|");
-                retval = retval.Replace("_shortOne_", "-");
-                retval = retval.Replace("_comma_", ",");
-                retval = retval.Replace("_return_", "\r");
-                retval = retval.Replace("_newline_", "\n");
-            }
-            return retval;
-        }
-
-        /// <summary> 
-        /// 过滤sql攻击脚本 
-        /// </summary> 
-        public static string FilterSql(string objStr)
-        {
-            if (string.IsNullOrEmpty(objStr)) return string.Empty;
-
-            var isSqlExists = false;
-            const string strSql = "',--,\\(,\\)";
-            var strSqls = strSql.Split(',');
-            foreach (var sql in strSqls)
-            {
-                if (objStr.IndexOf(sql, StringComparison.Ordinal) != -1)
-                {
-                    isSqlExists = true;
-                    break;
-                }
-            }
-            if (isSqlExists)
-            {
-                return objStr.Replace("'", "_sqlquote_").Replace("--", "_sqldoulbeline_").Replace("\\(", "_sqlleftparenthesis_").Replace("\\)", "_sqlrightparenthesis_");
-            }
-            return objStr;
-        }
-
-        public static string UnFilterSql(string objStr)
-        {
-            if (string.IsNullOrEmpty(objStr)) return string.Empty;
-
-            return objStr.Replace("_sqlquote_", "'").Replace("_sqldoulbeline_", "--").Replace("_sqlleftparenthesis_", "\\(").Replace("_sqlrightparenthesis_", "\\)");
         }
 
         public static string GetRedirectStringWithCheckBoxValue(string redirectUrl, string checkBoxServerId, string checkBoxClientId, string emptyAlertText)

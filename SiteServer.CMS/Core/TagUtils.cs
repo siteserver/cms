@@ -17,7 +17,7 @@ namespace SiteServer.CMS.Core
 
             foreach (var tagName in tags)
             {
-                var tagInfo = DataProvider.TagDao.GetTagInfo(siteId,PageUtils.FilterXss(tagName));
+                var tagInfo = DataProvider.TagDao.GetTagInfo(siteId, AttackUtils.FilterXss(tagName));
                 if (tagInfo != null)
                 {
                     var contentIdList = TranslateUtils.StringCollectionToIntList(tagInfo.ContentIdCollection);

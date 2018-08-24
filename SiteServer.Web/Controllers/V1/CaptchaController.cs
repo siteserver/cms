@@ -31,7 +31,7 @@ namespace SiteServer.API.Controllers.V1
 
             var validateCode = VcManager.CreateValidateCode();
 
-            CookieUtils.SetCookie("SS-" + name, validateCode, DateTime.Now.AddHours(3));
+            CookieUtils.SetCookie("SS-" + name, validateCode, DateTime.Now.AddMinutes(10));
 
             response.BufferOutput = true;  //特别注意
             response.Cache.SetExpires(DateTime.Now.AddMilliseconds(-1));//特别注意
@@ -82,9 +82,12 @@ namespace SiteServer.API.Controllers.V1
             try
             {
                 var code = CookieUtils.GetCookie("SS-" + name);
-                var isValid = StringUtils.EqualsIgnoreCase(code, captchaInfo.Captcha);
+                if (string.IsNullOrEmpty(code))
+                {
+                    return BadRequest("验证码已超时，请刷新验证码图片");
+                }
 
-                if (!isValid)
+                if (!StringUtils.EqualsIgnoreCase(code, captchaInfo.Captcha))
                 {
                     return BadRequest("验证码不正确");
                 }

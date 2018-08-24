@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var contentGroupInfo = new ContentGroupInfo
             {
-                GroupName = PageUtils.FilterXss(TbContentGroupName.Text),
+                GroupName = AttackUtils.FilterXss(TbContentGroupName.Text),
                 SiteId = SiteId,
                 Description = TbDescription.Text
             };

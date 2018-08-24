@@ -168,7 +168,7 @@ namespace SiteServer.CMS.Provider
         public List<string> GetTagListByStartString(int siteId, string startString, int totalNum)
         {
             var sqlString = SqlUtils.GetDistinctTopSqlString("siteserver_Tag", "Tag, UseNum",
-                $"WHERE SiteId = {siteId} AND {SqlUtils.GetInStr("Tag", PageUtils.FilterSql(startString))}",
+                $"WHERE SiteId = {siteId} AND {SqlUtils.GetInStr("Tag", AttackUtils.FilterSql(startString))}",
                 "ORDER BY UseNum DESC", totalNum);
             return DataProvider.DatabaseDao.GetStringList(sqlString);
         }
@@ -206,7 +206,7 @@ namespace SiteServer.CMS.Provider
             builder.Append($" WHERE SiteId = {siteId} ");
             if (!string.IsNullOrEmpty(tag))
             {
-                builder.Append($"AND Tag = '{PageUtils.FilterSql(tag)}' ");
+                builder.Append($"AND Tag = '{AttackUtils.FilterSql(tag)}' ");
             }
             if (contentId > 0)
             {

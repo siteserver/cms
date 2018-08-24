@@ -931,7 +931,7 @@ function add_{attributeName}(val,foucs){{
 
                 if (inputType != InputType.TextEditor && inputType != InputType.Image && inputType != InputType.File && inputType != InputType.Video && styleInfo.AttributeName != ContentAttribute.LinkUrl)
                 {
-                    theValue = PageUtils.FilterSqlAndXss(theValue);
+                    theValue = AttackUtils.FilterSqlAndXss(theValue);
                 }
 
                 attributes.Set(styleInfo.AttributeName, theValue);

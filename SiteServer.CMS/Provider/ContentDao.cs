@@ -1726,7 +1726,7 @@ group by tmp.userName";
                 whereBuilder.Append(" AND (");
                 foreach (var attributeName in typeList)
                 {
-                    whereBuilder.Append($"[{attributeName}] LIKE '%{PageUtils.FilterSql(word)}%' OR ");
+                    whereBuilder.Append($"[{attributeName}] LIKE '%{AttackUtils.FilterSql(word)}%' OR ");
                 }
                 whereBuilder.Length = whereBuilder.Length - 3;
                 whereBuilder.Append(")");
@@ -1837,7 +1837,7 @@ group by tmp.userName";
 
         public string GetSqlStringByContentGroup(string tableName, string contentGroupName, int siteId)
         {
-            contentGroupName = PageUtils.FilterSql(contentGroupName);
+            contentGroupName = AttackUtils.FilterSql(contentGroupName);
             string sqlString =
                 $"SELECT * FROM {tableName} WHERE SiteId = {siteId} AND ChannelId > 0 AND (GroupNameCollection LIKE '{contentGroupName},%' OR GroupNameCollection LIKE '%,{contentGroupName}' OR GroupNameCollection  LIKE '%,{contentGroupName},%'  OR GroupNameCollection='{contentGroupName}')";
             return sqlString;
@@ -2691,14 +2691,9 @@ group by tmp.userName";
 
             if (isAllChannels)
             {
-                if (isTrashOnly)
-                {
-                    whereList.Add($"{nameof(ContentAttribute.ChannelId)} < 0");
-                }
-                else
-                {
-                    whereList.Add($"{nameof(ContentAttribute.ChannelId)} > 0");
-                }
+                whereList.Add(isTrashOnly
+                    ? $"{nameof(ContentAttribute.ChannelId)} < 0"
+                    : $"{nameof(ContentAttribute.ChannelId)} > 0");
             }
             else if (searchChannelIdList.Count == 0)
             {
@@ -2825,7 +2820,7 @@ group by tmp.userName";
             var likeList = TranslateUtils.StringCollectionToStringList(StringUtils.TrimAndToLower(like));
             var orderByString = string.IsNullOrEmpty(orderby)
                 ? $"{ContentAttribute.AddDate} DESC"
-                : PageUtils.FilterSql(orderby);
+                : AttackUtils.FilterSql(orderby);
             var dbArgs = new Dictionary<string, object>();
 
             if (queryString != null && queryString.Count > 0)
@@ -2848,7 +2843,7 @@ group by tmp.userName";
                     }
                     else if (likeList.Contains(attributeName))
                     {
-                        whereString += $" AND {attributeName} LIKE '%{PageUtils.FilterSql(value)}%'";
+                        whereString += $" AND {attributeName} LIKE '%{AttackUtils.FilterSql(value)}%'";
                     }
                     else
                     {
@@ -2883,7 +2878,7 @@ group by tmp.userName";
             var likeList = TranslateUtils.StringCollectionToStringList(StringUtils.TrimAndToLower(like));
             var orderByString = string.IsNullOrEmpty(orderby)
                 ? $"{ContentAttribute.AddDate} DESC"
-                : PageUtils.FilterSql(orderby);
+                : AttackUtils.FilterSql(orderby);
             var dbArgs = new Dictionary<string, object>();
 
             if (queryString != null && queryString.Count > 0)
@@ -2906,7 +2901,7 @@ group by tmp.userName";
                     }
                     else if (likeList.Contains(attributeName))
                     {
-                        whereString += $" AND {attributeName} LIKE '%{PageUtils.FilterSql(value)}%'";
+                        whereString += $" AND {attributeName} LIKE '%{AttackUtils.FilterSql(value)}%'";
                     }
                     else
                     {

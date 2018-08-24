@@ -29,22 +29,22 @@ namespace SiteServer.API.Controllers.Sys.Stl
                 var form = request.GetPostCollection();
 
                 var isAllSites = request.GetPostBool(StlSearch.IsAllSites.Name.ToLower());
-                var siteName = PageUtils.FilterSqlAndXss(request.GetPostString(StlSearch.SiteName.Name.ToLower()));
-                var siteDir = PageUtils.FilterSqlAndXss(request.GetPostString(StlSearch.SiteDir.Name.ToLower()));
-                var siteIds = PageUtils.FilterSqlAndXss(request.GetPostString(StlSearch.SiteIds.Name.ToLower()));
-                var channelIndex = PageUtils.FilterSqlAndXss(request.GetPostString(StlSearch.ChannelIndex.Name.ToLower()));
-                var channelName = PageUtils.FilterSqlAndXss(request.GetPostString(StlSearch.ChannelName.Name.ToLower()));
-                var channelIds = PageUtils.FilterSqlAndXss(request.GetPostString(StlSearch.ChannelIds.Name.ToLower()));
-                var type = PageUtils.FilterSqlAndXss(request.GetPostString(StlSearch.Type.Name.ToLower()));
-                var word = PageUtils.FilterSql(request.GetPostString(StlSearch.Word.Name.ToLower()));
-                var dateAttribute = PageUtils.FilterSqlAndXss(request.GetPostString(StlSearch.DateAttribute.Name.ToLower()));
-                var dateFrom = PageUtils.FilterSqlAndXss(request.GetPostString(StlSearch.DateFrom.Name.ToLower()));
-                var dateTo = PageUtils.FilterSqlAndXss(request.GetPostString(StlSearch.DateTo.Name.ToLower()));
-                var since = PageUtils.FilterSqlAndXss(request.GetPostString(StlSearch.Since.Name.ToLower()));
+                var siteName = AttackUtils.FilterSqlAndXss(request.GetPostString(StlSearch.SiteName.Name.ToLower()));
+                var siteDir = AttackUtils.FilterSqlAndXss(request.GetPostString(StlSearch.SiteDir.Name.ToLower()));
+                var siteIds = AttackUtils.FilterSqlAndXss(request.GetPostString(StlSearch.SiteIds.Name.ToLower()));
+                var channelIndex = AttackUtils.FilterSqlAndXss(request.GetPostString(StlSearch.ChannelIndex.Name.ToLower()));
+                var channelName = AttackUtils.FilterSqlAndXss(request.GetPostString(StlSearch.ChannelName.Name.ToLower()));
+                var channelIds = AttackUtils.FilterSqlAndXss(request.GetPostString(StlSearch.ChannelIds.Name.ToLower()));
+                var type = AttackUtils.FilterSqlAndXss(request.GetPostString(StlSearch.Type.Name.ToLower()));
+                var word = AttackUtils.FilterSqlAndXss(request.GetPostString(StlSearch.Word.Name.ToLower()));
+                var dateAttribute = AttackUtils.FilterSqlAndXss(request.GetPostString(StlSearch.DateAttribute.Name.ToLower()));
+                var dateFrom = AttackUtils.FilterSqlAndXss(request.GetPostString(StlSearch.DateFrom.Name.ToLower()));
+                var dateTo = AttackUtils.FilterSqlAndXss(request.GetPostString(StlSearch.DateTo.Name.ToLower()));
+                var since = AttackUtils.FilterSqlAndXss(request.GetPostString(StlSearch.Since.Name.ToLower()));
                 var pageNum = request.GetPostInt(StlSearch.PageNum.Name.ToLower());
                 var isHighlight = request.GetPostBool(StlSearch.IsHighlight.Name.ToLower());
                 var siteId = request.GetPostInt("siteid");
-                var ajaxDivId = PageUtils.FilterSqlAndXss(request.GetPostString("ajaxdivid"));
+                var ajaxDivId = AttackUtils.FilterSqlAndXss(request.GetPostString("ajaxdivid"));
                 var template = TranslateUtils.DecryptStringBySecretKey(request.GetPostString("template"));
                 var pageIndex = request.GetPostInt("page", 1) - 1;
 

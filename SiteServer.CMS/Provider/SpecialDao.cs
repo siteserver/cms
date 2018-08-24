@@ -182,7 +182,7 @@ namespace SiteServer.CMS.Provider
         {
             var list = new List<SpecialInfo>();
 
-            keyword = PageUtils.FilterSql(keyword);
+            keyword = AttackUtils.FilterSql(keyword);
 
             var sqlString = $@"SELECT {nameof(SpecialInfo.Id)}, 
                 {nameof(SpecialInfo.SiteId)},

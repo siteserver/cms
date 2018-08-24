@@ -1071,7 +1071,7 @@ namespace SiteServer.CMS.Provider
                 if (siteId == parentId)
                 {
                     sqlString =
-                        $"SELECT Id FROM siteserver_Channel WHERE (SiteId = {siteId} AND ChannelName = '{PageUtils.FilterSql(channelName)}') ORDER BY Taxis";
+                        $"SELECT Id FROM siteserver_Channel WHERE (SiteId = {siteId} AND ChannelName = '{AttackUtils.FilterSql(channelName)}') ORDER BY Taxis";
                 }
                 else
                 {
@@ -1081,14 +1081,14 @@ WHERE ((ParentId = {parentId}) OR
       (ParentsPath = '{parentId}') OR
       (ParentsPath LIKE '{parentId},%') OR
       (ParentsPath LIKE '%,{parentId},%') OR
-      (ParentsPath LIKE '%,{parentId}')) AND ChannelName = '{PageUtils.FilterSql(channelName)}'
+      (ParentsPath LIKE '%,{parentId}')) AND ChannelName = '{AttackUtils.FilterSql(channelName)}'
 ORDER BY Taxis";
                 }
             }
             else
             {
                 sqlString =
-                    $"SELECT Id FROM siteserver_Channel WHERE (ParentId = {parentId} AND ChannelName = '{PageUtils.FilterSql(channelName)}') ORDER BY Taxis";
+                    $"SELECT Id FROM siteserver_Channel WHERE (ParentId = {parentId} AND ChannelName = '{AttackUtils.FilterSql(channelName)}') ORDER BY Taxis";
             }
 
             using (var rdr = ExecuteReader(sqlString))

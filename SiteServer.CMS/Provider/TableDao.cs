@@ -618,7 +618,7 @@ namespace SiteServer.CMS.Provider
             var isExists = false;
 
             string sqlString =
-                $"SELECT TableName FROM siteserver_Table WHERE TableName = '{PageUtils.FilterSql(tableName)}' AND IsCreatedInDB = 'True'";
+                $"SELECT TableName FROM siteserver_Table WHERE TableName = '{AttackUtils.FilterSql(tableName)}' AND IsCreatedInDB = 'True'";
             using (var rdr = ExecuteReader(sqlString))
             {
                 if (rdr.Read() && !rdr.IsDBNull(0))
@@ -636,7 +636,7 @@ namespace SiteServer.CMS.Provider
             var isExists = false;
 
             string sqlString =
-                $"SELECT TableName FROM siteserver_Table WHERE TableName = '{PageUtils.FilterSql(tableName)}'";
+                $"SELECT TableName FROM siteserver_Table WHERE TableName = '{AttackUtils.FilterSql(tableName)}'";
             using (var rdr = ExecuteReader(sqlString))
             {
                 if (rdr.Read() && !rdr.IsDBNull(0))

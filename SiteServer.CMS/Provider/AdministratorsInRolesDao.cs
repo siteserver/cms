@@ -119,7 +119,7 @@ namespace SiteServer.CMS.Provider
         {
             var tmpUserNames = string.Empty;
             string sqlString =
-                $"SELECT UserName FROM siteserver_AdministratorsInRoles WHERE RoleName = @RoleName AND UserName LIKE '%{PageUtils.FilterSql(userNameToMatch)}%'";
+                $"SELECT UserName FROM siteserver_AdministratorsInRoles WHERE RoleName = @RoleName AND UserName LIKE '%{AttackUtils.FilterSql(userNameToMatch)}%'";
 
             var parms = new IDataParameter[]
             {

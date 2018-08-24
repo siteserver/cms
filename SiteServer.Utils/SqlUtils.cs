@@ -1272,19 +1272,19 @@ SELECT * FROM (
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"'{PageUtils.FilterSql(value)}'";
+                retval = $"'{AttackUtils.FilterSql(value)}'";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"N'{PageUtils.FilterSql(value)}'";
+                retval = $"N'{AttackUtils.FilterSql(value)}'";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"'{PageUtils.FilterSql(value)}'";
+                retval = $"'{AttackUtils.FilterSql(value)}'";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"'{PageUtils.FilterSql(value)}'";
+                retval = $"'{AttackUtils.FilterSql(value)}'";
             }
 
             return retval;
@@ -1576,9 +1576,9 @@ SELECT * FROM (
 
             if (!string.IsNullOrEmpty(value))
             {
-                value = PageUtils.UnFilterSql(value);
+                value = AttackUtils.UnFilterSql(value);
             }
-            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && value == SqlUtils.OracleEmptyValue)
+            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && value == OracleEmptyValue)
             {
                 value = string.Empty;
             }

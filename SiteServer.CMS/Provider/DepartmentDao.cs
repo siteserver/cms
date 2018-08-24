@@ -152,7 +152,7 @@ namespace SiteServer.CMS.Provider
 
             if (!string.IsNullOrEmpty(departmentInfo.ParentsPath))
             {
-                sqlString = $"UPDATE siteserver_Department SET {SqlUtils.ToPlusSqlString("ChildrenCount")} WHERE Id IN ({PageUtils.FilterSql(departmentInfo.ParentsPath)})";
+                sqlString = $"UPDATE siteserver_Department SET {SqlUtils.ToPlusSqlString("ChildrenCount")} WHERE Id IN ({AttackUtils.FilterSql(departmentInfo.ParentsPath)})";
 
                 ExecuteNonQuery(trans, sqlString);
             }
@@ -176,7 +176,7 @@ namespace SiteServer.CMS.Provider
         {
             if (!string.IsNullOrEmpty(parentsPath))
             {
-                var sqlString = string.Concat("UPDATE siteserver_Department SET ChildrenCount = ChildrenCount - ", subtractNum, " WHERE Id IN (", PageUtils.FilterSql(parentsPath) , ")");
+                var sqlString = string.Concat("UPDATE siteserver_Department SET ChildrenCount = ChildrenCount - ", subtractNum, " WHERE Id IN (", AttackUtils.FilterSql(parentsPath) , ")");
                 ExecuteNonQuery(sqlString);
 
                 DepartmentManager.ClearCache();
@@ -283,8 +283,8 @@ namespace SiteServer.CMS.Provider
 
         private void SetTaxisAdd(int id, string parentsPath, int addNum)
         {
-            var path = PageUtils.FilterSql(parentsPath);
-            string sqlString =
+            var path = AttackUtils.FilterSql(parentsPath);
+            var sqlString =
                 $"UPDATE siteserver_Department SET Taxis = Taxis + {addNum} WHERE Id = {id} OR ParentsPath = '{path}' OR ParentsPath LIKE '{path},%'";
 
             ExecuteNonQuery(sqlString);
@@ -294,8 +294,8 @@ namespace SiteServer.CMS.Provider
 
         private void SetTaxisSubtract(int id, string parentsPath, int subtractNum)
         {
-            var path = PageUtils.FilterSql(parentsPath);
-            string sqlString =
+            var path = AttackUtils.FilterSql(parentsPath);
+            var sqlString =
                 $"UPDATE siteserver_Department SET Taxis = Taxis - {subtractNum} WHERE  Id = {id} OR ParentsPath = '{path}' OR ParentsPath LIKE '{path},%'";
 
             ExecuteNonQuery(sqlString);
@@ -329,7 +329,8 @@ namespace SiteServer.CMS.Provider
 
         private int GetMaxTaxisByParentPath(string parentPath)
         {
-            var sqlString = string.Concat("SELECT MAX(Taxis) AS MaxTaxis FROM siteserver_Department WHERE (ParentsPath = '", PageUtils.FilterSql(parentPath), "') OR (ParentsPath LIKE '", PageUtils.FilterSql(parentPath), ",%')");
+            parentPath = AttackUtils.FilterSql(parentPath);
+            var sqlString = string.Concat("SELECT MAX(Taxis) AS MaxTaxis FROM siteserver_Department WHERE (ParentsPath = '", parentPath, "') OR (ParentsPath LIKE '", parentPath, ",%')");
             var maxTaxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))

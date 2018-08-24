@@ -376,6 +376,24 @@ namespace SiteServer.CMS.Provider
             userInfo.LastActivityDate = DateTime.Now;
             userInfo.LastResetPasswordDate = DateTime.Now;
 
+            userInfo.DisplayName = AttackUtils.FilterXss(userInfo.DisplayName);
+            userInfo.Email = AttackUtils.FilterXss(userInfo.Email);
+            userInfo.Mobile = AttackUtils.FilterXss(userInfo.Mobile);
+            userInfo.AvatarUrl = AttackUtils.FilterXss(userInfo.AvatarUrl);
+            userInfo.Organization = AttackUtils.FilterXss(userInfo.Organization);
+            userInfo.Department = AttackUtils.FilterXss(userInfo.Department);
+            userInfo.Position = AttackUtils.FilterXss(userInfo.Position);
+            userInfo.Gender = AttackUtils.FilterXss(userInfo.Gender);
+            userInfo.Birthday = AttackUtils.FilterXss(userInfo.Birthday);
+            userInfo.Education = AttackUtils.FilterXss(userInfo.Education);
+            userInfo.Graduation = AttackUtils.FilterXss(userInfo.Graduation);
+            userInfo.Address = AttackUtils.FilterXss(userInfo.Address);
+            userInfo.WeiXin = AttackUtils.FilterXss(userInfo.WeiXin);
+            userInfo.Qq = AttackUtils.FilterXss(userInfo.Qq);
+            userInfo.WeiBo = AttackUtils.FilterXss(userInfo.WeiBo);
+            userInfo.Interests = AttackUtils.FilterXss(userInfo.Interests);
+            userInfo.Signature = AttackUtils.FilterXss(userInfo.Signature);
+
             var parameters = new IDataParameter[]
             {
                 GetParameter(ParmUserName, DataType.VarChar, 255, userInfo.UserName),
@@ -436,6 +454,24 @@ namespace SiteServer.CMS.Provider
 
         public void Update(IUserInfo userInfo)
         {
+            userInfo.DisplayName = AttackUtils.FilterXss(userInfo.DisplayName);
+            userInfo.Email = AttackUtils.FilterXss(userInfo.Email);
+            userInfo.Mobile = AttackUtils.FilterXss(userInfo.Mobile);
+            userInfo.AvatarUrl = AttackUtils.FilterXss(userInfo.AvatarUrl);
+            userInfo.Organization = AttackUtils.FilterXss(userInfo.Organization);
+            userInfo.Department = AttackUtils.FilterXss(userInfo.Department);
+            userInfo.Position = AttackUtils.FilterXss(userInfo.Position);
+            userInfo.Gender = AttackUtils.FilterXss(userInfo.Gender);
+            userInfo.Birthday = AttackUtils.FilterXss(userInfo.Birthday);
+            userInfo.Education = AttackUtils.FilterXss(userInfo.Education);
+            userInfo.Graduation = AttackUtils.FilterXss(userInfo.Graduation);
+            userInfo.Address = AttackUtils.FilterXss(userInfo.Address);
+            userInfo.WeiXin = AttackUtils.FilterXss(userInfo.WeiXin);
+            userInfo.Qq = AttackUtils.FilterXss(userInfo.Qq);
+            userInfo.WeiBo = AttackUtils.FilterXss(userInfo.WeiBo);
+            userInfo.Interests = AttackUtils.FilterXss(userInfo.Interests);
+            userInfo.Signature = AttackUtils.FilterXss(userInfo.Signature);
+
             var sqlString = $"UPDATE {TableName} SET UserName = @UserName, CreateDate = @CreateDate, LastResetPasswordDate = @LastResetPasswordDate, LastActivityDate = @LastActivityDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin, CountOfWriting = @CountOfWriting, IsChecked = @IsChecked, IsLockedOut = @IsLockedOut, DisplayName = @DisplayName, Email = @Email, Mobile = @Mobile, AvatarUrl = @AvatarUrl, Organization = @Organization, Department = @Department, Position = @Position, Gender = @Gender, Birthday = @Birthday, Education = @Education, Graduation = @Graduation, Address = @Address, WeiXin = @WeiXin, QQ = @QQ, WeiBo = @WeiBo, Interests = @Interests, Signature = @Signature WHERE Id = @Id";
 
             var updateParms = new IDataParameter[]
@@ -1179,7 +1215,7 @@ namespace SiteServer.CMS.Provider
             }
             if (!string.IsNullOrEmpty(searchWord))
             {
-                var word = PageUtils.FilterSql(searchWord);
+                var word = AttackUtils.FilterSql(searchWord);
                 whereString += $" AND (UserName LIKE '%{word}%' OR EMAIL LIKE '%{word}%' OR MOBILE = '{word}') ";
             }
             var sqlString =
@@ -1222,11 +1258,13 @@ namespace SiteServer.CMS.Provider
                 whereBuilder.Append($"(LastActivityDate >= {SqlUtils.GetComparableDate(dateTime)}) ");
             }
 
+            searchWord = AttackUtils.FilterSql(searchWord);
+
             if (string.IsNullOrEmpty(searchType))
             {
                 whereBuilder.Append(" AND ");
                 whereBuilder.Append(
-                    $"(UserName LIKE '%{PageUtils.FilterSql(searchWord)}%' OR EMAIL LIKE '%{PageUtils.FilterSql(searchWord)}%')");
+                    $"(UserName LIKE '%{searchWord}%' OR EMAIL LIKE '%{searchWord}%')");
             }
             else
             {

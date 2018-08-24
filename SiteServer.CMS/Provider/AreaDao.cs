@@ -124,7 +124,7 @@ namespace SiteServer.CMS.Provider
 
             if (!string.IsNullOrEmpty(areaInfo.ParentsPath) && areaInfo.ParentsPath != "0")
             {
-                sqlString = $"UPDATE siteserver_Area SET {SqlUtils.ToPlusSqlString("ChildrenCount")} WHERE Id IN ({PageUtils.FilterSql(areaInfo.ParentsPath)})";
+                sqlString = $"UPDATE siteserver_Area SET {SqlUtils.ToPlusSqlString("ChildrenCount")} WHERE Id IN ({AttackUtils.FilterSql(areaInfo.ParentsPath)})";
 
                 ExecuteNonQuery(trans, sqlString);
             }
@@ -147,7 +147,7 @@ namespace SiteServer.CMS.Provider
         {
             if (!string.IsNullOrEmpty(parentsPath))
             {
-                var sqlString = string.Concat("UPDATE siteserver_Area SET ChildrenCount = ChildrenCount - ", subtractNum, " WHERE Id IN (", PageUtils.FilterSql(parentsPath), ")");
+                var sqlString = string.Concat("UPDATE siteserver_Area SET ChildrenCount = ChildrenCount - ", subtractNum, " WHERE Id IN (", AttackUtils.FilterSql(parentsPath), ")");
                 ExecuteNonQuery(sqlString);
 
                 AreaManager.ClearCache();
@@ -248,7 +248,7 @@ namespace SiteServer.CMS.Provider
 
         private void SetTaxisAdd(int areaId, string parentsPath, int addNum)
         {
-            var path = PageUtils.FilterSql(parentsPath);
+            var path = AttackUtils.FilterSql(parentsPath);
             string sqlString =
                 $"UPDATE siteserver_Area SET Taxis = Taxis + {addNum} WHERE Id = {areaId} OR ParentsPath = '{path}' OR ParentsPath LIKE '{path},%'";
 
@@ -259,7 +259,7 @@ namespace SiteServer.CMS.Provider
 
         private void SetTaxisSubtract(int areaId, string parentsPath, int subtractNum)
         {
-            var path = PageUtils.FilterSql(parentsPath);
+            var path = AttackUtils.FilterSql(parentsPath);
             string sqlString =
                 $"UPDATE siteserver_Area SET Taxis = Taxis - {subtractNum} WHERE  Id = {areaId} OR ParentsPath = '{path}' OR ParentsPath LIKE '{path},%'";
 
@@ -292,7 +292,7 @@ namespace SiteServer.CMS.Provider
 
         private int GetMaxTaxisByParentPath(string parentPath)
         {
-            var sqlString = string.Concat("SELECT MAX(Taxis) AS MaxTaxis FROM siteserver_Area WHERE (ParentsPath = '", PageUtils.FilterSql(parentPath), "') OR (ParentsPath LIKE '", PageUtils.FilterSql(parentPath), ",%')");
+            var sqlString = string.Concat("SELECT MAX(Taxis) AS MaxTaxis FROM siteserver_Area WHERE (ParentsPath = '", AttackUtils.FilterSql(parentPath), "') OR (ParentsPath LIKE '", AttackUtils.FilterSql(parentPath), ",%')");
             var maxTaxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))

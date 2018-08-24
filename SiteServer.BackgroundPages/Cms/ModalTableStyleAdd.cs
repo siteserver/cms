@@ -294,7 +294,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             var isChanged = false;
             _styleInfo.AttributeName =TbAttributeName.Text;
-            _styleInfo.DisplayName = PageUtils.FilterXss(TbDisplayName.Text);
+            _styleInfo.DisplayName = AttackUtils.FilterXss(TbDisplayName.Text);
             _styleInfo.HelpText = TbHelpText.Text;
             _styleInfo.Taxis = TranslateUtils.ToInt(TbTaxis.Text);
             _styleInfo.InputType = inputType;
@@ -393,7 +393,7 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfo.RelatedIdentity = relatedIdentity;
             _styleInfo.TableName = _tableName;
             _styleInfo.AttributeName = TbAttributeName.Text;
-            _styleInfo.DisplayName =PageUtils.FilterXss(TbDisplayName.Text);
+            _styleInfo.DisplayName = AttackUtils.FilterXss(TbDisplayName.Text);
             _styleInfo.HelpText = TbHelpText.Text;
             _styleInfo.Taxis = TranslateUtils.ToInt(TbTaxis.Text);
             _styleInfo.InputType = inputType;

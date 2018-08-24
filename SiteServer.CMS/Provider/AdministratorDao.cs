@@ -202,6 +202,10 @@ namespace SiteServer.CMS.Provider
 
         public void Update(IAdministratorInfo info)
         {
+            info.DisplayName = AttackUtils.FilterXss(info.DisplayName);
+            info.Email = AttackUtils.FilterXss(info.Email);
+            info.Mobile = AttackUtils.FilterXss(info.Mobile);
+
             IDataParameter[] parms =
             {
                 GetParameter(ParmLastActivityDate, DataType.DateTime, info.LastActivityDate),
@@ -483,8 +487,10 @@ namespace SiteServer.CMS.Provider
                 {
                     whereBuilder.Append(" AND ");
                 }
+
+                var filterSearchWord = AttackUtils.FilterSql(searchWord);
                 whereBuilder.Append(
-                    $"(UserName LIKE '%{PageUtils.FilterSql(searchWord)}%' OR EMAIL LIKE '%{PageUtils.FilterSql(searchWord)}%' OR DisplayName LIKE '%{PageUtils.FilterSql(searchWord)}%')");
+                    $"(UserName LIKE '%{filterSearchWord}%' OR EMAIL LIKE '%{filterSearchWord}%' OR DisplayName LIKE '%{filterSearchWord}%')");
             }
 
             if (!isConsoleAdministrator)
@@ -493,7 +499,7 @@ namespace SiteServer.CMS.Provider
                 {
                     whereBuilder.Append(" AND ");
                 }
-                whereBuilder.Append($"CreatorUserName = '{PageUtils.FilterSql(creatorUserName)}'");
+                whereBuilder.Append($"CreatorUserName = '{AttackUtils.FilterSql(creatorUserName)}'");
             }
 
             if (departmentId != 0)
@@ -522,7 +528,7 @@ namespace SiteServer.CMS.Provider
                     whereString = $"AND {whereBuilder}";
                 }
                 whereString =
-                    $"WHERE (UserName IN (SELECT UserName FROM {DataProvider.AdministratorsInRolesDao.TableName} WHERE RoleName = '{PageUtils.FilterSql(roleName)}')) {whereString}";
+                    $"WHERE (UserName IN (SELECT UserName FROM {DataProvider.AdministratorsInRolesDao.TableName} WHERE RoleName = '{AttackUtils.FilterSql(roleName)}')) {whereString}";
             }
             else
             {
@@ -834,7 +840,7 @@ namespace SiteServer.CMS.Provider
             }
             if (!string.IsNullOrEmpty(searchWord))
             {
-                var word = PageUtils.FilterSql(searchWord);
+                var word = AttackUtils.FilterSql(searchWord);
                 whereString += $" AND (UserName LIKE '%{word}%' OR EMAIL LIKE '%{word}%') ";
             }
 
@@ -1053,6 +1059,10 @@ namespace SiteServer.CMS.Provider
                 string passwordSalt;
                 adminInfo.Password = EncodePassword(adminInfo.Password, EPasswordFormatUtils.GetEnumType(adminInfo.PasswordFormat), out passwordSalt);
                 adminInfo.PasswordSalt = passwordSalt;
+
+                adminInfo.DisplayName = AttackUtils.FilterXss(adminInfo.DisplayName);
+                adminInfo.Email = AttackUtils.FilterXss(adminInfo.Email);
+                adminInfo.Mobile = AttackUtils.FilterXss(adminInfo.Mobile);
 
                 IDataParameter[] insertParms =
                 {

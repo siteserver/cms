@@ -106,7 +106,7 @@ namespace SiteServer.CMS.Provider
             if (!string.IsNullOrEmpty(keyword))
             {
                 isWhere = true;
-                var filterKeyword = PageUtils.FilterSql(keyword);
+                var filterKeyword = AttackUtils.FilterSql(keyword);
                 whereString.Append(
                     $"(Text LIKE '%{filterKeyword}%' OR Summary LIKE '%{filterKeyword}%' OR Source LIKE '%{filterKeyword}%')");
             }

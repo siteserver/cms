@@ -240,7 +240,7 @@ namespace SiteServer.CMS.Provider
             if (relatedIdentities == null || relatedIdentities.Count <= 0) return;
 
             string sqlString =
-                $"DELETE FROM siteserver_TableStyle WHERE RelatedIdentity IN ({TranslateUtils.ToSqlInStringWithoutQuote(relatedIdentities)}) AND TableName = '{PageUtils.FilterSql(tableName)}'";
+                $"DELETE FROM siteserver_TableStyle WHERE RelatedIdentity IN ({TranslateUtils.ToSqlInStringWithoutQuote(relatedIdentities)}) AND TableName = '{AttackUtils.FilterSql(tableName)}'";
             ExecuteNonQuery(sqlString);
             TableStyleManager.IsChanged = true;
         }
@@ -250,7 +250,7 @@ namespace SiteServer.CMS.Provider
             var list = new List<TableStyleInfo>();
 
             string sqlString =
-                $"SELECT Id, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM siteserver_TableStyle WHERE RelatedIdentity IN ({TranslateUtils.ToSqlInStringWithoutQuote(relatedIdentities)}) AND TableName = '{PageUtils.FilterSql(tableName)}' ORDER BY Id DESC";
+                $"SELECT Id, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM siteserver_TableStyle WHERE RelatedIdentity IN ({TranslateUtils.ToSqlInStringWithoutQuote(relatedIdentities)}) AND TableName = '{AttackUtils.FilterSql(tableName)}' ORDER BY Id DESC";
 
             using (var rdr = ExecuteReader(sqlString))
             {

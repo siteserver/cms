@@ -3,7 +3,6 @@ using System.Web;
 using System.Web.Http;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser.StlElement;
 
@@ -29,7 +28,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
                 var pageTemplateId = request.GetPostInt("pageTemplateId");
                 var isPageRefresh = request.GetPostBool("isPageRefresh");
                 var templateContent = TranslateUtils.DecryptStringBySecretKey(request.GetPostString("templateContent"));
-                var ajaxDivId = PageUtils.FilterSqlAndXss(request.GetPostString("ajaxDivId"));
+                var ajaxDivId = AttackUtils.FilterSqlAndXss(request.GetPostString("ajaxDivId"));
 
                 var channelId = request.GetPostInt("channelId");
                 if (channelId == 0)

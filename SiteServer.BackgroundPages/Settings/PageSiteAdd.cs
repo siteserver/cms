@@ -422,7 +422,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 var psInfo = new SiteInfo
                 {
-                    SiteName = PageUtils.FilterXss(TbSiteName.Text),
+                    SiteName = AttackUtils.FilterXss(TbSiteName.Text),
                     SiteDir = siteDir,
                     TableName = DdlTableName.SelectedValue,
                     ParentId = parentSiteId,
@@ -446,7 +446,7 @@ namespace SiteServer.BackgroundPages.Settings
                     DataProvider.AdministratorDao.UpdateSiteIdCollection(AuthRequest.AdminName, TranslateUtils.ObjectCollectionToString(siteIdList));
                 }
 
-                AuthRequest.AddAdminLog("创建新站点", $"站点名称：{PageUtils.FilterXss(TbSiteName.Text)}");
+                AuthRequest.AddAdminLog("创建新站点", $"站点名称：{AttackUtils.FilterXss(TbSiteName.Text)}");
 
                 errorMessage = string.Empty;
                 return theSiteId;
