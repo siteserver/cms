@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Cms
                     PhFilePath.Visible = false;
                 }
 
-                BtnSubmit.Attributes.Add("onclick", $"if (UE && UE.getEditor('Content', {ETextEditorTypeUtils.ConfigValues})){{ UE.getEditor('Content', {ETextEditorTypeUtils.ConfigValues}).sync(); }}");
+                BtnSubmit.Attributes.Add("onclick", $"if (UE && UE.getEditor('Content', {UEditorUtils.ConfigValues})){{ UE.getEditor('Content', {UEditorUtils.ConfigValues}).sync(); }}");
 
                 CacAttributes.Attributes = nodeInfo.Additional;
 

@@ -11,7 +11,7 @@ namespace SiteServer.CMS.Provider
 {
     public class RecordDao : DataProviderBase
     {
-        public bool IsRecord => true;
+        public bool IsRecord => false;
 
         public override string TableName => "siteserver_Record";
 

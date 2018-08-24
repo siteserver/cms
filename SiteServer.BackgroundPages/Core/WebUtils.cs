@@ -245,7 +245,7 @@ namespace SiteServer.BackgroundPages.Core
             return $@"
 <script type=""text/javascript"">
 function getWordSpliter(){{
-    var pureText = {ETextEditorTypeUtils.GetPureTextScript(attributeName)}
+    var pureText = {UEditorUtils.GetPureTextScript(attributeName)}
 	$.post('{AjaxCmsService.GetWordSpliterUrl(siteInfo.Id)}&r=' + Math.random(), {{content:pureText}}, function(data) {{
 		if(data !=''){{
             $('.nav-pills').children('li').eq(1).find('a').click();
@@ -256,8 +256,8 @@ function getWordSpliter(){{
 	}});	
 }}
 function detection_{attributeName}(){{
-    var pureText = {ETextEditorTypeUtils.GetPureTextScript(attributeName)}
-    var htmlContent = {ETextEditorTypeUtils.GetContentScript(attributeName)}
+    var pureText = {UEditorUtils.GetPureTextScript(attributeName)}
+    var htmlContent = {UEditorUtils.GetContentScript(attributeName)}
     var keyword = '';
 	$.post('{AjaxCmsService.GetDetectionUrl(siteInfo.Id)}&r=' + Math.random(), {{content:pureText}}, function(data) {{
 		if(data){{
@@ -269,7 +269,7 @@ function detection_{attributeName}(){{
 				htmlContent = htmlContent.replace(reg,'<span style=""background-color:#ffff00;"">' + arr[i] + '</span>');
 			}}
             keyword=data;
-			{ETextEditorTypeUtils.GetSetContentScript(attributeName, "htmlContent")}
+			{UEditorUtils.GetSetContentScript(attributeName, "htmlContent")}
             {AlertUtils.Warning("敏感词检测", "共检测到' + i + '个敏感词，内容已用黄色背景标明", "取 消", string.Empty, string.Empty)}
 		}} else {{
             {AlertUtils.Success("敏感词检测", "检测成功，没有检测到任何敏感词")}
@@ -292,9 +292,9 @@ function detection_{attributeName}(){{
         {
             var isAutoCheckKeywords = siteInfo.Additional.IsAutoCheckKeywords.ToString().ToLower();
             var url = AjaxCmsService.GetDetectionReplaceUrl(siteInfo.Id);
-            var getPureText = ETextEditorTypeUtils.GetPureTextScript(BackgroundContentAttribute.Content);
-            var getContent = ETextEditorTypeUtils.GetContentScript(BackgroundContentAttribute.Content);
-            var setContent = ETextEditorTypeUtils.GetSetContentScript(BackgroundContentAttribute.Content, "htmlContent");
+            var getPureText = UEditorUtils.GetPureTextScript(BackgroundContentAttribute.Content);
+            var getContent = UEditorUtils.GetContentScript(BackgroundContentAttribute.Content);
+            var setContent = UEditorUtils.GetSetContentScript(BackgroundContentAttribute.Content, "htmlContent");
             var tipsWarn = AlertUtils.Warning("敏感词检测", "内容中共检测到' + i + '个敏感词，已用黄色背景标明", "取 消", "自动替换并保存",
                 "autoReplaceKeywords");
 

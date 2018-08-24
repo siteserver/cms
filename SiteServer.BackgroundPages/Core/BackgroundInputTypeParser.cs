@@ -273,11 +273,11 @@ $('#Title').keyup(function (e) {
             var value = attributes.GetString(attributeName);
 
             value = ContentUtility.TextEditorContentDecode(siteInfo, value, true);
-            value = ETextEditorTypeUtils.TranslateToHtml(value);
+            value = UEditorUtils.TranslateToHtml(value);
             value = StringUtils.HtmlEncode(value);
 
             var controllerUrl = ApiRouteUEditor.GetUrl(ApiManager.InnerApiUrl, siteInfo.Id);
-            var editorUrl = SiteFilesAssets.GetUrl(ApiManager.InnerApiUrl, "ueditor");
+            var editorUrl = SiteServerAssets.GetUrl("ueditor");
 
             if (pageScripts["uEditor"] == null)
             {
@@ -289,7 +289,7 @@ $('#Title').keyup(function (e) {
             extraBuilder.Append($@"
 <script type=""text/javascript"">
 $(function(){{
-  UE.getEditor('{attributeName}', {ETextEditorTypeUtils.ConfigValues});
+  UE.getEditor('{attributeName}', {UEditorUtils.ConfigValues});
   $('#{attributeName}').show();
 }});
 </script>");
@@ -926,7 +926,7 @@ function add_{attributeName}(val,foucs){{
                 if (inputType == InputType.TextEditor)
                 {
                     theValue = ContentUtility.TextEditorContentEncode(siteInfo, theValue);
-                    theValue = ETextEditorTypeUtils.TranslateToStlElement(theValue);
+                    theValue = UEditorUtils.TranslateToStlElement(theValue);
                 }
 
                 if (inputType != InputType.TextEditor && inputType != InputType.Image && inputType != InputType.File && inputType != InputType.Video && styleInfo.AttributeName != ContentAttribute.LinkUrl)

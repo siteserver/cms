@@ -459,6 +459,8 @@ namespace SiteServer.CMS.Core
         //根据发布系统属性判断是否为相对路径并返回解析后路径
         public static string ParseNavigationUrl(SiteInfo siteInfo, string url, bool isLocal)
         {
+            if (string.IsNullOrEmpty(url)) return string.Empty;
+
             if (siteInfo != null)
             {
                 if (!string.IsNullOrEmpty(url) && url.StartsWith("@"))

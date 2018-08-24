@@ -6,6 +6,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages
 {
@@ -31,8 +32,8 @@ namespace SiteServer.API.Controllers.Pages
                     Value = new
                     {
                         Version = SystemManager.Version == PackageUtils.VersionDev ? "dev" : SystemManager.Version,
-                        LastActivityDate = DateUtils.GetDateAndTimeString(request.AdminInfo.LastActivityDate),
-                        UpdateDate = DateUtils.GetDateAndTimeString(ConfigManager.Instance.UpdateDate)
+                        LastActivityDate = DateUtils.GetDateString(request.AdminInfo.LastActivityDate, EDateFormatType.Chinese),
+                        UpdateDate = DateUtils.GetDateString(ConfigManager.Instance.UpdateDate, EDateFormatType.Chinese)
                     }
                 });
             }

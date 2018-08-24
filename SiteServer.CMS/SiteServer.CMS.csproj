@@ -183,6 +183,7 @@
     <Compile Include="Core\TemplateManager.cs" />
     <Compile Include="Core\TemplateTypeUtils.cs" />
     <Compile Include="Core\UEditorUploader.cs" />
+    <Compile Include="Core\UEditorUtils.cs" />
     <Compile Include="Core\VisualInfo.cs" />
     <Compile Include="Core\WordSpliter.cs" />
     <Compile Include="Data\DataProviderBase.cs" />

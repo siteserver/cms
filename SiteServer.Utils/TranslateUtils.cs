@@ -781,11 +781,8 @@ namespace SiteServer.Utils
                 foreach (var key in attributes.Keys)
                 {
                     var value = attributes[key];
-                    if (!string.IsNullOrEmpty(value))
-                    {
-                        value = value.Replace("\"", "'");
-                    }
-                    builder.Append($@"{key}=""{value}"" ");
+
+                    builder.Append(value == null ? $"{key} " : $@"{key}=""{value.Replace("\"", "'")}"" ");
                 }
                 builder.Length--;
             }

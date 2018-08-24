@@ -122,7 +122,6 @@
     <Compile Include="Enumerations\EStaticXType.cs" />
     <Compile Include="Enumerations\ESubscribePushType.cs" />
     <Compile Include="Enumerations\ETaxisType.cs" />
-    <Compile Include="Enumerations\ETextEditorType.cs" />
     <Compile Include="Enumerations\ETheme.cs" />
     <Compile Include="Enumerations\ETimeFormatType.cs" />
     <Compile Include="Enumerations\ETriState.cs" />
@@ -312,7 +311,6 @@
     <Compile Include="ThirdParty\MvpXml\XmlNamespaces.cs" />
     <Compile Include="ThirdParty\MvpXml\XPathNavigatorReader.cs" />
     <Compile Include="TranslateUtils.cs" />
-    <Compile Include="UEditorUploaderForUser.cs" />
     <Compile Include="ValidateTypeUtils.cs" />
     <Compile Include="WebClientUtils.cs" />
     <Compile Include="WebConfigUtils.cs" />

@@ -286,16 +286,52 @@ namespace SiteServer.CMS.Model.Attributes
             set => Set(nameof(ConfigTemplateIsCodeMirror), value);
         }
 
-        public int ConfigVideoContentInsertWidth
+        public bool ConfigUEditorVideoIsImageUrl
         {
-            get => GetInt(nameof(ConfigVideoContentInsertWidth), 420);
-            set => Set(nameof(ConfigVideoContentInsertWidth), value);
+            get => GetBool(nameof(ConfigUEditorVideoIsImageUrl));
+            set => Set(nameof(ConfigUEditorVideoIsImageUrl), value);
         }
 
-        public int ConfigVideoContentInsertHeight
+        public bool ConfigUEditorVideoIsAutoPlay
         {
-            get => GetInt(nameof(ConfigVideoContentInsertHeight), 280);
-            set => Set(nameof(ConfigVideoContentInsertHeight), value);
+            get => GetBool(nameof(ConfigUEditorVideoIsAutoPlay));
+            set => Set(nameof(ConfigUEditorVideoIsAutoPlay), value);
+        }
+
+        public bool ConfigUEditorVideoIsWidth
+        {
+            get => GetBool(nameof(ConfigUEditorVideoIsWidth));
+            set => Set(nameof(ConfigUEditorVideoIsWidth), value);
+        }
+
+        public bool ConfigUEditorVideoIsHeight
+        {
+            get => GetBool(nameof(ConfigUEditorVideoIsHeight));
+            set => Set(nameof(ConfigUEditorVideoIsHeight), value);
+        }
+
+        public string ConfigUEditorVideoPlayBy
+        {
+            get => GetString(nameof(ConfigUEditorVideoPlayBy));
+            set => Set(nameof(ConfigUEditorVideoPlayBy), value);
+        }
+
+        public int ConfigUEditorVideoWidth
+        {
+            get => GetInt(nameof(ConfigUEditorVideoWidth), 600);
+            set => Set(nameof(ConfigUEditorVideoWidth), value);
+        }
+
+        public int ConfigUEditorVideoHeight
+        {
+            get => GetInt(nameof(ConfigUEditorVideoHeight), 400);
+            set => Set(nameof(ConfigUEditorVideoHeight), value);
+        }
+
+        public bool ConfigUEditorAudioIsAutoPlay
+        {
+            get => GetBool(nameof(ConfigUEditorAudioIsAutoPlay));
+            set => Set(nameof(ConfigUEditorAudioIsAutoPlay), value);
         }
 
         public string ConfigExportType
