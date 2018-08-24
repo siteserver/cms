@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.CMS.Core
 {
@@ -1142,19 +1143,38 @@ namespace SiteServer.CMS.Core
         {
             var list = new List<KeyValuePair<int, int>>();
 
-            var tableNameList = DataProvider.TableDao.GetTableNameListCreatedInDb();
+            var tableNameList = new List<string>();
+            foreach (var siteId in permissionManager.SiteIdList)
+            {
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                if (siteInfo == null) continue;
+
+                if (!string.IsNullOrEmpty(siteInfo.TableName) && !tableNameList.Contains(siteInfo.TableName))
+                {
+                    tableNameList.Add(siteInfo.TableName);
+                }
+
+                var channelIdList = ChannelManager.GetChannelIdList(siteId);
+                foreach (var channelId in channelIdList)
+                {
+                    var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                    if (!string.IsNullOrEmpty(channelInfo.ContentModelPluginId))
+                    {
+                        var tableName = PluginContentTableManager.GetTableName(channelInfo.ContentModelPluginId);
+                        if (!string.IsNullOrEmpty(tableName) && !tableNameList.Contains(tableName))
+                        {
+                            tableNameList.Add(tableName);
+                        }
+                    }
+                }
+            }
 
             foreach (var tableName in tableNameList)
             {
-                list.AddRange(GetUserCountListUnChecked(permissionManager, tableName));
+                list.AddRange(DataProvider.ContentDao.GetCountListUnChecked(permissionManager, tableName));
             }
 
             return list;
-        }
-
-        private static List<KeyValuePair<int, int>> GetUserCountListUnChecked(PermissionManager permissionManager, string tableName)
-        {
-            return DataProvider.ContentDao.GetCountListUnChecked(permissionManager, tableName);
         }
 	}
 }

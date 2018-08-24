@@ -19,25 +19,25 @@
         if (window.top != self) {
           window.top.location = self.location;
         }
-  
+
         function redirect(url) {
           $('#right').src = url;
         }
-  
+
         var isDesktop = $(window).width() > 1010;
         var contentMargin = isDesktop ? 200 : 0;
         var isMenuWin = false;
-  
+
         function openMenu() {
           isMenuWin = true;
           !isDesktop && $('#leftMenu').show();
         }
-  
+
         function closeMenu() {
           isMenuWin = false;
           !isDesktop && $('#leftMenu').hide();
         }
-  
+
         function toggleMenu() {
           if (isDesktop) {
             contentMargin = contentMargin === 200 ? 0 : 200;
@@ -133,14 +133,14 @@
         </div>
 
         <div class="content-page" id="content">
-          <iframe id="frmMain" frameborder="0" id="right" name="right" src="pageRight.aspx" style="width:100%; height: 100%"></iframe>
+          <iframe id="frmMain" frameborder="0" id="right" name="right" src="dashboard.cshtml" style="width:100%; height: 100%"></iframe>
         </div>
       </div>
     </body>
 
     </html>
 
-    
+
     <script src="assets/signalR/jquery.signalR-2.2.2.min.js" type="text/javascript"></script>
     <script src="assets/layer/layer.min.js" type="text/javascript"></script>
     <script src="<%=SignalrHubsUrl%>" type="text/javascript"></script>

@@ -1,0 +1,58 @@
+@{ Layout = "./Shared/_LayoutRoot.cshtml"; }
+
+<div>
+
+  <h4 class="page-title mt-4 mb-4">
+    欢迎使用 SiteServer CMS 管理后台
+  </h4>
+
+  <div class="row text-center">
+
+    <div class="col-4">
+      <div class="widget-simple-chart text-center card-box">
+        <h3 class="text-primary counter m-t-10">{{ version }}</h3>
+        <p class="text-muted text-nowrap m-b-10">当前版本</p>
+      </div>
+    </div>
+
+    <div class="col-4">
+      <div class="widget-simple-chart text-center card-box">
+        <h3 class="text-primary counter m-t-10">{{ updateDate }}</h3>
+        <p class="text-muted text-nowrap m-b-10">最近升级时间</p>
+      </div>
+    </div>
+
+    <div class="col-4">
+      <div class="widget-simple-chart text-center card-box">
+        <h3 class="text-primary counter m-t-10">{{ lastActivityDate }}</h3>
+        <p class="text-muted text-nowrap m-b-10">上次登录时间</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card-box" v-if="unCheckedListTotalCount > 0">
+    <div class="header-title m-t-0">待审核内容</div>
+    <p class="text-muted m-b-25 font-13">
+      共有
+      <span style="color:#f00"> {{ unCheckedListTotalCount }} </span> 篇内容待审核
+    </p>
+
+    <div class="table-responsive">
+      <table class="table">
+        <tbody>
+          <tr v-for="item in unCheckedList">
+            <td>
+              <a v-bind:href="item.url"> {{ item.siteName }} 有
+                <span style="color:#f00"> {{ item.count }} </span> 篇</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+@section Scripts{
+<script src="dashboard.js" type="text/javascript"></script> }

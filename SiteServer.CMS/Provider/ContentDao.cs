@@ -2016,9 +2016,6 @@ group by tmp.userName";
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (!permissionManager.IsSystemAdministrator)
                 {
-                    //if (!owningChannelIdArrayList.Contains(psID)) continue;
-                    //if (!AdminUtility.HasChannelPermissions(psID, psID, AppManager.CMS.Permission.Channel.ContentCheck)) continue;
-
                     var isContentCheck = false;
                     foreach (var theChannelId in owningChannelIdList)
                     {
@@ -2036,7 +2033,10 @@ group by tmp.userName";
                 int checkedLevel;
                 var isChecked = CheckManager.GetUserCheckLevel(permissionManager, siteInfo, siteInfo.Id, out checkedLevel);
                 var checkLevelList = CheckManager.LevelInt.GetCheckLevelListOfNeedCheck(siteInfo, isChecked, checkedLevel);
-                var sqlString = permissionManager.IsSystemAdministrator ? $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (SiteId = {siteId} AND ChannelId > 0 AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}))" : $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (SiteId = {siteId} AND ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningChannelIdList)}) AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}))";
+
+                var sqlString = permissionManager.IsSystemAdministrator
+                    ? $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (SiteId = {siteId} AND ChannelId > 0 AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}))"
+                    : $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (SiteId = {siteId} AND ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningChannelIdList)}) AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}))";
 
                 var count = DataProvider.DatabaseDao.GetIntResult(sqlString);
                 if (count > 0)

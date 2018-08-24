@@ -14,7 +14,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "滚动焦点图", Description = "通过 stl:focusviewer 标签在模板中实现由 FLASH 显示的图片轮播效果", Obsolete = true)]
+    [StlClass(Usage = "滚动焦点图", Description = "通过 stl:focusviewer 标签在模板中实现由 FLASH 显示的图片轮播效果")]
     public static class StlFocusViewer
     {
         public const string ElementName = "stl:focusViewer";

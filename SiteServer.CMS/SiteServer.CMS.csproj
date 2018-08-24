@@ -115,8 +115,6 @@
     <Compile Include="Api\V1\StlRequest.cs" />
     <Compile Include="Api\ApiRoutePlugin.cs" />
     <Compile Include="Api\Preview\ApiRoutePreview.cs" />
-    <Compile Include="Api\Sys\Administrators\ApiRouteActionsLogin.cs" />
-    <Compile Include="Api\Sys\Administrators\ApiRouteSiteCheckList.cs" />
     <Compile Include="Api\Sys\Errors\ApiRouteError.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteClearCache.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteUpdateSsCms.cs" />

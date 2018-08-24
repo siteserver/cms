@@ -133,14 +133,15 @@
     <Content Include="安装向导.html" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\Pages\Cms\TemplateReferenceController.cs" />
     <Compile Include="Controllers\Pages\Plugins\InstallController.cs" />
     <Compile Include="Controllers\Pages\Settings\AdminAccessTokensViewLayerController.cs" />
+    <Compile Include="Controllers\Pages\DashboardController.cs" />
     <Compile Include="Controllers\Plugins\PluginController.cs" />
     <Compile Include="Controllers\Preview\PreviewController.cs" />
     <Compile Include="Controllers\V1\ContentsController.cs" />
     <Compile Include="Controllers\V1\CaptchaController.cs" />
     <Compile Include="Controllers\Pages\Settings\AdminAccessTokensController.cs" />
-    <Compile Include="Controllers\Sys\Administrators\AdministratorsSiteCheckListController.cs" />
     <Compile Include="Controllers\Sys\Errors\ErrorController.cs" />
     <Compile Include="Controllers\Sys\Packaging\PackagingClearCacheController.cs" />
     <Compile Include="Controllers\Sys\Packaging\PackagingUpdateSsCmsController.cs" />

@@ -7,6 +7,5 @@ namespace SiteServer.CMS.StlParser.Model
     {
         public string Usage { get; set; }
         public string Description { get; set; }
-        public bool Obsolete { get; set; }
     }
 }

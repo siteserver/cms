@@ -88,7 +88,7 @@ namespace SiteServer.CMS.StlParser.Model
             return enums;
         }
 
-        public static string GetAttrTypeText(AttrType attrType, List<AttrEnum> attrEnums)
+        public static string GetAttrTypeText(AttrType attrType)
         {
             if (attrType == AttrType.Boolean)
             {
@@ -108,32 +108,6 @@ namespace SiteServer.CMS.StlParser.Model
             }
             if (attrType == AttrType.Enum)
             {
-                if (attrEnums != null && attrEnums.Count > 0)
-                {
-                    var builder = new StringBuilder();
-                    foreach (var attrEnum in attrEnums)
-                    {
-                        builder.Append(
-                            $@"<div class=""list-group-item"" style=""padding: 6px 10px"">
-    <small class=""float-left"">{attrEnum.Name}</small>
-    <small class=""float-right"">{attrEnum.Description}</small>
-  </div>");
-                    }
-                    return $@"
-<div class=""row"">
-    <div class=""col-6"">枚举</div>
-    <div class=""col-6 text-right"">
-        <a class=""enum-link ion-ios-arrow-down"" href=""javascript:;""></a>
-    </div>
-</div>
-<div style=""display: none"">
-    <hr />
-    <div class=""list-group"">
-      {builder}
-    </div>
-</div>
-";
-                }
                 return "枚举";
             }
 

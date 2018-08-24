@@ -420,9 +420,6 @@
     <Compile Include="Cms\PageTemplatePreview.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTemplateReference.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\ModalTextEditorInsertImageHandler.cs" />
     <Compile Include="Cms\ModalUploadWordHandler.cs" />
     <Compile Include="Controls\Alerts.cs" />
@@ -486,9 +483,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageRedirect.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PageRight.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageTest.cs">

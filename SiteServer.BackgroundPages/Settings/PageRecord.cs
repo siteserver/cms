@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Page_Load(object sender, EventArgs e)
         {
-            if (!DataProvider.RecordDao.IsRecord()) return;
+            if (!DataProvider.RecordDao.IsRecord) return;
 
             if (!string.IsNullOrEmpty(Request.QueryString["Delete"]))
             {
