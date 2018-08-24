@@ -2635,6 +2635,7 @@ group by tmp.userName";
 
         public string GetPagerWhereSqlString(SiteInfo siteInfo, ChannelInfo channelInfo, string searchType, string keyword, string dateFrom, string dateTo, int checkLevel, bool isCheckOnly, bool isSelfOnly, bool isTrashOnly, bool isWritingOnly, bool isAdminOnly, PermissionManager adminPermissions, List<string> allLowerAttributeNameList)
         {
+            var isAllChannels = false;
             var searchChannelIdList = new List<int>();
 
             if (isSelfOnly)
@@ -2643,7 +2644,6 @@ group by tmp.userName";
                 {
                     channelInfo.Id
                 };
-                
             }
             else
             {
@@ -2651,6 +2651,11 @@ group by tmp.userName";
 
                 if (adminPermissions.IsSystemAdministrator)
                 {
+                    if (channelInfo.Id == siteInfo.Id)
+                    {
+                        isAllChannels = true;
+                    }
+                    
                     searchChannelIdList = channelIdList;
                 }
                 else
@@ -2684,7 +2689,18 @@ group by tmp.userName";
                 whereList.Add($"{nameof(ContentAttribute.AddDate)} <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo).AddDays(1))}");
             }
 
-            if (searchChannelIdList.Count == 0)
+            if (isAllChannels)
+            {
+                if (isTrashOnly)
+                {
+                    whereList.Add($"{nameof(ContentAttribute.ChannelId)} < 0");
+                }
+                else
+                {
+                    whereList.Add($"{nameof(ContentAttribute.ChannelId)} > 0");
+                }
+            }
+            else if (searchChannelIdList.Count == 0)
             {
                 whereList.Add($"{nameof(ContentAttribute.ChannelId)} = 0");
             }
