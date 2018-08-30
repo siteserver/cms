@@ -25,11 +25,6 @@ namespace SiteServer.Utils
 
             public const string TitleImageAppendix = "t_";
             public const string SmallImageAppendix = "s_";
-
-            public static string GetStlUrl(bool isEntity, string label)
-            {
-                return isEntity ? $"http://stl.siteserver.cn/e-{label}/index.html" : $"http://stl.siteserver.cn/{label.Substring("stl:".Length)}/index.html";
-            }
         }
 
         public static bool IsMobile(string val)

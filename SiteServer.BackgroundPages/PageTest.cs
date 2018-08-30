@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Security.AccessControl;
+using System.Security.Permissions;
+using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.UI;
@@ -19,6 +22,14 @@ namespace SiteServer.BackgroundPages
     public class PageTest : Page
     {
         public Literal LtlContent;
+
+        public void Page_Load(object sender, EventArgs e)
+        {
+            // Check permissions exist to write to the directory.
+            // Will throw a System.Security.SecurityException if the demand fails.
+            FileIOPermission ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, WebConfigUtils.PhysicalApplicationPath);
+            ioPermission.Demand();
+        }
 
         // MODEL Reference
         //        public void Page_Load(object sender, EventArgs e)
@@ -54,58 +65,58 @@ namespace SiteServer.BackgroundPages
         //        }
 
         // STL Reference
-        public void Page_Load(object sender, EventArgs e)
-        {
-            var _elementName = Request.QueryString["name"];
+        //public void Page_Load(object sender, EventArgs e)
+        //{
+        //    var _elementName = Request.QueryString["name"];
 
-            Type elementType;
-            if (StlAll.Elements.TryGetValue(_elementName, out elementType))
-            {
-                var elementBuilder = new StringBuilder();
-                var tableBuilder = new StringBuilder();
+        //    Type elementType;
+        //    if (StlAll.Elements.TryGetValue(_elementName, out elementType))
+        //    {
+        //        var elementBuilder = new StringBuilder();
+        //        var tableBuilder = new StringBuilder();
 
-                var elementName = _elementName.Replace("stl:", string.Empty);
+        //        var elementName = _elementName.Replace("stl:", string.Empty);
 
-                var fields = elementType.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-                foreach (var field in fields)
-                {
-                    var stlAttribute =
-                        (StlAttributeAttribute)Attribute.GetCustomAttribute(field, typeof(StlAttributeAttribute));
+        //        var fields = elementType.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+        //        foreach (var field in fields)
+        //        {
+        //            var stlAttribute =
+        //                (StlAttributeAttribute)Attribute.GetCustomAttribute(field, typeof(StlAttributeAttribute));
 
-                    if (stlAttribute != null)
-                    {
-                        var attrName = field.Name.ToCamelCase();
+        //            if (stlAttribute != null)
+        //            {
+        //                var attrName = field.Name.ToCamelCase();
 
-                        elementBuilder.Append($@"&nbsp;{attrName}=""{stlAttribute.Title}""<br />");
+        //                elementBuilder.Append($@"&nbsp;{attrName}=""{stlAttribute.Title}""<br />");
 
-                        tableBuilder.Append($@"|[{attrName}]({elementName}/attributes?id={attrName}) | {stlAttribute.Title} | <br />");
-                    }
-                }
+        //                tableBuilder.Append($@"|[{attrName}]({elementName}/attributes?id={attrName}) | {stlAttribute.Title} | <br />");
+        //            }
+        //        }
 
-                if (elementName == "channels" || elementName == "contents" || elementName == "each" || elementName == "sites" || elementName == "sqlContents")
-                {
-                    fields = typeof(StlListBase).GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-                    foreach (var field in fields)
-                    {
-                        var stlAttribute =
-                            (StlAttributeAttribute)Attribute.GetCustomAttribute(field, typeof(StlAttributeAttribute));
+        //        if (elementName == "channels" || elementName == "contents" || elementName == "each" || elementName == "sites" || elementName == "sqlContents")
+        //        {
+        //            fields = typeof(StlListBase).GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+        //            foreach (var field in fields)
+        //            {
+        //                var stlAttribute =
+        //                    (StlAttributeAttribute)Attribute.GetCustomAttribute(field, typeof(StlAttributeAttribute));
 
-                        if (stlAttribute != null)
-                        {
-                            var attrName = field.Name.ToCamelCase();
+        //                if (stlAttribute != null)
+        //                {
+        //                    var attrName = field.Name.ToCamelCase();
 
-                            elementBuilder.Append($@"&nbsp;{attrName}=""{stlAttribute.Title}""<br />");
+        //                    elementBuilder.Append($@"&nbsp;{attrName}=""{stlAttribute.Title}""<br />");
 
-                            tableBuilder.Append($@"|[{attrName}]({elementName}/attributes?id={attrName}) | {stlAttribute.Title} | <br />");
-                        }
-                    }
-                }
+        //                    tableBuilder.Append($@"|[{attrName}]({elementName}/attributes?id={attrName}) | {stlAttribute.Title} | <br />");
+        //                }
+        //            }
+        //        }
 
-                if (elementBuilder.Length > 0) elementBuilder.Length -= 6;
+        //        if (elementBuilder.Length > 0) elementBuilder.Length -= 6;
 
-                LtlContent.Text = $"&lt;stl:{elementName}<br />{elementBuilder}&gt;<br />&lt;/stl:{elementName}&gt;" + "<br /><hr /><br />" + tableBuilder;
+        //        LtlContent.Text = $"&lt;stl:{elementName}<br />{elementBuilder}&gt;<br />&lt;/stl:{elementName}&gt;" + "<br /><hr /><br />" + tableBuilder;
 
-            }
-        }
+        //    }
+        //}
     }
 }

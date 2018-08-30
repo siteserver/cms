@@ -126,7 +126,7 @@
               <hr />
 
               <div class="text-center">
-                <input class="btn" @click="updateSsCmsApi" v-bind:disabled="!isCheck" v-bind:class="{ 'btn-primary': isCheck }"
+                <input class="btn" @click="updateSsCms" v-bind:disabled="!isCheck" v-bind:class="{ 'btn-primary': isCheck }"
                   type="button" value="下一步">
               </div>
             </div>

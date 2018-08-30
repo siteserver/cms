@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Permissions;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
@@ -113,21 +114,28 @@ namespace SiteServer.BackgroundPages
                 var isRootWritable = false;
                 try
                 {
-                    var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "robots.txt");
-                    FileUtils.WriteText(filePath, ECharset.utf_8, @"User-agent: *
-Disallow: /SiteServer/
-Disallow: /SiteFiles/");
+                    var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "version.txt");
+                    FileUtils.WriteText(filePath, ECharset.utf_8, SystemManager.Version);
+
+                    var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, WebConfigUtils.PhysicalApplicationPath);
+                    ioPermission.Demand();
+
                     isRootWritable = true;
                 }
                 catch
                 {
                     // ignored
                 }
+
                 var isSiteFilesWritable = false;
                 try
                 {
                     var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, "index.htm");
                     FileUtils.WriteText(filePath, ECharset.utf_8, StringUtils.Constants.Html5Empty);
+
+                    var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName));
+                    ioPermission.Demand();
+
                     isSiteFilesWritable = true;
                 }
                 catch
