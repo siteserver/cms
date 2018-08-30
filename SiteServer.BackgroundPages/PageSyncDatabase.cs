@@ -9,11 +9,6 @@ namespace SiteServer.BackgroundPages
 {
     public class PageSyncDatabase : Page
     {
-        public static string GetRedirectUrl()
-        {
-            return PageUtils.GetSiteServerUrl(nameof(PageSyncDatabase), null);
-        }
-
         public string UpdateDatabaseApiUrl => ApiRouteSyncDatabase.GetUrl(ApiManager.InnerApiUrl);
 
         public string AdminUrl => PageUtils.GetAdminDirectoryUrl(string.Empty);

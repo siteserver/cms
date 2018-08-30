@@ -15,7 +15,9 @@ namespace SiteServer.API.Controllers.Sys.Packaging
         {
             var request = new AuthRequest();
 
-            if (!request.IsAdminLoggin)
+            var isDownload = TranslateUtils.ToBool(CacheDbUtils.GetValueAndRemove(PackageUtils.CacheKeySsCmsIsDownload));
+
+            if (!isDownload)
             {
                 return Unauthorized();
             }
@@ -30,6 +32,8 @@ namespace SiteServer.API.Controllers.Sys.Packaging
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), PathUtils.GetAdminDirectoryPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), PathUtils.GetBinDirectoryPath(string.Empty), true);
             FileUtils.CopyFile(packageWebConfigPath, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.WebConfigFileName), true);
+
+            CacheDbUtils.RemoveAndInsert(PackageUtils.CacheKeySsCmsIsCopyFiles, true.ToString());
 
             //SystemManager.SyncDatabase();
 
