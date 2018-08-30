@@ -129,7 +129,7 @@ namespace SiteServer.CMS.Provider
 		{
             ConfigInfo info = null;
 
-		    using (var rdr = ExecuteReader($"SELECT {nameof(ConfigInfo.Id)}, {nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}"))
+		    using (var rdr = ExecuteReader($"SELECT {nameof(ConfigInfo.Id)}, {nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}"))
             {
                 if (rdr.Read())
                 {

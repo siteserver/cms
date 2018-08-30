@@ -46,13 +46,13 @@ namespace SiteServer.BackgroundPages
                     return;
                 }
 
-//#if !DEBUG
-//                if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.Version)
-//                {
-//                    PageUtils.Redirect(PageSyncDatabase.GetRedirectUrl());
-//                    return;
-//                }
-//#endif
+                #if !DEBUG
+                if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.Version)
+                {
+                    PageUtils.Redirect(PageSyncDatabase.GetRedirectUrl());
+                    return;
+                }
+                #endif
             }
 
             if (!IsAccessable) // 如果页面不能直接访问且又没有登录则直接跳登录页

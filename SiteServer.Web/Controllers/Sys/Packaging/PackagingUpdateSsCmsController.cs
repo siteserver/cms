@@ -42,8 +42,6 @@ namespace SiteServer.API.Controllers.Sys.Packaging
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), PathUtils.GetBinDirectoryPath(string.Empty), true);
             var isCopyFiles = FileUtils.CopyFile(packageWebConfigPath, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.WebConfigFileName), true);
 
-            CacheDbUtils.RemoveAndInsert(PackageUtils.CacheKeySsCmsIsCopyFiles, isCopyFiles.ToString());
-
             //SystemManager.SyncDatabase();
 
             return Ok(new
