@@ -28,16 +28,28 @@ namespace SiteServer.API.Controllers.Sys.Packaging
             var packagePath = PathUtils.GetPackagesPath(idWithVersion);
             var packageWebConfigPath = PathUtils.Combine(packagePath, WebConfigUtils.WebConfigFileName);
 
+            if (!FileUtils.IsFileExists(packageWebConfigPath))
+            {
+                return BadRequest($"升级包 {WebConfigUtils.WebConfigFileName} 文件不存在");
+            }
+
+            WebConfigUtils.UpdateWebConfig(packageWebConfigPath, WebConfigUtils.IsProtectData,
+                WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory,
+                WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
+
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), PathUtils.GetSiteFilesPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), PathUtils.GetAdminDirectoryPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), PathUtils.GetBinDirectoryPath(string.Empty), true);
-            FileUtils.CopyFile(packageWebConfigPath, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.WebConfigFileName), true);
+            var isCopyFiles = FileUtils.CopyFile(packageWebConfigPath, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.WebConfigFileName), true);
 
-            CacheDbUtils.RemoveAndInsert(PackageUtils.CacheKeySsCmsIsCopyFiles, true.ToString());
+            CacheDbUtils.RemoveAndInsert(PackageUtils.CacheKeySsCmsIsCopyFiles, isCopyFiles.ToString());
 
             //SystemManager.SyncDatabase();
 
-            return Ok();
+            return Ok(new
+            {
+                isCopyFiles
+            });
         }
     }
 }
