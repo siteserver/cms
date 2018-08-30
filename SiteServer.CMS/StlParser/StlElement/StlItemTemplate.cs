@@ -3,14 +3,19 @@ using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "列表项", Description = "通过 stl:itemTemplate 标签在模板中控制列表中每一项的显示内容及样式")]
+    [StlElement(Title = "列表项", Description = "通过 stl:itemTemplate 标签在模板中控制列表中每一项的显示内容及样式")]
     public class StlItemTemplate
 	{
         public const string ElementName = "stl:itemTemplate";
 
-	    public static readonly Attr Type = new Attr("type", "列表项类型");
-	    public static readonly Attr Selected = new Attr("selected", "列表当前选定项类型");
-	    public static readonly Attr SelectedValue = new Attr("selectedValue", "当前选定项的值");
+	    [StlAttribute(Title = "列表项类型")]
+	    public const string Type = nameof(Type);
+
+	    [StlAttribute(Title = "列表当前选定项类型")]
+        public const string Selected = nameof(Selected);
+
+	    [StlAttribute(Title = "当前选定项的值")]
+	    public const string SelectedValue = nameof(SelectedValue);
 
         public const string TypeHeader = "header";
         public const string TypeFooter = "footer";

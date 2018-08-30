@@ -362,7 +362,7 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public IDataReader GetStlDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString, string since)
+        public IDataReader GetStlDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString)
         {
             IDataReader ie = null;
 

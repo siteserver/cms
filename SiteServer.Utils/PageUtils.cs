@@ -801,7 +801,7 @@ namespace SiteServer.Utils
 
         public static string UrlDecode(string urlString)
         {
-            return HttpContext.Current.Server.UrlDecode(urlString);
+            return HttpUtility.UrlDecode(urlString);
         }
 
         public static void Redirect(string url)

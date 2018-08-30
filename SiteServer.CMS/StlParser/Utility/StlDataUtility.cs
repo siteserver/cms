@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-using System.Xml;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.Utils.Enumerations;
@@ -433,9 +431,9 @@ namespace SiteServer.CMS.StlParser.Utility
             return DataProvider.DatabaseDao.GetDataSet(connectionString, sqlString);
         }
 
-        public static IDataReader GetSitesDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString, string since)
+        public static IDataReader GetSitesDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString)
         {
-            return DataProvider.SiteDao.GetStlDataSource(siteName, siteDir, startNum, totalNum, whereString, scopeType, orderByString, since);
+            return DataProvider.SiteDao.GetStlDataSource(siteName, siteDir, startNum, totalNum, whereString, scopeType, orderByString);
         }
     }
 }

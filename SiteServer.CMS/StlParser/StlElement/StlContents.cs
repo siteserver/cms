@@ -12,7 +12,7 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "内容列表", Description = "通过 stl:contents 标签在模板中显示内容列表")]
+    [StlElement(Title = "内容列表", Description = "通过 stl:contents 标签在模板中显示内容列表")]
     public class StlContents : StlListBase
     {
         public const string ElementName = "stl:contents";

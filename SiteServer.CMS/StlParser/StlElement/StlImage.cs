@@ -1,7 +1,6 @@
 ﻿using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
@@ -11,34 +10,51 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "显示图片", Description = "通过 stl:image 标签在模板中显示栏目或内容的图片")]
+    [StlElement(Title = "显示图片", Description = "通过 stl:image 标签在模板中显示栏目或内容的图片")]
     public class StlImage
 	{
 		private StlImage(){}
 		public const string ElementName = "stl:image";
 
-		private static readonly Attr ChannelIndex = new Attr("channelIndex", "栏目索引");
-		private static readonly Attr ChannelName = new Attr("channelName", "栏目名称");
-        private static readonly Attr No = new Attr("no", "显示字段的顺序");
-		private static readonly Attr Parent = new Attr("parent", "显示父栏目");
-		private static readonly Attr UpLevel = new Attr("upLevel", "上级栏目的级别");
-        private static readonly Attr TopLevel = new Attr("topLevel", "从首页向下的栏目级别");
-        private static readonly Attr Type = new Attr("type", "指定存储图片的字段");
-        private static readonly Attr IsOriginal = new Attr("isOriginal", "如果是引用内容，是否获取所引用内容的值");
-		private static readonly Attr Src = new Attr("src", "显示的图片地址");
-        private static readonly Attr AltSrc = new Attr("altSrc", "当指定的图片不存在时显示的图片地址");
-        private static readonly Attr Width = new Attr("width", "宽度");
-        private static readonly Attr Height = new Attr("height", "高度");
+		[StlAttribute(Title = "栏目索引")]
+        private const string ChannelIndex = nameof(ChannelIndex);
+        
+		[StlAttribute(Title = "栏目名称")]
+        private const string ChannelName = nameof(ChannelName);
+        
+		[StlAttribute(Title = "显示父栏目")]
+        private const string Parent = nameof(Parent);
+        
+		[StlAttribute(Title = "上级栏目的级别")]
+        private const string UpLevel = nameof(UpLevel);
+        
+        [StlAttribute(Title = "从首页向下的栏目级别")]
+        private const string TopLevel = nameof(TopLevel);
+        
+        [StlAttribute(Title = "指定存储图片的字段")]
+        private const string Type = nameof(Type);
+
+	    [StlAttribute(Title = "显示字段存储的第几幅图片，默认为 1")]
+	    private const string No = nameof(No);
+
+        [StlAttribute(Title = "如果是引用内容，是否获取所引用内容的值")]
+        private const string IsOriginal = nameof(IsOriginal);
+        
+		[StlAttribute(Title = "显示的图片地址")]
+        private const string Src = nameof(Src);
+        
+        [StlAttribute(Title = "当指定的图片不存在时显示的图片地址")]
+        private const string AltSrc = nameof(AltSrc);
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
 		    var isGetPicUrlFromAttribute = false;
             var channelIndex = string.Empty;
             var channelName = string.Empty;
-            var no = 0;
             var upLevel = 0;
             var topLevel = -1;
             var type = BackgroundContentAttribute.ImageUrl;
+		    var no = 0;
             var isOriginal = false;
             var src = string.Empty;
             var altSrc = string.Empty;
@@ -48,7 +64,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, ChannelIndex.Name))
+                if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
                 {
                     channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     if (!string.IsNullOrEmpty(channelIndex))
@@ -56,7 +72,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, ChannelName.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelName))
                 {
                     channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     if (!string.IsNullOrEmpty(channelName))
@@ -64,11 +80,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, No.Name))
-                {
-                    no = TranslateUtils.ToInt(value);
-                }
-                else if (StringUtils.EqualsIgnoreCase(name, Parent.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Parent))
                 {
                     if (TranslateUtils.ToBool(value))
                     {
@@ -76,7 +88,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, UpLevel.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, UpLevel))
                 {
                     upLevel = TranslateUtils.ToInt(value);
                     if (upLevel > 0)
@@ -84,7 +96,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, TopLevel.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, TopLevel))
                 {
                     topLevel = TranslateUtils.ToInt(value);
                     if (topLevel >= 0)
@@ -92,19 +104,23 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Type.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsOriginal.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, No))
+                {
+                    no = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, IsOriginal))
                 {
                     isOriginal = TranslateUtils.ToBool(value, true);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Src.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Src))
                 {
                     src = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AltSrc.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, AltSrc))
                 {
                     altSrc = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
@@ -114,10 +130,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, stlImage, isGetPicUrlFromAttribute, channelIndex, channelName, no, upLevel, topLevel, type, isOriginal, src, altSrc);
+            return ParseImpl(pageInfo, contextInfo, stlImage, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, no, isOriginal, src, altSrc);
 		}
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlImage stlImage, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int no, int upLevel, int topLevel, string type, bool isOriginal, string src, string altSrc)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlImage stlImage, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, int no, bool isOriginal, string src, string altSrc)
         {
             var parsedContent = string.Empty;
 

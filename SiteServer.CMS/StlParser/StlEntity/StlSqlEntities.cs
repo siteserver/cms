@@ -6,7 +6,7 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
-    [StlClass(Usage = "数据库实体", Description = "通过 {sql.} 实体在模板中显示数据库值")]
+    [StlElement(Title = "数据库实体", Description = "通过 {sql.} 实体在模板中显示数据库值")]
     public class StlSqlEntities
 	{
         private StlSqlEntities()

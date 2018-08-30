@@ -7,7 +7,7 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
-    [StlClass(Usage = "导航实体", Description = "通过 {navigation.}  实体在模板中显示导航链接")]
+    [StlElement(Title = "导航实体", Description = "通过 {navigation.}  实体在模板中显示导航链接")]
     public class StlNavigationEntities
 	{
         private StlNavigationEntities()

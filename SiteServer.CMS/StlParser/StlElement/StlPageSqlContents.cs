@@ -8,12 +8,13 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "翻页数据库列表", Description = "通过 stl:pageSqlContents 标签在模板中显示能够翻页的数据库列表")]
+    [StlElement(Title = "翻页数据库列表", Description = "通过 stl:pageSqlContents 标签在模板中显示能够翻页的数据库列表")]
     public class StlPageSqlContents : StlSqlContents
     {
         public new const string ElementName = "stl:pageSqlContents";
 
-        private static readonly Attr PageNum = new Attr("pageNum", "每页显示的内容数目");
+        [StlAttribute(Title = "每页显示的内容数目")]
+        private const string PageNum = nameof(PageNum);
 
         private readonly string _stlPageSqlContentsElement;
         private readonly ListInfo _listInfo;

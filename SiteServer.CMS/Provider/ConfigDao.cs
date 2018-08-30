@@ -44,46 +44,38 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlInsertConfig = "INSERT INTO siteserver_Config (IsInitialized, DatabaseVersion, UpdateDate, SystemConfig) VALUES (@IsInitialized, @DatabaseVersion, @UpdateDate, @SystemConfig)";
+        public void Insert(ConfigInfo info)
+        {
+            var sqlString =
+                $"INSERT INTO {TableName} ({nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}) VALUES (@{nameof(ConfigInfo.IsInitialized)}, @{nameof(ConfigInfo.DatabaseVersion)}, @{nameof(ConfigInfo.UpdateDate)}, @{nameof(ConfigInfo.SystemConfig)})";
 
-        private const string SqlSelectConfig = "SELECT Id, IsInitialized, DatabaseVersion, UpdateDate, SystemConfig FROM siteserver_Config";
-
-        private const string SqlSelectIsInitialized = "SELECT IsInitialized FROM siteserver_Config";
-
-		private const string SqlSelectDatabaseVersion = "SELECT DatabaseVersion FROM siteserver_Config";
-
-        private const string SqlUpdateConfig = "UPDATE siteserver_Config SET IsInitialized = @IsInitialized, DatabaseVersion = @DatabaseVersion, UpdateDate = @UpdateDate, SystemConfig = @SystemConfig";
-
-		private const string ParmIsInitialized = "@IsInitialized";
-		private const string ParmDatabaseVersion = "@DatabaseVersion";
-        private const string ParmUpdateDate = "@UpdateDate";
-        private const string ParmSystemConfig = "@SystemConfig";
-
-        public void Insert(ConfigInfo info) 
-		{
-			var insertParms = new IDataParameter[]
+            var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmIsInitialized, DataType.VarChar, 18, info.IsInitialized.ToString()),
-				GetParameter(ParmDatabaseVersion, DataType.VarChar, 50, info.DatabaseVersion),
-                GetParameter(ParmUpdateDate, DataType.DateTime, info.UpdateDate),
-                GetParameter(ParmSystemConfig, DataType.Text, info.SystemConfigInfo.ToString())
+				GetParameter($"@{nameof(ConfigInfo.IsInitialized)}", DataType.VarChar, 18, info.IsInitialized.ToString()),
+				GetParameter($"@{nameof(ConfigInfo.DatabaseVersion)}", DataType.VarChar, 50, info.DatabaseVersion),
+                GetParameter($"@{nameof(ConfigInfo.UpdateDate)}", DataType.DateTime, info.UpdateDate),
+                GetParameter($"@{nameof(ConfigInfo.SystemConfig)}", DataType.Text, info.SystemConfigInfo.ToString())
             };
 
-            ExecuteNonQuery(SqlInsertConfig, insertParms);
+            ExecuteNonQuery(sqlString, insertParms);
             ConfigManager.IsChanged = true;
 		}
 
-		public void Update(ConfigInfo info) 
+		public void Update(ConfigInfo info)
 		{
-			var updateParms = new IDataParameter[]
+		    var sqlString =
+                $"UPDATE {TableName} SET {nameof(ConfigInfo.IsInitialized)} = @{nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}= @{nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}= @{nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}= @{nameof(ConfigInfo.SystemConfig)} WHERE {nameof(ConfigInfo.Id)} = @{nameof(ConfigInfo.Id)}";
+
+            var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmIsInitialized, DataType.VarChar, 18, info.IsInitialized.ToString()),
-				GetParameter(ParmDatabaseVersion, DataType.VarChar, 50, info.DatabaseVersion),
-                GetParameter(ParmUpdateDate, DataType.DateTime, info.UpdateDate),
-                GetParameter(ParmSystemConfig, DataType.Text, info.SystemConfigInfo.ToString())
+				GetParameter($"@{nameof(ConfigInfo.IsInitialized)}", DataType.VarChar, 18, info.IsInitialized.ToString()),
+				GetParameter($"@{nameof(ConfigInfo.DatabaseVersion)}", DataType.VarChar, 50, info.DatabaseVersion),
+                GetParameter($"@{nameof(ConfigInfo.UpdateDate)}", DataType.DateTime, info.UpdateDate),
+                GetParameter($"@{nameof(ConfigInfo.SystemConfig)}", DataType.Text, info.SystemConfigInfo.ToString()),
+			    GetParameter($"@{nameof(ConfigInfo.Id)}", DataType.Integer, info.Id)
             };
 
-            ExecuteNonQuery(SqlUpdateConfig, updateParms);
+            ExecuteNonQuery(sqlString, updateParms);
             ConfigManager.IsChanged = true;
 		}
 
@@ -93,7 +85,7 @@ namespace SiteServer.CMS.Provider
 
 			try
 			{
-                using (var rdr = ExecuteReader(SqlSelectIsInitialized)) 
+                using (var rdr = ExecuteReader($"SELECT {nameof(ConfigInfo.IsInitialized)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}")) 
 				{
 					if (rdr.Read()) 
 					{
@@ -116,7 +108,7 @@ namespace SiteServer.CMS.Provider
 
 			try
 			{
-				using (var rdr = ExecuteReader(SqlSelectDatabaseVersion)) 
+				using (var rdr = ExecuteReader($"SELECT {nameof(ConfigInfo.DatabaseVersion)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}")) 
 				{
 					if (rdr.Read()) 
 					{
@@ -137,7 +129,7 @@ namespace SiteServer.CMS.Provider
 		{
             ConfigInfo info = null;
 
-		    using (var rdr = ExecuteReader(SqlSelectConfig))
+		    using (var rdr = ExecuteReader($"SELECT {nameof(ConfigInfo.Id)}, {nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}"))
             {
                 if (rdr.Read())
                 {
@@ -149,17 +141,5 @@ namespace SiteServer.CMS.Provider
 
 			return info;
 		}
-
-	    public void DeleteAllExclude(int configId)
-	    {
-	        var sqlString = $"DELETE FROM {TableName} WHERE {nameof(ConfigInfo.Id)} != @{nameof(ConfigInfo.Id)}";
-
-	        var parms = new IDataParameter[]
-	        {
-	            GetParameter(nameof(ConfigInfo.Id), DataType.Integer, configId)
-	        };
-
-	        ExecuteNonQuery(sqlString, parms);
-        }
     }
 }

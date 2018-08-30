@@ -11,22 +11,41 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "翻页项", Description = "通过 stl:pageItem 标签在模板中显示翻页项（上一页、下一页、当前页、页跳转、页导航等）")]
+    [StlElement(Title = "翻页项", Description = "通过 stl:pageItem 标签在模板中显示翻页项（上一页、下一页、当前页、页跳转、页导航等）")]
     public class StlPageItem
     {
         private StlPageItem() { }
         public const string ElementName = "stl:pageItem";
 
-        private static readonly Attr Type = new Attr("type", "类型");
-        private static readonly Attr Text = new Attr("text", "显示的文字");
-        private static readonly Attr LinkClass = new Attr("linkClass", "链接CSS样式");
-        private static readonly Attr TextClass = new Attr("textClass", "文字CSS样式");
-        private static readonly Attr ListNum = new Attr("listNum", "页导航或页跳转显示链接数");
-        private static readonly Attr ListEllipsis = new Attr("listEllipsis", "页导航或页跳转链接太多时显示的省略号");
-        private static readonly Attr HasLr = new Attr("hasLr", "页码导航是否包含左右字符");
-        private static readonly Attr LStr = new Attr("lStr", "页面左字符");
-        private static readonly Attr RStr = new Attr("rStr", "页面右字符");
-        private static readonly Attr AlwaysA = new Attr("alwaysA", "页码总是超链接，包括无连接时");
+        [StlAttribute(Title = "类型")]
+        private const string Type = nameof(Type);
+
+        [StlAttribute(Title = "显示的文字")]
+        private const string Text = nameof(Text);
+
+        [StlAttribute(Title = "链接CSS样式")]
+        private const string LinkClass = nameof(LinkClass);
+
+        [StlAttribute(Title = "文字CSS样式")]
+        private const string TextClass = nameof(TextClass);
+
+        [StlAttribute(Title = "页导航或页跳转显示链接数")]
+        private const string ListNum = nameof(ListNum);
+
+        [StlAttribute(Title = "页导航或页跳转链接太多时显示的省略号")]
+        private const string ListEllipsis = nameof(ListEllipsis);
+
+        [StlAttribute(Title = "页码导航是否包含左右字符")]
+        private const string HasLr = nameof(HasLr);
+
+        [StlAttribute(Title = "页面左字符")]
+        private const string LStr = nameof(LStr);
+
+        [StlAttribute(Title = "页面右字符")]
+        private const string RStr = nameof(RStr);
+
+        [StlAttribute(Title = "页码总是超链接，包括无连接时")]
+        private const string AlwaysA = nameof(AlwaysA);
 
         public const string TypePreviousPage = "PreviousPage";				            //上一页
         public const string TypeNextPage = "NextPage";						            //下一页
@@ -78,43 +97,43 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var value = stlElementInfo.Attributes[name];
 
-                    if (StringUtils.EqualsIgnoreCase(name, Type.Name))
+                    if (StringUtils.EqualsIgnoreCase(name, Type))
                     {
                         type = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, Text.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, Text))
                     {
                         text = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, ListNum.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, ListNum))
                     {
                         listNum = TranslateUtils.ToInt(value, 9);
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, ListEllipsis.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, ListEllipsis))
                     {
                         listEllipsis = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, LinkClass.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, LinkClass))
                     {
                         linkClass = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, TextClass.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, TextClass))
                     {
                         textClass = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, HasLr.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, HasLr))
                     {
                         hasLr = TranslateUtils.ToBool(value);
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, LStr.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, LStr))
                     {
                         lStr = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, RStr.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, RStr))
                     {
                         rStr = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, AlwaysA.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, AlwaysA))
                     {
                         alwaysA = TranslateUtils.ToBool(value);
                     }
@@ -550,43 +569,43 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var value = stlElementInfo.Attributes[name];
 
-                    if (StringUtils.EqualsIgnoreCase(name, Type.Name))
+                    if (StringUtils.EqualsIgnoreCase(name, Type))
                     {
                         type = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, Text.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, Text))
                     {
                         text = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, ListNum.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, ListNum))
                     {
                         listNum = TranslateUtils.ToInt(value, 9);
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, ListEllipsis.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, ListEllipsis))
                     {
                         listEllipsis = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, LinkClass.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, LinkClass))
                     {
                         linkClass = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, TextClass.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, TextClass))
                     {
                         textClass = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, HasLr.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, HasLr))
                     {
                         hasLr = TranslateUtils.ToBool(value);
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, LStr.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, LStr))
                     {
                         lStr = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, RStr.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, RStr))
                     {
                         rStr = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, AlwaysA.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, AlwaysA))
                     {
                         alwaysA = TranslateUtils.ToBool(value);
                     }
@@ -1026,43 +1045,43 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var value = stlElementInfo.Attributes[name];
 
-                    if (StringUtils.EqualsIgnoreCase(name, Type.Name))
+                    if (StringUtils.EqualsIgnoreCase(name, Type))
                     {
                         type = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, Text.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, Text))
                     {
                         text = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, ListNum.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, ListNum))
                     {
                         listNum = TranslateUtils.ToInt(value, 9);
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, ListEllipsis.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, ListEllipsis))
                     {
                         listEllipsis = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, LinkClass.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, LinkClass))
                     {
                         linkClass = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, TextClass.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, TextClass))
                     {
                         textClass = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, HasLr.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, HasLr))
                     {
                         hasLr = TranslateUtils.ToBool(value);
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, LStr.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, LStr))
                     {
                         lStr = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, RStr.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, RStr))
                     {
                         rStr = value;
                     }
-                    else if (StringUtils.EqualsIgnoreCase(name, AlwaysA.Name))
+                    else if (StringUtils.EqualsIgnoreCase(name, AlwaysA))
                     {
                         alwaysA = TranslateUtils.ToBool(value);
                     }

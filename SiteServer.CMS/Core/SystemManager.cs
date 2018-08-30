@@ -96,12 +96,6 @@ namespace SiteServer.CMS.Core
             }
             else
             {
-                var count = DataProvider.DatabaseDao.GetCount(DataProvider.ConfigDao.TableName);
-                if (count > 1)
-                {
-                    DataProvider.ConfigDao.DeleteAllExclude(configInfo.Id);
-                }
-
                 configInfo.DatabaseVersion = Version;
                 configInfo.IsInitialized = true;
                 configInfo.UpdateDate = DateTime.Now;

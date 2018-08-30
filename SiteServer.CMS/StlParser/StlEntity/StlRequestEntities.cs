@@ -7,7 +7,7 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
-    [StlClass(Usage = "请求实体", Description = "通过 {request.} 实体在模板中显示地址栏请求参数")]
+    [StlElement(Title = "请求实体", Description = "通过 {request.} 实体在模板中显示地址栏请求参数")]
     public class StlRequestEntities
 	{
         private StlRequestEntities()

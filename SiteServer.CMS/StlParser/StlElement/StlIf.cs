@@ -12,16 +12,23 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "条件判断", Description = "通过 stl:if 标签在模板中根据条件判断显示内容")]
+    [StlElement(Title = "条件判断", Description = "通过 stl:if 标签在模板中根据条件判断显示内容")]
     public class StlIf
     {
         private StlIf() { }
         public const string ElementName = "stl:if";
 
-        private static readonly Attr Type = new Attr("type", "测试类型");			                                    //测试类型
-        private static readonly Attr Operate = new Attr("operate", "测试操作");				                            //测试操作
-        private static readonly Attr Value = new Attr("value", "测试值");				                                //测试值
-        private static readonly Attr Context = new Attr("context", "所处上下文");                                          //所处上下文
+        [StlAttribute(Title = "测试类型")]
+        private const string Type = nameof(Type);
+
+        [StlAttribute(Title = "测试操作")]
+        private const string Op = nameof(Op);
+
+        [StlAttribute(Title = "测试值")]
+        private const string Value = nameof(Value);
+
+        [StlAttribute(Title = "所处上下文")]
+        private const string Context = nameof(Context);
 
         public const string TypeIsUserLoggin = "IsUserLoggin";                                      //用户是否已登录
         public const string TypeIsAdministratorLoggin = "IsAdministratorLoggin";                    //管理员是否已登录
@@ -94,19 +101,19 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, Type.Name) || StringUtils.EqualsIgnoreCase(name, "testType"))
+                if (StringUtils.EqualsIgnoreCase(name, Type) || StringUtils.EqualsIgnoreCase(name, "testType"))
                 {
                     testTypeStr = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Operate.Name) || StringUtils.EqualsIgnoreCase(name, "testOperate"))
+                else if (StringUtils.EqualsIgnoreCase(name, Op) || StringUtils.EqualsIgnoreCase(name, "operate") || StringUtils.EqualsIgnoreCase(name, "testOperate"))
                 {
                     testOperate = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Value.Name) || StringUtils.EqualsIgnoreCase(name, "testValue"))
+                else if (StringUtils.EqualsIgnoreCase(name, Value) || StringUtils.EqualsIgnoreCase(name, "testValue"))
                 {
                     testValue = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Context.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Context))
                 {
                     contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
                 }

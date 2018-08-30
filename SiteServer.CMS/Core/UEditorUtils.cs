@@ -32,22 +32,22 @@ namespace SiteServer.CMS.Core
 
             var dict = new Dictionary<string, string>
             {
-                {StlPlayer.PlayUrl.Name, playUrl},
-                {StlPlayer.IsAutoPlay.Name, siteInfo.Additional.ConfigUEditorVideoIsAutoPlay.ToString()},
-                {StlPlayer.PlayBy.Name, siteInfo.Additional.ConfigUEditorVideoPlayBy},
+                {StlPlayer.PlayUrl, playUrl},
+                {StlPlayer.IsAutoPlay, siteInfo.Additional.ConfigUEditorVideoIsAutoPlay.ToString()},
+                {StlPlayer.PlayBy, siteInfo.Additional.ConfigUEditorVideoPlayBy},
                 {"style", "width: 333px; height: 333px;" }
             };
             if (siteInfo.Additional.ConfigUEditorVideoIsImageUrl && !string.IsNullOrEmpty(imageUrl))
             {
-                dict.Add(StlPlayer.ImageUrl.Name, imageUrl);
+                dict.Add(StlPlayer.ImageUrl, imageUrl);
             }
             if (siteInfo.Additional.ConfigUEditorVideoIsWidth)
             {
-                dict.Add(StlPlayer.Width.Name, siteInfo.Additional.ConfigUEditorVideoWidth.ToString());
+                dict.Add(StlPlayer.Width, siteInfo.Additional.ConfigUEditorVideoWidth.ToString());
             }
             if (siteInfo.Additional.ConfigUEditorVideoIsHeight)
             {
-                dict.Add(StlPlayer.Height.Name, siteInfo.Additional.ConfigUEditorVideoHeight.ToString());
+                dict.Add(StlPlayer.Height, siteInfo.Additional.ConfigUEditorVideoHeight.ToString());
             }
 
             return GetInsertHtmlScript(attributeName,
@@ -60,8 +60,8 @@ namespace SiteServer.CMS.Core
 
             var dict = new Dictionary<string, string>
             {
-                {StlPlayer.PlayUrl.Name, playUrl},
-                {StlPlayer.IsAutoPlay.Name, siteInfo.Additional.ConfigUEditorAudioIsAutoPlay.ToString()},
+                {StlPlayer.PlayUrl, playUrl},
+                {StlPlayer.IsAutoPlay, siteInfo.Additional.ConfigUEditorAudioIsAutoPlay.ToString()},
                 {"style", "width: 400px; height: 40px;" }
             };
 

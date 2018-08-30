@@ -1694,7 +1694,7 @@ FROM (SELECT TOP {totalNum} *
         public IEnumerable<dynamic> GetPageObjects(string tableName, string identityColumnName, int offset, int limit)
         {
             IEnumerable<dynamic> objects;
-            var sqlString = GetPageSqlString(tableName, "*", string.Empty, $"ORDER BY {identityColumnName}", offset, limit);
+            var sqlString = GetPageSqlString(tableName, "*", string.Empty, $"ORDER BY {identityColumnName} ASC", offset, limit);
 
             using (var connection = GetConnection())
             {

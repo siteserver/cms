@@ -6,17 +6,26 @@ using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "播放音频", Description = "通过 stl:audio 标签在模板中显示并播放音频文件")]
+    [StlElement(Title = "播放音频", Description = "通过 stl:audio 标签在模板中显示并播放音频文件")]
     public class StlAudio
 	{
         private StlAudio() { }
 		public const string ElementName = "stl:audio";
 
-        private static readonly Attr Type = new Attr("type", "指定存储音频地址的内容字段，默认为VideoUrl", AttrType.Enum);
-        private static readonly Attr PlayUrl = new Attr("playUrl", "音频地址，优先级高于type属性");
-        private static readonly Attr IsAutoPlay = new Attr("isAutoPlay", "是否自动播放", AttrType.Boolean);
-        private static readonly Attr IsPreload = new Attr("isPreload", "是否预载入", AttrType.Boolean);
-        private static readonly Attr IsLoop = new Attr("isLoop", "是否循环播放", AttrType.Boolean);
+        [StlAttribute(Title = "指定存储音频地址的内容字段，默认为VideoUrl")]
+        private const string Type = nameof(Type);
+
+        [StlAttribute(Title = "音频地址，优先级高于type属性")]
+        private const string PlayUrl = nameof(PlayUrl);
+
+        [StlAttribute(Title = "是否自动播放")]
+        private const string IsAutoPlay = nameof(IsAutoPlay);
+
+        [StlAttribute(Title = "是否预载入")]
+        private const string IsPreload = nameof(IsPreload);
+
+        [StlAttribute(Title = "是否循环播放")]
+        private const string IsLoop = nameof(IsLoop);
 
 	    public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
@@ -30,23 +39,23 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, Type.Name))
+                if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, PlayUrl.Name) || StringUtils.EqualsIgnoreCase(name, "src"))
+                else if (StringUtils.EqualsIgnoreCase(name, PlayUrl) || StringUtils.EqualsIgnoreCase(name, "src"))
                 {
                     playUrl = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsAutoPlay.Name) || StringUtils.EqualsIgnoreCase(name, "play"))
+                else if (StringUtils.EqualsIgnoreCase(name, IsAutoPlay) || StringUtils.EqualsIgnoreCase(name, "play"))
                 {
                     isAutoPlay = TranslateUtils.ToBool(value, false);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsPreload.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsPreload))
                 {
                     isPreLoad = TranslateUtils.ToBool(value, true);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsLoop.Name) || StringUtils.EqualsIgnoreCase(name, "loop"))
+                else if (StringUtils.EqualsIgnoreCase(name, IsLoop) || StringUtils.EqualsIgnoreCase(name, "loop"))
                 {
                     isLoop = TranslateUtils.ToBool(value, false);
                 }

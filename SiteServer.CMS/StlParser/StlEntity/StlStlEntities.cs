@@ -7,7 +7,7 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
-    [StlClass(Usage = "通用实体", Description = "通过 {stl.} 实体在模板中显示对应数据")]
+    [StlElement(Title = "通用实体", Description = "通过 {stl.} 实体在模板中显示对应数据")]
     public class StlStlEntities
 	{
 		private StlStlEntities()

@@ -7,29 +7,62 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "数据库值", Description = "通过 stl:sqlContent 标签在模板中显示数据库值")]
+    [StlElement(Title = "数据库值", Description = "通过 stl:sqlContent 标签在模板中显示数据库值")]
     public class StlSqlContent
 	{
         private StlSqlContent() { }
         public const string ElementName = "stl:sqlContent";
 
-        private static readonly Attr ConnectionStringName = new Attr("connectionStringName", "数据库链接字符串名称");
-        private static readonly Attr ConnectionString = new Attr("connectionString", "数据库链接字符串");
-        private static readonly Attr QueryString = new Attr("queryString", "数据库查询语句");
-		private static readonly Attr Type = new Attr("type", "显示的类型");
-        private static readonly Attr LeftText = new Attr("leftText", "显示在信息前的文字");
-        private static readonly Attr RightText = new Attr("rightText", "显示在信息后的文字");
-        private static readonly Attr FormatString = new Attr("formatString", "显示的格式");
-        private static readonly Attr StartIndex = new Attr("startIndex", "字符开始位置");
-        private static readonly Attr Length = new Attr("length", "指定字符长度");
-		private static readonly Attr WordNum = new Attr("wordNum", "显示字符的数目");
-        private static readonly Attr Ellipsis = new Attr("ellipsis", "文字超出部分显示的文字");
-        private static readonly Attr Replace = new Attr("replace", "需要替换的文字，可以是正则表达式");
-        private static readonly Attr To = new Attr("to", "替换replace的文字信息");
-        private static readonly Attr IsClearTags = new Attr("isClearTags", "是否清除标签信息");
-        private static readonly Attr IsReturnToBr = new Attr("isReturnToBr", "是否将回车替换为HTML换行标签");
-        private static readonly Attr IsLower = new Attr("isLower", "是否转换为小写");
-        private static readonly Attr IsUpper = new Attr("isUpper", "是否转换为大写");
+        [StlAttribute(Title = "数据库链接字符串名称")]
+        private const string ConnectionStringName = nameof(ConnectionStringName);
+        
+        [StlAttribute(Title = "数据库链接字符串")]
+        private const string ConnectionString = nameof(ConnectionString);
+        
+        [StlAttribute(Title = "数据库查询语句")]
+        private const string QueryString = nameof(QueryString);
+        
+		[StlAttribute(Title = "显示的类型")]
+        private const string Type = nameof(Type);
+        
+        [StlAttribute(Title = "显示在信息前的文字")]
+        private const string LeftText = nameof(LeftText);
+        
+        [StlAttribute(Title = "显示在信息后的文字")]
+        private const string RightText = nameof(RightText);
+        
+        [StlAttribute(Title = "显示的格式")]
+        private const string FormatString = nameof(FormatString);
+        
+        [StlAttribute(Title = "字符开始位置")]
+        private const string StartIndex = nameof(StartIndex);
+        
+        [StlAttribute(Title = "指定字符长度")]
+        private const string Length = nameof(Length);
+        
+		[StlAttribute(Title = "显示字符的数目")]
+        private const string WordNum = nameof(WordNum);
+        
+        [StlAttribute(Title = "文字超出部分显示的文字")]
+        private const string Ellipsis = nameof(Ellipsis);
+        
+        [StlAttribute(Title = "需要替换的文字，可以是正则表达式")]
+        private const string Replace = nameof(Replace);
+        
+        [StlAttribute(Title = "替换replace的文字信息")]
+        private const string To = nameof(To);
+        
+        [StlAttribute(Title = "是否清除标签信息")]
+        private const string IsClearTags = nameof(IsClearTags);
+        
+        [StlAttribute(Title = "是否将回车替换为HTML换行标签")]
+        private const string IsReturnToBr = nameof(IsReturnToBr);
+        
+        [StlAttribute(Title = "是否转换为小写")]
+        private const string IsLower = nameof(IsLower);
+        
+        [StlAttribute(Title = "是否转换为大写")]
+        private const string IsUpper = nameof(IsUpper);
 
         public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
@@ -55,74 +88,74 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, ConnectionString.Name))
+                if (StringUtils.EqualsIgnoreCase(name, ConnectionString))
                 {
                     connectionString = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, ConnectionStringName.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, ConnectionStringName))
                 {
                     if (string.IsNullOrEmpty(connectionString))
                     {
                         connectionString = WebConfigUtils.ConnectionString;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, QueryString.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, QueryString))
                 {
                     queryString = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Type.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
                     type = value.ToLower();
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, LeftText.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, LeftText))
                 {
                     leftText = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, RightText.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, RightText))
                 {
                     rightText = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, FormatString.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, FormatString))
                 {
                     formatString = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, StartIndex.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, StartIndex))
                 {
                     startIndex = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Length.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Length))
                 {
                     length = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, WordNum.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, WordNum))
                 {
                     wordNum = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Ellipsis.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Ellipsis))
                 {
                     ellipsis = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Replace.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Replace))
                 {
                     replace = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, To.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, To))
                 {
                     to = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsClearTags.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsClearTags))
                 {
                     isClearTags = TranslateUtils.ToBool(value, false);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsReturnToBr.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsReturnToBr))
                 {
                     isReturnToBr = TranslateUtils.ToBool(value, false);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsLower.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsLower))
                 {
                     isLower = TranslateUtils.ToBool(value, true);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsUpper.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsUpper))
                 {
                     isUpper = TranslateUtils.ToBool(value, true);
                 }

@@ -7,21 +7,35 @@ using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "播放视频", Description = "通过 stl:video 标签在模板中显示视频播放器")]
+    [StlElement(Title = "播放视频", Description = "通过 stl:video 标签在模板中显示视频播放器")]
     public class StlVideo
 	{
         private StlVideo() { }
 		public const string ElementName = "stl:video";
 
-        private static readonly Attr Type = new Attr("type", "指定视频的字段");
-
-		private static readonly Attr PlayUrl = new Attr("playUrl", "视频地址");
-        private static readonly Attr ImageUrl = new Attr("imageUrl", "图片地址");
-        private static readonly Attr Width = new Attr("width", "宽度");
-        private static readonly Attr Height = new Attr("height", "高度");
-        private static readonly Attr IsAutoPlay = new Attr("isAutoPlay", "是否自动播放");
-        private static readonly Attr IsControls = new Attr("isControls", "是否显示播放控件");
-        private static readonly Attr IsLoop = new Attr("isLoop", "是否循环播放");
+        [StlAttribute(Title = "指定视频的字段")]
+        private const string Type = nameof(Type);
+         
+		[StlAttribute(Title = "视频地址")]
+        private const string PlayUrl = nameof(PlayUrl);
+         
+        [StlAttribute(Title = "图片地址")]
+        private const string ImageUrl = nameof(ImageUrl);
+         
+        [StlAttribute(Title = "宽度")]
+        private const string Width = nameof(Width);
+         
+        [StlAttribute(Title = "高度")]
+        private const string Height = nameof(Height);
+         
+        [StlAttribute(Title = "是否自动播放")]
+        private const string IsAutoPlay = nameof(IsAutoPlay);
+         
+        [StlAttribute(Title = "是否显示播放控件")]
+        private const string IsControls = nameof(IsControls);
+         
+        [StlAttribute(Title = "是否循环播放")]
+        private const string IsLoop = nameof(IsLoop);
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
@@ -38,35 +52,35 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, Type.Name))
+                if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, PlayUrl.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, PlayUrl))
                 {
                     playUrl = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, ImageUrl.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, ImageUrl))
                 {
                     imageUrl = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Width.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Width))
                 {
                     width = TranslateUtils.ToInt(value, width);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Height.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Height))
                 {
                     height = TranslateUtils.ToInt(value, height);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsAutoPlay.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsAutoPlay))
                 {
                     isAutoPlay = TranslateUtils.ToBool(value, true);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsControls.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsControls))
                 {
                     isControls = TranslateUtils.ToBool(value, true);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsLoop.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsLoop))
                 {
                     isLoop = TranslateUtils.ToBool(value, false);
                 }

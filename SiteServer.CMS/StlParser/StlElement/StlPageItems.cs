@@ -5,13 +5,14 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "翻页项容器", Description = "通过 stl:pageItems 标签在模板中插入翻页项的容器，当不需要翻页时容器内的内容不显示")]
+    [StlElement(Title = "翻页项容器", Description = "通过 stl:pageItems 标签在模板中插入翻页项的容器，当不需要翻页时容器内的内容不显示")]
     public class StlPageItems
     {
         private StlPageItems() { }
         public const string ElementName = "stl:pageItems";
 
-        private static readonly Attr Context = new Attr("context", "所处上下文");
+        [StlAttribute(Title = "所处上下文")]
+        private const string Context = nameof(Context);
 
         //对“翻页项容器”（stl:pageItems）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
         public static string Parse(string stlElement, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum, EContextType contextType)
@@ -21,9 +22,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             try
             {
                 var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
-                if (stlElementInfo.Attributes[Context.Name] != null)
+                if (stlElementInfo.Attributes[Context] != null)
                 {
-                    contextType = EContextTypeUtils.GetEnumType(stlElementInfo.Attributes[Context.Name]);
+                    contextType = EContextTypeUtils.GetEnumType(stlElementInfo.Attributes[Context]);
                 }
 
                 if (pageCount <= 1)

@@ -11,7 +11,7 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
-    [StlClass(Usage = "内容实体", Description = "通过 {content.} 实体在模板中显示内容值")]
+    [StlElement(Title = "内容实体", Description = "通过 {content.} 实体在模板中显示内容值")]
     public class StlContentEntities
     {
         private StlContentEntities()

@@ -10,20 +10,32 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "播放视频", Description = "通过 stl:player 标签在模板中播放视频")]
+    [StlElement(Title = "播放视频", Description = "通过 stl:player 标签在模板中播放视频")]
     public class StlPlayer
 	{
         private StlPlayer() { }
 		public const string ElementName = "stl:player";
 
-        private static readonly Attr Type = new Attr("type", "指定存储媒体的字段");
+        [StlAttribute(Title = "指定存储媒体的字段")]
+        public const string Type = nameof(Type);
 
-	    public static readonly Attr PlayUrl = new Attr("playUrl", "视频地址");
-	    public static readonly Attr ImageUrl = new Attr("imageUrl", "图片地址");
-	    public static readonly Attr PlayBy = new Attr("playBy", "指定播放器");
-	    public static readonly Attr Width = new Attr("width", "宽度");
-	    public static readonly Attr Height = new Attr("height", "高度");
-	    public static readonly Attr IsAutoPlay = new Attr("isAutoPlay", "是否自动播放");
+	    [StlAttribute(Title = "视频地址")]
+	    public const string PlayUrl = nameof(PlayUrl);
+        
+	    [StlAttribute(Title = "图片地址")]
+	    public const string ImageUrl = nameof(ImageUrl);
+        
+	    [StlAttribute(Title = "指定播放器")]
+	    public const string PlayBy = nameof(PlayBy);
+        
+	    [StlAttribute(Title = "宽度")]
+	    public const string Width = nameof(Width);
+        
+	    [StlAttribute(Title = "高度")]
+        public const string Height = nameof(Height);
+        
+	    [StlAttribute(Title = "是否自动播放")]
+	    public const string IsAutoPlay = nameof(IsAutoPlay);
 
 	    private const string PlayByHtml5 = "Html5";
         private const string PlayByFlowPlayer = "FlowPlayer";
@@ -50,31 +62,31 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, Type.Name))
+                if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, PlayUrl.Name) || StringUtils.EqualsIgnoreCase(name, "src"))
+                else if (StringUtils.EqualsIgnoreCase(name, PlayUrl) || StringUtils.EqualsIgnoreCase(name, "src"))
                 {
                     playUrl = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, ImageUrl.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, ImageUrl))
                 {
                     imageUrl = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, PlayBy.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, PlayBy))
                 {
                     playBy = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Width.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Width))
                 {
                     width = TranslateUtils.ToInt(value, width);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Height.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Height))
                 {
                     height = TranslateUtils.ToInt(value, height);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsAutoPlay.Name) || StringUtils.EqualsIgnoreCase(name, "play"))
+                else if (StringUtils.EqualsIgnoreCase(name, IsAutoPlay) || StringUtils.EqualsIgnoreCase(name, "play"))
                 {
                     isAutoPlay = TranslateUtils.ToBool(value, true);
                 }

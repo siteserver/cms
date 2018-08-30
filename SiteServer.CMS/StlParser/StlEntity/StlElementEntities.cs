@@ -5,7 +5,7 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
-    [StlClass(Usage = "STL标签实体", Description = "通过 {stl:} 实体在模板中实现STL标签")]
+    [StlElement(Title = "STL标签实体", Description = "通过 {stl:} 实体在模板中实现STL标签")]
     public class StlElementEntities
     {
         private StlElementEntities()

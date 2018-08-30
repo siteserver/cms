@@ -6,7 +6,7 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
-    [StlClass(Usage = "用户实体", Description = "通过 {user.} 实体在模板中显示用户值")]
+    [StlElement(Title = "用户实体", Description = "通过 {user.} 实体在模板中显示用户值")]
     public class StlUserEntities
 	{
         private StlUserEntities()

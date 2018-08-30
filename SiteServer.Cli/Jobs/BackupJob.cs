@@ -88,6 +88,7 @@ namespace SiteServer.Cli.Jobs
             _excludes.Add("bairong_ErrorLog");
             _excludes.Add("siteserver_ErrorLog");
             _excludes.Add("siteserver_Log");
+            _excludes.Add("siteserver_Tracking");
 
             var tableNames = DataProvider.DatabaseDao.GetTableNameList();
 
@@ -132,7 +133,7 @@ namespace SiteServer.Cli.Jobs
                                 var fileName = $"{current}.json";
                                 tableInfo.RowFiles.Add(fileName);
                                 var offset = (current - 1) * CliUtils.PageSize;
-                                var limit = CliUtils.PageSize;
+                                var limit = tableInfo.TotalCount - offset < CliUtils.PageSize ? tableInfo.TotalCount - offset : CliUtils.PageSize;
 
                                 var rows = DataProvider.DatabaseDao.GetPageObjects(tableName, identityColumnName, offset, limit);
 

@@ -9,17 +9,26 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "显示导航", Description = "通过 stl:navigation 标签在模板中显示链接导航")]
+    [StlElement(Title = "显示导航", Description = "通过 stl:navigation 标签在模板中显示链接导航")]
     public class StlNavigation
     {
         private StlNavigation() { }
         public const string ElementName = "stl:navigation";
 
-        private static readonly Attr Type = new Attr("type", "类型");
-        private static readonly Attr EmptyText = new Attr("emptyText", "当无内容时显示的信息");
-        private static readonly Attr TipText = new Attr("tipText", "导航提示信息");
-        private static readonly Attr WordNum = new Attr("wordNum", "显示字数");
-        private static readonly Attr IsKeyboard = new Attr("isKeyboard", "是否开启键盘，↑↓←→键分别为上下左右");
+        [StlAttribute(Title = "类型")]
+        private const string Type = nameof(Type);
+        
+        [StlAttribute(Title = "当无内容时显示的信息")]
+        private const string EmptyText = nameof(EmptyText);
+        
+        [StlAttribute(Title = "导航提示信息")]
+        private const string TipText = nameof(TipText);
+        
+        [StlAttribute(Title = "显示字数")]
+        private const string WordNum = nameof(WordNum);
+        
+        [StlAttribute(Title = "是否开启键盘，↑↓←→键分别为上下左右")]
+        private const string IsKeyboard = nameof(IsKeyboard);
 
         public const string TypePreviousChannel = "PreviousChannel";
         public const string TypeNextChannel = "NextChannel";
@@ -47,23 +56,23 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, Type.Name))
+                if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, EmptyText.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, EmptyText))
                 {
                     emptyText = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, TipText.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, TipText))
                 {
                     tipText = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, WordNum.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, WordNum))
                 {
                     wordNum = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsKeyboard.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsKeyboard))
                 {
                     isKeyboard = TranslateUtils.ToBool(value);
                 }

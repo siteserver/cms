@@ -84,12 +84,12 @@ namespace SiteServer.API.Controllers.V1
                 var code = CookieUtils.GetCookie("SS-" + name);
                 if (string.IsNullOrEmpty(code))
                 {
-                    return BadRequest("验证码已超时，请刷新验证码图片");
+                    return BadRequest("验证码已超时，请点击刷新验证码图片！");
                 }
 
                 if (!StringUtils.EqualsIgnoreCase(code, captchaInfo.Captcha))
                 {
-                    return BadRequest("验证码不正确");
+                    return BadRequest("验证码不正确，请重新输入！");
                 }
 
                 return Ok(new OResponse(true));

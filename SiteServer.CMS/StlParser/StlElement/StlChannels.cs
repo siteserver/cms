@@ -13,14 +13,16 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "栏目列表", Description = "通过 stl:channels 标签在模板中显示栏目列表")]
+    [StlElement(Title = "栏目列表", Description = "通过 stl:channels 标签在模板中显示栏目列表")]
     public class StlChannels : StlListBase
     {
         public const string ElementName = "stl:channels";
 
-        
-        protected static readonly Attr IsTotal = new Attr("isTotal", "是否从所有栏目中选择", AttrType.Boolean);						//是否从所有栏目中选择（包括首页）
-        protected static readonly Attr IsAllChildren = new Attr("isAllChildren", "是否显示所有级别的子栏目", AttrType.Boolean);			//是否显示所有级别的子栏目
+        [StlAttribute(Title = "是否从所有栏目中选择")]
+        public const string IsTotal = nameof(IsTotal);
+
+        [StlAttribute(Title = "是否显示所有级别的子栏目")]
+        public const string IsAllChildren = nameof(IsAllChildren);
 
         public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -42,9 +44,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
 
-            var isTotal = TranslateUtils.ToBool(listInfo.Others.Get(IsTotal.Name));
+            var isTotal = TranslateUtils.ToBool(listInfo.Others.Get(IsTotal));
 
-            if (TranslateUtils.ToBool(listInfo.Others.Get(IsAllChildren.Name)))
+            if (TranslateUtils.ToBool(listInfo.Others.Get(IsAllChildren)))
             {
                 listInfo.Scope = EScopeType.Descendant;
             }

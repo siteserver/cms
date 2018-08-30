@@ -12,7 +12,10 @@ namespace SiteServer.API.Controllers.Sys.Packaging
         {
             SystemManager.SyncDatabase();
 
-            return Ok();
+            return Ok(new
+            {
+                SystemManager.Version
+            });
         }
     }
 }

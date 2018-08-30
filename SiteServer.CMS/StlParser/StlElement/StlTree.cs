@@ -14,24 +14,47 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "树状导航", Description = "通过 stl:tree 标签在模板中显示树状导航")]
+    [StlElement(Title = "树状导航", Description = "通过 stl:tree 标签在模板中显示树状导航")]
     public class StlTree
 	{
         private StlTree() { }
         public const string ElementName = "stl:tree";
 
-		private static readonly Attr ChannelIndex = new Attr("channelIndex", "栏目索引");
-		private static readonly Attr ChannelName = new Attr("channelName", "栏目名称");
-        private static readonly Attr UpLevel = new Attr("upLevel", "上级栏目的级别");
-        private static readonly Attr TopLevel = new Attr("topLevel", "从首页向下的栏目级别");
-        private static readonly Attr GroupChannel = new Attr("groupChannel", "指定显示的栏目组");
-        private static readonly Attr GroupChannelNot = new Attr("groupChannelNot", "指定不显示的栏目组");
-        private static readonly Attr Title = new Attr("title", "根节点显示名称");
-        private static readonly Attr IsLoading = new Attr("isLoading", "是否AJAX方式即时载入");
-        private static readonly Attr IsShowContentNum = new Attr("isShowContentNum", "是否显示栏目内容数");
-        private static readonly Attr IsShowTreeLine = new Attr("isShowTreeLine", "是否显示树状线");
-        private static readonly Attr CurrentFormatString = new Attr("currentFormatString", "当前项格式化字符串");
-        private static readonly Attr Target = new Attr("target", "打开窗口目标");
+		[StlAttribute(Title = "栏目索引")]
+        private const string ChannelIndex = nameof(ChannelIndex);
+        
+		[StlAttribute(Title = "栏目名称")]
+        private const string ChannelName = nameof(ChannelName);
+        
+        [StlAttribute(Title = "上级栏目的级别")]
+        private const string UpLevel = nameof(UpLevel);
+        
+        [StlAttribute(Title = "从首页向下的栏目级别")]
+        private const string TopLevel = nameof(TopLevel);
+        
+        [StlAttribute(Title = "指定显示的栏目组")]
+        private const string GroupChannel = nameof(GroupChannel);
+        
+        [StlAttribute(Title = "指定不显示的栏目组")]
+        private const string GroupChannelNot = nameof(GroupChannelNot);
+        
+        [StlAttribute(Title = "根节点显示名称")]
+        private const string Title = nameof(Title);
+        
+        [StlAttribute(Title = "是否AJAX方式即时载入")]
+        private const string IsLoading = nameof(IsLoading);
+        
+        [StlAttribute(Title = "是否显示栏目内容数")]
+        private const string IsShowContentNum = nameof(IsShowContentNum);
+        
+        [StlAttribute(Title = "是否显示树状线")]
+        private const string IsShowTreeLine = nameof(IsShowTreeLine);
+        
+        [StlAttribute(Title = "当前项格式化字符串")]
+        private const string CurrentFormatString = nameof(CurrentFormatString);
+        
+        [StlAttribute(Title = "打开窗口目标")]
+        private const string Target = nameof(Target);
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
@@ -51,48 +74,48 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, ChannelIndex.Name))
+                if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
                 {
                     channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, ChannelName.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelName))
                 {
                     channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, UpLevel.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, UpLevel))
                 {
                     upLevel = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, TopLevel.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, TopLevel))
                 {
                     topLevel = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, GroupChannel.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, GroupChannel))
                 {
                     groupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, GroupChannelNot.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, GroupChannelNot))
                 {
                     groupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo,
                         contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Title.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Title))
                 {
                     title = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsLoading.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsLoading))
                 {
                     isLoading = TranslateUtils.ToBool(value, false);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsShowContentNum.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsShowContentNum))
                 {
                     isShowContentNum = TranslateUtils.ToBool(value, false);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsShowTreeLine.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsShowTreeLine))
                 {
                     isShowTreeLine = TranslateUtils.ToBool(value, true);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, CurrentFormatString.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, CurrentFormatString))
                 {
                     currentFormatString = value;
                     if (!StringUtils.Contains(currentFormatString, "{0}"))

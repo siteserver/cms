@@ -9,19 +9,33 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "显示数值", Description = "通过 stl:count 标签在模板中显示统计数字")]
+    [StlElement(Title = "显示数值", Description = "通过 stl:count 标签在模板中显示统计数字")]
     public class StlCount
 	{
         private StlCount() { }
 		public const string ElementName = "stl:count";
 
-		private static readonly Attr Type = new Attr("type", "需要获取值的类型");
-        private static readonly Attr ChannelIndex = new Attr("channelIndex", "栏目索引");
-        private static readonly Attr ChannelName = new Attr("channelName", "栏目名称");
-        private static readonly Attr UpLevel = new Attr("upLevel", "上级栏目的级别");
-        private static readonly Attr TopLevel = new Attr("topLevel", "从首页向下的栏目级别");
-        private static readonly Attr Scope = new Attr("scope", "内容范围");
-        private static readonly Attr Since = new Attr("since", "时间段");
+		[StlAttribute(Title = "需要获取值的类型")]
+        private const string Type = nameof(Type);
+
+        [StlAttribute(Title = "栏目索引")]
+        private const string ChannelIndex = nameof(ChannelIndex);
+
+        [StlAttribute(Title = "栏目名称")]
+        private const string ChannelName = nameof(ChannelName);
+
+        [StlAttribute(Title = "上级栏目的级别")]
+        private const string UpLevel = nameof(UpLevel);
+
+        [StlAttribute(Title = "从首页向下的栏目级别")]
+        private const string TopLevel = nameof(TopLevel);
+
+        [StlAttribute(Title = "内容范围")]
+        private const string Scope = nameof(Scope);
+
+        [StlAttribute(Title = "时间段")]
+        private const string Since = nameof(Since);
+
 
         public const string TypeChannels = "Channels";
         public const string TypeContents = "Contents";
@@ -46,31 +60,31 @@ namespace SiteServer.CMS.StlParser.StlElement
 		    {
 		        var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, Type.Name))
+                if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, ChannelIndex.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
                 {
                     channelIndex = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, ChannelName.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelName))
                 {
                     channelName = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, UpLevel.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, UpLevel))
                 {
                     upLevel = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, TopLevel.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, TopLevel))
                 {
                     topLevel = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Scope.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Scope))
                 {
                     scope = EScopeTypeUtils.GetEnumType(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Since.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Since))
                 {
                     since = value;
                 }

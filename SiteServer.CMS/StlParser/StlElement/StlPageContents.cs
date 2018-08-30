@@ -13,13 +13,16 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "翻页内容列表", Description = "通过 stl:pageContents 标签在模板中显示翻页内容列表")]
+    [StlElement(Title = "翻页内容列表", Description = "通过 stl:pageContents 标签在模板中显示翻页内容列表")]
     public class StlPageContents : StlContents
     {
         public new const string ElementName = "stl:pageContents";
 
-        public static readonly Attr PageNum = new Attr("pageNum", "每页显示的内容数目");
-        public static readonly Attr MaxPage = new Attr("maxPage", "翻页中生成的静态页面最大数，剩余页面将动态获取");
+        [StlAttribute(Title = "每页显示的内容数目")]
+        public const string PageNum = nameof(PageNum);
+        
+        [StlAttribute(Title = "翻页中生成的静态页面最大数，剩余页面将动态获取")]
+        public const string MaxPage = nameof(MaxPage);
 
         private readonly string _stlPageContentsElement;
         private readonly PageInfo _pageInfo;

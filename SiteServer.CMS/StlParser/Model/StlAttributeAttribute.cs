@@ -3,8 +3,8 @@
 namespace SiteServer.CMS.StlParser.Model
 {
     [AttributeUsage(AttributeTargets.Field)]
-    public class StlFieldAttribute : Attribute
+    public class StlAttributeAttribute : Attribute
     {
-        public string Description { get; set; }
+        public string Title { get; set; }
     }
 }
