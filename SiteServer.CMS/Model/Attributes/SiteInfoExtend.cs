@@ -230,7 +230,7 @@ namespace SiteServer.CMS.Model.Attributes
 
         public bool IsCreateWithJQuery
         {
-            get => GetBool(nameof(IsCreateWithJQuery));
+            get => GetBool(nameof(IsCreateWithJQuery), true);
             set => Set(nameof(IsCreateWithJQuery), value);
         }
 
