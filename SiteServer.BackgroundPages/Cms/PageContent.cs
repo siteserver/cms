@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Cms
             _pluginColumns = PluginContentManager.GetContentColumns(_channelInfo);
             _isEdit = TextUtility.IsEdit(SiteInfo, channelId, AuthRequest.AdminPermissions);
 
-            if (_channelInfo.Additional.IsPreviewContents)
+            if (_channelInfo.Additional.IsPreviewContentsExists)
             {
                 new Action(() =>
                 {

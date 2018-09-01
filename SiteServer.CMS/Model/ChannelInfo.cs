@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin;
@@ -160,8 +164,35 @@ namespace SiteServer.CMS.Model
         }
 
         private ChannelInfoExtend _additional;
+
+        [JsonIgnore]
         public ChannelInfoExtend Additional => _additional ?? (_additional = new ChannelInfoExtend(_extendValues));
 
+        [JsonIgnore]
         public IAttributes Attributes => Additional;
+
+        public Dictionary<string, object> ToDictionary()
+        {
+            var jObject = JObject.FromObject(this);
+
+            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, Id);
+            var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName, relatedIdentities);
+
+            foreach (var styleInfo in styleInfoList)
+            {
+                jObject[styleInfo.AttributeName] = Attributes.GetString(styleInfo.AttributeName);
+            }
+
+            var siteInfo = SiteManager.GetSiteInfo(SiteId);
+
+            if (!string.IsNullOrEmpty(ImageUrl))
+            {
+                jObject[nameof(ImageUrl)] = PageUtility.ParseNavigationUrl(siteInfo, ImageUrl, false);
+            }
+
+            jObject["NavigationUrl"] = PageUtility.GetChannelUrl(siteInfo, this, false);
+
+            return jObject.ToObject<Dictionary<string, object>>();
+        }
     }
 }

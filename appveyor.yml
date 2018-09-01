@@ -3,7 +3,7 @@
     only:
       - master
 
-  version: 6.5.{build}
+  version: 6.6.{build}
   image: Visual Studio 2017
 
   assembly_info:
@@ -83,7 +83,7 @@
     only:
       - dev
 
-  version: 6.5.{build}-beta
+  version: 6.6.{build}-beta
   image: Visual Studio 2017
 
   assembly_info:

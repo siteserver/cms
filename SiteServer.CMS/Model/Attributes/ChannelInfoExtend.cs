@@ -80,7 +80,7 @@ namespace SiteServer.CMS.Model.Attributes
             set => Set("TransDoneType", ETranslateContentTypeUtils.GetValue(value));
         }
 
-        public bool IsPreviewContents
+        public bool IsPreviewContentsExists
         {
             get => GetBool("IsPreviewContents");
             set => Set("IsPreviewContents", value);

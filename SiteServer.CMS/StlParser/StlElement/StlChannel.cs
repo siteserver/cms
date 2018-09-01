@@ -194,7 +194,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))
             {
-                return channel;
+                return channel.ToDictionary();
             }
 
             return ParseImpl(pageInfo, contextInfo, leftText, rightText, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, channel, channelId);

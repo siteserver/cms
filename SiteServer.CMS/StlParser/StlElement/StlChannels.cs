@@ -4,7 +4,6 @@ using System.Data;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
@@ -132,7 +131,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static object ParseEntity(PageInfo pageInfo, DataSet dataSource)
         {
-            var channelInfoList = new List<ChannelInfo>();
+            var channelInfoList = new List<Dictionary<string,object>>();
             var table = dataSource.Tables[0];
             foreach (DataRow row in table.Rows)
             {
@@ -141,7 +140,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
                 if (channelInfo != null)
                 {
-                    channelInfoList.Add(channelInfo);
+                    channelInfoList.Add(channelInfo.ToDictionary());
                 }
             }
 

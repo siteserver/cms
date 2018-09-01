@@ -967,7 +967,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
         {
             if (!string.IsNullOrEmpty(tableName))
             {
-                channelInfo.Additional.IsPreviewContents = false;
+                channelInfo.Additional.IsPreviewContentsExists = false;
                 DataProvider.ChannelDao.UpdateAdditional(channelInfo);
 
                 string sqlString =
@@ -1542,7 +1542,7 @@ group by tmp.userName";
 
         public int InsertPreview(string tableName, SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
         {
-            channelInfo.Additional.IsPreviewContents = true;
+            channelInfo.Additional.IsPreviewContentsExists = true;
             DataProvider.ChannelDao.UpdateAdditional(channelInfo);
 
             contentInfo.SourceId = SourceManager.Preview;

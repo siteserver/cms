@@ -1078,6 +1078,16 @@ namespace SiteServer.Utils
 
                     return parsedContent;
                 }
+
+                if (toList.Count == 1)
+                {
+                    foreach (var replaceStr in replaceList)
+                    {
+                        parsedContent = parsedContent.Replace(replaceStr, to);
+                    }
+
+                    return parsedContent;
+                }
             }
 
             string retval;
