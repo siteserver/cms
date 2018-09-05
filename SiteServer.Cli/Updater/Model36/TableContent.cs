@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using SiteServer.Cli.Core;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -132,6 +134,8 @@ namespace SiteServer.Cli.Updater.Model36
         private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
         {
             var columns = new List<TableColumn>();
+            columns.AddRange(DataProvider.ContentDao.TableColumns);
+
             foreach (var tableColumnInfo in oldColumns)
             {
                 if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(NodeId)))
@@ -146,7 +150,11 @@ namespace SiteServer.Cli.Updater.Model36
                 {
                     tableColumnInfo.AttributeName = nameof(ContentInfo.GroupNameCollection);
                 }
-                columns.Add(tableColumnInfo);
+
+                if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, tableColumnInfo.AttributeName)))
+                {
+                    columns.Add(tableColumnInfo);
+                }
             }
 
             return columns;

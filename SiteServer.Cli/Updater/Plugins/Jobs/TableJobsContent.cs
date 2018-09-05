@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -119,20 +120,75 @@ namespace SiteServer.Cli.Updater.Plugins.Jobs
     {
         public static readonly string NewTableName = "ss_jobs";
 
-        public static ConvertInfo GetConverter(List<TableColumn> oldColumns)
+        private static List<TableColumn> NewColumns => new List<TableColumn>
         {
-            return new ConvertInfo
+            new TableColumn
             {
-                NewTableName = NewTableName,
-                NewColumns = GetNewColumns(oldColumns),
-                ConvertKeyDict = ConvertKeyDict,
-                ConvertValueDict = ConvertValueDict
-            };
-        }
+                AttributeName = "Department",
+                DataType = DataType.VarChar,
+                DataLength = 200,
+                InputStyle = new InputStyle
+                {
+                    InputType = InputType.Text,
+                    DisplayName = "所属部门",
+                    IsRequired = true
+                }
+            },
+            new TableColumn
+            {
+                AttributeName = "Location",
+                DataType = DataType.VarChar,
+                DataLength = 200,
+                InputStyle = new InputStyle
+                {
+                    InputType = InputType.Text,
+                    DisplayName = "工作地点",
+                    IsRequired = true
+                }
+            },
+            new TableColumn
+            {
+                AttributeName = "NumberOfPeople",
+                DataType = DataType.VarChar,
+                DataLength = 200,
+                InputStyle = new InputStyle
+                {
+                    InputType = InputType.Text,
+                    DisplayName = "招聘人数",
+                    IsRequired = true,
+                    DefaultValue = "不限"
+                }
+            },
+            new TableColumn
+            {
+                AttributeName = "Responsibility",
+                DataType = DataType.Text,
+                InputStyle = new InputStyle
+                {
+                    InputType = InputType.TextEditor,
+                    DisplayName = "工作职责",
+                    IsRequired = true
+                }
+            },
+            new TableColumn
+            {
+                AttributeName = "Requirement",
+                DataType = DataType.Text,
+                InputStyle = new InputStyle
+                {
+                    InputType = InputType.TextEditor,
+                    DisplayName = "工作要求",
+                    IsRequired = true
+                }
+            }
+        };
 
         private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
         {
             var columns = new List<TableColumn>();
+            columns.AddRange(DataProvider.ContentDao.TableColumns);
+            columns.AddRange(NewColumns);
+
             foreach (var tableColumnInfo in oldColumns)
             {
                 if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(NodeId)))
@@ -147,10 +203,25 @@ namespace SiteServer.Cli.Updater.Plugins.Jobs
                 {
                     tableColumnInfo.AttributeName = nameof(ContentInfo.GroupNameCollection);
                 }
-                columns.Add(tableColumnInfo);
+
+                if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, tableColumnInfo.AttributeName)))
+                {
+                    columns.Add(tableColumnInfo);
+                }
             }
 
             return columns;
+        }
+
+        public static ConvertInfo GetConverter(List<TableColumn> oldColumns)
+        {
+            return new ConvertInfo
+            {
+                NewTableName = NewTableName,
+                NewColumns = GetNewColumns(oldColumns),
+                ConvertKeyDict = ConvertKeyDict,
+                ConvertValueDict = ConvertValueDict
+            };
         }
 
         private static readonly Dictionary<string, string> ConvertKeyDict =

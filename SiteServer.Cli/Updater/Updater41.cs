@@ -187,11 +187,11 @@ namespace SiteServer.Cli.Updater
             }
             else if (StringUtils.ContainsIgnoreCase(tableNameListForGovPublic, oldTableName))
             {
-                converter = TableGovPublicContent.Converter;
+                converter = TableGovPublicContent.GetConverter(oldTableInfo.Columns);
             }
             else if (StringUtils.ContainsIgnoreCase(tableNameListForGovInteract, oldTableName))
             {
-                converter = TableGovInteractContent.Converter;
+                converter = TableGovInteractContent.GetConverter(oldTableInfo.Columns);
             }
             else if (StringUtils.ContainsIgnoreCase(tableNameListForJob, oldTableName))
             {
