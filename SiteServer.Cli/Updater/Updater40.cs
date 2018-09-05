@@ -6,6 +6,7 @@ using SiteServer.Utils;
 using SiteServer.Cli.Updater.Model40;
 using SiteServer.Cli.Updater.Plugins.GovInteract;
 using SiteServer.Cli.Updater.Plugins.GovPublic;
+using SiteServer.Cli.Updater.Plugins.Jobs;
 
 namespace SiteServer.Cli.Updater
 {
@@ -17,7 +18,7 @@ namespace SiteServer.Cli.Updater
         {
         }
 
-        public override async Task<Tuple<string, TableInfo>> UpdateTableInfoAsync(string oldTableName, TableInfo oldTableInfo, List<string> contentTableNameList)
+        public override async Task<Tuple<string, TableInfo>> UpdateTableInfoAsync(string oldTableName, TableInfo oldTableInfo, List<string> tableNameListForContent, List<string> tableNameListForGovPublic, List<string> tableNameListForGovInteract, List<string> tableNameListForJob)
         {
             ConvertInfo converter = null;
 
@@ -179,9 +180,21 @@ namespace SiteServer.Cli.Updater
             {
                 converter = TableGovPublicIdentifierSeq.Converter;
             }
-            else if (StringUtils.ContainsIgnoreCase(contentTableNameList, oldTableName))
+            else if (StringUtils.ContainsIgnoreCase(tableNameListForContent, oldTableName))
             {
                 converter = TableContent.GetConverter(oldTableName, oldTableInfo.Columns);
+            }
+            else if (StringUtils.ContainsIgnoreCase(tableNameListForGovPublic, oldTableName))
+            {
+                converter = TableGovPublicContent.Converter;
+            }
+            else if (StringUtils.ContainsIgnoreCase(tableNameListForGovInteract, oldTableName))
+            {
+                converter = TableGovInteractContent.Converter;
+            }
+            else if (StringUtils.ContainsIgnoreCase(tableNameListForJob, oldTableName))
+            {
+                converter = TableJobsContent.GetConverter(oldTableInfo.Columns);
             }
 
             return await GetNewTableInfoAsync(oldTableName, oldTableInfo, converter);

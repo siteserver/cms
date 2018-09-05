@@ -81,6 +81,6 @@ namespace SiteServer.Cli.Updater
             return new Tuple<string, TableInfo>(converter.NewTableName, newTableInfo);
         }
 
-        public abstract Task<Tuple<string, TableInfo>> UpdateTableInfoAsync(string oldTableName, TableInfo oldTableInfo, List<string> contentTableNameList);
+        public abstract Task<Tuple<string, TableInfo>> UpdateTableInfoAsync(string oldTableName, TableInfo oldTableInfo, List<string> tableNameListForContent, List<string> tableNameListForGovPublic, List<string> tableNameListForGovInteract, List<string> tableNameListForJob);
     }
 }

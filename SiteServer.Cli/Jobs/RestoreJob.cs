@@ -115,68 +115,80 @@ namespace SiteServer.Cli.Jobs
             {
                 var logs = new List<TextLogInfo>();
 
-                if (_includes != null)
+                try
                 {
-                    if (!StringUtils.ContainsIgnoreCase(_includes, tableName)) continue;
-                }
-                if (_excludes != null)
-                {
-                    if (StringUtils.ContainsIgnoreCase(_excludes, tableName)) continue;
-                }
-
-                var metadataFilePath = treeInfo.GetTableMetadataFilePath(tableName);
-
-                if (!FileUtils.IsFileExists(metadataFilePath)) continue;
-
-                var tableInfo = TranslateUtils.JsonDeserialize<TableInfo>(await FileUtils.ReadTextAsync(metadataFilePath, Encoding.UTF8));
-
-                await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
-
-                if (!DataProvider.DatabaseDao.IsTableExists(tableName))
-                {
-                    if (!DataProvider.DatabaseDao.CreateSystemTable(tableName, tableInfo.Columns, out var ex, out var sqlString))
+                    if (_includes != null)
                     {
-                        logs.Add(new TextLogInfo
-                        {
-                            DateTime = DateTime.Now,
-                            Detail = $"创建表 {tableName}: {sqlString}",
-                            Exception = ex
-                        });
-
-                        continue;
+                        if (!StringUtils.ContainsIgnoreCase(_includes, tableName)) continue;
                     }
-                }
-                else
-                {
-                    DataProvider.DatabaseDao.AlterSystemTable(tableName, tableInfo.Columns);
-                }
-
-                using (var progress = new ProgressBar())
-                {
-                    for (var i = 0; i < tableInfo.RowFiles.Count; i++)
+                    if (_excludes != null)
                     {
-                        progress.Report((double)i / tableInfo.RowFiles.Count);
+                        if (StringUtils.ContainsIgnoreCase(_excludes, tableName)) continue;
+                    }
 
-                        var fileName = tableInfo.RowFiles[i];
+                    var metadataFilePath = treeInfo.GetTableMetadataFilePath(tableName);
 
-                        var objects = TranslateUtils.JsonDeserialize<List<JObject>>(
-                            await FileUtils.ReadTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName),
-                                Encoding.UTF8));
+                    if (!FileUtils.IsFileExists(metadataFilePath)) continue;
 
-                        try
-                        {
-                            DataProvider.DatabaseDao.InsertMultiple(tableName, objects, tableInfo.Columns);
-                        }
-                        catch (Exception ex)
+                    var tableInfo = TranslateUtils.JsonDeserialize<TableInfo>(await FileUtils.ReadTextAsync(metadataFilePath, Encoding.UTF8));
+
+                    await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
+
+                    if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+                    {
+                        if (!DataProvider.DatabaseDao.CreateSystemTable(tableName, tableInfo.Columns, out var ex, out var sqlString))
                         {
                             logs.Add(new TextLogInfo
                             {
                                 DateTime = DateTime.Now,
-                                Detail = $"插入表 {tableName}, 文件名 {fileName}",
+                                Detail = $"创建表 {tableName}: {sqlString}",
                                 Exception = ex
                             });
+
+                            continue;
                         }
                     }
+                    else
+                    {
+                        DataProvider.DatabaseDao.AlterSystemTable(tableName, tableInfo.Columns);
+                    }
+
+                    using (var progress = new ProgressBar())
+                    {
+                        for (var i = 0; i < tableInfo.RowFiles.Count; i++)
+                        {
+                            progress.Report((double)i / tableInfo.RowFiles.Count);
+
+                            var fileName = tableInfo.RowFiles[i];
+
+                            var objects = TranslateUtils.JsonDeserialize<List<JObject>>(
+                                await FileUtils.ReadTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName),
+                                    Encoding.UTF8));
+
+                            try
+                            {
+                                DataProvider.DatabaseDao.InsertMultiple(tableName, objects, tableInfo.Columns);
+                            }
+                            catch (Exception ex)
+                            {
+                                logs.Add(new TextLogInfo
+                                {
+                                    DateTime = DateTime.Now,
+                                    Detail = $"插入表 {tableName}, 文件名 {fileName}",
+                                    Exception = ex
+                                });
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logs.Add(new TextLogInfo
+                    {
+                        DateTime = DateTime.Now,
+                        Detail = $"插入表 {tableName}",
+                        Exception = ex
+                    });
                 }
 
                 await CliUtils.AppendErrorLogsAsync(errorLogFilePath, logs);

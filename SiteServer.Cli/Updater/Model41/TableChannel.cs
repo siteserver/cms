@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using SiteServer.Cli.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -117,9 +118,15 @@ namespace SiteServer.Cli.Updater.Model41
                 {nameof(ChannelInfo.ChannelName), nameof(NodeName)},
                 {nameof(ChannelInfo.SiteId), nameof(PublishmentSystemId)},
                 {nameof(ChannelInfo.IndexName), nameof(NodeIndexName)},
-                {nameof(ChannelInfo.GroupNameCollection), nameof(NodeGroupNameCollection)}
+                {nameof(ChannelInfo.GroupNameCollection), nameof(NodeGroupNameCollection)},
+                {nameof(ChannelInfo.ContentModelPluginId), nameof(ContentModelId)}
             };
 
-        private static readonly Dictionary<string, string> ConvertValueDict = null;
+        private static readonly Dictionary<string, string> ConvertValueDict = new Dictionary<string, string>
+        {
+            {UpdateUtils.GetConvertValueDictKey(nameof(ChannelInfo.ContentModelPluginId), "GovInteract"), "SS.GovInteract"},
+            {UpdateUtils.GetConvertValueDictKey(nameof(ChannelInfo.ContentModelPluginId), "GovPublic"), "SS.GovPublic"},
+            {UpdateUtils.GetConvertValueDictKey(nameof(ChannelInfo.ContentModelPluginId), "Job"), "SS.Jobs"},
+        };
     }
 }

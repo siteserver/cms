@@ -122,7 +122,7 @@ namespace SiteServer.Cli.Updater.Model36
         {
             return new ConvertInfo
             {
-                NewTableName = UpdateUtils.GetContentTableName(oldTableName),
+                NewTableName = oldTableName,
                 NewColumns = GetNewColumns(oldColumns),
                 ConvertKeyDict = ConvertKeyDict,
                 ConvertValueDict = ConvertValueDict

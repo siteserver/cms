@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json.Linq;
-using SiteServer.Cli.Updater.Plugins.GovInteract;
-using SiteServer.Cli.Updater.Plugins.GovPublic;
-using SiteServer.Cli.Updater.Plugins.Jobs;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli.Core
@@ -53,7 +50,7 @@ namespace SiteServer.Cli.Core
             return newRows;
         }
 
-        public static void LoadContentTableNameList(TreeInfo oldTreeInfo, string oldSiteTableName, List<string> contentTableNameList)
+        public static void LoadContentTableNameList(TreeInfo oldTreeInfo, string oldSiteTableName, List<string> tableNameListForContent, List<string> tableNameListForGovPublic, List<string> tableNameListForGovInteract, List<string> tableNameListForJob)
         {
             var siteMetadataFilePath = oldTreeInfo.GetTableMetadataFilePath(oldSiteTableName);
             if (FileUtils.IsFileExists(siteMetadataFilePath))
@@ -70,66 +67,46 @@ namespace SiteServer.Cli.Core
                         if (dict.TryGetValue("AuxiliaryTableForContent",
                             out obj))
                         {
-                            if (obj != null && !contentTableNameList.Contains(obj.ToString()))
+                            if (obj != null && !tableNameListForContent.Contains(obj.ToString()))
                             {
-                                contentTableNameList.Add(obj.ToString());
+                                tableNameListForContent.Add(obj.ToString());
                             }
                         }
                         if (dict.TryGetValue("AuxiliaryTableForGovInteract",
                             out obj))
                         {
-                            if (obj != null && !contentTableNameList.Contains(obj.ToString()))
+                            if (obj != null && !tableNameListForGovInteract.Contains(obj.ToString()))
                             {
-                                contentTableNameList.Add(obj.ToString());
+                                tableNameListForGovInteract.Add(obj.ToString());
                             }
                         }
                         if (dict.TryGetValue("AuxiliaryTableForGovPublic",
                             out obj))
                         {
-                            if (obj != null && !contentTableNameList.Contains(obj.ToString()))
+                            if (obj != null && !tableNameListForGovPublic.Contains(obj.ToString()))
                             {
-                                contentTableNameList.Add(obj.ToString());
+                                tableNameListForGovPublic.Add(obj.ToString());
                             }
                         }
                         if (dict.TryGetValue("AuxiliaryTableForJob",
                             out obj))
                         {
-                            if (obj != null && !contentTableNameList.Contains(obj.ToString()))
+                            if (obj != null && !tableNameListForJob.Contains(obj.ToString()))
                             {
-                                contentTableNameList.Add(obj.ToString());
+                                tableNameListForJob.Add(obj.ToString());
                             }
                         }
-                        if (dict.TryGetValue("AuxiliaryTableForVote",
-                            out obj))
-                        {
-                            if (obj != null && !contentTableNameList.Contains(obj.ToString()))
-                            {
-                                contentTableNameList.Add(obj.ToString());
-                            }
-                        }
+                        //if (dict.TryGetValue("AuxiliaryTableForVote",
+                        //    out obj))
+                        //{
+                        //    if (obj != null && !contentTableNameList.Contains(obj.ToString()))
+                        //    {
+                        //        contentTableNameList.Add(obj.ToString());
+                        //    }
+                        //}
                     }
                 }
             }
-        }
-
-        public static string GetContentTableName(string oldTableNameWithPrefix)
-        {
-            var newTableName = oldTableNameWithPrefix;
-
-            if (StringUtils.EqualsIgnoreCase(oldTableNameWithPrefix, TableGovInteractContent.OldTableName))
-            {
-                newTableName = TableGovInteractContent.NewTableName;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithPrefix, TableGovPublicContent.OldTableName))
-            {
-                newTableName = TableGovPublicContent.NewTableName;
-            }
-            else if (StringUtils.EqualsIgnoreCase(oldTableNameWithPrefix, TableJobsContent.OldTableName))
-            {
-                newTableName = TableJobsContent.NewTableName;
-            }
-
-            return newTableName;
         }
     }
 }

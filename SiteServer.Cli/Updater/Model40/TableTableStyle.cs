@@ -1,9 +1,5 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using SiteServer.Cli.Core;
-using SiteServer.Cli.Updater.Plugins.GovInteract;
-using SiteServer.Cli.Updater.Plugins.GovPublic;
-using SiteServer.Cli.Updater.Plugins.Jobs;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -66,8 +62,7 @@ namespace SiteServer.Cli.Updater.Model40
         {
             NewTableName = NewTableName,
             NewColumns = NewColumns,
-            ConvertKeyDict = ConvertKeyDict,
-            ConvertValueDict = ConvertValueDict
+            ConvertKeyDict = ConvertKeyDict
         };
 
         private static readonly string NewTableName = DataProvider.TableStyleDao.TableName;
@@ -79,14 +74,6 @@ namespace SiteServer.Cli.Updater.Model40
             {
                 {nameof(TableStyleInfo.Id), nameof(TableStyleId)},
                 {nameof(TableStyleInfo.TableName), nameof(TableName)}
-            };
-
-        private static readonly Dictionary<string, string> ConvertValueDict =
-            new Dictionary<string, string>
-            {
-                {UpdateUtils.GetConvertValueDictKey(nameof(TableStyleInfo.TableName), TableGovInteractContent.OldTableName), TableGovInteractContent.NewTableName},
-                {UpdateUtils.GetConvertValueDictKey(nameof(TableStyleInfo.TableName), TableGovPublicContent.OldTableName), TableGovPublicContent.NewTableName},
-                {UpdateUtils.GetConvertValueDictKey(nameof(TableStyleInfo.TableName), TableJobsContent.OldTableName), TableJobsContent.NewTableName}
             };
     }
 }

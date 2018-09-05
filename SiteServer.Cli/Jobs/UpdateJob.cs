@@ -103,11 +103,15 @@ namespace SiteServer.Cli.Jobs
             await CliUtils.PrintRowAsync("备份表名称", "升级表名称", "总条数");
             await CliUtils.PrintRowLineAsync();
 
-            var contentTableNameList = new List<string>();
+            var tableNameListForContent = new List<string>();
+            var tableNameListForGovPublic = new List<string>();
+            var tableNameListForGovInteract = new List<string>();
+            var tableNameListForJob = new List<string>();
+
             UpdateUtils.LoadContentTableNameList(oldTreeInfo, "siteserver_PublishmentSystem",
-                contentTableNameList);
+                tableNameListForContent, tableNameListForGovPublic, tableNameListForGovInteract, tableNameListForJob);
             UpdateUtils.LoadContentTableNameList(oldTreeInfo, "wcm_PublishmentSystem",
-                contentTableNameList);
+                tableNameListForContent, tableNameListForGovPublic, tableNameListForGovInteract, tableNameListForJob);
 
             foreach (var oldTableName in oldTableNames)
             {
@@ -117,7 +121,7 @@ namespace SiteServer.Cli.Jobs
 
                 var oldTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(await FileUtils.ReadTextAsync(oldMetadataFilePath, Encoding.UTF8));
 
-                var tuple = await updater.UpdateTableInfoAsync(oldTableName, oldTableInfo, contentTableNameList);
+                var tuple = await updater.UpdateTableInfoAsync(oldTableName, oldTableInfo, tableNameListForContent, tableNameListForGovPublic, tableNameListForGovInteract, tableNameListForJob);
                 if (tuple != null)
                 {
                     newTableNames.Add(tuple.Item1);

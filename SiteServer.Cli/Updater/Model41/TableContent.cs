@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using SiteServer.Cli.Core;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -126,7 +124,7 @@ namespace SiteServer.Cli.Updater.Model41
         {
             return new ConvertInfo
             {
-                NewTableName = UpdateUtils.GetContentTableName(oldTableName),
+                NewTableName = oldTableName,
                 NewColumns = GetNewColumns(oldColumns),
                 ConvertKeyDict = ConvertKeyDict,
                 ConvertValueDict = ConvertValueDict
