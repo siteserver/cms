@@ -113,8 +113,6 @@ namespace SiteServer.Cli.Jobs
 
             foreach (var tableName in tableNames)
             {
-                var logs = new List<TextLogInfo>();
-
                 try
                 {
                     if (_includes != null)
@@ -138,7 +136,7 @@ namespace SiteServer.Cli.Jobs
                     {
                         if (!DataProvider.DatabaseDao.CreateSystemTable(tableName, tableInfo.Columns, out var ex, out var sqlString))
                         {
-                            logs.Add(new TextLogInfo
+                            await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
                             {
                                 DateTime = DateTime.Now,
                                 Detail = $"创建表 {tableName}: {sqlString}",
@@ -153,45 +151,46 @@ namespace SiteServer.Cli.Jobs
                         DataProvider.DatabaseDao.AlterSystemTable(tableName, tableInfo.Columns);
                     }
 
-                    using (var progress = new ProgressBar())
+                    if (tableInfo.RowFiles.Count > 0)
                     {
-                        for (var i = 0; i < tableInfo.RowFiles.Count; i++)
+                        using (var progress = new ProgressBar())
                         {
-                            progress.Report((double)i / tableInfo.RowFiles.Count);
-
-                            var fileName = tableInfo.RowFiles[i];
-
-                            var objects = TranslateUtils.JsonDeserialize<List<JObject>>(
-                                await FileUtils.ReadTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName),
-                                    Encoding.UTF8));
-
-                            try
+                            for (var i = 0; i < tableInfo.RowFiles.Count; i++)
                             {
-                                DataProvider.DatabaseDao.InsertMultiple(tableName, objects, tableInfo.Columns);
-                            }
-                            catch (Exception ex)
-                            {
-                                logs.Add(new TextLogInfo
+                                progress.Report((double)i / tableInfo.RowFiles.Count);
+
+                                var fileName = tableInfo.RowFiles[i];
+
+                                var objects = TranslateUtils.JsonDeserialize<List<JObject>>(
+                                    await FileUtils.ReadTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName),
+                                        Encoding.UTF8));
+
+                                try
                                 {
-                                    DateTime = DateTime.Now,
-                                    Detail = $"插入表 {tableName}, 文件名 {fileName}",
-                                    Exception = ex
-                                });
+                                    DataProvider.DatabaseDao.InsertMultiple(tableName, objects, tableInfo.Columns);
+                                }
+                                catch (Exception ex)
+                                {
+                                    await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
+                                    {
+                                        DateTime = DateTime.Now,
+                                        Detail = $"插入表 {tableName}, 文件名 {fileName}",
+                                        Exception = ex
+                                    });
+                                }
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    logs.Add(new TextLogInfo
+                    await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
                     {
                         DateTime = DateTime.Now,
                         Detail = $"插入表 {tableName}",
                         Exception = ex
                     });
                 }
-
-                await CliUtils.AppendErrorLogsAsync(errorLogFilePath, logs);
             }
 
             await CliUtils.PrintRowLineAsync();

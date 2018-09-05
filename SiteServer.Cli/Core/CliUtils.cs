@@ -113,5 +113,23 @@ namespace SiteServer.Cli.Core
 
             await FileUtils.AppendTextAsync(filePath, Encoding.UTF8, builder.ToString());
         }
+
+        public static async Task AppendErrorLogAsync(string filePath, TextLogInfo log)
+        {
+            if (log == null) return;
+
+            if (!FileUtils.IsFileExists(filePath))
+            {
+                await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, string.Empty);
+            }
+
+            var builder = new StringBuilder();
+
+            builder.AppendLine();
+            builder.Append(log);
+            builder.AppendLine();
+
+            await FileUtils.AppendTextAsync(filePath, Encoding.UTF8, builder.ToString());
+        }
     }
 }
