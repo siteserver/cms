@@ -180,7 +180,8 @@ namespace SiteServer.BackgroundPages.Cms
                     var defaultUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
                     {
                         {"TemplateID", templateId.ToString()},
-                        {"SetDefault", true.ToString()}
+                        {"SetDefault", true.ToString()},
+                        { "TemplateType", templateType.Value }
                     });
                     ltlDefaultUrl.Text =
                         $@"<a href=""{defaultUrl}"" onClick=""javascript:return confirm('此操作将把此模板设为默认，确认吗？');"">设为默认</a>";
@@ -202,7 +203,8 @@ namespace SiteServer.BackgroundPages.Cms
                 var deleteUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
                 {
                     {"TemplateID", templateId.ToString()},
-                    {"Delete", true.ToString()}
+                    {"Delete", true.ToString()},
+                    { "TemplateType", templateType.Value }
                 });
 
                 ltlDeleteUrl.Text =

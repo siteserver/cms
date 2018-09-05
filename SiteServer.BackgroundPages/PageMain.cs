@@ -15,6 +15,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
+using System.Linq;
 
 namespace SiteServer.BackgroundPages
 {
@@ -209,6 +210,9 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
 ");
 
                 level++;
+
+                var list = children.OrderByDescending(o => o.Taxis).ToList();
+
                 foreach (var subSiteInfo in children)
                 {
                     AddSite(builder, subSiteInfo, parentWithChildren, level);
@@ -274,7 +278,8 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
                 if (mySystemInfoList.Count > 0)
                 {
                     var count = 0;
-                    foreach (var siteInfo in mySystemInfoList)
+                    var list = mySystemInfoList.OrderByDescending(o => o.Taxis).ToList();
+                    foreach (var siteInfo in list)
                     {
                         if (siteInfo.IsRoot == false)
                         {

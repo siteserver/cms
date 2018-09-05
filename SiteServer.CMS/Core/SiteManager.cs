@@ -190,7 +190,10 @@ namespace SiteServer.CMS.Core
             {
                 retval.Add(hqSiteId);
             }
-            foreach (var siteInfo in siteInfoList)
+
+            var list = siteInfoList.OrderByDescending(o => o.Taxis).ToList();
+
+            foreach (var siteInfo in list)
             {
                 AddSiteIdList(retval, siteInfo, parentWithChildren, 0);
             }
@@ -205,7 +208,10 @@ namespace SiteServer.CMS.Core
             {
                 var children = (List<SiteInfo>)parentWithChildren[siteInfo.Id];
                 level++;
-                foreach (var subSiteInfo in children)
+
+                var list = children.OrderByDescending(o => o.Taxis).ToList();
+
+                foreach (var subSiteInfo in list)
                 {
                     AddSiteIdList(dataSource, subSiteInfo, parentWithChildren, level);
                 }
