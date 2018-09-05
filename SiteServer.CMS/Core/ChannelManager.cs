@@ -101,6 +101,11 @@ namespace SiteServer.CMS.Core
             return dic.Values.OrderBy(c => c.Taxis).Select(channelInfo => channelInfo.Id).ToList();
         }
 
+        public static List<int> GetChannelIdList(ChannelInfo channelInfo, EScopeType scopeType)
+        {
+            return GetChannelIdList(channelInfo, EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
+        }
+
         public static List<int> GetChannelIdList(ChannelInfo channelInfo, EScopeType scopeType, string group, string groupNot, string contentModelPluginId)
         {
             if (channelInfo == null) return new List<int>();

@@ -165,7 +165,7 @@ namespace SiteServer.BackgroundPages.Core
 </tr>
 ";
             }
-            else if (loadingType == ELoadingType.ChannelSelect)
+            else if (loadingType == ELoadingType.ChannelClickSelect)
             {
                 rowHtml = $@"
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">

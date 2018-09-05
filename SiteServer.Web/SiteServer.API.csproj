@@ -133,6 +133,7 @@
     <Content Include="安装向导.html" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\Pages\Cms\CreateController.cs" />
     <Compile Include="Controllers\Pages\Plugins\InstallController.cs" />
     <Compile Include="Controllers\Pages\Settings\AdminAccessTokensViewLayerController.cs" />
     <Compile Include="Controllers\Pages\DashboardController.cs" />

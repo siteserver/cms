@@ -96,7 +96,7 @@ namespace SiteServer.BackgroundPages.Core
                     htmlBuilder.Append(
                         $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_channelInfo.ChannelName}</a>");
                 }
-                else if (loadingType == ELoadingType.ChannelSelect)
+                else if (loadingType == ELoadingType.ChannelClickSelect)
                 {
                     var linkUrl = ModalChannelSelect.GetRedirectUrl(_channelInfo.SiteId, _channelInfo.Id);
                     if (additional != null)
