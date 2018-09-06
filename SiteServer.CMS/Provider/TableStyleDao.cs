@@ -222,6 +222,22 @@ namespace SiteServer.CMS.Provider
             TableStyleManager.IsChanged = true;
         }
 
+        public void Delete(string tableName, IDbTransaction trans)
+        {
+            if (string.IsNullOrEmpty(tableName)) return;
+
+            const string sqlString = "DELETE FROM siteserver_TableStyle WHERE TableName = @TableName";
+
+            var parameters = new IDataParameter[]
+            {
+                GetParameter(ParmTableName, DataType.VarChar, 50, tableName)
+            };
+
+            ExecuteNonQuery(trans, sqlString, parameters);
+
+            TableStyleManager.IsChanged = true;
+        }
+
         public void Delete(int relatedIdentity, string tableName, string attributeName)
         {
             var parms = new IDataParameter[]

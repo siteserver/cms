@@ -195,6 +195,34 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(SqlUpdateTableIsChangedAfterCreatedInDb, updateParms);
         }
 
+        public void Delete(string tableName)
+        {
+            var parms = new IDataParameter[]
+            {
+                GetParameter(ParmTableName, DataType.VarChar, 50, tableName),
+            };
+
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var trans = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        ExecuteNonQuery(trans, SqlDeleteTable, parms);
+                        DataProvider.TableMetadataDao.Delete(tableName, trans);
+                        DataProvider.TableStyleDao.Delete(tableName, trans);
+                        trans.Commit();
+                    }
+                    catch
+                    {
+                        trans.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
+
         public void DeleteCollectionTableInfoAndDbTable(string tableName)
 		{
             var isDbExists = DataProvider.DatabaseDao.IsTableExists(tableName);

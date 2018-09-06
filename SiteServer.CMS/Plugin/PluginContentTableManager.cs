@@ -59,9 +59,7 @@ namespace SiteServer.CMS.Plugin
 
         private static void ContentTableCreateMetadatas(IMetadata metadata, string tableName, List<TableColumn> tableColumns)
         {
-            DataProvider.TableDao.DeleteCollectionTableInfoAndDbTable(tableName);
-            DataProvider.TableMetadataDao.Delete(tableName);
-            DataProvider.TableStyleDao.Delete(tableName);
+            DataProvider.TableDao.Delete(tableName);
 
             var metadataInfoList = new List<TableMetadataInfo>();
             foreach (var tableColumn in tableColumns)
