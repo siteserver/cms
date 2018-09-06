@@ -36,7 +36,7 @@ namespace SiteServer.Cli.Updater.Plugins.GovPublic
 
     public partial class TableGovPublicCategoryClass
     {
-        public const string OldTableName = "GovPublicCategoryClass";
+        public const string OldTableName = "wcm_GovPublicCategoryClass";
 
         public static ConvertInfo Converter => new ConvertInfo
         {

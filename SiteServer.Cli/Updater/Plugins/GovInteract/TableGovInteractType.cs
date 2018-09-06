@@ -24,7 +24,7 @@ namespace SiteServer.Cli.Updater.Plugins.GovInteract
 
     public partial class TableGovInteractType
     {
-        public const string OldTableName = "GovInteractType";
+        public const string OldTableName = "wcm_GovInteractType";
 
         public static ConvertInfo Converter => new ConvertInfo
         {

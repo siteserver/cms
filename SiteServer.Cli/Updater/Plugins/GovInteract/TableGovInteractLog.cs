@@ -40,7 +40,7 @@ namespace SiteServer.Cli.Updater.Plugins.GovInteract
 
     public partial class TableGovInteractLog
     {
-        public const string OldTableName = "GovInteractLog";
+        public const string OldTableName = "wcm_GovInteractLog";
 
         public static ConvertInfo Converter => new ConvertInfo
         {

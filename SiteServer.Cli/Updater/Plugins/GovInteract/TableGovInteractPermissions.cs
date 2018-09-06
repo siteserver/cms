@@ -21,7 +21,7 @@ namespace SiteServer.Cli.Updater.Plugins.GovInteract
 
     public partial class TableGovInteractPermissions
     {
-        public const string OldTableName = "GovInteractPermissions";
+        public const string OldTableName = "wcm_GovInteractPermissions";
 
         public static ConvertInfo Converter => new ConvertInfo
         {

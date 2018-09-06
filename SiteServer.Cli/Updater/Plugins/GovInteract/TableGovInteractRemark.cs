@@ -37,7 +37,7 @@ namespace SiteServer.Cli.Updater.Plugins.GovInteract
 
     public partial class TableGovInteractRemark
     {
-        public const string OldTableName = "GovInteractRemark";
+        public const string OldTableName = "wcm_GovInteractRemark";
 
         public static ConvertInfo Converter => new ConvertInfo
         {

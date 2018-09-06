@@ -27,7 +27,7 @@ namespace SiteServer.Cli.Updater.Plugins.GovPublic
 
     public partial class TableGovPublicIdentifierSeq
     {
-        public const string OldTableName = "GovPublicIdentifierSeq";
+        public const string OldTableName = "wcm_GovPublicIdentifierSeq";
 
         public static ConvertInfo Converter => new ConvertInfo
         {

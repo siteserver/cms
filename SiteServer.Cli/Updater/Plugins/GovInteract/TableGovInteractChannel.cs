@@ -30,7 +30,7 @@ namespace SiteServer.Cli.Updater.Plugins.GovInteract
 
     public partial class TableGovInteractChannel
     {
-        public const string OldTableName = "GovInteractChannel";
+        public const string OldTableName = "wcm_GovInteractChannel";
 
         public static ConvertInfo Converter => new ConvertInfo
         {

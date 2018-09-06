@@ -42,7 +42,7 @@ namespace SiteServer.Cli.Updater.Plugins.GovPublic
 
     public partial class TableGovPublicIdentifierRule
     {
-        public const string OldTableName = "GovPublicIdentifierRule";
+        public const string OldTableName = "wcm_GovPublicIdentifierRule";
 
         public static ConvertInfo Converter => new ConvertInfo
         {

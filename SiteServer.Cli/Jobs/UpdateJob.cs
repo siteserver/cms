@@ -69,25 +69,21 @@ namespace SiteServer.Cli.Jobs
 
             UpdaterBase updater = null;
 
-            if (_version == Updater36.Version)
+            if (_version == Updater3.Version)
             {
-                updater = new Updater36(oldTreeInfo, newTreeInfo);
+                updater = new Updater3(oldTreeInfo, newTreeInfo);
             }
-            else if (_version == Updater40.Version)
+            else if (_version == Updater4.Version)
             {
-                updater = new Updater40(oldTreeInfo, newTreeInfo);
+                updater = new Updater4(oldTreeInfo, newTreeInfo);
             }
-            else if (_version == Updater41.Version)
+            else if (_version == Updater5.Version)
             {
-                updater = new Updater41(oldTreeInfo, newTreeInfo);
-            }
-            else if (_version == Updater50.Version)
-            {
-                updater = new Updater50(oldTreeInfo, newTreeInfo);
+                updater = new Updater5(oldTreeInfo, newTreeInfo);
             }
             if (updater == null)
             {
-                await Console.Out.WriteLineAsync($"当前支持的升级版本号必须是 {Updater36.Version},{Updater40.Version},{Updater41.Version},{Updater50.Version} 中的一项");
+                await Console.Out.WriteLineAsync($"当前支持的升级版本号必须是 {Updater3.Version},{Updater4.Version},{Updater5.Version} 中的一项");
                 return;
             }
 
