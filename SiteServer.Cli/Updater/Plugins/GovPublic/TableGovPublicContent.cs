@@ -139,7 +139,7 @@ namespace SiteServer.Cli.Updater.Plugins.GovPublic
 
     public partial class TableGovPublicContent
     {
-        private static readonly string NewTableName = "ss_govpublic_content";
+        public static readonly string NewTableName = "ss_govpublic_content";
 
         private static List<TableColumn> NewColumns => new List<TableColumn>
         {

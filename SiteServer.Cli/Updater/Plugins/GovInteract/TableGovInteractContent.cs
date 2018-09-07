@@ -118,7 +118,7 @@ namespace SiteServer.Cli.Updater.Plugins.GovInteract
 
     public partial class TableGovInteractContent
     {
-        private const string NewTableName = "ss_govinteract_content";
+        public const string NewTableName = "ss_govinteract_content";
 
         private static List<TableColumn> NewColumns => new List<TableColumn>
         {

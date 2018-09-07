@@ -1,5 +1,9 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using SiteServer.Cli.Core;
+using SiteServer.Cli.Updater.Plugins.GovInteract;
+using SiteServer.Cli.Updater.Plugins.GovPublic;
+using SiteServer.Cli.Updater.Plugins.Jobs;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 using TableInfo = SiteServer.CMS.Model.TableInfo;
