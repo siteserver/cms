@@ -97,7 +97,7 @@
     <Compile Include="Core\TreeInfo.cs" />
     <Compile Include="Core\TableInfo.cs" />
     <Compile Include="Core\TextLogInfo.cs" />
-    <Compile Include="Core\UpdateUtils.cs" />
+    <Compile Include="Updater\UpdateUtils.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Updater\ConvertInfo.cs" />
@@ -118,7 +118,6 @@
     <Compile Include="Updater\Model3\TableTableStyleItem.cs" />
     <Compile Include="Updater\Model3\TableTag.cs" />
     <Compile Include="Updater\Model3\TableUser.cs" />
-    <Compile Include="Updater\Model3\TableContent.cs" />
     <Compile Include="Updater\Model3\TableContentGroup.cs" />
     <Compile Include="Updater\Model4\TableAdministrator.cs" />
     <Compile Include="Updater\Model4\TableAdministratorsInRoles.cs" />
@@ -126,7 +125,7 @@
     <Compile Include="Updater\Model4\TableChannel.cs" />
     <Compile Include="Updater\Model4\TableChannelGroup.cs" />
     <Compile Include="Updater\Model4\TableConfig.cs" />
-    <Compile Include="Updater\Model4\TableContent.cs" />
+    <Compile Include="Updater\ContentConverter.cs" />
     <Compile Include="Updater\Model4\TableContentCheck.cs" />
     <Compile Include="Updater\Model4\TableContentGroup.cs" />
     <Compile Include="Updater\Model4\TableDbCache.cs" />
@@ -157,7 +156,6 @@
     <Compile Include="Updater\Model5\TableChannel.cs" />
     <Compile Include="Updater\Model5\TableChannelGroup.cs" />
     <Compile Include="Updater\Model5\TableConfig.cs" />
-    <Compile Include="Updater\Model5\TableContent.cs" />
     <Compile Include="Updater\Model5\TableContentCheck.cs" />
     <Compile Include="Updater\Model5\TableContentGroup.cs" />
     <Compile Include="Updater\Model5\TableDbCache.cs" />

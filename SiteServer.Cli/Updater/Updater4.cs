@@ -19,7 +19,7 @@ namespace SiteServer.Cli.Updater
             
         }
 
-        public override async Task<Tuple<string, TableInfo>> UpdateTableInfoAsync(string oldTableName, TableInfo oldTableInfo, List<string> tableNameListForContent, List<string> tableNameListForGovPublic, List<string> tableNameListForGovInteract, List<string> tableNameListForJob)
+        public override async Task<Tuple<string, TableInfo>> UpdateTableInfoAsync(string oldTableName, TableInfo oldTableInfo, List<string> tableNameListForGovPublic, List<string> tableNameListForGovInteract, List<string> tableNameListForJob)
         {
             ConvertInfo converter = null;
 
@@ -178,10 +178,6 @@ namespace SiteServer.Cli.Updater
             else if (StringUtils.EqualsIgnoreCase(TableGovPublicIdentifierSeq.OldTableName, oldTableName))
             {
                 converter = TableGovPublicIdentifierSeq.Converter;
-            }
-            else if (StringUtils.ContainsIgnoreCase(tableNameListForContent, oldTableName))
-            {
-                converter = TableContent.GetConverter(oldTableName, oldTableInfo.Columns);
             }
             else if (StringUtils.ContainsIgnoreCase(tableNameListForGovPublic, oldTableName))
             {

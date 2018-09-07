@@ -6,9 +6,9 @@ using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
-namespace SiteServer.Cli.Updater.Model3
+namespace SiteServer.Cli.Updater
 {
-    public partial class TableContent
+    public partial class ContentConverter
     {
         [JsonProperty("id")]
         public long Id { get; set; }
@@ -116,7 +116,7 @@ namespace SiteServer.Cli.Updater.Model3
         public DateTimeOffset AddDate { get; set; }
     }
 
-    public partial class TableContent
+    public partial class ContentConverter
     {
         public static ConvertInfo GetConverter(string oldTableName, List<TableColumn> oldColumns)
         {

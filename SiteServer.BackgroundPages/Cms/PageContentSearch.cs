@@ -264,8 +264,9 @@ namespace SiteServer.BackgroundPages.Cms
                 : TextUtility.GetCommandsHtml(SiteInfo, _pluginMenus, contentInfo, PageUrl,
                     AuthRequest.AdminName, _isEdit);
 
-            ltlColumns.Text = $@"<td class=""text-center text-nowrap"">
+            ltlColumns.Text = $@"
 {TextUtility.GetColumnsHtml(_nameValueCacheDict, SiteInfo, contentInfo, _attributesOfDisplay, _allStyleInfoList, _pluginColumns)}
+<td class=""text-center text-nowrap"">
 {specialHtml}
 </td>";
 
