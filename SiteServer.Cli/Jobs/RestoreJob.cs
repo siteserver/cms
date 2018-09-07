@@ -195,6 +195,15 @@ namespace SiteServer.Cli.Jobs
 
             await CliUtils.PrintRowLineAsync();
 
+            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                var tableNameList = DataProvider.DatabaseDao.GetTableNameList();
+                foreach (var tableName in tableNameList)
+                {
+                    DataProvider.DatabaseDao.AlterOracleAutoIncresementIdToMaxValue(tableName);
+                }
+            }
+
             // 恢复后同步表，确保内容辅助表字段与系统一致
             SystemManager.SyncContentTables();
             SystemManager.UpdateConfigVersion();

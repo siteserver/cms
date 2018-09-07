@@ -816,6 +816,20 @@ SELECT * FROM (
             }
         }
 
+        public void AlterOracleAutoIncresementIdToMaxValue(string tableName)
+        {
+            try
+            {
+                var sqlString =
+                    $"ALTER TABLE {tableName} MODIFY Id GENERATED ALWAYS AS IDENTITY(START WITH LIMIT VALUE)";
+                ExecuteNonQuery(sqlString);
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+
         public List<string> GetDatabaseNameList(DatabaseType databaseType, string connectionStringWithoutDatabaseName)
         {
             if (string.IsNullOrEmpty(connectionStringWithoutDatabaseName))

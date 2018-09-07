@@ -265,8 +265,8 @@ namespace SiteServer.BackgroundPages.Cms
                     AuthRequest.AdminName, _isEdit);
 
             ltlColumns.Text = $@"<td class=""text-center text-nowrap"">
-{specialHtml}
 {TextUtility.GetColumnsHtml(_nameValueCacheDict, SiteInfo, contentInfo, _attributesOfDisplay, _allStyleInfoList, _pluginColumns)}
+{specialHtml}
 </td>";
 
             string nodeName;
