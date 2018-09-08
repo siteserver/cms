@@ -6,6 +6,7 @@ using NDesk.Options;
 using SiteServer.Cli.Core;
 using SiteServer.Cli.Updater;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Packaging;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -18,14 +19,11 @@ namespace SiteServer.Cli.Jobs
 
         private static bool _isHelp;
         private static string _directory;
-        private static string _version;
         private static bool _contentSplit;
 
         private static readonly OptionSet Options = new OptionSet() {
             { "d|directory=", "指定需要转换至最新版本的备份数据文件夹",
                 v => _directory = v },
-            { "v|version=", "指定需要转换的备份数据版本号",
-                v => _version = v },
             { "content-split",  "拆分内容表",
                 v => _contentSplit = v != null },
             { "h|help",  "命令说明",
@@ -49,12 +47,6 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            if (string.IsNullOrEmpty(_version))
-            {
-                await CliUtils.PrintErrorAsync("未指定需要转换的备份数据版本号： version");
-                return;
-            }
-
             if (string.IsNullOrEmpty(_directory))
             {
                 await CliUtils.PrintErrorAsync("未指定需要转换至最新版本的备份数据文件夹：directory");
@@ -71,30 +63,11 @@ namespace SiteServer.Cli.Jobs
             }
             DirectoryUtils.CreateDirectoryIfNotExists(newTreeInfo.DirectoryPath);
 
-            UpdaterBase updater = null;
+            var updater = new UpdaterManager(oldTreeInfo, newTreeInfo);
 
-            if (_version == Updater3.Version)
-            {
-                updater = new Updater3(oldTreeInfo, newTreeInfo);
-            }
-            else if (_version == Updater4.Version)
-            {
-                updater = new Updater4(oldTreeInfo, newTreeInfo);
-            }
-            else if (_version == Updater5.Version)
-            {
-                updater = new Updater5(oldTreeInfo, newTreeInfo);
-            }
-            if (updater == null)
-            {
-                await Console.Out.WriteLineAsync($"当前支持的升级版本号必须是 {Updater3.Version},{Updater4.Version},{Updater5.Version} 中的一项");
-                return;
-            }
+            var newVersion = SystemManager.Version == PackageUtils.VersionDev ? "dev" : SystemManager.Version;
 
-            var newVersion = "latest";
-
-            await Console.Out.WriteLineAsync($"备份版本: {_version}, 备份数据文件夹: {oldTreeInfo.DirectoryPath}");
-            await Console.Out.WriteLineAsync($"升级版本: {newVersion}, 升级数据文件夹: {newTreeInfo.DirectoryPath}");
+            await Console.Out.WriteLineAsync($"备份数据文件夹: {oldTreeInfo.DirectoryPath}，升级数据文件夹: {newTreeInfo.DirectoryPath}，升级版本: {newVersion}");
 
             var oldTableNames = TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(oldTreeInfo.TablesFilePath, Encoding.UTF8));
             var newTableNames = new List<string>();
