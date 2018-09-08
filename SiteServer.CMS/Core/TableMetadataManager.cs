@@ -71,11 +71,12 @@ namespace SiteServer.CMS.Core
         public static List<string> GetAllLowerAttributeNameListExcludeText(string tableName)
         {
             var list = new List<string>();
+            var tableColumns = TableColumnManager.GetTableColumnNameList(tableName);
             list.AddRange(ContentAttribute.AllAttributesLowercase);
             var metadataInfoList = GetTableMetadataInfoList(tableName);
             foreach (var metadataInfo in metadataInfoList)
             {
-                if (metadataInfo.DataType != DataType.Text)
+                if (metadataInfo.DataType != DataType.Text && StringUtils.ContainsIgnoreCase(tableColumns, metadataInfo.AttributeName))
                 {
                     list.Add(metadataInfo.AttributeName.ToLower());
                 }
