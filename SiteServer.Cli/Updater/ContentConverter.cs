@@ -118,6 +118,16 @@ namespace SiteServer.Cli.Updater
 
     public partial class ContentConverter
     {
+        public static ConvertInfo GetSplitConverter()
+        {
+            return new ConvertInfo
+            {
+                NewColumns = GetNewColumns(null),
+                ConvertKeyDict = ConvertKeyDict,
+                ConvertValueDict = ConvertValueDict
+            };
+        }
+
         public static ConvertInfo GetConverter(string oldTableName, List<TableColumn> oldColumns)
         {
             return new ConvertInfo
@@ -134,24 +144,27 @@ namespace SiteServer.Cli.Updater
             var columns = new List<TableColumn>();
             columns.AddRange(DataProvider.ContentDao.TableColumns);
 
-            foreach (var tableColumnInfo in oldColumns)
+            if (oldColumns != null && oldColumns.Count > 0)
             {
-                if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(NodeId)))
+                foreach (var tableColumnInfo in oldColumns)
                 {
-                    tableColumnInfo.AttributeName = nameof(ContentInfo.ChannelId);
-                }
-                else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(PublishmentSystemId)))
-                {
-                    tableColumnInfo.AttributeName = nameof(ContentInfo.SiteId);
-                }
-                else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(ContentGroupNameCollection)))
-                {
-                    tableColumnInfo.AttributeName = nameof(ContentInfo.GroupNameCollection);
-                }
+                    if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(NodeId)))
+                    {
+                        tableColumnInfo.AttributeName = nameof(ContentInfo.ChannelId);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(PublishmentSystemId)))
+                    {
+                        tableColumnInfo.AttributeName = nameof(ContentInfo.SiteId);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(ContentGroupNameCollection)))
+                    {
+                        tableColumnInfo.AttributeName = nameof(ContentInfo.GroupNameCollection);
+                    }
 
-                if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, tableColumnInfo.AttributeName)))
-                {
-                    columns.Add(tableColumnInfo);
+                    if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, tableColumnInfo.AttributeName)))
+                    {
+                        columns.Add(tableColumnInfo);
+                    }
                 }
             }
 

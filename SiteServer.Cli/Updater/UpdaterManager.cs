@@ -88,7 +88,7 @@ namespace SiteServer.Cli.Updater
             return new Tuple<string, TableInfo>(converter.NewTableName, newTableInfo);
         }
 
-        public async Task<List<Tuple<int, string, TableInfo>>> GetNewSplitContentsTableInfoAsync(List<int> siteIdList, string oldTableName, TableInfo oldTableInfo, ConvertInfo converter)
+        public async Task UpdateSplitContentsTableInfoAsync(Dictionary<int, TableInfo> splitSiteTableDict, List<int> siteIdList, string oldTableName, TableInfo oldTableInfo, ConvertInfo converter)
         {
             if (converter == null)
             {
@@ -98,7 +98,7 @@ namespace SiteServer.Cli.Updater
             if (converter.IsAbandon)
             {
                 await CliUtils.PrintRowAsync(oldTableName, "Abandon", "--");
-                return null;
+                return;
             }
 
             if (converter.NewColumns == null || converter.NewColumns.Count == 0)
@@ -108,95 +108,69 @@ namespace SiteServer.Cli.Updater
 
             await CliUtils.PrintRowAsync(oldTableName, "#split-content#", oldTableInfo.TotalCount.ToString("#,0"));
 
-            var newRows = new List<Dictionary<string, object>>();
-
-            foreach (var fileName in oldTableInfo.RowFiles)
+            if (oldTableInfo.RowFiles.Count > 0)
             {
-                var oldFilePath = OldTreeInfo.GetTableContentFilePath(oldTableName, fileName);
-
-                var oldRows =
-                    TranslateUtils.JsonDeserialize<List<JObject>>(await FileUtils.ReadTextAsync(oldFilePath, Encoding.UTF8));
-
-                newRows.AddRange(UpdateUtils.UpdateRows(oldRows, converter.ConvertKeyDict, converter.ConvertValueDict));
-            }
-
-            var siteIdWithRows = new Dictionary<int, List<Dictionary<string, object>>>();
-            foreach (var siteId in siteIdList)
-            {
-                siteIdWithRows.Add(siteId, new List<Dictionary<string, object>>());
-            }
-
-            foreach (var newRow in newRows)
-            {
-                if (newRow.ContainsKey("siteId"))
+                var i = 0;
+                using (var progress = new ProgressBar())
                 {
-                    var siteId = (int)newRow["siteId"];
-                    if (siteIdList.Contains(siteId))
+                    foreach (var fileName in oldTableInfo.RowFiles)
                     {
-                        var rows = siteIdWithRows[siteId];
-                        rows.Add(newRow);
-                    }
-                }
-            }
+                        progress.Report((double)i++ / oldTableInfo.RowFiles.Count);
 
-            var tupleList = new List<Tuple<int, string, TableInfo>>();
+                        var newRows = new List<Dictionary<string, object>>();
 
-            foreach (var siteId in siteIdList)
-            {
-                var rows = siteIdWithRows[siteId];
+                        var oldFilePath = OldTreeInfo.GetTableContentFilePath(oldTableName, fileName);
 
-                var tableName = UpdateUtils.GetSplitContentTableName(siteId);
+                        var oldRows =
+                            TranslateUtils.JsonDeserialize<List<JObject>>(await FileUtils.ReadTextAsync(oldFilePath, Encoding.UTF8));
 
-                var tableInfo = new TableInfo
-                {
-                    Columns = converter.NewColumns,
-                    TotalCount = rows.Count,
-                    RowFiles = new List<string>()
-                };
+                        newRows.AddRange(UpdateUtils.UpdateRows(oldRows, converter.ConvertKeyDict, converter.ConvertValueDict));
 
-                if (tableInfo.TotalCount > 0)
-                {
-                    var current = 1;
-                    if (tableInfo.TotalCount > CliUtils.PageSize)
-                    {
-                        var pageCount = (int)Math.Ceiling((double)tableInfo.TotalCount / CliUtils.PageSize);
-
-                        using (var progress = new ProgressBar())
+                        var siteIdWithRows = new Dictionary<int, List<Dictionary<string, object>>>();
+                        foreach (var siteId in siteIdList)
                         {
-                            for (; current <= pageCount; current++)
+                            siteIdWithRows.Add(siteId, new List<Dictionary<string, object>>());
+                        }
+
+                        foreach (var newRow in newRows)
+                        {
+                            if (newRow.ContainsKey(nameof(CMS.Model.ContentInfo.SiteId)))
                             {
-                                progress.Report((double)(current - 1) / pageCount);
+                                var siteId = Convert.ToInt32(newRow[nameof(CMS.Model.ContentInfo.SiteId)]);
+                                if (siteIdList.Contains(siteId))
+                                {
+                                    var rows = siteIdWithRows[siteId];
+                                    rows.Add(newRow);
+                                }
+                            }
+                        }
 
-                                var fileName = $"{current}.json";
-                                tableInfo.RowFiles.Add(fileName);
-                                var offset = (current - 1) * CliUtils.PageSize;
-                                var limit = tableInfo.TotalCount - offset < CliUtils.PageSize ? tableInfo.TotalCount - offset : CliUtils.PageSize;
+                        foreach (var siteId in siteIdList)
+                        {
+                            var siteRows = siteIdWithRows[siteId];
+                            var siteTableName = UpdateUtils.GetSplitContentTableName(siteId);
+                            var siteTableInfo = splitSiteTableDict[siteId];
+                            siteTableInfo.TotalCount += siteRows.Count;
 
-                                var pageRows = rows.Skip(offset).Take(limit);
+                            foreach(var tableColumn in converter.NewColumns)
+                            {
+                                if (!siteTableInfo.Columns.Any(t => StringUtils.EqualsIgnoreCase(t.AttributeName, tableColumn.AttributeName)))
+                                {
+                                    siteTableInfo.Columns.Add(tableColumn);
+                                }
+                            }
 
-                                //var rows = DataProvider.DatabaseDao.GetPageObjects(tableName, identityColumnName, offset, limit);
-
-                                var filePath = NewTreeInfo.GetTableContentFilePath(tableName, fileName);
-
-                                await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, TranslateUtils.JsonSerialize(pageRows));
+                            if (siteRows.Count > 0)
+                            {
+                                var siteTableFileName = $"{siteTableInfo.RowFiles.Count + 1}.json";
+                                siteTableInfo.RowFiles.Add(siteTableFileName);
+                                var filePath = NewTreeInfo.GetTableContentFilePath(siteTableName, siteTableFileName);
+                                await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, TranslateUtils.JsonSerialize(siteRows));
                             }
                         }
                     }
-                    else
-                    {
-                        var fileName = $"{current}.json";
-                        tableInfo.RowFiles.Add(fileName);
-
-                        var filePath = NewTreeInfo.GetTableContentFilePath(tableName, fileName);
-
-                        await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
-                    }
                 }
-
-                tupleList.Add(new Tuple<int, string, TableInfo>(siteId, tableName, tableInfo));
             }
-
-            return tupleList;
         }
 
         public async Task<Tuple<string, TableInfo>> UpdateTableInfoAsync(string oldTableName, TableInfo oldTableInfo, List<string> tableNameListForGovPublic, List<string> tableNameListForGovInteract, List<string> tableNameListForJob)

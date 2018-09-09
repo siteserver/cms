@@ -46,6 +46,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public StlPageSqlContents(string stlPageSqlContentsElement, PageInfo pageInfo, ContextInfo contextInfo)
         {
+            _stlPageSqlContentsElement = stlPageSqlContentsElement;
             _pageInfo = pageInfo;
             try
             {

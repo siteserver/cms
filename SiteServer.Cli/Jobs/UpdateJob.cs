@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using NDesk.Options;
 using SiteServer.Cli.Core;
 using SiteServer.Cli.Updater;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Packaging;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -65,9 +65,8 @@ namespace SiteServer.Cli.Jobs
 
             var updater = new UpdaterManager(oldTreeInfo, newTreeInfo);
 
-            var newVersion = SystemManager.Version == PackageUtils.VersionDev ? "dev" : SystemManager.Version;
-
-            await Console.Out.WriteLineAsync($"备份数据文件夹: {oldTreeInfo.DirectoryPath}，升级数据文件夹: {newTreeInfo.DirectoryPath}，升级版本: {newVersion}");
+            var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            await Console.Out.WriteLineAsync($"备份数据文件夹: {oldTreeInfo.DirectoryPath}，升级数据文件夹: {newTreeInfo.DirectoryPath}，升级版本: {version.Substring(0, version.Length - 2)}");
 
             var oldTableNames = TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(oldTreeInfo.TablesFilePath, Encoding.UTF8));
             var newTableNames = new List<string>();
@@ -82,10 +81,23 @@ namespace SiteServer.Cli.Jobs
             var tableNameListForGovInteract = new List<string>();
             var tableNameListForJob = new List<string>();
 
-            UpdateUtils.LoadSites(oldTreeInfo, "siteserver_PublishmentSystem", siteIdList,
+            UpdateUtils.LoadSites(oldTreeInfo, siteIdList,
                 tableNameListForContent, tableNameListForGovPublic, tableNameListForGovInteract, tableNameListForJob);
-            UpdateUtils.LoadSites(oldTreeInfo, "wcm_PublishmentSystem", siteIdList,
-                tableNameListForContent, tableNameListForGovPublic, tableNameListForGovInteract, tableNameListForJob);
+
+            var splitSiteTableDict = new Dictionary<int, TableInfo>();
+            if (_contentSplit)
+            {
+                var converter = ContentConverter.GetSplitConverter();
+                foreach (var siteId in siteIdList)
+                {
+                    splitSiteTableDict.Add(siteId, new TableInfo
+                    {
+                        Columns = converter.NewColumns,
+                        TotalCount = 0,
+                        RowFiles = new List<string>()
+                    });
+                }
+            }
 
             foreach (var oldTableName in oldTableNames)
             {
@@ -101,15 +113,8 @@ namespace SiteServer.Cli.Jobs
                     {
                         var converter = ContentConverter.GetConverter(oldTableName, oldTableInfo.Columns);
 
-                        var tupleList = await updater.GetNewSplitContentsTableInfoAsync(siteIdList, oldTableName,
+                        await updater.UpdateSplitContentsTableInfoAsync(splitSiteTableDict, siteIdList, oldTableName,
                             oldTableInfo, converter);
-
-                        foreach (var tuple in tupleList)
-                        {
-                            newTableNames.Add(tuple.Item2);
-
-                            await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(tuple.Item2), Encoding.UTF8, TranslateUtils.JsonSerialize(tuple.Item3));
-                        }
                     }
                     else
                     {
@@ -137,7 +142,16 @@ namespace SiteServer.Cli.Jobs
 
             if (_contentSplit)
             {
-                await UpdateUtils.UpdateSitesSplitTableNameAsync(newTreeInfo, DataProvider.SiteDao.TableName);
+                foreach (var siteId in siteIdList)
+                {
+                    var siteTableInfo = splitSiteTableDict[siteId];
+                    var siteTableName = UpdateUtils.GetSplitContentTableName(siteId);
+                    newTableNames.Add(siteTableName);
+
+                    await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(siteTableName), Encoding.UTF8, TranslateUtils.JsonSerialize(siteTableInfo));
+                }
+
+                await UpdateUtils.UpdateSitesSplitTableNameAsync(newTreeInfo, splitSiteTableDict);
             }
 
             await FileUtils.WriteTextAsync(newTreeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newTableNames));

@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
+using SiteServer.Cli.Updater.Tables;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 using TableInfo = SiteServer.Cli.Core.TableInfo;
@@ -54,68 +57,62 @@ namespace SiteServer.Cli.Updater
             return newRows;
         }
 
-        public static void LoadSites(TreeInfo oldTreeInfo, string oldSiteTableName, List<int> siteIdList, List<string> tableNameListForContent, List<string> tableNameListForGovPublic, List<string> tableNameListForGovInteract, List<string> tableNameListForJob)
+        public static void LoadSites(TreeInfo oldTreeInfo, List<int> siteIdList, List<string> tableNameListForContent, List<string> tableNameListForGovPublic, List<string> tableNameListForGovInteract, List<string> tableNameListForJob)
         {
-            var siteMetadataFilePath = oldTreeInfo.GetTableMetadataFilePath(oldSiteTableName);
-            if (FileUtils.IsFileExists(siteMetadataFilePath))
+            foreach(string oldSiteTableName in TableSite.OldTableNames)
             {
-                var siteTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(siteMetadataFilePath, Encoding.UTF8));
-                foreach (var fileName in siteTableInfo.RowFiles)
+                var siteMetadataFilePath = oldTreeInfo.GetTableMetadataFilePath(oldSiteTableName);
+                if (FileUtils.IsFileExists(siteMetadataFilePath))
                 {
-                    var filePath = oldTreeInfo.GetTableContentFilePath(oldSiteTableName, fileName);
-                    var rows = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(filePath, Encoding.UTF8));
-                    foreach (var row in rows)
+                    var siteTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(siteMetadataFilePath, Encoding.UTF8));
+                    foreach (var fileName in siteTableInfo.RowFiles)
                     {
-                        var dict = TranslateUtils.JsonGetDictionaryIgnorecase(row);
-                        object obj;
-                        if (dict.TryGetValue("PublishmentSystemID",
-                            out obj))
+                        var filePath = oldTreeInfo.GetTableContentFilePath(oldSiteTableName, fileName);
+                        var rows = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(filePath, Encoding.UTF8));
+                        foreach (var row in rows)
                         {
-                            if (obj != null && !siteIdList.Contains((int)obj))
+                            var dict = TranslateUtils.JsonGetDictionaryIgnorecase(row);
+                            if (dict.ContainsKey(nameof(TableSite.PublishmentSystemId)))
                             {
-                                siteIdList.Add((int)obj);
+                                var value = Convert.ToInt32(dict[nameof(TableSite.PublishmentSystemId)]);
+                                if (value > 0 && !siteIdList.Contains(value))
+                                {
+                                    siteIdList.Add(value);
+                                }
+                            }
+                            if (dict.ContainsKey(nameof(TableSite.AuxiliaryTableForContent)))
+                            {
+                                var value = Convert.ToString(dict[nameof(TableSite.AuxiliaryTableForContent)]);
+                                if (!string.IsNullOrEmpty(value) && !tableNameListForContent.Contains(value))
+                                {
+                                    tableNameListForContent.Add(value);
+                                }
+                            }
+                            if (dict.ContainsKey(nameof(TableSite.AuxiliaryTableForGovInteract)))
+                            {
+                                var value = Convert.ToString(dict[nameof(TableSite.AuxiliaryTableForGovInteract)]);
+                                if (!string.IsNullOrEmpty(value) && !tableNameListForGovInteract.Contains(value))
+                                {
+                                    tableNameListForGovInteract.Add(value);
+                                }
+                            }
+                            if (dict.ContainsKey(nameof(TableSite.AuxiliaryTableForGovPublic)))
+                            {
+                                var value = Convert.ToString(dict[nameof(TableSite.AuxiliaryTableForGovPublic)]);
+                                if (!string.IsNullOrEmpty(value) && !tableNameListForGovPublic.Contains(value))
+                                {
+                                    tableNameListForGovPublic.Add(value);
+                                }
+                            }
+                            if (dict.ContainsKey(nameof(TableSite.AuxiliaryTableForJob)))
+                            {
+                                var value = Convert.ToString(dict[nameof(TableSite.AuxiliaryTableForJob)]);
+                                if (!string.IsNullOrEmpty(value) && !tableNameListForJob.Contains(value))
+                                {
+                                    tableNameListForJob.Add(value);
+                                }
                             }
                         }
-                        if (dict.TryGetValue("AuxiliaryTableForContent",
-                            out obj))
-                        {
-                            if (obj != null && !tableNameListForContent.Contains(obj.ToString()))
-                            {
-                                tableNameListForContent.Add(obj.ToString());
-                            }
-                        }
-                        if (dict.TryGetValue("AuxiliaryTableForGovInteract",
-                            out obj))
-                        {
-                            if (obj != null && !tableNameListForGovInteract.Contains(obj.ToString()))
-                            {
-                                tableNameListForGovInteract.Add(obj.ToString());
-                            }
-                        }
-                        if (dict.TryGetValue("AuxiliaryTableForGovPublic",
-                            out obj))
-                        {
-                            if (obj != null && !tableNameListForGovPublic.Contains(obj.ToString()))
-                            {
-                                tableNameListForGovPublic.Add(obj.ToString());
-                            }
-                        }
-                        if (dict.TryGetValue("AuxiliaryTableForJob",
-                            out obj))
-                        {
-                            if (obj != null && !tableNameListForJob.Contains(obj.ToString()))
-                            {
-                                tableNameListForJob.Add(obj.ToString());
-                            }
-                        }
-                        //if (dict.TryGetValue("AuxiliaryTableForVote",
-                        //    out obj))
-                        //{
-                        //    if (obj != null && !contentTableNameList.Contains(obj.ToString()))
-                        //    {
-                        //        contentTableNameList.Add(obj.ToString());
-                        //    }
-                        //}
                     }
                 }
             }
@@ -126,29 +123,24 @@ namespace SiteServer.Cli.Updater
             return $"model_SiteContent_{siteId}";
         }
 
-        public static async Task UpdateSitesSplitTableNameAsync(TreeInfo newTreeInfo, string newSiteTableName)
+        public static async Task UpdateSitesSplitTableNameAsync(TreeInfo newTreeInfo, Dictionary<int, TableInfo> splitSiteTableDict)
         {
-            var siteMetadataFilePath = newTreeInfo.GetTableMetadataFilePath(newSiteTableName);
+            var siteMetadataFilePath = newTreeInfo.GetTableMetadataFilePath(DataProvider.SiteDao.TableName);
             if (FileUtils.IsFileExists(siteMetadataFilePath))
             {
                 var siteTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(siteMetadataFilePath, Encoding.UTF8));
                 foreach (var fileName in siteTableInfo.RowFiles)
                 {
-                    var filePath = newTreeInfo.GetTableContentFilePath(newSiteTableName, fileName);
+                    var filePath = newTreeInfo.GetTableContentFilePath(DataProvider.SiteDao.TableName, fileName);
                     var oldRows = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(filePath, Encoding.UTF8));
                     var newRows = new List<Dictionary<string, object>>();
                     foreach (var row in oldRows)
                     {
                         var dict = TranslateUtils.JsonGetDictionaryIgnorecase(row);
-                        object obj;
-                        if (dict.TryGetValue("Id",
-                            out obj))
+                        if (dict.ContainsKey(nameof(SiteInfo.Id)))
                         {
-                            if (obj != null)
-                            {
-                                var siteId = (int) obj;
-                                dict[nameof(SiteInfo.TableName)] = GetSplitContentTableName(siteId);
-                            }
+                            var siteId = Convert.ToInt32(dict[nameof(SiteInfo.Id)]);
+                            dict[nameof(SiteInfo.TableName)] = GetSplitContentTableName(siteId);
                         }
 
                         newRows.Add(dict);
@@ -157,6 +149,26 @@ namespace SiteServer.Cli.Updater
                     await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newRows));
                 }
             }
+
+            //foreach (var siteId in splitSiteTableDict.Keys)
+            //{
+            //    var siteTableInfo = splitSiteTableDict[siteId];
+            //    var siteTableName = UpdateUtils.GetSplitContentTableName(siteId);
+                
+            //    siteTableInfo.Columns
+            //}
+
+            //var tableFilePath = newTreeInfo.GetTableMetadataFilePath(DataProvider.TableDao.TableName);
+            //if (FileUtils.IsFileExists(tableFilePath))
+            //{
+            //    var siteTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(tableFilePath, Encoding.UTF8));
+            //    var filePath = newTreeInfo.GetTableContentFilePath(DataProvider.SiteDao.TableName, siteTableInfo.RowFiles[siteTableInfo.RowFiles.Count]);
+            //    var tableInfoList = TranslateUtils.JsonDeserialize<List<CMS.Model.TableInfo>>(FileUtils.ReadText(filePath, Encoding.UTF8));
+                
+
+
+            //    await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, TranslateUtils.JsonSerialize(tableInfoList));
+            //}
         }
     }
 }
