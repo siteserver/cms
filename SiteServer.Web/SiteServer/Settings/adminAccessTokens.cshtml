@@ -72,43 +72,36 @@
 </template>
 <template v-else>
 
-  <div class="panel panel-default">
-    <div class="panel-body p-0">
-      <div class="table-responsive">
-        <table id="contents" class="table tablesaw table-hover m-0">
-          <thead>
-            <tr class="thead">
-              <th>名称</th>
-              <th>关联管理员</th>
-              <th>授权范围</th>
-              <th class="text-center">操作</th>
-            </tr>
-          </thead>
-          <tbody>
+  <table id="contents" class="table tablesaw table-hover m-0">
+    <thead>
+      <tr class="thead">
+        <th>名称</th>
+        <th>关联管理员</th>
+        <th>授权范围</th>
+        <th class="text-center">操作</th>
+      </tr>
+    </thead>
+    <tbody>
 
-            <tr v-for="item in items">
-              <td class="text-nowrap">
-                {{ item.title }}
-              </td>
-              <td class="text-nowrap">
-                {{ item.adminName }}
-              </td>
-              <td class="text-nowrap">
-                {{ getItemScopes(item) }}
-              </td>
-              <td class="text-center text-nowrap">
-                <a href="javascript:;" v-on:click="btnViewClick(item)" class="btn btn-primary m-r-5">获取密钥</a>
-                <a href="javascript:;" v-on:click="btnAddClick(item)" class="btn btn-success m-r-5">编 辑</a>
-                <a href="javascript:;" v-on:click="btnDeleteClick(item)" class="btn btn-danger m-r-5">删 除</a>
-              </td>
-            </tr>
+      <tr v-for="item in items">
+        <td class="text-nowrap">
+          {{ item.title }}
+        </td>
+        <td class="text-nowrap">
+          {{ item.adminName }}
+        </td>
+        <td class="text-nowrap">
+          {{ getItemScopes(item) }}
+        </td>
+        <td class="text-center text-nowrap">
+          <a href="javascript:;" v-on:click="btnViewClick(item)" class="btn btn-sm btn-primary m-r-5">获取密钥</a>
+          <a href="javascript:;" v-on:click="btnAddClick(item)" class="btn btn-sm btn-success m-r-5">编 辑</a>
+          <a href="javascript:;" v-on:click="btnDeleteClick(item)" class="btn btn-sm btn-danger m-r-5">删 除</a>
+        </td>
+      </tr>
 
-          </tbody>
-        </table>
-
-      </div>
-    </div>
-  </div>
+    </tbody>
+  </table>
 
   <hr />
 

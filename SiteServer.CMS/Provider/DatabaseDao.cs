@@ -717,71 +717,71 @@ SELECT * FROM (
             }
         }
 
+        public string GetCreateSystemTableSqlString(string tableName, List<TableColumn> tableColumns)
+        {
+            var sqlBuilder = new StringBuilder();
+
+            sqlBuilder.Append($@"CREATE TABLE {tableName} (").AppendLine();
+
+            var primaryKeyColumns = new List<TableColumn>();
+            foreach (var tableColumn in tableColumns)
+            {
+                if (string.IsNullOrEmpty(tableColumn.AttributeName)) continue;
+
+                if (tableColumn.IsIdentity)
+                {
+                    primaryKeyColumns.Add(tableColumn);
+                    sqlBuilder.Append($@"{tableColumn.AttributeName} {SqlUtils.GetAutoIncrementDataType()},").AppendLine();
+                }
+                else
+                {
+                    if (tableColumn.IsPrimaryKey)
+                    {
+                        primaryKeyColumns.Add(tableColumn);
+                    }
+
+                    var columnSql = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.AttributeName,
+                    tableColumn.DataLength);
+                    if (!string.IsNullOrEmpty(columnSql))
+                    {
+                        sqlBuilder.Append(columnSql).Append(",").AppendLine();
+                    }
+                }
+            }
+
+            foreach (var tableColumn in primaryKeyColumns)
+            {
+                sqlBuilder.Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
+                    ? $@"PRIMARY KEY ({tableColumn.AttributeName}),"
+                    : $@"CONSTRAINT PK_{tableName}_{tableColumn.AttributeName} PRIMARY KEY ({tableColumn.AttributeName}),");
+            }
+            if (primaryKeyColumns.Count > 0)
+            {
+                sqlBuilder.Length--;
+            }
+
+            sqlBuilder.AppendLine().Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
+                ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+                : ")");
+
+            return sqlBuilder.ToString();
+        }
+
         public bool CreateSystemTable(string tableName, List<TableColumn> tableColumns, out Exception ex, out string sqlString)
         {
             ex = null;
-            sqlString = string.Empty;
-
-            var sqlBuilder = new StringBuilder();
+            sqlString = GetCreateSystemTableSqlString(tableName, tableColumns);
 
             try
             {
-                sqlBuilder.Append($@"CREATE TABLE {tableName} (").AppendLine();
-
-                var primaryKeyColumns = new List<TableColumn>();
-                foreach (var tableColumn in tableColumns)
-                {
-                    if (string.IsNullOrEmpty(tableColumn.AttributeName)) continue;
-
-                    if (tableColumn.IsIdentity)
-                    {
-                        primaryKeyColumns.Add(tableColumn);
-                        sqlBuilder.Append($@"{tableColumn.AttributeName} {SqlUtils.GetAutoIncrementDataType()},").AppendLine();
-                    }
-                    else
-                    {
-                        if (tableColumn.IsPrimaryKey)
-                        {
-                            primaryKeyColumns.Add(tableColumn);
-                        }
-
-                        var columnSql = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.AttributeName,
-                        tableColumn.DataLength);
-                        if (!string.IsNullOrEmpty(columnSql))
-                        {
-                            sqlBuilder.Append(columnSql).Append(",").AppendLine();
-                        }
-                    }
-                }
-
-                foreach (var tableColumn in primaryKeyColumns)
-                {
-                    sqlBuilder.Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
-                        ? $@"PRIMARY KEY ({tableColumn.AttributeName}),"
-                        : $@"CONSTRAINT PK_{tableName}_{tableColumn.AttributeName} PRIMARY KEY ({tableColumn.AttributeName}),");
-                }
-                if (primaryKeyColumns.Count > 0)
-                {
-                    sqlBuilder.Length--;
-                }
-
-                sqlBuilder.AppendLine().Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
-                    ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
-                    : ")");
-
-                ExecuteNonQuery(sqlBuilder.ToString());
-
+                ExecuteNonQuery(sqlString);
                 TableColumnManager.ClearCache();
-
                 return true;
             }
             catch (Exception e)
             {
                 ex = e;
-                sqlString = sqlBuilder.ToString();
-
                 LogUtils.AddErrorLog(ex, tableName);
-
                 return false;
             }
         }

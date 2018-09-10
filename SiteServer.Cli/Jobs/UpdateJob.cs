@@ -145,7 +145,7 @@ namespace SiteServer.Cli.Jobs
                 foreach (var siteId in siteIdList)
                 {
                     var siteTableInfo = splitSiteTableDict[siteId];
-                    var siteTableName = UpdateUtils.GetSplitContentTableName(siteId);
+                    var siteTableName = DataProvider.ContentDao.GetContentTableName(siteId);
                     newTableNames.Add(siteTableName);
 
                     await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(siteTableName), Encoding.UTF8, TranslateUtils.JsonSerialize(siteTableInfo));

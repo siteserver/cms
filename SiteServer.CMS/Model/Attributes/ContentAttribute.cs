@@ -47,37 +47,69 @@ namespace SiteServer.CMS.Model.Attributes
         public const string CheckReasons = "Check_Reasons";              //审核原因
         public const string TranslateContentType = "TranslateContentType";    //转移内容类型
 
-        private static List<string> _allAttributesLowercase;
+        private static List<string> _allAttributes;
 
-        public static List<string> AllAttributesLowercase => _allAttributesLowercase ?? (_allAttributesLowercase = new List<string>
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            Id.ToLower(),
-            ChannelId.ToLower(),
-            SiteId.ToLower(),
-            AddUserName.ToLower(),
-            LastEditUserName.ToLower(),
-            WritingUserName.ToLower(),
-            LastEditDate.ToLower(),
-            Taxis.ToLower(),
-            GroupNameCollection.ToLower(),
-            Tags.ToLower(),
-            SourceId.ToLower(),
-            ReferenceId.ToLower(),
-            IsChecked.ToLower(),
-            CheckedLevel.ToLower(),
-            Hits.ToLower(),
-            HitsByDay.ToLower(),
-            HitsByWeek.ToLower(),
-            HitsByMonth.ToLower(),
-            LastHitsDate.ToLower(),
-            SettingsXml.ToLower(),
-            Title.ToLower(),
-            IsTop.ToLower(),
-            IsRecommend.ToLower(),
-            IsHot.ToLower(),
-            IsColor.ToLower(),
-            LinkUrl.ToLower(),
-            AddDate.ToLower()
+            Id,
+            ChannelId,
+            SiteId,
+            AddUserName,
+            LastEditUserName,
+            WritingUserName,
+            LastEditDate,
+            Taxis,
+            GroupNameCollection,
+            Tags,
+            SourceId,
+            ReferenceId,
+            IsChecked,
+            CheckedLevel,
+            Hits,
+            HitsByDay,
+            HitsByWeek,
+            HitsByMonth,
+            LastHitsDate,
+            SettingsXml,
+            Title,
+            IsTop,
+            IsRecommend,
+            IsHot,
+            IsColor,
+            LinkUrl,
+            AddDate
+        });
+
+        private static List<string> _metadataAttributes;
+
+        public static List<string> MetadataAttributes => _metadataAttributes ?? (_metadataAttributes = new List<string>
+        {
+            Id,
+            ChannelId,
+            SiteId,
+            AddUserName,
+            LastEditUserName,
+            WritingUserName,
+            LastEditDate,
+            Taxis,
+            GroupNameCollection,
+            Tags,
+            SourceId,
+            ReferenceId,
+            IsChecked,
+            CheckedLevel,
+            Hits,
+            HitsByDay,
+            HitsByWeek,
+            HitsByMonth,
+            LastHitsDate,
+            SettingsXml,
+            IsTop,
+            IsRecommend,
+            IsHot,
+            IsColor,
+            AddDate,
+            LinkUrl
         });
     }
 }

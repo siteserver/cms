@@ -124,18 +124,6 @@ namespace SiteServer.CMS.ImportExport
             relatedFieldIe.ImportRelatedField(overwrite);
         }
 
-        public void ImportAuxiliaryTables(string tableDirectoryPath, bool isUseTables)
-        {
-            NameValueCollection nameValueCollection = null;
-            if (DirectoryUtils.IsDirectoryExists(tableDirectoryPath))
-            {
-                var tableIe = new TableIe(tableDirectoryPath);
-                nameValueCollection = tableIe.ImportAuxiliaryTables(_siteInfo.Id, isUseTables);
-            }
-            SaveTableNameCache(nameValueCollection);
-        }
-
-
         public void ImportTableStyles(string tableDirectoryPath)
         {
             if (DirectoryUtils.IsDirectoryExists(tableDirectoryPath))

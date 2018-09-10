@@ -118,11 +118,6 @@ namespace SiteServer.Cli.Updater
             }
         }
 
-        public static string GetSplitContentTableName(int siteId)
-        {
-            return $"model_SiteContent_{siteId}";
-        }
-
         public static async Task UpdateSitesSplitTableNameAsync(TreeInfo newTreeInfo, Dictionary<int, TableInfo> splitSiteTableDict)
         {
             var siteMetadataFilePath = newTreeInfo.GetTableMetadataFilePath(DataProvider.SiteDao.TableName);
@@ -140,7 +135,7 @@ namespace SiteServer.Cli.Updater
                         if (dict.ContainsKey(nameof(SiteInfo.Id)))
                         {
                             var siteId = Convert.ToInt32(dict[nameof(SiteInfo.Id)]);
-                            dict[nameof(SiteInfo.TableName)] = GetSplitContentTableName(siteId);
+                            dict[nameof(SiteInfo.TableName)] = DataProvider.ContentDao.GetContentTableName(siteId);
                         }
 
                         newRows.Add(dict);

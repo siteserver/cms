@@ -7,7 +7,6 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -160,14 +159,14 @@ namespace SiteServer.BackgroundPages.Cms
                         DataProvider.ContentDao.TrashContents(SiteId, tableName, contentIdList);
 
                         //引用内容，需要删除
-                        var tableList = DataProvider.TableDao.GetTableCollectionInfoListCreatedInDb();
-                        foreach (var table in tableList)
+                        var siteTableNameList = SiteManager.GetTableNameList();
+                        foreach (var siteTableName in siteTableNameList)
                         {
-                            var targetContentIdList = DataProvider.ContentDao.GetReferenceIdList(table.TableName, contentIdList);
+                            var targetContentIdList = DataProvider.ContentDao.GetReferenceIdList(siteTableName, contentIdList);
                             if (targetContentIdList.Count > 0)
                             {
-                                var targetContentInfo = DataProvider.ContentDao.GetContentInfo(table.TableName, TranslateUtils.ToInt(targetContentIdList[0].ToString()));
-                                DataProvider.ContentDao.DeleteContents(targetContentInfo.SiteId, table.TableName, targetContentIdList, targetContentInfo.ChannelId);
+                                var targetContentInfo = DataProvider.ContentDao.GetContentInfo(siteTableName, TranslateUtils.ToInt(targetContentIdList[0].ToString()));
+                                DataProvider.ContentDao.DeleteContents(targetContentInfo.SiteId, siteTableName, targetContentIdList, targetContentInfo.ChannelId);
                             }
                         }
 

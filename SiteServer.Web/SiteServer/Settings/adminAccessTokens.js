@@ -29,16 +29,16 @@ var methods = {
       $this.pageLoad = true;
     });
   },
-  getItemScopes: function(item) {
+  getItemScopes: function (item) {
     if (!item.scopes) return '';
     var itemScopes = item.scopes.split(',');
     var retval = [];
-    for(var i = 0; i < this.scopes.length; i++) {
+    for (var i = 0; i < this.scopes.length; i++) {
       if (itemScopes.indexOf(this.scopes[i]) !== -1) {
         retval.push(this.scopes[i]);
       }
     }
-    
+
     return retval.join(',');
   },
   delete: function (item) {
@@ -112,10 +112,11 @@ var methods = {
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
-  methods: methods
+  methods: methods,
+  created: function () {
+    this.getList();
+  }
 });
-
-$vue.getList();

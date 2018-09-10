@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
-            var allLowerAttributeNameList = TableMetadataManager.GetAllLowerAttributeNameListExcludeText(_tableName);
+            var allAttributeNameList = TableColumnManager.GetTableColumnNameList(_tableName, DataType.Text);
             var pagerParam = new PagerParam
             {
                 ControlToPaginate = RptContents,
@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Cms
                 PageSize = SiteInfo.Additional.PageSize,
                 Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
                 OrderSqlString = DataProvider.ContentDao.GetPagerOrderSqlString(_channelInfo),
-                ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allLowerAttributeNameList)
+                ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allAttributeNameList)
             };
 
             var administratorName = AuthRequest.AdminPermissions.IsViewContentOnlySelf(SiteId, channelId) ? AuthRequest.AdminName : string.Empty;
@@ -100,7 +100,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (AuthRequest.IsQueryExists("searchType"))
             {
                 pagerParam.WhereSqlString = DataProvider.ContentDao.GetPagerWhereSqlString(SiteInfo, _channelInfo, AuthRequest.GetQueryString("searchType"), AuthRequest.GetQueryString("keyword"),
-                    AuthRequest.GetQueryString("dateFrom"), string.Empty, CheckManager.LevelInt.All, false, true, false, false, false, AuthRequest.AdminPermissions, allLowerAttributeNameList);
+                    AuthRequest.GetQueryString("dateFrom"), string.Empty, CheckManager.LevelInt.All, false, true, false, false, false, AuthRequest.AdminPermissions, allAttributeNameList);
                 pagerParam.TotalCount =
                     DataProvider.DatabaseDao.GetPageTotalCount(_tableName, pagerParam.WhereSqlString);
             }

@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var form = AuthRequest.HttpRequest.Form;
 
-            BackgroundInputTypeParser.SaveAttributes(contentInfo, siteInfo, styleInfoList, form, ContentAttribute.AllAttributesLowercase);
+            BackgroundInputTypeParser.SaveAttributes(contentInfo, siteInfo, styleInfoList, form, ContentAttribute.AllAttributes);
 
             //contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);
             var tagCollection = TagUtils.ParseTagsString(form["TbTags"]);

@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -65,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             InfoMessage(
-                $"在此编辑内容模型字段,子栏目默认继承父栏目字段设置; 内容表:{DataProvider.TableDao.GetDisplayName(_tableName)}({_tableName})");
+                $"在此编辑内容模型字段,子栏目默认继承父栏目字段设置; 内容表:{_tableName}");
             ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissions);
             ControlUtils.SelectSingleItem(DdlChannelId, channelId.ToString());
 
@@ -103,16 +104,22 @@ namespace SiteServer.BackgroundPages.Cms
 
             ltlDisplayName.Text = styleInfo.DisplayName;
             ltlInputType.Text = InputTypeUtils.GetText(styleInfo.InputType);
-            ltlFieldType.Text = TableMetadataManager.IsAttributeNameExists(_tableName, styleInfo.AttributeName) ? $"真实 {TableMetadataManager.GetTableMetadataDataType(_tableName, styleInfo.AttributeName)}" : "虚拟字段";
+
+            var columnInfo = TableColumnManager.GetTableColumnInfo(_tableName, styleInfo.AttributeName);
+
+            ltlFieldType.Text = columnInfo != null ? $"真实 {DataTypeUtils.GetText(columnInfo.DataType)}" : "虚拟字段";
 
             ltlValidate.Text = TableStyleManager.GetValidateInfo(styleInfo);
 
-            var showPopWinString = ModalTableStyleAdd.GetOpenWindowString(SiteId, styleInfo.Id, _relatedIdentities, _tableName, styleInfo.AttributeName, _redirectUrl);
-            var editText = styleInfo.RelatedIdentity == _channelInfo.Id ? "修改" : "添加";
-            ltlEditStyle.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">{editText}</a>";
+            if (!StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.Title))
+            {
+                var showPopWinString = ModalTableStyleAdd.GetOpenWindowString(SiteId, styleInfo.Id, _relatedIdentities, _tableName, styleInfo.AttributeName, _redirectUrl);
 
-            showPopWinString = ModalTableStyleValidateAdd.GetOpenWindowString(SiteId, styleInfo.Id, _relatedIdentities, _tableName, styleInfo.AttributeName, _redirectUrl);
-            ltlEditValidate.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">设置</a>";
+                ltlEditStyle.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">设置</a>";
+
+                showPopWinString = ModalTableStyleValidateAdd.GetOpenWindowString(SiteId, styleInfo.Id, _relatedIdentities, _tableName, styleInfo.AttributeName, _redirectUrl);
+                ltlEditValidate.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">设置</a>";
+            }
 
             ltlTaxis.Text = styleInfo.Taxis.ToString();
 

@@ -135,6 +135,7 @@
   <ItemGroup>
     <Compile Include="Controllers\Pages\Cms\CreateController.cs" />
     <Compile Include="Controllers\Pages\Plugins\InstallController.cs" />
+    <Compile Include="Controllers\Pages\Settings\SiteTableController.cs" />
     <Compile Include="Controllers\Pages\Settings\AdminAccessTokensViewLayerController.cs" />
     <Compile Include="Controllers\Pages\DashboardController.cs" />
     <Compile Include="Controllers\Plugins\PluginController.cs" />

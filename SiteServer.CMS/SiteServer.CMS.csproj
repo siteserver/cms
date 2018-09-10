@@ -139,7 +139,6 @@
     <Compile Include="Api\V1\OResponse.cs" />
     <Compile Include="Core\AdminManager.cs" />
     <Compile Include="Api\ApiManager.cs" />
-    <Compile Include="Core\ArchiveManager.cs" />
     <Compile Include="Core\AreaManager.cs" />
     <Compile Include="Core\CacheDbUtils.cs" />
     <Compile Include="Core\ChannelManager.cs" />
@@ -175,7 +174,6 @@
     <Compile Include="Core\AccessTokenManager.cs" />
     <Compile Include="Core\SystemManager.cs" />
     <Compile Include="Core\TableColumnManager.cs" />
-    <Compile Include="Core\TableMetadataManager.cs" />
     <Compile Include="Core\TableStyleManager.cs" />
     <Compile Include="Core\TabManager.cs" />
     <Compile Include="Core\TagUtils.cs" />
@@ -201,7 +199,6 @@
     <Compile Include="ImportExport\Components\ContentIe.cs" />
     <Compile Include="ImportExport\Components\SiteIe.cs" />
     <Compile Include="ImportExport\Components\ChannelIe.cs" />
-    <Compile Include="ImportExport\Components\TableIe.cs" />
     <Compile Include="ImportExport\Components\TableStyleIe.cs" />
     <Compile Include="ImportExport\Components\TemplateIe.cs" />
     <Compile Include="ImportExport\ExportObject.cs" />
@@ -234,6 +231,7 @@
     <Compile Include="Model\Enumerations\EGatherType.cs" />
     <Compile Include="Model\Enumerations\EImportExportType.cs" />
     <Compile Include="Model\Enumerations\EKeywordGrade.cs" />
+    <Compile Include="Model\Enumerations\ETableRule.cs" />
     <Compile Include="Model\Enumerations\ELayout.cs" />
     <Compile Include="Model\Enumerations\ELinkType.cs" />
     <Compile Include="Model\Enumerations\ELoadingType.cs" />
@@ -334,8 +332,6 @@
     <Compile Include="Provider\SiteLogDao.cs" />
     <Compile Include="Provider\SitePermissionsDao.cs" />
     <Compile Include="Provider\AccessTokenDao.cs" />
-    <Compile Include="Provider\TableDao.cs" />
-    <Compile Include="Provider\TableMetadataDao.cs" />
     <Compile Include="Provider\TableStyleDao.cs" />
     <Compile Include="Provider\TableStyleItemDao.cs" />
     <Compile Include="Provider\TagDao.cs" />

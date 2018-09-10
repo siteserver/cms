@@ -217,19 +217,9 @@ setTimeout(function() {{
             LayerUtils.Close(Page);
         }
 
-        public static string GetShowHintScript()
+        public static string PageLoading()
         {
-            return GetShowHintScript("操作进行中");
-        }
-
-        public static string GetShowHintScript(string message)
-        {
-            return GetShowHintScript(message, 120);
-        }
-
-        public static string GetShowHintScript(string message, int top)
-        {
-            return $@"hideBoxAndShowHint(this, '{message}, 请稍候...', {top});";
+            return "pageUtils.loading(true);";
         }
 
         public void ClientScriptRegisterClientScriptBlock(string key, string script)

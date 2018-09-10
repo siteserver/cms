@@ -9,6 +9,7 @@ using SiteServer.Cli.Updater.Tables;
 using SiteServer.Cli.Updater.Tables.GovInteract;
 using SiteServer.Cli.Updater.Tables.GovPublic;
 using SiteServer.Cli.Updater.Tables.Jobs;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli.Updater
@@ -148,7 +149,7 @@ namespace SiteServer.Cli.Updater
                         foreach (var siteId in siteIdList)
                         {
                             var siteRows = siteIdWithRows[siteId];
-                            var siteTableName = UpdateUtils.GetSplitContentTableName(siteId);
+                            var siteTableName = DataProvider.ContentDao.GetContentTableName(siteId);
                             var siteTableInfo = splitSiteTableDict[siteId];
                             siteTableInfo.TotalCount += siteRows.Count;
 
@@ -256,14 +257,6 @@ namespace SiteServer.Cli.Updater
             else if (StringUtils.ContainsIgnoreCase(TableSitePermissions.OldTableNames, oldTableName))
             {
                 converter = TableSitePermissions.Converter;
-            }
-            else if (StringUtils.EqualsIgnoreCase(TableTable.OldTableName, oldTableName))
-            {
-                converter = TableTable.Converter;
-            }
-            else if (StringUtils.EqualsIgnoreCase(TableTableMetadata.OldTableName, oldTableName))
-            {
-                converter = TableTableMetadata.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TableTableStyle.OldTableName, oldTableName))
             {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
@@ -11,7 +12,7 @@ namespace SiteServer.CMS.Core
     {
         private static readonly object LockObject = new object();
         private static bool _async = true;//缓存与数据库不同步
-        private const string CacheKey = "BaiRong.Core.Table.TableStyleManager";
+        private const string CacheKey = "SiteServer.CMS.Core.TableStyleManager";
 
         public static PairList GetAllTableStyleInfoPairs()
         {
@@ -42,28 +43,29 @@ namespace SiteServer.CMS.Core
                     var styleInfo = entries.GetValue(key) as TableStyleInfo;
                     if (styleInfo == null) continue;
 
-                    if (!allAttributeNames.Contains(styleInfo.AttributeName.ToLower()))
+                    if (!allAttributeNames.Contains(styleInfo.AttributeName))
                     {
-                        allAttributeNames.Add(styleInfo.AttributeName.ToLower());
+                        allAttributeNames.Add(styleInfo.AttributeName);
                         styleInfoList.Add(styleInfo);
                     }
                 }
             }
 
-            var attributeNames = TableMetadataManager.GetAttributeNameList(tableName);
-            foreach (var attributeName in attributeNames)
+            if (SiteManager.IsSiteTable(tableName))
             {
-                if (!allAttributeNames.Contains(attributeName.ToLower()))
-                {
-                    allAttributeNames.Add(attributeName.ToLower());
+                var columnNames = TableColumnManager.GetTableColumnNameList(tableName, ContentAttribute.MetadataAttributes);
 
-                    styleInfoList.Add(GetDefaultTableStyleInfo(tableName, attributeName));
+                foreach (var columnName in columnNames)
+                {
+                    if (!StringUtils.ContainsIgnoreCase(allAttributeNames, columnName))
+                    {
+                        allAttributeNames.Add(columnName);
+                        styleInfoList.Add(GetDefaultTableStyleInfo(tableName, columnName));
+                    }
                 }
             }
-            
-            styleInfoList.Sort();
 
-            return styleInfoList;
+            return styleInfoList.OrderBy(styleInfo => styleInfo.Taxis == 0 ? int.MaxValue : styleInfo.Taxis).ToList();
         }
 
         public static IAttributes GetDefaultAttributes(List<TableStyleInfo> styleInfoList)
@@ -100,26 +102,6 @@ namespace SiteServer.CMS.Core
             }
 
             return attributes;
-        }
-
-        public static bool IsExistsInParents(List<int> relatedIdentities, string tableName, string attributeName)
-        {
-            var entries = GetAllTableStyleInfoPairs();
-            for (var i = 1; i < relatedIdentities.Count - 1; i++)
-            {
-                var relatedIdentity = relatedIdentities[i];
-                var startKey = GetCacheKeyStart(relatedIdentity, tableName);
-                var keyArrayList = entries.GetKeys(startKey);
-                foreach (string key in keyArrayList)
-                {
-                    var styleInfo = entries.GetValue(key) as TableStyleInfo;
-                    if (styleInfo != null && styleInfo.AttributeName == attributeName)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
         }
 
         public static bool IsChanged
@@ -233,61 +215,6 @@ namespace SiteServer.CMS.Core
             return entries.Keys.Contains(key);
         }
 
-        //public static DataSet GetStyleItemDataSet(int styleItemCount, List<TableStyleItemInfo> styleItemInfoList)
-        //{
-        //    var dataset = new DataSet();
-
-        //    var dataTable = new DataTable("StyleItems");
-
-        //    dataTable.Columns.Add(new DataColumn
-        //    {
-        //        DataType = System.Type.GetType("System.Int32"),
-        //        AttributeName = "TableStyleItemID"
-        //    });
-
-        //    dataTable.Columns.Add(new DataColumn
-        //    {
-        //        DataType = System.Type.GetType("System.Int32"),
-        //        AttributeName = "TableStyleID"
-        //    });
-
-        //    dataTable.Columns.Add(new DataColumn
-        //    {
-        //        DataType = System.Type.GetType("System.String"),
-        //        AttributeName = "ItemTitle"
-        //    });
-
-        //    dataTable.Columns.Add(new DataColumn
-        //    {
-        //        DataType = System.Type.GetType("System.String"),
-        //        AttributeName = "ItemValue"
-        //    });
-
-        //    dataTable.Columns.Add(new DataColumn
-        //    {
-        //        DataType = System.Type.GetType("System.String"),
-        //        AttributeName = "IsSelected"
-        //    });
-
-        //    for (var i = 0; i < styleItemCount; i++)
-        //    {
-        //        var dataRow = dataTable.NewRow();
-
-        //        var itemInfo = styleItemInfoList != null && styleItemInfoList.Count > i ? styleItemInfoList[i] : new TableStyleItemInfo();
-
-        //        dataRow["TableStyleItemID"] = itemInfo.TableStyleItemId;
-        //        dataRow["TableStyleID"] = itemInfo.TableStyleId;
-        //        dataRow["ItemTitle"] = itemInfo.ItemTitle;
-        //        dataRow["ItemValue"] = itemInfo.ItemValue;
-        //        dataRow["IsSelected"] = itemInfo.IsSelected.ToString();
-
-        //        dataTable.Rows.Add(dataRow);
-        //    }
-
-        //    dataset.Tables.Add(dataTable);
-        //    return dataset;
-        //}
-
         public static Dictionary<string, List<TableStyleInfo>> GetTableStyleInfoWithItemsDictinary(string tableName, List<int> allRelatedIdentities)
         {
             var dict = new Dictionary<string, List<TableStyleInfo>>();
@@ -349,50 +276,55 @@ namespace SiteServer.CMS.Core
             var lowerAttributeName = attributeName.ToLower();
             var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, false, InputType.Text, string.Empty, true, string.Empty);
 
-            if (lowerAttributeName == BackgroundContentAttribute.SubTitle.ToLower())
+            if (lowerAttributeName == ContentAttribute.Title.ToLower())
+            {
+                styleInfo.DisplayName = "标题";
+                styleInfo.Taxis = 1;
+            }
+            else if (lowerAttributeName == BackgroundContentAttribute.SubTitle.ToLower())
             {
                 styleInfo.DisplayName = "副标题";
-                styleInfo.Taxis = 1;
+                styleInfo.Taxis = 2;
             }
             else if (lowerAttributeName == BackgroundContentAttribute.ImageUrl.ToLower())
             {
                 styleInfo.DisplayName = "图片";
                 styleInfo.InputType = InputType.Image;
-                styleInfo.Taxis = 2;
+                styleInfo.Taxis = 3;
             }
             else if (lowerAttributeName == BackgroundContentAttribute.VideoUrl.ToLower())
             {
                 styleInfo.DisplayName = "视频";
                 styleInfo.InputType = InputType.Video;
-                styleInfo.Taxis = 3;
+                styleInfo.Taxis = 4;
             }
             else if (lowerAttributeName == BackgroundContentAttribute.FileUrl.ToLower())
             {
                 styleInfo.DisplayName = "附件";
                 styleInfo.InputType = InputType.File;
-                styleInfo.Taxis = 4;
+                styleInfo.Taxis = 5;
             }
             else if (lowerAttributeName == BackgroundContentAttribute.Content.ToLower())
             {
                 styleInfo.DisplayName = "内容";
                 styleInfo.InputType = InputType.TextEditor;
-                styleInfo.Taxis = 5;
+                styleInfo.Taxis = 6;
             }
             else if (lowerAttributeName == BackgroundContentAttribute.Summary.ToLower())
             {
                 styleInfo.DisplayName = "内容摘要";
                 styleInfo.InputType = InputType.TextArea;
-                styleInfo.Taxis = 6;
+                styleInfo.Taxis = 7;
             }
             else if (lowerAttributeName == BackgroundContentAttribute.Author.ToLower())
             {
                 styleInfo.DisplayName = "作者";
-                styleInfo.Taxis = 7;
+                styleInfo.Taxis = 8;
             }
             else if (lowerAttributeName == BackgroundContentAttribute.Source.ToLower())
             {
                 styleInfo.DisplayName = "来源";
-                styleInfo.Taxis = 8;
+                styleInfo.Taxis = 9;
             }
 
             return styleInfo;

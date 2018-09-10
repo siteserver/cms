@@ -738,7 +738,7 @@ namespace SiteServer.CMS.Provider
         /// <summary>
         /// 添加后台发布节点
         /// </summary>
-        public int InsertSiteInfo(ChannelInfo channelInfo, SiteInfo psInfo, string administratorName)
+        public int InsertSiteInfo(ChannelInfo channelInfo, SiteInfo siteInfo, string administratorName)
         {
             using (var conn = GetConnection())
             {
@@ -749,9 +749,9 @@ namespace SiteServer.CMS.Provider
                     {
                         InsertChannelInfoWithTrans(null, channelInfo, trans);
 
-                        psInfo.Id = channelInfo.Id;
+                        siteInfo.Id = channelInfo.Id;
 
-                        DataProvider.SiteDao.InsertWithTrans(psInfo, trans);
+                        DataProvider.SiteDao.InsertWithTrans(siteInfo, trans);
 
                         trans.Commit();
                     }

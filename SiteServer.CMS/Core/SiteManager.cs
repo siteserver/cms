@@ -191,7 +191,7 @@ namespace SiteServer.CMS.Core
                 retval.Add(hqSiteId);
             }
 
-            var list = siteInfoList.OrderByDescending(o => o.Taxis).ToList();
+            var list = siteInfoList.OrderBy(siteInfo => siteInfo.Taxis == 0 ? int.MaxValue : siteInfo.Taxis).ToList();
 
             foreach (var siteInfo in list)
             {
@@ -209,7 +209,7 @@ namespace SiteServer.CMS.Core
                 var children = (List<SiteInfo>)parentWithChildren[siteInfo.Id];
                 level++;
 
-                var list = children.OrderByDescending(o => o.Taxis).ToList();
+                var list = children.OrderBy(child => child.Taxis == 0 ? int.MaxValue : child.Taxis).ToList();
 
                 foreach (var subSiteInfo in list)
                 {
@@ -240,9 +240,25 @@ namespace SiteServer.CMS.Core
             return GetSiteInfo(siteId) != null;
         }
 
+        public static List<string> GetTableNameList()
+        {
+            var pairList = SiteManagerCache.GetSiteInfoKeyValuePairList();
+            var list = new List<string>();
+
+            foreach (var pair in pairList)
+            {
+                if (!StringUtils.ContainsIgnoreCase(list, pair.Value.TableName))
+                {
+                    list.Add(pair.Value.TableName);
+                }
+            }
+
+            return list;
+        }
+
         public static List<string> GetTableNameList(SiteInfo siteInfo)
         {
-            return new List <string>
+            return new List<string>
             {
                 siteInfo.TableName
             };
@@ -450,6 +466,12 @@ namespace SiteServer.CMS.Core
             }
 
             return $"{padding}<img align='absbottom' border='0' src='{psLogo}'/>&nbsp;{siteInfo.SiteName}";
+        }
+
+        public static bool IsSiteTable(string tableName)
+        {
+            var pairList = SiteManagerCache.GetSiteInfoKeyValuePairList();
+            return pairList.Any(pair => StringUtils.EqualsIgnoreCase(pair.Value.TableName, tableName) || StringUtils.EqualsIgnoreCase(pair.Value.TableName, tableName));
         }
     }
 }

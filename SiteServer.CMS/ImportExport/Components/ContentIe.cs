@@ -259,7 +259,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             foreach (var attributeName in contentInfo.ToDictionary().Keys)
             {
-                if (!ContentAttribute.AllAttributesLowercase.Contains(attributeName.ToLower()))
+                if (!StringUtils.ContainsIgnoreCase(ContentAttribute.AllAttributes, attributeName))
                 {
                     AtomUtility.AddDcElement(entry.AdditionalElements, attributeName, AtomUtility.Encrypt(contentInfo.GetString(attributeName)));
                 }

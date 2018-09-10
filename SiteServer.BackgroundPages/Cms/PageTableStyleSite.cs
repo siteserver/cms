@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
             _tableName = DataProvider.SiteDao.TableName;
             _itemId = AuthRequest.GetQueryInt("itemID");
             _relatedIdentities = RelatedIdentities.GetRelatedIdentities(SiteId, _relatedIdentity);
-            _attributeNames = TableMetadataManager.GetAttributeNameList(_tableName);
+            _attributeNames = TableColumnManager.GetTableColumnNameList(_tableName);
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
             if (IsPostBack) return;
@@ -135,7 +135,7 @@ namespace SiteServer.BackgroundPages.Cms
             showPopWinString = ModalTableStyleValidateAdd.GetOpenWindowString(SiteId, styleInfo.Id, _relatedIdentities, _tableName, styleInfo.AttributeName, redirectUrl);
             ltlEditValidate.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">设置</a>";
 
-            ltlTaxis.Text = styleInfo.Taxis.ToString();
+            ltlTaxis.Text = styleInfo.Taxis == 0 ? string.Empty : styleInfo.Taxis.ToString();
 
             if (styleInfo.RelatedIdentity != _relatedIdentity) return;
 

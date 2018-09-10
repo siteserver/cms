@@ -114,8 +114,6 @@
     <Compile Include="Updater\Tables\TableLog.cs" />
     <Compile Include="Updater\Tables\TablePermissionsInRoles.cs" />
     <Compile Include="Updater\Tables\TableRole.cs" />
-    <Compile Include="Updater\Tables\TableTable.cs" />
-    <Compile Include="Updater\Tables\TableTableMetadata.cs" />
     <Compile Include="Updater\Tables\TableTableStyle.cs" />
     <Compile Include="Updater\Tables\TableTableStyleItem.cs" />
     <Compile Include="Updater\Tables\TableTag.cs" />

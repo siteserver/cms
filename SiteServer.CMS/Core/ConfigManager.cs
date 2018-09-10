@@ -1,5 +1,4 @@
-﻿using System;
-using SiteServer.CMS.Model;
+﻿using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils;
 
@@ -42,7 +41,6 @@ namespace SiteServer.CMS.Core
             public const string ContentEdit = "cms_contentEdit";
             public const string ContentDelete = "cms_contentDelete";
             public const string ContentTranslate = "cms_contentTranslate";
-            public const string ContentArchive = "cms_contentArchive";
             public const string ContentOrder = "cms_contentOrder";
             public const string ChannelAdd = "cms_channelAdd";
             public const string ChannelEdit = "cms_channelEdit";

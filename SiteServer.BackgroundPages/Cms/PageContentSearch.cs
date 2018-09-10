@@ -108,12 +108,12 @@ namespace SiteServer.BackgroundPages.Cms
 
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
-            var allLowerAttributeNameList = TableMetadataManager.GetAllLowerAttributeNameListExcludeText(tableName);
+            var allAttributeNameList = TableColumnManager.GetTableColumnNameList(tableName, DataType.Text);
             var whereString = DataProvider.ContentDao.GetPagerWhereSqlString(SiteInfo, _channelInfo,
                 searchType, keyword,
                 dateFrom, dateTo, state, _isCheckOnly, false, _isTrashOnly, _isWritingOnly, _isAdminOnly,
                 AuthRequest.AdminPermissions,
-                allLowerAttributeNameList);
+                allAttributeNameList);
 
             PgContents.Param = new PagerParam
             {
@@ -122,7 +122,7 @@ namespace SiteServer.BackgroundPages.Cms
                 PageSize = SiteInfo.Additional.PageSize,
                 Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
                 OrderSqlString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc),
-                ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allLowerAttributeNameList),
+                ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allAttributeNameList),
                 WhereSqlString = whereString,
                 TotalCount = DataProvider.DatabaseDao.GetPageTotalCount(tableName, whereString)
             };

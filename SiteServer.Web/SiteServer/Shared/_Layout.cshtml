@@ -12,6 +12,9 @@
   <link href="../assets/css/font-awesome-4.7.0.min.css" rel="stylesheet" type="text/css" />
   <link href="../assets/css/bootstrap-4.1.0.min.css" rel="stylesheet" type="text/css" />
   <link href="../assets/css/siteserver-1.0.7.min.css" rel="stylesheet" type="text/css" />
+  <style>
+    .nav .nav-link {font-weight: normal; border-radius: 1.25rem; font-size: 14px;}
+  </style>
 </head>
 
 <body>
@@ -19,10 +22,12 @@
 
     <template v-if="pageLoad">
       @if (IsSectionDefined("Navs")){
-      <div class="card-box">
-        <ul class="nav nav-tabs tabs-bordered nav-justified m-b-15">
+      <div class="card-box" style="padding: 10px; margin-bottom: 10px">
+        <ul class="nav nav-pills nav-justified">
           @RenderSection("Navs")
         </ul>
+      </div>
+      <div class="card-box">
         <div v-if="pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
           <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
           <span v-html="pageAlert.html"></span>

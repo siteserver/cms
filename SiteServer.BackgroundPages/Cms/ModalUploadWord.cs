@@ -89,7 +89,7 @@ namespace SiteServer.BackgroundPages.Cms
                         {
                             var contentInfo = new ContentInfo();
 
-                            BackgroundInputTypeParser.SaveAttributes(contentInfo, SiteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributesLowercase);
+                            BackgroundInputTypeParser.SaveAttributes(contentInfo, SiteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributes);
 
                             contentInfo.ChannelId = _channelInfo.Id;
                             contentInfo.SiteId = SiteId;

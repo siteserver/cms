@@ -119,9 +119,6 @@
     <Compile Include="Cms\ModalConfigurationCreateChannel.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalContentArchive.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\ModalContentAttributes.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -473,9 +470,7 @@
     <Compile Include="PageRedirect.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="PageTest.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="PageTest.cs" />
     <Compile Include="PageValidateCode.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -508,9 +503,6 @@
     <Compile Include="Settings\ModalAreaAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\ModalAuxiliaryTableAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\ModalChangeSiteType.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -530,9 +522,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\ModalPermissionsSet.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\ModalTableMetadataAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\ModalUserExport.cs">
@@ -616,9 +605,6 @@
     <Compile Include="Settings\PageSiteAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageSiteAuxiliaryTable.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\PageSiteDelete.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -631,7 +617,7 @@
     <Compile Include="Settings\PageSiteSave.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageSiteTableMetadata.cs">
+    <Compile Include="Settings\PageSiteTable.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageSiteTableStyle.cs">
@@ -668,9 +654,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageUserConfiguration.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageAdminAccessTokensAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageUtilityCache.cs">

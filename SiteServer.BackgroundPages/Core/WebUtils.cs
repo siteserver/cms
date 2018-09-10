@@ -7,7 +7,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -219,13 +218,6 @@ namespace SiteServer.BackgroundPages.Core
                     builder.Append($@"
 <a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentTidyUp.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, pageUrl)}"">
     整 理
-</a>");
-                }
-                if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ContentArchive))
-                {
-                    builder.Append($@"
-<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentArchive.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, pageUrl)}"">
-    归 档
 </a>");
                 }
                 if (CrossSiteTransUtility.IsCrossSiteTrans(siteInfo, nodeInfo) && !CrossSiteTransUtility.IsAutomatic(nodeInfo))

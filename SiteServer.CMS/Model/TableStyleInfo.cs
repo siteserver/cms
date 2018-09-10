@@ -6,7 +6,7 @@ using SiteServer.Plugin;
 namespace SiteServer.CMS.Model
 {
     [Serializable]
-	public class TableStyleInfo: IComparable<TableStyleInfo>
+	public class TableStyleInfo
 	{
 	    public TableStyleInfo()
 		{
@@ -68,15 +68,5 @@ namespace SiteServer.CMS.Model
         public TableStyleInfoExtend Additional => _additional ?? (_additional = new TableStyleInfoExtend(ExtendValues));
 
 	    public List<TableStyleItemInfo> StyleItems { get; set; }
-
-	    public int CompareTo(TableStyleInfo other)
-	    {
-            if (other == null) return 1;
-
-            var x = Taxis.CompareTo(other.Taxis);
-	        if (x != 0) return x;
-
-	        return string.Compare(AttributeName, other.AttributeName, StringComparison.Ordinal);
-	    }
 	}
 }

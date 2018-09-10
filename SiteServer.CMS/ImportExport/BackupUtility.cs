@@ -118,7 +118,6 @@ namespace SiteServer.CMS.ImportExport
 
             //导入辅助表
             var tableDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.Table);
-            importObject.ImportAuxiliaryTables(tableDirectoryPath, isUseTable);
 
             //导入站点设置
             var configurationFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);

@@ -562,7 +562,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     if (contentInfo.ContainsKey(type))
                     {
-                        if (!ContentAttribute.AllAttributesLowercase.Contains(type.ToLower()))
+                        if (!StringUtils.ContainsIgnoreCase(ContentAttribute.AllAttributes, type))
                         {
                             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, contentInfo.ChannelId);
                             var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, nodeInfo);

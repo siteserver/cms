@@ -242,7 +242,7 @@ namespace SiteServer.BackgroundPages.Cms
                     contentInfo.LastEditUserName = contentInfo.AddUserName;
                     contentInfo.LastEditDate = DateTime.Now;
 
-                    BackgroundInputTypeParser.SaveAttributes(contentInfo, SiteInfo, _styleInfoList, Request.Form, ContentAttribute.AllAttributesLowercase);
+                    BackgroundInputTypeParser.SaveAttributes(contentInfo, SiteInfo, _styleInfoList, Request.Form, ContentAttribute.AllAttributes);
 
                     contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);
                     var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
@@ -330,7 +330,7 @@ namespace SiteServer.BackgroundPages.Cms
                     contentInfo.LastEditUserName = AuthRequest.AdminName;
                     contentInfo.LastEditDate = DateTime.Now;
 
-                    BackgroundInputTypeParser.SaveAttributes(contentInfo, SiteInfo, _styleInfoList, Request.Form, ContentAttribute.AllAttributesLowercase);
+                    BackgroundInputTypeParser.SaveAttributes(contentInfo, SiteInfo, _styleInfoList, Request.Form, ContentAttribute.AllAttributes);
 
                     contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);
                     var tagCollection = TagUtils.ParseTagsString(TbTags.Text);

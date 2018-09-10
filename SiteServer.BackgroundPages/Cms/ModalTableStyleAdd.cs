@@ -388,7 +388,7 @@ namespace SiteServer.BackgroundPages.Cms
                 return false;
             }
 
-            _styleInfo = DataProvider.TableMetadataDao.IsExists(_tableName, TbAttributeName.Text) ? TableStyleManager.GetTableStyleInfo(_tableName, TbAttributeName.Text, _relatedIdentities) : new TableStyleInfo();
+            _styleInfo = TableColumnManager.IsAttributeNameExists(_tableName, TbAttributeName.Text) ? TableStyleManager.GetTableStyleInfo(_tableName, TbAttributeName.Text, _relatedIdentities) : new TableStyleInfo();
 
             _styleInfo.RelatedIdentity = relatedIdentity;
             _styleInfo.TableName = _tableName;

@@ -117,7 +117,7 @@ namespace SiteServer.CMS.Core
             return list;
         }
 
-        public void ImportSiteTemplateToEmptySite(int siteId, string siteTemplateDir, bool isUseTables, bool isImportContents, bool isImportTableStyles, string administratorName)
+        public void ImportSiteTemplateToEmptySite(int siteId, string siteTemplateDir, bool isImportContents, bool isImportTableStyles, string administratorName)
         {
             var siteTemplatePath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
             if (DirectoryUtils.IsDirectoryExists(siteTemplatePath))
@@ -134,8 +134,6 @@ namespace SiteServer.CMS.Core
                 importObject.ImportFiles(siteTemplatePath, true);
 
                 importObject.ImportTemplates(templateFilePath, true, administratorName);
-
-                importObject.ImportAuxiliaryTables(tableDirectoryPath, isUseTables);
 
                 importObject.ImportConfiguration(configurationFilePath);
 

@@ -909,16 +909,16 @@ function add_{attributeName}(val,foucs){{
             return left;
         }
 
-        public static void SaveAttributes(IAttributes attributes, SiteInfo siteInfo, List<TableStyleInfo> styleInfoList, NameValueCollection formCollection, List<string> dontAddAttributesLowercase)
+        public static void SaveAttributes(IAttributes attributes, SiteInfo siteInfo, List<TableStyleInfo> styleInfoList, NameValueCollection formCollection, List<string> dontAddAttributes)
         {
-            if (dontAddAttributesLowercase == null)
+            if (dontAddAttributes == null)
             {
-                dontAddAttributesLowercase = new List<string>();
+                dontAddAttributes = new List<string>();
             }
 
             foreach (var styleInfo in styleInfoList)
             {
-                if (dontAddAttributesLowercase.Contains(styleInfo.AttributeName.ToLower())) continue;
+                if (StringUtils.ContainsIgnoreCase(dontAddAttributes, styleInfo.AttributeName)) continue;
                 //var theValue = GetValueByForm(styleInfo, siteInfo, formCollection);
 
                 var theValue = formCollection[styleInfo.AttributeName] ?? string.Empty;

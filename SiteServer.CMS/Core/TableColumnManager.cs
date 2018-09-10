@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.IO;
@@ -65,35 +66,58 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static List<TableColumn> GetTableColumnInfoList(string tableName, List<string> excludeAttributeNameList = null)
+        public static List<TableColumn> GetTableColumnInfoList(string tableName)
+        {
+            return TableColumnManagerCache.GetTableColumnInfoList(tableName);
+        }
+
+        public static List<TableColumn> GetTableColumnInfoList(string tableName, List<string> excludeAttributeNameList)
         {
             var list = TableColumnManagerCache.GetTableColumnInfoList(tableName);
             if (excludeAttributeNameList == null || excludeAttributeNameList.Count == 0) return list;
 
-            var retval = new List<TableColumn>();
-            foreach (var tableColumnInfo in list)
-            {
-                if (!StringUtils.ContainsIgnoreCase(excludeAttributeNameList, tableColumnInfo.AttributeName))
-                {
-                    retval.Add(tableColumnInfo);
-                }
-            }
-
-            return retval;
+            return list.Where(tableColumnInfo =>
+                !StringUtils.ContainsIgnoreCase(excludeAttributeNameList, tableColumnInfo.AttributeName)).ToList();
         }
 
-        public static List<string> GetTableColumnNameList(string tableName, List<string> excludeAttributeNameList = null)
+        public static List<TableColumn> GetTableColumnInfoList(string tableName, DataType excludeDataType)
+        {
+            var list = TableColumnManagerCache.GetTableColumnInfoList(tableName);
+
+            return list.Where(tableColumnInfo =>
+                tableColumnInfo.DataType != excludeDataType).ToList();
+        }
+
+        public static TableColumn GetTableColumnInfo(string tableName, string attributeName)
+        {
+            var list = TableColumnManagerCache.GetTableColumnInfoList(tableName);
+            return list.FirstOrDefault(tableColumnInfo =>
+                StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, attributeName));
+        }
+
+        public static bool IsAttributeNameExists(string tableName, string attributeName)
+        {
+            var list = TableColumnManagerCache.GetTableColumnInfoList(tableName);
+            return list.Any(tableColumnInfo =>
+                StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, attributeName));
+        }
+
+        public static List<string> GetTableColumnNameList(string tableName)
+        {
+            var allTableColumnInfoList = GetTableColumnInfoList(tableName);
+            return allTableColumnInfoList.Select(tableColumnInfo => tableColumnInfo.AttributeName).ToList();
+        }
+
+        public static List<string> GetTableColumnNameList(string tableName, List<string> excludeAttributeNameList)
         {
             var allTableColumnInfoList = GetTableColumnInfoList(tableName, excludeAttributeNameList);
+            return allTableColumnInfoList.Select(tableColumnInfo => tableColumnInfo.AttributeName).ToList();
+        }
 
-            var columnNameList = new List<string>();
-
-            foreach (var tableColumnInfo in allTableColumnInfoList)
-            {
-                columnNameList.Add(tableColumnInfo.AttributeName);
-            }
-
-            return columnNameList;
+        public static List<string> GetTableColumnNameList(string tableName, DataType excludeDataType)
+        {
+            var allTableColumnInfoList = GetTableColumnInfoList(tableName, excludeDataType);
+            return allTableColumnInfoList.Select(tableColumnInfo => tableColumnInfo.AttributeName).ToList();
         }
 
         public static void ClearCache()

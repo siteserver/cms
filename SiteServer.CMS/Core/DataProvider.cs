@@ -117,12 +117,6 @@ namespace SiteServer.CMS.Core
         private static SpecialDao _specialDao;
         public static SpecialDao SpecialDao => _specialDao ?? (_specialDao = new SpecialDao());
 
-        private static TableDao _tableDao;
-        public static TableDao TableDao => _tableDao ?? (_tableDao = new TableDao());
-
-        private static TableMetadataDao _tableMetadataDao;
-        public static TableMetadataDao TableMetadataDao => _tableMetadataDao ?? (_tableMetadataDao = new TableMetadataDao());
-
         private static TableStyleDao _tableStyleDao;
         public static TableStyleDao TableStyleDao => _tableStyleDao ?? (_tableStyleDao = new TableStyleDao());
 
@@ -178,8 +172,6 @@ namespace SiteServer.CMS.Core
             _siteLogDao = null;
             _sitePermissionsDao = null;
             _specialDao = null;
-            _tableDao = null;
-            _tableMetadataDao = null;
             _tableStyleDao = null;
             _tableStyleItemDao = null;
             _tagDao = null;
@@ -219,8 +211,6 @@ namespace SiteServer.CMS.Core
             SiteLogDao,
             SitePermissionsDao,
             SpecialDao,
-            TableDao,
-            TableMetadataDao,
             TableStyleDao,
             TableStyleItemDao,
             TagDao,

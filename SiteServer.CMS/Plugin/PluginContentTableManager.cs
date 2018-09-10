@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -36,98 +35,20 @@ namespace SiteServer.CMS.Plugin
 
             var tableName = service.ContentTableName;
 
-            if (!DataProvider.TableDao.IsExists(tableName))
-            {
-                ContentTableCreateMetadatas(service.Metadata, tableName, service.ContentTableColumns);
-            }
-            else
-            {
-                ContentTableUpdateMetadatas(tableName, service.ContentTableColumns);
-            }
+            var tableColumns = new List<TableColumn>();
+            tableColumns.AddRange(DataProvider.ContentDao.TableColumns);
+            tableColumns.AddRange(service.ContentTableColumns);
 
             if (!DataProvider.DatabaseDao.IsTableExists(tableName))
             {
-                DataProvider.TableDao.CreateDbTable(tableName);
+                DataProvider.ContentDao.CreateContentTable(tableName, tableColumns);
             }
             else
             {
-                DataProvider.TableDao.SyncDbTable(tableName);
+                DataProvider.DatabaseDao.AlterSystemTable(tableName, tableColumns);
             }
 
             ContentTableCreateOrUpdateStyles(tableName, service.ContentTableColumns);
-        }
-
-        private static void ContentTableCreateMetadatas(IMetadata metadata, string tableName, List<TableColumn> tableColumns)
-        {
-            DataProvider.TableDao.Delete(tableName);
-
-            var metadataInfoList = new List<TableMetadataInfo>();
-            foreach (var tableColumn in tableColumns)
-            {
-                if (string.IsNullOrEmpty(tableColumn.AttributeName) ||
-                    ContentAttribute.AllAttributesLowercase.Contains(tableColumn.AttributeName.ToLower()))
-                    continue;
-
-                metadataInfoList.Add(new TableMetadataInfo(0, tableName,
-                    tableColumn.AttributeName, tableColumn.DataType, tableColumn.DataLength,
-                    0, true));
-            }
-
-            DataProvider.TableDao.Insert(
-                new TableInfo(0, tableName, $"插件内容表：{metadata.Title}", 0, false, false, false, string.Empty),
-                metadataInfoList);
-        }
-
-        private static void ContentTableUpdateMetadatas(string tableName, List<TableColumn> tableColumns)
-        {
-            var metadataInfoListToInsert = new List<TableMetadataInfo>();
-            var metadataInfoListToUpdate = new List<TableMetadataInfo>();
-
-            foreach (var tableColumn in tableColumns)
-            {
-                if (string.IsNullOrEmpty(tableColumn.AttributeName) ||
-                    ContentAttribute.AllAttributesLowercase.Contains(tableColumn.AttributeName.ToLower()))
-                    continue;
-
-                if (!TableMetadataManager.IsAttributeNameExists(tableName, tableColumn.AttributeName))
-                {
-                    var metadataInfo = new TableMetadataInfo(0, tableName,
-                        tableColumn.AttributeName, tableColumn.DataType,
-                        tableColumn.DataLength, 0, true);
-                    metadataInfoListToInsert.Add(metadataInfo);
-                }
-                else
-                {
-                    var isEquals = true;
-
-                    var metadataInfo = TableMetadataManager.GetTableMetadataInfo(tableName, tableColumn.AttributeName);
-
-                    if (metadataInfo.DataType != tableColumn.DataType)
-                    {
-                        isEquals = false;
-                        metadataInfo.DataType = tableColumn.DataType;
-                    }
-
-                    if (metadataInfo.DataLength != tableColumn.DataLength)
-                    {
-                        isEquals = false;
-                        metadataInfo.DataLength = tableColumn.DataLength;
-                    }
-
-                    if (isEquals) continue;
-
-                    metadataInfoListToUpdate.Add(metadataInfo);
-                }
-            }
-
-            foreach (var metadataInfo in metadataInfoListToInsert)
-            {
-                DataProvider.TableMetadataDao.Insert(metadataInfo);
-            }
-            foreach (var metadataInfo in metadataInfoListToUpdate)
-            {
-                DataProvider.TableMetadataDao.Update(metadataInfo);
-            }
         }
 
         private static void ContentTableCreateOrUpdateStyles(string tableName, List<TableColumn> tableColumns)

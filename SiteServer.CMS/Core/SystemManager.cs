@@ -70,7 +70,7 @@ namespace SiteServer.CMS.Core
 
         public static void SyncContentTables()
         {
-            var tableNameList = DataProvider.TableDao.GetTableNameListCreatedInDb();
+            var tableNameList = SiteManager.GetTableNameList();
             foreach (var tableName in tableNameList)
             {
                 if (!DataProvider.DatabaseDao.IsTableExists(tableName))
@@ -82,8 +82,6 @@ namespace SiteServer.CMS.Core
                     DataProvider.DatabaseDao.AlterSystemTable(tableName, DataProvider.ContentDao.TableColumns);
                 }
             }
-
-            DataProvider.TableDao.CreateAllTableCollectionInfoIfNotExists();
         }
 
         public static void UpdateConfigVersion()

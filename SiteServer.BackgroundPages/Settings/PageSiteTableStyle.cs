@@ -31,7 +31,8 @@ namespace SiteServer.BackgroundPages.Settings
 
         public string GetReturnUrl()
         {
-            return PageSiteAuxiliaryTable.GetRedirectUrl();
+            return string.Empty;
+            //return PageSiteAuxiliaryTable.GetRedirectUrl();
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -93,7 +94,10 @@ namespace SiteServer.BackgroundPages.Settings
 
             ltlDisplayName.Text = styleInfo.DisplayName;
             ltlInputType.Text = InputTypeUtils.GetText(styleInfo.InputType);
-            ltlFieldType.Text = TableMetadataManager.IsAttributeNameExists(_tableName, styleInfo.AttributeName) ? $"真实 {TableMetadataManager.GetTableMetadataDataType(_tableName, styleInfo.AttributeName)}" : "虚拟字段";
+
+            var columnInfo = TableColumnManager.GetTableColumnInfo(_tableName, styleInfo.AttributeName);
+
+            ltlFieldType.Text = columnInfo != null ? $"真实 {DataTypeUtils.GetText(columnInfo.DataType)}" : "虚拟字段";
 
             ltlValidate.Text = TableStyleManager.GetValidateInfo(styleInfo);
 
@@ -119,7 +123,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageSiteAuxiliaryTable.GetRedirectUrl());
+            PageUtils.Redirect(string.Empty);
         }
     }
 }
