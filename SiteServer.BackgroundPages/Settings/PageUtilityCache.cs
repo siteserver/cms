@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
@@ -8,7 +9,6 @@ namespace SiteServer.BackgroundPages.Settings
     public class PageUtilityCache : BasePage
     {
         public Literal LtlCount;
-        public Literal LtlPercentage;
         public Repeater RptContents;
 
         public void Page_Load(object sender, EventArgs e)
@@ -33,8 +33,12 @@ namespace SiteServer.BackgroundPages.Settings
             var key = (string) e.Item.DataItem;
             var value = CacheUtils.Get(key);
 
-            if (value == null) return;
-            var valueType = value.GetType().FullName;
+            var valueType = value?.GetType().FullName;
+            if (valueType == null)
+            {
+                e.Item.Visible = false;
+                return;
+            }
 
             var ltlKey = (Literal)e.Item.FindControl("ltlKey");
             var ltlValue = (Literal)e.Item.FindControl("ltlValue");
@@ -43,10 +47,15 @@ namespace SiteServer.BackgroundPages.Settings
                 
             if (valueType == "System.String")
             {
-                ltlValue.Text = $"string, length:{value.ToString().Length}";
-            } else if (valueType == "System.Int32")
+                ltlValue.Text = $"String, Length:{value.ToString().Length}";
+            }
+            else if (valueType == "System.Int32")
             {
                 ltlValue.Text = value.ToString();
+            }
+            else if (valueType.StartsWith("System.Collections.Generic.List"))
+            {
+                ltlValue.Text = $"List, Count:{((ICollection)value).Count}";
             }
             else
             {

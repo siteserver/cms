@@ -465,7 +465,7 @@ function {functionName}(pageNum)
                 foreach (var channelIndex in channelIndexes)
                 {
                     //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
-                    var parentId = Node.GetIdByIndexName(pageInfo.SiteId, channelIndex);
+                    var parentId = Channel.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                     if (ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId))
                     {
                         isIn = true;
@@ -484,7 +484,7 @@ function {functionName}(pageNum)
                 foreach (var channelIndex in channelIndexes)
                 {
                     //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
-                    var parentId = Node.GetIdByIndexName(pageInfo.SiteId, channelIndex);
+                    var parentId = Channel.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                     if (ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId))
                     {
                         isIn = true;
@@ -511,7 +511,7 @@ function {functionName}(pageNum)
                     foreach (var channelIndex in channelIndexes)
                     {
                         //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
-                        var parentId = Node.GetIdByIndexName(pageInfo.SiteId, channelIndex);
+                        var parentId = Channel.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                         if (ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId))
                         {
                             isSuccess = true;
@@ -534,7 +534,7 @@ function {functionName}(pageNum)
                 foreach (var channelIndex in channelIndexes)
                 {
                     //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
-                    var parentId = Node.GetIdByIndexName(pageInfo.SiteId, channelIndex);
+                    var parentId = Channel.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                     if (parentId != pageInfo.PageChannelId &&
                         ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId))
                     {
@@ -563,7 +563,7 @@ function {functionName}(pageNum)
                     foreach (var channelIndex in channelIndexes)
                     {
                         //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
-                        var parentId = Node.GetIdByIndexName(pageInfo.SiteId, channelIndex);
+                        var parentId = Channel.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                         if (parentId != pageInfo.PageChannelId &&
                             ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId))
                         {

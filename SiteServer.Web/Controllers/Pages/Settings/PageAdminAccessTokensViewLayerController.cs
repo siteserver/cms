@@ -7,7 +7,7 @@ using SiteServer.Utils;
 namespace SiteServer.API.Controllers.Pages.Settings
 {
     [RoutePrefix("api/pages/settings/adminAccessTokensViewLayer")]
-    public class AdminAccessTokensViewLayerController : ApiController
+    public class PageAdminAccessTokensViewLayerController : ApiController
     {
         private const string RouteAccessTokens = "accessTokens/{id:int}";
         private const string RouteRegenerate = "regenerate/{id:int}";

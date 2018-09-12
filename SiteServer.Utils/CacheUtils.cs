@@ -6,10 +6,8 @@ using System.Web.Caching;
 
 namespace SiteServer.Utils
 {
-    public class CacheUtils
+    public static class CacheUtils
     {
-        private CacheUtils() { }
-
         private static readonly Cache Cache;
 
         /// <summary>
@@ -47,7 +45,7 @@ namespace SiteServer.Utils
             }
         }
 
-        public static void RemoveByPattern(string pattern)
+        private static void RemoveByPattern(string pattern)
         {
             if (Cache == null) return;
 
@@ -109,11 +107,6 @@ namespace SiteServer.Utils
             }
         }
 
-        public static bool IsCache(string key)
-        {
-            return Cache?.Get(key) != null;
-        }
-
         public static object Get(string key)
         {
             return Cache?.Get(key);
@@ -142,6 +135,18 @@ namespace SiteServer.Utils
         public static T Get<T>(string key) where T : class
         {
             return Cache?.Get(key) as T;
+        }
+
+        public static bool Exists(string key)
+        {
+            var val = Cache?.Get(key);
+            return val != null;
+        }
+
+        public static bool Exists<T>(string key) where T : class
+        {
+            var val = Cache?.Get(key) as T;
+            return val != null;
         }
 
         public static List<string> AllKeys

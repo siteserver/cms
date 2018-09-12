@@ -11,7 +11,7 @@ using SiteServer.Utils.Enumerations;
 namespace SiteServer.API.Controllers.Pages
 {
     [RoutePrefix("api/pages/dashboard")]
-    public class DashboardController : ApiController
+    public class PageDashboardController : ApiController
     {
         private const string Route = "";
         private const string RouteUnCheckedList = "unCheckedList";

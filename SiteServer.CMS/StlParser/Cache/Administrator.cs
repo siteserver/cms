@@ -2,7 +2,7 @@ using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.StlParser.Cache
 {
-    public class Administrator
+    public static class Administrator
     {
         private static readonly object LockObject = new object();
 

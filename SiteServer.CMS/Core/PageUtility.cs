@@ -182,7 +182,7 @@ namespace SiteServer.CMS.Core
                 if (sourceId > 0 && (ChannelManager.IsExists(siteInfo.Id, sourceId) || ChannelManager.IsExists(sourceId)))
                 {
                     var targetChannelId = sourceId;
-                    var targetSiteId = Node.GetSiteId(targetChannelId);
+                    var targetSiteId = Channel.GetSiteId(targetChannelId);
                     var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                     var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
@@ -208,7 +208,7 @@ namespace SiteServer.CMS.Core
                     {
                         return GetContentUrlById(siteInfo, channelId, referenceId, 0, 0, linkUrl, false);
                     }
-                    var targetSiteId = Node.GetSiteId(channelId);
+                    var targetSiteId = Channel.GetSiteId(channelId);
                     var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                     return GetContentUrlById(targetSiteInfo, channelId, referenceId, 0, 0, linkUrl, false);
                 }
@@ -237,7 +237,7 @@ namespace SiteServer.CMS.Core
                 if (sourceId > 0 && (ChannelManager.IsExists(siteInfo.Id, sourceId) || ChannelManager.IsExists(sourceId)))
                 {
                     var targetChannelId = sourceId;
-                    var targetSiteId = Node.GetSiteId(targetChannelId);
+                    var targetSiteId = Channel.GetSiteId(targetChannelId);
                     var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                     var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
@@ -400,22 +400,22 @@ namespace SiteServer.CMS.Core
                     }
                     else if (linkType == ELinkType.LinkToLastAddChannel)
                     {
-                        var lastAddChannelInfo = Node.GetChannelInfoByLastAddDate(nodeInfo.Id);
+                        var lastAddChannelInfo = Channel.GetChannelInfoByLastAddDate(nodeInfo.Id);
                         url = lastAddChannelInfo != null ? GetChannelUrl(siteInfo, lastAddChannelInfo, false) : GetChannelUrlNotComputed(siteInfo, nodeInfo.Id, false);
                     }
                     else if (linkType == ELinkType.LinkToFirstChannel)
                     {
-                        var firstChannelInfo = Node.GetChannelInfoByTaxis(nodeInfo.Id);
+                        var firstChannelInfo = Channel.GetChannelInfoByTaxis(nodeInfo.Id);
                         url = firstChannelInfo != null ? GetChannelUrl(siteInfo, firstChannelInfo, false) : GetChannelUrlNotComputed(siteInfo, nodeInfo.Id, false);
                     }
                     else if (linkType == ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel)
                     {
-                        var lastAddChannelInfo = Node.GetChannelInfoByLastAddDate(nodeInfo.Id);
+                        var lastAddChannelInfo = Channel.GetChannelInfoByLastAddDate(nodeInfo.Id);
                         url = lastAddChannelInfo != null ? GetChannelUrl(siteInfo, lastAddChannelInfo, false) : PageUtils.UnclickedUrl;
                     }
                     else if (linkType == ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel)
                     {
-                        var firstChannelInfo = Node.GetChannelInfoByTaxis(nodeInfo.Id);
+                        var firstChannelInfo = Channel.GetChannelInfoByTaxis(nodeInfo.Id);
                         url = firstChannelInfo != null ? GetChannelUrl(siteInfo, firstChannelInfo, false) : PageUtils.UnclickedUrl;
                     }
                 }

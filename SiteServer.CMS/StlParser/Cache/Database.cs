@@ -3,7 +3,7 @@ using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.StlParser.Cache
 {
-    public class Database
+    public static class Database
     {
         private static readonly object LockObject = new object();
 

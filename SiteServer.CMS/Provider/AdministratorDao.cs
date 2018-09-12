@@ -1185,7 +1185,7 @@ namespace SiteServer.CMS.Provider
             if (CheckPassword(password, isPasswordMd5, adminInfo.Password, EPasswordFormatUtils.GetEnumType(adminInfo.PasswordFormat), adminInfo.PasswordSalt))
                 return true;
 
-            errorMessage = "账号或密码不正确";
+            errorMessage = "账号或密码错误";
             return false;
         }
 

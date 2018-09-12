@@ -91,7 +91,7 @@ namespace SiteServer.BackgroundPages.Cms
                 TableName = _tableName,
                 PageSize = SiteInfo.Additional.PageSize,
                 Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
-                OrderSqlString = DataProvider.ContentDao.GetPagerOrderSqlString(_channelInfo),
+                OrderSqlString = DataProvider.ContentDao.GetCacheOrderString(_channelInfo),
                 ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allAttributeNameList)
             };
 

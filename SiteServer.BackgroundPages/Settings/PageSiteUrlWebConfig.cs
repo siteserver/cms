@@ -49,6 +49,10 @@ namespace SiteServer.BackgroundPages.Settings
         {
             SiteInfo.Additional.IsSeparatedWeb = TranslateUtils.ToBool(RblIsSeparatedWeb.SelectedValue);
             SiteInfo.Additional.SeparatedWebUrl = TbSeparatedWebUrl.Text;
+            if (!string.IsNullOrEmpty(SiteInfo.Additional.SeparatedWebUrl) && !SiteInfo.Additional.SeparatedWebUrl.EndsWith("/"))
+            {
+                SiteInfo.Additional.SeparatedWebUrl = SiteInfo.Additional.SeparatedWebUrl + "/";
+            }
 
             DataProvider.SiteDao.Update(SiteInfo);
             AuthRequest.AddSiteLog(SiteId, "修改Web访问地址");

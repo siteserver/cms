@@ -9,7 +9,7 @@ using SiteServer.CMS.Plugin;
 namespace SiteServer.API.Controllers.Pages.Settings
 {
     [RoutePrefix("api/pages/settings/adminAccessTokens")]
-    public class AdminAccessTokensController : ApiController
+    public class PageAdminAccessTokensController : ApiController
     {
         private const string Route = "";
 

@@ -9,7 +9,7 @@ using SiteServer.Utils;
 namespace SiteServer.API.Controllers.Pages.Plugins
 {
     [RoutePrefix("api/pages/plugins/install")]
-    public class InstallController : ApiController
+    public class PageInstallController : ApiController
     {
         private const string RouteConfig = "config";
 

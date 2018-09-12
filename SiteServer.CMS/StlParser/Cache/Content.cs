@@ -8,7 +8,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.Cache
 {
-    public class Content
+    public static class Content
     {
         private static readonly object LockObject = new object();
 

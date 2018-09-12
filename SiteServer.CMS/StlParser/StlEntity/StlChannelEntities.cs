@@ -58,7 +58,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 if (!string.IsNullOrEmpty(channelIndex))
                 {
                     //channelId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
-                    channelId = Node.GetIdByIndexName(pageInfo.SiteId, channelIndex);
+                    channelId = Channel.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                     if (channelId == 0)
                     {
                         channelId = contextInfo.ChannelId;

@@ -617,7 +617,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Sequence))
                     {
-                        value = Node.GetSequence(siteInfo.Id, channelId).ToString();
+                        value = Channel.GetSequence(siteInfo.Id, channelId).ToString();
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, ParentRule))
                     {

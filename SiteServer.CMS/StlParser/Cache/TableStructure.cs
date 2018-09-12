@@ -2,7 +2,7 @@ using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.StlParser.Cache
 {
-    public class TableStructure
+    public static class TableStructure
     {
         private static readonly object LockObject = new object();
 

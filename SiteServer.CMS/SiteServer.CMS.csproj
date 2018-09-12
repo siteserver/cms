@@ -141,6 +141,7 @@
     <Compile Include="Api\ApiManager.cs" />
     <Compile Include="Core\AreaManager.cs" />
     <Compile Include="Core\CacheDbUtils.cs" />
+    <Compile Include="Core\ContentManager.cs" />
     <Compile Include="Core\ChannelManager.cs" />
     <Compile Include="Core\CheckManager.cs" />
     <Compile Include="Core\ConfigManager.cs" />
@@ -345,12 +346,11 @@
     <Compile Include="StlParser\Cache\Administrator.cs" />
     <Compile Include="StlParser\Cache\Content.cs" />
     <Compile Include="StlParser\Cache\Database.cs" />
-    <Compile Include="StlParser\Cache\Node.cs" />
-    <Compile Include="StlParser\Cache\PublishmentSystem.cs" />
+    <Compile Include="StlParser\Cache\Channel.cs" />
+    <Compile Include="StlParser\Cache\Site.cs" />
     <Compile Include="StlParser\Cache\StlCacheUtils.cs" />
     <Compile Include="StlParser\Cache\TableStructure.cs" />
     <Compile Include="StlParser\Cache\Tag.cs" />
-    <Compile Include="StlParser\Cache\User.cs" />
     <Compile Include="StlParser\FileSystemObjectAsync.cs" />
     <Compile Include="StlParser\Model\ChannelItemInfo.cs" />
     <Compile Include="StlParser\Model\ContentItemInfo.cs" />

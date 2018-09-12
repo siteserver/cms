@@ -21,7 +21,7 @@ namespace SiteServer.CMS.Core
 
             static ChannelManagerCache()
             {
-                FileWatcher = new FileWatcherClass(FileWatcherClass.Node);
+                FileWatcher = new FileWatcherClass(FileWatcherClass.Channel);
                 FileWatcher.OnFileChange += FileWatcher_OnFileChange;
             }
 
@@ -44,7 +44,7 @@ namespace SiteServer.CMS.Core
                 if (allDict != null) return allDict;
 
                 allDict = new Dictionary<int, Dictionary<int, ChannelInfo>>();
-                CacheUtils.InsertHours(CacheKey, allDict, 24);
+                CacheUtils.Insert(CacheKey, allDict);
                 return allDict;
             }
 
@@ -78,7 +78,7 @@ namespace SiteServer.CMS.Core
         public static void RemoveCache(int siteId)
         {
             ChannelManagerCache.Remove(siteId);
-            Node.ClearCache();
+            Channel.ClearCache();
         }
 
         public static ChannelInfo GetChannelInfo(int siteId, int channelId)
@@ -231,9 +231,9 @@ namespace SiteServer.CMS.Core
             return GetTableName(siteInfo, GetChannelInfo(siteInfo.Id, channelId));
         }
 
-        public static string GetTableName(SiteInfo siteInfo, ChannelInfo nodeInfo)
+        public static string GetTableName(SiteInfo siteInfo, ChannelInfo channelInfo)
         {
-            return nodeInfo != null ? GetTableName(siteInfo, nodeInfo.ContentModelPluginId) : string.Empty;
+            return channelInfo != null ? GetTableName(siteInfo, channelInfo.ContentModelPluginId) : string.Empty;
         }
 
         public static string GetTableName(SiteInfo siteInfo, string pluginId)

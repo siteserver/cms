@@ -1,0 +1,198 @@
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
+
+<div class="card-box">
+
+  <a id="top"></a>
+
+  <div class="btn-toolbar btn-group btn-group-sm">
+    <a href="/SiteServer/cms/pagecontentadd.aspx?siteId=35&channelId=6136&returnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1"
+      class="btn text-primary">
+      <i class="ion-plus"></i>
+      添加
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="$.layer({type: 2, maxmin: true, shadeClose: true, title: '批量导入Word文件', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modaluploadword.aspx?siteId=35&channelId=6136&returnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1'}, area: ['700px', '550px'], offset: ['', '']});return false;">
+      导入Word
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="if (!_alertCheckBoxCollection(document.getElementsByName('contentIdCollection'), '请选择需要删除的内容！')){_goto('/SiteServer/cms/pagecontentdelete.aspx?siteId=35&channelId=6136&IsDeleteFromTrash=False&ReturnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection')));};return false;">
+      <i class="ion-trash-a"></i>
+      删 除
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="if (!_alertCheckBoxCollection(document.getElementsByName('contentIdCollection'), '请选择需要设置属性的内容！')){$.layer({type: 2, maxmin: true, shadeClose: true, title: '设置内容属性', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalcontentattributes.aspx?siteId=35&channelId=6136' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection'))}, area: ['450px', '350px'], offset: ['', '']});};return false;">
+      <i class="ion-flag"></i>
+      属性
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="if (!_alertCheckBoxCollection(document.getElementsByName('contentIdCollection'), '请选择需要设置组别的内容！')){$.layer({type: 2, maxmin: true, shadeClose: true, title: '添加到内容组', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modaladdtogroup.aspx?siteId=35&channelId=6136&isContent=True' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection'))}, area: ['650px', '550px'], offset: ['', '']});};return false;">
+      内容组
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="if (!_alertCheckBoxCollection(document.getElementsByName('contentIdCollection'), '请选择需要转移的内容！')){_goto('/SiteServer/cms/pagecontenttranslate.aspx?siteId=35&channelId=6136&ReturnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection')));};return false;">
+      转 移
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="if (!_alertCheckBoxCollection(document.getElementsByName('contentIdCollection'), '请选择需要排序的内容！')){$.layer({type: 2, maxmin: true, shadeClose: true, title: '内容排序', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalcontenttaxis.aspx?siteId=35&channelId=6136&ReturnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection'))}, area: ['400px', '280px'], offset: ['', '']});};return false;">
+      排 序
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="if (!_alertCheckBoxCollection(document.getElementsByName('contentIdCollection'), '请选择需要审核的内容！')){$.layer({type: 2, maxmin: true, shadeClose: true, title: '审核内容', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalcontentcheck.aspx?siteId=35&channelId=6136&ReturnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection'))}, area: ['560px', '550px'], offset: ['', '']});};return false;">
+      审 核
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="if (!_alertCheckBoxCollection(document.getElementsByName('contentIdCollection'), '请选择需要生成的内容！')){$.layer({type: 2, maxmin: true, shadeClose: true, title: '生成内容页', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalprogressbar.aspx?siteId=35&channelId=6136&CreateContentsOneByOne=True' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection'))}, area: ['500px', '360px'], offset: ['', '']});};return false;">
+      <i class="ion-wand"></i>
+      生 成
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="$.layer({type: 2, maxmin: true, shadeClose: true, title: '设置显示项', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalselectcolumns.aspx?siteId=35&channelId=6136'}, area: [($(window).width() - 50) +'px', ($(window).height() - 50) +'px'], offset: ['25px', '25px']});return false;">
+      <i class="ion-ios-list-outline"></i>
+      显示规则
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="$.layer({type: 2, maxmin: true, shadeClose: true, title: '设置显示项', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalselectcolumns.aspx?siteId=35&channelId=6136'}, area: [($(window).width() - 50) +'px', ($(window).height() - 50) +'px'], offset: ['25px', '25px']});return false;">
+      <i class="ion-ios-list-outline"></i>
+      排序规则
+    </a>
+    <a href="javascript:;;" class="btn text-primary text-secondary" onClick="$('#contentSearch').toggle(); return false">
+      <i class="ion-search"></i>
+      查找
+    </a>
+    <a href="javascript:;" class="btn text-primary dropdown-toggle ">更多 <span class="caret"></span></a>
+    <div id="dropdownHeadMore" class="dropdown-menu">
+
+      <a class="dropdown-item" href="javascript:;" onclick="$.layer({type: 2, maxmin: true, shadeClose: true, title: '导入内容', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalcontentimport.aspx?siteId=35&channelId=6136'}, area: [($(window).width() - 50) +'px', '520px'], offset: ['', '25px']});return false;">
+        导 入
+      </a>
+      <a class="dropdown-item" href="javascript:;" onclick="$.layer({type: 2, maxmin: true, shadeClose: true, title: '导出内容', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalcontentexport.aspx?siteId=35&channelId=6136' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection'))}, area: [($(window).width() - 50) +'px', ($(window).height() - 50) +'px'], offset: ['25px', '25px']});return false;">
+        导 出
+      </a>
+      <a class="dropdown-item" href="javascript:;" onclick="$.layer({type: 2, maxmin: true, shadeClose: true, title: '整理排序', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalcontenttidyup.aspx?siteId=35&channelId=6136&ReturnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection'))}, area: ['460px', '320px'], offset: ['', '']});return false;">
+        整 理
+      </a>
+    </div>
+  </div>
+
+  <hr />
+
+  <table class="table tablesaw table-bordered table-hover">
+    <thead>
+      <tr>
+        <th>内容标题(点击查看) </th>
+        <th class="text-nowrap">外部链接</th>
+        <th class="text-nowrap">添加时间</th>
+        <th class="text-center text-nowrap">操作</th>
+        <th class="text-center text-nowrap">状态</th>
+        <th class="text-nowrap checkbox checkbox-primary">
+          <input id="all" v-on:click="selectAll()" v-model="isAllChecked" type="checkbox">
+          <label for="all"></label>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="content in pageContents" v-on:click="toggleChecked(content)" :class="{'table-warning': content.isChecked}">
+        <td>
+          <a href="/SiteServer/cms/pagecontentadd.aspx?siteId=35&channelId=6136&id=298418&returnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1">
+            {{content.title }}
+          </a>
+        </td>
+        <td>http://www.gov.cn/premier/2016-06/07/content_5080344.htm</td>
+        <td class="text-center text-nowrap">2016-06-08 15:46</td>
+        <td class="text-center text-nowrap">
+          <a href="/SiteServer/cms/pagecontentadd.aspx?siteId=35&channelId=6136&id=298418&returnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1">编辑</a>
+        </td>
+        <td class="text-center text-nowrap">
+          <a href="javascript:;" title="设置内容状态" onclick="$.layer({type: 2, maxmin: true, shadeClose: true, title: '审核状态', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalcheckstate.aspx?siteId=35&channelId=6136&contentID=298418&returnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1'}, area: ['560px', '500px'], offset: ['', '']});return false;"><span
+              style='color:red'>待审核</span></a>
+        </td>
+        <td class="text-nowrap checkbox checkbox-primary">
+          <input :id="'checkbox' + content.id" v-model="content.isChecked" type="checkbox">
+          <label :for="'checkbox' + content.id"></label>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr />
+
+  <div class="row">
+    <div class="col-9">
+      <ul class="pagination pagination-sm float-left">
+        <li class="page-item" :class="{disabled : page === 1}">
+          <a class="page-link" v-on:click="loadFirstPage" :class="{'bg-light' : page === 1}" href="javascript:;">首 页</a>
+        </li>
+        <li class="page-item" :class="{disabled : page === 1}">
+          <a class="page-link" v-on:click="loadPrevPage" :class="{'bg-light' : page === 1}" href="javascript:;">上一页</a>
+        </li>
+        <li class="page-item" :class="{disabled : page === pages}">
+          <a class="page-link" v-on:click="loadNextPage" :class="{'bg-light' : page === pages}" href="javascript:;">下一页</a>
+        </li>
+        <li class="page-item" :class="{disabled : page === pages}">
+          <a class="page-link" v-on:click="loadLastPage" :class="{'bg-light' : page === pages}" href="javascript:;">末
+            页</a>
+        </li>
+      </ul>
+    </div>
+    <div class="col-3">
+      <multiselect v-on:select="onPageSelect" v-model="page" placeholder="Select one" :options="pageOptions"
+        :searchable="false" :show-labels="false">
+        <template slot="singleLabel" slot-scope="{ option }">第 {{ option }} 页</template>
+        <template slot="option" slot-scope="props">
+          第 {{ props.option }} 页
+        </template>
+      </multiselect>
+    </div>
+  </div>
+
+  <div class="btn-toolbar btn-group btn-group-sm">
+    <a href="/SiteServer/cms/pagecontentadd.aspx?siteId=35&channelId=6136&returnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1"
+      class="btn text-primary">
+      <i class="ion-plus"></i>
+      添加
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="$.layer({type: 2, maxmin: true, shadeClose: true, title: '批量导入Word文件', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modaluploadword.aspx?siteId=35&channelId=6136&returnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1'}, area: ['700px', '550px'], offset: ['', '']});return false;">
+      导入Word
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="if (!_alertCheckBoxCollection(document.getElementsByName('contentIdCollection'), '请选择需要删除的内容！')){_goto('/SiteServer/cms/pagecontentdelete.aspx?siteId=35&channelId=6136&IsDeleteFromTrash=False&ReturnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection')));};return false;">
+      <i class="ion-trash-a"></i>
+      删 除
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="if (!_alertCheckBoxCollection(document.getElementsByName('contentIdCollection'), '请选择需要设置属性的内容！')){$.layer({type: 2, maxmin: true, shadeClose: true, title: '设置内容属性', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalcontentattributes.aspx?siteId=35&channelId=6136' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection'))}, area: ['450px', '350px'], offset: ['', '']});};return false;">
+      <i class="ion-flag"></i>
+      属性
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="if (!_alertCheckBoxCollection(document.getElementsByName('contentIdCollection'), '请选择需要设置组别的内容！')){$.layer({type: 2, maxmin: true, shadeClose: true, title: '添加到内容组', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modaladdtogroup.aspx?siteId=35&channelId=6136&isContent=True' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection'))}, area: ['650px', '550px'], offset: ['', '']});};return false;">
+      内容组
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="if (!_alertCheckBoxCollection(document.getElementsByName('contentIdCollection'), '请选择需要转移的内容！')){_goto('/SiteServer/cms/pagecontenttranslate.aspx?siteId=35&channelId=6136&ReturnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection')));};return false;">
+      转 移
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="if (!_alertCheckBoxCollection(document.getElementsByName('contentIdCollection'), '请选择需要排序的内容！')){$.layer({type: 2, maxmin: true, shadeClose: true, title: '内容排序', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalcontenttaxis.aspx?siteId=35&channelId=6136&ReturnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection'))}, area: ['400px', '280px'], offset: ['', '']});};return false;">
+      排 序
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="if (!_alertCheckBoxCollection(document.getElementsByName('contentIdCollection'), '请选择需要审核的内容！')){$.layer({type: 2, maxmin: true, shadeClose: true, title: '审核内容', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalcontentcheck.aspx?siteId=35&channelId=6136&ReturnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection'))}, area: ['560px', '550px'], offset: ['', '']});};return false;">
+      审 核
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="if (!_alertCheckBoxCollection(document.getElementsByName('contentIdCollection'), '请选择需要生成的内容！')){$.layer({type: 2, maxmin: true, shadeClose: true, title: '生成内容页', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalprogressbar.aspx?siteId=35&channelId=6136&CreateContentsOneByOne=True' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection'))}, area: ['500px', '360px'], offset: ['', '']});};return false;">
+      <i class="ion-wand"></i>
+      生 成
+    </a>
+    <a href="javascript:;" class="btn text-primary" onclick="$.layer({type: 2, maxmin: true, shadeClose: true, title: '设置显示项', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalselectcolumns.aspx?siteId=35&channelId=6136'}, area: [($(window).width() - 50) +'px', ($(window).height() - 50) +'px'], offset: ['25px', '25px']});return false;">
+      <i class="ion-ios-list-outline"></i>
+      显示项
+    </a>
+    <a href="javascript:;;" class="btn text-primary text-secondary" onClick="$('#contentSearch').toggle(); return false">
+      <i class="ion-search"></i>
+      查找
+    </a>
+    <a href="javascript:;" class="btn text-primary dropdown-toggle ">更多 <span class="caret"></span></a>
+    <div id="dropdownHeadMore" class="dropdown-menu">
+      <a class="dropdown-item" href="javascript:;" onclick="$.layer({type: 2, maxmin: true, shadeClose: true, title: '导入内容', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalcontentimport.aspx?siteId=35&channelId=6136'}, area: [($(window).width() - 50) +'px', '520px'], offset: ['', '25px']});return false;">
+        导 入
+      </a>
+      <a class="dropdown-item" href="javascript:;" onclick="$.layer({type: 2, maxmin: true, shadeClose: true, title: '导出内容', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalcontentexport.aspx?siteId=35&channelId=6136' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection'))}, area: [($(window).width() - 50) +'px', ($(window).height() - 50) +'px'], offset: ['25px', '25px']});return false;">
+        导 出
+      </a>
+      <a class="dropdown-item" href="javascript:;" onclick="$.layer({type: 2, maxmin: true, shadeClose: true, title: '整理排序', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalcontenttidyup.aspx?siteId=35&channelId=6136&ReturnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1' + '&contentIdCollection=' + _getCheckBoxCollectionValue(document.getElementsByName('contentIdCollection'))}, area: ['460px', '320px'], offset: ['', '']});return false;">
+        整 理
+      </a>
+    </div>
+  </div>
+
+</div>
+
+@section Scripts{
+<script src="../assets/js/vue-multiselect-2.1.0.min.js"></script>
+<link rel="stylesheet" href="../assets/js/vue-multiselect-2.1.0.min.css">
+<script src="contents.js" type="text/javascript"></script> }

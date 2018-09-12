@@ -29,6 +29,8 @@ var $vue = new Vue({
   methods: {
     reload: function () {
       this.pageLoad = true;
+      this.captcha = '';
+      this.pageSubmit = false;
       this.captchaUrl = $captchaGetUrl + '?r=' + new Date().getTime();
     },
     checkCaptcha: function () {
@@ -39,6 +41,7 @@ var $vue = new Vue({
         captcha: $this.captcha
       }, function (err, res) {
         pageUtils.loading(false);
+        $this.reload();
         if (err) {
           $this.pageAlert = {
             type: 'danger',

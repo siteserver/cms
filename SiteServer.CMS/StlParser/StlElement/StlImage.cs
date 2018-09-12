@@ -167,7 +167,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             var targetChannelId = contentInfo.SourceId;
                             //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
-                            var targetSiteId = Node.GetSiteId(targetChannelId);
+                            var targetSiteId = Channel.GetSiteId(targetChannelId);
                             var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                             var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 

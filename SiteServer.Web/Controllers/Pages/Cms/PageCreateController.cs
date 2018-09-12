@@ -10,7 +10,7 @@ using SiteServer.Utils.Enumerations;
 namespace SiteServer.API.Controllers.Pages.Cms
 {
     [RoutePrefix("api/pages/cms/create")]
-    public class CreateController : ApiController
+    public class PageCreateController : ApiController
     {
         private const string Route = "";
         private const string RouteAll = "all";

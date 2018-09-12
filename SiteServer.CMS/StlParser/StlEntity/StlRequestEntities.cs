@@ -23,6 +23,8 @@ namespace SiteServer.CMS.StlParser.StlEntity
             var parsedContent = string.Empty;
             try
             {
+                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
+
                 var entityName = StlParserUtility.GetNameFromEntity(stlEntity);
                 var entityValue = StlParserUtility.GetValueFromEntity(stlEntity);
                 var attributeName = entityName.Substring(9, entityName.Length - 10);
@@ -42,7 +44,7 @@ $(function(){{
         var reg = new RegExp(""(^|&){attributeName}=([^&]*)(&|$)""); 
         var r = queryString.substring(1).match(reg);
         var v = decodeURI(decodeURI(r[2]));
-        if (r) $(""#{ajaxDivId}"").html(v);");
+        if (r) $(""#{ajaxDivId}"").text(v);");
 
                 if (!string.IsNullOrEmpty(entityValue))
                 {
@@ -51,8 +53,8 @@ $(function(){{
                 }
 
                 builder.Append(@"
-    }}catch(e){{}}
-}});
+    }catch(e){}
+});
 </script>
 ");
 

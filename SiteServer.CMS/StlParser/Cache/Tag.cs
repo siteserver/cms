@@ -6,7 +6,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.StlParser.Cache
 {
-    public class Tag
+    public static class Tag
     {
         private static readonly object LockObject = new object();
 

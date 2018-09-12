@@ -2745,11 +2745,6 @@ group by tmp.userName";
             return whereString.ToString();
         }
 
-        public string GetPagerOrderSqlString(ChannelInfo channelInfo)
-        {
-            return ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channelInfo.Additional.DefaultTaxisType));
-        }
-
         public string GetCreateContentTableSqlString(string tableName, List<TableColumn> tableColumns)
         {
             //            var columnSqlStringList = new List<string>();
@@ -3082,5 +3077,34 @@ GO");
         //}
 
         #endregion
+
+        public string GetCacheWhereString(SiteInfo siteInfo, ChannelInfo channelInfo)
+        {
+            return $"WHERE {nameof(ContentInfo.SiteId)} = {siteInfo.Id} AND {nameof(ContentInfo.ChannelId)} = {channelInfo.Id} AND {nameof(ContentAttribute.SourceId)} != {SourceManager.Preview}";
+        }
+
+        public string GetCacheOrderString(ChannelInfo channelInfo)
+        {
+            return ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channelInfo.Additional.DefaultTaxisType));
+        }
+
+        public List<ContentInfo> GetCacheList(SiteInfo siteInfo, ChannelInfo channelInfo, int offset, int limit)
+        {
+            var list = new List<ContentInfo>();
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+
+            var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, SqlUtils.Asterisk, GetCacheWhereString(siteInfo, channelInfo), GetCacheOrderString(channelInfo), offset, limit);
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                while (rdr.Read())
+                {
+                    list.Add(GetContentInfo(rdr));
+                }
+                rdr.Close();
+            }
+
+            return list;
+        }
     }
 }
