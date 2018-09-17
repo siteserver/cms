@@ -4,6 +4,7 @@ using SiteServer.Utils;
 using SiteServer.Utils.IO;
 using SiteServer.Utils.Rss;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;

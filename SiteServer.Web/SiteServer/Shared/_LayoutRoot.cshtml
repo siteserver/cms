@@ -1,4 +1,4 @@
-@using SiteServer.CMS.Api
+@using SiteServer.CMS.Pages
 <!DOCTYPE html>
 <html>
 
@@ -37,7 +37,11 @@
 <script src="assets/js/sweetalert-2.1.0.min.js" type="text/javascript"></script>
 <script src="assets/js/vue-2.5.16.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-  var $apiConfig = { isSeparatedApi: @ApiManager.IsSeparatedApi.ToString().ToLower(), apiUrl: '@ApiManager.ApiUrl', innerApiUrl: '@ApiManager.InnerApiUrl'};
+  var $apiConfig = {
+    isSeparatedApi: @Sys.IsSeparatedApi.ToString().ToLower(),
+    apiUrl: '@Sys.ApiUrl',
+    innerApiUrl: '@Sys.InnerApiUrl'
+  };
 </script>
 <script src="assets/js/apiUtils.js" type="text/javascript"></script>
 <script src="assets/js/pageUtils.js" type="text/javascript"></script> @RenderSection("Scripts")

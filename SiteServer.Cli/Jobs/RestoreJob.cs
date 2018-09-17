@@ -6,6 +6,7 @@ using NDesk.Options;
 using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 

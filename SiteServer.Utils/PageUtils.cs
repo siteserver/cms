@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -21,6 +23,16 @@ namespace SiteServer.Utils
 
             url = url.StartsWith("~") ? Combine(ApplicationPath, url.Substring(1)) : url;
             url = url.Replace(PathUtils.SeparatorChar, SeparatorChar);
+            return url;
+        }
+
+        public static string AddEndSlashToUrl(string url)
+        {
+            if (string.IsNullOrEmpty(url) || !url.EndsWith("/"))
+            {
+                url += "/";
+            }
+
             return url;
         }
 
@@ -903,9 +915,10 @@ namespace SiteServer.Utils
             return AddQueryString(GetAdminDirectoryUrl(Combine("settings", className.ToLower() + ".aspx")), queryString);
         }
 
-        public static string GetCmsUrl(string className)
+        public static string GetCmsUrl(string pageName, int siteId, object param = null)
         {
-            return GetAdminDirectoryUrl(Combine("cms", className.ToCamelCase() + ".cshtml"));
+            var url = GetAdminDirectoryUrl(Combine("cms", $"{pageName.ToCamelCase()}.cshtml?siteId={siteId}"));
+            return param == null ? url : param.GetType().GetProperties().Aggregate(url, (current, p) => current + $"&{p.Name.ToCamelCase()}={p.GetValue(param)}");
         }
 
         public static string GetCmsUrl(int siteId, string className, NameValueCollection queryString)

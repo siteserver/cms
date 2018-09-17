@@ -306,7 +306,7 @@ $(function(){{
             }
 
             var builder = new StringBuilder();
-            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
+            var styleItems = styleInfo.StyleItems ?? new List<TableStyleItemInfo>();
 
             var selectedValue = attributes.GetString(styleInfo.AttributeName);
 
@@ -339,7 +339,7 @@ $(function(){{
             }
 
             var builder = new StringBuilder();
-            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
+            var styleItems = styleInfo.StyleItems ?? new List<TableStyleItemInfo>();
 
             var selectedValues = TranslateUtils.StringCollectionToStringList(attributes.GetString(styleInfo.AttributeName));
 
@@ -476,7 +476,7 @@ $(document).ready(function(){{
 
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
+            var styleItems = styleInfo.StyleItems ?? new List<TableStyleItemInfo>();
 
             var checkBoxList = new CheckBoxList
             {
@@ -524,7 +524,7 @@ $(document).ready(function(){{
 
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
+            var styleItems = styleInfo.StyleItems;
             if (styleItems == null || styleItems.Count == 0)
             {
                 styleItems = new List<TableStyleItemInfo>

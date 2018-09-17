@@ -6,6 +6,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;

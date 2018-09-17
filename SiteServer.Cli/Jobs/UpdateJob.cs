@@ -7,6 +7,7 @@ using NDesk.Options;
 using SiteServer.Cli.Core;
 using SiteServer.Cli.Updater;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Provider;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -145,7 +146,7 @@ namespace SiteServer.Cli.Jobs
                 foreach (var siteId in siteIdList)
                 {
                     var siteTableInfo = splitSiteTableDict[siteId];
-                    var siteTableName = DataProvider.ContentDao.GetContentTableName(siteId);
+                    var siteTableName = ContentDao.GetContentTableName(siteId);
                     newTableNames.Add(siteTableName);
 
                     await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(siteTableName), Encoding.UTF8, TranslateUtils.JsonSerialize(siteTableInfo));

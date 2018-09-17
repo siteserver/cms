@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Core
@@ -82,7 +83,7 @@ namespace SiteServer.BackgroundPages.Core
             {
                 if (loadingType == ELoadingType.ContentTree)
                 {
-                    var linkUrl = PageContent.GetRedirectUrl(_channelInfo.SiteId, _channelInfo.Id);
+                    var linkUrl = CmsPages.GetContentsUrl(_channelInfo.SiteId, _channelInfo.Id);
                     if (!string.IsNullOrEmpty(additional?["linkUrl"]))
                     {
                         linkUrl = PageUtils.AddQueryStringIfNotExists(additional["linkUrl"], new NameValueCollection

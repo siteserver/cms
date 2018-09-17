@@ -14,7 +14,7 @@
   <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/ionicons.min.css" rel="stylesheet" type="text/css" />
   <link href="assets/icons/favicon.png" rel="icon" type="image/png">
-  <script src="assets/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+  <script type="text/javascript" src="assets/jquery/jquery-1.9.1.min.js"></script>
   <script type="text/javascript">
     if (window.top != self) {
       window.top.location = self.location;
@@ -96,7 +96,11 @@
                 </div>
               </li>
               <li class="dropdown hidden-xs">
-                <asp:Literal id="LtlCreateStatus" runat="server" />
+                <a href="javascript:;" onclick="openPageCreateStatus()">
+                  <i class="ion-wand"></i>
+                  <span id="progress" class="badge badge-xs badge-pink">0</span>
+                </a>
+
               </li>
               <li>
                 <form id="search" role="search" class="navbar-left app-search float-left hidden-xs" action="cms/pagecontentsearch.aspx?siteId=<%=SiteId%>"
@@ -140,32 +144,14 @@
 
 </html>
 
-<script src="assets/signalR/jquery.signalR-2.2.2.min.js" type="text/javascript"></script>
-<script src="assets/layer/layer.min.js" type="text/javascript"></script>
-<script src="<%=SignalrHubsUrl%>" type="text/javascript"></script>
-<script src="inc/script.js" type="text/javascript"></script>
-<script src="assets/jQuery-slimScroll/jquery.slimscroll.min.js" type="text/javascript"></script>
-<script src="assets/js/apiUtils.js"></script>
-<script src="assets/js/compareversion.js"></script>
+<script type="text/javascript" src="assets/js/layer-3.1.1/layer.js"></script>
+<script type="text/javascript" src="inc/script.js"></script>
+<script type="text/javascript" src="assets/jQuery-slimScroll/jquery.slimscroll.min.js"></script>
+<script type="text/javascript" src="assets/js/apiUtils.js"></script>
+<script type="text/javascript" src="assets/js/pageUtils.js"></script>
+<script type="text/javascript" src="assets/js/compareversion.js"></script>
 
 <script type="text/javascript">
-  var siteId = <%=SiteId%>;
-  var create = $.connection.createHub;
-
-  create.client.next = function (total) {
-    $('#progress').html(total);
-    if (total) {
-      create.server.execute(siteId);
-    } else {
-      setTimeout(function () {
-        create.server.execute(siteId);
-      }, 5000);
-    }
-  };
-  $.connection.hub.start().done(function () {
-    create.server.execute(siteId);
-  });
-
   window.onresize = function (event) {
     isDesktop = $(window).width() > 1010;
     if (!isDesktop) {
@@ -263,8 +249,49 @@
     });
   }
 
+  var $api = new apiUtils.Api('<%=ApiUrl%>/pages/main');
+  var $siteId = parseInt(pageUtils.getQueryStringByName('siteId'));
+  var lastExecuteTime = new Date();
+
+  function loadProgress() {
+    $api.get(null,
+      function (err, res) {
+        if (err || !res) {
+          setTimeout(loadProgress, 1000);
+        } else {
+          if (res.value === 0) {
+            setTimeout(loadProgress, 2000);
+          } else {
+            setTimeout(loadProgress, 100);
+          }
+          $('#progress').html(res.value + '');
+        }
+        lastExecuteTime = new Date();
+      });
+  }
+
+  setInterval(function () {
+    var dif = new Date().getTime() - lastExecuteTime.getTime();
+    var minutes = dif / 1000 / 60;
+    if (minutes > 2) {
+      loadProgress();
+    }
+  }, 30000);
+
+  function openPageCreateStatus() {
+    pageUtils.openLayer({
+      title: "生成进度查看",
+      url: "cms/createStatus.cshtml?siteId=" + $siteId,
+      full: false,
+      width: 0,
+      height: 0
+    });
+    return false;
+  }
+
   $(document).ready(function () {
     onresize();
+    loadProgress();
 
     $('.waves-primary').click(function () {
       if ($(this).hasClass('subdrop')) {

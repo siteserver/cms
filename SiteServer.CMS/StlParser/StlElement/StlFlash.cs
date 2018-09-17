@@ -1,7 +1,8 @@
 ﻿using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -154,7 +155,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var tableName = ChannelManager.GetTableName(contextInfo.SiteInfo, nodeInfo);
 
                         //picUrl = DataProvider.ContentDao.GetValue(tableName, contentId, type);
-                        flashUrl = Content.GetValue(tableName, contentId, type);
+                        flashUrl = StlContentCache.GetValue(tableName, contentId, type);
                     }
                     else
                     {

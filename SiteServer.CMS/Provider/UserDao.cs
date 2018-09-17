@@ -13,6 +13,7 @@ using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 using Dapper.Contrib.Extensions;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.CMS.Provider
 {

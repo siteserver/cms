@@ -1,8 +1,9 @@
 ﻿using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -167,13 +168,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             var targetChannelId = contentInfo.SourceId;
                             //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
-                            var targetSiteId = Channel.GetSiteId(targetChannelId);
+                            var targetSiteId = StlChannelCache.GetSiteId(targetChannelId);
                             var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                             var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
-                            var tableName = ChannelManager.GetTableName(targetSiteInfo, targetNodeInfo);
                             //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                            var targetContentInfo = Content.GetContentInfo(tableName, contentInfo.ReferenceId);
+                            var targetContentInfo = ContentManager.GetContentInfo(targetSiteInfo, targetNodeInfo, contentInfo.ReferenceId);
                             if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                             {
                                 contentInfo = targetContentInfo;
@@ -183,8 +183,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     if (contentInfo == null)
                     {
-                        //contentInfo = DataProvider.ContentDao.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.SiteInfo.AuxiliaryTableForContent, contentId);
-                        contentInfo = Content.GetContentInfo(pageInfo.SiteInfo.TableName, contentId);
+                        contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contextInfo.ChannelId, contentId);
                     }
 
                     if (contentInfo != null)

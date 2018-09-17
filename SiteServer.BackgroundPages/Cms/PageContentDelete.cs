@@ -7,6 +7,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -94,11 +95,10 @@ namespace SiteServer.BackgroundPages.Cms
             var builder = new StringBuilder();
             foreach (var channelId in _idsDictionary.Keys)
             {
-                var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
                 var contentIdList = _idsDictionary[channelId];
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(SiteInfo, channelId, contentId);
                     if (contentInfo != null)
                     {
                         builder.Append(
@@ -156,21 +156,21 @@ namespace SiteServer.BackgroundPages.Cms
                                 $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, channelId)},内容条数:{contentIdList.Count}");
                         }
 
-                        DataProvider.ContentDao.TrashContents(SiteId, tableName, contentIdList);
+                        DataProvider.ContentDao.UpdateTrashContents(SiteId, channelId, tableName, contentIdList);
 
                         //引用内容，需要删除
-                        var siteTableNameList = SiteManager.GetTableNameList();
-                        foreach (var siteTableName in siteTableNameList)
-                        {
-                            var targetContentIdList = DataProvider.ContentDao.GetReferenceIdList(siteTableName, contentIdList);
-                            if (targetContentIdList.Count > 0)
-                            {
-                                var targetContentInfo = DataProvider.ContentDao.GetContentInfo(siteTableName, TranslateUtils.ToInt(targetContentIdList[0].ToString()));
-                                DataProvider.ContentDao.DeleteContents(targetContentInfo.SiteId, siteTableName, targetContentIdList, targetContentInfo.ChannelId);
-                            }
-                        }
+                        //var siteTableNameList = SiteManager.GetTableNameList();
+                        //foreach (var siteTableName in siteTableNameList)
+                        //{
+                        //    var targetContentIdList = DataProvider.ContentDao.GetReferenceIdList(siteTableName, contentIdList);
+                        //    if (targetContentIdList.Count > 0)
+                        //    {
+                        //        var targetContentInfo = ContentManager.GetContentInfo(siteTableName, TranslateUtils.ToInt(targetContentIdList[0].ToString()));
+                        //        DataProvider.ContentDao.DeleteContents(targetContentInfo.SiteId, siteTableName, targetContentIdList, targetContentInfo.ChannelId);
+                        //    }
+                        //}
 
-                        CreateManager.CreateContentTrigger(SiteId, channelId);
+                        CreateManager.TriggerContentChangedEvent(SiteId, channelId);
                     }
                     else
                     {

@@ -1,6 +1,7 @@
 ﻿using System.Web.Http;
 using SiteServer.CMS.Api.Sys.Errors;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.API.Controllers.Sys.Errors
 {

@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
@@ -58,7 +59,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 if (!string.IsNullOrEmpty(channelIndex))
                 {
                     //channelId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
-                    channelId = Channel.GetIdByIndexName(pageInfo.SiteId, channelIndex);
+                    channelId = StlChannelCache.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                     if (channelId == 0)
                     {
                         channelId = contextInfo.ChannelId;

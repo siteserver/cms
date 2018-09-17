@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport.Components;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;

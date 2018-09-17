@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;

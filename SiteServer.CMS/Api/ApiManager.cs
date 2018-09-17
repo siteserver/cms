@@ -1,4 +1,5 @@
 ﻿using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Api
@@ -8,6 +9,8 @@ namespace SiteServer.CMS.Api
         public static bool IsSeparatedApi => ConfigManager.SystemConfigInfo.IsSeparatedApi;
 
         public static string ApiUrl => ConfigManager.SystemConfigInfo.ApiUrl;
+
+        public static string RootUrl => PageUtils.ApplicationPath;
 
         private static string _innerApiUrl;
 

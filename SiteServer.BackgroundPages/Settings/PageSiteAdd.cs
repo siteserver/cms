@@ -8,8 +8,10 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Provider;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -487,7 +489,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 if (string.IsNullOrEmpty(tableName))
                 {
-                    tableName = DataProvider.ContentDao.GetContentTableName(siteId);
+                    tableName = ContentDao.GetContentTableName(siteId);
                     DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
                     DataProvider.SiteDao.UpdateTableName(siteId, tableName);
                 }

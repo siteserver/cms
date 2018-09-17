@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -51,7 +52,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var attributeName = AuthRequest.GetQueryString("AttributeName");
                 if (TableStyleManager.IsExists(0, _tableName, attributeName))
                 {
-                    TableStyleManager.Delete(0, _tableName, attributeName);
+                    DataProvider.TableStyleDao.Delete(0, _tableName, attributeName);
                     AuthRequest.AddAdminLog("删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
                     SuccessDeleteMessage();
                 }

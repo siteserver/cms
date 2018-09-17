@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 using SiteServer.Plugin;
@@ -203,7 +204,7 @@ namespace SiteServer.BackgroundPages.Cms
                 foreach (TableStyleInfo styleInfo in styleInfoArrayList)
                 {
                     attributeNames.Add(styleInfo.AttributeName);
-                    TableStyleManager.Insert(styleInfo);
+                    DataProvider.TableStyleDao.Insert(styleInfo);
                 }
                 
 

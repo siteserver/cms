@@ -7,6 +7,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
@@ -38,13 +39,15 @@ namespace SiteServer.BackgroundPages.Cms
         private bool _isEdit;
         private readonly Dictionary<string, string> _nameValueCacheDict = new Dictionary<string, string>();
 
-        public static string GetRedirectUrl(int siteId, int channelId)
-        {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageContent), new NameValueCollection
-            {
-                {"channelId", channelId.ToString()}
-            });
-        }
+        protected override bool IsSinglePage => true;
+
+        //public static string GetRedirectUrl(int siteId, int channelId)
+        //{
+        //    return PageUtils.GetCmsUrl(siteId, nameof(PageContent), new NameValueCollection
+        //    {
+        //        {"channelId", channelId.ToString()}
+        //    });
+        //}
 
         public void Page_Load(object sender, EventArgs e)
         {

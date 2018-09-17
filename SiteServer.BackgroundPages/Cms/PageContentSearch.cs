@@ -7,6 +7,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
@@ -133,7 +134,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (AuthRequest.IsQueryExists("IsDeleteAll"))
                 {
-                    DataProvider.ContentDao.DeleteContentsByTrash(SiteId, tableName);
+                    DataProvider.ContentDao.DeleteContentsByTrash(SiteId, _channelId, tableName);
                     AuthRequest.AddSiteLog(SiteId, "清空回收站");
                     SuccessMessage("成功清空回收站!");
                 }
@@ -142,15 +143,15 @@ namespace SiteServer.BackgroundPages.Cms
                     var idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
                     foreach (var channelId in idsDictionary.Keys)
                     {
-                        var contentIdArrayList = idsDictionary[channelId];
-                        DataProvider.ContentDao.TrashContents(SiteId, ChannelManager.GetTableName(SiteInfo, channelId), contentIdArrayList);
+                        var contentIdList = idsDictionary[channelId];
+                        DataProvider.ContentDao.UpdateTrashContents(SiteId, channelId, ChannelManager.GetTableName(SiteInfo, channelId), contentIdList);
                     }
                     AuthRequest.AddSiteLog(SiteId, "从回收站还原内容");
                     SuccessMessage("成功还原内容!");
                 }
                 else if (AuthRequest.IsQueryExists("IsRestoreAll"))
                 {
-                    DataProvider.ContentDao.RestoreContentsByTrash(SiteId, tableName);
+                    DataProvider.ContentDao.UpdateRestoreContentsByTrash(SiteId, _channelId, tableName);
                     AuthRequest.AddSiteLog(SiteId, "从回收站还原所有内容");
                     SuccessMessage("成功还原所有内容!");
                 }

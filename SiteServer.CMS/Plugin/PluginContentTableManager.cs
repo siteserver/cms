@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
@@ -200,12 +201,12 @@ namespace SiteServer.CMS.Plugin
             {
                 if (styleInfo.Id == 0)
                 {
-                    TableStyleManager.Insert(styleInfo);
+                    DataProvider.TableStyleDao.Insert(styleInfo);
                 }
                 else
                 {
-                    TableStyleManager.Update(styleInfo);
-                    TableStyleManager.DeleteAndInsertStyleItems(styleInfo.Id, styleInfo.StyleItems);
+                    DataProvider.TableStyleDao.Update(styleInfo);
+                    DataProvider.TableStyleItemDao.DeleteAndInsertStyleItems(styleInfo.Id, styleInfo.StyleItems);
                 }
             }
         }

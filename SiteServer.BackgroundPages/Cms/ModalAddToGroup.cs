@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -68,7 +69,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (_isContent)
                 {
-                    var contentGroupNameList = DataProvider.ContentGroupDao.GetGroupNameList(SiteId);
+                    var contentGroupNameList = ContentGroupManager.GetGroupNameList(SiteId);
                     foreach (var groupName in contentGroupNameList)
                     {
                         var item = new ListItem(groupName, groupName);
@@ -79,7 +80,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    var nodeGroupNameList = DataProvider.ChannelGroupDao.GetGroupNameList(SiteId);
+                    var nodeGroupNameList = ChannelGroupManager.GetGroupNameList(SiteId);
                     foreach (var groupName in nodeGroupNameList)
                     {
                         var item = new ListItem(groupName, groupName);

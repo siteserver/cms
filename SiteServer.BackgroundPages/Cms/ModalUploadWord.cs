@@ -7,6 +7,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 
@@ -52,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             int checkedLevel;
             var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, SiteId, out checkedLevel);
-            CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, _channelInfo.Id, null, isChecked, checkedLevel);
+            CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, null, isChecked, checkedLevel);
             ControlUtils.SelectSingleItem(DdlContentLevel, CheckManager.LevelInt.CaoGao.ToString());
         }
 
@@ -103,9 +104,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                             contentInfo.Title = formCollection[ContentAttribute.Title];
 
-                            contentInfo.Id = DataProvider.ContentDao.Insert(tableName, SiteInfo, contentInfo);
+                            contentInfo.Id = DataProvider.ContentDao.Insert(tableName, SiteInfo, _channelInfo, contentInfo);
 
-                            CreateManager.CreateContentAndTrigger(SiteId, _channelInfo.Id, contentInfo.Id);
+                            CreateManager.CreateContent(SiteId, _channelInfo.Id, contentInfo.Id);
+                            CreateManager.TriggerContentChangedEvent(SiteId, _channelInfo.Id);
                         }
                     }
                 }

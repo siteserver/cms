@@ -4,6 +4,7 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
 using SiteServer.Utils.Enumerations;
 
@@ -38,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             int checkedLevel;
             var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, SiteId, out checkedLevel);
-            CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, _channelId, null, isChecked, checkedLevel);
+            CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, null, isChecked, checkedLevel);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)

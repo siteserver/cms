@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.StlParser.Cache;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
@@ -113,7 +114,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 foreach (var theChannelId in channelIdList)
                 {
                     var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, theChannelId);
-                    count += Content.GetCountOfContentAdd(tableName, pageInfo.SiteId, theChannelId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty, ETriState.True);
+                    count += StlContentCache.GetCountOfContentAdd(tableName, pageInfo.SiteId, theChannelId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty, ETriState.True);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeChannels))

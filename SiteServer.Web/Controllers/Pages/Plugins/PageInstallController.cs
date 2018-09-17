@@ -3,6 +3,7 @@ using System.Web.Http;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 

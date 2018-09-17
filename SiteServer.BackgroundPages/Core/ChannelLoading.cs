@@ -4,6 +4,7 @@ using SiteServer.Utils;
 using System.Collections.Specialized;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
@@ -121,7 +122,7 @@ namespace SiteServer.BackgroundPages.Core
                 if (nodeInfo.Additional.Count > 0)
                 {
                     var nodeNameBuilder = new StringBuilder();
-                    var channelIdList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.CreateChannelIDsIfContentChanged);
+                    var channelIdList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.CreateChannelIdsIfContentChanged);
                     foreach (var theChannelId in channelIdList)
                     {
                         var theNodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, theChannelId);

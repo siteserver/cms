@@ -1,0 +1,63 @@
+﻿@{ Layout = "../Shared/_LayoutLayer.cshtml"; }
+
+<table class="bg-white table tablesaw table-bordered table-hover">
+  <thead>
+    <tr>
+      <th class="text-center text-nowrap">内容Id </th>
+      <th>内容标题(点击查看) </th>
+      <th class="text-center text-nowrap">添加时间</th>
+      <th class="text-center text-nowrap">状态</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="content in contents">
+      <td class="text-center">{{ content.id }}</td>
+      <td v-html="content.title"></td>
+      <td class="text-center text-nowrap">{{ content.addDate }}</td>
+      <td class="text-center text-nowrap" v-html="content.checkState"></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="form-row">
+  <div class="form-group col-md-6">
+    <label class="col-form-label">审核状态</label>
+    <select v-model="checkedLevel" class="form-control">
+      <option v-for="level in checkedLevels" :value="level.key">{{ level.value }}</option>
+    </select>
+  </div>
+  <div class="form-group col-md-6">
+    <label class="col-form-label">转移栏目</label>
+    <select v-model="isTranslate" class="form-control">
+      <option :value="false">不转移</option>
+      <option :value="true">转移</option>
+    </select>
+  </div>
+</div>
+
+<div v-show="isTranslate" class="form-group">
+  <label>转移到</label>
+  <multiselect v-model="translateChannel" label="value" track-by="value" placeholder="输入名称进行搜索" open-direction="bottom"
+    :options="channels" :multiple="false" :searchable="true" :loading="isChannelLoading" :internal-search="false"
+    :options-limit="300" :max-height="600" :show-no-results="false" :hide-selected="true" v-on:search-change="asyncFind">
+  </multiselect>
+
+  <small class="form-text text-muted">转移栏目将把内容从当前栏目转移到所选栏目</small>
+</div>
+
+<div class="form-group">
+  <label>审核原因</label>
+  <textarea v-model="reasons" class="form-control"></textarea>
+</div>
+
+<hr />
+
+<div class="text-right mr-1">
+  <button v-on:click="btnSubmitClick" type="button" class="btn btn-primary m-l-5">确 定</button>
+  <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
+</div>
+
+@section Scripts{
+<script src="../assets/js/vue-multiselect-2.1.0.min.js"></script>
+<link rel="stylesheet" href="../assets/js/vue-multiselect-2.1.0.min.css">
+<script src="contentsLayerCheck.js" type="text/javascript"></script> }

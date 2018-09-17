@@ -74,16 +74,6 @@ namespace SiteServer.Utils
             InnerInsert(key, obj, null, Cache.NoSlidingExpiration);
         }
 
-        public static void InsertMinutes(string key, object obj, int minutes)
-        {
-            InnerInsert(key, obj, null, TimeSpan.FromMinutes(minutes));
-        }
-
-        public static void InsertHours(string key, object obj, int hours)
-        {
-            InnerInsert(key, obj, null, TimeSpan.FromHours(hours));
-        }
-
         public static void Insert(string key, object obj, string filePath)
         {
             InnerInsert(key, obj, filePath, Cache.NoSlidingExpiration);
@@ -92,6 +82,21 @@ namespace SiteServer.Utils
         public static void Insert(string key, object obj, TimeSpan timeSpan, string filePath)
         {
             InnerInsert(key, obj, filePath, timeSpan);
+        }
+
+        public static void InsertHours(string key, object obj, int hours)
+        {
+            InnerInsert(key, obj, null, TimeSpan.FromHours(hours));
+        }
+
+        public static void InsertMinutes(string key, object obj, int minutes)
+        {
+            InnerInsert(key, obj, null, TimeSpan.FromMinutes(minutes));
+        }
+
+        public static void InsertSeconds(string key, object obj, int seconds)
+        {
+            InnerInsert(key, obj, null, TimeSpan.FromSeconds(seconds));
         }
 
         private static void InnerInsert(string key, object obj, string filePath, TimeSpan timeSpan)

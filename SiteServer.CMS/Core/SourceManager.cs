@@ -1,4 +1,6 @@
-﻿namespace SiteServer.CMS.Core
+﻿using SiteServer.CMS.DataCache;
+
+namespace SiteServer.CMS.Core
 {
     public static class SourceManager
 	{

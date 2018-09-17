@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
@@ -54,44 +55,49 @@ namespace SiteServer.API.Controllers.Pages
                     return Unauthorized();
                 }
 
-                var unCheckedList = new List<object>();
-                var userCountListUnChecked = CheckManager.GetUserCountListUnChecked(request.AdminPermissions);
+                //var unCheckedList = new List<object>();
+                //var userCountListUnChecked = CheckManager.GetUserCountListUnChecked(request.AdminPermissions);
 
-                if (userCountListUnChecked.Count > 0)
-                {
-                    var dict = new Dictionary<int, int>();
+                //if (userCountListUnChecked.Count > 0)
+                //{
+                //    var dict = new Dictionary<int, int>();
 
-                    foreach (var pair in userCountListUnChecked)
-                    {
-                        var siteId = pair.Key;
-                        var count = pair.Value;
-                        if (dict.ContainsKey(siteId))
-                        {
-                            dict[siteId] = dict[siteId] + count;
-                        }
-                        else
-                        {
-                            dict[siteId] = count;
-                        }
-                    }
+                //    foreach (var pair in userCountListUnChecked)
+                //    {
+                //        var siteId = pair.Key;
+                //        var count = pair.Value;
+                //        if (dict.ContainsKey(siteId))
+                //        {
+                //            dict[siteId] = dict[siteId] + count;
+                //        }
+                //        else
+                //        {
+                //            dict[siteId] = count;
+                //        }
+                //    }
 
-                    foreach (var siteId in dict.Keys)
-                    {
-                        var count = dict[siteId];
-                        if (!SiteManager.IsExists(siteId)) continue;
+                //    foreach (var siteId in dict.Keys)
+                //    {
+                //        var count = dict[siteId];
+                //        if (!SiteManager.IsExists(siteId)) continue;
 
-                        unCheckedList.Add(new
-                        {
-                            Url = PageContentSearch.GetRedirectUrlCheck(siteId),
-                            SiteManager.GetSiteInfo(siteId).SiteName,
-                            Count = count
-                        });
-                    }
-                }
+                //        unCheckedList.Add(new
+                //        {
+                //            Url = PageContentSearch.GetRedirectUrlCheck(siteId),
+                //            SiteManager.GetSiteInfo(siteId).SiteName,
+                //            Count = count
+                //        });
+                //    }
+                //}
+
+                //return Ok(new
+                //{
+                //    Value = unCheckedList
+                //});
 
                 return Ok(new
                 {
-                    Value = unCheckedList
+                    Value = new List<object>()
                 });
             }
             catch (Exception ex)

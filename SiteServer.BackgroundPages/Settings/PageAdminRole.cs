@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 

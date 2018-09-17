@@ -4,7 +4,7 @@ namespace SiteServer.CMS.Core.Create
 {
     public class CreateTaskSummaryItem
     {
-        public CreateTaskSummaryItem(CreateTaskInfo taskInfo, string timeSpan, bool isExecuting, bool isPending, bool isSuccess, string errorMessage)
+        public CreateTaskSummaryItem(CreateTaskInfo taskInfo, string timeSpan, bool isPending, bool isSuccess, string errorMessage)
         {
             siteId = taskInfo.SiteId;
             channelId = taskInfo.ChannelId;
@@ -14,7 +14,6 @@ namespace SiteServer.CMS.Core.Create
             type = ECreateTypeUtils.GetText(taskInfo.CreateType);
             name = taskInfo.Name;
             this.timeSpan = timeSpan;
-            this.isExecuting = isExecuting;
             this.isPending = isPending;
             this.isSuccess = isSuccess;
             this.errorMessage = errorMessage;
@@ -30,7 +29,6 @@ namespace SiteServer.CMS.Core.Create
             type = ECreateTypeUtils.GetText(logInfo.CreateType);
             name = logInfo.TaskName;
             timeSpan = logInfo.TimeSpan;
-            isExecuting = false;
             isPending = false;
             isSuccess = logInfo.IsSuccess;
             errorMessage = logInfo.ErrorMessage;
@@ -45,7 +43,6 @@ namespace SiteServer.CMS.Core.Create
         public string type { get; set; }
         public string name { get; set; }
         public string timeSpan { get; set; }
-        public bool isExecuting { get; set; }
         public bool isPending { get; set; }
         public bool isSuccess { get; set; }
         public string errorMessage { get; set; }

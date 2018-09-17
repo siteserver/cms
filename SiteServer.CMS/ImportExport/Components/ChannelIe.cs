@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Atom.AdditionalElements;
 using Atom.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;

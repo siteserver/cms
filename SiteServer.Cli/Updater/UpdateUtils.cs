@@ -7,6 +7,7 @@ using SiteServer.Cli.Core;
 using SiteServer.Cli.Updater.Tables;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Provider;
 using SiteServer.Utils;
 using TableInfo = SiteServer.Cli.Core.TableInfo;
 
@@ -135,7 +136,7 @@ namespace SiteServer.Cli.Updater
                         if (dict.ContainsKey(nameof(SiteInfo.Id)))
                         {
                             var siteId = Convert.ToInt32(dict[nameof(SiteInfo.Id)]);
-                            dict[nameof(SiteInfo.TableName)] = DataProvider.ContentDao.GetContentTableName(siteId);
+                            dict[nameof(SiteInfo.TableName)] = ContentDao.GetContentTableName(siteId);
                         }
 
                         newRows.Add(dict);

@@ -6,6 +6,7 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
 using SiteServer.Utils.Enumerations;

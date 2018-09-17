@@ -10,6 +10,7 @@ using SiteServer.Cli.Updater.Tables.GovInteract;
 using SiteServer.Cli.Updater.Tables.GovPublic;
 using SiteServer.Cli.Updater.Tables.Jobs;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Provider;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli.Updater
@@ -149,7 +150,7 @@ namespace SiteServer.Cli.Updater
                         foreach (var siteId in siteIdList)
                         {
                             var siteRows = siteIdWithRows[siteId];
-                            var siteTableName = DataProvider.ContentDao.GetContentTableName(siteId);
+                            var siteTableName = ContentDao.GetContentTableName(siteId);
                             var siteTableInfo = splitSiteTableDict[siteId];
                             siteTableInfo.TotalCount += siteRows.Count;
 

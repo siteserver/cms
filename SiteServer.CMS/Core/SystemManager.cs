@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;

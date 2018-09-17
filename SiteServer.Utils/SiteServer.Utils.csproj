@@ -138,6 +138,7 @@
     <Compile Include="Enumerations\EVoteItemType.cs" />
     <Compile Include="Enumerations\EVoteRestrictType.cs" />
     <Compile Include="Enumerations\EVoteType.cs" />
+    <Compile Include="IO\FileManager.cs" />
     <Compile Include="FileUtils.cs" />
     <Compile Include="HtmlClearUtils.cs" />
     <Compile Include="Images\BitmapFilter.cs" />
@@ -147,7 +148,6 @@
     <Compile Include="InputParserUtils.cs" />
     <Compile Include="InputTypeUtils.cs" />
     <Compile Include="IO\EncodedStringWriter.cs" />
-    <Compile Include="IO\FileManager.cs" />
     <Compile Include="IO\FileSystemInfoExtend.cs" />
     <Compile Include="IO\FileSystemInfosExtend.cs" />
     <Compile Include="IO\FileWatcherClass.cs" />
@@ -166,8 +166,6 @@
     <Compile Include="MessageUtils.cs" />
     <Compile Include="AttackUtils.cs" />
     <Compile Include="PageUtils.cs" />
-    <Compile Include="Pair.cs" />
-    <Compile Include="PairList.cs" />
     <Compile Include="PathUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegexUtils.cs" />

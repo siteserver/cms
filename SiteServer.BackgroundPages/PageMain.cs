@@ -16,6 +16,7 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
 using System.Linq;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.BackgroundPages
 {
@@ -23,7 +24,6 @@ namespace SiteServer.BackgroundPages
     {
         public Literal LtlTopMenus;
         public PlaceHolder PhSite;
-        public Literal LtlCreateStatus;
         public NavigationTree NtLeftManagement;
         public NavigationTree NtLeftFunctions;
 
@@ -32,6 +32,8 @@ namespace SiteServer.BackgroundPages
         private readonly List<int> _addedSiteIdList = new List<int>();
 
         protected override bool IsSinglePage => true;
+
+        public string ApiUrl => ApiManager.ApiUrl.TrimEnd('/');
 
         public string SignalrHubsUrl = ApiManager.SignalrHubsUrl;
 
@@ -135,18 +137,6 @@ namespace SiteServer.BackgroundPages
 
                 PhSite.Visible = isLeft;
 
-                LtlCreateStatus.Text = $@"
-<script type=""text/javascript"">
-function {LayerUtils.OpenPageCreateStatusFuncName}() {{
-    {PageCreateStatus.GetOpenLayerString(_siteInfo.Id)}
-}}
-</script>
-<a href=""javascript:;"" onclick=""{LayerUtils.OpenPageCreateStatusFuncName}()"">
-    <i class=""ion-wand""></i>
-    <span id=""progress"" class=""badge badge-xs badge-pink"">0</span>
-</a>
-";
-
                 NtLeftManagement.TopId = ConfigManager.TopMenu.IdSite;
                 NtLeftManagement.SiteId = _siteInfo.Id;
                 NtLeftManagement.PermissionList = permissionList;
@@ -213,7 +203,7 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
 
                 var list = children.OrderByDescending(o => o.Taxis).ToList();
 
-                foreach (var subSiteInfo in children)
+                foreach (var subSiteInfo in list)
                 {
                     AddSite(builder, subSiteInfo, parentWithChildren, level);
                 }

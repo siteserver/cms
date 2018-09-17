@@ -14,82 +14,82 @@ namespace SiteServer.CMS.Model.Attributes
         //是否可以添加栏目
         public bool IsChannelAddable
         {
-            get => GetBool("IsChannelAddable", true);
-            set => Set("IsChannelAddable", value);
+            get => GetBool(nameof(IsChannelAddable), true);
+            set => Set(nameof(IsChannelAddable), value);
         }
 
         //是否可以添加内容
         public bool IsContentAddable
         {
-            get => GetBool("IsContentAddable", true);
-            set => Set("IsContentAddable", value);
+            get => GetBool(nameof(IsContentAddable), true);
+            set => Set(nameof(IsContentAddable), value);
         }
 
         public bool IsCreateChannelIfContentChanged
         {
-            get => GetBool("IsCreateChannelIfContentChanged", true);
-            set => Set("IsCreateChannelIfContentChanged", value);
+            get => GetBool(nameof(IsCreateChannelIfContentChanged), true);
+            set => Set(nameof(IsCreateChannelIfContentChanged), value);
         }
 
-        public string CreateChannelIDsIfContentChanged
+        public string CreateChannelIdsIfContentChanged
         {
-            get => GetString("CreateChannelIDsIfContentChanged");
-            set => Set("CreateChannelIDsIfContentChanged", value);
+            get => GetString(nameof(CreateChannelIdsIfContentChanged));
+            set => Set(nameof(CreateChannelIdsIfContentChanged), value);
         }
 
         public string ContentAttributesOfDisplay
         {
-            get => GetString("ContentAttributesOfDisplay");
-            set => Set("ContentAttributesOfDisplay", value);
+            get => GetString(nameof(ContentAttributesOfDisplay));
+            set => Set(nameof(ContentAttributesOfDisplay), value);
         }
 
         public ECrossSiteTransType TransType
         {
-            get => ECrossSiteTransTypeUtils.GetEnumType(GetString("TransType"));
-            set => Set("TransType", ECrossSiteTransTypeUtils.GetValue(value));
+            get => ECrossSiteTransTypeUtils.GetEnumType(GetString(nameof(TransType)));
+            set => Set(nameof(TransType), ECrossSiteTransTypeUtils.GetValue(value));
         }
 
         public int TransSiteId
         {
-            get => TranslateUtils.ToInt(GetString("TransSiteId"));
-            set => Set("TransSiteId", value);
+            get => TranslateUtils.ToInt(GetString(nameof(TransSiteId)));
+            set => Set(nameof(TransSiteId), value);
         }
 
         public string TransChannelIds
         {
-            get => GetString("TransChannelIds");
-            set => Set("TransChannelIds", value);
+            get => GetString(nameof(TransChannelIds));
+            set => Set(nameof(TransChannelIds), value);
         }
 
         public string TransChannelNames
         {
-            get => GetString("TransChannelNames");
-            set => Set("TransChannelNames", value);
+            get => GetString(nameof(TransChannelNames));
+            set => Set(nameof(TransChannelNames), value);
         }
 
         public bool TransIsAutomatic
         {
-            get => GetBool("TransIsAutomatic");
-            set => Set("TransIsAutomatic", value);
+            get => GetBool(nameof(TransIsAutomatic));
+            set => Set(nameof(TransIsAutomatic), value);
         }
 
         //跨站转发操作类型：复制 引用地址 引用内容
         public ETranslateContentType TransDoneType
         {
-            get => ETranslateContentTypeUtils.GetEnumType(GetString("TransDoneType"));
-            set => Set("TransDoneType", ETranslateContentTypeUtils.GetValue(value));
+            get => ETranslateContentTypeUtils.GetEnumType(GetString(nameof(TransDoneType)));
+            set => Set(nameof(TransDoneType), ETranslateContentTypeUtils.GetValue(value));
         }
 
         public bool IsPreviewContentsExists
         {
-            get => GetBool("IsPreviewContents");
-            set => Set("IsPreviewContents", value);
+            get => GetBool(nameof(IsPreviewContentsExists));
+            set => Set(nameof(IsPreviewContentsExists), value);
         }
 
         public string DefaultTaxisType
         {
-            get => GetString("DefaultTaxisType", ETaxisTypeUtils.GetValue(ETaxisType.OrderByTaxisDesc));
-            set => Set("DefaultTaxisType", value);
+            get => GetString(nameof(DefaultTaxisType), ETaxisTypeUtils.GetValue(ETaxisType.OrderByTaxisDesc));
+            set => Set(nameof(DefaultTaxisType), value);
         }
     }
 }

@@ -13,6 +13,7 @@ using Npgsql;
 using Oracle.ManagedDataAccess.Client;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
+using SiteServer.CMS.DataCache;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.Plugin;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -56,7 +55,7 @@ namespace SiteServer.BackgroundPages.Cms
                 CreateManager.CreateSpecial(SiteId, specialId);
             }
 
-            PageCreateStatus.Redirect(SiteId);
+            PageUtils.Redirect(CmsPages.GetCreateStatusUrl(SiteId));
         }
     }
 }

@@ -61,7 +61,7 @@ var methods = {
       isContentPage: $this.isContentPage,
       scope: $this.scope
     }, function () {
-      location.href = '../settings/pageCreateStatus.aspx?siteId=' + $this.siteId;
+      location.href = 'createStatus.cshtml?siteId=' + $this.siteId;
     });
   },
   createIndex: function () {
@@ -75,7 +75,7 @@ var methods = {
       isChannelPage: true,
       isContentPage: false,
     }, function () {
-      location.href = '../settings/pageCreateStatus.aspx?siteId=' + $this.siteId;
+      location.href = 'createStatus.cshtml?siteId=' + $this.siteId;
     });
   },
   createAll: function () {
@@ -84,7 +84,7 @@ var methods = {
     $apiAll.post({
       siteId: $this.siteId
     }, function () {
-      location.href = '../settings/pageCreateStatus.aspx?siteId=' + $this.siteId;
+      location.href = 'createStatus.cshtml?siteId=' + $this.siteId;
     });
   },
   loadChannels: function () {

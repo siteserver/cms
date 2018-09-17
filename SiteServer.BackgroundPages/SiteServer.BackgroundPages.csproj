@@ -419,7 +419,6 @@
     <Compile Include="Controls\ChannelTree.cs" />
     <Compile Include="Controls\NoTagText.cs" />
     <Compile Include="Controls\Script.cs" />
-    <Compile Include="Controls\SqlCountPager.cs" />
     <Compile Include="Controls\Pager.cs" />
     <Compile Include="Controls\SqlPager.cs" />
     <Compile Include="Controls\Style.cs" />
@@ -437,7 +436,6 @@
     <Compile Include="Core\NodeNaviTreeItem.cs" />
     <Compile Include="Core\ChannelTreeItem.cs" />
     <Compile Include="Core\PagerStyle.cs" />
-    <Compile Include="Core\PagingMode.cs" />
     <Compile Include="Core\SortMode.cs" />
     <Compile Include="Core\TextUtility.cs" />
     <Compile Include="Core\VCManager.cs" />
@@ -576,9 +574,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageAnalysisUser.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageCreateStatus.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageLogAdmin.cs">

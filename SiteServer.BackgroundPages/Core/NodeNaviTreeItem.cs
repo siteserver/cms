@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.BackgroundPages.Core
 {

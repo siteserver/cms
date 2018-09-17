@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
 

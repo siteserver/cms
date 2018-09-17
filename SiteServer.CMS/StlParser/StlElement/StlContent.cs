@@ -1,10 +1,11 @@
 ﻿using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -210,13 +211,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var targetChannelId = contentInfo.SourceId;
                     //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
-                    var targetSiteId = Channel.GetSiteId(targetChannelId);
+                    var targetSiteId = StlChannelCache.GetSiteId(targetChannelId);
                     var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                     var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
-                    var tableName = ChannelManager.GetTableName(targetSiteInfo, targetNodeInfo);
                     //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                    var targetContentInfo = Content.GetContentInfo(tableName, contentInfo.ReferenceId);
+                    var targetContentInfo = ContentManager.GetContentInfo(targetSiteInfo, targetNodeInfo, contentInfo.ReferenceId);
                     if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                     {
                         //标题可以使用自己的
@@ -552,7 +552,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     if (!string.IsNullOrEmpty(contentInfo.AddUserName))
                     {
                         //var displayName = DataProvider.AdministratorDao.GetDisplayName(contentInfo.AddUserName);
-                        var displayName = Administrator.GetDisplayName(contentInfo.AddUserName);
+                        var displayName = StlAdministratorCache.GetDisplayName(contentInfo.AddUserName);
                         parsedContent = string.IsNullOrEmpty(displayName) ? contentInfo.AddUserName : displayName;
                     }
                 }

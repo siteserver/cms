@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin.Model;
@@ -206,7 +207,7 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetCommandsHtml(SiteInfo siteInfo, Dictionary<string, List<Menu>> pluginMenus, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
+        public static string GetCommandsHtml(SiteInfo siteInfo, Dictionary<string, List<Plugin.Menu>> pluginMenus, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
         {
             var builder = new StringBuilder();
 

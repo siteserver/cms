@@ -9,16 +9,23 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 using Dapper;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.CMS.Provider
 {
     public class ContentDao : DataProviderBase
     {
         private const int TaxisIsTopStartValue = 2000000000;
+
+        private string StlColumns { get; } = $"{ContentAttribute.Id}, {ContentAttribute.ChannelId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}, {ContentAttribute.LastEditDate}, {ContentAttribute.Taxis}, {ContentAttribute.Hits}, {ContentAttribute.HitsByDay}, {ContentAttribute.HitsByWeek}, {ContentAttribute.HitsByMonth}";
+
+        public static string GetContentTableName(int siteId)
+        {
+            return $"siteserver_Content_{siteId}";
+        }
 
         public override List<TableColumn> TableColumns => new List<TableColumn>
         {
@@ -230,13 +237,20 @@ namespace SiteServer.CMS.Provider
             }
         }
 
-        public void SetValue(string tableName, int contentId, string name, string value)
+        public void Update(string tableName, int chananelId, int contentId, string name, string value)
         {
-            string sqlString = $"UPDATE {tableName} SET {name} = '{value}' WHERE Id = {contentId}";
+            var sqlString = $"UPDATE {tableName} SET {name} = @{name} WHERE Id = @Id";
 
-            ExecuteNonQuery(sqlString);
+            var parameters = new DynamicParameters();
+            parameters.Add($"@{name}", value);
+            parameters.Add("@Id", contentId);
 
-            Content.ClearCache();
+            using (var connection = GetConnection())
+            {
+                connection.Execute(sqlString, parameters);
+            }
+
+            ContentManager.RemoveCache(chananelId);
         }
 
         public void UpdateIsChecked(string tableName, int siteId, int channelId, List<int> contentIdList, int translateChannelId, string userName, bool isChecked, int checkedLevel, string reasons)
@@ -250,8 +264,10 @@ namespace SiteServer.CMS.Provider
 
             foreach (var contentId in contentIdList)
             {
-                var json = GetValue(tableName, contentId, ContentAttribute.SettingsXml);
-                var attributes = new ExtendedAttributes(json);
+                var tuple = GetValue(tableName, contentId, ContentAttribute.SettingsXml);
+                if (tuple == null) continue;
+
+                var attributes = new ExtendedAttributes(tuple.Item2);
                 attributes.Set(ContentAttribute.CheckUserName, userName);
                 attributes.Set(ContentAttribute.CheckCheckDate, DateUtils.GetDateAndTimeString(checkDate));
                 attributes.Set(ContentAttribute.CheckReasons, reasons);
@@ -269,27 +285,25 @@ namespace SiteServer.CMS.Provider
                 DataProvider.ContentCheckDao.Insert(checkInfo);
             }
 
-            Content.ClearCache();
+            ContentManager.RemoveCache(channelId);
         }
 
-        public void DeleteContentsByTrash(int siteId, string tableName)
+        public void DeleteContentsByTrash(int siteId, int channelId, string tableName)
         {
             if (string.IsNullOrEmpty(tableName)) return;
 
             var contentIdList = GetContentIdListByTrash(siteId, tableName);
             TagUtils.RemoveTags(siteId, contentIdList);
 
-            string sqlString =
+            var sqlString =
                 $"DELETE FROM {tableName} WHERE SiteId = {siteId} AND ChannelId < 0";
             ExecuteNonQuery(sqlString);
 
-            Content.ClearCache();
+            ContentManager.RemoveCache(channelId);
         }
 
-        private int Insert(string tableName, IContentInfo contentInfo)
+        private int Insert(string tableName, ChannelInfo channelInfo, IContentInfo contentInfo)
         {
-            //var contentId = 0;
-
             if (string.IsNullOrEmpty(tableName) || contentInfo == null) return 0;
 
             contentInfo.LastEditDate = DateTime.Now;
@@ -420,11 +434,11 @@ INSERT INTO {tableName} (
             //IDataParameter[] parms;
             //var sqlInsert = DataProvider.DatabaseDao.GetInsertSqlString(contentInfo.Attributes.GetExtendedAttributes(), tableName, out parms);
 
-            var contentId = ExecuteNonQueryAndReturnId(tableName, nameof(ContentInfo.Id), sqlString, parameters.ToArray());
+            contentInfo.Id = ExecuteNonQueryAndReturnId(tableName, nameof(ContentInfo.Id), sqlString, parameters.ToArray());
 
-            Content.ClearCache();
+            ContentManager.InsertCache(channelInfo, contentInfo);
 
-            return contentId;
+            return contentInfo.Id;
 
             //using (var conn = GetConnection())
             //{
@@ -449,9 +463,693 @@ INSERT INTO {tableName} (
             //return contentId;
         }
 
-        private void Update(string tableName, IContentInfo contentInfo)
+        public void SetAutoPageContentToSite(SiteInfo siteInfo)
         {
-            if (string.IsNullOrEmpty(tableName) || contentInfo == null) return;
+            if (!siteInfo.Additional.IsAutoPageInTextEditor) return;
+
+            var sqlString =
+                $"SELECT Id, {nameof(ContentInfo.ChannelId)}, {nameof(ContentInfo.Content)} FROM {siteInfo.TableName} WHERE SiteId = {siteInfo.Id}";
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                while (rdr.Read())
+                {
+                    var contentId = GetInt(rdr, 0);
+                    var channelId = GetInt(rdr, 1);
+                    var content = GetString(rdr, 2);
+
+                    if (!string.IsNullOrEmpty(content))
+                    {
+                        content = ContentUtility.GetAutoPageContent(content, siteInfo.Additional.AutoPageWordNum);
+
+                        Update(siteInfo.TableName, channelId, contentId, nameof(ContentInfo.Content), content);
+                    }
+                }
+
+                rdr.Close();
+            }
+        }
+
+        public void UpdateTrashContents(int siteId, int channelId, string tableName, List<int> contentIdList)
+        {
+            if (string.IsNullOrEmpty(tableName)) return;
+
+            var referenceIdList = GetReferenceIdList(tableName, contentIdList);
+            if (referenceIdList.Count > 0)
+            {
+                DeleteContents(siteId, channelId, tableName, referenceIdList);
+            }
+
+            var updateNum = 0;
+
+            if (!string.IsNullOrEmpty(tableName) && contentIdList != null && contentIdList.Count > 0)
+            {
+                var sqlString =
+                    $"UPDATE {tableName} SET ChannelId = -ChannelId, LastEditDate = {SqlUtils.GetComparableNow()} WHERE SiteId = {siteId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
+                updateNum = ExecuteNonQuery(sqlString);
+            }
+
+            if (updateNum <= 0) return;
+
+            new Action(() =>
+            {
+                DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(siteId));
+            }).BeginInvoke(null, null);
+
+            ContentManager.RemoveCache(channelId);
+        }
+
+        public void UpdateTrashContentsByChannelId(int siteId, int channelId, string tableName)
+        {
+            if (string.IsNullOrEmpty(tableName)) return;
+
+            var contentIdList = GetContentIdList(tableName, channelId);
+            var referenceIdList = GetReferenceIdList(tableName, contentIdList);
+            if (referenceIdList.Count > 0)
+            {
+                DeleteContents(siteId, channelId, tableName, referenceIdList);
+            }
+            var updateNum = 0;
+
+            if (!string.IsNullOrEmpty(tableName))
+            {
+                var sqlString =
+                    $"UPDATE {tableName} SET ChannelId = -ChannelId, LastEditDate = {SqlUtils.GetComparableNow()} WHERE SiteId = {siteId} AND ChannelId = {siteId}";
+                updateNum = ExecuteNonQuery(sqlString);
+            }
+
+            if (updateNum <= 0) return;
+
+            new Action(() =>
+            {
+                DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(siteId), channelId, true);
+            }).BeginInvoke(null, null);
+
+            ContentManager.RemoveCache(channelId);
+        }
+
+        public void DeleteContent(string tableName, SiteInfo siteInfo, int channelId, int contentId)
+        {
+            if (string.IsNullOrEmpty(tableName)) return;
+
+            if (!string.IsNullOrEmpty(tableName) && contentId > 0)
+            {
+                TagUtils.RemoveTags(siteInfo.Id, contentId);
+
+                var sqlString =
+                    $"DELETE FROM {tableName} WHERE SiteId = {siteInfo.Id} AND Id = {contentId}";
+                ExecuteNonQuery(sqlString);
+            }
+
+            if (channelId <= 0) return;
+
+            new Action(() =>
+            {
+                DataProvider.ChannelDao.UpdateContentNum(siteInfo, channelId, true);
+            }).BeginInvoke(null, null);
+
+            ContentManager.RemoveCache(channelId);
+        }
+
+        public void DeleteContents(int siteId, string tableName, List<int> contentIdList, int channelId)
+        {
+            if (string.IsNullOrEmpty(tableName)) return;
+
+            var deleteNum = 0;
+
+            if (!string.IsNullOrEmpty(tableName) && contentIdList != null && contentIdList.Count > 0)
+            {
+                TagUtils.RemoveTags(siteId, contentIdList);
+
+                var sqlString =
+                    $"DELETE FROM {tableName} WHERE SiteId = {siteId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
+                deleteNum = ExecuteNonQuery(sqlString);
+            }
+
+            if (channelId <= 0 || deleteNum <= 0) return;
+
+            new Action(() =>
+            {
+                DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(siteId), channelId, true);
+            }).BeginInvoke(null, null);
+
+            ContentManager.RemoveCache(channelId);
+        }
+
+        public void DeleteContentsByChannelId(int siteId, string tableName, int channelId)
+        {
+            if (string.IsNullOrEmpty(tableName)) return;
+
+            var contentIdList = GetContentIdListChecked(tableName, channelId, string.Empty);
+
+            TagUtils.RemoveTags(siteId, contentIdList);
+
+            var sqlString =
+                $"DELETE FROM {tableName} WHERE SiteId = {siteId} AND ChannelId = {channelId}";
+            var deleteNum = ExecuteNonQuery(sqlString);
+
+            if (channelId <= 0 || deleteNum <= 0) return;
+
+            new Action(() =>
+            {
+                DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(siteId), channelId, true);
+            }).BeginInvoke(null, null);
+
+            ContentManager.RemoveCache(channelId);
+        }
+
+        public void DeleteContentsByDeletedChannelIdList(IDbTransaction trans, SiteInfo siteInfo, List<int> channelIdList)
+        {
+            foreach (var channelId in channelIdList)
+            {
+                var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+                if (!string.IsNullOrEmpty(tableName))
+                {
+                    ExecuteNonQuery(trans, $"DELETE FROM {tableName} WHERE SiteId = {siteInfo.Id} AND {nameof(ContentInfo.ChannelId)} = {channelId}");
+                    ContentManager.RemoveCache(channelId);
+                }
+            }
+        }
+
+        public void UpdateRestoreContentsByTrash(int siteId, int channelId, string tableName)
+        {
+            var updateNum = 0;
+
+            if (!string.IsNullOrEmpty(tableName))
+            {
+                var sqlString =
+                    $"UPDATE {tableName} SET ChannelId = -ChannelId, LastEditDate = {SqlUtils.GetComparableNow()} WHERE SiteId = {siteId} AND ChannelId < 0";
+                updateNum = ExecuteNonQuery(sqlString);
+            }
+
+            if (updateNum <= 0) return;
+
+            new Action(() =>
+            {
+                DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(siteId));
+            }).BeginInvoke(null, null);
+
+            ContentManager.RemoveCache(channelId);
+        }
+
+        private void UpdateTaxis(int channelId, int id, int taxis, string tableName)
+        {
+            var sqlString = $"UPDATE {tableName} SET Taxis = {taxis} WHERE Id = {id}";
+            ExecuteNonQuery(sqlString);
+
+            ContentManager.RemoveCache(channelId);
+        }
+
+        private void DeleteContents(int siteId, int channelId, string tableName, List<int> contentIdList)
+        {
+            if (string.IsNullOrEmpty(tableName)) return;
+
+            var deleteNum = 0;
+
+            if (!string.IsNullOrEmpty(tableName) && contentIdList != null && contentIdList.Count > 0)
+            {
+                TagUtils.RemoveTags(siteId, contentIdList);
+
+                var sqlString =
+                    $"DELETE FROM {tableName} WHERE SiteId = {siteId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
+                deleteNum = ExecuteNonQuery(sqlString);
+            }
+
+            if (deleteNum <= 0) return;
+
+            new Action(() =>
+            {
+                DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(siteId));
+            }).BeginInvoke(null, null);
+
+            ContentManager.RemoveCache(channelId);
+        }
+
+        public void DeletePreviewContents(int siteId, string tableName, ChannelInfo channelInfo)
+        {
+            if (string.IsNullOrEmpty(tableName)) return;
+
+            channelInfo.Additional.IsPreviewContentsExists = false;
+            DataProvider.ChannelDao.UpdateAdditional(channelInfo);
+
+            var sqlString =
+                $"DELETE FROM {tableName} WHERE {nameof(ContentInfo.SiteId)} = @{nameof(ContentInfo.SiteId)} AND {nameof(ContentInfo.ChannelId)} = @{nameof(ContentInfo.ChannelId)} AND {nameof(ContentInfo.SourceId)} = @{nameof(ContentInfo.SourceId)}";
+
+            using (var connection = GetConnection())
+            {
+                connection.Execute(sqlString, new
+                    {
+                        SiteId = siteId,
+                        ChannelId = channelInfo.Id,
+                        SourceId = SourceManager.Preview
+                    }
+                );
+            }
+        }
+
+        public void UpdateTidyUp(string tableName, int channelId, string attributeName, bool isDesc)
+        {
+            var taxisDirection = isDesc ? "ASC" : "DESC";//升序,但由于页面排序是按Taxis的Desc排序的，所以这里sql里面的ASC/DESC取反
+
+            var sqlString =
+                $"SELECT Id, IsTop FROM {tableName} WHERE ChannelId = {channelId} OR ChannelId = -{channelId} ORDER BY {attributeName} {taxisDirection}";
+            var sqlList = new List<string>();
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                var taxis = 1;
+                while (rdr.Read())
+                {
+                    var id = GetInt(rdr, 0);
+                    var isTop = GetBool(rdr, 1);
+
+                    sqlList.Add(
+                        $"UPDATE {tableName} SET Taxis = {taxis++}, IsTop = '{isTop}' WHERE Id = {id}");
+                }
+                rdr.Close();
+            }
+
+            DataProvider.DatabaseDao.ExecuteSql(sqlList);
+
+            ContentManager.RemoveCache(channelId);
+        }
+
+        public bool SetTaxisToUp(string tableName, int channelId, int contentId, bool isTop)
+        {
+            //Get Higher Taxis and Id
+            var sqlString = SqlUtils.ToTopSqlString(tableName, "Id, Taxis",
+                isTop
+                    ? $"WHERE (Taxis > (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis >= {TaxisIsTopStartValue} AND ChannelId = {channelId})"
+                    : $"WHERE (Taxis > (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis < {TaxisIsTopStartValue} AND ChannelId = {channelId})",
+                "ORDER BY Taxis", 1);
+            var higherId = 0;
+            var higherTaxis = 0;
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                if (rdr.Read())
+                {
+                    higherId = GetInt(rdr, 0);
+                    higherTaxis = GetInt(rdr, 1);
+                }
+                rdr.Close();
+            }
+
+            if (higherId != 0)
+            {
+                //Get Taxis Of Selected Id
+                var selectedTaxis = GetTaxis(contentId, tableName);
+
+                //Set The Selected Class Taxis To Higher Level
+                UpdateTaxis(channelId, contentId, higherTaxis, tableName);
+                //Set The Higher Class Taxis To Lower Level
+                UpdateTaxis(channelId, higherId, selectedTaxis, tableName);
+                return true;
+            }
+            return false;
+        }
+
+        public bool SetTaxisToDown(string tableName, int channelId, int contentId, bool isTop)
+        {
+            //Get Lower Taxis and Id
+            var sqlString = SqlUtils.ToTopSqlString(tableName, "Id, Taxis",
+                isTop
+                    ? $"WHERE (Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis >= {TaxisIsTopStartValue} AND ChannelId = {channelId})"
+                    : $"WHERE (Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis < {TaxisIsTopStartValue} AND ChannelId = {channelId})",
+                "ORDER BY Taxis DESC", 1);
+            var lowerId = 0;
+            var lowerTaxis = 0;
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                if (rdr.Read())
+                {
+                    lowerId = GetInt(rdr, 0);
+                    lowerTaxis = GetInt(rdr, 1);
+                }
+                rdr.Close();
+            }
+
+            if (lowerId != 0)
+            {
+                //Get Taxis Of Selected Class
+                var selectedTaxis = GetTaxis(contentId, tableName);
+
+                //Set The Selected Class Taxis To Lower Level
+                UpdateTaxis(channelId, contentId, lowerTaxis, tableName);
+                //Set The Lower Class Taxis To Higher Level
+                UpdateTaxis(channelId, lowerId, selectedTaxis, tableName);
+                return true;
+            }
+            return false;
+        }
+
+        public int GetMaxTaxis(string tableName, int channelId, bool isTop)
+        {
+            var maxTaxis = 0;
+            if (isTop)
+            {
+                maxTaxis = TaxisIsTopStartValue;
+
+                var sqlString =
+                    $"SELECT MAX(Taxis) FROM {tableName} WHERE ChannelId = {channelId} AND Taxis >= {TaxisIsTopStartValue}";
+
+                using (var conn = GetConnection())
+                {
+                    conn.Open();
+                    using (var rdr = ExecuteReader(conn, sqlString))
+                    {
+                        if (rdr.Read())
+                        {
+                            maxTaxis = GetInt(rdr, 0);
+                        }
+                        rdr.Close();
+                    }
+                }
+
+                if (maxTaxis < TaxisIsTopStartValue)
+                {
+                    maxTaxis = TaxisIsTopStartValue;
+                }
+            }
+            else
+            {
+                var sqlString =
+                    $"SELECT MAX(Taxis) FROM {tableName} WHERE ChannelId = {channelId} AND Taxis < {TaxisIsTopStartValue}";
+                using (var conn = GetConnection())
+                {
+                    conn.Open();
+                    using (var rdr = ExecuteReader(conn, sqlString))
+                    {
+                        if (rdr.Read())
+                        {
+                            maxTaxis = GetInt(rdr, 0);
+                        }
+                        rdr.Close();
+                    }
+                }
+            }
+            return maxTaxis;
+        }
+
+        public Tuple<int, string> GetValue(string tableName, int contentId, string name)
+        {
+            Tuple<int, string> tuple = null;
+
+            try
+            {
+                var sqlString = $"SELECT {nameof(ContentInfo.ChannelId)}, {name} FROM {tableName} WHERE Id = {contentId}";
+
+                using (var conn = GetConnection())
+                {
+                    conn.Open();
+                    using (var rdr = ExecuteReader(conn, sqlString))
+                    {
+                        if (rdr.Read())
+                        {
+                            var channelId = GetInt(rdr, 0);
+                            var value = GetString(rdr, 1);
+
+                            tuple = new Tuple<int, string>(channelId, value);
+                        }
+
+                        rdr.Close();
+                    }
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return tuple;
+        }
+
+        public void AddContentGroupList(string tableName, int contentId, List<string> contentGroupList)
+        {
+            var tuple = GetValue(tableName, contentId, ContentAttribute.GroupNameCollection);
+
+            if (tuple != null)
+            {
+                var list = TranslateUtils.StringCollectionToStringList(tuple.Item2);
+                foreach (var groupName in contentGroupList)
+                {
+                    if (!list.Contains(groupName)) list.Add(groupName);
+                }
+                Update(tableName, tuple.Item1, contentId, ContentAttribute.GroupNameCollection, TranslateUtils.ObjectCollectionToString(list));
+            }
+        }
+
+        private List<int> GetReferenceIdList(string tableName, List<int> contentIdList)
+        {
+            var list = new List<int>();
+            var sqlString =
+                $"SELECT Id FROM {tableName} WHERE ChannelId > 0 AND ReferenceId IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                while (rdr.Read())
+                {
+                    list.Add(GetInt(rdr, 0));
+                }
+                rdr.Close();
+            }
+
+            return list;
+        }
+
+        public int GetTotalHits(string tableName, int siteId)
+        {
+            return DataProvider.DatabaseDao.GetIntResult($"SELECT SUM(Hits) FROM {tableName} WHERE IsChecked='{true}' AND SiteId = {siteId} AND Hits > 0");
+        }
+
+        public int GetFirstContentId(string tableName, int channelId)
+        {
+            var sqlString = $"SELECT Id FROM {tableName} WHERE ChannelId = {channelId} ORDER BY Taxis DESC, Id DESC";
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
+        }
+
+        public List<int> GetContentIdList(string tableName, int channelId)
+        {
+            var list = new List<int>();
+
+            var sqlString = $"SELECT Id FROM {tableName} WHERE ChannelId = {channelId}";
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                while (rdr.Read())
+                {
+                    var contentId = GetInt(rdr, 0);
+                    list.Add(contentId);
+                }
+                rdr.Close();
+            }
+            return list;
+        }
+
+        public List<int> GetContentIdList(string tableName, int channelId, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
+        {
+            var list = new List<int>();
+
+            var sqlString = $"SELECT Id FROM {tableName} WHERE ChannelId = {channelId}";
+            if (isPeriods)
+            {
+                var dateString = string.Empty;
+                if (!string.IsNullOrEmpty(dateFrom))
+                {
+                    dateString = $" AND AddDate >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))} ";
+                }
+                if (!string.IsNullOrEmpty(dateTo))
+                {
+                    dateString += $" AND AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo).AddDays(1))} ";
+                }
+                sqlString += dateString;
+            }
+
+            if (checkedState != ETriState.All)
+            {
+                sqlString += $" AND IsChecked = '{ETriStateUtils.GetValue(checkedState)}'";
+            }
+
+            sqlString += " ORDER BY Taxis DESC, Id DESC";
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                while (rdr.Read())
+                {
+                    var contentId = GetInt(rdr, 0);
+                    list.Add(contentId);
+                }
+                rdr.Close();
+            }
+            return list;
+        }
+
+        public List<int> GetContentIdListCheckedByChannelId(string tableName, int siteId, int channelId)
+        {
+            var list = new List<int>();
+
+            var sqlString = $"SELECT Id FROM {tableName} WHERE SiteId = {siteId} AND ChannelId = {channelId} AND IsChecked = '{true}'";
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                while (rdr.Read())
+                {
+                    list.Add(GetInt(rdr, 0));
+                }
+                rdr.Close();
+            }
+            return list;
+        }
+
+        public int GetContentId(string tableName, int channelId, int taxis, bool isNextContent)
+        {
+            var contentId = 0;
+            var sqlString = SqlUtils.ToTopSqlString(tableName, "Id", $"WHERE (ChannelId = {channelId} AND Taxis > {taxis} AND IsChecked = 'True')", "ORDER BY Taxis", 1);
+            if (isNextContent)
+            {
+                sqlString = SqlUtils.ToTopSqlString(tableName, "Id",
+                $"WHERE (ChannelId = {channelId} AND Taxis < {taxis} AND IsChecked = 'True')", "ORDER BY Taxis DESC", 1);
+            }
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                if (rdr.Read())
+                {
+                    contentId = GetInt(rdr, 0);
+                }
+                rdr.Close();
+            }
+            return contentId;
+        }
+
+        public int GetContentId(string tableName, int channelId, string orderByString)
+        {
+            var contentId = 0;
+            var sqlString = SqlUtils.ToTopSqlString(tableName, "Id", $"WHERE (ChannelId = {channelId})", orderByString, 1);
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                if (rdr.Read())
+                {
+                    contentId = GetInt(rdr, 0);
+                }
+                rdr.Close();
+            }
+            return contentId;
+        }
+
+        public List<string> GetValueListByStartString(string tableName, int channelId, string name, string startString, int totalNum)
+        {
+            var inStr = SqlUtils.GetInStr(name, startString);
+            var sqlString = SqlUtils.GetDistinctTopSqlString(tableName, name, $"WHERE ChannelId = {channelId} AND {inStr}", string.Empty, totalNum);
+            return DataProvider.DatabaseDao.GetStringList(sqlString);
+        }
+
+        public int GetChannelId(string tableName, int contentId)
+        {
+            var channelId = 0;
+            var sqlString = $"SELECT {ContentAttribute.ChannelId} FROM {tableName} WHERE (Id = {contentId})";
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                if (rdr.Read())
+                {
+                    channelId = GetInt(rdr, 0);
+                }
+                rdr.Close();
+            }
+            return channelId;
+        }
+
+        public int GetCount(string tableName, int channelId)
+        {
+            var sqlString = $"SELECT COUNT(*) FROM {tableName} WHERE {nameof(ContentInfo.ChannelId)} = {channelId} AND {nameof(ContentInfo.SourceId)} != {SourceManager.Preview}";
+
+            return DataProvider.DatabaseDao.GetIntResult(sqlString);
+        }
+
+        public int GetSequence(string tableName, int channelId, int contentId)
+        {
+            var sqlString =
+                $"SELECT COUNT(*) FROM {tableName} WHERE {nameof(ContentInfo.ChannelId)} = {channelId} AND {nameof(ContentInfo.IsChecked)} = '{true}' AND Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND {nameof(ContentInfo.SourceId)} != {SourceManager.Preview}";
+
+            return DataProvider.DatabaseDao.GetIntResult(sqlString) + 1;
+        }
+
+        public List<int> GetChannelIdListCheckedByLastEditDateHour(string tableName, int siteId, int hour)
+        {
+            var list = new List<int>();
+
+            var sqlString =
+                $"SELECT DISTINCT ChannelId FROM {tableName} WHERE (SiteId = {siteId}) AND (IsChecked = '{true}') AND (LastEditDate BETWEEN {SqlUtils.GetComparableDateTime(DateTime.Now.AddHours(-hour))} AND {SqlUtils.GetComparableNow()})";
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                while (rdr.Read())
+                {
+                    var channelId = GetInt(rdr, 0);
+                    list.Add(channelId);
+                }
+                rdr.Close();
+            }
+            return list;
+        }
+
+        public DataSet GetDataSetOfAdminExcludeRecycle(string tableName, int siteId, DateTime begin, DateTime end)
+        {
+            var sqlString = DataProvider.ContentDao.GetSqlStringOfAdminExcludeRecycle(tableName, siteId, begin, end);
+
+            return ExecuteDataset(sqlString);
+        }
+
+        public int Insert(string tableName, SiteInfo siteInfo, ChannelInfo channelInfo, IContentInfo contentInfo)
+        {
+            var taxis = GetTaxisToInsert(tableName, contentInfo.ChannelId, contentInfo.IsTop);
+            return Insert(tableName, siteInfo, channelInfo, contentInfo, true, taxis);
+        }
+
+        public int InsertPreview(string tableName, SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
+        {
+            channelInfo.Additional.IsPreviewContentsExists = true;
+            DataProvider.ChannelDao.UpdateAdditional(channelInfo);
+
+            contentInfo.SourceId = SourceManager.Preview;
+            return Insert(tableName, siteInfo, channelInfo, contentInfo, false, 0);
+        }
+
+        public int Insert(string tableName, SiteInfo siteInfo, ChannelInfo channelInfo, IContentInfo contentInfo, bool isUpdateContentNum, int taxis)
+        {
+            if (string.IsNullOrEmpty(tableName)) return 0;
+
+            if (siteInfo.Additional.IsAutoPageInTextEditor && contentInfo.ContainsKey(BackgroundContentAttribute.Content))
+            {
+                contentInfo.Set(BackgroundContentAttribute.Content, ContentUtility.GetAutoPageContent(contentInfo.GetString(BackgroundContentAttribute.Content), siteInfo.Additional.AutoPageWordNum));
+            }
+
+            contentInfo.Taxis = taxis;
+
+            var contentId = Insert(tableName, channelInfo, contentInfo);
+
+            if (isUpdateContentNum)
+            {
+                new Action(() =>
+                {
+                    DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(contentInfo.SiteId), contentInfo.ChannelId, true);
+                }).BeginInvoke(null, null);
+            }
+
+            return contentId;
+        }
+
+        public void Update(SiteInfo siteInfo, ChannelInfo channelInfo, IContentInfo contentInfo)
+        {
+            if (contentInfo == null) return;
+
+            if (siteInfo.Additional.IsAutoPageInTextEditor && contentInfo.ContainsKey(BackgroundContentAttribute.Content))
+            {
+                contentInfo.Set(BackgroundContentAttribute.Content, ContentUtility.GetAutoPageContent(contentInfo.GetString(BackgroundContentAttribute.Content), siteInfo.Additional.AutoPageWordNum));
+            }
+
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
             //出现IsTop与Taxis不同步情况
             if (contentInfo.IsTop == false && contentInfo.Taxis >= TaxisIsTopStartValue)
@@ -535,8 +1233,8 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
 
             var parameters = new List<IDataParameter>
             {
-                GetParameter($"@{nameof(ContentInfo.ChannelId)}", DataType.Integer, contentInfo.ChannelId),
-                GetParameter($"@{nameof(ContentInfo.SiteId)}", DataType.Integer, contentInfo.SiteId),
+                GetParameter($"@{nameof(ContentInfo.ChannelId)}", DataType.Integer, channelInfo.Id),
+                GetParameter($"@{nameof(ContentInfo.SiteId)}", DataType.Integer, siteInfo.Id),
                 GetParameter($"@{nameof(ContentInfo.AddUserName)}", DataType.VarChar, 255, contentInfo.AddUserName),
                 GetParameter($"@{nameof(ContentInfo.LastEditUserName)}", DataType.VarChar, 255, contentInfo.LastEditUserName),
                 GetParameter($"@{nameof(ContentInfo.WritingUserName)}", DataType.VarChar, 255, contentInfo.WritingUserName),
@@ -567,783 +1265,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
 
             ExecuteNonQuery(sqlString, parameters.ToArray());
 
-            Content.ClearCache();
-        }
-
-        public void UpdateAutoPageContent(string tableName, SiteInfo siteInfo)
-        {
-            if (!siteInfo.Additional.IsAutoPageInTextEditor) return;
-
-            string sqlString =
-                $"SELECT Id, {BackgroundContentAttribute.Content} FROM {tableName} WHERE (SiteId = {siteInfo.Id})";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var contentId = GetInt(rdr, 0);
-                    var content = GetString(rdr, 1);
-                    if (!string.IsNullOrEmpty(content))
-                    {
-                        content = ContentUtility.GetAutoPageContent(content, siteInfo.Additional.AutoPageWordNum);
-                        string updateString =
-                            $"UPDATE {tableName} SET {BackgroundContentAttribute.Content} = '{content}' WHERE Id = {contentId}";
-                        try
-                        {
-                            ExecuteNonQuery(updateString);
-                        }
-                        catch
-                        {
-                            // ignored
-                        }
-                    }
-                }
-
-                rdr.Close();
-            }
-
-            Content.ClearCache();
-        }
-
-        //public void TrashContents(int siteId, string tableName, List<int> contentIdList, int channelId)
-        //{
-        //    if (string.IsNullOrEmpty(tableName)) return;
-
-        //    var referenceIdList = GetReferenceIdList(tableName, contentIdList);
-        //    if (referenceIdList.Count > 0)
-        //    {
-        //        DeleteContents(siteId, tableName, referenceIdList);
-        //    }
-        //    var updateNum = 0;
-
-        //    if (!string.IsNullOrEmpty(tableName) && contentIdList != null && contentIdList.Count > 0)
-        //    {
-        //        string sqlString =
-        //            $"UPDATE {tableName} SET ChannelId = -ChannelId, LastEditDate = {SqlUtils.GetComparableNow()} WHERE SiteId = {siteId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
-        //        updateNum = ExecuteNonQuery(sqlString);
-        //    }
-
-        //    if (updateNum <= 0) return;
-
-        //    new Action(() =>
-        //    {
-        //        DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(siteId), channelId, true);
-        //    }).BeginInvoke(null, null);
-
-        //    Content.ClearCache();
-        //}
-
-        public void TrashContents(int siteId, string tableName, List<int> contentIdList)
-        {
-            if (string.IsNullOrEmpty(tableName)) return;
-
-            var referenceIdList = GetReferenceIdList(tableName, contentIdList);
-            if (referenceIdList.Count > 0)
-            {
-                DeleteContents(siteId, tableName, referenceIdList);
-            }
-
-            var updateNum = 0;
-
-            if (!string.IsNullOrEmpty(tableName) && contentIdList != null && contentIdList.Count > 0)
-            {
-                string sqlString =
-                    $"UPDATE {tableName} SET ChannelId = -ChannelId, LastEditDate = {SqlUtils.GetComparableNow()} WHERE SiteId = {siteId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
-                updateNum = ExecuteNonQuery(sqlString);
-            }
-
-            if (updateNum <= 0) return;
-
-            new Action(() =>
-            {
-                DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(siteId));
-            }).BeginInvoke(null, null);
-
-            Content.ClearCache();
-        }
-
-        public void TrashContentsByChannelId(int siteId, string tableName, int channelId)
-        {
-            if (string.IsNullOrEmpty(tableName)) return;
-
-            var contentIdList = GetContentIdList(tableName, channelId);
-            var referenceIdList = GetReferenceIdList(tableName, contentIdList);
-            if (referenceIdList.Count > 0)
-            {
-                DeleteContents(siteId, tableName, referenceIdList);
-            }
-            var updateNum = 0;
-
-            if (!string.IsNullOrEmpty(tableName))
-            {
-                string sqlString =
-                    $"UPDATE {tableName} SET ChannelId = -ChannelId, LastEditDate = {SqlUtils.GetComparableNow()} WHERE SiteId = {siteId} AND ChannelId = {siteId}";
-                updateNum = ExecuteNonQuery(sqlString);
-            }
-
-            if (updateNum <= 0) return;
-
-            new Action(() =>
-            {
-                DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(siteId), channelId, true);
-            }).BeginInvoke(null, null);
-
-            Content.ClearCache();
-        }
-
-        public void DeleteContent(string tableName, SiteInfo siteInfo, int channelId, int contentId)
-        {
-            if (string.IsNullOrEmpty(tableName)) return;
-
-            if (!string.IsNullOrEmpty(tableName) && contentId > 0)
-            {
-                TagUtils.RemoveTags(siteInfo.Id, contentId);
-
-                string sqlString =
-                    $"DELETE FROM {tableName} WHERE SiteId = {siteInfo.Id} AND Id = {contentId}";
-                ExecuteNonQuery(sqlString);
-            }
-
-            if (channelId <= 0) return;
-
-            new Action(() =>
-            {
-                DataProvider.ChannelDao.UpdateContentNum(siteInfo, channelId, true);
-            }).BeginInvoke(null, null);
-
-            Content.ClearCache();
-        }
-
-        public void DeleteContents(int siteId, string tableName, List<int> contentIdList, int channelId)
-        {
-            if (string.IsNullOrEmpty(tableName)) return;
-
-            var deleteNum = 0;
-
-            if (!string.IsNullOrEmpty(tableName) && contentIdList != null && contentIdList.Count > 0)
-            {
-                TagUtils.RemoveTags(siteId, contentIdList);
-
-                string sqlString =
-                    $"DELETE FROM {tableName} WHERE SiteId = {siteId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
-                deleteNum = ExecuteNonQuery(sqlString);
-            }
-
-            if (channelId <= 0 || deleteNum <= 0) return;
-
-            new Action(() =>
-            {
-                DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(siteId), channelId, true);
-            }).BeginInvoke(null, null);
-
-            Content.ClearCache();
-        }
-
-        public void DeleteContentsByChannelId(int siteId, string tableName, int channelId)
-        {
-            if (string.IsNullOrEmpty(tableName)) return;
-
-            var contentIdList = GetContentIdListChecked(tableName, channelId, string.Empty);
-
-            TagUtils.RemoveTags(siteId, contentIdList);
-
-            string sqlString =
-                $"DELETE FROM {tableName} WHERE SiteId = {siteId} AND ChannelId = {channelId}";
-            var deleteNum = ExecuteNonQuery(sqlString);
-
-            if (channelId <= 0 || deleteNum <= 0) return;
-
-            new Action(() =>
-            {
-                DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(siteId), channelId, true);
-            }).BeginInvoke(null, null);
-
-            Content.ClearCache();
-        }
-
-        public void DeleteContentsByDeletedChannelIdList(IDbTransaction trans, SiteInfo siteInfo, List<int> channelIdList)
-        {
-            foreach (var channelId in channelIdList)
-            {
-                var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-                if (!string.IsNullOrEmpty(tableName))
-                {
-                    ExecuteNonQuery(trans, $"DELETE FROM {tableName} WHERE SiteId = {siteInfo.Id} AND {nameof(ContentInfo.ChannelId)} = {channelId}");
-                }
-            }
-
-            Content.ClearCache();
-        }
-
-        public void RestoreContentsByTrash(int siteId, string tableName)
-        {
-            var updateNum = 0;
-
-            if (!string.IsNullOrEmpty(tableName))
-            {
-                string sqlString =
-                    $"UPDATE {tableName} SET ChannelId = -ChannelId, LastEditDate = {SqlUtils.GetComparableNow()} WHERE SiteId = {siteId} AND ChannelId < 0";
-                updateNum = ExecuteNonQuery(sqlString);
-            }
-
-            if (updateNum <= 0) return;
-
-            new Action(() =>
-            {
-                DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(siteId));
-            }).BeginInvoke(null, null);
-
-            Content.ClearCache();
-        }
-
-        private void SetTaxis(int id, int taxis, string tableName)
-        {
-            string sqlString = $"UPDATE {tableName} SET Taxis = {taxis} WHERE Id = {id}";
-            ExecuteNonQuery(sqlString);
-
-            Content.ClearCache();
-        }
-
-        private void DeleteContents(int siteId, string tableName, List<int> contentIdList)
-        {
-            if (string.IsNullOrEmpty(tableName)) return;
-
-            var deleteNum = 0;
-
-            if (!string.IsNullOrEmpty(tableName) && contentIdList != null && contentIdList.Count > 0)
-            {
-                TagUtils.RemoveTags(siteId, contentIdList);
-
-                string sqlString =
-                    $"DELETE FROM {tableName} WHERE SiteId = {siteId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
-                deleteNum = ExecuteNonQuery(sqlString);
-            }
-
-            if (deleteNum <= 0) return;
-
-            new Action(() =>
-            {
-                DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(siteId));
-            }).BeginInvoke(null, null);
-
-            Content.ClearCache();
-        }
-
-        public void DeletePreviewContents(int siteId, string tableName, ChannelInfo channelInfo)
-        {
-            if (!string.IsNullOrEmpty(tableName))
-            {
-                channelInfo.Additional.IsPreviewContentsExists = false;
-                DataProvider.ChannelDao.UpdateAdditional(channelInfo);
-
-                string sqlString =
-                    $"DELETE FROM {tableName} WHERE SiteId = {siteId} AND ChannelId = {channelInfo.Id} AND SourceId = {SourceManager.Preview}";
-                DataProvider.DatabaseDao.ExecuteSql(sqlString);
-            }
-        }
-
-        public void TidyUp(string tableName, int channelId, string attributeName, bool isDesc)
-        {
-            var taxisDirection = isDesc ? "ASC" : "DESC";//升序,但由于页面排序是按Taxis的Desc排序的，所以这里sql里面的ASC/DESC取反
-
-            string sqlString =
-                $"SELECT Id, IsTop FROM {tableName} WHERE ChannelId = {channelId} OR ChannelId = -{channelId} ORDER BY {attributeName} {taxisDirection}";
-            var sqlList = new List<string>();
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                var taxis = 1;
-                while (rdr.Read())
-                {
-                    var id = GetInt(rdr, 0);
-                    var isTop = GetBool(rdr, 1);
-
-                    sqlList.Add(
-                        $"UPDATE {tableName} SET Taxis = {taxis++}, IsTop = '{isTop}' WHERE Id = {id}");
-                }
-                rdr.Close();
-            }
-
-            DataProvider.DatabaseDao.ExecuteSql(sqlList);
-
-            Content.ClearCache();
-        }
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        public bool UpdateTaxisToUp(string tableName, int channelId, int contentId, bool isTop)
-        {
-            //Get Higher Taxis and Id
-            var sqlString = SqlUtils.ToTopSqlString(tableName, "Id, Taxis",
-                isTop
-                    ? $"WHERE (Taxis > (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis >= {TaxisIsTopStartValue} AND ChannelId = {channelId})"
-                    : $"WHERE (Taxis > (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis < {TaxisIsTopStartValue} AND ChannelId = {channelId})",
-                "ORDER BY Taxis", 1);
-            var higherId = 0;
-            var higherTaxis = 0;
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    higherId = GetInt(rdr, 0);
-                    higherTaxis = GetInt(rdr, 1);
-                }
-                rdr.Close();
-            }
-
-            if (higherId != 0)
-            {
-                //Get Taxis Of Selected Id
-                var selectedTaxis = GetTaxis(contentId, tableName);
-
-                //Set The Selected Class Taxis To Higher Level
-                SetTaxis(contentId, higherTaxis, tableName);
-                //Set The Higher Class Taxis To Lower Level
-                SetTaxis(higherId, selectedTaxis, tableName);
-                return true;
-            }
-            return false;
-        }
-
-        public bool UpdateTaxisToDown(string tableName, int channelId, int contentId, bool isTop)
-        {
-            //Get Lower Taxis and Id
-            var sqlString = SqlUtils.ToTopSqlString(tableName, "Id, Taxis",
-                isTop
-                    ? $"WHERE (Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis >= {TaxisIsTopStartValue} AND ChannelId = {channelId})"
-                    : $"WHERE (Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis < {TaxisIsTopStartValue} AND ChannelId = {channelId})",
-                "ORDER BY Taxis DESC", 1);
-            var lowerId = 0;
-            var lowerTaxis = 0;
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    lowerId = GetInt(rdr, 0);
-                    lowerTaxis = GetInt(rdr, 1);
-                }
-                rdr.Close();
-            }
-
-            if (lowerId != 0)
-            {
-                //Get Taxis Of Selected Class
-                var selectedTaxis = GetTaxis(contentId, tableName);
-
-                //Set The Selected Class Taxis To Lower Level
-                SetTaxis(contentId, lowerTaxis, tableName);
-                //Set The Lower Class Taxis To Higher Level
-                SetTaxis(lowerId, selectedTaxis, tableName);
-                return true;
-            }
-            return false;
-        }
-
-        public int GetMaxTaxis(string tableName, int channelId, bool isTop)
-        {
-            var maxTaxis = 0;
-            if (isTop)
-            {
-                maxTaxis = TaxisIsTopStartValue;
-
-                var sqlString =
-                    $"SELECT MAX(Taxis) FROM {tableName} WHERE ChannelId = {channelId} AND Taxis >= {TaxisIsTopStartValue}";
-
-                using (var conn = GetConnection())
-                {
-                    conn.Open();
-                    using (var rdr = ExecuteReader(conn, sqlString))
-                    {
-                        if (rdr.Read())
-                        {
-                            maxTaxis = GetInt(rdr, 0);
-                        }
-                        rdr.Close();
-                    }
-                }
-
-                if (maxTaxis < TaxisIsTopStartValue)
-                {
-                    maxTaxis = TaxisIsTopStartValue;
-                }
-            }
-            else
-            {
-                var sqlString =
-                    $"SELECT MAX(Taxis) FROM {tableName} WHERE ChannelId = {channelId} AND Taxis < {TaxisIsTopStartValue}";
-                using (var conn = GetConnection())
-                {
-                    conn.Open();
-                    using (var rdr = ExecuteReader(conn, sqlString))
-                    {
-                        if (rdr.Read())
-                        {
-                            maxTaxis = GetInt(rdr, 0);
-                        }
-                        rdr.Close();
-                    }
-                }
-            }
-            return maxTaxis;
-        }
-
-        public string GetValue(string tableName, int contentId, string name)
-        {
-            string sqlString = $"SELECT {name} FROM {tableName} WHERE (Id = {contentId})";
-            return DataProvider.DatabaseDao.GetString(sqlString);
-        }
-
-        public void AddContentGroupList(string tableName, int contentId, List<string> contentGroupList)
-        {
-            var list = TranslateUtils.StringCollectionToStringList(GetValue(tableName, contentId, ContentAttribute.GroupNameCollection));
-            foreach (var groupName in contentGroupList)
-            {
-                if (!list.Contains(groupName)) list.Add(groupName);
-            }
-            SetValue(tableName, contentId, ContentAttribute.GroupNameCollection, TranslateUtils.ObjectCollectionToString(list));
-        }       
-
-        //public int GetReferenceId(string tableName, int contentId, out string linkUrl)
-        //{
-        //    var referenceId = 0;
-        //    linkUrl = string.Empty;
-        //    try
-        //    {
-        //        string sqlString = $"SELECT ReferenceId, LinkUrl FROM {tableName} WHERE Id = {contentId}";
-
-        //        using (var rdr = ExecuteReader(sqlString))
-        //        {
-        //            if (rdr.Read())
-        //            {
-        //                referenceId = GetInt(rdr, 0);
-        //                linkUrl = GetString(rdr, 1);
-        //            }
-        //            rdr.Close();
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        // ignored
-        //    }
-        //    return referenceId;
-        //}
-
-        public List<int> GetReferenceIdList(string tableName, List<int> contentIdList)
-        {
-            var list = new List<int>();
-            string sqlString =
-                $"SELECT Id FROM {tableName} WHERE ChannelId > 0 AND ReferenceId IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetInt(rdr, 0));
-                }
-                rdr.Close();
-            }
-
-            return list;
-        }
-
-        public int GetTotalHits(string tableName, int siteId)
-        {
-            return DataProvider.DatabaseDao.GetIntResult($"SELECT SUM(Hits) FROM {tableName} WHERE IsChecked='{true}' AND SiteId = {siteId} AND Hits > 0");
-        }
-
-        public int GetFirstContentId(string tableName, int channelId)
-        {
-            string sqlString = $"SELECT Id FROM {tableName} WHERE ChannelId = {channelId} ORDER BY Taxis DESC, Id DESC";
-            return DataProvider.DatabaseDao.GetIntResult(sqlString);
-        }
-
-        public List<int> GetContentIdList(string tableName, int channelId)
-        {
-            var list = new List<int>();
-
-            string sqlString = $"SELECT Id FROM {tableName} WHERE ChannelId = {channelId}";
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var contentId = GetInt(rdr, 0);
-                    list.Add(contentId);
-                }
-                rdr.Close();
-            }
-            return list;
-        }
-
-        public List<int> GetContentIdList(string tableName, int channelId, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
-        {
-            var list = new List<int>();
-
-            string sqlString = $"SELECT Id FROM {tableName} WHERE ChannelId = {channelId}";
-            if (isPeriods)
-            {
-                var dateString = string.Empty;
-                if (!string.IsNullOrEmpty(dateFrom))
-                {
-                    dateString = $" AND AddDate >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))} ";
-                }
-                if (!string.IsNullOrEmpty(dateTo))
-                {
-                    dateString += $" AND AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo).AddDays(1))} ";
-                }
-                sqlString += dateString;
-            }
-
-            if (checkedState != ETriState.All)
-            {
-                sqlString += $" AND IsChecked = '{ETriStateUtils.GetValue(checkedState)}'";
-            }
-
-            sqlString += " ORDER BY Taxis DESC, Id DESC";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var contentId = GetInt(rdr, 0);
-                    list.Add(contentId);
-                }
-                rdr.Close();
-            }
-            return list;
-        }
-
-        public List<int> GetContentIdListCheckedByChannelId(string tableName, int siteId, int channelId)
-        {
-            var list = new List<int>();
-
-            string sqlString = $"SELECT Id FROM {tableName} WHERE SiteId = {siteId} AND ChannelId = {channelId} AND IsChecked = '{true}'";
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetInt(rdr, 0));
-                }
-                rdr.Close();
-            }
-            return list;
-        }
-
-        public int GetContentId(string tableName, int channelId, int taxis, bool isNextContent)
-        {
-            var contentId = 0;
-            var sqlString = SqlUtils.ToTopSqlString(tableName, "Id", $"WHERE (ChannelId = {channelId} AND Taxis > {taxis} AND IsChecked = 'True')", "ORDER BY Taxis", 1);
-            if (isNextContent)
-            {
-                sqlString = SqlUtils.ToTopSqlString(tableName, "Id",
-                $"WHERE (ChannelId = {channelId} AND Taxis < {taxis} AND IsChecked = 'True')", "ORDER BY Taxis DESC", 1);
-            }
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    contentId = GetInt(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return contentId;
-        }
-
-        public int GetContentId(string tableName, int channelId, string orderByString)
-        {
-            var contentId = 0;
-            var sqlString = SqlUtils.ToTopSqlString(tableName, "Id", $"WHERE (ChannelId = {channelId})", orderByString, 1);
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    contentId = GetInt(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return contentId;
-        }
-
-        //public List<string> GetValueList(string tableName, int channelId, string name)
-        //{
-        //    string sqlString = $"SELECT {name} FROM {tableName} WHERE ChannelId = {channelId}";
-        //    return DataProvider.DatabaseDao.GetStringList(sqlString);
-        //}
-
-        public List<string> GetValueListByStartString(string tableName, int channelId, string name, string startString, int totalNum)
-        {
-            var inStr = SqlUtils.GetInStr(name, startString);
-            var sqlString = SqlUtils.GetDistinctTopSqlString(tableName, name, $"WHERE ChannelId = {channelId} AND {inStr}", string.Empty, totalNum);
-            return DataProvider.DatabaseDao.GetStringList(sqlString);
-        }
-
-        public int GetChannelId(string tableName, int contentId)
-        {
-            var channelId = 0;
-            string sqlString = $"SELECT {ContentAttribute.ChannelId} FROM {tableName} WHERE (Id = {contentId})";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    channelId = GetInt(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return channelId;
-        }
-
-        public DateTime GetAddDate(string tableName, int contentId)
-        {
-            var addDate = DateTime.Now;
-            string sqlString = $"SELECT {ContentAttribute.AddDate} FROM {tableName} WHERE (Id = {contentId})";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    addDate = GetDateTime(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return addDate;
-        }
-
-        public DateTime GetLastEditDate(string tableName, int contentId)
-        {
-            var lastEditDate = DateTime.Now;
-            string sqlString = $"SELECT {ContentAttribute.LastEditDate} FROM {tableName} WHERE (Id = {contentId})";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    lastEditDate = GetDateTime(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return lastEditDate;
-        }
-
-        public int GetCount(string tableName, int channelId)
-        {
-            string sqlString = $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (ChannelId = {channelId})";
-
-            return DataProvider.DatabaseDao.GetIntResult(sqlString);
-        }
-
-        public int GetSequence(string tableName, int channelId, int contentId)
-        {
-            string sqlString =
-                $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE ChannelId = {channelId} AND IsChecked = '{true}' AND Taxis < (SELECT Taxis FROM {tableName} WHERE (Id = {contentId}))";
-
-            return DataProvider.DatabaseDao.GetIntResult(sqlString) + 1;
-        }
-
-        public List<int> GetChannelIdListCheckedByLastEditDateHour(string tableName, int siteId, int hour)
-        {
-            var list = new List<int>();
-
-            string sqlString =
-                $"SELECT DISTINCT ChannelId FROM {tableName} WHERE (SiteId = {siteId}) AND (IsChecked = '{true}') AND (LastEditDate BETWEEN {SqlUtils.GetComparableDateTime(DateTime.Now.AddHours(-hour))} AND {SqlUtils.GetComparableNow()})";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var channelId = GetInt(rdr, 0);
-                    list.Add(channelId);
-                }
-                rdr.Close();
-            }
-            return list;
-        }
-
-        public DataSet GetDataSetOfAdminExcludeRecycle(string tableName, int siteId, DateTime begin, DateTime end)
-        {
-            var sqlString = DataProvider.ContentDao.GetSqlStringOfAdminExcludeRecycle(tableName, siteId, begin, end);
-
-            return ExecuteDataset(sqlString);
-        }
-
-        public int Insert(string tableName, SiteInfo siteInfo, IContentInfo contentInfo)
-        {
-            var taxis = GetTaxisToInsert(tableName, contentInfo.ChannelId, contentInfo.IsTop);
-            return Insert(tableName, siteInfo, contentInfo, true, taxis);
-        }
-
-        public int InsertPreview(string tableName, SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
-        {
-            channelInfo.Additional.IsPreviewContentsExists = true;
-            DataProvider.ChannelDao.UpdateAdditional(channelInfo);
-
-            contentInfo.SourceId = SourceManager.Preview;
-            return Insert(tableName, siteInfo, contentInfo, false, 0);
-        }
-
-        public int Insert(string tableName, SiteInfo siteInfo, IContentInfo contentInfo, bool isUpdateContentNum, int taxis)
-        {
-            var contentId = 0;
-
-            if (!string.IsNullOrEmpty(tableName))
-            {
-                if (siteInfo.Additional.IsAutoPageInTextEditor && contentInfo.ContainsKey(BackgroundContentAttribute.Content))
-                {
-                    contentInfo.Set(BackgroundContentAttribute.Content, ContentUtility.GetAutoPageContent(contentInfo.GetString(BackgroundContentAttribute.Content), siteInfo.Additional.AutoPageWordNum));
-                }
-
-                contentInfo.Taxis = taxis;
-
-                contentId = Insert(tableName, contentInfo);
-
-                if (isUpdateContentNum)
-                {
-                    new Action(() =>
-                    {
-                        DataProvider.ChannelDao.UpdateContentNum(SiteManager.GetSiteInfo(contentInfo.SiteId), contentInfo.ChannelId, true);
-                    }).BeginInvoke(null, null);
-                }
-
-                Content.ClearCache();
-            }
-
-            return contentId;
-        }
-
-        public void Update(string tableName, SiteInfo siteInfo, IContentInfo contentInfo)
-        {
-            if (siteInfo.Additional.IsAutoPageInTextEditor && contentInfo.ContainsKey(BackgroundContentAttribute.Content))
-            {
-                contentInfo.Set(BackgroundContentAttribute.Content, ContentUtility.GetAutoPageContent(contentInfo.GetString(BackgroundContentAttribute.Content), siteInfo.Additional.AutoPageWordNum));
-            }
-
-            Update(tableName, contentInfo);
-
-            Content.ClearCache();
-        }
-
-        public ContentInfo GetContentInfo(string tableName, int contentId)
-        {
-            if (string.IsNullOrEmpty(tableName) || contentId <= 0) return null;
-
-            ContentInfo info = null;
-
-            string sqlWhere = $"WHERE Id = {contentId}";
-            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
-
-            using (var rdr = ExecuteReader(sqlSelect))
-            {
-                if (rdr.Read())
-                {
-                    info = GetContentInfo(rdr);
-                }
-                rdr.Close();
-            }
-
-            return info;
+            ContentManager.UpdateCache(channelInfo, contentInfo);
         }
 
         public int GetCountOfContentAdd(string tableName, int siteId, int channelId, EScopeType scope, DateTime begin, DateTime end, string userName, ETriState checkedState)
@@ -1392,7 +1314,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
         public List<int> GetIdListBySameTitle(string tableName, int channelId, string title)
         {
             var list = new List<int>();
-            string sql = $"SELECT Id FROM {tableName} WHERE ChannelId = {channelId} AND Title = '{title}'";
+            var sql = $"SELECT Id FROM {tableName} WHERE ChannelId = {channelId} AND Title = '{title}'";
             using (var rdr = ExecuteReader(sql))
             {
                 while (rdr.Read())
@@ -1404,94 +1326,6 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             return list;
         }
 
-        public List<IContentInfo> GetListByLimitAndOffset(string tableName, string whereString, string orderString, int limit, int offset)
-        {
-            var list = new List<IContentInfo>();
-            if (!string.IsNullOrEmpty(whereString))
-            {
-                whereString = whereString.Replace("WHERE ", string.Empty).Replace("where ", string.Empty);
-            }
-            if (!string.IsNullOrEmpty(orderString))
-            {
-                orderString = orderString.Replace("ORDER BY ", string.Empty).Replace("order by ", string.Empty);
-            }
-            var firstWhere = string.IsNullOrEmpty(whereString) ? string.Empty : $"WHERE {whereString}";
-            var secondWhere = string.IsNullOrEmpty(whereString) ? string.Empty : $"AND {whereString}";
-            var order = string.IsNullOrEmpty(orderString) ? "IsTop DESC, Id DESC" : orderString;
-
-            var sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order}";
-            if (limit > 0 && offset > 0)
-            {
-                if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-                {
-                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit} offset {offset}";
-                }
-                else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-                {
-                    sqlString = $@"SELECT TOP {limit} * FROM {tableName} WHERE Id NOT IN (SELECT TOP {offset} Id FROM {tableName} {firstWhere} ORDER BY {order}) {secondWhere} ORDER BY {order}";
-                }
-                else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-                {
-                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit} offset {offset}";
-                }
-                else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-                {
-                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
-                }
-            }
-            else if (limit > 0)
-            {
-                if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-                {
-                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit}";
-                }
-                else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-                {
-                    sqlString = $@"SELECT TOP {limit} * FROM {tableName} {firstWhere} ORDER BY {order}";
-                }
-                else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-                {
-                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit}";
-                }
-                else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-                {
-                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} FETCH FIRST {limit} ROWS ONLY";
-                }
-            }
-            else if (offset > 0)
-            {
-                if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-                {
-                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} offset {offset}";
-                }
-                else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-                {
-                    sqlString =
-                            $@"SELECT * FROM {tableName} WHERE Id NOT IN (SELECT TOP {offset} Id FROM {tableName} {firstWhere} ORDER BY {order}) {secondWhere} ORDER BY {order}";
-                }
-                else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-                {
-                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} offset {offset}";
-                }
-                else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-                {
-                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} OFFSET {offset} ROWS";
-                }
-            }
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var info = GetContentInfo(rdr);
-                    list.Add(info);
-                }
-                rdr.Close();
-            }
-
-            return list;
-        }
-
         public int GetCount(string tableName, string whereString)
         {
             if (!string.IsNullOrEmpty(whereString))
@@ -1500,7 +1334,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             }
             whereString = string.IsNullOrEmpty(whereString) ? string.Empty : $"WHERE {whereString}";
 
-            string sqlString = $"SELECT COUNT(*) FROM {tableName} {whereString}";
+            var sqlString = $"SELECT COUNT(*) FROM {tableName} {whereString}";
 
             return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
@@ -1534,13 +1368,12 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
                     }
                 }
 
-                int checkedLevel;
-                var isChecked = CheckManager.GetUserCheckLevel(permissionManager, siteInfo, siteInfo.Id, out checkedLevel);
-                var checkLevelList = CheckManager.LevelInt.GetCheckLevelListOfNeedCheck(siteInfo, isChecked, checkedLevel);
+                var isChecked = CheckManager.GetUserCheckLevel(permissionManager, siteInfo, siteInfo.Id, out var checkedLevel);
+                var checkLevelList = CheckManager.LevelInt.GetCheckLevelListOfNeedCheck(isChecked, checkedLevel);
 
                 var sqlString = permissionManager.IsSystemAdministrator
-                    ? $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (SiteId = {siteId} AND ChannelId > 0 AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}))"
-                    : $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (SiteId = {siteId} AND ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningChannelIdList)}) AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}))";
+                    ? $"SELECT COUNT(*) FROM {tableName} WHERE SiteId = {siteId} AND ChannelId > 0 AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) AND {nameof(ContentInfo.SourceId)} != {SourceManager.Preview}"
+                    : $"SELECT COUNT(*) FROM {tableName} WHERE SiteId = {siteId} AND ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningChannelIdList)}) AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) AND {nameof(ContentInfo.SourceId)} != {SourceManager.Preview}";
 
                 var count = DataProvider.DatabaseDao.GetIntResult(sqlString);
                 if (count > 0)
@@ -1554,8 +1387,8 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
         public int GetCountCheckedImage(int siteId, int channelId)
         {
             var tableName = SiteManager.GetSiteInfo(siteId).TableName;
-            string sqlString =
-                $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (ChannelId = {channelId} AND ImageUrl <> '' AND {ContentAttribute.IsChecked} = '{true}')";
+            var sqlString =
+                $"SELECT COUNT(*) FROM {tableName} WHERE {nameof(ContentInfo.ChannelId)} = {channelId} AND {nameof(ContentInfo.ImageUrl)} != '' AND {ContentAttribute.IsChecked} = '{true}' AND {nameof(ContentInfo.SourceId)} != {SourceManager.Preview}";
 
             return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
@@ -1569,7 +1402,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
 
         private List<int> GetContentIdListByTrash(int siteId, string tableName)
         {
-            string sqlString =
+            var sqlString =
                 $"SELECT Id FROM {tableName} WHERE SiteId = {siteId} AND ChannelId < 0";
             return DataProvider.DatabaseDao.GetIntList(sqlString);
         }
@@ -1743,15 +1576,6 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             return taxis;
         }
 
-        private ContentInfo GetContentInfo(IDataReader rdr)
-        {
-            var contentInfo = new ContentInfo();
-            contentInfo.Load(rdr);
-            contentInfo.Load(contentInfo.SettingsXml);
-
-            return contentInfo;
-        }
-
         private int GetCountOfContentAdd(string tableName, int siteId, List<int> channelIdList, DateTime begin, DateTime end, string userName, ETriState checkedState)
         {
             string sqlString;
@@ -1838,10 +1662,10 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             }
         }
 
-        public List<int> ApiGetContentIdListBySiteId(string tableName, int siteId, int top, int skip, string like, string orderby, NameValueCollection queryString, out int totalCount)
+        public List<Tuple<int, int>> ApiGetContentIdListBySiteId(string tableName, int siteId, int top, int skip, string like, string orderby, NameValueCollection queryString, out int totalCount)
         {
             totalCount = 0;
-            var list = new List<int>();
+            var list = new List<ContentInfo>();
 
             var whereString = $"WHERE {ContentAttribute.SiteId} = {siteId} AND {ContentAttribute.ChannelId} > 0 AND {ContentAttribute.IsChecked} = '{true}'";
 
@@ -1884,15 +1708,21 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             totalCount = DataProvider.DatabaseDao.GetPageTotalCount(tableName, whereString, dbArgs);
             if (totalCount > 0 && skip < totalCount)
             {
-                var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, ContentAttribute.Id, whereString, $"ORDER BY {orderByString}", skip, top);
+                var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, $"{ContentAttribute.Id}, {ContentAttribute.ChannelId}", whereString, $"ORDER BY {orderByString}", skip, top);
 
                 using (var connection = GetConnection())
                 {
-                    list = connection.Query<int>(sqlString, dbArgs).ToList();
+                    list = connection.Query<ContentInfo>(sqlString, dbArgs).ToList();
                 }
             }
 
-            return list;
+            var retval = new List<Tuple<int, int>>();
+            foreach (var contentInfo in list)
+            {
+                retval.Add(new Tuple<int, int>(contentInfo.ChannelId, contentInfo.Id));
+            }
+
+            return retval;
         }
 
         public List<int> ApiGetContentIdListByChannelId(string tableName, int siteId, int channelId, int top, int skip, string like, string orderby, NameValueCollection queryString, out int totalCount)
@@ -1953,40 +1783,11 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             return list;
         }
 
-        public Dictionary<string, object> ApiGetContentInfo(string tableName, int contentId)
-        {
-            if (string.IsNullOrEmpty(tableName) || contentId <= 0) return null;
-
-            Dictionary<string, object> info = null;
-
-            string sqlWhere = $"WHERE Id = {contentId}";
-            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
-
-            using (var rdr = ExecuteReader(sqlSelect))
-            {
-                if (rdr.Read())
-                {
-                    var contentInfo = GetContentInfo(rdr);
-                    info = contentInfo.ToDictionary();
-                }
-                rdr.Close();
-            }
-
-            return info;
-        }
-
         #region Table
-
-        public string StlColumns { get; } = $"{ContentAttribute.Id}, {ContentAttribute.ChannelId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}, {ContentAttribute.LastEditDate}, {ContentAttribute.Taxis}, {ContentAttribute.Hits}, {ContentAttribute.HitsByDay}, {ContentAttribute.HitsByWeek}, {ContentAttribute.HitsByMonth}";
-
-        public string GetContentTableName(int siteId)
-        {
-            return $"siteserver_Content_{siteId}";
-        }
 
         public string GetCountSqlString(string tableName, int channelId)
         {
-            return $"SELECT COUNT(*) AS ContentNum FROM {tableName} WHERE {ContentAttribute.ChannelId} = {channelId}";
+            return $"SELECT COUNT(*) FROM {tableName} WHERE {ContentAttribute.ChannelId} = {channelId}  AND {nameof(ContentInfo.SourceId)} != {SourceManager.Preview}";
         }
 
         public string GetSelectCommandByHitsAnalysis(string tableName, int siteId)
@@ -1994,7 +1795,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
 
             var whereString = new StringBuilder();
-            whereString.Append($"AND IsChecked='{true}' AND SiteId = {siteId} AND Hits > 0");
+            whereString.Append($"AND IsChecked = '{true}' AND SiteId = {siteId} AND Hits > 0");
             whereString.Append(orderByString);
 
             return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
@@ -2002,7 +1803,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
 
         public string GetSqlStringOfAdminExcludeRecycle(string tableName, int siteId, DateTime begin, DateTime end)
         {
-            string sqlString = $@"select userName,SUM(addCount) as addCount, SUM(updateCount) as updateCount from( 
+            var sqlString = $@"select userName,SUM(addCount) as addCount, SUM(updateCount) as updateCount from( 
 SELECT AddUserName as userName, Count(AddUserName) as addCount, 0 as updateCount FROM {tableName} 
 INNER JOIN {DataProvider.AdministratorDao.TableName} ON AddUserName = {DataProvider.AdministratorDao.TableName}.UserName 
 WHERE {tableName}.SiteId = {siteId} AND (({tableName}.ChannelId > 0)) 
@@ -2248,7 +2049,7 @@ group by tmp.userName";
             }
             else
             {
-                foreach (int theChannelId in channelIdList)
+                foreach (var theChannelId in channelIdList)
                 {
                     if (owningChannelIdList.Contains(theChannelId))
                     {
@@ -2263,7 +2064,7 @@ group by tmp.userName";
         public string GetSqlStringByContentGroup(string tableName, string contentGroupName, int siteId)
         {
             contentGroupName = AttackUtils.FilterSql(contentGroupName);
-            string sqlString =
+            var sqlString =
                 $"SELECT * FROM {tableName} WHERE SiteId = {siteId} AND ChannelId > 0 AND (GroupNameCollection LIKE '{contentGroupName},%' OR GroupNameCollection LIKE '%,{contentGroupName}' OR GroupNameCollection  LIKE '%,{contentGroupName},%'  OR GroupNameCollection='{contentGroupName}')";
             return sqlString;
         }
@@ -2745,7 +2546,7 @@ group by tmp.userName";
             return whereString.ToString();
         }
 
-        public string GetCreateContentTableSqlString(string tableName, List<TableColumn> tableColumns)
+        private string GetCreateContentTableSqlString(string tableName, List<TableColumn> tableColumns)
         {
             //            var columnSqlStringList = new List<string>();
 
@@ -2982,103 +2783,11 @@ GO");
             }
         }
 
-        //public List<string> GetAddColumnsSqlString(string tableName, TableColumn columnInfo)
-        //{
-        //    var sqlList = new List<string>();
-        //    var columnSqlString = SqlUtils.GetColumnSqlString(columnInfo.DataType, columnInfo.AttributeName, columnInfo.DataLength);
-        //    var alterSqlString = SqlUtils.GetAddColumnsSqlString(tableName, columnSqlString);
-        //    sqlList.Add(alterSqlString);
-        //    return sqlList;
-        //}
-
-        //public void SyncDbTable(string tableName, List<TableColumn> newColumnInfoList)
-        //{
-        //    var oldColumnInfoList = TableColumnManager.GetTableColumnInfoList(tableName, ContentAttribute.AllAttributes);
-
-        //    var sqlList = new List<string>();
-
-        //    //添加新增/修改字段SQL语句
-        //    foreach (var metadataInfo in newColumnInfoList)
-        //    {
-        //        var columnExists = false;
-        //        foreach (var columnInfo in oldColumnInfoList)
-        //        {
-        //            if (!StringUtils.EqualsIgnoreCase(columnInfo.AttributeName, metadataInfo.AttributeName)) continue;
-
-        //            columnExists = true;
-
-        //            if (metadataInfo.DataType != columnInfo.DataType)
-        //            {
-        //                var dropColumnsSqlList = DataProvider.DatabaseDao.GetDropColumnsSqlString(tableName, metadataInfo.AttributeName);
-        //                foreach (var sql in dropColumnsSqlList)
-        //                {
-        //                    sqlList.Add(sql);
-        //                }
-        //                var addColumnsSqlList1 = GetAddColumnsSqlString(tableName, metadataInfo);
-        //                foreach (var sql in addColumnsSqlList1)
-        //                {
-        //                    sqlList.Add(sql);
-        //                }
-        //            }
-
-        //            break;
-        //        }
-        //        if (columnExists) continue;
-
-        //        var addColumnsSqlList2 = GetAddColumnsSqlString(tableName, metadataInfo);
-        //        foreach (var sql in addColumnsSqlList2)
-        //        {
-        //            sqlList.Add(sql);
-        //        }
-        //    }
-
-        //    //添加删除字段SQL语句
-        //    foreach (var columnInfo in oldColumnInfoList)
-        //    {
-        //        var isNeedDelete = true;
-        //        foreach (var metadataInfo in newColumnInfoList)
-        //        {
-        //            if (StringUtils.EqualsIgnoreCase(columnInfo.AttributeName, metadataInfo.AttributeName))
-        //            {
-        //                isNeedDelete = false;
-        //                break;
-        //            }
-        //        }
-        //        if (isNeedDelete)
-        //        {
-        //            var dropColumnsSqlList = DataProvider.DatabaseDao.GetDropColumnsSqlString(tableName, columnInfo.AttributeName);
-        //            foreach (var sql in dropColumnsSqlList)
-        //            {
-        //                sqlList.Add(sql);
-        //            }
-        //        }
-        //    }
-
-        //    if (sqlList.Count <= 0) return;
-
-        //    DataProvider.DatabaseDao.ExecuteSql(sqlList);
-        //    TableColumnManager.ClearCache();
-        //}
-
-        //public void CreateAllTableCollectionInfoIfNotExists()
-        //{
-        //    //添加后台内容表
-        //    if (!IsTableExistsAndCreated())
-        //    {
-        //        var tableName = DefaultTableName;
-        //        if (!IsExists(tableName))
-        //        {
-        //            var tableInfo = new TableInfo(0, tableName, "后台内容表", 0, false, false, true, string.Empty);
-        //            var metadataInfoList = DataProvider.TableMetadataDao.GetDefaultTableMetadataInfoList(tableName);
-        //            Insert(tableInfo, metadataInfoList);
-        //        }
-        //        CreateDbTable(tableName);
-        //    }
-        //}
-
         #endregion
 
-        public string GetCacheWhereString(SiteInfo siteInfo, ChannelInfo channelInfo)
+        #region Cache
+
+        private string GetCacheWhereString(SiteInfo siteInfo, ChannelInfo channelInfo)
         {
             return $"WHERE {nameof(ContentInfo.SiteId)} = {siteInfo.Id} AND {nameof(ContentInfo.ChannelId)} = {channelInfo.Id} AND {nameof(ContentAttribute.SourceId)} != {SourceManager.Preview}";
         }
@@ -3090,21 +2799,57 @@ GO");
 
         public List<ContentInfo> GetCacheList(SiteInfo siteInfo, ChannelInfo channelInfo, int offset, int limit)
         {
-            var list = new List<ContentInfo>();
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-            var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, SqlUtils.Asterisk, GetCacheWhereString(siteInfo, channelInfo), GetCacheOrderString(channelInfo), offset, limit);
+            return GetContentInfoList(tableName, GetCacheWhereString(siteInfo, channelInfo),
+                GetCacheOrderString(channelInfo), offset, limit);
+        }
+
+        public List<ContentInfo> GetContentInfoList(string tableName, string whereString, string orderString, int offset, int limit)
+        {
+            var list = new List<ContentInfo>();
+
+            var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, SqlUtils.Asterisk, whereString, orderString, offset, limit);
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    list.Add(GetContentInfo(rdr));
+                    var contentInfo = new ContentInfo();
+                    contentInfo.Load(rdr);
+                    contentInfo.Load(contentInfo.SettingsXml);
+
+                    list.Add(contentInfo);
                 }
                 rdr.Close();
             }
 
             return list;
         }
+
+        public ContentInfo GetCacheContentInfo(string tableName, int contentId)
+        {
+            if (string.IsNullOrEmpty(tableName) || contentId <= 0) return null;
+
+            ContentInfo contentInfo = null;
+
+            var sqlWhere = $"WHERE Id = {contentId}";
+            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
+
+            using (var rdr = ExecuteReader(sqlSelect))
+            {
+                if (rdr.Read())
+                {
+                    contentInfo = new ContentInfo();
+                    contentInfo.Load(rdr);
+                    contentInfo.Load(contentInfo.SettingsXml);
+                }
+                rdr.Close();
+            }
+
+            return contentInfo;
+        }
+
+        #endregion
     }
 }

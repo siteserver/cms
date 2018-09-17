@@ -147,7 +147,7 @@
         <div class="form-group form-row">
           <label class="col-2 col-form-label text-right">栏目组</label>
           <div class="col-10">
-            <asp:CheckBoxList id="CblNodeGroupNameCollection" DataTextField="GroupName" DataValueField="GroupName" RepeatDirection="Horizontal"
+            <asp:CheckBoxList id="CblNodeGroupNameCollection" RepeatDirection="Horizontal"
               RepeatLayout="Flow" class="checkbox checkbox-primary" runat="server" />
           </div>
         </div>

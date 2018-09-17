@@ -4,6 +4,7 @@ using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.BackgroundPages
 {

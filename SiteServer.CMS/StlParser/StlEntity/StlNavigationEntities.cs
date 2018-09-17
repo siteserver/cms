@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.StlParser.Cache;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -44,7 +45,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     var taxis = nodeInfo.Taxis;
                     var isNextChannel = !StringUtils.EqualsIgnoreCase(attributeName, PreviousChannel);
                     //var siblingChannelId = DataProvider.ChannelDao.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
-                    var siblingChannelId = Channel.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
+                    var siblingChannelId = StlChannelCache.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
                     if (siblingChannelId != 0)
                     {
                         var siblingNodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, siblingChannelId);
@@ -58,12 +59,10 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         var taxis = contextInfo.ContentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(attributeName, PreviousContent);
                         var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
-                        //var siblingContentId = DataProvider.ContentDao.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
-                        var siblingContentId = Content.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
+                        var siblingContentId = StlContentCache.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
-                            //var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
-                            var contentInfo = Content.GetContentInfo(tableName, siblingContentId);
+                            var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contextInfo.ChannelId, siblingContentId);
                             parsedContent = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, pageInfo.IsLocal);
                         }
                     }

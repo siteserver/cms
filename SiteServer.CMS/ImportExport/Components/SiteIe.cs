@@ -2,6 +2,7 @@
 using Atom.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils.Enumerations;
@@ -119,17 +120,17 @@ namespace SiteServer.CMS.ImportExport.Components
 
         public void Export(int siteId, int channelId, bool isSaveContents)
         {
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            if (nodeInfo == null) return;
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            if (channelInfo == null) return;
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
             var fileName = DataProvider.ChannelDao.GetOrderStringInSite(channelId);
 
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + fileName + ".xml";
 
-            var feed = _channelIe.ExportNodeInfo(nodeInfo);
+            var feed = _channelIe.ExportNodeInfo(channelInfo);
 
             if (isSaveContents)
             {
@@ -137,7 +138,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, channelId, orderByString);
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                     //ContentUtility.PutImagePaths(siteInfo, contentInfo as BackgroundContentInfo, collection);
                     var entry = _contentIe.ExportContentInfo(contentInfo);
                     feed.Entries.Add(entry);

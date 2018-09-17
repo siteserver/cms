@@ -4,7 +4,7 @@ using System.IO;
 namespace SiteServer.Utils.IO
 {
 	/// <summary>
-	/// FileSystemInfoExtend ��ժҪ˵����
+	/// FileSystemInfoExtend
 	/// </summary>
 	public class FileSystemInfoExtend : SimpleFileInfoBase
 	{

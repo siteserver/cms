@@ -30,24 +30,5 @@ namespace SiteServer.Utils
 		{
 			_tabs = tabs;
 		}
-
-		/// <summary>
-		/// Returns the current instance of the TabCollection
-		/// </summary>
-		/// <returns></returns>
-		public static TabCollection GetTabs(string filePath)
-		{
-		    if (filePath.StartsWith("/") || filePath.StartsWith("~"))
-		    {
-                filePath = HttpContext.Current.Server.MapPath(filePath);
-            }
-
-			var tc = CacheUtils.Get(filePath) as TabCollection;
-		    if (tc != null) return tc;
-
-		    tc = (TabCollection)Serializer.ConvertFileToObject(filePath,typeof(TabCollection));
-		    CacheUtils.Insert(filePath, tc, filePath);
-		    return tc;
-		}
     }
 }

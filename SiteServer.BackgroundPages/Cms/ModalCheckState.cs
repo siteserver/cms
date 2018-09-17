@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -42,11 +43,11 @@ namespace SiteServer.BackgroundPages.Cms
             _contentId = AuthRequest.GetQueryInt("contentID");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
 
-            var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, _contentId);
+            var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelId, _contentId);
 
             int checkedLevel;
             var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, SiteId, out checkedLevel);
-            BtnCheck.Visible = CheckManager.IsCheckable(SiteInfo, _channelId, contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
+            BtnCheck.Visible = CheckManager.IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
 
             LtlTitle.Text = contentInfo.Title;
             LtlState.Text = CheckManager.GetCheckState(SiteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);

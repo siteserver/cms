@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.UI;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
 

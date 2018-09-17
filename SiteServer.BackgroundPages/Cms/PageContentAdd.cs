@@ -9,6 +9,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
@@ -76,7 +77,7 @@ namespace SiteServer.BackgroundPages.Cms
             ReturnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
             if (string.IsNullOrEmpty(ReturnUrl))
             {
-                ReturnUrl = PageContent.GetRedirectUrl(SiteId, channelId);
+                ReturnUrl = CmsPages.GetContentsUrl(SiteId, channelId);
             }
 
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
@@ -89,7 +90,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (contentId > 0)
             {
-                contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, contentId);
+                contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
             }
 
             var titleFormat = IsPostBack ? Request.Form[ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)] : contentInfo?.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title));
@@ -126,7 +127,7 @@ namespace SiteServer.BackgroundPages.Cms
                 TbAddDate.DateTime = DateTime.Now;
                 TbAddDate.Now = true;
 
-                var contentGroupNameList = DataProvider.ContentGroupDao.GetGroupNameList(SiteId);
+                var contentGroupNameList = ContentGroupManager.GetGroupNameList(SiteId);
                 foreach (var groupName in contentGroupNameList)
                 {
                     var item = new ListItem(groupName, groupName);
@@ -151,7 +152,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, _channelInfo.Id, contentInfo, isChecked, checkedLevel);
+                    CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, contentInfo, isChecked, checkedLevel);
                 }
                 else
                 {
@@ -288,7 +289,7 @@ namespace SiteServer.BackgroundPages.Cms
                     //判断是不是有审核权限
                     int checkedLevelOfUser;
                     var isCheckedOfUser = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, contentInfo.ChannelId, out checkedLevelOfUser);
-                    if (CheckManager.IsCheckable(SiteInfo, contentInfo.ChannelId, contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
+                    if (CheckManager.IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                     {
                         if (contentInfo.IsChecked)
                         {
@@ -300,7 +301,7 @@ namespace SiteServer.BackgroundPages.Cms
                         contentInfo.Set(ContentAttribute.CheckReasons, string.Empty);
                     }
 
-                    contentInfo.Id = DataProvider.ContentDao.Insert(_tableName, SiteInfo, contentInfo);
+                    contentInfo.Id = DataProvider.ContentDao.Insert(_tableName, SiteInfo, _channelInfo, contentInfo);
 
                     TagUtils.AddTags(tagCollection, SiteId, contentInfo.Id);
                 }
@@ -310,7 +311,8 @@ namespace SiteServer.BackgroundPages.Cms
                     FailMessage($"内容添加失败：{ex.Message}");
                 }
 
-                CreateManager.CreateContentAndTrigger(SiteId, _channelInfo.Id, contentInfo.Id);
+                CreateManager.CreateContent(SiteId, _channelInfo.Id, contentInfo.Id);
+                CreateManager.TriggerContentChangedEvent(SiteId, _channelInfo.Id);
 
                 AuthRequest.AddSiteLog(SiteId, _channelInfo.Id, contentInfo.Id, "添加内容",
                     $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
@@ -322,7 +324,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, contentId);
+                var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
                 try
                 {
                     var tagsLast = contentInfo.Tags;
@@ -372,7 +374,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    DataProvider.ContentDao.Update(_tableName, SiteInfo, contentInfo);
+                    DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
 
                     TagUtils.UpdateTags(tagsLast, contentInfo.Tags, tagCollection, SiteId, contentId);
 
@@ -452,7 +454,8 @@ namespace SiteServer.BackgroundPages.Cms
                     return;
                 }
 
-                CreateManager.CreateContentAndTrigger(SiteId, _channelInfo.Id, contentId);
+                CreateManager.CreateContent(SiteId, _channelInfo.Id, contentId);
+                CreateManager.TriggerContentChangedEvent(SiteId, _channelInfo.Id);
 
                 AuthRequest.AddSiteLog(SiteId, _channelInfo.Id, contentId, "修改内容",
                     $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");

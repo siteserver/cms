@@ -32,16 +32,25 @@ var pageUtils = {
       config.height = $(window).height() - 50;
     }
 
-    layer.open({
+    if (config.full) {
+      config.width = $(window).width() - 50;
+      config.height = $(window).height() - 50;
+    }
+
+    var index = layer.open({
       type: 2,
       btn: null,
       title: config.title,
       area: [config.width + 'px', config.height + 'px'],
-      fixed: false,
       maxmin: true,
+      resize: true,
       shadeClose: true,
       content: config.url
     });
+
+    // if (config.full) {
+    //   layer.full(index);
+    // }
 
     return false;
   },

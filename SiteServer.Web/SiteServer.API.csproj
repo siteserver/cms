@@ -44,12 +44,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.2\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.2.2\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.3.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
@@ -133,8 +127,16 @@
     <Content Include="安装向导.html" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\Pages\Cms\PageContentsLayerCheckController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PageContentsLayerTaxisController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PageContentsLayerGroupController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PageContentsLayerAttributesController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PageContentsLayerDeleteController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PageContentsLayerWordController.cs" />
     <Compile Include="Controllers\Pages\Cms\PageContentsController.cs" />
     <Compile Include="Controllers\Pages\Cms\PageCreateController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PageCreateStatusController.cs" />
+    <Compile Include="Controllers\Pages\PageMainController.cs" />
     <Compile Include="Controllers\Pages\Plugins\PageInstallController.cs" />
     <Compile Include="Controllers\Pages\Settings\PageSiteTableController.cs" />
     <Compile Include="Controllers\Pages\Settings\PageAdminAccessTokensViewLayerController.cs" />
@@ -165,7 +167,6 @@
     <Compile Include="Controllers\V1\UsersController.cs" />
     <Compile Include="Controllers\V1\PingController.cs" />
     <Compile Include="Controllers\V1\StlController.cs" />
-    <Compile Include="CreateHub.cs" />
     <Compile Include="ErrorRedirectModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />

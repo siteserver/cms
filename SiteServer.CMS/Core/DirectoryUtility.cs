@@ -2,6 +2,7 @@
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using System.Collections;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.CMS.Core
 {

@@ -7,6 +7,7 @@ using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
 using SiteServer.Utils.Enumerations;
 

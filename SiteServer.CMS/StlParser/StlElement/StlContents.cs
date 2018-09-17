@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils;
@@ -125,8 +126,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var contentId = Convert.ToInt32(row[nameof(ContentAttribute.Id)]);
                 var channelId = Convert.ToInt32(row[nameof(ContentAttribute.ChannelId)]);
 
-                var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, channelId);
-                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+                var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelId, contentId);
 
                 if (contentInfo != null)
                 {

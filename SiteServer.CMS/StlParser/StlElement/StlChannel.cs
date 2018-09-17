@@ -1,8 +1,9 @@
 ﻿using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -415,7 +416,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.Equals(ChannelAttribute.CountOfImageContents.ToLower()))
             { 
-                var count = Content.GetCountCheckedImage(pageInfo.SiteId, channel.Id);
+                var count = StlContentCache.GetCountCheckedImage(pageInfo.SiteId, channel.Id);
                 parsedContent = count.ToString();
             }
             else

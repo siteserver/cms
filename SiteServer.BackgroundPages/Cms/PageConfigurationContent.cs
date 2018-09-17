@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -111,7 +112,7 @@ namespace SiteServer.BackgroundPages.Cms
             DataProvider.SiteDao.Update(SiteInfo);
             if (isReCaculate)
             {
-                DataProvider.ContentDao.UpdateAutoPageContent(SiteInfo.TableName, SiteInfo);
+                DataProvider.ContentDao.SetAutoPageContentToSite(SiteInfo);
             }
 
             AuthRequest.AddSiteLog(SiteId, "修改内容设置");

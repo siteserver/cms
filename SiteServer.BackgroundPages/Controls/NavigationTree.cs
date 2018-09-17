@@ -5,6 +5,7 @@ using System.Web.UI;
 using SiteServer.BackgroundPages.Plugins;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.BackgroundPages.Controls
 {

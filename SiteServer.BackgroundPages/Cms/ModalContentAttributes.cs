@@ -5,6 +5,7 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 
@@ -19,8 +20,7 @@ namespace SiteServer.BackgroundPages.Cms
         protected HtmlInputHidden HihType;
         protected TextBox TbHits;
 
-        private int _channelId;
-        private string _tableName;
+        private ChannelInfo _channelInfo;
         private List<int> _idList;
 
         public static string GetOpenWindowString(int siteId, int channelId)
@@ -45,8 +45,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "channelId");
 
-            _channelId = AuthRequest.GetQueryInt("channelId");
-            _tableName = ChannelManager.GetTableName(SiteInfo, _channelId);
+            var channelId = AuthRequest.GetQueryInt("channelId");
+            _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             _idList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
 		}
 
@@ -61,7 +61,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in _idList)
                         {
-                            var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, contentId);
+                            var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
                             if (contentInfo != null)
                             {
                                 if (CbIsRecommend.Checked)
@@ -80,7 +80,7 @@ namespace SiteServer.BackgroundPages.Cms
                                 {
                                     contentInfo.IsTop = true;
                                 }
-                                DataProvider.ContentDao.Update(_tableName, SiteInfo, contentInfo);
+                                DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
                             }
                         }
 
@@ -95,7 +95,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in _idList)
                         {
-                            var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, contentId);
+                            var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
                             if (contentInfo != null)
                             {
                                 if (CbIsRecommend.Checked)
@@ -114,7 +114,7 @@ namespace SiteServer.BackgroundPages.Cms
                                 {
                                     contentInfo.IsTop = false;
                                 }
-                                DataProvider.ContentDao.Update(_tableName, SiteInfo, contentInfo);
+                                DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
                             }
                         }
 
@@ -129,7 +129,12 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var contentId in _idList)
                     {
-                        DataProvider.ContentDao.SetValue(_tableName, contentId, ContentAttribute.Hits, hits.ToString());
+                        var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
+                        if (contentInfo != null)
+                        {
+                            contentInfo.Hits = hits;
+                            DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
+                        }
                     }
 
                     AuthRequest.AddSiteLog(SiteId, "设置内容点击量");

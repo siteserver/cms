@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 

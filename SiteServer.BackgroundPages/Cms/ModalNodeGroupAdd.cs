@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -34,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (AuthRequest.IsQueryExists("GroupName"))
             {
                 var groupName = AuthRequest.GetQueryString("GroupName");
-                var nodeGroupInfo = DataProvider.ChannelGroupDao.GetGroupInfo(SiteId, groupName);
+                var nodeGroupInfo = ChannelGroupManager.GetChannelGroupInfo(SiteId, groupName);
                 if (nodeGroupInfo != null)
                 {
                     TbNodeGroupName.Text = nodeGroupInfo.GroupName;
@@ -71,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 			else
 			{
-                var nodeGroupNameList = DataProvider.ChannelGroupDao.GetGroupNameList(SiteId);
+                var nodeGroupNameList = ChannelGroupManager.GetGroupNameList(SiteId);
 				if (nodeGroupNameList.IndexOf(TbNodeGroupName.Text) != -1)
 				{
                     FailMessage("栏目组添加失败，栏目组名称已存在！");
