@@ -13,6 +13,7 @@ var data = {
   count: null,
   pages: null,
   permissions: null,
+  attributes: null,
   pageOptions: null,
   isAllChecked: false
 };
@@ -21,10 +22,13 @@ var methods = {
   btnAddClick: function () {
     location.href = 'pageContentAdd.aspx?siteId=' + this.siteId + '&channelId=' + this.channelId;
   },
+  btnSearchClick: function () {
+    parent.location.href = 'pageContentSearch.aspx?siteId=' + this.siteId + '&channelId=' + this.channelId;
+  },
   btnCreateClick: function () {
-    this.pageAlert = null;
-
     var $this = this;
+    $this.pageAlert = null;
+    if ($this.selectedContentIds.length === 0) return;
 
     pageUtils.loading(true);
     $createApi.post({
@@ -42,6 +46,7 @@ var methods = {
   },
   btnFuncClick: function (options) {
     this.pageAlert = null;
+
     if (options.withoutContents) {
       pageUtils.openLayer({
         title: "批量" + options.title,
@@ -55,6 +60,8 @@ var methods = {
       });
       return;
     }
+
+    if (this.selectedContentIds.length === 0) return;
 
     if (options.redirect) {
       location.href =
@@ -80,6 +87,30 @@ var methods = {
         height: options.height ? options.height : 500
       });
     }
+  },
+  btnContentViewClick: function (contentId) {
+    pageUtils.openLayer({
+      title: "查看内容",
+      url: "contentsLayerView.cshtml?siteId=" +
+        this.siteId +
+        "&channelId=" +
+        this.channelId +
+        "&contentId=" +
+        contentId,
+      full: true
+    });
+  },
+  btnContentStateClick: function (contentId) {
+    pageUtils.openLayer({
+      title: "查看审核状态",
+      url: "contentsLayerState.cshtml?siteId=" +
+        this.siteId +
+        "&channelId=" +
+        this.channelId +
+        "&contentId=" +
+        contentId,
+      full: true
+    });
   },
   toggleChecked: function (content) {
     content.isSelected = !content.isSelected;
@@ -142,6 +173,7 @@ var methods = {
         $this.pages = res.pages;
         if (page === 1) {
           $this.permissions = res.permissions;
+          $this.attributes = res.attributes;
         }
         $this.page = page;
         $this.pageOptions = [];

@@ -5,6 +5,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 
@@ -25,6 +26,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
+                var searchType = request.GetQueryString("searchType");
+                var searchWord = request.GetQueryString("searchWord");
                 var page = request.GetQueryInt("page");
 
                 if (!request.IsAdminLoggin ||
@@ -40,12 +43,6 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                //var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-                //var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(siteId, channelId);
-                //var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
-                //var attributes = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplay(siteId, channelId));
-                //var returnColumnNames = TranslateUtils.ObjectCollectionToString(TableColumnManager.GetTableColumnNameList(tableName, DataType.Text));
-
                 var offset = siteInfo.Additional.PageSize * (page - 1);
                 var limit = siteInfo.Additional.PageSize;
 
@@ -54,7 +51,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 foreach (var contentInfo in pageContents)
                 {
                     var dict = contentInfo.ToDictionary();
-                    dict["title"] = WebUtils.GetContentTitle(siteInfo, contentInfo, string.Empty);
+                    //dict["title"] = WebUtils.GetContentTitle(siteInfo, contentInfo, string.Empty);
+                    dict["title"] = ContentUtility.FormatTitle(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString), contentInfo.Title);
                     dict["checkState"] = CheckManager.GetCheckState(siteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);
                     retval.Add(dict);
                 }
@@ -74,12 +72,18 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     };
                 }
 
+                var attributes = ChannelManager.GetContentAttributesToList(siteInfo, channelInfo, false);
+                var pages = Convert.ToInt32(
+                    Math.Ceiling(Convert.ToDouble(channelInfo.ContentNum / siteInfo.Additional.PageSize)));
+                if (pages == 0) pages = 1;
+
                 return Ok(new
                 {
                     Value = retval,
                     Count = channelInfo.ContentNum,
-                    Pages = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(channelInfo.ContentNum / siteInfo.Additional.PageSize))),
-                    Permissions = permissions
+                    Pages = pages,
+                    Permissions = permissions,
+                    Attributes = attributes
                 });
             }
             catch (Exception ex)

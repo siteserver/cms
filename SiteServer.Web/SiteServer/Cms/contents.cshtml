@@ -2,74 +2,75 @@
 
 <div class="card-box">
 
-  <div class="btn-toolbar btn-group btn-group-sm mb-2">
-    <button v-on:click="btnAddClick" v-if="permissions.isAdd" class="btn btn-rounded bg-light text-black">
-      <i class="fa fa-plus"></i>
-      添加
-    </button>
-    <button v-on:click="btnFuncClick({title: '导入Word', name: 'Word', withoutContents: true, full: true})" v-if="permissions.isAdd"
-      class="btn btn-rounded bg-light text-sm">
-      <i class="fa fa-file"></i>
-      导入Word
-    </button>
-    <button v-if="permissions.isAdd" class="btn btn-rounded bg-light text-black">
+  <div class="btn-toolbar mb-2">
+    <div class="btn-group">
+      <button v-if="permissions.isAdd" v-on:click="btnAddClick" class="btn btn-light text-secondary btn-sm">
+        <i class="ion-plus"></i>
+        添加
+      </button>
+      <button v-if="permissions.isAdd" v-on:click="btnFuncClick({title: '导入Word', name: 'Word', withoutContents: true, full: true})"
+        class="btn btn-light text-secondary btn-sm">
+        <i class="fa fa-file"></i>
+        导入Word
+      </button>
+      <!-- <button v-if="permissions.isAdd" class="btn btn-light text-secondary btn-sm">
       <i class="fa fa-upload"></i>
       导入文件
-    </button>
-    <button v-if="permissions.isChannelEdit" class="btn btn-rounded bg-light text-black" onclick="$.layer({type: 2, maxmin: true, shadeClose: true, title: '设置显示项', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalselectcolumns.aspx?siteId=35&channelId=6136'}, area: [($(window).width() - 50) +'px', ($(window).height() - 50) +'px'], offset: ['25px', '25px']});return false;">
-      <i class="fa fa-columns"></i>
-      显 示
-    </button>
-
-    <button v-if="count > 0" class="btn btn-rounded bg-light text-black">
+    </button> -->
+      <button v-if="permissions.isChannelEdit" v-on:click="btnFuncClick({title: '设置显示列', name: 'Columns', withoutContents: true, full: true})"
+        class="btn btn-light text-secondary btn-sm">
+        <i class="fa fa-columns"></i>
+        显示列
+      </button>
+      <!-- <button v-if="count > 0" class="btn btn-light text-secondary btn-sm">
       <i class="fa fa-download"></i>
       导 出
-    </button>
-    <button v-if="count > 0 && permissions.isEdit" class="btn btn-rounded bg-light text-black">
+    </button> -->
+      <!-- <button v-if="count > 0 && permissions.isEdit" class="btn btn-light text-secondary btn-sm">
       <i class="fa fa-list-ol"></i>
       整 理
-    </button>
-  </div>
-
-  <div v-if="count > 0" class="row form-inline mb-2">
-    <div class="col-8 btn-toolbar btn-group btn-group-sm">
-      <button v-on:click="btnFuncClick({title: '删除', name: 'Delete'})" v-if="selectedContentIds.length > 0 && permissions.isDelete"
-        class="btn btn-rounded bg-light text-black">
+    </button> -->
+      <button v-on:click="btnSearchClick" class="btn btn-light text-secondary btn-sm">
+        <i class="ion-search"></i>
+        搜 索
+      </button>
+    </div>
+    <div class="btn-group ml-2">
+      <button :class="{disabled: selectedContentIds.length === 0 || !permissions.isDelete}" v-on:click="btnFuncClick({title: '删除', name: 'Delete'})"
+        class="btn btn-light text-secondary btn-sm">
         <i class="fa fa-trash"></i>
         删 除
       </button>
-      <button v-on:click="btnFuncClick({title: '设置属性', name: 'Attributes', width: 450, height: 320})" v-if="selectedContentIds.length > 0 && permissions.isEdit"
-        class="btn btn-rounded bg-light text-black">
+      <button :class="{disabled: selectedContentIds.length === 0 || !permissions.isEdit}" v-on:click="btnFuncClick({title: '设置属性', name: 'Attributes', width: 450, height: 320})"
+        class="btn btn-light text-secondary btn-sm">
         <i class="fa fa-flag"></i>
         属 性
       </button>
-      <button v-on:click="btnFuncClick({title: '设置组别', name: 'Group'})" v-if="selectedContentIds.length > 0 && permissions.isEdit"
-        v-if="selectedContentIds.length > 0" class="btn btn-rounded bg-light text-black">
+      <button :class="{disabled: selectedContentIds.length === 0 || !permissions.isEdit}" v-on:click="btnFuncClick({title: '设置组别', name: 'Group'})"
+        class="btn btn-light text-secondary btn-sm">
         <i class="ion-android-checkbox-outline"></i>
         内容组
       </button>
-      <button v-on:click="btnFuncClick({title: '转移', name: 'Translate', redirect: true})" v-if="selectedContentIds.length > 0 && permissions.isTranslate"
-        class="btn btn-rounded bg-light text-black">
+      <button :class="{disabled: selectedContentIds.length === 0 || !permissions.isTranslate}" v-on:click="btnFuncClick({title: '转移', name: 'Translate', redirect: true})"
+        class="btn btn-light text-secondary btn-sm">
         <i class="fa fa-exchange"></i>
         转 移
       </button>
-      <button v-on:click="btnFuncClick({title: '排序', name: 'Taxis', width: 450, height: 280})" v-if="selectedContentIds.length > 0 && permissions.isEdit"
-        class="btn btn-rounded bg-light text-black">
+      <button :class="{disabled: selectedContentIds.length === 0 || !permissions.isEdit}" v-on:click="btnFuncClick({title: '排序', name: 'Taxis', width: 450, height: 280})"
+        class="btn btn-light text-secondary btn-sm">
         <i class="fa fa-sort"></i>
         排 序
       </button>
-      <button v-on:click="btnFuncClick({title: '审核', name: 'Check', full: true})" v-if="selectedContentIds.length > 0 && permissions.isCheck"
-        class="btn btn-rounded bg-light text-black">
+      <button :class="{disabled: selectedContentIds.length === 0 || !permissions.isCheck}" v-on:click="btnFuncClick({title: '审核', name: 'Check', full: true})"
+        class="btn btn-light text-secondary btn-sm">
         <i class="fa fa-check"></i>
         审 核
       </button>
-      <button v-on:click="btnCreateClick" v-if="selectedContentIds.length > 0 && permissions.isCreate" class="btn btn-rounded bg-light text-black">
+      <button :class="{disabled: selectedContentIds.length === 0 || !permissions.isCreate}" v-on:click="btnCreateClick"
+        class="btn btn-light text-secondary btn-sm">
         <i class="ion-wand"></i>
         生 成
       </button>
-    </div>
-    <div class="col-4 text-right">
-      搜索：<input type="search" class="form-control form-control-sm inline">
     </div>
   </div>
 
@@ -81,12 +82,11 @@
   <table class="table tablesaw table-bordered table-hover mt-1">
     <thead>
       <tr>
-        <th>内容标题(点击查看) </th>
-        <th class="text-nowrap">外部链接</th>
-        <th class="text-nowrap">添加时间</th>
+        <th class="text-nowrap" v-for="attribute in attributes" v-html="attribute.text"></th>
+
         <th class="text-center text-nowrap">操作</th>
         <th class="text-center text-nowrap">状态</th>
-        <th class="text-nowrap checkbox checkbox-primary">
+        <th class="text-nowrap checkbox checkbox-primary" style="width: 40px">
           <input id="all" v-on:click="selectAll()" v-model="isAllChecked" type="checkbox">
           <label for="all"></label>
         </th>
@@ -94,23 +94,101 @@
     </thead>
     <tbody>
       <tr v-for="content in pageContents" v-on:click="toggleChecked(content)" :class="{'table-warning': content.isSelected}">
-        <td v-html="content.title"></td>
-        <td>{{ content.navigationUrl }}</td>
-        <td class="text-center text-nowrap">{{ content.addDate }}</td>
+        <td v-for="attribute in attributes">
+          <a v-if="attribute.value === 'Title' && content.isChecked === 'True'" :href="content.navigationUrl" target="_blank">
+            {{ content.title }}
+          </a>
+          <a v-else-if="attribute.value === 'Title' && content.isChecked === 'False'" href="javascript:;" v-on:click="btnContentViewClick(content.id)">
+            {{ content.title }}
+          </a>
+          <span v-else v-html="content[_.camelCase(attribute.value)]"></span>
+        </td>
+
         <td class="text-center text-nowrap">
           <a :href="'pageContentAdd.aspx?siteId=' + siteId + '&channelId=' + channelId + '&id=' + content.id">编辑</a>
         </td>
         <td class="text-center text-nowrap">
-          <a href="javascript:;" title="设置内容状态" onclick="$.layer({type: 2, maxmin: true, shadeClose: true, title: '审核状态', shade: [0.1,'#fff'], iframe: {src: '/SiteServer/cms/modalcheckstate.aspx?siteId=35&channelId=6136&contentID=298418&returnUrl=%2fSiteServer%2fcms%2fpagecontent.aspx_question_siteId_equals_35_and_channelId_equals_6136_and_dateFrom_equals__and_searchType_equals__and_keyword_equals__and_page_equals_1'}, area: ['560px', '500px'], offset: ['', '']});return false;"
-            v-html="content.checkState"></a>
+          <a v-on:click="btnContentStateClick(content.id)" href="javascript:;" v-html="content.checkState"></a>
         </td>
         <td class="text-nowrap checkbox checkbox-primary">
           <input :id="'checkbox' + content.id" v-model="content.isSelected" type="checkbox">
-          <label :for="'checkbox' + content.id"></label>
+          <label :for="'checkbox' + content.id" style="padding: 0;margin-bottom: 13px;margin-left: 2px;"></label>
         </td>
       </tr>
     </tbody>
   </table>
+
+  <div v-if="count > 20" class="btn-toolbar mb-2">
+    <div class="btn-group">
+      <button v-if="permissions.isAdd" v-on:click="btnAddClick" class="btn btn-light text-secondary btn-sm">
+        <i class="ion-plus"></i>
+        添加
+      </button>
+      <button v-if="permissions.isAdd" v-on:click="btnFuncClick({title: '导入Word', name: 'Word', withoutContents: true, full: true})"
+        class="btn btn-light text-secondary btn-sm">
+        <i class="fa fa-file"></i>
+        导入Word
+      </button>
+      <!-- <button v-if="permissions.isAdd" class="btn btn-light text-secondary btn-sm">
+      <i class="fa fa-upload"></i>
+      导入文件
+    </button> -->
+      <button v-if="permissions.isChannelEdit" v-on:click="btnFuncClick({title: '设置显示列', name: 'Columns', withoutContents: true, full: true})"
+        class="btn btn-light text-secondary btn-sm">
+        <i class="fa fa-columns"></i>
+        显示列
+      </button>
+      <!-- <button v-if="count > 0" class="btn btn-light text-secondary btn-sm">
+      <i class="fa fa-download"></i>
+      导 出
+    </button> -->
+      <!-- <button v-if="count > 0 && permissions.isEdit" class="btn btn-light text-secondary btn-sm">
+      <i class="fa fa-list-ol"></i>
+      整 理
+    </button> -->
+      <button v-on:click="btnSearchClick" class="btn btn-light text-secondary btn-sm">
+        <i class="ion-search"></i>
+        搜 索
+      </button>
+    </div>
+    <div class="btn-group ml-2">
+      <button :class="{disabled: selectedContentIds.length === 0 || !permissions.isDelete}" v-on:click="btnFuncClick({title: '删除', name: 'Delete'})"
+        class="btn btn-light text-secondary btn-sm">
+        <i class="fa fa-trash"></i>
+        删 除
+      </button>
+      <button :class="{disabled: selectedContentIds.length === 0 || !permissions.isEdit}" v-on:click="btnFuncClick({title: '设置属性', name: 'Attributes', width: 450, height: 320})"
+        class="btn btn-light text-secondary btn-sm">
+        <i class="fa fa-flag"></i>
+        属 性
+      </button>
+      <button :class="{disabled: selectedContentIds.length === 0 || !permissions.isEdit}" v-on:click="btnFuncClick({title: '设置组别', name: 'Group'})"
+        class="btn btn-light text-secondary btn-sm">
+        <i class="ion-android-checkbox-outline"></i>
+        内容组
+      </button>
+      <button :class="{disabled: selectedContentIds.length === 0 || !permissions.isTranslate}" v-on:click="btnFuncClick({title: '转移', name: 'Translate', redirect: true})"
+        class="btn btn-light text-secondary btn-sm">
+        <i class="fa fa-exchange"></i>
+        转 移
+      </button>
+      <button :class="{disabled: selectedContentIds.length === 0 || !permissions.isEdit}" v-on:click="btnFuncClick({title: '排序', name: 'Taxis', width: 450, height: 280})"
+        class="btn btn-light text-secondary btn-sm">
+        <i class="fa fa-sort"></i>
+        排 序
+      </button>
+      <button :class="{disabled: selectedContentIds.length === 0 || !permissions.isCheck}" v-on:click="btnFuncClick({title: '审核', name: 'Check', full: true})"
+        class="btn btn-light text-secondary btn-sm">
+        <i class="fa fa-check"></i>
+        审 核
+      </button>
+      <button :class="{disabled: selectedContentIds.length === 0 || !permissions.isCreate}" v-on:click="btnCreateClick"
+        class="btn btn-light text-secondary btn-sm">
+        <i class="ion-wand"></i>
+        生 成
+      </button>
+    </div>
+  </div>
 
   <hr />
 

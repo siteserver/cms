@@ -128,10 +128,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\Pages\Cms\PageContentsLayerCheckController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PageContentsLayerViewController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PageContentsLayerStateController.cs" />
     <Compile Include="Controllers\Pages\Cms\PageContentsLayerTaxisController.cs" />
     <Compile Include="Controllers\Pages\Cms\PageContentsLayerGroupController.cs" />
     <Compile Include="Controllers\Pages\Cms\PageContentsLayerAttributesController.cs" />
     <Compile Include="Controllers\Pages\Cms\PageContentsLayerDeleteController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PageContentsLayerColumnsController.cs" />
     <Compile Include="Controllers\Pages\Cms\PageContentsLayerWordController.cs" />
     <Compile Include="Controllers\Pages\Cms\PageContentsController.cs" />
     <Compile Include="Controllers\Pages\Cms\PageCreateController.cs" />

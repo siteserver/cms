@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Core
                         });
                     }
 
-                    linkUrl = PageUtils.GetLoadingUrl(linkUrl);
+                    //linkUrl = PageUtils.GetLoadingUrl(linkUrl);
 
                     htmlBuilder.Append(
                         $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_channelInfo.ChannelName}</a>");

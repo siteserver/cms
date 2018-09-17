@@ -15,9 +15,9 @@ namespace SiteServer.CMS.Provider
         {
             get
             {
-#if DEBUG
-                return true;
-#endif
+//#if DEBUG
+//                return true;
+//#endif
                 return false;
             }
         }

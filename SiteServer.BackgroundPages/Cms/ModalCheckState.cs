@@ -10,6 +10,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalCheckState : BasePageCms
     {
+        protected override bool IsSinglePage => true;
         public Literal LtlTitle;
         public Literal LtlState;
         public PlaceHolder PhCheckReasons;

@@ -13,6 +13,8 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalSelectColumns : BasePageCms
     {
+        protected override bool IsSinglePage => true;
+
         protected CheckBoxList CblDisplayAttributes;
 
         private int _channelId;

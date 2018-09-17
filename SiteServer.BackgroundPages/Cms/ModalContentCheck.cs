@@ -14,6 +14,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalContentCheck : BasePageCms
     {
+        protected override bool IsSinglePage => true;
         public Literal LtlTitles;
         public DropDownList DdlCheckType;
         public DropDownList DdlTranslateChannelId;

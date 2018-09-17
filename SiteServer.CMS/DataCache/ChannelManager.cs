@@ -6,7 +6,9 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -532,6 +534,75 @@ namespace SiteServer.CMS.DataCache
                 return GetContentAttributesOfDisplay(siteId, nodeInfo.ParentId);
             }
             return nodeInfo.Additional.ContentAttributesOfDisplay;
+        }
+
+        public static List<InputListItem> GetContentAttributesToList(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll)
+        {
+            var items = new List<InputListItem>();
+
+            var tableName = GetTableName(siteInfo, channelInfo);
+            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(siteInfo.Id, channelInfo.Id);
+            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.Additional.ContentAttributesOfDisplay);
+            var pluginColumns = PluginContentManager.GetContentColumns(channelInfo);
+
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities));
+            foreach (var styleInfo in styleInfoList)
+            {
+                if (styleInfo.InputType == InputType.TextEditor) continue;
+
+                var listitem = new InputListItem
+                {
+                    Text = styleInfo.DisplayName,
+                    Value = styleInfo.AttributeName
+                };
+                if (styleInfo.AttributeName == ContentAttribute.Title)
+                {
+                    listitem.Selected = true;
+                }
+                else
+                {
+                    if (attributesOfDisplay.Contains(styleInfo.AttributeName))
+                    {
+                        listitem.Selected = true;
+                    }
+                }
+
+                if (includeAll || listitem.Selected)
+                {
+                    items.Add(listitem);
+                }
+            }
+
+            if (pluginColumns != null)
+            {
+                foreach (var pluginId in pluginColumns.Keys)
+                {
+                    var contentColumns = pluginColumns[pluginId];
+                    if (contentColumns == null || contentColumns.Count == 0) continue;
+
+                    foreach (var columnName in contentColumns.Keys)
+                    {
+                        var attributeName = $"{pluginId}:{columnName}";
+                        var listitem = new InputListItem
+                        {
+                            Text = $"{columnName}({pluginId})",
+                            Value = attributeName
+                        };
+
+                        if (attributesOfDisplay.Contains(attributeName))
+                        {
+                            listitem.Selected = true;
+                        }
+
+                        if (includeAll || listitem.Selected)
+                        {
+                            items.Add(listitem);
+                        }
+                    }
+                }
+            }
+
+            return items;
         }
 
         public static bool IsAncestorOrSelf(int siteId, int parentId, int childId)
