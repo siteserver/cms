@@ -30,7 +30,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var siteId = request.SiteId;
                 var parentId = request.GetQueryInt("parentId");
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
                 var parent = ChannelManager.GetChannelInfo(siteId, parentId);
+                var countDict = new Dictionary<int, int>();
+                countDict[parent.Id] = ContentManager.GetCount(siteInfo, parent, true);
 
                 var channelInfoList = new List<ChannelInfo>();
 
@@ -47,14 +50,15 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     }
 
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-
                     channelInfoList.Add(channelInfo);
+                    countDict[channelInfo.Id] = ContentManager.GetCount(siteInfo, channelInfo, true);
                 }
 
                 return Ok(new
                 {
                     Value = channelInfoList,
-                    Parent = parent
+                    Parent = parent,
+                    CountDict = countDict
                 });
             }
             catch (Exception ex)

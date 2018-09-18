@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Atom.AdditionalElements;
 using Atom.Core;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
@@ -73,47 +72,46 @@ namespace SiteServer.CMS.ImportExport.Components
             nodeInfo.SetExtendValues(AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.ExtendValues));
         }
 
-        public AtomFeed ExportNodeInfo(ChannelInfo nodeInfo)
+        public AtomFeed ExportNodeInfo(ChannelInfo channelInfo)
         {
             var feed = AtomUtility.GetEmptyFeed();
 
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string>{ ChannelAttribute.Id, "NodeId" }, nodeInfo.Id.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { ChannelAttribute.ChannelName, "NodeName" }, nodeInfo.ChannelName);
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { ChannelAttribute.SiteId, "PublishmentSystemId" }, nodeInfo.SiteId.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ContentModelPluginId, nodeInfo.ContentModelPluginId);
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ContentRelatedPluginIds, nodeInfo.ContentRelatedPluginIds);
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ParentId, nodeInfo.ParentId.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ParentsPath, nodeInfo.ParentsPath);
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ParentsCount, nodeInfo.ParentsCount.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ChildrenCount, nodeInfo.ChildrenCount.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.IsLastNode, nodeInfo.IsLastNode.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { ChannelAttribute.IndexName, "NodeIndexName" }, nodeInfo.IndexName);
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { ChannelAttribute.GroupNameCollection, "NodeGroupNameCollection" }, nodeInfo.GroupNameCollection);
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.Taxis, nodeInfo.Taxis.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.AddDate, nodeInfo.AddDate.ToLongDateString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ImageUrl, nodeInfo.ImageUrl);
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.Content, AtomUtility.Encrypt(nodeInfo.Content));
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ContentNum, nodeInfo.ContentNum.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.FilePath, nodeInfo.FilePath);
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ChannelFilePathRule, nodeInfo.ChannelFilePathRule);
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ContentFilePathRule, nodeInfo.ContentFilePathRule);
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.LinkUrl, nodeInfo.LinkUrl);
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.LinkType, nodeInfo.LinkType);
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ChannelTemplateId, nodeInfo.ChannelTemplateId.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ContentTemplateId, nodeInfo.ContentTemplateId.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.Keywords, nodeInfo.Keywords);
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.Description, nodeInfo.Description);
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ExtendValues, nodeInfo.Additional.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string>{ ChannelAttribute.Id, "NodeId" }, channelInfo.Id.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { ChannelAttribute.ChannelName, "NodeName" }, channelInfo.ChannelName);
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { ChannelAttribute.SiteId, "PublishmentSystemId" }, channelInfo.SiteId.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ContentModelPluginId, channelInfo.ContentModelPluginId);
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ContentRelatedPluginIds, channelInfo.ContentRelatedPluginIds);
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ParentId, channelInfo.ParentId.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ParentsPath, channelInfo.ParentsPath);
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ParentsCount, channelInfo.ParentsCount.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ChildrenCount, channelInfo.ChildrenCount.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.IsLastNode, channelInfo.IsLastNode.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { ChannelAttribute.IndexName, "NodeIndexName" }, channelInfo.IndexName);
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { ChannelAttribute.GroupNameCollection, "NodeGroupNameCollection" }, channelInfo.GroupNameCollection);
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.Taxis, channelInfo.Taxis.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.AddDate, channelInfo.AddDate.ToLongDateString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ImageUrl, channelInfo.ImageUrl);
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.Content, AtomUtility.Encrypt(channelInfo.Content));
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.FilePath, channelInfo.FilePath);
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ChannelFilePathRule, channelInfo.ChannelFilePathRule);
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ContentFilePathRule, channelInfo.ContentFilePathRule);
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.LinkUrl, channelInfo.LinkUrl);
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.LinkType, channelInfo.LinkType);
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ChannelTemplateId, channelInfo.ChannelTemplateId.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ContentTemplateId, channelInfo.ContentTemplateId.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.Keywords, channelInfo.Keywords);
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.Description, channelInfo.Description);
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ExtendValues, channelInfo.Additional.ToString());
 
-            if (nodeInfo.ChannelTemplateId != 0)
+            if (channelInfo.ChannelTemplateId != 0)
             {
-                var channelTemplateName = TemplateManager.GetTemplateName(nodeInfo.SiteId, nodeInfo.ChannelTemplateId);
+                var channelTemplateName = TemplateManager.GetTemplateName(channelInfo.SiteId, channelInfo.ChannelTemplateId);
                 AtomUtility.AddDcElement(feed.AdditionalElements, ChannelTemplateName, channelTemplateName);
             }
 
-            if (nodeInfo.ContentTemplateId != 0)
+            if (channelInfo.ContentTemplateId != 0)
             {
-                var contentTemplateName = TemplateManager.GetTemplateName(nodeInfo.SiteId, nodeInfo.ContentTemplateId);
+                var contentTemplateName = TemplateManager.GetTemplateName(channelInfo.SiteId, channelInfo.ContentTemplateId);
                 AtomUtility.AddDcElement(feed.AdditionalElements, ContentTemplateName, contentTemplateName);
             }
 

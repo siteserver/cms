@@ -23,11 +23,17 @@ namespace SiteServer.CMS.Core.Create
             }
             else if (createType == ECreateType.AllContent)
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-                if (nodeInfo != null && nodeInfo.ContentNum > 0)
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                
+                if (channelInfo != null)
                 {
-                    pageCount = nodeInfo.ContentNum;
-                    name = $"{nodeInfo.ChannelName}下所有内容页，共{pageCount}项";
+                    var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                    if (count > 0)
+                    {
+                        pageCount = count;
+                        name = $"{channelInfo.ChannelName}下所有内容页，共 {pageCount} 项";
+                    }
                 }
             }
             else if (createType == ECreateType.Content)

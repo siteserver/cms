@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
@@ -15,11 +14,6 @@ namespace SiteServer.CMS.Core
         {
             _rootPath = rootPath;
             DirectoryUtils.CreateDirectoryIfNotExists(_rootPath);
-        }
-
-        public static SiteTemplateManager GetInstance(string rootPath)
-        {
-            return new SiteTemplateManager(rootPath);
         }
 
         public static SiteTemplateManager Instance => new SiteTemplateManager(PathUtility.GetSiteTemplatesPath(string.Empty));
@@ -44,23 +38,6 @@ namespace SiteServer.CMS.Core
         {
             var siteTemplatePath = PathUtils.Combine(_rootPath, siteTemplateDir);
             return DirectoryUtils.IsDirectoryExists(siteTemplatePath);
-        }
-
-        public int GetSiteTemplateCount()
-        {
-            var directorys = DirectoryUtils.GetDirectoryPaths(_rootPath);
-            return directorys.Length;
-        }
-
-        public List<string> GetDirectoryNameLowerList()
-        {
-            var directorys = DirectoryUtils.GetDirectoryNames(_rootPath);
-            var list = new List<string>();
-            foreach (var directoryName in directorys)
-            {
-                list.Add(directoryName.ToLower().Trim());
-            }
-            return list;
         }
 
         public bool IsSiteTemplateExists
@@ -123,8 +100,6 @@ namespace SiteServer.CMS.Core
             var siteTemplatePath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
             if (DirectoryUtils.IsDirectoryExists(siteTemplatePath))
             {
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-
                 var templateFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTemplate);
                 var tableDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Table);
                 var configurationFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
@@ -144,8 +119,6 @@ namespace SiteServer.CMS.Core
                 {
                     importObject.ImportSiteContent(siteContentDirectoryPath, filePath, isImportContents);
                 }
-
-                DataProvider.ChannelDao.UpdateContentNum(siteInfo);
 
                 if (isImportTableStyles)
                 {

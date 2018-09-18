@@ -118,30 +118,31 @@ namespace SiteServer.BackgroundPages.Cms
             }
         }
 
-		public string GetTitle(ChannelInfo nodeInfo)
+		public string GetTitle(ChannelInfo channelInfo)
 		{
 			var str = "";
-            if (nodeInfo.Id == SiteId)
+            if (channelInfo.Id == SiteId)
 			{
-                nodeInfo.IsLastNode = true;
+                channelInfo.IsLastNode = true;
 			}
-            if (nodeInfo.IsLastNode == false)
+            if (channelInfo.IsLastNode == false)
 			{
-                _isLastNodeArray[nodeInfo.ParentsCount] = false;
+                _isLastNodeArray[channelInfo.ParentsCount] = false;
 			}
 			else
 			{
-                _isLastNodeArray[nodeInfo.ParentsCount] = true;
+                _isLastNodeArray[channelInfo.ParentsCount] = true;
 			}
-            for (var i = 0; i < nodeInfo.ParentsCount; i++)
+            for (var i = 0; i < channelInfo.ParentsCount; i++)
             {
                 str = string.Concat(str, _isLastNodeArray[i] ? "　" : "│");
             }
-		    str = string.Concat(str, nodeInfo.IsLastNode ? "└" : "├");
-		    str = string.Concat(str, nodeInfo.ChannelName);
-            if (nodeInfo.ContentNum != 0)
+		    str = string.Concat(str, channelInfo.IsLastNode ? "└" : "├");
+		    str = string.Concat(str, channelInfo.ChannelName);
+		    var count = ContentManager.GetCount(SiteInfo, channelInfo);
+            if (count != 0)
             {
-                str = $"{str} ({nodeInfo.ContentNum})";
+                str = $"{str} ({count})";
             }
 			return str;
 		}
@@ -266,7 +267,6 @@ namespace SiteServer.BackgroundPages.Cms
 			    {
 			        SiteId = targetSiteId,
 			        ParentId = parentId,
-			        ContentNum = 0,
 			        ChildrenCount = 0,
 			        AddDate = DateTime.Now
 			    };

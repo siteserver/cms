@@ -4,7 +4,6 @@ using System.Text;
 using System.Web.UI;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model.Attributes;
@@ -750,7 +749,8 @@ function {functionName}(pageNum)
             }
             else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.CountOfContents, testTypeStr))
             {
-                theValue = channel.ContentNum.ToString();
+                var count = ContentManager.GetCount(pageInfo.SiteInfo, channel, true);
+                theValue = count.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.CountOfImageContents, testTypeStr))
             {

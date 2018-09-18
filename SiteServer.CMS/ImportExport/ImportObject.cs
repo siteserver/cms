@@ -162,8 +162,6 @@ namespace SiteServer.CMS.ImportExport
 
             ImportChannelsAndContentsFromZip(parentId, siteContentDirectoryPath, isOverride);
 
-            DataProvider.ChannelDao.UpdateContentNum(_siteInfo);
-
             var uploadFolderPath = PathUtils.Combine(siteContentDirectoryPath, BackupUtility.UploadFolderName);
             var uploadFilePath = PathUtils.Combine(uploadFolderPath, BackupUtility.UploadFileName);
             if (!FileUtils.IsFileExists(uploadFilePath))
@@ -259,8 +257,6 @@ namespace SiteServer.CMS.ImportExport
             var taxis = DataProvider.ContentDao.GetMaxTaxis(tableName, nodeInfo.Id, false);
 
             ImportContents(nodeInfo, siteContentDirectoryPath, isOverride, taxis, importStart, importCount, isChecked, checkedLevel);
-
-            DataProvider.ChannelDao.UpdateContentNum(_siteInfo);
         }
 
         public void ImportContentsByAccessFile(int channelId, string excelFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)

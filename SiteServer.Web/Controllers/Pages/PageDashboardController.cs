@@ -55,49 +55,47 @@ namespace SiteServer.API.Controllers.Pages
                     return Unauthorized();
                 }
 
-                //var unCheckedList = new List<object>();
-                //var userCountListUnChecked = CheckManager.GetUserCountListUnChecked(request.AdminPermissions);
+                var unCheckedList = new List<object>();
 
-                //if (userCountListUnChecked.Count > 0)
-                //{
-                //    var dict = new Dictionary<int, int>();
+                if (request.AdminPermissions.IsConsoleAdministrator)
+                {
+                    foreach(var siteInfo in SiteManager.GetSiteInfoList())
+                    {
+                        var count = ContentManager.GetCount(siteInfo, false);
+                        if (count > 0)
+                        {
+                            unCheckedList.Add(new
+                            {
+                                Url = PageContentSearch.GetRedirectUrlCheck(siteInfo.Id),
+                                siteInfo.SiteName,
+                                Count = count
+                            });
+                        }
+                    }
+                }
+                else if (request.AdminPermissions.IsSystemAdministrator)
+                {
+                    foreach (var siteId in TranslateUtils.StringCollectionToIntList(request.AdminInfo.SiteIdCollection))
+                    {
+                        var siteInfo = SiteManager.GetSiteInfo(siteId);
+                        if (siteInfo == null) continue;
 
-                //    foreach (var pair in userCountListUnChecked)
-                //    {
-                //        var siteId = pair.Key;
-                //        var count = pair.Value;
-                //        if (dict.ContainsKey(siteId))
-                //        {
-                //            dict[siteId] = dict[siteId] + count;
-                //        }
-                //        else
-                //        {
-                //            dict[siteId] = count;
-                //        }
-                //    }
-
-                //    foreach (var siteId in dict.Keys)
-                //    {
-                //        var count = dict[siteId];
-                //        if (!SiteManager.IsExists(siteId)) continue;
-
-                //        unCheckedList.Add(new
-                //        {
-                //            Url = PageContentSearch.GetRedirectUrlCheck(siteId),
-                //            SiteManager.GetSiteInfo(siteId).SiteName,
-                //            Count = count
-                //        });
-                //    }
-                //}
-
-                //return Ok(new
-                //{
-                //    Value = unCheckedList
-                //});
+                        var count = ContentManager.GetCount(siteInfo, false);
+                        if (count > 0)
+                        {
+                            unCheckedList.Add(new
+                            {
+                                Url = PageContentSearch.GetRedirectUrlCheck(siteInfo.Id),
+                                siteInfo.SiteName,
+                                Count = count
+                            });
+                        }
+                    }
+                }
 
                 return Ok(new
                 {
-                    Value = new List<object>()
+                    Value = unCheckedList
                 });
             }
             catch (Exception ex)

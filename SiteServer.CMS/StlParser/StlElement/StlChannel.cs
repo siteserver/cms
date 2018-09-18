@@ -312,10 +312,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                     parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
                 }
             }
-            else if (type.Equals(ChannelAttribute.ContentNum.ToLower()))
-            {
-                parsedContent = channel.ContentNum.ToString();
-            }
             else if (type.Equals(ChannelAttribute.FilePath.ToLower()))
             {
                 parsedContent = channel.FilePath;
@@ -412,7 +408,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.Equals(ChannelAttribute.CountOfContents.ToLower()))
             {
-                parsedContent = channel.ContentNum.ToString();
+                var count = ContentManager.GetCount(pageInfo.SiteInfo, channel, true);
+                parsedContent = count.ToString();
             }
             else if (type.Equals(ChannelAttribute.CountOfImageContents.ToLower()))
             { 

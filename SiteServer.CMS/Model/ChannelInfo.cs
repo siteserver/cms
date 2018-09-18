@@ -32,7 +32,6 @@ namespace SiteServer.CMS.Model
 			AddDate = DateTime.Now;
 			ImageUrl = string.Empty;
 			Content = string.Empty;
-			ContentNum = 0;
             FilePath = string.Empty;
             ChannelFilePathRule = string.Empty;
             ContentFilePathRule = string.Empty;
@@ -45,7 +44,7 @@ namespace SiteServer.CMS.Model
             _extendValues = string.Empty;
 		}
 
-        public ChannelInfo(int id, string channelName, int siteId, string contentModelPluginId, string contentRelatedPluginIds, int parentId, string parentsPath, int parentsCount, int childrenCount, bool isLastNode, string indexName, string groupNameCollection, int taxis, DateTime addDate, string imageUrl, string content, int contentNum, string filePath, string channelFilePathRule, string contentFilePathRule, string linkUrl, ELinkType linkType, int channelTemplateId, int contentTemplateId, string keywords, string description, string extendValues) 
+        public ChannelInfo(int id, string channelName, int siteId, string contentModelPluginId, string contentRelatedPluginIds, int parentId, string parentsPath, int parentsCount, int childrenCount, bool isLastNode, string indexName, string groupNameCollection, int taxis, DateTime addDate, string imageUrl, string content, string filePath, string channelFilePathRule, string contentFilePathRule, string linkUrl, ELinkType linkType, int channelTemplateId, int contentTemplateId, string keywords, string description, string extendValues) 
 		{
 			Id = id;
 			ChannelName = channelName;
@@ -63,7 +62,6 @@ namespace SiteServer.CMS.Model
 			AddDate = addDate;
 			ImageUrl = imageUrl;
 			Content = content;
-			ContentNum = contentNum;
             FilePath = filePath;
             ChannelFilePathRule = channelFilePathRule;
             ContentFilePathRule = contentFilePathRule;
@@ -94,7 +92,6 @@ namespace SiteServer.CMS.Model
             AddDate = channelInfo.AddDate;
             ImageUrl = channelInfo.ImageUrl;
             Content = channelInfo.Content;
-            ContentNum = channelInfo.ContentNum;
             FilePath = channelInfo.FilePath;
             ChannelFilePathRule = channelInfo.ChannelFilePathRule;
             ContentFilePathRule = channelInfo.ContentFilePathRule;
@@ -138,8 +135,6 @@ namespace SiteServer.CMS.Model
 	    public string ImageUrl { get; set; }
 
 	    public string Content { get; set; }
-
-	    public int ContentNum { get; set; }
 
         public string FilePath { get; set; }
 

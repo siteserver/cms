@@ -6,6 +6,7 @@ using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.DataCache
@@ -242,28 +243,60 @@ namespace SiteServer.CMS.DataCache
             return GetSiteInfo(siteId) != null;
         }
 
-        public static List<string> GetTableNameList()
+        public static List<string> GetSiteTableNames()
         {
-            var pairList = SiteManagerCache.GetSiteInfoKeyValuePairList();
-            var list = new List<string>();
+            return GetTableNameList(true, false);
+        }
 
-            foreach (var pair in pairList)
+        public static List<string> GetAllTableNameList()
+        {
+            return GetTableNameList(true, true);
+        }
+
+        private static List<string> GetTableNameList(bool includeSiteTables, bool includePluginTables)
+        {
+            
+            var tableNames = new List<string>();
+
+            if (includeSiteTables)
             {
-                if (!StringUtils.ContainsIgnoreCase(list, pair.Value.TableName))
+                var pairList = SiteManagerCache.GetSiteInfoKeyValuePairList();
+                foreach (var pair in pairList)
                 {
-                    list.Add(pair.Value.TableName);
+                    if (!StringUtils.ContainsIgnoreCase(tableNames, pair.Value.TableName))
+                    {
+                        tableNames.Add(pair.Value.TableName);
+                    }
                 }
             }
 
-            return list;
+            if (includePluginTables)
+            {
+                var pluginTableNames = PluginContentManager.GetContentTableNameList();
+                foreach (var pluginTableName in pluginTableNames)
+                {
+                    if (!StringUtils.ContainsIgnoreCase(tableNames, pluginTableName))
+                    {
+                        tableNames.Add(pluginTableName);
+                    }
+                }
+            }
+
+            return tableNames;
         }
 
         public static List<string> GetTableNameList(SiteInfo siteInfo)
         {
-            return new List<string>
+            var tableNames = new List<string>{ siteInfo.TableName };
+            var pluginTableNames = PluginContentManager.GetContentTableNameList();
+            foreach (var pluginTableName in pluginTableNames)
             {
-                siteInfo.TableName
-            };
+                if (!StringUtils.ContainsIgnoreCase(tableNames, pluginTableName))
+                {
+                    tableNames.Add(pluginTableName);
+                }
+            }
+            return tableNames;
         }
 
         //public static ETableStyle GetTableStyle(SiteInfo siteInfo, string tableName)

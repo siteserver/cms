@@ -47,11 +47,12 @@ namespace SiteServer.BackgroundPages.Cms
                 if (channelId == SiteId) continue;
                 if (!HasChannelPermissions(channelId, ConfigManager.ChannelPermissions.ChannelDelete)) continue;
 
-                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-                var displayName = nodeInfo.ChannelName;
-                if (nodeInfo.ContentNum > 0)
+                var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                var displayName = channelInfo.ChannelName;
+                var count = ContentManager.GetCount(SiteInfo, channelInfo);
+                if (count > 0)
                 {
-                    displayName += $"({nodeInfo.ContentNum})";
+                    displayName += $"({count})";
                 }
                 _nodeNameList.Add(displayName);
             }

@@ -80,8 +80,8 @@
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=2.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.2.0.3\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.2.0.4\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -138,6 +138,7 @@
     <Compile Include="Api\V1\OFilter.cs" />
     <Compile Include="Api\V1\OResponse.cs" />
     <Compile Include="Core\CmsPages.cs" />
+    <Compile Include="Core\ContentCountInfo.cs" />
     <Compile Include="DataCache\ChannelGroupManager.cs" />
     <Compile Include="DataCache\ContentGroupManager.cs" />
     <Compile Include="DataCache\Core\DataCacheManager.cs" />

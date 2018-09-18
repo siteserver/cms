@@ -128,8 +128,6 @@ namespace SiteServer.CMS.ImportExport
             var siteContentDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.SiteContent);
             importObject.ImportChannelsAndContents(0, siteContentDirectoryPath, isOverride);
 
-            DataProvider.ChannelDao.UpdateContentNum(siteInfo);
-
             //导入表样式及清除缓存
             if (isUseTable)
             {

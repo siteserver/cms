@@ -49,9 +49,6 @@ namespace SiteServer.CMS.Model.Attributes
         [StlAttribute(Title = "栏目正文")]
         public const string Content = nameof(ChannelInfo.Content);
 
-        [StlAttribute(Title = "包含内容数")]
-        public const string ContentNum = nameof(ChannelInfo.ContentNum);
-
         [StlAttribute(Title = "页面路径")]
         public const string FilePath = nameof(ChannelInfo.FilePath);
 

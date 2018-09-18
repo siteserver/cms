@@ -7,9 +7,7 @@
 
 <div class="form-group form-row">
   <label class="col-2 col-form-label text-right">审核状态</label>
-  <div class="col-4 form-control-plaintext">
-    {{ checkState }}
-  </div>
+  <div class="col-4 form-control-plaintext" v-html="checkState"></div>
 </div>
 
 <table class="table tablesaw table-bordered table-hover">

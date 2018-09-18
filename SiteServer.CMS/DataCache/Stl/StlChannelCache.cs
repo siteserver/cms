@@ -171,7 +171,7 @@ namespace SiteServer.CMS.DataCache.Stl
                 retval = StlCacheManager.Get<string>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.ChannelDao.GetWhereString(siteId, groupContent, groupContentNot,
+                    retval = DataProvider.ChannelDao.GetWhereString(groupContent, groupContentNot,
                     isImageExists, isImage, where);
                     StlCacheManager.Set(cacheKey, retval);
                 }

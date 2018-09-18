@@ -90,7 +90,7 @@ namespace SiteServer.BackgroundPages.Settings
                 ControlUtils.SelectSingleItem(DdlParentId, SiteInfo.ParentId.ToString());
             }
 
-            var tableNameList = SiteManager.GetTableNameList();
+            var tableNameList = SiteManager.GetSiteTableNames();
             if (tableNameList.Count > 0)
             {
                 RblTableRule.Items.Add(ETableRuleUtils.GetListItem(ETableRule.Choose, true));
@@ -274,7 +274,7 @@ namespace SiteServer.BackgroundPages.Settings
             DataProvider.SiteDao.Update(SiteInfo);
             if (isTableChanged)
             {
-                DataProvider.ChannelDao.UpdateContentNum(SiteInfo);
+                ContentManager.RemoveCountCache(tableName);
             }
 
             AuthRequest.AddAdminLog("修改站点属性", $"站点:{SiteInfo.SiteName}");

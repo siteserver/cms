@@ -70,14 +70,14 @@ namespace SiteServer.CMS.StlParser
         private static async Task CreateChannelAsync(int siteId, int channelId)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            if (nodeInfo == null) return;
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            if (channelInfo == null) return;
 
-            if (!string.IsNullOrEmpty(nodeInfo.LinkUrl))
+            if (!string.IsNullOrEmpty(channelInfo.LinkUrl))
             {
                 return;
             }
-            if (!ELinkTypeUtils.IsCreatable(nodeInfo))
+            if (!ELinkTypeUtils.IsCreatable(siteInfo, channelInfo))
             {
                 return;
             }

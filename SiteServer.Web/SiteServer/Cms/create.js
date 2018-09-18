@@ -97,6 +97,7 @@ var methods = {
       if (err || !res || !res.value) return;
 
       $this.root = _.assign({}, res.parent, {
+        contentNum: res.countDict[res.parent.id],
         isOpen: true,
         isLoading: false,
         isChecked: false,
@@ -105,6 +106,7 @@ var methods = {
 
       for (var i = 0; i < res.value.length; i++) {
         var channel = _.assign({}, res.value[i], {
+          contentNum: res.countDict[res.value[i].id],
           isOpen: false,
           isLoading: false,
           isChecked: false,
@@ -146,6 +148,7 @@ var methods = {
 
         for (var i = 0; i < res.value.length; i++) {
           var child = _.assign({}, res.value[i], {
+            contentNum: res.countDict[res.value[i].id],
             isOpen: false,
             isLoading: false,
             isChecked: $this.isAllChecked,

@@ -124,7 +124,7 @@ namespace SiteServer.BackgroundPages.Settings
             ECharsetUtils.AddListItems(DdlCharset);
             ControlUtils.SelectSingleItem(DdlCharset, ECharsetUtils.GetValue(ECharset.utf_8));
 
-            var tableNameList = SiteManager.GetTableNameList();
+            var tableNameList = SiteManager.GetSiteTableNames();
             if (tableNameList.Count > 0)
             {
                 RblTableRule.Items.Add(ETableRuleUtils.GetListItem(ETableRule.Choose, true));

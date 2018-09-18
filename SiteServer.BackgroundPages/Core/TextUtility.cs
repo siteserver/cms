@@ -56,12 +56,12 @@ namespace SiteServer.BackgroundPages.Core
                     }
                 }
             }
-            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckCheckDate))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckDate))
             {
-                var checkDate = contentInfo.GetString(ContentAttribute.CheckCheckDate);
-                if (!string.IsNullOrEmpty(checkDate))
+                var checkDate = contentInfo.GetDateTime(ContentAttribute.CheckDate, DateTime.MinValue);
+                if (checkDate != DateTime.MinValue)
                 {
-                    value = DateUtils.GetDateAndTimeString(TranslateUtils.ToDateTime(checkDate));
+                    value = DateUtils.GetDateAndTimeString(checkDate);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckReasons))
@@ -207,7 +207,7 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetCommandsHtml(SiteInfo siteInfo, Dictionary<string, List<Plugin.Menu>> pluginMenus, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
+        public static string GetCommandsHtml(SiteInfo siteInfo, Dictionary<string, List<Menu>> pluginMenus, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
         {
             var builder = new StringBuilder();
 

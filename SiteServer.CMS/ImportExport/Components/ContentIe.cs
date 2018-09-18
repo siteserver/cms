@@ -165,7 +165,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     if (isInsert)
                     {
-                        var contentId = DataProvider.ContentDao.Insert(tableName, _siteInfo, channelInfo, contentInfo, false, taxis);
+                        var contentId = DataProvider.ContentDao.Insert(tableName, _siteInfo, channelInfo, contentInfo, taxis);
 
                         if (!string.IsNullOrEmpty(tags))
                         {

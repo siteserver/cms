@@ -1848,7 +1848,7 @@ SET IDENTITY_INSERT {tableName} OFF
 
         private ETriState _sqlServerVersionState = ETriState.All;
 
-        private bool IsSqlServer2012
+        public bool IsSqlServer2012
         {
             get
             {

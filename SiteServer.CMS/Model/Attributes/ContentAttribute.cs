@@ -42,10 +42,10 @@ namespace SiteServer.CMS.Model.Attributes
             return attributeName + "_Extend";
         }
 
-        public const string CheckUserName = "Check_UserName";            //审核者
-        public const string CheckCheckDate = "Check_CheckDate";          //审核时间
-        public const string CheckReasons = "Check_Reasons";              //审核原因
-        public const string TranslateContentType = "TranslateContentType";    //转移内容类型
+        public const string CheckUserName = nameof(CheckUserName);                  //审核者
+        public const string CheckDate = nameof(CheckDate);                          //审核时间
+        public const string CheckReasons = nameof(CheckReasons);                    //审核原因
+        public const string TranslateContentType = nameof(TranslateContentType);    //转移内容类型
 
         private static List<string> _allAttributes;
 

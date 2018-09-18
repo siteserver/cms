@@ -26,8 +26,6 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
-                var searchType = request.GetQueryString("searchType");
-                var searchWord = request.GetQueryString("searchWord");
                 var page = request.GetQueryInt("page");
 
                 if (!request.IsAdminLoggin ||
@@ -43,18 +41,27 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var offset = siteInfo.Additional.PageSize * (page - 1);
-                var limit = siteInfo.Additional.PageSize;
+                var pageContentInfoList = new List<Dictionary<string, object>>();
+                var count = ContentManager.GetCount(siteInfo, channelInfo);
+                var pages = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(count / siteInfo.Additional.PageSize)));
+                if (pages == 0) pages = 1;
 
-                var pageContents = ContentManager.GetContentInfoList(siteInfo, channelInfo, offset, limit);
-                var retval = new List<Dictionary<string, object>>();
-                foreach (var contentInfo in pageContents)
+                if (count > 0)
                 {
-                    var dict = contentInfo.ToDictionary();
-                    //dict["title"] = WebUtils.GetContentTitle(siteInfo, contentInfo, string.Empty);
-                    dict["title"] = ContentUtility.FormatTitle(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString), contentInfo.Title);
-                    dict["checkState"] = CheckManager.GetCheckState(siteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);
-                    retval.Add(dict);
+                    var offset = siteInfo.Additional.PageSize * (page - 1);
+                    var limit = siteInfo.Additional.PageSize;
+
+                    var pageContentIds = ContentManager.GetContentIdList(siteInfo, channelInfo, offset, limit);
+
+                    foreach (var contentId in pageContentIds)
+                    {
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                        var dict = contentInfo.ToDictionary();
+                        //dict["title"] = WebUtils.GetContentTitle(siteInfo, contentInfo, string.Empty);
+                        dict["title"] = ContentUtility.FormatTitle(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString), contentInfo.Title);
+                        dict["checkState"] = CheckManager.GetCheckState(siteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);
+                        pageContentInfoList.Add(dict);
+                    }
                 }
 
                 object permissions = null;
@@ -73,14 +80,11 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 }
 
                 var attributes = ChannelManager.GetContentAttributesToList(siteInfo, channelInfo, false);
-                var pages = Convert.ToInt32(
-                    Math.Ceiling(Convert.ToDouble(channelInfo.ContentNum / siteInfo.Additional.PageSize)));
-                if (pages == 0) pages = 1;
 
                 return Ok(new
                 {
-                    Value = retval,
-                    Count = channelInfo.ContentNum,
+                    Value = pageContentInfoList,
+                    Count = count,
                     Pages = pages,
                     Permissions = permissions,
                     Attributes = attributes

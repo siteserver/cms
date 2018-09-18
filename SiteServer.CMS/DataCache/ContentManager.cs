@@ -26,13 +26,13 @@ namespace SiteServer.CMS.DataCache
                 DataCacheManager.Remove(cacheKey);
             }
 
-            public static List<ContentInfo> GetContentInfoList(int channelId)
+            public static List<int> GetContentIdList(int channelId)
             {
                 var cacheKey = GetCacheKey(channelId);
-                var list = DataCacheManager.Get<List<ContentInfo>>(cacheKey);
+                var list = DataCacheManager.Get<List<int>>(cacheKey);
                 if (list != null) return list;
 
-                list = new List<ContentInfo>();
+                list = new List<int>();
                 DataCacheManager.Insert(cacheKey, list);
                 return list;
             }
@@ -67,22 +67,61 @@ namespace SiteServer.CMS.DataCache
             }
         }
 
-        public static void RemoveCache(int channelId)
+        private static class CountCache
+        {
+            private static readonly object LockObject = new object();
+
+            private static readonly string CacheKey =
+                DataCacheManager.GetCacheKey(nameof(ContentManager)) + "." + nameof(CountCache);
+
+            public static void Clear(string tableName)
+            {
+                var dict = GetAllContentCounts();
+                dict.Remove(tableName);
+            }
+
+            public static Dictionary<string, List<ContentCountInfo>> GetAllContentCounts()
+            {
+                var retval = DataCacheManager.Get<Dictionary<string, List<ContentCountInfo>>>(CacheKey);
+                if (retval != null) return retval;
+
+                lock (LockObject)
+                {
+                    retval = DataCacheManager.Get<Dictionary<string, List<ContentCountInfo>>>(CacheKey);
+                    if (retval == null)
+                    {
+                        retval = new Dictionary<string, List<ContentCountInfo>>();
+                        DataCacheManager.Insert(CacheKey, retval);
+                    }
+                }
+
+                return retval;
+            }
+        }
+
+        public static void RemoveCache(string tableName, int channelId)
         {
             ListCache.Remove(channelId);
             ContentCache.Remove(channelId);
+            CountCache.Clear(tableName);
             StlContentCache.ClearCache();
         }
 
-        public static void InsertCache(ChannelInfo channelInfo, IContentInfo contentInfo)
+        public static void RemoveCountCache(string tableName)
+        {
+            CountCache.Clear(tableName);
+            StlContentCache.ClearCache();
+        }
+
+        public static void InsertCache(SiteInfo siteInfo, ChannelInfo channelInfo, IContentInfo contentInfo)
         {
             if (contentInfo.SourceId == SourceManager.Preview) return;
 
-            var list = ListCache.GetContentInfoList(channelInfo.Id);
+            var contentIdList = ListCache.GetContentIdList(channelInfo.Id);
 
             if (ETaxisTypeUtils.Equals(ETaxisType.OrderByTaxisDesc, channelInfo.Additional.DefaultTaxisType))
             {
-                list.Insert(0, (ContentInfo)contentInfo);
+                contentIdList.Insert(0, contentInfo.Id);
             }
             else
             {
@@ -92,13 +131,20 @@ namespace SiteServer.CMS.DataCache
             var dict = ContentCache.GetContentDict(channelInfo.Id);
             dict[contentInfo.Id] = (ContentInfo)contentInfo;
 
+            var countInfoList = GetContentCountInfoList(ChannelManager.GetTableName(siteInfo, channelInfo));
+            var countInfo = countInfoList.FirstOrDefault(x =>
+                x.SiteId == siteInfo.Id && x.ChannelId == channelInfo.Id &&
+                x.IsChecked == contentInfo.IsChecked.ToString() && x.CheckedLevel == contentInfo.CheckedLevel);
+            if (countInfo != null) countInfo.Count++;
+
             StlContentCache.ClearCache();
         }
 
-        public static void UpdateCache(ChannelInfo channelInfo, IContentInfo contentInfoToUpdate)
+        public static void UpdateCache(SiteInfo siteInfo, ChannelInfo channelInfo, IContentInfo contentInfoToUpdate)
         {
-            var list = ListCache.GetContentInfoList(channelInfo.Id);
-            var contentInfo = list.FirstOrDefault(o => o.Id == contentInfoToUpdate.Id);
+            var dict = ContentCache.GetContentDict(channelInfo.Id);
+
+            var contentInfo = GetContentInfo(siteInfo, channelInfo, contentInfoToUpdate.Id);
             if (contentInfo != null)
             {
                 var isClearCache = contentInfo.IsTop != contentInfoToUpdate.IsTop;
@@ -118,44 +164,43 @@ namespace SiteServer.CMS.DataCache
                 {
                     ListCache.Remove(channelInfo.Id);
                 }
-                else
-                {
-                    list[list.IndexOf(contentInfo)] = (ContentInfo)contentInfoToUpdate;
-                }
             }
 
-            var dict = ContentCache.GetContentDict(channelInfo.Id);
+            
             dict[contentInfoToUpdate.Id] = (ContentInfo)contentInfoToUpdate;
 
             StlContentCache.ClearCache();
         }
 
-        public static List<ContentInfo> GetContentInfoList(SiteInfo siteInfo, ChannelInfo channelInfo, int offset, int limit)
+        public static List<int> GetContentIdList(SiteInfo siteInfo, ChannelInfo channelInfo, int offset, int limit)
         {
-            var list = ListCache.GetContentInfoList(channelInfo.Id);
-            if (list.Count > offset + limit)
+            var list = ListCache.GetContentIdList(channelInfo.Id);
+            if (list.Count >= offset + limit)
             {
                 return list.Skip(offset).Take(limit).ToList();
             }
 
             if (list.Count == offset)
             {
-                var pageList = DataProvider.ContentDao.GetCacheList(siteInfo, channelInfo, offset, limit);
-                list.AddRange(pageList);
-                return pageList;
+                var dict = ContentCache.GetContentDict(channelInfo.Id);
+                var pageContentInfoList = DataProvider.ContentDao.GetCacheContentInfoList(siteInfo, channelInfo, offset, limit);
+                foreach (var contentInfo in pageContentInfoList)
+                {
+                    dict[contentInfo.Id] = contentInfo;
+                }
+
+                var pageContentIdList = pageContentInfoList.Select(x => x.Id).ToList();
+                list.AddRange(pageContentIdList);
+                return pageContentIdList;
             }
 
-            return DataProvider.ContentDao.GetCacheList(siteInfo, channelInfo, offset, limit);
+            return DataProvider.ContentDao.GetCacheContentIdList(siteInfo, channelInfo, offset, limit);
         }
 
         public static ContentInfo GetContentInfo(SiteInfo siteInfo, int channelId, int contentId)
         {
-            var list = ListCache.GetContentInfoList(channelId);
-            var contentInfo = list.FirstOrDefault(o => o.Id == contentId);
-            if (contentInfo != null) return contentInfo;
-
             var dict = ContentCache.GetContentDict(channelId);
-            dict.TryGetValue(contentId, out contentInfo);
+            dict.TryGetValue(contentId, out var contentInfo);
             if (contentInfo != null) return contentInfo;
 
             contentInfo = DataProvider.ContentDao.GetCacheContentInfo(ChannelManager.GetTableName(siteInfo, channelId), contentId);
@@ -166,18 +211,67 @@ namespace SiteServer.CMS.DataCache
 
         public static ContentInfo GetContentInfo(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId)
         {
-            var list = ListCache.GetContentInfoList(channelInfo.Id);
-            var contentInfo = list.FirstOrDefault(o => o.Id == contentId);
-            if (contentInfo != null) return contentInfo;
 
             var dict = ContentCache.GetContentDict(channelInfo.Id);
-            dict.TryGetValue(contentId, out contentInfo);
+            dict.TryGetValue(contentId, out var contentInfo);
             if (contentInfo != null) return contentInfo;
 
             contentInfo = DataProvider.ContentDao.GetCacheContentInfo(ChannelManager.GetTableName(siteInfo, channelInfo), contentId);
             dict[contentId] = contentInfo;
 
             return contentInfo;
+        }
+
+        public static int GetCount(SiteInfo siteInfo, bool isChecked)
+        {
+            var tableNames = SiteManager.GetTableNameList(siteInfo);
+            var count = 0;
+            foreach (var tableName in tableNames)
+            {
+                var list = GetContentCountInfoList(tableName);
+                count += list.Where(x => x.SiteId == siteInfo.Id && x.IsChecked == isChecked.ToString()).Sum(x => x.Count);
+            }
+
+            return count;
+        }
+
+        public static int GetCount(SiteInfo siteInfo)
+        {
+            var tableNames = SiteManager.GetTableNameList(siteInfo);
+            var count = 0;
+            foreach (var tableName in tableNames)
+            {
+                var list = GetContentCountInfoList(tableName);
+                count += list.Where(x => x.SiteId == siteInfo.Id).Sum(x => x.Count);
+            }
+
+            return count;
+        }
+
+        public static int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo)
+        {
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            var list = GetContentCountInfoList(tableName);
+            return list.Where(x => x.SiteId == siteInfo.Id && x.ChannelId == channelInfo.Id).Sum(x => x.Count);
+        }
+
+        public static int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked)
+        {
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            var list = GetContentCountInfoList(tableName);
+            return list.Where(x => x.SiteId == siteInfo.Id && x.ChannelId == channelInfo.Id && x.IsChecked == isChecked.ToString()).Sum(x => x.Count);
+        }
+
+        private static List<ContentCountInfo> GetContentCountInfoList(string tableName)
+        {
+            var dict = CountCache.GetAllContentCounts();
+            dict.TryGetValue(tableName, out var countList);
+            if (countList != null) return countList;
+
+            countList = DataProvider.ContentDao.GetTableContentCounts(tableName);
+            dict[tableName] = countList;
+
+            return countList;
         }
     }
 }

@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
-            RptContents.DataSource = SiteManager.GetTableNameList();
+            RptContents.DataSource = SiteManager.GetSiteTableNames();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 

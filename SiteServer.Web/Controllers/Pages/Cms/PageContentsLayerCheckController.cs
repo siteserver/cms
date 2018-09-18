@@ -108,6 +108,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 {
                     checkedLevel = 0;
                 }
+                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
                 var contentInfoList = new List<ContentInfo>();
                 foreach (var contentId in contentIdList)
@@ -116,7 +117,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     if (contentInfo == null) continue;
 
                     contentInfo.Set(ContentAttribute.CheckUserName, request.AdminName);
-                    contentInfo.Set(ContentAttribute.CheckCheckDate, DateUtils.GetDateAndTimeString(DateTime.Now));
+                    contentInfo.Set(ContentAttribute.CheckDate, DateTime.Now);
                     contentInfo.Set(ContentAttribute.CheckReasons, reasons);
 
                     contentInfo.IsChecked = isChecked;
@@ -135,16 +136,15 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                     contentInfoList.Add(contentInfo);
 
-                    var checkInfo = new ContentCheckInfo(0, string.Empty, siteId, contentInfo.ChannelId, contentInfo.Id, request.AdminName, isChecked, checkedLevel, DateTime.Now, reasons);
+                    var checkInfo = new ContentCheckInfo(0, tableName, siteId, contentInfo.ChannelId, contentInfo.Id, request.AdminName, isChecked, checkedLevel, DateTime.Now, reasons);
                     DataProvider.ContentCheckDao.Insert(checkInfo);
                 }
 
                 if (isTranslate && translateChannelId > 0)
                 {
-                    ContentManager.RemoveCache(channelId);
-                    ContentManager.RemoveCache(translateChannelId);
-                    DataProvider.ChannelDao.UpdateContentNum(siteInfo, channelId, true);
-                    DataProvider.ChannelDao.UpdateContentNum(siteInfo, translateChannelId, true);
+                    ContentManager.RemoveCache(tableName, channelId);
+                    var translateTableName = ChannelManager.GetTableName(siteInfo, translateChannelId);
+                    ContentManager.RemoveCache(translateTableName, translateChannelId);
                 }
 
                 request.AddSiteLog(siteId, "批量审核内容");

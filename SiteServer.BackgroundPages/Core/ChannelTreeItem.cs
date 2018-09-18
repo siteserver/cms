@@ -142,10 +142,10 @@ namespace SiteServer.BackgroundPages.Core
 
                 htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(_siteInfo, _channelInfo));
 
-                if (_channelInfo.ContentNum < 0) return htmlBuilder.ToString();
+                var count = ContentManager.GetCount(_siteInfo, _channelInfo);
 
                 htmlBuilder.Append(
-                    $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({_channelInfo.ContentNum})</span>");
+                    $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({count})</span>");
             }
 
             return htmlBuilder.ToString();

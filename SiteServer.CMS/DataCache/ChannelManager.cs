@@ -495,31 +495,32 @@ namespace SiteServer.CMS.DataCache
             }
         }
 
-        public static string GetSelectText(SiteInfo siteInfo, ChannelInfo nodeInfo, bool[] isLastNodeArray, bool isShowContentNum)
+        public static string GetSelectText(SiteInfo siteInfo, ChannelInfo channelInfo, bool[] isLastNodeArray, bool isShowContentNum)
         {
             var retval = string.Empty;
-            if (nodeInfo.Id == nodeInfo.SiteId)
+            if (channelInfo.Id == channelInfo.SiteId)
             {
-                nodeInfo.IsLastNode = true;
+                channelInfo.IsLastNode = true;
             }
-            if (nodeInfo.IsLastNode == false)
+            if (channelInfo.IsLastNode == false)
             {
-                isLastNodeArray[nodeInfo.ParentsCount] = false;
+                isLastNodeArray[channelInfo.ParentsCount] = false;
             }
             else
             {
-                isLastNodeArray[nodeInfo.ParentsCount] = true;
+                isLastNodeArray[channelInfo.ParentsCount] = true;
             }
-            for (var i = 0; i < nodeInfo.ParentsCount; i++)
+            for (var i = 0; i < channelInfo.ParentsCount; i++)
             {
                 retval = string.Concat(retval, isLastNodeArray[i] ? "　" : "│");
             }
-            retval = string.Concat(retval, nodeInfo.IsLastNode ? "└" : "├");
-            retval = string.Concat(retval, nodeInfo.ChannelName);
+            retval = string.Concat(retval, channelInfo.IsLastNode ? "└" : "├");
+            retval = string.Concat(retval, channelInfo.ChannelName);
 
             if (isShowContentNum)
             {
-                retval = string.Concat(retval, " (", nodeInfo.ContentNum, ")");
+                var count = ContentManager.GetCount(siteInfo, channelInfo);
+                retval = string.Concat(retval, " (", count, ")");
             }
 
             return retval;
@@ -628,8 +629,6 @@ namespace SiteServer.CMS.DataCache
             var options = new List<KeyValuePair<int, string>>();
 
             var list = GetChannelIdList(siteId);
-            var nodeCount = list.Count;
-            var isLastNodeArray = new bool[nodeCount];
             foreach (var channelId in list)
             {
                 var enabled = permissionManager.HasChannelPermissions(siteId, channelId, channelPermissions);

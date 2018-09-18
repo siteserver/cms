@@ -238,7 +238,7 @@ namespace SiteServer.CMS.Core
                 new TableStyleInfo
                 {
                     AttributeName = ContentAttribute.Id,
-                    DisplayName = "编号"
+                    DisplayName = "内容Id"
                 },
                 new TableStyleInfo
                 {
@@ -287,7 +287,7 @@ namespace SiteServer.CMS.Core
                 },
                 new TableStyleInfo
                 {
-                    AttributeName = ContentAttribute.CheckCheckDate,
+                    AttributeName = ContentAttribute.CheckDate,
                     DisplayName = "审核时间"
                 },
                 new TableStyleInfo
@@ -508,9 +508,6 @@ namespace SiteServer.CMS.Core
 
                 var newContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
                 DataProvider.ContentDao.DeleteContents(siteInfo.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
-
-                DataProvider.ChannelDao.UpdateContentNum(siteInfo, channelId, true);
-                DataProvider.ChannelDao.UpdateContentNum(targetSiteInfo, targetChannelId, true);
 
                 foreach (var service in PluginManager.Services)
                 {

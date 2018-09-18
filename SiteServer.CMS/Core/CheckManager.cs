@@ -1248,5 +1248,5 @@ namespace SiteServer.CMS.Core
             userCheckedLevel = checkedLevel;
             return isChecked;
         }
-	}
+    }
 }

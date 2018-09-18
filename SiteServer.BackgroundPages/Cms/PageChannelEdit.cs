@@ -201,7 +201,6 @@ namespace SiteServer.BackgroundPages.Cms
                 if (nodeInfo.ContentModelPluginId != DdlContentModelPluginId.SelectedValue)
                 {
                     nodeInfo.ContentModelPluginId = DdlContentModelPluginId.SelectedValue;
-                    nodeInfo.ContentNum = DataProvider.ContentDao.GetCount(ChannelManager.GetTableName(SiteInfo, nodeInfo.ContentModelPluginId), nodeInfo.Id);
                 }
 
                 nodeInfo.ContentRelatedPluginIds = ControlUtils.GetSelectedListControlValueCollection(CblContentRelatedPluginIds);

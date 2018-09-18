@@ -110,7 +110,8 @@ namespace SiteServer.BackgroundPages.Cms
             else
             {
                 pagerParam.WhereSqlString = DataProvider.ContentDao.GetPagerWhereSqlString(channelId, ETriState.All, administratorName);
-                pagerParam.TotalCount = _channelInfo.ContentNum;
+                var count = ContentManager.GetCount(SiteInfo, _channelInfo);
+                pagerParam.TotalCount = count;
             }
 
             PgContents.Param = pagerParam;

@@ -141,42 +141,44 @@ namespace SiteServer.BackgroundPages.Settings
             return htmlBuilder.ToString();
         }
 
-        private string GetTitle(ChannelInfo nodeInfo, string treeDirectoryUrl, IList<bool> isLastNodeArray)
+        private string GetTitle(ChannelInfo channelInfo, string treeDirectoryUrl, IList<bool> isLastNodeArray)
         {
             var itemBuilder = new StringBuilder();
-            if (nodeInfo.Id == SiteId)
+            if (channelInfo.Id == SiteId)
             {
-                nodeInfo.IsLastNode = true;
+                channelInfo.IsLastNode = true;
             }
-            if (nodeInfo.IsLastNode == false)
+            if (channelInfo.IsLastNode == false)
             {
-                isLastNodeArray[nodeInfo.ParentsCount] = false;
+                isLastNodeArray[channelInfo.ParentsCount] = false;
             }
             else
             {
-                isLastNodeArray[nodeInfo.ParentsCount] = true;
+                isLastNodeArray[channelInfo.ParentsCount] = true;
             }
-            for (var i = 0; i < nodeInfo.ParentsCount; i++)
+            for (var i = 0; i < channelInfo.ParentsCount; i++)
             {
                 itemBuilder.Append($"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_empty.gif\"/>");
             }
-            if (nodeInfo.IsLastNode)
+            if (channelInfo.IsLastNode)
             {
-                itemBuilder.Append(nodeInfo.ChildrenCount > 0
+                itemBuilder.Append(channelInfo.ChildrenCount > 0
                     ? $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/minus.png\"/>"
                     : $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_empty.gif\"/>");
             }
             else
             {
-                itemBuilder.Append(nodeInfo.ChildrenCount > 0
+                itemBuilder.Append(channelInfo.ChildrenCount > 0
                     ? $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/minus.png\"/>"
                     : $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_empty.gif\"/>");
             }
 
+            var count = ContentManager.GetCount(SiteInfo, channelInfo);
+
             itemBuilder.Append($@"
 <span class=""checkbox checkbox-primary"" style=""padding-left: 0px;"">
-    <input type=""checkbox"" id=""ChannelIdCollection_{nodeInfo.Id}"" name=""ChannelIdCollection"" value=""{nodeInfo.Id}""/>
-    <label for=""ChannelIdCollection_{nodeInfo.Id}""> {nodeInfo.ChannelName} &nbsp;<span style=""font-size:8pt;font-family:arial"" class=""gray"">({nodeInfo.ContentNum})</span></label>
+    <input type=""checkbox"" id=""ChannelIdCollection_{channelInfo.Id}"" name=""ChannelIdCollection"" value=""{channelInfo.Id}""/>
+    <label for=""ChannelIdCollection_{channelInfo.Id}""> {channelInfo.ChannelName} &nbsp;<span style=""font-size:8pt;font-family:arial"" class=""gray"">({count})</span></label>
 </span>
 ");
 

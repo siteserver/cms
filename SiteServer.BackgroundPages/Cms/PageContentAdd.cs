@@ -297,7 +297,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
 
                         contentInfo.Set(ContentAttribute.CheckUserName, AuthRequest.AdminName);
-                        contentInfo.Set(ContentAttribute.CheckCheckDate, DateUtils.GetDateAndTimeString(DateTime.Now));
+                        contentInfo.Set(ContentAttribute.CheckDate, DateUtils.GetDateAndTimeString(DateTime.Now));
                         contentInfo.Set(ContentAttribute.CheckReasons, string.Empty);
                     }
 

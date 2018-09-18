@@ -15,9 +15,28 @@ namespace SiteServer.CMS.Plugin
 
             foreach (var service in PluginManager.Services)
             {
-                if (string.IsNullOrEmpty(service.ContentTableName) || service.ContentTableColumns == null || service.ContentTableColumns.Count == 0) continue;
+                if (PluginContentTableManager.IsContentTable(service))
+                {
+                    list.Add(service.Metadata);
+                }
+            }
 
-                list.Add(service.Metadata);
+            return list;
+        }
+
+        public static List<string> GetContentTableNameList()
+        {
+            var list = new List<string>();
+
+            foreach (var service in PluginManager.Services)
+            {
+                if (PluginContentTableManager.IsContentTable(service))
+                {
+                    if (!StringUtils.ContainsIgnoreCase(list, service.ContentTableName))
+                    {
+                        list.Add(service.ContentTableName);
+                    }
+                }
             }
 
             return list;

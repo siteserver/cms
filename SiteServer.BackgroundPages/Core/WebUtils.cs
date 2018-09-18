@@ -119,7 +119,9 @@ namespace SiteServer.BackgroundPages.Core
 </a>");
             }
 
-            if (channelInfo.ContentNum > 0 && permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete))
+            var count = ContentManager.GetCount(siteInfo, channelInfo);
+
+            if (count > 0 && permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete))
             {
                 builder.Append($@"
 <a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{PageContentDelete.GetRedirectClickStringForSingleChannel(siteInfo.Id, channelInfo.Id, false, pageUrl)}"">
@@ -128,7 +130,7 @@ namespace SiteServer.BackgroundPages.Core
 </a>");
             }
 
-            if (channelInfo.ContentNum > 0)
+            if (count > 0)
             {
                 if (permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentEdit))
                 {
@@ -184,7 +186,7 @@ namespace SiteServer.BackgroundPages.Core
 </a>");
             }
 
-            if (channelInfo.ContentNum > 0)
+            if (count > 0)
             {
                 builder.Append(@"
 <a href=""javascript:;;"" class=""btn btn-light text-secondary text-secondary"" onClick=""$('#contentSearch').toggle(); return false"">
@@ -196,35 +198,37 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetContentMoreCommands(PermissionManager permissionManager, SiteInfo siteInfo, ChannelInfo nodeInfo, string pageUrl)
+        public static string GetContentMoreCommands(PermissionManager permissionManager, SiteInfo siteInfo, ChannelInfo channelInfo, string pageUrl)
         {
             var builder = new StringBuilder();
 
-            if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && nodeInfo.Additional.IsContentAddable)
+            if (permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.Additional.IsContentAddable)
             {
                 builder.Append($@"
-<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentImport.GetOpenWindowString(siteInfo.Id, nodeInfo.Id)}"">
+<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentImport.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
     导 入
 </a>");
             }
 
-            if (nodeInfo.ContentNum > 0)
+            var count = ContentManager.GetCount(siteInfo, channelInfo);
+
+            if (count > 0)
             {
                 builder.Append($@"
-<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentExport.GetOpenWindowString(siteInfo.Id, nodeInfo.Id)}"">
+<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentExport.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
     导 出
 </a>");
-                if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ContentOrder))
+                if (permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentOrder))
                 {
                     builder.Append($@"
-<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentTidyUp.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, pageUrl)}"">
+<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentTidyUp.GetOpenWindowString(siteInfo.Id, channelInfo.Id, pageUrl)}"">
     整 理
 </a>");
                 }
-                if (CrossSiteTransUtility.IsCrossSiteTrans(siteInfo, nodeInfo) && !CrossSiteTransUtility.IsAutomatic(nodeInfo))
+                if (CrossSiteTransUtility.IsCrossSiteTrans(siteInfo, channelInfo) && !CrossSiteTransUtility.IsAutomatic(channelInfo))
                 {
                     builder.Append($@"
-<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentCrossSiteTrans.GetOpenWindowString(siteInfo.Id, nodeInfo.Id)}"">
+<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentCrossSiteTrans.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
     跨站转发
 </a>");
                 }

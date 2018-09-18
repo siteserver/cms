@@ -252,17 +252,19 @@
   var $api = new apiUtils.Api('<%=ApiUrl%>/pages/main');
   var $siteId = parseInt(pageUtils.getQueryStringByName('siteId'));
   var lastExecuteTime = new Date();
+  var timeoutId = null;
 
   function loadProgress() {
+    clearTimeout(timeoutId);
     $api.get(null,
       function (err, res) {
         if (err || !res) {
-          setTimeout(loadProgress, 1000);
+          timeoutId = setTimeout(loadProgress, 1000);
         } else {
           if (res.value === 0) {
-            setTimeout(loadProgress, 2000);
+            timeoutId = setTimeout(loadProgress, 2000);
           } else {
-            setTimeout(loadProgress, 100);
+            timeoutId = setTimeout(loadProgress, 100);
           }
           $('#progress').html(res.value + '');
         }
@@ -276,7 +278,7 @@
     if (minutes > 2) {
       loadProgress();
     }
-  }, 30000);
+  }, 60000);
 
   function openPageCreateStatus() {
     pageUtils.openLayer({

@@ -167,13 +167,12 @@ namespace SiteServer.BackgroundPages.Cms
                 var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
                 var contentIdList = idsDictionaryToCheck[channelId];
                 DataProvider.ContentDao.UpdateIsChecked(tableName, SiteId, channelId, contentIdList, translateChannelId, AuthRequest.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
-
-                DataProvider.ChannelDao.UpdateContentNum(SiteInfo, channelId, true);
             }
 
             if (translateChannelId > 0)
             {
-                DataProvider.ChannelDao.UpdateContentNum(SiteInfo, translateChannelId, true);
+                var tableName = ChannelManager.GetTableName(SiteInfo, translateChannelId);
+                ContentManager.RemoveCache(tableName, translateChannelId);
             }
 
             AuthRequest.AddSiteLog(SiteId, SiteId, 0, "设置内容状态为" + DdlCheckType.SelectedItem.Text, TbCheckReasons.Text);

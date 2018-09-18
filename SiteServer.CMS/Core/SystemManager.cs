@@ -71,7 +71,7 @@ namespace SiteServer.CMS.Core
 
         public static void SyncContentTables()
         {
-            var tableNameList = SiteManager.GetTableNameList();
+            var tableNameList = SiteManager.GetAllTableNameList();
             foreach (var tableName in tableNameList)
             {
                 if (!DataProvider.DatabaseDao.IsTableExists(tableName))
