@@ -7,7 +7,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.Office
 {
-	public class TxtObject
+	public static class TxtObject
 	{
         public static List<ContentInfo> GetContentListByTxtFile(string directoryPath, SiteInfo siteInfo, ChannelInfo nodeInfo)
         {
@@ -27,13 +27,14 @@ namespace SiteServer.CMS.Core.Office
                         var title = StringUtils.GetFirstOfStringCollection(content, '\r');
                         if (!string.IsNullOrEmpty(title))
                         {
-                            var contentInfo = new ContentInfo
+                            var dict = new Dictionary<string, object>
                             {
-                                Title = title.Trim(),
-                                SiteId = siteInfo.Id,
-                                ChannelId = nodeInfo.Id,
-                                LastEditDate = DateTime.Now
+                                {ContentAttribute.Title, title.Trim()},
+                                {ContentAttribute.SiteId, siteInfo.Id},
+                                {ContentAttribute.ChannelId, nodeInfo.Id},
+                                {ContentAttribute.LastEditDate, DateTime.Now}
                             };
+                            var contentInfo = new ContentInfo(dict);
                             contentInfo.Set(BackgroundContentAttribute.Content, StringUtils.ReplaceNewlineToBr(content.Replace(title, string.Empty).Trim()));
 
                             contentInfoList.Add(contentInfo);

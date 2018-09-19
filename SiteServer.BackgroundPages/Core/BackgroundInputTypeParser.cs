@@ -909,8 +909,10 @@ function add_{attributeName}(val,foucs){{
             return left;
         }
 
-        public static void SaveAttributes(IAttributes attributes, SiteInfo siteInfo, List<TableStyleInfo> styleInfoList, NameValueCollection formCollection, List<string> dontAddAttributes)
+        public static Dictionary<string, object> SaveAttributes(SiteInfo siteInfo, List<TableStyleInfo> styleInfoList, NameValueCollection formCollection, List<string> dontAddAttributes)
         {
+            var dict = new Dictionary<string, object>();
+
             if (dontAddAttributes == null)
             {
                 dontAddAttributes = new List<string>();
@@ -931,11 +933,10 @@ function add_{attributeName}(val,foucs){{
 
                 if (inputType != InputType.TextEditor && inputType != InputType.Image && inputType != InputType.File && inputType != InputType.Video && styleInfo.AttributeName != ContentAttribute.LinkUrl)
                 {
-                    theValue = AttackUtils.FilterSqlAndXss(theValue);
+                    theValue = AttackUtils.FilterXss(theValue);
                 }
 
-                attributes.Set(styleInfo.AttributeName, theValue);
-                //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, styleInfo.AttributeName, theValue);
+                dict[styleInfo.AttributeName] = theValue;
 
                 if (styleInfo.Additional.IsFormatString)
                 {
@@ -945,17 +946,66 @@ function add_{attributeName}(val,foucs){{
                     var formatColor = formCollection[styleInfo.AttributeName + "_formatColor"];
                     var theFormatString = ContentUtility.GetTitleFormatString(formatString, formatEm, formatU, formatColor);
 
-                    attributes.Set(ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
-                    //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
+                    dict[ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName)] = theFormatString;
                 }
 
                 if (inputType == InputType.Image || inputType == InputType.File || inputType == InputType.Video)
                 {
                     var attributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
-                    attributes.Set(attributeName, formCollection[attributeName]);
-                    //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, attributeName, formCollection[attributeName]);
+                    dict[attributeName] = formCollection[attributeName];
                 }
             }
+
+            return dict;
         }
+
+        //public static void SaveAttributes(IAttributes attributes, SiteInfo siteInfo, List<TableStyleInfo> styleInfoList, NameValueCollection formCollection, List<string> dontAddAttributes)
+        //{
+        //    if (dontAddAttributes == null)
+        //    {
+        //        dontAddAttributes = new List<string>();
+        //    }
+
+        //    foreach (var styleInfo in styleInfoList)
+        //    {
+        //        if (StringUtils.ContainsIgnoreCase(dontAddAttributes, styleInfo.AttributeName)) continue;
+        //        //var theValue = GetValueByForm(styleInfo, siteInfo, formCollection);
+
+        //        var theValue = formCollection[styleInfo.AttributeName] ?? string.Empty;
+        //        var inputType = styleInfo.InputType;
+        //        if (inputType == InputType.TextEditor)
+        //        {
+        //            theValue = ContentUtility.TextEditorContentEncode(siteInfo, theValue);
+        //            theValue = UEditorUtils.TranslateToStlElement(theValue);
+        //        }
+
+        //        if (inputType != InputType.TextEditor && inputType != InputType.Image && inputType != InputType.File && inputType != InputType.Video && styleInfo.AttributeName != ContentAttribute.LinkUrl)
+        //        {
+        //            theValue = AttackUtils.FilterSqlAndXss(theValue);
+        //        }
+
+        //        attributes.Set(styleInfo.AttributeName, theValue);
+        //        //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, styleInfo.AttributeName, theValue);
+
+        //        if (styleInfo.Additional.IsFormatString)
+        //        {
+        //            var formatString = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatStrong"]);
+        //            var formatEm = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatEM"]);
+        //            var formatU = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatU"]);
+        //            var formatColor = formCollection[styleInfo.AttributeName + "_formatColor"];
+        //            var theFormatString = ContentUtility.GetTitleFormatString(formatString, formatEm, formatU, formatColor);
+
+        //            attributes.Set(ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
+        //            //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
+        //        }
+
+        //        if (inputType == InputType.Image || inputType == InputType.File || inputType == InputType.Video)
+        //        {
+        //            var attributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
+        //            attributes.Set(attributeName, formCollection[attributeName]);
+        //            //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, attributeName, formCollection[attributeName]);
+        //        }
+        //    }
+        //}
     }
 }

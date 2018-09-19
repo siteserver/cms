@@ -47,6 +47,8 @@ namespace SiteServer.CMS.Model.Attributes
         public const string CheckReasons = nameof(CheckReasons);                    //审核原因
         public const string TranslateContentType = nameof(TranslateContentType);    //转移内容类型
 
+        public const string Sequence = nameof(Sequence);                            //序号
+
         private static List<string> _allAttributes;
 
         public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>

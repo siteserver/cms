@@ -252,7 +252,7 @@
     <Compile Include="Model\Enumerations\ETranslateType.cs" />
     <Compile Include="Model\Enumerations\EWriteBackMethod.cs" />
     <Compile Include="Model\ErrorLogInfo.cs" />
-    <Compile Include="Model\Attributes\ExtendedAttributes.cs" />
+    <Compile Include="Plugin\Model\AttributesImpl.cs" />
     <Compile Include="Model\AccessTokenInfo.cs" />
     <Compile Include="Model\KeywordInfo.cs" />
     <Compile Include="Model\LogInfo.cs" />
@@ -299,7 +299,7 @@
     <Compile Include="Plugin\Apis\UserApi.cs" />
     <Compile Include="Plugin\Model\ApiCollectionImpl.cs" />
     <Compile Include="Plugin\Model\EnvironmentImpl.cs" />
-    <Compile Include="Plugin\Model\PluginInstance.cs" />
+    <Compile Include="Plugin\PluginInstance.cs" />
     <Compile Include="Plugin\Model\ContentContextImpl.cs" />
     <Compile Include="Plugin\Model\ParseContextImpl.cs" />
     <Compile Include="Plugin\Model\ServiceImpl.cs" />

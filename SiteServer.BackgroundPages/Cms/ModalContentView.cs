@@ -89,7 +89,7 @@ namespace SiteServer.BackgroundPages.Cms
             LtlAddUserName.Text = AdminManager.GetDisplayName(_contentInfo.AddUserName, true);
             LtlLastEditUserName.Text = AdminManager.GetDisplayName(_contentInfo.LastEditUserName, true);
 
-            LtlContentLevel.Text = CheckManager.GetCheckState(SiteInfo, _contentInfo.IsChecked, _contentInfo.CheckedLevel);
+            LtlContentLevel.Text = CheckManager.GetCheckState(SiteInfo, _contentInfo);
 
             if (_contentInfo.ReferenceId > 0 && _contentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
             {

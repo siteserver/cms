@@ -2,6 +2,17 @@
 var $api = new apiUtils.Api($apiUrl + "/pages/cms/contents");
 var $createApi = new apiUtils.Api($apiUrl + "/pages/cms/contents/actions/create");
 
+Object.defineProperty(Object.prototype, "getProp", {
+  value: function (prop) {
+    var key, self = this;
+    for (key in self) {
+      if (key.toLowerCase() == prop.toLowerCase()) {
+        return self[key];
+      }
+    }
+  }
+});
+
 var data = {
   siteId: parseInt(pageUtils.getQueryStringByName("siteId")),
   channelId: parseInt(pageUtils.getQueryStringByName("channelId")),
@@ -10,6 +21,7 @@ var data = {
   pageType: null,
   page: 1,
   pageContents: null,
+  contentDict: null,
   count: null,
   pages: null,
   permissions: null,
@@ -163,6 +175,7 @@ var methods = {
 
         var pageContents = [];
         for (var i = 0; i < res.value.length; i++) {
+
           var content = _.assign({}, res.value[i], {
             isSelected: false
           });

@@ -1,10 +1,11 @@
 ﻿using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin.Model;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Model.Attributes
 {
-    public class ChannelInfoExtend : ExtendedAttributes
+    public class ChannelInfoExtend : AttributesImpl
     {
         public ChannelInfoExtend(string settings) : base(settings)
         {

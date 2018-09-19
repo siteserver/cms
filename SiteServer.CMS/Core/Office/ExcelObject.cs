@@ -107,9 +107,7 @@ namespace SiteServer.CMS.Core.Office
         {
             var contentInfoList = new List<ContentInfo>();
 
-            List<string> head;
-            List<List<string>> rows;
-            CsvUtils.Import(filePath, out head, out rows);
+            CsvUtils.Import(filePath, out var head, out var rows);
 
             if (rows.Count <= 0) return contentInfoList;
 
@@ -136,18 +134,20 @@ namespace SiteServer.CMS.Core.Office
 
             foreach (var row in rows)
             {
-                var contentInfo = new ContentInfo();
                 if (row.Count != attributeNames.Count) continue;
+
+                var dict = new Dictionary<string, object>();
 
                 for (var i = 0; i < attributeNames.Count; i++)
                 {
                     var attributeName = attributeNames[i];
                     if (!string.IsNullOrEmpty(attributeName))
                     {
-                        var value = row[i];
-                        contentInfo.Set(attributeName, value);
+                        dict[attributeName] = row[i];
                     }
                 }
+
+                var contentInfo = new ContentInfo(dict);
 
                 if (!string.IsNullOrEmpty(contentInfo.Title))
                 {

@@ -88,22 +88,26 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="content in pageContents" v-on:click="toggleChecked(content)" :class="{'table-warning': content.isSelected}">
+      <tr v-for="(content, index) in pageContents" v-on:click="toggleChecked(content)" :class="{'table-warning': content.isSelected}">
         <td v-for="attribute in attributes">
-          <a v-if="attribute.value === 'Title' && content.isChecked === 'True'" :href="content.navigationUrl" target="_blank">
+          <a v-if="attribute.value === 'Title' && content.getProp('isChecked') === 'True'" :href="content.getProp('navigationUrl')"
+            target="_blank">
             {{ content.title }}
           </a>
-          <a v-else-if="attribute.value === 'Title' && content.isChecked === 'False'" href="javascript:;" v-on:click="btnContentViewClick(content.id)">
+          <a v-else-if="attribute.value === 'Title' && content.getProp('isChecked') === 'False'" href="javascript:;"
+            v-on:click="btnContentViewClick(content.id)">
             {{ content.title }}
           </a>
-          <span v-else v-html="content[_.camelCase(attribute.value)]"></span>
+          <span v-else-if="attribute.value === 'Sequence'">{{ index + 1 }}</span>
+          <span v-else v-html="content.getProp(attribute.value)"></span>
         </td>
 
         <td class="text-center text-nowrap">
           <a :href="'pageContentAdd.aspx?siteId=' + siteId + '&channelId=' + channelId + '&id=' + content.id">编辑</a>
         </td>
         <td class="text-center text-nowrap">
-          <a v-on:click="btnContentStateClick(content.id)" href="javascript:;" v-html="content.checkState"></a>
+          <a v-on:click="btnContentStateClick(content.id)" href="javascript:;" :class="{'text-danger' : content.getProp('isChecked') !== 'True'}">{{
+            content.getProp('checkState') }}</a>
         </td>
         <td class="text-nowrap checkbox checkbox-primary">
           <input :id="'checkbox' + content.id" v-model="content.isSelected" type="checkbox">

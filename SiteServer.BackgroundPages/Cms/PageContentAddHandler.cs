@@ -7,6 +7,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -35,7 +36,12 @@ namespace SiteServer.BackgroundPages.Cms
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
             var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
 
-            var contentInfo = new ContentInfo
+            
+
+            var form = AuthRequest.HttpRequest.Form;
+
+            var dict = BackgroundInputTypeParser.SaveAttributes(siteInfo, styleInfoList, form, ContentAttribute.AllAttributes);
+            var contentInfo = new ContentInfo(dict)
             {
                 ChannelId = channelId,
                 SiteId = siteId,
@@ -43,10 +49,6 @@ namespace SiteServer.BackgroundPages.Cms
                 LastEditUserName = AuthRequest.AdminName,
                 LastEditDate = DateTime.Now
             };
-
-            var form = AuthRequest.HttpRequest.Form;
-
-            BackgroundInputTypeParser.SaveAttributes(contentInfo, siteInfo, styleInfoList, form, ContentAttribute.AllAttributes);
 
             //contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);
             var tagCollection = TagUtils.ParseTagsString(form["TbTags"]);
@@ -73,7 +75,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 try
                 {
-                    service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, new ExtendedAttributes(form), contentInfo));
+                    service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, new AttributesImpl(form), contentInfo));
                 }
                 catch (Exception ex)
                 {

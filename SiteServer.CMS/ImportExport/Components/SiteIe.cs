@@ -87,7 +87,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 var theSameNameChannelId = 0;
                 if (isOverride)
                 {
-                    theSameNameChannelId = DataProvider.ChannelDao.GetIdByParentIdAndChannelName(_siteInfo.Id, parentId, nodeInfo.ChannelName, false);
+                    theSameNameChannelId = ChannelManager.GetChannelIdByParentIdAndChannelName(_siteInfo.Id, parentId, nodeInfo.ChannelName, false);
                     if (theSameNameChannelId != 0)
                     {
                         isUpdate = true;

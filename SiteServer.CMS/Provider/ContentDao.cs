@@ -13,6 +13,7 @@ using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 using Dapper;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.CMS.Provider
 {
@@ -20,9 +21,7 @@ namespace SiteServer.CMS.Provider
     {
         private const int TaxisIsTopStartValue = 2000000000;
 
-        private static string MinListColumns { get; } = DataProvider.DatabaseDao.IsSqlServer2012
-            ? ContentAttribute.Id
-            : $"{ContentAttribute.Id}, {ContentAttribute.ChannelId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}, {ContentAttribute.LastEditDate}, {ContentAttribute.Taxis}, {ContentAttribute.Hits}, {ContentAttribute.HitsByDay}, {ContentAttribute.HitsByWeek}, {ContentAttribute.HitsByMonth}";
+        private static string MinListColumns { get; } = $"{ContentAttribute.Id}, {ContentAttribute.ChannelId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}, {ContentAttribute.LastEditDate}, {ContentAttribute.Taxis}, {ContentAttribute.Hits}, {ContentAttribute.HitsByDay}, {ContentAttribute.HitsByWeek}, {ContentAttribute.HitsByMonth}";
 
         public static string GetContentTableName(int siteId)
         {
@@ -269,7 +268,7 @@ namespace SiteServer.CMS.Provider
                 var tuple = GetValue(tableName, contentId, ContentAttribute.SettingsXml);
                 if (tuple == null) continue;
 
-                var attributes = new ExtendedAttributes(tuple.Item2);
+                var attributes = new AttributesImpl(tuple.Item2);
                 attributes.Set(ContentAttribute.CheckUserName, userName);
                 attributes.Set(ContentAttribute.CheckDate, DateUtils.GetDateAndTimeString(checkDate));
                 attributes.Set(ContentAttribute.CheckReasons, reasons);
@@ -1814,7 +1813,7 @@ group by tmp.userName";
                 siteInfo = SiteManager.GetSiteInfo(siteId);
             }
 
-            var channelId = DataProvider.ChannelDao.GetIdByChannelIdOrChannelIndexOrChannelName(siteId, siteId, channelIndex, channelName);
+            var channelId = ChannelManager.GetChannelId(siteId, siteId, channelIndex, channelName);
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
             if (isAllSites)
@@ -2447,7 +2446,7 @@ group by tmp.userName";
 
         private string GetCreateContentTableSqlString(string tableName, List<TableColumn> tableColumns)
         {
-            var sqlBuilder = new StringBuilder(DataProvider.DatabaseDao.GetCreateSystemTableSqlString(tableName, tableColumns));
+            var sqlBuilder = new StringBuilder(DataProvider.DatabaseDao.GetCreateTableSqlString(tableName, tableColumns));
             sqlBuilder.AppendLine().Append("GO");
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
@@ -2536,9 +2535,7 @@ GO");
             {
                 while (rdr.Read())
                 {
-                    var contentInfo = new ContentInfo();
-                    contentInfo.Load(rdr);
-                    contentInfo.Load(contentInfo.SettingsXml);
+                    var contentInfo = new ContentInfo(rdr);
 
                     list.Add(contentInfo);
                 }
@@ -2589,9 +2586,7 @@ GO");
             {
                 if (rdr.Read())
                 {
-                    contentInfo = new ContentInfo();
-                    contentInfo.Load(rdr);
-                    contentInfo.Load(contentInfo.SettingsXml);
+                    contentInfo = new ContentInfo(rdr);
                 }
                 rdr.Close();
             }

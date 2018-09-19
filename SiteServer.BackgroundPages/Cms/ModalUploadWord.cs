@@ -88,14 +88,16 @@ namespace SiteServer.BackgroundPages.Cms
 
                         if (!string.IsNullOrEmpty(formCollection[ContentAttribute.Title]))
                         {
-                            var contentInfo = new ContentInfo();
+                            var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributes);
 
-                            BackgroundInputTypeParser.SaveAttributes(contentInfo, SiteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributes);
+                            var contentInfo = new ContentInfo(dict)
+                            {
+                                ChannelId = _channelInfo.Id,
+                                SiteId = SiteId,
+                                AddUserName = AuthRequest.AdminName,
+                                AddDate = DateTime.Now
+                            };
 
-                            contentInfo.ChannelId = _channelInfo.Id;
-                            contentInfo.SiteId = SiteId;
-                            contentInfo.AddUserName = AuthRequest.AdminName;
-                            contentInfo.AddDate = DateTime.Now;
                             contentInfo.LastEditUserName = contentInfo.AddUserName;
                             contentInfo.LastEditDate = contentInfo.AddDate;
 

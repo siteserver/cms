@@ -21,6 +21,7 @@ namespace SiteServer.CMS.StlParser.Model
             SiteInfo = contextInfo.SiteInfo;
             ChannelId = contextInfo.ChannelId;
             ContentId = contextInfo.ContentId;
+            _channelInfo = contextInfo._channelInfo;
             _contentInfo = contextInfo._contentInfo;
 
             IsInnerElement = contextInfo.IsInnerElement;
@@ -65,13 +66,26 @@ namespace SiteServer.CMS.StlParser.Model
 
         public NameValueCollection Attributes { get; set; }
 
+        private ChannelInfo _channelInfo;
+        public ChannelInfo ChannelInfo
+        {
+            get
+            {
+                if (_channelInfo != null) return _channelInfo;
+                if (ChannelId <= 0) return null;
+                _channelInfo = ChannelManager.GetChannelInfo(SiteInfo.Id, ChannelId);
+                return _channelInfo;
+            }
+            set { _channelInfo = value; }
+        }
+
         private ContentInfo _contentInfo;
         public ContentInfo ContentInfo
         {
             get
             {
                 if (_contentInfo != null) return _contentInfo;
-                if (ContentId <= 0) return _contentInfo;
+                if (ContentId <= 0) return null;
                 _contentInfo = ContentManager.GetContentInfo(SiteInfo, ChannelId, ContentId);
                 return _contentInfo;
             }

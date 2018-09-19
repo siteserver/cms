@@ -1,6 +1,17 @@
 ﻿var $apiUrl = $apiConfig.apiUrl;
 var $api = new apiUtils.Api($apiUrl + '/pages/cms/contentsLayerView');
 
+Object.defineProperty(Object.prototype, "getProp", {
+  value: function (prop) {
+    var key, self = this;
+    for (key in self) {
+      if (key.toLowerCase() == prop.toLowerCase()) {
+        return self[key];
+      }
+    }
+  }
+});
+
 var data = {
   siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
   channelId: parseInt(pageUtils.getQueryStringByName('channelId')),

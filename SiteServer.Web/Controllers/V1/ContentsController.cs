@@ -28,11 +28,11 @@ namespace SiteServer.API.Controllers.V1
                 var attributes = request.GetPostCollection();
                 if (attributes == null) return BadRequest("无法从body中获取内容实体");
 
-                var contentInfo = new ContentInfo();
-                contentInfo.Load(attributes);
-
-                contentInfo.SiteId = siteId;
-                contentInfo.ChannelId = channelId;
+                var contentInfo = new ContentInfo(attributes)
+                {
+                    SiteId = siteId,
+                    ChannelId = channelId
+                };
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
@@ -78,12 +78,12 @@ namespace SiteServer.API.Controllers.V1
                 var attributes = request.GetPostCollection();
                 if (attributes == null) return BadRequest("无法从body中获取内容实体");
 
-                var contentInfo = new ContentInfo();
-                contentInfo.Load(attributes);
-
-                contentInfo.SiteId = siteId;
-                contentInfo.ChannelId = channelId;
-                contentInfo.Id = id;
+                var contentInfo = new ContentInfo(attributes)
+                {
+                    SiteId = siteId,
+                    ChannelId = channelId,
+                    Id = id
+                };
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo == null) return BadRequest("无法确定内容对应的站点");

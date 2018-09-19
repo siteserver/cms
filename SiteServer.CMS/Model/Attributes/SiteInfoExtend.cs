@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using SiteServer.CMS.Plugin.Model;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Model.Attributes
 {
     [Serializable]
-    public class SiteInfoExtend : ExtendedAttributes
+    public class SiteInfoExtend : AttributesImpl
     {
         private readonly string _siteDir;
 

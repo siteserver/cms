@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
             BtnCheck.Visible = CheckManager.IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
 
             LtlTitle.Text = contentInfo.Title;
-            LtlState.Text = CheckManager.GetCheckState(SiteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);
+            LtlState.Text = CheckManager.GetCheckState(SiteInfo, contentInfo);
 
             var checkInfoList = DataProvider.ContentCheckDao.GetCheckInfoList(_tableName, _contentId);
             if (checkInfoList.Count > 0)

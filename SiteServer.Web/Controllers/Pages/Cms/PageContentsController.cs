@@ -5,6 +5,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
@@ -41,7 +42,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var pageContentInfoList = new List<Dictionary<string, object>>();
+                var pageContentInfoList = new List<ContentInfo>();
                 var count = ContentManager.GetCount(siteInfo, channelInfo);
                 var pages = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(count / siteInfo.Additional.PageSize)));
                 if (pages == 0) pages = 1;
@@ -56,11 +57,15 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     foreach (var contentId in pageContentIds)
                     {
                         var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
-                        var dict = contentInfo.ToDictionary();
-                        //dict["title"] = WebUtils.GetContentTitle(siteInfo, contentInfo, string.Empty);
-                        dict["title"] = ContentUtility.FormatTitle(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString), contentInfo.Title);
-                        dict["checkState"] = CheckManager.GetCheckState(siteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);
-                        pageContentInfoList.Add(dict);
+
+                        contentInfo.AddParameters(new
+                        {
+                            NavigationUrl = PageUtility.GetContentUrl(siteInfo, contentInfo, false),
+                            CheckState =
+                                CheckManager.GetCheckState(siteInfo, contentInfo)
+                        });
+
+                        pageContentInfoList.Add(contentInfo);
                     }
                 }
 

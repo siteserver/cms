@@ -84,17 +84,7 @@ namespace SiteServer.CMS.Core.Office
 
                         foreach (DataRow row in oleDt.Rows)
                         {
-                            var contentInfo = new ContentInfo();
-
-                            for (var i = 0; i < oleDt.Columns.Count; i++)
-                            {
-                                var attributeName = attributeNames[i] as string;
-                                if (!string.IsNullOrEmpty(attributeName))
-                                {
-                                    var value = row[i].ToString();
-                                    contentInfo.Set(attributeName, value);
-                                }
-                            }
+                            var contentInfo = new ContentInfo(row);
 
                             if (!string.IsNullOrEmpty(contentInfo.Title))
                             {

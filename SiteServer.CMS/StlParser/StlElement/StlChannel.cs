@@ -190,7 +190,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
-            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
+            channelId = ChannelManager.GetChannelId(pageInfo.SiteId, channelId, channelIndex, channelName);
             var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
 
             if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))

@@ -12,6 +12,7 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -176,7 +177,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                CacAttributes.Attributes = new ExtendedAttributes(Request.Form);
+                CacAttributes.Attributes = new AttributesImpl(Request.Form);
             }
         }
 
@@ -257,11 +258,10 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                var extendedAttributes = new ExtendedAttributes();
                 var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName, relatedIdentities);
-                BackgroundInputTypeParser.SaveAttributes(extendedAttributes, SiteInfo, styleInfoList, Request.Form, null);
-                nodeInfo.Additional.Load(extendedAttributes.ToDictionary());
+                var extendedAttributes = BackgroundInputTypeParser.SaveAttributes(SiteInfo, styleInfoList, Request.Form, null);
+                nodeInfo.Additional.Load(extendedAttributes);
 
                 nodeInfo.ChannelName = TbNodeName.Text;
                 nodeInfo.IndexName = TbNodeIndexName.Text;

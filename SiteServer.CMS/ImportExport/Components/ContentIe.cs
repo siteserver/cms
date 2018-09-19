@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using Atom.Core;
@@ -107,13 +108,15 @@ namespace SiteServer.CMS.ImportExport.Components
                     }
                     var tags = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Tags));
 
-                    var contentInfo = new ContentInfo
+                    var dict = new Dictionary<string, object>
                     {
-                        ChannelId= channelInfo.Id,
-                        SiteId = _siteInfo.Id,
-                        AddUserName = adminName,
-                        AddDate = TranslateUtils.ToDateTime(addDate)
+                        {ContentAttribute.SiteId, _siteInfo.Id},
+                        {ContentAttribute.ChannelId, channelInfo.Id},
+                        {ContentAttribute.AddUserName, adminName},
+                        {ContentAttribute.AddDate, TranslateUtils.ToDateTime(addDate)}
                     };
+                    var contentInfo = new ContentInfo(dict);
+
                     contentInfo.LastEditUserName = contentInfo.AddUserName;
                     contentInfo.LastEditDate = TranslateUtils.ToDateTime(lastEditDate);
                     contentInfo.GroupNameCollection = groupNameCollection;

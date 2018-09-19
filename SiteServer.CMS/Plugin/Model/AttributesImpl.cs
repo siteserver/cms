@@ -6,51 +6,48 @@ using System.Linq;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
-namespace SiteServer.CMS.Model.Attributes
+namespace SiteServer.CMS.Plugin.Model
 {
-    /// <summary>
-    /// Provides standard implementation for simple extendent data storage
-    /// </summary>
     [Serializable]
-    public class ExtendedAttributes : IAttributes
+    public class AttributesImpl : IAttributes
     {
         private readonly Dictionary<string, object> _dataDict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
-        public ExtendedAttributes()
+        public AttributesImpl()
         {
         }
 
-        public ExtendedAttributes(IDataReader reader)
+        public AttributesImpl(IDataReader reader)
         {
             Load(reader);
         }
 
-        public ExtendedAttributes(IDataRecord record)
+        public AttributesImpl(IDataRecord record)
         {
             Load(record);
         }
 
-        public ExtendedAttributes(DataRowView view)
+        public AttributesImpl(DataRowView view)
         {
             Load(view);
         }
 
-        public ExtendedAttributes(DataRow row)
+        public AttributesImpl(DataRow row)
         {
             Load(row);
         }
 
-        public ExtendedAttributes(NameValueCollection attributes)
+        public AttributesImpl(NameValueCollection attributes)
         {
             Load(attributes);
         }
 
-        public ExtendedAttributes(Dictionary<string, object> dict)
+        public AttributesImpl(Dictionary<string, object> dict)
         {
             Load(dict);
         }
 
-        public ExtendedAttributes(string json)
+        public AttributesImpl(string json)
         {
             Load(json);
         }

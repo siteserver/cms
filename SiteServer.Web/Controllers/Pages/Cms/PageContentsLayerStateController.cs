@@ -43,7 +43,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var title = WebUtils.GetContentTitle(siteInfo, contentInfo, string.Empty);
                 var checkState = 
-                    CheckManager.GetCheckState(siteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);
+                    CheckManager.GetCheckState(siteInfo, contentInfo);
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
                 var contentChecks = DataProvider.ContentCheckDao.GetCheckInfoList(tableName, contentId);

@@ -92,6 +92,90 @@ namespace SiteServer.CMS.DataCache
             return channelInfo;
         }
 
+        public static int GetChannelId(int siteId, int channelId, string channelIndex, string channelName)
+        {
+            var retval = channelId;
+
+            if (!string.IsNullOrEmpty(channelIndex))
+            {
+                var theChannelId = GetChannelIdByIndexName(siteId, channelIndex);
+                if (theChannelId != 0)
+                {
+                    retval = theChannelId;
+                }
+            }
+            if (!string.IsNullOrEmpty(channelName))
+            {
+                var theChannelId = GetChannelIdByParentIdAndChannelName(siteId, retval, channelName, true);
+                if (theChannelId == 0)
+                {
+                    theChannelId = GetChannelIdByParentIdAndChannelName(siteId, siteId, channelName, true);
+                }
+                if (theChannelId != 0)
+                {
+                    retval = theChannelId;
+                }
+            }
+
+            return retval;
+        }
+
+        public static int GetChannelIdByIndexName(int siteId, string indexName)
+        {
+            if (string.IsNullOrEmpty(indexName)) return 0;
+
+            var dict = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
+            var channelInfo = dict.Values.FirstOrDefault(x => x != null && x.IndexName == indexName);
+            return channelInfo?.Id ?? 0;
+        }
+
+        public static int GetChannelIdByParentIdAndChannelName(int siteId, int parentId, string channelName, bool recursive)
+        {
+            if (parentId <= 0 || string.IsNullOrEmpty(channelName)) return 0;
+
+            var dict = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
+            var channelInfoList = dict.Values.OrderBy(x => x.Taxis).ToList();
+
+            ChannelInfo channelInfo = null;
+
+            if (recursive)
+            {
+                if (siteId == parentId)
+                {
+                    channelInfo = channelInfoList.FirstOrDefault(x => x.ChannelName == channelName);
+
+                    //sqlString = $"SELECT Id FROM siteserver_Channel WHERE (SiteId = {siteId} AND ChannelName = '{AttackUtils.FilterSql(channelName)}') ORDER BY Taxis";
+                }
+                else
+                {
+                    channelInfo = channelInfoList.FirstOrDefault(x => (x.ParentId == parentId || TranslateUtils.StringCollectionToIntList(x.ParentsPath).Contains(parentId)) && x.ChannelName == channelName);
+
+//                    sqlString = $@"SELECT Id
+//FROM siteserver_Channel 
+//WHERE ((ParentId = {parentId}) OR
+//      (ParentsPath = '{parentId}') OR
+//      (ParentsPath LIKE '{parentId},%') OR
+//      (ParentsPath LIKE '%,{parentId},%') OR
+//      (ParentsPath LIKE '%,{parentId}')) AND ChannelName = '{AttackUtils.FilterSql(channelName)}'
+//ORDER BY Taxis";
+                }
+            }
+            else
+            {
+                channelInfo = channelInfoList.FirstOrDefault(x => x.ParentId == parentId && x.ChannelName == channelName);
+
+                //sqlString = $"SELECT Id FROM siteserver_Channel WHERE (ParentId = {parentId} AND ChannelName = '{AttackUtils.FilterSql(channelName)}') ORDER BY Taxis";
+            }
+
+            return channelInfo?.Id ?? 0;
+        }
+
+        //public static List<string> GetIndexNameList(int siteId)
+        //{
+        //    var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
+        //    return dic.Values.Where(x => !string.IsNullOrEmpty(x?.IndexName)).Select(x => x.IndexName).Distinct().ToList();
+        //}
+
         public static List<ChannelInfo> GetChannelInfoList(int siteId)
         {
             var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
@@ -547,6 +631,13 @@ namespace SiteServer.CMS.DataCache
             var pluginColumns = PluginContentManager.GetContentColumns(channelInfo);
 
             var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities));
+
+            styleInfoList.Insert(0, new TableStyleInfo
+            {
+                AttributeName = ContentAttribute.Sequence,
+                DisplayName = "序号"
+            });
+
             foreach (var styleInfo in styleInfoList)
             {
                 if (styleInfo.InputType == InputType.TextEditor) continue;

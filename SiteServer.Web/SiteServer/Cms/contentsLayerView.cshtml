@@ -9,7 +9,7 @@
 <div v-if="content[_.camelCase(attribute.value)]" class="form-group form-row" v-for="attribute in attributes">
   <label class="col-sm-2 col-form-label">{{ attribute.text }}</label>
   <div class="col-sm-9 form-control-plaintext">
-    {{ content[_.camelCase(attribute.value)] }}
+    {{ content.getProp(attribute.value) }}
   </div>
   <div class="col-sm-1"></div>
 </div>
@@ -17,7 +17,7 @@
 <div v-if="content.tags" class="form-group form-row">
   <label class="col-sm-2 col-form-label">内容标签</label>
   <div class="col-sm-9 form-control-plaintext">
-    {{ content.tags }}
+    {{ content.getProp('tags') }}
   </div>
   <div class="col-sm-1"></div>
 </div>
@@ -25,7 +25,7 @@
 <div v-if="content.groupNameCollection" class="form-group form-row">
   <label class="col-sm-2 col-form-label">所属内容组</label>
   <div class="col-sm-9 form-control-plaintext">
-    {{ content.groupNameCollection }}
+    {{ content.getProp('groupNameCollection') }}
   </div>
   <div class="col-sm-1"></div>
 </div>
@@ -33,7 +33,7 @@
 <div class="form-group form-row">
   <label class="col-sm-2 col-form-label">最后修改日期</label>
   <div class="col-sm-9 form-control-plaintext">
-    {{ content.lastEditDate }}
+    {{ content.getProp('lastEditDate') }}
   </div>
   <div class="col-sm-1"></div>
 </div>
@@ -41,7 +41,7 @@
 <div class="form-group form-row">
   <label class="col-sm-2 col-form-label">添加人</label>
   <div class="col-sm-9 form-control-plaintext">
-    {{ content.addUserName }}
+    {{ content.getProp('addUserName') }}
   </div>
   <div class="col-sm-1"></div>
 </div>
@@ -49,14 +49,15 @@
 <div class="form-group form-row">
   <label class="col-sm-2 col-form-label">最后修改人</label>
   <div class="col-sm-9 form-control-plaintext">
-    {{ content.lastEditUserName }}
+    {{ content.getProp('lastEditUserName') }}
   </div>
   <div class="col-sm-1"></div>
 </div>
 
 <div class="form-group form-row">
   <label class="col-sm-2 col-form-label">状态</label>
-  <div class="col-sm-9 form-control-plaintext" v-html="content.checkState"></div>
+  <div class="col-sm-9 form-control-plaintext" :class="{'text-danger' : content.isChecked !== 'True'}">{{
+    content.getProp('checkState') }}</div>
   <div class="col-sm-1"></div>
 </div>
 

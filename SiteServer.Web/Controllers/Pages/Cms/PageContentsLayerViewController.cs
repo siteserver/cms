@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin;
-using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
@@ -42,17 +38,19 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                 if (contentInfo == null) return BadRequest("无法确定对应的内容");
 
-                var channelName = ChannelManager.GetChannelNameNavigation(siteId, channelId);
+                contentInfo.AddParameters(new
+                {
+                    CheckState =
+                        CheckManager.GetCheckState(siteInfo, contentInfo)
+                });
 
-                var dict = contentInfo.ToDictionary();
-                dict["title"] = ContentUtility.FormatTitle(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString), contentInfo.Title);
-                dict["checkState"] = CheckManager.GetCheckState(siteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);
+                var channelName = ChannelManager.GetChannelNameNavigation(siteId, channelId);
 
                 var attributes = ChannelManager.GetContentAttributesToList(siteInfo, channelInfo, true);
 
                 return Ok(new
                 {
-                    Value = dict,
+                    Value = contentInfo,
                     ChannelName = channelName,
                     Attributes = attributes
                 });

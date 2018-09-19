@@ -88,8 +88,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
             ltlItemChannel.Text = ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId);
             ltlItemAddDate.Text = DateUtils.GetDateAndTimeString(contentInfo.AddDate);
-            ltlItemStatus.Text = CheckManager.GetCheckState(SiteInfo, contentInfo.IsChecked,
-                contentInfo.CheckedLevel);
+            ltlItemStatus.Text = CheckManager.GetCheckState(SiteInfo, contentInfo);
 
             if (!HasChannelPermissions(contentInfo.ChannelId, ConfigManager.ChannelPermissions.ContentEdit) &&
                 AuthRequest.AdminName != contentInfo.AddUserName) return;

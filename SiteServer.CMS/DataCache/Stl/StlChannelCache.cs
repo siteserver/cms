@@ -96,25 +96,25 @@ namespace SiteServer.CMS.DataCache.Stl
             return retval;
         }
 
-        public static int GetIdByIndexName(int siteId, string channelIndex)
-        {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetIdByIndexName),
-                       siteId.ToString(), channelIndex);
-            var retval = StlCacheManager.GetInt(cacheKey);
-            if (retval != -1) return retval;
+        //public static int GetIdByIndexName(int siteId, string channelIndex)
+        //{
+        //    var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetIdByIndexName),
+        //               siteId.ToString(), channelIndex);
+        //    var retval = StlCacheManager.GetInt(cacheKey);
+        //    if (retval != -1) return retval;
 
-            lock (LockObject)
-            {
-                retval = StlCacheManager.GetInt(cacheKey);
-                if (retval == -1)
-                {
-                    retval = DataProvider.ChannelDao.GetIdByIndexName(siteId, channelIndex);
-                    StlCacheManager.Set(cacheKey, retval);
-                }
-            }
+        //    lock (LockObject)
+        //    {
+        //        retval = StlCacheManager.GetInt(cacheKey);
+        //        if (retval == -1)
+        //        {
+        //            retval = DataProvider.ChannelDao.GetIdByIndexName(siteId, channelIndex);
+        //            StlCacheManager.Set(cacheKey, retval);
+        //        }
+        //    }
 
-            return retval;
-        }
+        //    return retval;
+        //}
 
         public static int GetIdByParentIdAndTaxis(int parentId, int taxis, bool isNextChannel)
         {
@@ -129,28 +129,6 @@ namespace SiteServer.CMS.DataCache.Stl
                 if (retval == -1)
                 {
                     retval = DataProvider.ChannelDao.GetIdByParentIdAndTaxis(parentId, taxis, isNextChannel);
-                    StlCacheManager.Set(cacheKey, retval);
-                }
-            }
-
-            return retval;
-        }
-
-        public static int GetIdByParentIdAndChannelName(int siteId, int parentId, string nodeName, bool recursive)
-        {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache),
-                       nameof(GetIdByParentIdAndChannelName), siteId.ToString(),
-                       parentId.ToString(), nodeName, recursive.ToString());
-            var retval = StlCacheManager.GetInt(cacheKey);
-            if (retval != -1) return retval;
-
-            lock (LockObject)
-            {
-                retval = StlCacheManager.GetInt(cacheKey);
-                if (retval == -1)
-                {
-                    retval = DataProvider.ChannelDao.GetIdByParentIdAndChannelName(siteId,
-                    parentId, nodeName, recursive);
                     StlCacheManager.Set(cacheKey, retval);
                 }
             }

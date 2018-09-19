@@ -171,14 +171,16 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                     if (string.IsNullOrEmpty(formCollection[ContentAttribute.Title])) continue;
 
-                    var contentInfo = new ContentInfo();
+                    var dict = BackgroundInputTypeParser.SaveAttributes(siteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributes);
 
-                    BackgroundInputTypeParser.SaveAttributes(contentInfo, siteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributes);
+                    var contentInfo = new ContentInfo(dict)
+                    {
+                        ChannelId = channelInfo.Id,
+                        SiteId = siteId,
+                        AddUserName = request.AdminName,
+                        AddDate = DateTime.Now
+                    };
 
-                    contentInfo.ChannelId = channelInfo.Id;
-                    contentInfo.SiteId = siteId;
-                    contentInfo.AddUserName = request.AdminName;
-                    contentInfo.AddDate = DateTime.Now;
                     contentInfo.LastEditUserName = contentInfo.AddUserName;
                     contentInfo.LastEditDate = contentInfo.AddDate;
                     contentInfo.IsChecked = isChecked;

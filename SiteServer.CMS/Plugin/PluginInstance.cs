@@ -1,9 +1,10 @@
 ﻿using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
+using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
 
-namespace SiteServer.CMS.Plugin.Model
+namespace SiteServer.CMS.Plugin
 {
     public class PluginInstance
     {

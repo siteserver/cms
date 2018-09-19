@@ -6,6 +6,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -74,7 +75,7 @@ namespace SiteServer.CMS.DataCache
 
         public static IAttributes GetDefaultAttributes(List<TableStyleInfo> styleInfoList)
         {
-            var attributes = new ExtendedAttributes();
+            var attributes = new AttributesImpl();
 
             foreach (var styleInfo in styleInfoList)
             {

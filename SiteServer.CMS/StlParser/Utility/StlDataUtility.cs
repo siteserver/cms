@@ -20,7 +20,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
             if (!string.IsNullOrEmpty(channelIndex))
             {
-                var theChannelId = StlChannelCache.GetIdByIndexName(siteId, channelIndex);
+                var theChannelId = ChannelManager.GetChannelIdByIndexName(siteId, channelIndex);
                 if (theChannelId != 0)
                 {
                     retval = theChannelId;
@@ -28,10 +28,10 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             if (!string.IsNullOrEmpty(channelName))
             {
-                var theChannelId = StlChannelCache.GetIdByParentIdAndChannelName(siteId, retval, channelName, true);
+                var theChannelId = ChannelManager.GetChannelIdByParentIdAndChannelName(siteId, retval, channelName, true);
                 if (theChannelId == 0)
                 {
-                    theChannelId = StlChannelCache.GetIdByParentIdAndChannelName(siteId, siteId, channelName, true);
+                    theChannelId = ChannelManager.GetChannelIdByParentIdAndChannelName(siteId, siteId, channelName, true);
                 }
                 if (theChannelId != 0)
                 {

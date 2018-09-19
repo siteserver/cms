@@ -159,7 +159,15 @@ namespace SiteServer.BackgroundPages.Cms
 
             ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, true, true, AuthRequest.AdminPermissions);
 
-            CheckManager.LoadContentLevelToList(DdlState, SiteInfo, _isCheckOnly, isChecked, checkedLevel);
+            if (_isCheckOnly)
+            {
+                CheckManager.LoadContentLevelToCheck(DdlState, SiteInfo, isChecked, checkedLevel);
+            }
+            else
+            {
+                CheckManager.LoadContentLevelToList(DdlState, SiteInfo, _isCheckOnly, isChecked, checkedLevel);
+            }
+            
             ControlUtils.SelectSingleItem(DdlState, state.ToString());
 
             foreach (var styleInfo in _allStyleInfoList)
@@ -279,12 +287,13 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             ltlChannel.Text = nodeName;
+            var checkState = CheckManager.GetCheckState(SiteInfo, contentInfo);
 
             ltlStatus.Text = _isTrashOnly
-                ? CheckManager.GetCheckState(SiteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)
+                ? checkState
                 : $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{
                         ModalCheckState.GetOpenWindowString(SiteId, contentInfo, PageUrl)
-                    }"">{CheckManager.GetCheckState(SiteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
+                    }"">{checkState}</a>";
 
             ltlSelect.Text = $@"<input type=""checkbox"" name=""IDsCollection"" value=""{contentInfo.ChannelId}_{contentInfo.Id}"" />";
         }

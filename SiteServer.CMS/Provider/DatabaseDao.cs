@@ -649,47 +649,6 @@ SELECT * FROM (
             return exists;
         }
 
-        public void CreatePluginTable(string pluginId, string tableName, List<TableColumn> tableColumns)
-        {
-            var sqlBuilder = new StringBuilder();
-
-            try
-            {
-                sqlBuilder.Append($@"CREATE TABLE {tableName} (").AppendLine();
-
-                sqlBuilder.Append($"Id {SqlUtils.GetAutoIncrementDataType()},").AppendLine();
-
-                foreach (var tableColumn in tableColumns)
-                {
-                    if (string.IsNullOrEmpty(tableColumn.AttributeName) ||
-                        StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, "Id")) continue;
-
-                    var columnSql = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.AttributeName,
-                        tableColumn.DataLength);
-                    if (!string.IsNullOrEmpty(columnSql))
-                    {
-                        sqlBuilder.Append(columnSql).Append(",").AppendLine();
-                    }
-                }
-
-                sqlBuilder.Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
-                    ? @"PRIMARY KEY (Id)"
-                    : $@"CONSTRAINT PK_{tableName} PRIMARY KEY (Id)").AppendLine();
-
-                sqlBuilder.Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
-                    ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
-                    : ")");
-
-                ExecuteNonQuery(sqlBuilder.ToString());
-
-                TableColumnManager.ClearCache();
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddErrorLog(pluginId, ex, sqlBuilder.ToString());
-            }
-        }
-
         public void AlterPluginTable(string pluginId, string tableName, List<TableColumn> tableColumns)
         {
             var isAltered = false;
@@ -718,7 +677,72 @@ SELECT * FROM (
             }
         }
 
-        public string GetCreateSystemTableSqlString(string tableName, List<TableColumn> tableColumns)
+        public void CreatePluginTable(string pluginId, string tableName, List<TableColumn> tableColumns)
+        {
+            if (!tableColumns.Any(x => StringUtils.EqualsIgnoreCase(x.AttributeName, "Id")))
+            {
+                tableColumns.Insert(0, new TableColumn
+                {
+                    AttributeName = "Id",
+                    DataType = DataType.Integer,
+                    IsIdentity = true,
+                    IsPrimaryKey = true
+                });
+            }
+
+            var sqlString = GetCreateTableSqlString(tableName, tableColumns);
+
+            try
+            {
+                ExecuteNonQuery(sqlString);
+                TableColumnManager.ClearCache();
+            }
+            catch (Exception ex)
+            {
+                LogUtils.AddErrorLog(pluginId, ex, sqlString);
+            }
+
+
+            //var sqlBuilder = new StringBuilder();
+
+            //try
+            //{
+            //    sqlBuilder.Append($@"CREATE TABLE {tableName} (").AppendLine();
+
+            //    sqlBuilder.Append($"Id {SqlUtils.GetAutoIncrementDataType()},").AppendLine();
+
+            //    foreach (var tableColumn in tableColumns)
+            //    {
+            //        if (string.IsNullOrEmpty(tableColumn.AttributeName) ||
+            //            StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, "Id")) continue;
+
+            //        var columnSql = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.AttributeName,
+            //            tableColumn.DataLength);
+            //        if (!string.IsNullOrEmpty(columnSql))
+            //        {
+            //            sqlBuilder.Append(columnSql).Append(",").AppendLine();
+            //        }
+            //    }
+
+            //    sqlBuilder.Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
+            //        ? @"PRIMARY KEY (Id)"
+            //        : $@"CONSTRAINT PK_{tableName} PRIMARY KEY (Id)").AppendLine();
+
+            //    sqlBuilder.Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
+            //        ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+            //        : ")");
+
+            //    ExecuteNonQuery(sqlBuilder.ToString());
+
+            //    TableColumnManager.ClearCache();
+            //}
+            //catch (Exception ex)
+            //{
+            //    LogUtils.AddErrorLog(pluginId, ex, sqlBuilder.ToString());
+            //}
+        }
+
+        public string GetCreateTableSqlString(string tableName, List<TableColumn> tableColumns)
         {
             var sqlBuilder = new StringBuilder();
 
@@ -771,7 +795,7 @@ SELECT * FROM (
         public bool CreateSystemTable(string tableName, List<TableColumn> tableColumns, out Exception ex, out string sqlString)
         {
             ex = null;
-            sqlString = GetCreateSystemTableSqlString(tableName, tableColumns);
+            sqlString = GetCreateTableSqlString(tableName, tableColumns);
 
             try
             {
@@ -1044,7 +1068,7 @@ SELECT * FROM (
                 while (rdr.Read())
                 {
                     var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
-                    var dataType = SqlUtils.ToDataType(DatabaseType.Oracle, rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
+                    var dataType = SqlUtils.ToDataType(rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
                     var percision = rdr.IsDBNull(2) ? 0 : rdr.GetInt32(2);
                     var scale = rdr.IsDBNull(3) ? 0 : rdr.GetInt32(3);
                     var charLength = rdr.IsDBNull(4) ? 0 : rdr.GetInt32(4);
@@ -1111,7 +1135,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
                 while (rdr.Read())
                 {
                     var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
-                    var dataType = SqlUtils.ToDataType(DatabaseType.PostgreSql, rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
+                    var dataType = SqlUtils.ToDataType(rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
                     var length = rdr.IsDBNull(2) ? 0 : rdr.GetInt32(2);
                     var columnDefault = rdr.IsDBNull(3) ? string.Empty : rdr.GetString(3);
 
@@ -1191,7 +1215,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
                     }
 
                     var dataTypeName = rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1);
-                    var dataType = SqlUtils.ToDataType(DatabaseType.SqlServer, dataTypeName);
+                    var dataType = SqlUtils.ToDataType(dataTypeName);
                     var length = Convert.ToInt32(rdr.GetValue(2));
                     if (dataType == DataType.VarChar && dataTypeName == "nvarchar")
                     {
@@ -1257,7 +1281,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
                 while (rdr.Read())
                 {
                     var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
-                    var dataType = SqlUtils.ToDataType(DatabaseType.MySql, rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
+                    var dataType = SqlUtils.ToDataType(rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
                     var length = rdr.IsDBNull(2) || dataType == DataType.Text ? 0 : Convert.ToInt32(rdr.GetValue(2));
                     var isPrimaryKey = Convert.ToString(rdr.GetValue(3)) == "PRI";
                     var isIdentity = Convert.ToString(rdr.GetValue(4)) == "auto_increment";

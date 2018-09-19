@@ -181,12 +181,12 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public IContentInfo NewInstance(int siteId, int channelId)
         {
-            return new ContentInfo
+            return new ContentInfo(new Dictionary<string, object>
             {
-                SiteId = siteId,
-                ChannelId = channelId,
-                AddDate = DateTime.Now
-            };
+                {ContentAttribute.SiteId, siteId},
+                {ContentAttribute.ChannelId, channelId},
+                {ContentAttribute.AddDate, DateTime.Now}
+            });
         }
 
         //public void SetValuesToContentInfo(int siteId, int channelId, NameValueCollection form, IContentInfo contentInfo)

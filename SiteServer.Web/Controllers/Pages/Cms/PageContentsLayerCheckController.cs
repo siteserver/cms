@@ -50,7 +50,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     var dict = contentInfo.ToDictionary();
                     dict["title"] = WebUtils.GetContentTitle(siteInfo, contentInfo, string.Empty);
                     dict["checkState"] =
-                        CheckManager.GetCheckState(siteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);
+                        CheckManager.GetCheckState(siteInfo, contentInfo);
                     retval.Add(dict);
                 }
 

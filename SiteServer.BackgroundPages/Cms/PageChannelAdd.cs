@@ -12,6 +12,7 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -109,7 +110,7 @@ namespace SiteServer.BackgroundPages.Cms
                     PhContentRelatedPluginIds.Visible = false;
                 }
 
-                CacAttributes.Attributes = new ExtendedAttributes();
+                CacAttributes.Attributes = new AttributesImpl();
 
                 TbImageUrl.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", SiteInfo.Additional.WebUrl));
 
@@ -147,7 +148,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                CacAttributes.Attributes = new ExtendedAttributes(Request.Form);
+                CacAttributes.Attributes = new AttributesImpl(Request.Form);
             }
         }
 
@@ -258,13 +259,11 @@ namespace SiteServer.BackgroundPages.Cms
                         return;
                     }
                 }
-
-                var extendedAttributes = new ExtendedAttributes();
+                
                 var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName, relatedIdentities);
-                BackgroundInputTypeParser.SaveAttributes(extendedAttributes, SiteInfo, styleInfoList, Request.Form, null);
-                var attributes = extendedAttributes.ToDictionary();
-                nodeInfo.Additional.Load(attributes);
+                var extendedAttributes = BackgroundInputTypeParser.SaveAttributes(SiteInfo, styleInfoList, Request.Form, null);
+                nodeInfo.Additional.Load(extendedAttributes);
                 //foreach (string key in attributes)
                 //{
                 //    nodeInfo.Additional.SetExtendedAttribute(key, attributes[key]);
