@@ -761,20 +761,20 @@ SELECT * FROM (
                 var columnSql = SqlUtils.GetColumnSqlString(tableColumn);
                 if (!string.IsNullOrEmpty(columnSql))
                 {
-                    sqlBuilder.Append(columnSql).Append(",").AppendLine();
+                    sqlBuilder.Append(columnSql).Append(",");
                 }
             }
 
             foreach (var tableColumn in primaryKeyColumns)
             {
-                sqlBuilder.Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
-                    ? $@"PRIMARY KEY ({tableColumn.AttributeName}),"
-                    : $@"CONSTRAINT PK_{tableName}_{tableColumn.AttributeName} PRIMARY KEY ({tableColumn.AttributeName}),");
+                var primarykeySql = SqlUtils.GetPrimaryKeySqlString(tableName, tableColumn.AttributeName);
+                if (!string.IsNullOrEmpty(primarykeySql))
+                {
+                    sqlBuilder.Append(primarykeySql).Append(",");
+                }
             }
-            if (primaryKeyColumns.Count > 0)
-            {
-                sqlBuilder.Length--;
-            }
+
+            sqlBuilder.Length--;
 
             sqlBuilder.AppendLine().Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
                 ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"

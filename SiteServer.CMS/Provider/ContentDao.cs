@@ -2457,6 +2457,14 @@ GO
 CREATE INDEX `IX_{tableName}_Taxis` ON `{tableName}`(`{nameof(ContentInfo.Taxis)}` DESC)
 GO");
             }
+            else if(WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                sqlBuilder.Append($@"
+CREATE INDEX IX_{tableName} ON {tableName}(""{nameof(ContentInfo.IsTop)}"" DESC, ""{nameof(ContentInfo.Taxis)}"" DESC, ""{nameof(ContentInfo.Id)}"" DESC)
+GO
+CREATE INDEX IX_{tableName}_Taxis ON {tableName}(""{nameof(ContentInfo.Taxis)}"" DESC)
+GO");
+            }
             else
             {
                 sqlBuilder.Append($@"

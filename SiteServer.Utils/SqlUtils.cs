@@ -531,6 +531,31 @@ SELECT * FROM (
             return string.Empty;
         }
 
+        public static string GetPrimaryKeySqlString(string tableName, string attributeName)
+        {
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                return $@"PRIMARY KEY ({attributeName})";
+            }
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                return $@"CONSTRAINT PK_{tableName}_{attributeName} PRIMARY KEY ({attributeName})";
+            }
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                return $@"CONSTRAINT PK_{tableName}_{attributeName} PRIMARY KEY ({attributeName})";
+            }
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                return $@"CONSTRAINT PK_{tableName}_{attributeName} PRIMARY KEY (""{attributeName}"")";
+            }
+
+            return string.Empty;
+        }
+
         //public static string GetColumnSqlString(DataType dataType, string attributeName, int length)
         //{
         //    var retval = string.Empty;

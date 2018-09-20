@@ -29,7 +29,7 @@ namespace SiteServer.Cli.Jobs
                 v => _includes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
             { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
                 v => _excludes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
-            { "table-only=",  "仅恢复数据",
+            { "data-only",  "仅恢复数据",
                 v => _dataOnly = v != null },
             { "h|help",  "命令说明",
                 v => _isHelp = v != null }
@@ -98,14 +98,14 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            if (!SystemManager.IsNeedInstall())
-            {
-                await CliUtils.PrintErrorAsync("数据无法在已安装系统的数据库中恢复，命令执行失败");
-                return;
-            }
-
             if (!_dataOnly)
             {
+                if (!SystemManager.IsNeedInstall())
+                {
+                    await CliUtils.PrintErrorAsync("数据无法在已安装系统的数据库中恢复，命令执行失败");
+                    return;
+                }
+
                 // 恢复前先创建表，确保系统在恢复的数据库中能够使用
                 SystemManager.CreateSiteServerTables();
             }
