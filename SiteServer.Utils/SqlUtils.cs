@@ -503,9 +503,7 @@ SELECT * FROM (
         {
             if (tableColumn.IsIdentity)
             {
-                return WebConfigUtils.DatabaseType == DatabaseType.Oracle
-                    ? $@"""{tableColumn.AttributeName}"" {GetAutoIncrementDataType()}"
-                    : $@"{tableColumn.AttributeName} {GetAutoIncrementDataType()}";
+                return $@"{tableColumn.AttributeName} {GetAutoIncrementDataType()}";
             }
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
@@ -533,27 +531,9 @@ SELECT * FROM (
 
         public static string GetPrimaryKeySqlString(string tableName, string attributeName)
         {
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-            {
-                return $@"PRIMARY KEY ({attributeName})";
-            }
-
-            if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-            {
-                return $@"CONSTRAINT PK_{tableName}_{attributeName} PRIMARY KEY ({attributeName})";
-            }
-
-            if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            {
-                return $@"CONSTRAINT PK_{tableName}_{attributeName} PRIMARY KEY ({attributeName})";
-            }
-
-            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-            {
-                return $@"CONSTRAINT PK_{tableName}_{attributeName} PRIMARY KEY (""{attributeName}"")";
-            }
-
-            return string.Empty;
+            return WebConfigUtils.DatabaseType == DatabaseType.MySql
+                ? $@"PRIMARY KEY ({attributeName})"
+                : $@"CONSTRAINT PK_{tableName}_{attributeName} PRIMARY KEY ({attributeName})";
         }
 
         //public static string GetColumnSqlString(DataType dataType, string attributeName, int length)
@@ -953,8 +933,6 @@ SELECT * FROM (
 
         private static string ToOracleColumnString(DataType type, string attributeName, int length)
         {
-            attributeName = $@"""{attributeName}""";
-
             if (type == DataType.Boolean)
             {
                 return $"{attributeName} number(1)";

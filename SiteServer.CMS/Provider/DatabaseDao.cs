@@ -690,17 +690,22 @@ SELECT * FROM (
                 });
             }
 
-            var sqlString = GetCreateTableSqlString(tableName, tableColumns);
-
-            try
-            {
-                ExecuteNonQuery(sqlString);
-                TableColumnManager.ClearCache();
-            }
-            catch (Exception ex)
+            if (!CreateTable(tableName, tableColumns, out var ex, out var sqlString))
             {
                 LogUtils.AddErrorLog(pluginId, ex, sqlString);
             }
+
+            //var sqlString = GetCreateTableSqlString(tableName, tableColumns);
+
+            //try
+            //{
+            //    ExecuteNonQuery(sqlString);
+            //    TableColumnManager.ClearCache();
+            //}
+            //catch (Exception ex)
+            //{
+            //    LogUtils.AddErrorLog(pluginId, ex, sqlString);
+            //}
 
 
             //var sqlBuilder = new StringBuilder();
@@ -783,7 +788,7 @@ SELECT * FROM (
             return sqlBuilder.ToString();
         }
 
-        public bool CreateSystemTable(string tableName, List<TableColumn> tableColumns, out Exception ex, out string sqlString)
+        public bool CreateTable(string tableName, List<TableColumn> tableColumns, out Exception ex, out string sqlString)
         {
             ex = null;
             sqlString = GetCreateTableSqlString(tableName, tableColumns);

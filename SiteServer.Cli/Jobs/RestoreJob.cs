@@ -141,7 +141,7 @@ namespace SiteServer.Cli.Jobs
 
                     if (!DataProvider.DatabaseDao.IsTableExists(tableName))
                     {
-                        if (!DataProvider.DatabaseDao.CreateSystemTable(tableName, tableInfo.Columns, out var ex, out var sqlString))
+                        if (!DataProvider.DatabaseDao.CreateTable(tableName, tableInfo.Columns, out var ex, out var sqlString))
                         {
                             await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
                             {

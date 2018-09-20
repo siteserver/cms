@@ -60,7 +60,7 @@ namespace SiteServer.CMS.Core
 
                 if (!DataProvider.DatabaseDao.IsTableExists(provider.TableName))
                 {
-                    DataProvider.DatabaseDao.CreateSystemTable(provider.TableName, provider.TableColumns, out _, out _);
+                    DataProvider.DatabaseDao.CreateTable(provider.TableName, provider.TableColumns, out _, out _);
                 }
                 else
                 {
@@ -76,7 +76,7 @@ namespace SiteServer.CMS.Core
             {
                 if (!DataProvider.DatabaseDao.IsTableExists(tableName))
                 {
-                    DataProvider.DatabaseDao.CreateSystemTable(tableName, DataProvider.ContentDao.TableColumns, out _, out _);
+                    DataProvider.DatabaseDao.CreateTable(tableName, DataProvider.ContentDao.TableColumns, out _, out _);
                 }
                 else
                 {
