@@ -20,6 +20,7 @@ namespace SiteServer.Cli.Jobs
         private static string _directory;
         private static List<string> _includes;
         private static List<string> _excludes;
+        private static bool _dataOnly;
 
         private static readonly OptionSet Options = new OptionSet {
             { "d|directory=", "从指定的文件夹中恢复数据",
@@ -28,6 +29,8 @@ namespace SiteServer.Cli.Jobs
                 v => _includes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
             { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
                 v => _excludes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
+            { "table-only=",  "仅恢复数据",
+                v => _dataOnly = v != null },
             { "h|help",  "命令说明",
                 v => _isHelp = v != null }
         };
@@ -101,8 +104,11 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            // 恢复前先创建表，确保系统在恢复的数据库中能够使用
-            SystemManager.CreateSiteServerTables();
+            if (!_dataOnly)
+            {
+                // 恢复前先创建表，确保系统在恢复的数据库中能够使用
+                SystemManager.CreateSiteServerTables();
+            }
 
             var tableNames = TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(tablesFilePath, Encoding.UTF8));
 
@@ -205,9 +211,12 @@ namespace SiteServer.Cli.Jobs
                 }
             }
 
-            // 恢复后同步表，确保内容辅助表字段与系统一致
-            SystemManager.SyncContentTables();
-            SystemManager.UpdateConfigVersion();
+            if (!_dataOnly)
+            {
+                // 恢复后同步表，确保内容辅助表字段与系统一致
+                SystemManager.SyncContentTables();
+                SystemManager.UpdateConfigVersion();
+            }
 
             await Console.Out.WriteLineAsync($"恭喜，成功从文件夹：{treeInfo.DirectoryPath} 恢复数据！");
         }

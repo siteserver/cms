@@ -499,29 +499,61 @@ SELECT * FROM (
                 $"SELECT {builder} FROM ({ToTopSqlString(tableName, columns, whereString, orderString, topN)})";
         }
 
-        public static string GetColumnSqlString(DataType dataType, string attributeName, int length)
+        public static string GetColumnSqlString(TableColumn tableColumn)
         {
-            var retval = string.Empty;
+            if (tableColumn.IsIdentity)
+            {
+                return WebConfigUtils.DatabaseType == DatabaseType.Oracle
+                    ? $@"""{tableColumn.AttributeName}"" {GetAutoIncrementDataType()}"
+                    : $@"{tableColumn.AttributeName} {GetAutoIncrementDataType()}";
+            }
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = ToMySqlColumnString(dataType, attributeName, length);
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-            {
-                retval = ToSqlServerColumnString(dataType, attributeName, length);
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            {
-                retval = ToPostgreColumnString(dataType, attributeName, length);
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-            {
-                retval = ToOracleColumnString(dataType, attributeName, length);
+                return ToMySqlColumnString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
             }
 
-            return retval;
+            if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                return ToSqlServerColumnString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
+            }
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                return ToPostgreColumnString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
+            }
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                return ToOracleColumnString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
+            }
+
+            return string.Empty;
         }
+
+        //public static string GetColumnSqlString(DataType dataType, string attributeName, int length)
+        //{
+        //    var retval = string.Empty;
+
+        //    if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+        //    {
+        //        retval = ToMySqlColumnString(dataType, attributeName, length);
+        //    }
+        //    else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+        //    {
+        //        retval = ToSqlServerColumnString(dataType, attributeName, length);
+        //    }
+        //    else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+        //    {
+        //        retval = ToPostgreColumnString(dataType, attributeName, length);
+        //    }
+        //    else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+        //    {
+        //        retval = ToOracleColumnString(dataType, attributeName, length);
+        //    }
+
+        //    return retval;
+        //}
 
         public static string GetAddColumnsSqlString(string tableName, string columnsSqlString)
         {

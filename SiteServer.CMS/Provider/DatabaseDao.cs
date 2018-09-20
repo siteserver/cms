@@ -657,7 +657,7 @@ SELECT * FROM (
             {
                 if (StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName)) continue;
 
-                var columnSqlString = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
+                var columnSqlString = SqlUtils.GetColumnSqlString(tableColumn);
                 var sqlString = SqlUtils.GetAddColumnsSqlString(tableName, columnSqlString);
 
                 try
@@ -753,24 +753,15 @@ SELECT * FROM (
             {
                 if (string.IsNullOrEmpty(tableColumn.AttributeName)) continue;
 
-                if (tableColumn.IsIdentity)
+                if (tableColumn.IsPrimaryKey)
                 {
                     primaryKeyColumns.Add(tableColumn);
-                    sqlBuilder.Append($@"{tableColumn.AttributeName} {SqlUtils.GetAutoIncrementDataType()},").AppendLine();
                 }
-                else
-                {
-                    if (tableColumn.IsPrimaryKey)
-                    {
-                        primaryKeyColumns.Add(tableColumn);
-                    }
 
-                    var columnSql = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.AttributeName,
-                    tableColumn.DataLength);
-                    if (!string.IsNullOrEmpty(columnSql))
-                    {
-                        sqlBuilder.Append(columnSql).Append(",").AppendLine();
-                    }
+                var columnSql = SqlUtils.GetColumnSqlString(tableColumn);
+                if (!string.IsNullOrEmpty(columnSql))
+                {
+                    sqlBuilder.Append(columnSql).Append(",").AppendLine();
                 }
             }
 
@@ -820,7 +811,7 @@ SELECT * FROM (
             {
                 if (StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName)) continue;
 
-                list.Add(SqlUtils.GetAddColumnsSqlString(tableName, SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength)));
+                list.Add(SqlUtils.GetAddColumnsSqlString(tableName, SqlUtils.GetColumnSqlString(tableColumn)));
             }
 
             if (list.Count > 0)
