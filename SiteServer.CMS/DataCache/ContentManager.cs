@@ -131,13 +131,15 @@ namespace SiteServer.CMS.DataCache
             var dict = ContentCache.GetContentDict(channelInfo.Id);
             dict[contentInfo.Id] = (ContentInfo)contentInfo;
 
-            var countInfoList = GetContentCountInfoList(ChannelManager.GetTableName(siteInfo, channelInfo));
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            var countInfoList = GetContentCountInfoList(tableName);
             var countInfo = countInfoList.FirstOrDefault(x =>
                 x.SiteId == siteInfo.Id && x.ChannelId == channelInfo.Id &&
                 x.IsChecked == contentInfo.IsChecked.ToString() && x.CheckedLevel == contentInfo.CheckedLevel);
             if (countInfo != null) countInfo.Count++;
 
             StlContentCache.ClearCache();
+            CountCache.Clear(tableName);
         }
 
         public static void UpdateCache(SiteInfo siteInfo, ChannelInfo channelInfo, IContentInfo contentInfoToUpdate)

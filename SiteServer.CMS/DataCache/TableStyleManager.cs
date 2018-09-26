@@ -73,6 +73,13 @@ namespace SiteServer.CMS.DataCache
             return styleInfoList.OrderBy(styleInfo => styleInfo.Taxis == 0 ? int.MaxValue : styleInfo.Taxis).ToList();
         }
 
+        public static List<TableStyleInfo> GetTableStyleInfoList(SiteInfo siteInfo, ChannelInfo channelInfo)
+        {
+            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(siteInfo.Id, channelInfo.Id);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            return GetTableStyleInfoList(tableName, relatedIdentities);
+        }
+
         public static IAttributes GetDefaultAttributes(List<TableStyleInfo> styleInfoList)
         {
             var attributes = new AttributesImpl();

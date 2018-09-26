@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
-using System.Linq;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -278,27 +277,61 @@ namespace SiteServer.CMS.Model
 
 	    public override Dictionary<string, object> ToDictionary()
 	    {
-	        var dict = base.ToDictionary();
+	        //var dict = base.ToDictionary();
 
 	        var siteInfo = SiteManager.GetSiteInfo(SiteId);
+	        var channelInfo = ChannelManager.GetChannelInfo(SiteId, ChannelId);
+	        var styleInfoList = TableStyleManager.GetTableStyleInfoList(siteInfo, channelInfo);
 
-	        if (dict.ContainsKey(BackgroundContentAttribute.ImageUrl))
+            var dict = new Dictionary<string, object>();
+	        foreach (var styleInfo in styleInfoList)
 	        {
-	            var imageUrl = (string)dict[BackgroundContentAttribute.ImageUrl];
-	            if (!string.IsNullOrEmpty(imageUrl))
+	            if (styleInfo.InputType == InputType.Image || styleInfo.InputType == InputType.File || styleInfo.InputType == InputType.Video)
 	            {
-                    dict[BackgroundContentAttribute.ImageUrl] = PageUtility.ParseNavigationUrl(siteInfo, imageUrl, false);
+	                var value = GetString(styleInfo.AttributeName);
+	                if (!string.IsNullOrEmpty(value))
+	                {
+	                    value = PageUtility.ParseNavigationUrl(siteInfo, value, false);
+	                }
+
+	                dict[styleInfo.AttributeName] = value;
+                }
+                else if (styleInfo.InputType == InputType.TextEditor)
+	            {
+	                var value = GetString(styleInfo.AttributeName);
+	                if (!string.IsNullOrEmpty(value))
+	                {
+	                    value = ContentUtility.TextEditorContentDecode(siteInfo, value, false);
+	                }
+
+	                dict[styleInfo.AttributeName] = value;
 	            }
+	            else
+	            {
+	                dict[styleInfo.AttributeName] = Get(styleInfo.AttributeName);
+                }
 	        }
-	        if (dict.ContainsKey(BackgroundContentAttribute.FileUrl))
+
+	        foreach (var attributeName in ContentAttribute.AllAttributes)
 	        {
-	            var fileUrl = (string)dict[BackgroundContentAttribute.FileUrl];
-	            if (!string.IsNullOrEmpty(fileUrl))
+	            if (StringUtils.StartsWith(attributeName, "Is"))
 	            {
-	                dict[BackgroundContentAttribute.FileUrl] = PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false);
-	            }
-	        }
-            dict[BackgroundContentAttribute.NavigationUrl] = PageUtility.GetContentUrl(siteInfo, this, false);
+	                dict[attributeName] = GetBool(attributeName);
+                }
+	            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Title))
+	            {
+	                var value = GetString(ContentAttribute.Title);
+	                if (siteInfo.Additional.IsContentTitleBreakLine)
+	                {
+	                    value = value.Replace("  ", "<br />");
+	                }
+	                dict[attributeName] = value;
+                }
+                else
+	            {
+	                dict[attributeName] = Get(attributeName);
+                }
+            }
 
             return dict;
 	    }

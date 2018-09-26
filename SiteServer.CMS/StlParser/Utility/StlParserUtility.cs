@@ -82,7 +82,7 @@ namespace SiteServer.CMS.StlParser.Utility
         {
             foreach (var label in list)
             {
-                if (!IsStlContentElement(label, BackgroundContentAttribute.PageContent)) continue;
+                if (!IsStlContentElement(label, ContentAttribute.PageContent)) continue;
                 return true;
             }
             return false;
@@ -108,7 +108,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var stlPageContentElement = string.Empty;
             foreach (var label in labelList)
             {
-                if (!IsStlContentElement(label, BackgroundContentAttribute.PageContent)) continue;
+                if (!IsStlContentElement(label, ContentAttribute.PageContent)) continue;
                 stlPageContentElement = label;
                 break;
             }

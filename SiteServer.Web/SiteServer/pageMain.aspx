@@ -259,6 +259,9 @@
     $api.get(null,
       function (err, res) {
         if (err || !res) {
+          if (err.status === 401) {
+            location.href = 'pageLogin.cshtml';
+          }
           timeoutId = setTimeout(loadProgress, 1000);
         } else {
           if (res.value === 0) {

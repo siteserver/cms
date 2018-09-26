@@ -42,7 +42,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var pageContentInfoList = new List<ContentInfo>();
+                var pageContentInfoList = new List<Dictionary<string, object>>();
                 var count = ContentManager.GetCount(siteInfo, channelInfo);
                 var pages = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(count / siteInfo.Additional.PageSize)));
                 if (pages == 0) pages = 1;
@@ -57,15 +57,27 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     foreach (var contentId in pageContentIds)
                     {
                         var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                        if (contentInfo == null) continue;
 
-                        contentInfo.AddParameters(new
+                        var dict = contentInfo.ToDictionary();
+
+                        foreach (var attributeName in ContentAttribute.HiddenAttributes)
                         {
-                            NavigationUrl = PageUtility.GetContentUrl(siteInfo, contentInfo, false),
-                            CheckState =
-                                CheckManager.GetCheckState(siteInfo, contentInfo)
-                        });
+                            if (attributeName == ContentAttribute.NavigationUrl)
+                            {
+                                dict[attributeName] = PageUtility.GetContentUrl(siteInfo, contentInfo, false);
+                            }
+                            else if (attributeName == ContentAttribute.CheckState)
+                            {
+                                dict[attributeName] = CheckManager.GetCheckState(siteInfo, contentInfo);
+                            }
+                            else
+                            {
+                                dict[attributeName] = contentInfo.Get(attributeName);
+                            }
+                        }
 
-                        pageContentInfoList.Add(contentInfo);
+                        pageContentInfoList.Add(dict);
                     }
                 }
 

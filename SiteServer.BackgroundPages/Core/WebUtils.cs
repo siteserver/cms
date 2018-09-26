@@ -16,7 +16,7 @@ namespace SiteServer.BackgroundPages.Core
         public static string GetContentTitle(SiteInfo siteInfo, ContentInfo contentInfo, string pageUrl)
         {
             string url;
-            var title = ContentUtility.FormatTitle(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString), contentInfo.Title);
+            var title = ContentUtility.FormatTitle(contentInfo.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)), contentInfo.Title);
 
             var displayString = contentInfo.IsColor ? $"<span style='color:#ff0000;text-decoration:none' title='醒目'>{title}</span>" : title;
 

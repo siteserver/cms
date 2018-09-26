@@ -1238,7 +1238,8 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
                     var isIdentityInt = Convert.ToInt32(rdr.GetValue(4));
 
                     var isPrimaryKey = isPrimaryKeyInt == 1;
-                    var isIdentity = isIdentityInt == 1 || StringUtils.EqualsIgnoreCase(columnName, "Id");
+                    //var isIdentity = isIdentityInt == 1 || StringUtils.EqualsIgnoreCase(columnName, "Id");
+                    var isIdentity = isIdentityInt == 1;
                     if (isIdentity)
                     {
                         isIdentityExist = true;

@@ -278,11 +278,11 @@ namespace SiteServer.BackgroundPages
                         }
                         if (count == 13)
                         {
-                            builder.Append(
-                                $@"<li><a href=""javascript:;"" onclick=""{ModalSiteSelect.GetOpenLayerString(SiteId)}"">列出全部站点...</a></li>");
                             break;
                         }
                     }
+                    builder.Append(
+                        $@"<li><a href=""javascript:;"" onclick=""{ModalSiteSelect.GetOpenLayerString(SiteId)}"">全部站点...</a></li>");
                 }
             }
 

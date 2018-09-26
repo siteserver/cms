@@ -73,17 +73,21 @@ namespace SiteServer.CMS.Core.Create
             foreach (var channelId in channelIdList)
             {
                 CreateChannel(siteId, channelId);
-                CreateAllContent(siteId, channelId);
             }
 
-            foreach (var fileTemplateId in TemplateManager.GetAllFileTemplateIdList(siteId))
+            foreach (var channelId in channelIdList)
             {
-                CreateFile(siteId, fileTemplateId);
+                CreateAllContent(siteId, channelId);
             }
 
             foreach (var specialId in SpecialManager.GetAllSpecialIdList(siteId))
             {
                 CreateSpecial(siteId, specialId);
+            }
+
+            foreach (var fileTemplateId in TemplateManager.GetAllFileTemplateIdList(siteId))
+            {
+                CreateFile(siteId, fileTemplateId);
             }
         }
 

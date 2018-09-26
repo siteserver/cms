@@ -18,12 +18,8 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Core
 {
-    public class BackgroundInputTypeParser
+    public static class BackgroundInputTypeParser
     {
-        private BackgroundInputTypeParser()
-        {
-        }
-
         public const string Current = "{Current}";
         public const string Value = "{Value}";
 

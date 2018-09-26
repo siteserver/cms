@@ -62,7 +62,7 @@ namespace SiteServer.CMS.Model.Attributes
 
         public bool IsContentTitleBreakLine
         {
-            get => GetBool(nameof(IsContentTitleBreakLine));
+            get => GetBool(nameof(IsContentTitleBreakLine), true);
             set => Set(nameof(IsContentTitleBreakLine), value);
         }
 

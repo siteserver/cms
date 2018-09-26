@@ -20,6 +20,7 @@ namespace SiteServer.Cli.Jobs
         private static string _directory;
         private static List<string> _includes;
         private static List<string> _excludes;
+        private static string _webConfig;
         private static bool _dataOnly;
 
         private static readonly OptionSet Options = new OptionSet {
@@ -29,6 +30,8 @@ namespace SiteServer.Cli.Jobs
                 v => _includes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
             { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
                 v => _excludes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
+            { "web-config=", "指定Web.config文件名",
+                v => _webConfig = v },
             { "data-only",  "仅恢复数据",
                 v => _dataOnly = v != null },
             { "h|help",  "命令说明",
@@ -73,20 +76,22 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            var webConfigPath = PathUtils.Combine(CliUtils.PhysicalApplicationPath, "web.config");
+            var webConfigName = string.IsNullOrEmpty(_webConfig) ? "web.config" : _webConfig;
+
+            var webConfigPath = PathUtils.Combine(CliUtils.PhysicalApplicationPath, webConfigName);
             if (!FileUtils.IsFileExists(webConfigPath))
             {
                 await CliUtils.PrintErrorAsync($"系统配置文件不存在：{webConfigPath}！");
                 return;
             }
 
+            WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, webConfigName);
+
             if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
             {
-                await CliUtils.PrintErrorAsync("web.config 中数据库连接字符串 connectionString 未设置");
+                await CliUtils.PrintErrorAsync($"{webConfigName} 中数据库连接字符串 connectionString 未设置");
                 return;
             }
-
-            WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, "web.config");
 
             await Console.Out.WriteLineAsync($"数据库类型: {WebConfigUtils.DatabaseType.Value}");
             await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
@@ -94,7 +99,7 @@ namespace SiteServer.Cli.Jobs
 
             if (!DataProvider.DatabaseDao.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             {
-                await CliUtils.PrintErrorAsync("系统无法连接到 web.config 中设置的数据库");
+                await CliUtils.PrintErrorAsync($"系统无法连接到 {webConfigName} 中设置的数据库");
                 return;
             }
 

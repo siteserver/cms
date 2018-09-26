@@ -90,24 +90,21 @@
     <tbody>
       <tr v-for="(content, index) in pageContents" v-on:click="toggleChecked(content)" :class="{'table-warning': content.isSelected}">
         <td v-for="attribute in attributes">
-          <a v-if="attribute.value === 'Title' && content.getProp('isChecked') === 'True'" :href="content.getProp('navigationUrl')"
-            target="_blank">
-            {{ content.title }}
-          </a>
-          <a v-else-if="attribute.value === 'Title' && content.getProp('isChecked') === 'False'" href="javascript:;"
-            v-on:click="btnContentViewClick(content.id)">
-            {{ content.title }}
-          </a>
+          <a v-if="attribute.value === 'Title' && content.isChecked" :href="content.navigationUrl" v-html="content.title"
+            target="_blank"></a>
+          <a v-else-if="attribute.value === 'Title' && !content.isChecked" href="javascript:;" v-html="content.title"
+            v-on:click="btnContentViewClick(content.id)"></a>
           <span v-else-if="attribute.value === 'Sequence'">{{ index + 1 }}</span>
           <span v-else v-html="content.getProp(attribute.value)"></span>
         </td>
 
-        <td class="text-center text-nowrap">
+        <td class="text-center text-nowrap" style="width: 80px">
           <a :href="'pageContentAdd.aspx?siteId=' + siteId + '&channelId=' + channelId + '&id=' + content.id">编辑</a>
         </td>
-        <td class="text-center text-nowrap">
-          <a v-on:click="btnContentStateClick(content.id)" href="javascript:;" :class="{'text-danger' : content.getProp('isChecked') !== 'True'}">{{
-            content.getProp('checkState') }}</a>
+        <td class="text-center text-nowrap" style="width: 80px">
+          <a v-on:click="btnContentStateClick(content.id)" href="javascript:;" :class="{'text-danger' : !content.isChecked}">
+            {{content.checkState }}
+          </a>
         </td>
         <td class="text-nowrap checkbox checkbox-primary">
           <input :id="'checkbox' + content.id" v-model="content.isSelected" type="checkbox">

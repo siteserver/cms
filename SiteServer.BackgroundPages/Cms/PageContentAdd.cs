@@ -82,10 +82,9 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, channelId);
             _tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
             ContentInfo contentInfo = null;
-            _styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, relatedIdentities);
+            _styleInfoList = TableStyleManager.GetTableStyleInfoList(SiteInfo, _channelInfo);
 
             if (!IsPermissions(contentId)) return;
 
@@ -235,7 +234,6 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (contentId == 0)
             {
-                
                 try
                 {
                     var tagCollection = TagUtils.ParseTagsString(TbTags.Text);

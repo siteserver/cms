@@ -42,12 +42,17 @@ namespace SiteServer.CMS.Model.Attributes
             return attributeName + "_Extend";
         }
 
+        // 计算字段
+        public const string Sequence = nameof(Sequence);                            //序号
+        public const string PageContent = nameof(PageContent);
+        public const string NavigationUrl = nameof(NavigationUrl);
+        public const string CheckState = nameof(CheckState);
+
+        // 附加字段
         public const string CheckUserName = nameof(CheckUserName);                  //审核者
         public const string CheckDate = nameof(CheckDate);                          //审核时间
         public const string CheckReasons = nameof(CheckReasons);                    //审核原因
         public const string TranslateContentType = nameof(TranslateContentType);    //转移内容类型
-
-        public const string Sequence = nameof(Sequence);                            //序号
 
         private static List<string> _allAttributes;
 
@@ -80,6 +85,20 @@ namespace SiteServer.CMS.Model.Attributes
             IsColor,
             LinkUrl,
             AddDate
+        });
+
+        private static List<string> _hiddenAttributes;
+
+        public static List<string> HiddenAttributes => _hiddenAttributes ?? (_hiddenAttributes = new List<string>
+        {
+            Sequence,
+            PageContent,
+            NavigationUrl,
+            CheckState,
+            CheckUserName,
+            CheckDate,
+            CheckReasons,
+            TranslateContentType
         });
 
         private static List<string> _metadataAttributes;

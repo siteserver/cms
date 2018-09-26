@@ -660,6 +660,9 @@ SELECT * FROM (
                     case "datetime":
                         dataType = DataType.DateTime;
                         break;
+                    case "datetime2":
+                        dataType = DataType.DateTime;
+                        break;
                     case "decimal":
                         dataType = DataType.Decimal;
                         break;

@@ -251,9 +251,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                     parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo.Title, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
                     parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
-                    if (!isClearTags && !string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString)))
+                    if (!isClearTags && !string.IsNullOrEmpty(contentInfo.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title))))
                     {
-                        parsedContent = ContentUtility.FormatTitle(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString), parsedContent);
+                        parsedContent = ContentUtility.FormatTitle(contentInfo.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)), parsedContent);
                     }
 
                     if (pageInfo.SiteInfo.Additional.IsContentTitleBreakLine)
@@ -289,7 +289,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         parsedContent = string.Format(formatString, parsedContent);
                     }
                 }
-                else if (BackgroundContentAttribute.PageContent.ToLower().Equals(type))
+                else if (ContentAttribute.PageContent.ToLower().Equals(type))
                 {
                     //if (contextInfo.IsInnerElement)
                     // {
@@ -534,7 +534,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
 
                 }
-                else if (BackgroundContentAttribute.NavigationUrl.ToLower().Equals(type))
+                else if (ContentAttribute.NavigationUrl.ToLower().Equals(type))
                 {
                     parsedContent = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, pageInfo.IsLocal);
                 }
