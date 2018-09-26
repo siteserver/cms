@@ -754,9 +754,15 @@ SELECT * FROM (
             sqlBuilder.Append($@"CREATE TABLE {tableName} (").AppendLine();
 
             var primaryKeyColumns = new List<TableColumn>();
+            TableColumn identityColumn = null;
             foreach (var tableColumn in tableColumns)
             {
                 if (string.IsNullOrEmpty(tableColumn.AttributeName)) continue;
+
+                if (tableColumn.IsIdentity)
+                {
+                    identityColumn = tableColumn;
+                }
 
                 if (tableColumn.IsPrimaryKey)
                 {
@@ -770,12 +776,23 @@ SELECT * FROM (
                 }
             }
 
-            foreach (var tableColumn in primaryKeyColumns)
+            if (identityColumn != null)
             {
-                var primarykeySql = SqlUtils.GetPrimaryKeySqlString(tableName, tableColumn.AttributeName);
+                var primarykeySql = SqlUtils.GetPrimaryKeySqlString(tableName, identityColumn.AttributeName);
                 if (!string.IsNullOrEmpty(primarykeySql))
                 {
                     sqlBuilder.Append(primarykeySql).Append(",");
+                }
+            }
+            else if (primaryKeyColumns.Count > 0)
+            {
+                foreach (var tableColumn in primaryKeyColumns)
+                {
+                    var primarykeySql = SqlUtils.GetPrimaryKeySqlString(tableName, tableColumn.AttributeName);
+                    if (!string.IsNullOrEmpty(primarykeySql))
+                    {
+                        sqlBuilder.Append(primarykeySql).Append(",");
+                    }
                 }
             }
 
