@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Apis

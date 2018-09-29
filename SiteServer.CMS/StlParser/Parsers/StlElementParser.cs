@@ -53,7 +53,6 @@ namespace SiteServer.CMS.StlParser.Parsers
             {StlEach.ElementName.ToLower(), StlEach.Parse},
             {StlFile.ElementName.ToLower(), StlFile.Parse},
             {StlFlash.ElementName.ToLower(), StlFlash.Parse},
-            {StlFocusViewer.ElementName.ToLower(), StlFocusViewer.Parse},
             {StlIf.ElementName.ToLower(), StlIf.Parse},
             {StlImage.ElementName.ToLower(), StlImage.Parse},
             {StlInclude.ElementName.ToLower(), StlInclude.Parse},

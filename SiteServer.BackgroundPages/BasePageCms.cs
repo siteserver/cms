@@ -1,5 +1,6 @@
 ﻿using System.Collections.Specialized;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 

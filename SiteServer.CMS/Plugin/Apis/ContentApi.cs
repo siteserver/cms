@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
@@ -20,9 +21,9 @@ namespace SiteServer.CMS.Plugin.Apis
             if (siteId <= 0 || channelId <= 0 || contentId <= 0) return null;
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
-            return DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+            return ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
         }
 
         public List<IContentInfo> GetContentInfoList(int siteId, int channelId, string whereString, string orderString, int limit, int offset)
@@ -32,7 +33,13 @@ namespace SiteServer.CMS.Plugin.Apis
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
-            return DataProvider.ContentDao.GetListByLimitAndOffset(tableName, whereString, orderString, limit, offset);
+            var list = DataProvider.ContentDao.GetContentInfoList(tableName, whereString, orderString, offset, limit);
+            var retval = new List<IContentInfo>();
+            foreach (var contentInfo in list)
+            {
+                retval.Add(contentInfo);
+            }
+            return retval;
         }
 
         public int GetCount(int siteId, int channelId, string whereString)
@@ -168,17 +175,18 @@ namespace SiteServer.CMS.Plugin.Apis
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
-            return DataProvider.ContentDao.GetValue(tableName, contentId, attributeName);
+            var tuple = DataProvider.ContentDao.GetValue(tableName, contentId, attributeName);
+            return tuple?.Item2;
         }
 
         public IContentInfo NewInstance(int siteId, int channelId)
         {
-            return new ContentInfo
+            return new ContentInfo(new Dictionary<string, object>
             {
-                SiteId = siteId,
-                ChannelId = channelId,
-                AddDate = DateTime.Now
-            };
+                {ContentAttribute.SiteId, siteId},
+                {ContentAttribute.ChannelId, channelId},
+                {ContentAttribute.AddDate, DateTime.Now}
+            });
         }
 
         //public void SetValuesToContentInfo(int siteId, int channelId, NameValueCollection form, IContentInfo contentInfo)
@@ -201,19 +209,17 @@ namespace SiteServer.CMS.Plugin.Apis
         public int Insert(int siteId, int channelId, IContentInfo contentInfo)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-            return DataProvider.ContentDao.Insert(tableName, siteInfo, contentInfo);
+            return DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, contentInfo);
         }
 
         public void Update(int siteId, int channelId, IContentInfo contentInfo)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
-
-            DataProvider.ContentDao.Update(tableName, siteInfo, contentInfo);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
         }
 
         public void Delete(int siteId, int channelId, int contentId)
@@ -222,7 +228,7 @@ namespace SiteServer.CMS.Plugin.Apis
             var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
             var contentIdList = new List<int> { contentId };
-            DataProvider.ContentDao.TrashContents(siteId, tableName, contentIdList);
+            DataProvider.ContentDao.UpdateTrashContents(siteId, channelId, tableName, contentIdList);
         }
 
         public List<int> GetContentIdList(int siteId, int channelId)

@@ -7,6 +7,7 @@ using Dapper;
 using Dapper.Contrib.Extensions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -162,7 +163,7 @@ namespace SiteServer.CMS.Provider
             if (!string.IsNullOrEmpty(userName))
             {
                 isWhere = true;
-                whereString.AppendFormat("(UserName = '{0}')", PageUtils.FilterSql(userName));
+                whereString.AppendFormat("(UserName = '{0}')", AttackUtils.FilterSql(userName));
             }
 
             if (!string.IsNullOrEmpty(keyword))
@@ -172,7 +173,7 @@ namespace SiteServer.CMS.Provider
                     whereString.Append(" AND ");
                 }
                 isWhere = true;
-                whereString.AppendFormat("(Action LIKE '%{0}%' OR Summary LIKE '%{0}%')", PageUtils.FilterSql(keyword));
+                whereString.AppendFormat("(Action LIKE '%{0}%' OR Summary LIKE '%{0}%')", AttackUtils.FilterSql(keyword));
             }
 
             if (!string.IsNullOrEmpty(dateFrom))

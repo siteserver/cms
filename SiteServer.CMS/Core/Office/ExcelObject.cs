@@ -3,14 +3,15 @@ using SiteServer.CMS.Model;
 using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
+using SiteServer.CMS.DataCache;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.Office
 {
-    public class ExcelObject
+    public static class ExcelObject
     {
         public static void CreateExcelFileForContents(string filePath, SiteInfo siteInfo,
-            ChannelInfo nodeInfo, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
+            ChannelInfo channelInfo, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
             string endDate, ETriState checkedState)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
@@ -20,8 +21,8 @@ namespace SiteServer.CMS.Core.Office
             var rows = new List<List<string>>();
 
             var relatedidentityes =
-                RelatedIdentities.GetChannelRelatedIdentities(siteInfo.Id, nodeInfo.Id);
-            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
+                RelatedIdentities.GetChannelRelatedIdentities(siteInfo.Id, channelInfo.Id);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
             var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetTableStyleInfoList(tableName, relatedidentityes));
 
             foreach (var styleInfo in styleInfoList)
@@ -34,13 +35,13 @@ namespace SiteServer.CMS.Core.Office
 
             if (contentIdList == null || contentIdList.Count == 0)
             {
-                contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, nodeInfo.Id, isPeriods,
+                contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelInfo.Id, isPeriods,
                     startDate, endDate, checkedState);
             }
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                 if (contentInfo != null)
                 {
                     var row = new List<string>();
@@ -106,9 +107,7 @@ namespace SiteServer.CMS.Core.Office
         {
             var contentInfoList = new List<ContentInfo>();
 
-            List<string> head;
-            List<List<string>> rows;
-            CsvUtils.Import(filePath, out head, out rows);
+            CsvUtils.Import(filePath, out var head, out var rows);
 
             if (rows.Count <= 0) return contentInfoList;
 
@@ -135,18 +134,20 @@ namespace SiteServer.CMS.Core.Office
 
             foreach (var row in rows)
             {
-                var contentInfo = new ContentInfo();
                 if (row.Count != attributeNames.Count) continue;
+
+                var dict = new Dictionary<string, object>();
 
                 for (var i = 0; i < attributeNames.Count; i++)
                 {
                     var attributeName = attributeNames[i];
                     if (!string.IsNullOrEmpty(attributeName))
                     {
-                        var value = row[i];
-                        contentInfo.Set(attributeName, value);
+                        dict[attributeName] = row[i];
                     }
                 }
+
+                var contentInfo = new ContentInfo(dict);
 
                 if (!string.IsNullOrEmpty(contentInfo.Title))
                 {

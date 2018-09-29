@@ -59,7 +59,7 @@ namespace SiteServer.BackgroundPages.Cms
                         var contentIdList = DataProvider.TagDao.GetContentIdListByTag(_tagName, SiteId);
                         if (contentIdList.Count > 0)
                         {
-                            foreach (int contentId in contentIdList)
+                            foreach (var contentId in contentIdList)
                             {
                                 if (!tagCollection.Contains(_tagName))//删除
                                 {
@@ -76,17 +76,21 @@ namespace SiteServer.BackgroundPages.Cms
 
                                 TagUtils.AddTags(tagCollection, SiteId, contentId);
 
-                                var contentTags = DataProvider.ContentDao.GetValue(SiteInfo.TableName, contentId, ContentAttribute.Tags);
-                                var contentTagArrayList = TranslateUtils.StringCollectionToStringList(contentTags);
-                                contentTagArrayList.Remove(_tagName);
-                                foreach (var theTag in tagCollection)
+                                var tuple = DataProvider.ContentDao.GetValue(SiteInfo.TableName, contentId, ContentAttribute.Tags);
+
+                                if (tuple != null)
                                 {
-                                    if (!contentTagArrayList.Contains(theTag))
+                                    var contentTagList = TranslateUtils.StringCollectionToStringList(tuple.Item2);
+                                    contentTagList.Remove(_tagName);
+                                    foreach (var theTag in tagCollection)
                                     {
-                                        contentTagArrayList.Add(theTag);
+                                        if (!contentTagList.Contains(theTag))
+                                        {
+                                            contentTagList.Add(theTag);
+                                        }
                                     }
+                                    DataProvider.ContentDao.Update(SiteInfo.TableName, tuple.Item1, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
                                 }
-                                DataProvider.ContentDao.SetValue(SiteInfo.TableName, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagArrayList));
                             }
                         }
                         else

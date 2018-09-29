@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Drawing;
 using System.Text;
 using System.Web.UI;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -32,6 +35,8 @@ namespace SiteServer.BackgroundPages.Controls
             var builder = new StringBuilder();
             foreach (var styleInfo in StyleInfoList)
             {
+                if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.Title)) continue;
+
                 string extra;
                 var value = BackgroundInputTypeParser.Parse(SiteInfo, ChannelId, styleInfo, Attributes, pageScripts, out extra);
 

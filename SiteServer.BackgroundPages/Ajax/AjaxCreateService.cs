@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Ajax
@@ -34,7 +35,7 @@ namespace SiteServer.BackgroundPages.Ajax
             });
         }
 
-        public static string GetCreateSiteParameters(int siteId, bool isImportContents, bool isImportTableStyles, string siteTemplateDir, string onlineTemplateName, bool isUseTables, string userKeyPrefix)
+        public static string GetCreateSiteParameters(int siteId, bool isImportContents, bool isImportTableStyles, string siteTemplateDir, string onlineTemplateName, string userKeyPrefix)
         {
             return TranslateUtils.NameValueCollectionToString(new NameValueCollection
             {
@@ -43,7 +44,6 @@ namespace SiteServer.BackgroundPages.Ajax
                 {"isImportTableStyles", isImportTableStyles.ToString()},
                 {"siteTemplateDir", siteTemplateDir},
                 {"onlineTemplateName", onlineTemplateName},
-                {"isUseTables", isUseTables.ToString()},
                 {"userKeyPrefix", userKeyPrefix}
             });
         }
@@ -67,15 +67,14 @@ namespace SiteServer.BackgroundPages.Ajax
                 var isImportTableStyles = TranslateUtils.ToBool(Request.Form["isImportTableStyles"]);
                 var siteTemplateDir = Request.Form["siteTemplateDir"];
                 var onlineTemplateName = Request.Form["onlineTemplateName"];
-                var isUseTables = TranslateUtils.ToBool(Request.Form["isUseTables"]);
 
                 if (!string.IsNullOrEmpty(siteTemplateDir))
                 {
-                    retval = CreateSiteBySiteTemplateDir(siteId, isImportContents, isImportTableStyles, siteTemplateDir, isUseTables, userKeyPrefix, request.AdminName);
+                    retval = CreateSiteBySiteTemplateDir(siteId, isImportContents, isImportTableStyles, siteTemplateDir, userKeyPrefix, request.AdminName);
                 }
                 else if (!string.IsNullOrEmpty(onlineTemplateName))
                 {
-                    retval = CreateSiteByOnlineTemplateName(siteId, isImportContents, isImportTableStyles, onlineTemplateName, isUseTables, userKeyPrefix, request.AdminName);
+                    retval = CreateSiteByOnlineTemplateName(siteId, isImportContents, isImportTableStyles, onlineTemplateName, userKeyPrefix, request.AdminName);
                 }
                 else
                 {
@@ -102,7 +101,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
-        public NameValueCollection CreateSiteBySiteTemplateDir(int siteId, bool isImportContents, bool isImportTableStyles, string siteTemplateDir, bool isUseTables, string userKeyPrefix, string administratorName)
+        public NameValueCollection CreateSiteBySiteTemplateDir(int siteId, bool isImportContents, bool isImportTableStyles, string siteTemplateDir, string userKeyPrefix, string administratorName)
         {
             var cacheTotalCountKey = userKeyPrefix + CacheTotalCount;
             var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
@@ -123,7 +122,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 CacheUtils.Insert(cacheCurrentCountKey, "2");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "正在导入数据...");//存储消息
-                SiteTemplateManager.Instance.ImportSiteTemplateToEmptySite(siteId, siteTemplateDir, isUseTables, isImportContents, isImportTableStyles, administratorName);
+                SiteTemplateManager.Instance.ImportSiteTemplateToEmptySite(siteId, siteTemplateDir, isImportContents, isImportTableStyles, administratorName);
                 CreateManager.CreateByAll(siteId);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "3");//存储当前的页面总数
@@ -146,7 +145,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
-        public NameValueCollection CreateSiteByOnlineTemplateName(int siteId, bool isImportContents, bool isImportTableStyles, string onlineTemplateName, bool isUseTables, string userKeyPrefix, string administratorName)
+        public NameValueCollection CreateSiteByOnlineTemplateName(int siteId, bool isImportContents, bool isImportTableStyles, string onlineTemplateName, string userKeyPrefix, string administratorName)
         {
             var cacheTotalCountKey = userKeyPrefix + CacheTotalCount;
             var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
@@ -180,7 +179,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheCurrentCountKey, "3");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "站点模板下载成功，正在导入数据...");//存储消息
 
-                SiteTemplateManager.Instance.ImportSiteTemplateToEmptySite(siteId, siteTemplateDir, isUseTables, isImportContents, isImportTableStyles, administratorName);
+                SiteTemplateManager.Instance.ImportSiteTemplateToEmptySite(siteId, siteTemplateDir, isImportContents, isImportTableStyles, administratorName);
                 CreateManager.CreateByAll(siteId);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "4");//存储当前的页面总数

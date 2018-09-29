@@ -3,7 +3,7 @@
     only:
       - master
 
-  version: 6.5.{build}
+  version: 6.6.{build}
   image: Visual Studio 2017
 
   assembly_info:
@@ -78,12 +78,12 @@
       on_build_success: true
       on_build_failure: true
 
-# configuration for "dev" branch
+# configuration for "staging" branch
 - branches:
     only:
-      - dev
+      - staging
 
-  version: 6.5.{build}-beta
+  version: 6.6.{build}-beta
   image: Visual Studio 2017
 
   assembly_info:
@@ -150,7 +150,7 @@
       draft: false
       prerelease: false
       on:
-        branch: dev
+        branch: staging
         appveyor_repo_tag: false
 
     - provider: NuGet

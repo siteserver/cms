@@ -246,7 +246,7 @@ namespace SiteServer.CMS.Data
             var value = rdr.IsDBNull(i) ? string.Empty : rdr.GetValue(i).ToString();
             if (!string.IsNullOrEmpty(value))
             {
-                value = PageUtils.UnFilterSql(value);
+                value = AttackUtils.UnFilterSql(value);
             }
             if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && value == SqlUtils.OracleEmptyValue)
             {

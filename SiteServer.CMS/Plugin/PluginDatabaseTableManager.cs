@@ -3,7 +3,7 @@ using SiteServer.CMS.Plugin.Model;
 
 namespace SiteServer.CMS.Plugin
 {
-    public class PluginDatabaseTableManager
+    public static class PluginDatabaseTableManager
     {
         public static void SyncTable(ServiceImpl service)
         {

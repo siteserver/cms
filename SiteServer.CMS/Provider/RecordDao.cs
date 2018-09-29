@@ -11,6 +11,17 @@ namespace SiteServer.CMS.Provider
 {
     public class RecordDao : DataProviderBase
     {
+        public bool IsRecord
+        {
+            get
+            {
+//#if DEBUG
+//                return true;
+//#endif
+                return false;
+            }
+        }
+
         public override string TableName => "siteserver_Record";
 
         public override List<TableColumn> TableColumns => new List<TableColumn>
@@ -104,7 +115,7 @@ namespace SiteServer.CMS.Provider
             if (!string.IsNullOrEmpty(keyword))
             {
                 isWhere = true;
-                var filterKeyword = PageUtils.FilterSql(keyword);
+                var filterKeyword = AttackUtils.FilterSql(keyword);
                 whereString.Append(
                     $"(Text LIKE '%{filterKeyword}%' OR Summary LIKE '%{filterKeyword}%' OR Source LIKE '%{filterKeyword}%')");
             }
@@ -130,38 +141,21 @@ namespace SiteServer.CMS.Provider
             return $"SELECT Id, Text, Summary, Source, AddDate FROM {TableName} {whereString}";
         }
 
-        public bool IsRecord()
-        {
-#if (DEBUG)
-            return false;
-#else
-            return false;
-#endif
-        }
-
         public void RecordCommandExecute(IDbCommand command, string source)
         {
-            if (!IsRecord()) return;
+            if (!IsRecord) return;
             if (command.CommandText.Contains(TableName)) return;
 
             var builder = new StringBuilder();
             foreach (var parameter in command.Parameters)
             {
-                var commandParameter = parameter as IDataParameter;
-                if (commandParameter != null)
+                if (parameter is IDataParameter commandParameter)
                 {
                     builder.Append(commandParameter.ParameterName + "=" + commandParameter.Value + "<br />").AppendLine();
                 }
             }
 
             Insert(command.CommandText, builder.ToString(), source);
-        }
-
-        public void RecordLog(string data, string source)
-        {
-            if (!IsRecord()) return;
-
-            Insert(data, source, "Log");
         }
     }
 }

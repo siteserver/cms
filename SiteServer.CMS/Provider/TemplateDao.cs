@@ -4,6 +4,7 @@ using System.Data;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
@@ -305,7 +306,7 @@ namespace SiteServer.CMS.Provider
             {
                 var whereString = (string.IsNullOrEmpty(templateTypeString)) ? string.Empty :
                     $"AND TemplateType = '{templateTypeString}' ";
-                searchText = PageUtils.FilterSql(searchText);
+                searchText = AttackUtils.FilterSql(searchText);
                 whereString +=
                     $"AND (TemplateName LIKE '%{searchText}%' OR RelatedFileName LIKE '%{searchText}%' OR CreatedFileFullName LIKE '%{searchText}%' OR CreatedFileExtName LIKE '%{searchText}%')";
                 string sqlString =

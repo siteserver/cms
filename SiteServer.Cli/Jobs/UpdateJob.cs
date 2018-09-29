@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using NDesk.Options;
 using SiteServer.Cli.Core;
 using SiteServer.Cli.Updater;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Provider;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -17,20 +20,20 @@ namespace SiteServer.Cli.Jobs
 
         private static bool _isHelp;
         private static string _directory;
-        private static string _version;
+        private static bool _contentSplit;
 
         private static readonly OptionSet Options = new OptionSet() {
-            { "d|directory=", "the update {directory} name.",
+            { "d|directory=", "指定需要转换至最新版本的备份数据文件夹",
                 v => _directory = v },
-            { "v|version=", "the {version} to update.",
-                v => _version = v },
-            { "h|help",  "show this message and exit",
+            { "content-split",  "拆分内容表",
+                v => _contentSplit = v != null },
+            { "h|help",  "命令说明",
                 v => _isHelp = v != null }
         };
 
         public static void PrintUsage()
         {
-            Console.WriteLine("Update command usage: siteserver update");
+            Console.WriteLine("升级备份数据: siteserver update");
             Options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }
@@ -45,15 +48,9 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            if (string.IsNullOrEmpty(_version))
-            {
-                await CliUtils.PrintErrorAsync("Error, the {version} to update is empty");
-                return;
-            }
-
             if (string.IsNullOrEmpty(_directory))
             {
-                await CliUtils.PrintErrorAsync("Error, the update {directory} name is empty");
+                await CliUtils.PrintErrorAsync("未指定需要转换至最新版本的备份数据文件夹：directory");
                 return;
             }
 
@@ -62,52 +59,46 @@ namespace SiteServer.Cli.Jobs
 
             if (!DirectoryUtils.IsDirectoryExists(oldTreeInfo.DirectoryPath))
             {
-                await CliUtils.PrintErrorAsync($"Error, directory {oldTreeInfo.DirectoryPath} not exists");
+                await CliUtils.PrintErrorAsync($"备份数据的文件夹 {oldTreeInfo.DirectoryPath} 不存在");
                 return;
             }
             DirectoryUtils.CreateDirectoryIfNotExists(newTreeInfo.DirectoryPath);
 
-            UpdaterBase updater = null;
+            var updater = new UpdaterManager(oldTreeInfo, newTreeInfo);
 
-            if (_version == Updater36.Version)
-            {
-                updater = new Updater36(oldTreeInfo, newTreeInfo);
-            }
-            else if (_version == Updater40.Version)
-            {
-                updater = new Updater40(oldTreeInfo, newTreeInfo);
-            }
-            else if (_version == Updater41.Version)
-            {
-                updater = new Updater41(oldTreeInfo, newTreeInfo);
-            }
-            else if (_version == Updater50.Version)
-            {
-                updater = new Updater50(oldTreeInfo, newTreeInfo);
-            }
-            if (updater == null)
-            {
-                await Console.Out.WriteLineAsync($"Error, the currently supported update versions are {Updater36.Version},{Updater40.Version},{Updater41.Version},{Updater50.Version}");
-                return;
-            }
-
-            var newVersion = "latest";
-
-            await Console.Out.WriteLineAsync($"Old Version: {_version}, Old Directory: {oldTreeInfo.DirectoryPath}");
-            await Console.Out.WriteLineAsync($"New Version: {newVersion}, New Directory: {newTreeInfo.DirectoryPath}");
+            var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            await Console.Out.WriteLineAsync($"备份数据文件夹: {oldTreeInfo.DirectoryPath}，升级数据文件夹: {newTreeInfo.DirectoryPath}，升级版本: {version.Substring(0, version.Length - 2)}");
 
             var oldTableNames = TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(oldTreeInfo.TablesFilePath, Encoding.UTF8));
             var newTableNames = new List<string>();
 
             await CliUtils.PrintRowLineAsync();
-            await CliUtils.PrintRowAsync("Old Table Name", "New Table Name", "Total Count");
+            await CliUtils.PrintRowAsync("备份表名称", "升级表名称", "总条数");
             await CliUtils.PrintRowLineAsync();
 
-            var contentTableNameList = new List<string>();
-            UpdateUtils.LoadContentTableNameList(oldTreeInfo, "siteserver_PublishmentSystem",
-                contentTableNameList);
-            UpdateUtils.LoadContentTableNameList(oldTreeInfo, "wcm_PublishmentSystem",
-                contentTableNameList);
+            var siteIdList = new List<int>();
+            var tableNameListForContent = new List<string>();
+            var tableNameListForGovPublic = new List<string>();
+            var tableNameListForGovInteract = new List<string>();
+            var tableNameListForJob = new List<string>();
+
+            UpdateUtils.LoadSites(oldTreeInfo, siteIdList,
+                tableNameListForContent, tableNameListForGovPublic, tableNameListForGovInteract, tableNameListForJob);
+
+            var splitSiteTableDict = new Dictionary<int, TableInfo>();
+            if (_contentSplit)
+            {
+                var converter = ContentConverter.GetSplitConverter();
+                foreach (var siteId in siteIdList)
+                {
+                    splitSiteTableDict.Add(siteId, new TableInfo
+                    {
+                        Columns = converter.NewColumns,
+                        TotalCount = 0,
+                        RowFiles = new List<string>()
+                    });
+                }
+            }
 
             foreach (var oldTableName in oldTableNames)
             {
@@ -117,19 +108,57 @@ namespace SiteServer.Cli.Jobs
 
                 var oldTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(await FileUtils.ReadTextAsync(oldMetadataFilePath, Encoding.UTF8));
 
-                var tuple = await updater.UpdateTableInfoAsync(oldTableName, oldTableInfo, contentTableNameList);
-                if (tuple != null)
+                if (StringUtils.ContainsIgnoreCase(tableNameListForContent, oldTableName))
                 {
-                    newTableNames.Add(tuple.Item1);
+                    if (_contentSplit)
+                    {
+                        var converter = ContentConverter.GetConverter(oldTableName, oldTableInfo.Columns);
 
-                    await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(tuple.Item1), Encoding.UTF8, TranslateUtils.JsonSerialize(tuple.Item2));
+                        await updater.UpdateSplitContentsTableInfoAsync(splitSiteTableDict, siteIdList, oldTableName,
+                            oldTableInfo, converter);
+                    }
+                    else
+                    {
+                        var converter = ContentConverter.GetConverter(oldTableName, oldTableInfo.Columns);
+                        var tuple = await updater.GetNewTableInfoAsync(oldTableName, oldTableInfo, converter);
+                        if (tuple != null)
+                        {
+                            newTableNames.Add(tuple.Item1);
+
+                            await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(tuple.Item1), Encoding.UTF8, TranslateUtils.JsonSerialize(tuple.Item2));
+                        }
+                    }
                 }
+                else
+                {
+                    var tuple = await updater.UpdateTableInfoAsync(oldTableName, oldTableInfo, tableNameListForGovPublic, tableNameListForGovInteract, tableNameListForJob);
+                    if (tuple != null)
+                    {
+                        newTableNames.Add(tuple.Item1);
+
+                        await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(tuple.Item1), Encoding.UTF8, TranslateUtils.JsonSerialize(tuple.Item2));
+                    }
+                }
+            }
+
+            if (_contentSplit)
+            {
+                foreach (var siteId in siteIdList)
+                {
+                    var siteTableInfo = splitSiteTableDict[siteId];
+                    var siteTableName = ContentDao.GetContentTableName(siteId);
+                    newTableNames.Add(siteTableName);
+
+                    await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(siteTableName), Encoding.UTF8, TranslateUtils.JsonSerialize(siteTableInfo));
+                }
+
+                await UpdateUtils.UpdateSitesSplitTableNameAsync(newTreeInfo, splitSiteTableDict);
             }
 
             await FileUtils.WriteTextAsync(newTreeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newTableNames));
 
             await CliUtils.PrintRowLineAsync();
-            await Console.Out.WriteLineAsync("Well done! Thanks for Using SiteServer Cli Tool");
+            await Console.Out.WriteLineAsync($"恭喜，成功从备份文件夹：{oldTreeInfo.DirectoryPath} 升级至新版本：{newTreeInfo.DirectoryPath} ！");
         }
     }
 }

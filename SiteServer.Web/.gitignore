@@ -10,6 +10,7 @@ SiteFiles/SiteTemplates/
 SiteFiles/TemporaryFiles/
 SiteFiles/UserFiles/test/
 Template
+/sapprft/
 
 ## sqlserver
 test1/

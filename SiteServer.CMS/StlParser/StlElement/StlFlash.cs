@@ -1,7 +1,8 @@
 ﻿using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -9,22 +10,41 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "显示Flash", Description = "通过 stl:flash 标签在模板中获取并显示栏目或内容的Flash")]
+    [StlElement(Title = "显示Flash", Description = "通过 stl:flash 标签在模板中获取并显示栏目或内容的Flash")]
     public class StlFlash
     {
         private StlFlash() { }
         public const string ElementName = "stl:flash";
 
-        private static readonly Attr ChannelIndex = new Attr("channelIndex", "栏目索引");
-        private static readonly Attr ChannelName = new Attr("channelName", "栏目名称");
-        private static readonly Attr Parent = new Attr("parent", "显示父栏目");
-        private static readonly Attr UpLevel = new Attr("upLevel", "上级栏目的级别");
-        private static readonly Attr TopLevel = new Attr("topLevel", "从首页向下的栏目级别");
-        private static readonly Attr Type = new Attr("type", "指定存储flash的字段");
-        private static readonly Attr Src = new Attr("src", "显示的flash地址");
-        private static readonly Attr AltSrc = new Attr("altSrc", "当指定的flash不存在时显示的flash地址");
-        private static readonly Attr Width = new Attr("width", "宽度");
-        private static readonly Attr Height = new Attr("height", "高度");
+        [StlAttribute(Title = "栏目索引")]
+        private const string ChannelIndex = nameof(ChannelIndex);
+
+        [StlAttribute(Title = "栏目名称")]
+        private const string ChannelName = nameof(ChannelName);
+
+        [StlAttribute(Title = "显示父栏目")]
+        private const string Parent = nameof(Parent);
+
+        [StlAttribute(Title = "上级栏目的级别")]
+        private const string UpLevel = nameof(UpLevel);
+
+        [StlAttribute(Title = "从首页向下的栏目级别")]
+        private const string TopLevel = nameof(TopLevel);
+
+        [StlAttribute(Title = "指定存储flash的字段")]
+        private const string Type = nameof(Type);
+
+        [StlAttribute(Title = "显示的flash地址")]
+        private const string Src = nameof(Src);
+
+        [StlAttribute(Title = "当指定的flash不存在时显示的flash地址")]
+        private const string AltSrc = nameof(AltSrc);
+
+        [StlAttribute(Title = "宽度")]
+        private const string Width = nameof(Width);
+
+        [StlAttribute(Title = "高度")]
+        private const string Height = nameof(Height);
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -43,7 +63,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, ChannelIndex.Name))
+                if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
                 {
                     channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     if (!string.IsNullOrEmpty(channelIndex))
@@ -51,7 +71,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, ChannelName.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelName))
                 {
                     channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     if (!string.IsNullOrEmpty(channelName))
@@ -59,7 +79,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Parent.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Parent))
                 {
                     if (TranslateUtils.ToBool(value))
                     {
@@ -67,7 +87,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, UpLevel.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, UpLevel))
                 {
                     upLevel = TranslateUtils.ToInt(value);
                     if (upLevel > 0)
@@ -75,7 +95,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, TopLevel.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, TopLevel))
                 {
                     topLevel = TranslateUtils.ToInt(value);
                     if (topLevel >= 0)
@@ -83,23 +103,23 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isGetPicUrlFromAttribute = true;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Type.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Src.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Src))
                 {
                     src = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AltSrc.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, AltSrc))
                 {
                     altSrc = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Width.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Width))
                 {
                     width = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Height.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Height))
                 {
                     height = value;
                 }
@@ -135,7 +155,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var tableName = ChannelManager.GetTableName(contextInfo.SiteInfo, nodeInfo);
 
                         //picUrl = DataProvider.ContentDao.GetValue(tableName, contentId, type);
-                        flashUrl = Content.GetValue(tableName, contentId, type);
+                        flashUrl = StlContentCache.GetValue(tableName, contentId, type);
                     }
                     else
                     {
@@ -237,7 +257,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 //            {
 //                var value = contextInfo.Attributes[name];
 
-//                if (StringUtils.EqualsIgnoreCase(name, ChannelIndex.Name))
+//                if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
 //                {
 //                    channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
 //                    if (!string.IsNullOrEmpty(channelIndex))
@@ -245,7 +265,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 //                        isGetPicUrlFromAttribute = true;
 //                    }
 //                }
-//                else if (StringUtils.EqualsIgnoreCase(name, ChannelName.Name))
+//                else if (StringUtils.EqualsIgnoreCase(name, ChannelName))
 //                {
 //                    channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
 //                    if (!string.IsNullOrEmpty(channelName))
@@ -253,7 +273,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 //                        isGetPicUrlFromAttribute = true;
 //                    }
 //                }
-//                else if (StringUtils.EqualsIgnoreCase(name, Parent.Name))
+//                else if (StringUtils.EqualsIgnoreCase(name, Parent))
 //                {
 //                    if (TranslateUtils.ToBool(value))
 //                    {
@@ -261,7 +281,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 //                        isGetPicUrlFromAttribute = true;
 //                    }
 //                }
-//                else if (StringUtils.EqualsIgnoreCase(name, UpLevel.Name))
+//                else if (StringUtils.EqualsIgnoreCase(name, UpLevel))
 //                {
 //                    upLevel = TranslateUtils.ToInt(value);
 //                    if (upLevel > 0)
@@ -269,7 +289,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 //                        isGetPicUrlFromAttribute = true;
 //                    }
 //                }
-//                else if (StringUtils.EqualsIgnoreCase(name, TopLevel.Name))
+//                else if (StringUtils.EqualsIgnoreCase(name, TopLevel))
 //                {
 //                    topLevel = TranslateUtils.ToInt(value);
 //                    if (topLevel >= 0)
@@ -277,23 +297,23 @@ namespace SiteServer.CMS.StlParser.StlElement
 //                        isGetPicUrlFromAttribute = true;
 //                    }
 //                }
-//                else if (StringUtils.EqualsIgnoreCase(name, Type.Name))
+//                else if (StringUtils.EqualsIgnoreCase(name, Type))
 //                {
 //                    type = value;
 //                }
-//                else if (StringUtils.EqualsIgnoreCase(name, Src.Name))
+//                else if (StringUtils.EqualsIgnoreCase(name, Src))
 //                {
 //                    src = value;
 //                }
-//                else if (StringUtils.EqualsIgnoreCase(name, AltSrc.Name))
+//                else if (StringUtils.EqualsIgnoreCase(name, AltSrc))
 //                {
 //                    altSrc = value;
 //                }
-//                else if (StringUtils.EqualsIgnoreCase(name, Width.Name))
+//                else if (StringUtils.EqualsIgnoreCase(name, Width))
 //                {
 //                    width = value;
 //                }
-//                else if (StringUtils.EqualsIgnoreCase(name, Height.Name))
+//                else if (StringUtils.EqualsIgnoreCase(name, Height))
 //                {
 //                    height = value;
 //                }

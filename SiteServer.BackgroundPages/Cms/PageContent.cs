@@ -7,6 +7,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
@@ -38,13 +39,15 @@ namespace SiteServer.BackgroundPages.Cms
         private bool _isEdit;
         private readonly Dictionary<string, string> _nameValueCacheDict = new Dictionary<string, string>();
 
-        public static string GetRedirectUrl(int siteId, int channelId)
-        {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageContent), new NameValueCollection
-            {
-                {"channelId", channelId.ToString()}
-            });
-        }
+        protected override bool IsSinglePage => true;
+
+        //public static string GetRedirectUrl(int siteId, int channelId)
+        //{
+        //    return PageUtils.GetCmsUrl(siteId, nameof(PageContent), new NameValueCollection
+        //    {
+        //        {"channelId", channelId.ToString()}
+        //    });
+        //}
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -63,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
             _pluginColumns = PluginContentManager.GetContentColumns(_channelInfo);
             _isEdit = TextUtility.IsEdit(SiteInfo, channelId, AuthRequest.AdminPermissions);
 
-            if (_channelInfo.Additional.IsPreviewContents)
+            if (_channelInfo.Additional.IsPreviewContentsExists)
             {
                 new Action(() =>
                 {
@@ -84,15 +87,15 @@ namespace SiteServer.BackgroundPages.Cms
 
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
-            var allLowerAttributeNameList = TableMetadataManager.GetAllLowerAttributeNameListExcludeText(_tableName);
+            var allAttributeNameList = TableColumnManager.GetTableColumnNameList(_tableName, DataType.Text);
             var pagerParam = new PagerParam
             {
                 ControlToPaginate = RptContents,
                 TableName = _tableName,
                 PageSize = SiteInfo.Additional.PageSize,
                 Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
-                OrderSqlString = DataProvider.ContentDao.GetPagerOrderSqlString(_channelInfo),
-                ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allLowerAttributeNameList)
+                OrderSqlString = DataProvider.ContentDao.GetCacheOrderString(_channelInfo),
+                ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allAttributeNameList)
             };
 
             var administratorName = AuthRequest.AdminPermissions.IsViewContentOnlySelf(SiteId, channelId) ? AuthRequest.AdminName : string.Empty;
@@ -100,14 +103,15 @@ namespace SiteServer.BackgroundPages.Cms
             if (AuthRequest.IsQueryExists("searchType"))
             {
                 pagerParam.WhereSqlString = DataProvider.ContentDao.GetPagerWhereSqlString(SiteInfo, _channelInfo, AuthRequest.GetQueryString("searchType"), AuthRequest.GetQueryString("keyword"),
-                    AuthRequest.GetQueryString("dateFrom"), string.Empty, CheckManager.LevelInt.All, false, true, false, false, false, AuthRequest.AdminPermissions, allLowerAttributeNameList);
+                    AuthRequest.GetQueryString("dateFrom"), string.Empty, CheckManager.LevelInt.All, false, true, false, false, false, AuthRequest.AdminPermissions, allAttributeNameList);
                 pagerParam.TotalCount =
                     DataProvider.DatabaseDao.GetPageTotalCount(_tableName, pagerParam.WhereSqlString);
             }
             else
             {
                 pagerParam.WhereSqlString = DataProvider.ContentDao.GetPagerWhereSqlString(channelId, ETriState.All, administratorName);
-                pagerParam.TotalCount = _channelInfo.ContentNum;
+                var count = ContentManager.GetCount(SiteInfo, _channelInfo);
+                pagerParam.TotalCount = count;
             }
 
             PgContents.Param = pagerParam;
@@ -192,7 +196,7 @@ $(document).ready(function() {
             ltlColumns.Text = TextUtility.GetColumnsHtml(_nameValueCacheDict, SiteInfo, contentInfo, _attributesOfDisplay, _allStyleInfoList, _pluginColumns);
 
             ltlStatus.Text =
-                $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{ModalCheckState.GetOpenWindowString(SiteId, contentInfo, PageUrl)}"">{CheckManager.GetCheckState(SiteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
+                $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{ModalCheckState.GetOpenWindowString(SiteId, contentInfo, PageUrl)}"">{CheckManager.GetCheckState(SiteInfo, contentInfo)}</a>";
 
             ltlCommands.Text = TextUtility.GetCommandsHtml(SiteInfo, _pluginMenus, contentInfo, PageUrl, AuthRequest.AdminName, _isEdit);
 

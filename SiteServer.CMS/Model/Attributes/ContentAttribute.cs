@@ -42,42 +42,95 @@ namespace SiteServer.CMS.Model.Attributes
             return attributeName + "_Extend";
         }
 
-        public const string CheckUserName = "Check_UserName";            //审核者
-        public const string CheckCheckDate = "Check_CheckDate";          //审核时间
-        public const string CheckReasons = "Check_Reasons";              //审核原因
-        public const string TranslateContentType = "TranslateContentType";    //转移内容类型
+        // 计算字段
+        public const string Sequence = nameof(Sequence);                            //序号
+        public const string PageContent = nameof(PageContent);
+        public const string NavigationUrl = nameof(NavigationUrl);
+        public const string CheckState = nameof(CheckState);
 
-        private static List<string> _allAttributesLowercase;
+        // 附加字段
+        public const string CheckUserName = nameof(CheckUserName);                  //审核者
+        public const string CheckDate = nameof(CheckDate);                          //审核时间
+        public const string CheckReasons = nameof(CheckReasons);                    //审核原因
+        public const string TranslateContentType = nameof(TranslateContentType);    //转移内容类型
 
-        public static List<string> AllAttributesLowercase => _allAttributesLowercase ?? (_allAttributesLowercase = new List<string>
+        private static List<string> _allAttributes;
+
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            Id.ToLower(),
-            ChannelId.ToLower(),
-            SiteId.ToLower(),
-            AddUserName.ToLower(),
-            LastEditUserName.ToLower(),
-            WritingUserName.ToLower(),
-            LastEditDate.ToLower(),
-            Taxis.ToLower(),
-            GroupNameCollection.ToLower(),
-            Tags.ToLower(),
-            SourceId.ToLower(),
-            ReferenceId.ToLower(),
-            IsChecked.ToLower(),
-            CheckedLevel.ToLower(),
-            Hits.ToLower(),
-            HitsByDay.ToLower(),
-            HitsByWeek.ToLower(),
-            HitsByMonth.ToLower(),
-            LastHitsDate.ToLower(),
-            SettingsXml.ToLower(),
-            Title.ToLower(),
-            IsTop.ToLower(),
-            IsRecommend.ToLower(),
-            IsHot.ToLower(),
-            IsColor.ToLower(),
-            LinkUrl.ToLower(),
-            AddDate.ToLower()
+            Id,
+            ChannelId,
+            SiteId,
+            AddUserName,
+            LastEditUserName,
+            WritingUserName,
+            LastEditDate,
+            Taxis,
+            GroupNameCollection,
+            Tags,
+            SourceId,
+            ReferenceId,
+            IsChecked,
+            CheckedLevel,
+            Hits,
+            HitsByDay,
+            HitsByWeek,
+            HitsByMonth,
+            LastHitsDate,
+            SettingsXml,
+            Title,
+            IsTop,
+            IsRecommend,
+            IsHot,
+            IsColor,
+            LinkUrl,
+            AddDate
+        });
+
+        private static List<string> _hiddenAttributes;
+
+        public static List<string> HiddenAttributes => _hiddenAttributes ?? (_hiddenAttributes = new List<string>
+        {
+            Sequence,
+            PageContent,
+            NavigationUrl,
+            CheckState,
+            CheckUserName,
+            CheckDate,
+            CheckReasons,
+            TranslateContentType
+        });
+
+        private static List<string> _metadataAttributes;
+
+        public static List<string> MetadataAttributes => _metadataAttributes ?? (_metadataAttributes = new List<string>
+        {
+            Id,
+            ChannelId,
+            SiteId,
+            AddUserName,
+            LastEditUserName,
+            WritingUserName,
+            LastEditDate,
+            Taxis,
+            GroupNameCollection,
+            Tags,
+            SourceId,
+            ReferenceId,
+            IsChecked,
+            CheckedLevel,
+            Hits,
+            HitsByDay,
+            HitsByWeek,
+            HitsByMonth,
+            LastHitsDate,
+            SettingsXml,
+            IsTop,
+            IsRecommend,
+            IsHot,
+            IsColor,
+            AddDate,
+            LinkUrl
         });
     }
 }

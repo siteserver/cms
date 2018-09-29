@@ -10,12 +10,13 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "翻页栏目列表", Description = "通过 stl:pageChannels 标签在模板中显示翻页栏目列表")]
+    [StlElement(Title = "翻页栏目列表", Description = "通过 stl:pageChannels 标签在模板中显示翻页栏目列表")]
     public class StlPageChannels : StlChannels
     {
         public new const string ElementName = "stl:pageChannels";
 
-        private static readonly Attr PageNum = new Attr("pageNum", "每页显示的栏目数目");
+        [StlAttribute(Title = "每页显示的栏目数目")]
+        private const string PageNum = nameof(PageNum);
 
         private readonly string _stlPageChannelsElement;
         private readonly PageInfo _pageInfo;
@@ -38,9 +39,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, DisplayInfo.ChannelIndex, DisplayInfo.ChannelName);
 
-            var isTotal = TranslateUtils.ToBool(DisplayInfo.Others.Get(IsTotal.Name));
+            var isTotal = TranslateUtils.ToBool(DisplayInfo.Others.Get(IsTotal));
 
-            if (TranslateUtils.ToBool(DisplayInfo.Others.Get(IsAllChildren.Name)))
+            if (TranslateUtils.ToBool(DisplayInfo.Others.Get(IsAllChildren)))
             {
                 DisplayInfo.Scope = EScopeType.Descendant;
             }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin.Model;
@@ -55,12 +56,12 @@ namespace SiteServer.BackgroundPages.Core
                     }
                 }
             }
-            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckCheckDate))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckDate))
             {
-                var checkDate = contentInfo.GetString(ContentAttribute.CheckCheckDate);
-                if (!string.IsNullOrEmpty(checkDate))
+                var checkDate = contentInfo.GetDateTime(ContentAttribute.CheckDate, DateTime.MinValue);
+                if (checkDate != DateTime.MinValue)
                 {
-                    value = DateUtils.GetDateAndTimeString(TranslateUtils.ToDateTime(checkDate));
+                    value = DateUtils.GetDateAndTimeString(checkDate);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckReasons))

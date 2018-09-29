@@ -4,6 +4,7 @@ using System.Data;
 using System.Text;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -166,7 +167,7 @@ namespace SiteServer.CMS.Provider
 
             if (!string.IsNullOrEmpty(pluginId))
             {
-                whereString.Append($"PluginId = '{PageUtils.FilterSql(pluginId)}'");
+                whereString.Append($"PluginId = '{AttackUtils.FilterSql(pluginId)}'");
             }
 
             if (!string.IsNullOrEmpty(keyword))
@@ -175,7 +176,7 @@ namespace SiteServer.CMS.Provider
                 {
                     whereString.Append(" AND ");
                 }
-                var filterKeyword = PageUtils.FilterSql(keyword);
+                var filterKeyword = AttackUtils.FilterSql(keyword);
                 var keywordId = TranslateUtils.ToInt(keyword);
                 whereString.Append(keywordId > 0
                     ? $"Id = {keywordId}"

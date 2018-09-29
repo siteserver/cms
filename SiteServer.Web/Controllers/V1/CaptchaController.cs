@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -29,9 +30,13 @@ namespace SiteServer.API.Controllers.V1
         {
             var response = HttpContext.Current.Response;
 
-            var validateCode = VcManager.CreateValidateCode();
+            var code = VcManager.CreateValidateCode();
+            if (CacheUtils.Exists($"SiteServer.API.Controllers.V1.CaptchaController.{code}"))
+            {
+                code = VcManager.CreateValidateCode();
+            }
 
-            CookieUtils.SetCookie("SS-" + name, validateCode, DateTime.Now.AddHours(3));
+            CookieUtils.SetCookie("SS-" + name, code, DateTime.Now.AddMinutes(10));
 
             response.BufferOutput = true;  //特别注意
             response.Cache.SetExpires(DateTime.Now.AddMilliseconds(-1));//特别注意
@@ -46,7 +51,7 @@ namespace SiteServer.API.Controllers.V1
 
             var g = Graphics.FromImage(validateimage);
             g.FillRectangle(new SolidBrush(Color.FromArgb(240, 243, 248)), 0, 0, 200, 200); //矩形框
-            g.DrawString(validateCode, new Font(FontFamily.GenericSerif, 28, FontStyle.Bold | FontStyle.Italic), new SolidBrush(colors), new PointF(14, 3));//字体/颜色
+            g.DrawString(code, new Font(FontFamily.GenericSerif, 28, FontStyle.Bold | FontStyle.Italic), new SolidBrush(colors), new PointF(14, 3));//字体/颜色
 
             var random = new Random();
 
@@ -82,11 +87,18 @@ namespace SiteServer.API.Controllers.V1
             try
             {
                 var code = CookieUtils.GetCookie("SS-" + name);
-                var isValid = StringUtils.EqualsIgnoreCase(code, captchaInfo.Captcha);
 
-                if (!isValid)
+                if (string.IsNullOrEmpty(code) || CacheUtils.Exists($"SiteServer.API.Controllers.V1.CaptchaController.{code}"))
                 {
-                    return BadRequest("验证码不正确");
+                    return BadRequest("验证码已超时，请点击刷新验证码！");
+                }
+
+                CookieUtils.Erase("SS-" + name);
+                CacheUtils.InsertMinutes($"SiteServer.API.Controllers.V1.CaptchaController.{code}", true, 10);
+
+                if (!StringUtils.EqualsIgnoreCase(code, captchaInfo.Captcha))
+                {
+                    return BadRequest("验证码不正确，请重新输入！");
                 }
 
                 return Ok(new OResponse(true));

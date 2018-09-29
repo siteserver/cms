@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -134,7 +135,7 @@ namespace SiteServer.BackgroundPages.Cms
             var charset = FileUtils.GetFileCharset(PathUtils.Combine(_directoryPath, fileName));
             ltlCharset.Text = ECharsetUtils.GetText(charset);
 
-            ltlView.Text = $@"<a href=""{SiteInfo.Additional.WebUrl}/{_assetsDir}/{fileName}"" target=""_blank"">查看</a>";
+            ltlView.Text = $@"<a href=""{PageUtility.GetSiteUrl(SiteInfo, $"{_assetsDir}/{fileName}", true)}"" target=""_blank"">查看</a>";
             ltlEdit.Text =
                 $@"<a href=""{PageTemplateAssetsAdd.GetRedirectUrlToEdit(SiteId, _type, fileName)}"">编辑</a>";
             ltlDelete.Text =

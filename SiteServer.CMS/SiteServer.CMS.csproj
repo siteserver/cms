@@ -80,8 +80,8 @@
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.2.0.0\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.2.0.4\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -115,8 +115,6 @@
     <Compile Include="Api\V1\StlRequest.cs" />
     <Compile Include="Api\ApiRoutePlugin.cs" />
     <Compile Include="Api\Preview\ApiRoutePreview.cs" />
-    <Compile Include="Api\Sys\Administrators\ApiRouteActionsLogin.cs" />
-    <Compile Include="Api\Sys\Administrators\ApiRouteSiteCheckList.cs" />
     <Compile Include="Api\Sys\Errors\ApiRouteError.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteClearCache.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteUpdateSsCms.cs" />
@@ -139,14 +137,19 @@
     <Compile Include="Api\V1\OUtils.cs" />
     <Compile Include="Api\V1\OFilter.cs" />
     <Compile Include="Api\V1\OResponse.cs" />
-    <Compile Include="Core\AdminManager.cs" />
+    <Compile Include="Core\CmsPages.cs" />
+    <Compile Include="Core\ContentCountInfo.cs" />
+    <Compile Include="DataCache\ChannelGroupManager.cs" />
+    <Compile Include="DataCache\ContentGroupManager.cs" />
+    <Compile Include="DataCache\Core\DataCacheManager.cs" />
+    <Compile Include="DataCache\AdminManager.cs" />
     <Compile Include="Api\ApiManager.cs" />
-    <Compile Include="Core\ArchiveManager.cs" />
-    <Compile Include="Core\AreaManager.cs" />
+    <Compile Include="DataCache\AreaManager.cs" />
     <Compile Include="Core\CacheDbUtils.cs" />
-    <Compile Include="Core\ChannelManager.cs" />
+    <Compile Include="DataCache\ContentManager.cs" />
+    <Compile Include="DataCache\ChannelManager.cs" />
     <Compile Include="Core\CheckManager.cs" />
-    <Compile Include="Core\ConfigManager.cs" />
+    <Compile Include="DataCache\ConfigManager.cs" />
     <Compile Include="Core\ContentUtility.cs" />
     <Compile Include="Core\Create\CreateManager.cs" />
     <Compile Include="Core\Create\CreateTaskManager.cs" />
@@ -154,7 +157,7 @@
     <Compile Include="Core\Create\ICreateTaskManager.cs" />
     <Compile Include="Core\CrossSiteTransUtility.cs" />
     <Compile Include="Core\DataProvider.cs" />
-    <Compile Include="Core\DepartmentManager.cs" />
+    <Compile Include="DataCache\DepartmentManager.cs" />
     <Compile Include="Core\DirectoryUtility.cs" />
     <Compile Include="Core\FileUtility.cs" />
     <Compile Include="Core\InputParserUtility.cs" />
@@ -169,22 +172,22 @@
     <Compile Include="Core\PathUtility.cs" />
     <Compile Include="Core\RelatedIdentities.cs" />
     <Compile Include="Core\RoleManager.cs" />
-    <Compile Include="Core\PermissionConfigManager.cs" />
-    <Compile Include="Core\PermissionManager.cs" />
-    <Compile Include="Core\SiteManager.cs" />
+    <Compile Include="DataCache\PermissionConfigManager.cs" />
+    <Compile Include="DataCache\PermissionManager.cs" />
+    <Compile Include="DataCache\SiteManager.cs" />
     <Compile Include="Core\SiteTemplateManager.cs" />
     <Compile Include="Core\SourceManager.cs" />
-    <Compile Include="Core\AccessTokenManager.cs" />
+    <Compile Include="DataCache\AccessTokenManager.cs" />
     <Compile Include="Core\SystemManager.cs" />
-    <Compile Include="Core\TableColumnManager.cs" />
-    <Compile Include="Core\TableMetadataManager.cs" />
-    <Compile Include="Core\TableStyleManager.cs" />
+    <Compile Include="DataCache\TableColumnManager.cs" />
+    <Compile Include="DataCache\TableStyleManager.cs" />
     <Compile Include="Core\TabManager.cs" />
     <Compile Include="Core\TagUtils.cs" />
-    <Compile Include="Core\SpecialManager.cs" />
-    <Compile Include="Core\TemplateManager.cs" />
+    <Compile Include="DataCache\SpecialManager.cs" />
+    <Compile Include="DataCache\TemplateManager.cs" />
     <Compile Include="Core\TemplateTypeUtils.cs" />
     <Compile Include="Core\UEditorUploader.cs" />
+    <Compile Include="Core\UEditorUtils.cs" />
     <Compile Include="Core\VisualInfo.cs" />
     <Compile Include="Core\WordSpliter.cs" />
     <Compile Include="Data\DataProviderBase.cs" />
@@ -202,7 +205,6 @@
     <Compile Include="ImportExport\Components\ContentIe.cs" />
     <Compile Include="ImportExport\Components\SiteIe.cs" />
     <Compile Include="ImportExport\Components\ChannelIe.cs" />
-    <Compile Include="ImportExport\Components\TableIe.cs" />
     <Compile Include="ImportExport\Components\TableStyleIe.cs" />
     <Compile Include="ImportExport\Components\TemplateIe.cs" />
     <Compile Include="ImportExport\ExportObject.cs" />
@@ -235,6 +237,7 @@
     <Compile Include="Model\Enumerations\EGatherType.cs" />
     <Compile Include="Model\Enumerations\EImportExportType.cs" />
     <Compile Include="Model\Enumerations\EKeywordGrade.cs" />
+    <Compile Include="Model\Enumerations\ETableRule.cs" />
     <Compile Include="Model\Enumerations\ELayout.cs" />
     <Compile Include="Model\Enumerations\ELinkType.cs" />
     <Compile Include="Model\Enumerations\ELoadingType.cs" />
@@ -249,7 +252,7 @@
     <Compile Include="Model\Enumerations\ETranslateType.cs" />
     <Compile Include="Model\Enumerations\EWriteBackMethod.cs" />
     <Compile Include="Model\ErrorLogInfo.cs" />
-    <Compile Include="Model\Attributes\ExtendedAttributes.cs" />
+    <Compile Include="Plugin\Model\AttributesImpl.cs" />
     <Compile Include="Model\AccessTokenInfo.cs" />
     <Compile Include="Model\KeywordInfo.cs" />
     <Compile Include="Model\LogInfo.cs" />
@@ -284,6 +287,7 @@
     <Compile Include="Packaging\PackageMetadataStrings.cs" />
     <Compile Include="Packaging\PackageType.cs" />
     <Compile Include="Packaging\PackageUtils.cs" />
+    <Compile Include="Pages\Sys.cs" />
     <Compile Include="Plugin\Apis\AdminApi.cs" />
     <Compile Include="Plugin\Apis\ChannelApi.cs" />
     <Compile Include="Plugin\Apis\ConfigApi.cs" />
@@ -295,7 +299,7 @@
     <Compile Include="Plugin\Apis\UserApi.cs" />
     <Compile Include="Plugin\Model\ApiCollectionImpl.cs" />
     <Compile Include="Plugin\Model\EnvironmentImpl.cs" />
-    <Compile Include="Plugin\Model\PluginInstance.cs" />
+    <Compile Include="Plugin\PluginInstance.cs" />
     <Compile Include="Plugin\Model\ContentContextImpl.cs" />
     <Compile Include="Plugin\Model\ParseContextImpl.cs" />
     <Compile Include="Plugin\Model\ServiceImpl.cs" />
@@ -335,8 +339,6 @@
     <Compile Include="Provider\SiteLogDao.cs" />
     <Compile Include="Provider\SitePermissionsDao.cs" />
     <Compile Include="Provider\AccessTokenDao.cs" />
-    <Compile Include="Provider\TableDao.cs" />
-    <Compile Include="Provider\TableMetadataDao.cs" />
     <Compile Include="Provider\TableStyleDao.cs" />
     <Compile Include="Provider\TableStyleItemDao.cs" />
     <Compile Include="Provider\TagDao.cs" />
@@ -347,18 +349,15 @@
     <Compile Include="Provider\UserDao.cs" />
     <Compile Include="Provider\UserLogDao.cs" />
     <Compile Include="StlControls\CommentInput.cs" />
-    <Compile Include="StlParser\Cache\Administrator.cs" />
-    <Compile Include="StlParser\Cache\Content.cs" />
-    <Compile Include="StlParser\Cache\Database.cs" />
-    <Compile Include="StlParser\Cache\Node.cs" />
-    <Compile Include="StlParser\Cache\PublishmentSystem.cs" />
-    <Compile Include="StlParser\Cache\StlCacheUtils.cs" />
-    <Compile Include="StlParser\Cache\TableStructure.cs" />
-    <Compile Include="StlParser\Cache\Tag.cs" />
-    <Compile Include="StlParser\Cache\User.cs" />
+    <Compile Include="DataCache\Stl\StlAdministratorCache.cs" />
+    <Compile Include="DataCache\Stl\StlContentCache.cs" />
+    <Compile Include="DataCache\Stl\StlDatabaseCache.cs" />
+    <Compile Include="DataCache\Stl\StlChannelCache.cs" />
+    <Compile Include="DataCache\Stl\StlSiteCache.cs" />
+    <Compile Include="DataCache\Core\StlCacheManager.cs" />
+    <Compile Include="DataCache\Stl\StlSqlContentsCache.cs" />
+    <Compile Include="DataCache\Stl\StlTagCache.cs" />
     <Compile Include="StlParser\FileSystemObjectAsync.cs" />
-    <Compile Include="StlParser\Model\AttrUtils.cs" />
-    <Compile Include="StlParser\Model\AttrType.cs" />
     <Compile Include="StlParser\Model\ChannelItemInfo.cs" />
     <Compile Include="StlParser\Model\ContentItemInfo.cs" />
     <Compile Include="StlParser\Model\ContextInfo.cs" />
@@ -372,12 +371,10 @@
     <Compile Include="StlParser\Model\PageInfo.cs" />
     <Compile Include="StlParser\Model\ParsedDataList.cs" />
     <Compile Include="StlParser\Model\StlAll.cs" />
-    <Compile Include="StlParser\Model\Attr.cs" />
-    <Compile Include="StlParser\Model\AttrEnum.cs" />
     <Compile Include="StlParser\Model\StlElementInfo.cs" />
     <Compile Include="StlParser\Model\StlListBase.cs" />
-    <Compile Include="StlParser\Model\StlFieldAttribute.cs" />
-    <Compile Include="StlParser\Model\StlClassAttribute.cs" />
+    <Compile Include="StlParser\Model\StlAttributeAttribute.cs" />
+    <Compile Include="StlParser\Model\StlElementAttribute.cs" />
     <Compile Include="StlParser\Parser.cs" />
     <Compile Include="StlParser\Parsers\StlElementParser.cs" />
     <Compile Include="StlParser\Parsers\StlEntityParser.cs" />
@@ -395,7 +392,6 @@
     <Compile Include="StlParser\StlElement\StlEach.cs" />
     <Compile Include="StlParser\StlElement\StlFile.cs" />
     <Compile Include="StlParser\StlElement\StlFlash.cs" />
-    <Compile Include="StlParser\StlElement\StlFocusViewer.cs" />
     <Compile Include="StlParser\StlElement\StlIf.cs" />
     <Compile Include="StlParser\StlElement\StlImage.cs" />
     <Compile Include="StlParser\StlElement\StlInclude.cs" />
@@ -464,6 +460,7 @@
       <Name>SiteServer.Utils</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

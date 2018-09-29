@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils.Enumerations;
@@ -66,19 +67,22 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var contentId in _contentIdList)
             {
-                var isTop = TranslateUtils.ToBool(DataProvider.ContentDao.GetValue(_tableName, contentId, ContentAttribute.IsTop));
+                var tuple = DataProvider.ContentDao.GetValue(_tableName, contentId, ContentAttribute.IsTop);
+                if (tuple == null) continue;
+
+                var isTop = TranslateUtils.ToBool(tuple.Item2);
                 for (var i = 1; i <= taxisNum; i++)
                 {
                     if (isUp)
                     {
-                        if (DataProvider.ContentDao.UpdateTaxisToUp(_tableName, _channelId, contentId, isTop) == false)
+                        if (DataProvider.ContentDao.SetTaxisToUp(_tableName, _channelId, contentId, isTop) == false)
                         {
                             break;
                         }
                     }
                     else
                     {
-                        if (DataProvider.ContentDao.UpdateTaxisToDown(_tableName, _channelId, contentId, isTop) == false)
+                        if (DataProvider.ContentDao.SetTaxisToDown(_tableName, _channelId, contentId, isTop) == false)
                         {
                             break;
                         }
@@ -86,8 +90,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            CreateManager.CreateContentTrigger(SiteId, _channelId);
-
+            CreateManager.TriggerContentChangedEvent(SiteId, _channelId);
             AuthRequest.AddSiteLog(SiteId, _channelId, 0, "对内容排序", string.Empty);
 
             LayerUtils.CloseAndRedirect(Page, _returnUrl);

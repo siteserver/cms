@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 using SiteServer.Plugin;
@@ -57,7 +58,7 @@ namespace SiteServer.BackgroundPages.Cms
             _redirectUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("RedirectUrl"));
 
             _styleInfo = _tableStyleId != 0
-                ? DataProvider.TableStyleDao.GetTableStyleInfo(_tableStyleId)
+                ? TableStyleManager.GetTableStyleInfo(_tableStyleId)
                 : TableStyleManager.GetTableStyleInfo(_tableName, _attributeName, _relatedIdentities);
 
             if (IsPostBack) return;
@@ -121,17 +122,17 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     var relatedIdentity = _relatedIdentities[0];
                     _styleInfo.RelatedIdentity = relatedIdentity;
-                    _styleInfo.Id = TableStyleManager.Insert(_styleInfo);
+                    _styleInfo.Id = DataProvider.TableStyleDao.Insert(_styleInfo);
                 }
 
                 if (_styleInfo.Id > 0)
                 {
-                    TableStyleManager.Update(_styleInfo);
+                    DataProvider.TableStyleDao.Update(_styleInfo);
                     AuthRequest.AddSiteLog(SiteId, "修改表单验证", $"字段:{_styleInfo.AttributeName}");
                 }
                 else
                 {
-                    TableStyleManager.Insert(_styleInfo);
+                    DataProvider.TableStyleDao.Insert(_styleInfo);
                     AuthRequest.AddSiteLog(SiteId, "新增表单验证", $"字段:{_styleInfo.AttributeName}");
                 }
                 isChanged = true;

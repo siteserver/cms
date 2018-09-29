@@ -16,8 +16,7 @@ namespace SiteServer.BackgroundPages.Controls
         protected override void Render(HtmlTextWriter writer)
         {
             var controllerUrl = ApiRouteUEditor.GetUrl(ApiManager.InnerApiUrl, 0);
-            var editorUrl = SiteFilesAssets.GetUrl(ApiManager.InnerApiUrl, "ueditor");
-
+            var editorUrl = SiteServerAssets.GetUrl("ueditor");
             if (string.IsNullOrEmpty(Height) || Height == "0")
             {
                 Height = "280";
@@ -35,7 +34,7 @@ namespace SiteServer.BackgroundPages.Controls
 <textarea id=""{ClientID}"" name=""{ClientID}"" style=""display:none"">{HttpUtility.HtmlEncode(Text)}</textarea>
 <script type=""text/javascript"">
 $(function(){{
-  UE.getEditor('{ClientID}', {ETextEditorTypeUtils.ConfigValues});
+  UE.getEditor('{ClientID}', {UEditorUtils.ConfigValues});
   $('#{ClientID}').show();
 }});
 </script>");

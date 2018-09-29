@@ -4,22 +4,25 @@ using System.Web.UI.WebControls;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "翻页内容列表", Description = "通过 stl:pageContents 标签在模板中显示翻页内容列表")]
+    [StlElement(Title = "翻页内容列表", Description = "通过 stl:pageContents 标签在模板中显示翻页内容列表")]
     public class StlPageContents : StlContents
     {
         public new const string ElementName = "stl:pageContents";
 
-        public static readonly Attr PageNum = new Attr("pageNum", "每页显示的内容数目");
-        public static readonly Attr MaxPage = new Attr("maxPage", "翻页中生成的静态页面最大数，剩余页面将动态获取");
+        [StlAttribute(Title = "每页显示的内容数目")]
+        public const string PageNum = nameof(PageNum);
+        
+        [StlAttribute(Title = "翻页中生成的静态页面最大数，剩余页面将动态获取")]
+        public const string MaxPage = nameof(MaxPage);
 
         private readonly string _stlPageContentsElement;
         private readonly PageInfo _pageInfo;
@@ -73,7 +76,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             try
             {
                 //totalNum = DataProvider.DatabaseDao.GetPageTotalCount(SqlString);
-                totalNum = Database.GetPageTotalCount(SqlString);
+                totalNum = StlDatabaseCache.GetPageTotalCount(SqlString);
                 if (ListInfo.PageNum != 0 && ListInfo.PageNum < totalNum)//需要翻页
                 {
                     pageCount = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(totalNum) / Convert.ToDouble(ListInfo.PageNum)));//需要生成的总页数
@@ -114,7 +117,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (!string.IsNullOrEmpty(SqlString))
                 {
                     //var pageSqlString = DataProvider.DatabaseDao.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
-                    var pageSqlString = Database.GetStlPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
+                    var pageSqlString = StlDatabaseCache.GetStlPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
 
                     var datasource = DataProvider.DatabaseDao.GetDataSource(pageSqlString);
 

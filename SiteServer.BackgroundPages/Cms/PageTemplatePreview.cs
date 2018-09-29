@@ -2,6 +2,7 @@
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
 
@@ -68,10 +69,11 @@ namespace SiteServer.BackgroundPages.Cms
                 channelId = TranslateUtils.ToInt(DdlChannelId.SelectedValue);
                 if (templateType == TemplateType.ContentTemplate)
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-                    if (nodeInfo.ContentNum > 0)
+                    var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                    var count = ContentManager.GetCount(SiteInfo, channelInfo, true);
+                    if (count > 0)
                     {
-                        var tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
+                        var tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
                         contentId = DataProvider.ContentDao.GetFirstContentId(tableName, channelId);
                     }
 

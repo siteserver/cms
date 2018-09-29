@@ -1,6 +1,7 @@
 ﻿using System.Web.Http;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.API.Controllers.Sys.Packaging
 {
@@ -12,7 +13,10 @@ namespace SiteServer.API.Controllers.Sys.Packaging
         {
             SystemManager.SyncDatabase();
 
-            return Ok();
+            return Ok(new
+            {
+                SystemManager.Version
+            });
         }
     }
 }

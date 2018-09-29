@@ -34,8 +34,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AngleSharp, Version=0.9.9.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>..\packages\AngleSharp.0.9.10\lib\net45\AngleSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Protobuf, Version=3.5.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.5.1\lib\net45\Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlSanitizer, Version=3.0.0.0, Culture=neutral, PublicKeyToken=61c49a1a9e79cc28, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlSanitizer.4.0.187\lib\net45\HtmlSanitizer.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.4.369, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\ICSharpCode.SharpZipLib.dll.0.85.4.369\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -53,8 +59,8 @@
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.2.0.0\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.2.0.4\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -122,7 +128,6 @@
     <Compile Include="Enumerations\EStaticXType.cs" />
     <Compile Include="Enumerations\ESubscribePushType.cs" />
     <Compile Include="Enumerations\ETaxisType.cs" />
-    <Compile Include="Enumerations\ETextEditorType.cs" />
     <Compile Include="Enumerations\ETheme.cs" />
     <Compile Include="Enumerations\ETimeFormatType.cs" />
     <Compile Include="Enumerations\ETriState.cs" />
@@ -133,6 +138,7 @@
     <Compile Include="Enumerations\EVoteItemType.cs" />
     <Compile Include="Enumerations\EVoteRestrictType.cs" />
     <Compile Include="Enumerations\EVoteType.cs" />
+    <Compile Include="IO\FileManager.cs" />
     <Compile Include="FileUtils.cs" />
     <Compile Include="HtmlClearUtils.cs" />
     <Compile Include="Images\BitmapFilter.cs" />
@@ -142,7 +148,6 @@
     <Compile Include="InputParserUtils.cs" />
     <Compile Include="InputTypeUtils.cs" />
     <Compile Include="IO\EncodedStringWriter.cs" />
-    <Compile Include="IO\FileManager.cs" />
     <Compile Include="IO\FileSystemInfoExtend.cs" />
     <Compile Include="IO\FileSystemInfosExtend.cs" />
     <Compile Include="IO\FileWatcherClass.cs" />
@@ -159,9 +164,8 @@
     <Compile Include="LitJson\ParserToken.cs" />
     <Compile Include="LowerNameValueCollection.cs" />
     <Compile Include="MessageUtils.cs" />
+    <Compile Include="AttackUtils.cs" />
     <Compile Include="PageUtils.cs" />
-    <Compile Include="Pair.cs" />
-    <Compile Include="PairList.cs" />
     <Compile Include="PathUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegexUtils.cs" />
@@ -202,91 +206,6 @@
     <Compile Include="StringUtils.cs" />
     <Compile Include="Tab.cs" />
     <Compile Include="TabCollection.cs" />
-    <Compile Include="ThirdParty\AntiXSS\AntiXSS.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Globalization\CodepageDetect.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Globalization\CodepageDetectData.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Globalization\CodepageMap.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Globalization\CodepageMapData.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Globalization\CultureDB.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Globalization\GlobalizationExceptions.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Globalization\Microsoft.Exchange.CtsResources.GlobalizationStrings.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Globalization\OutboundCodepageDetector.cs" />
-    <Compile Include="ThirdParty\AntiXSS\GlobalSuppressions.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Shared\AutoPositionStream.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Shared\ByteString.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Shared\Configuration.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Shared\DataException.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Shared\ICloneableStream.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Shared\InternalDebug.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Shared\Microsoft.Exchange.CtsResources.SharedStrings.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Shared\NativeMethods.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Shared\ScratchPad.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Shared\SuppressCloseStream.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Shared\TempFileStream.cs" />
-    <Compile Include="ThirdParty\AntiXSS\Shared\VirtualStream.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ByteCache.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\CommonTypes.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ConverterBufferInput.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ConverterDecodingInput.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ConverterEncodingOutput.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ConverterInput.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ConverterOutput.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ConverterUnicodeInput.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ConverterUnicodeOutput.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\HashCode.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\HtmlInjection.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\Injection.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ParseSupport.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ScratchBuffer.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\StringBuildSink.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\TextCache.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\TextWriterSink.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\Token.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\TokenBuilder.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\UrlCompareSink.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\ConverterCommon.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\ConverterReader.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\ConverterStream.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\ConverterWriter.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\CSS\CssData.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\CSS\CssParser.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\CSS\CssToken.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\CSS\CssTokenBuilder.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\FORMAT\FormatConverter.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\FORMAT\FormatOutput.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\FORMAT\FormatProperty.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\FORMAT\FormatStore.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\FORMAT\FormatStoreData.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\FORMAT\FormatTypes.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HtmlToHtml.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlCallback.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlConverterData.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlData.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlFilterData.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlFormatConverter.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlFormatOutput.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlNameData.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlNames.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlNormalizingParser.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlParser.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlReader.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlSupport.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlTextExtractionConverter.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlToHtmlConverter.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlToken.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlTokenBuilder.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlToTextConverter.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlWriter.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\Microsoft.Exchange.CtsResources.TextConvertersStrings.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\TextConverter.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\TextConvertersDefaults.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\TEXT\TextCodepageConverter.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\TEXT\TextFormatConverter.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\TEXT\TextOutput.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\TEXT\TextParser.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\TEXT\TextToken.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\TEXT\TextTokenBuilder.cs" />
-    <Compile Include="ThirdParty\AntiXSS\TextConverters\TEXT\TextToTextConverter.cs" />
     <Compile Include="ThirdParty\Atom\Atom.AdditionalElements\DublinCore\DcElement.cs" />
     <Compile Include="ThirdParty\Atom\Atom.AdditionalElements\ScopedElement.cs" />
     <Compile Include="ThirdParty\Atom\Atom.AdditionalElements\ScopedElementCollection.cs" />
@@ -312,23 +231,11 @@
     <Compile Include="ThirdParty\MvpXml\XmlNamespaces.cs" />
     <Compile Include="ThirdParty\MvpXml\XPathNavigatorReader.cs" />
     <Compile Include="TranslateUtils.cs" />
-    <Compile Include="UEditorUploaderForUser.cs" />
     <Compile Include="ValidateTypeUtils.cs" />
     <Compile Include="WebClientUtils.cs" />
     <Compile Include="WebConfigUtils.cs" />
     <Compile Include="XmlUtils.cs" />
     <Compile Include="ZipUtils.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="ThirdParty\AntiXSS\Globalization\Microsoft.Exchange.CtsResources.GlobalizationStrings.resx">
-      <DependentUpon>Microsoft.Exchange.CtsResources.GlobalizationStrings.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ThirdParty\AntiXSS\Shared\Microsoft.Exchange.CtsResources.SharedStrings.resx">
-      <DependentUpon>Microsoft.Exchange.CtsResources.SharedStrings.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ThirdParty\AntiXSS\TextConverters\Microsoft.Exchange.CtsResources.TextConvertersStrings.resx">
-      <DependentUpon>Microsoft.Exchange.CtsResources.TextConvertersStrings.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

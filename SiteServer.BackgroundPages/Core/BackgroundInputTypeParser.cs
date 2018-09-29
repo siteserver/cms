@@ -18,12 +18,8 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Core
 {
-    public class BackgroundInputTypeParser
+    public static class BackgroundInputTypeParser
     {
-        private BackgroundInputTypeParser()
-        {
-        }
-
         public const string Current = "{Current}";
         public const string Value = "{Value}";
 
@@ -273,11 +269,11 @@ $('#Title').keyup(function (e) {
             var value = attributes.GetString(attributeName);
 
             value = ContentUtility.TextEditorContentDecode(siteInfo, value, true);
-            value = ETextEditorTypeUtils.TranslateToHtml(value);
+            value = UEditorUtils.TranslateToHtml(value);
             value = StringUtils.HtmlEncode(value);
 
             var controllerUrl = ApiRouteUEditor.GetUrl(ApiManager.InnerApiUrl, siteInfo.Id);
-            var editorUrl = SiteFilesAssets.GetUrl(ApiManager.InnerApiUrl, "ueditor");
+            var editorUrl = SiteServerAssets.GetUrl("ueditor");
 
             if (pageScripts["uEditor"] == null)
             {
@@ -289,7 +285,7 @@ $('#Title').keyup(function (e) {
             extraBuilder.Append($@"
 <script type=""text/javascript"">
 $(function(){{
-  UE.getEditor('{attributeName}', {ETextEditorTypeUtils.ConfigValues});
+  UE.getEditor('{attributeName}', {UEditorUtils.ConfigValues});
   $('#{attributeName}').show();
 }});
 </script>");
@@ -306,7 +302,7 @@ $(function(){{
             }
 
             var builder = new StringBuilder();
-            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
+            var styleItems = styleInfo.StyleItems ?? new List<TableStyleItemInfo>();
 
             var selectedValue = attributes.GetString(styleInfo.AttributeName);
 
@@ -339,7 +335,7 @@ $(function(){{
             }
 
             var builder = new StringBuilder();
-            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
+            var styleItems = styleInfo.StyleItems ?? new List<TableStyleItemInfo>();
 
             var selectedValues = TranslateUtils.StringCollectionToStringList(attributes.GetString(styleInfo.AttributeName));
 
@@ -476,7 +472,7 @@ $(document).ready(function(){{
 
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
+            var styleItems = styleInfo.StyleItems ?? new List<TableStyleItemInfo>();
 
             var checkBoxList = new CheckBoxList
             {
@@ -524,7 +520,7 @@ $(document).ready(function(){{
 
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
+            var styleItems = styleInfo.StyleItems;
             if (styleItems == null || styleItems.Count == 0)
             {
                 styleItems = new List<TableStyleItemInfo>
@@ -909,16 +905,18 @@ function add_{attributeName}(val,foucs){{
             return left;
         }
 
-        public static void SaveAttributes(IAttributes attributes, SiteInfo siteInfo, List<TableStyleInfo> styleInfoList, NameValueCollection formCollection, List<string> dontAddAttributesLowercase)
+        public static Dictionary<string, object> SaveAttributes(SiteInfo siteInfo, List<TableStyleInfo> styleInfoList, NameValueCollection formCollection, List<string> dontAddAttributes)
         {
-            if (dontAddAttributesLowercase == null)
+            var dict = new Dictionary<string, object>();
+
+            if (dontAddAttributes == null)
             {
-                dontAddAttributesLowercase = new List<string>();
+                dontAddAttributes = new List<string>();
             }
 
             foreach (var styleInfo in styleInfoList)
             {
-                if (dontAddAttributesLowercase.Contains(styleInfo.AttributeName.ToLower())) continue;
+                if (StringUtils.ContainsIgnoreCase(dontAddAttributes, styleInfo.AttributeName)) continue;
                 //var theValue = GetValueByForm(styleInfo, siteInfo, formCollection);
 
                 var theValue = formCollection[styleInfo.AttributeName] ?? string.Empty;
@@ -926,16 +924,15 @@ function add_{attributeName}(val,foucs){{
                 if (inputType == InputType.TextEditor)
                 {
                     theValue = ContentUtility.TextEditorContentEncode(siteInfo, theValue);
-                    theValue = ETextEditorTypeUtils.TranslateToStlElement(theValue);
+                    theValue = UEditorUtils.TranslateToStlElement(theValue);
                 }
 
                 if (inputType != InputType.TextEditor && inputType != InputType.Image && inputType != InputType.File && inputType != InputType.Video && styleInfo.AttributeName != ContentAttribute.LinkUrl)
                 {
-                    theValue = PageUtils.FilterSqlAndXss(theValue);
+                    theValue = AttackUtils.FilterXss(theValue);
                 }
 
-                attributes.Set(styleInfo.AttributeName, theValue);
-                //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, styleInfo.AttributeName, theValue);
+                dict[styleInfo.AttributeName] = theValue;
 
                 if (styleInfo.Additional.IsFormatString)
                 {
@@ -945,17 +942,66 @@ function add_{attributeName}(val,foucs){{
                     var formatColor = formCollection[styleInfo.AttributeName + "_formatColor"];
                     var theFormatString = ContentUtility.GetTitleFormatString(formatString, formatEm, formatU, formatColor);
 
-                    attributes.Set(ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
-                    //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
+                    dict[ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName)] = theFormatString;
                 }
 
                 if (inputType == InputType.Image || inputType == InputType.File || inputType == InputType.Video)
                 {
                     var attributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
-                    attributes.Set(attributeName, formCollection[attributeName]);
-                    //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, attributeName, formCollection[attributeName]);
+                    dict[attributeName] = formCollection[attributeName];
                 }
             }
+
+            return dict;
         }
+
+        //public static void SaveAttributes(IAttributes attributes, SiteInfo siteInfo, List<TableStyleInfo> styleInfoList, NameValueCollection formCollection, List<string> dontAddAttributes)
+        //{
+        //    if (dontAddAttributes == null)
+        //    {
+        //        dontAddAttributes = new List<string>();
+        //    }
+
+        //    foreach (var styleInfo in styleInfoList)
+        //    {
+        //        if (StringUtils.ContainsIgnoreCase(dontAddAttributes, styleInfo.AttributeName)) continue;
+        //        //var theValue = GetValueByForm(styleInfo, siteInfo, formCollection);
+
+        //        var theValue = formCollection[styleInfo.AttributeName] ?? string.Empty;
+        //        var inputType = styleInfo.InputType;
+        //        if (inputType == InputType.TextEditor)
+        //        {
+        //            theValue = ContentUtility.TextEditorContentEncode(siteInfo, theValue);
+        //            theValue = UEditorUtils.TranslateToStlElement(theValue);
+        //        }
+
+        //        if (inputType != InputType.TextEditor && inputType != InputType.Image && inputType != InputType.File && inputType != InputType.Video && styleInfo.AttributeName != ContentAttribute.LinkUrl)
+        //        {
+        //            theValue = AttackUtils.FilterSqlAndXss(theValue);
+        //        }
+
+        //        attributes.Set(styleInfo.AttributeName, theValue);
+        //        //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, styleInfo.AttributeName, theValue);
+
+        //        if (styleInfo.Additional.IsFormatString)
+        //        {
+        //            var formatString = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatStrong"]);
+        //            var formatEm = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatEM"]);
+        //            var formatU = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatU"]);
+        //            var formatColor = formCollection[styleInfo.AttributeName + "_formatColor"];
+        //            var theFormatString = ContentUtility.GetTitleFormatString(formatString, formatEm, formatU, formatColor);
+
+        //            attributes.Set(ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
+        //            //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
+        //        }
+
+        //        if (inputType == InputType.Image || inputType == InputType.File || inputType == InputType.Video)
+        //        {
+        //            var attributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
+        //            attributes.Set(attributeName, formCollection[attributeName]);
+        //            //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, attributeName, formCollection[attributeName]);
+        //        }
+        //    }
+        //}
     }
 }

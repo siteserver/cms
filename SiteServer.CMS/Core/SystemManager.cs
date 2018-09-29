@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -51,41 +52,45 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void SyncDatabase()
+        public static void CreateSiteServerTables()
         {
-            CacheUtils.ClearAll();
-
             foreach (var provider in DataProvider.AllProviders)
             {
                 if (string.IsNullOrEmpty(provider.TableName) || provider.TableColumns == null || provider.TableColumns.Count <= 0) continue;
 
                 if (!DataProvider.DatabaseDao.IsTableExists(provider.TableName))
                 {
-                    DataProvider.DatabaseDao.CreateSystemTable(provider.TableName, provider.TableColumns, out _, out _);
+                    DataProvider.DatabaseDao.CreateTable(provider.TableName, provider.TableColumns, out _, out _);
                 }
                 else
                 {
                     DataProvider.DatabaseDao.AlterSystemTable(provider.TableName, provider.TableColumns);
                 }
             }
+        }
 
-            var tableNameList = DataProvider.TableDao.GetTableNameListCreatedInDb();
+        public static void SyncContentTables()
+        {
+            var tableNameList = SiteManager.GetAllTableNameList();
             foreach (var tableName in tableNameList)
             {
                 if (!DataProvider.DatabaseDao.IsTableExists(tableName))
                 {
-                    DataProvider.DatabaseDao.CreateSystemTable(tableName, DataProvider.ContentDao.TableColumns, out _, out _);
+                    DataProvider.DatabaseDao.CreateTable(tableName, DataProvider.ContentDao.TableColumns, out _, out _);
                 }
                 else
                 {
                     DataProvider.DatabaseDao.AlterSystemTable(tableName, DataProvider.ContentDao.TableColumns);
                 }
             }
+        }
 
+        public static void UpdateConfigVersion()
+        {
             var configInfo = DataProvider.ConfigDao.GetConfigInfo();
             if (configInfo == null)
             {
-                configInfo = new ConfigInfo(true, Version, DateTime.Now, string.Empty);
+                configInfo = new ConfigInfo(0, true, Version, DateTime.Now, string.Empty);
                 DataProvider.ConfigDao.Insert(configInfo);
             }
             else
@@ -95,9 +100,19 @@ namespace SiteServer.CMS.Core
                 configInfo.UpdateDate = DateTime.Now;
                 DataProvider.ConfigDao.Update(configInfo);
             }
-
-            DataProvider.TableDao.CreateAllTableCollectionInfoIfNotExists();
         }
+
+        public static void SyncDatabase()
+        {
+            CacheUtils.ClearAll();
+
+            CreateSiteServerTables();
+
+            SyncContentTables();
+
+            UpdateConfigVersion();
+        }
+
 
         public static bool IsNeedUpdate()
         {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -24,12 +25,12 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string FilterXss(string html)
         {
-            return PageUtils.FilterXss(html);
+            return AttackUtils.FilterXss(html);
         }
 
         public string FilterSql(string sql)
         {
-            return PageUtils.FilterSql(sql);
+            return AttackUtils.FilterSql(sql);
         }
 
         public void MoveFiles(int sourceSiteId, int targetSiteId, List<string> relatedUrls)

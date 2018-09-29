@@ -6,6 +6,7 @@ using System.Web.UI.WebControls;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
@@ -65,6 +66,7 @@ namespace SiteServer.CMS.Core
                 assetsUrl = siteInfo.Additional.AssetsUrl;
             }
             StringUtils.ReplaceHrefOrSrc(builder, virtualAssetsUrl, assetsUrl);
+            StringUtils.ReplaceHrefOrSrc(builder, "@/", siteInfo.Additional.WebUrl);
             StringUtils.ReplaceHrefOrSrc(builder, "@", siteInfo.Additional.WebUrl);
 
             builder.Replace("&#xa0;", "&nbsp;");
@@ -236,7 +238,7 @@ namespace SiteServer.CMS.Core
                 new TableStyleInfo
                 {
                     AttributeName = ContentAttribute.Id,
-                    DisplayName = "编号"
+                    DisplayName = "内容Id"
                 },
                 new TableStyleInfo
                 {
@@ -285,7 +287,7 @@ namespace SiteServer.CMS.Core
                 },
                 new TableStyleInfo
                 {
-                    AttributeName = ContentAttribute.CheckCheckDate,
+                    AttributeName = ContentAttribute.CheckDate,
                     DisplayName = "审核时间"
                 },
                 new TableStyleInfo
@@ -458,13 +460,13 @@ namespace SiteServer.CMS.Core
             if (siteInfo == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
 
             var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
-
-            var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelId);
+            var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
+            var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelInfo);
 
             var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-            var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
 
             if (contentInfo == null) return;
 
@@ -477,7 +479,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
-                var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, contentInfo);
+                var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
 
                 foreach (var service in PluginManager.Services)
                 {
@@ -491,7 +493,8 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                CreateManager.CreateContentAndTrigger(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
+                CreateManager.CreateContent(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
+                CreateManager.TriggerContentChangedEvent(targetSiteInfo.Id, contentInfo.ChannelId);
             }
             else if (translateType == ETranslateContentType.Cut)
             {
@@ -503,11 +506,8 @@ namespace SiteServer.CMS.Core
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
 
-                var newContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, contentInfo);
+                var newContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
                 DataProvider.ContentDao.DeleteContents(siteInfo.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
-
-                DataProvider.ChannelDao.UpdateContentNum(siteInfo, channelId, true);
-                DataProvider.ChannelDao.UpdateContentNum(targetSiteInfo, targetChannelId, true);
 
                 foreach (var service in PluginManager.Services)
                 {
@@ -530,7 +530,8 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                CreateManager.CreateContentAndTrigger(targetSiteInfo.Id, contentInfo.ChannelId, newContentId);
+                CreateManager.CreateContent(targetSiteInfo.Id, contentInfo.ChannelId, newContentId);
+                CreateManager.TriggerContentChangedEvent(targetSiteInfo.Id, contentInfo.ChannelId);
             }
             else if (translateType == ETranslateContentType.Reference)
             {
@@ -542,7 +543,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.ReferenceId = contentId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
-                DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, contentInfo);
+                DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
             }
             else if (translateType == ETranslateContentType.ReferenceContent)
             {
@@ -555,7 +556,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
-                var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, contentInfo);
+                var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
 
                 foreach (var service in PluginManager.Services)
                 {
@@ -569,7 +570,8 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                CreateManager.CreateContentAndTrigger(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
+                CreateManager.CreateContent(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
+                CreateManager.TriggerContentChangedEvent(targetSiteInfo.Id, contentInfo.ChannelId);
             }
         }
 

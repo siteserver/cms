@@ -115,7 +115,7 @@ namespace SiteServer.BackgroundPages.Cms
                     builder.Append(wordContent);
                     FileUtils.DeleteFileIfExists(filePath);
                 }
-                var script = "parent." + ETextEditorTypeUtils.GetInsertHtmlScript(_attributeName, builder.ToString());
+                var script = "parent." + UEditorUtils.GetInsertHtmlScript(_attributeName, builder.ToString());
                 LayerUtils.CloseWithoutRefresh(Page, script);
             }
             else

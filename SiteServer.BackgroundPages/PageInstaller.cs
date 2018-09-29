@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Permissions;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -113,21 +115,28 @@ namespace SiteServer.BackgroundPages
                 var isRootWritable = false;
                 try
                 {
-                    var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "robots.txt");
-                    FileUtils.WriteText(filePath, ECharset.utf_8, @"User-agent: *
-Disallow: /SiteServer/
-Disallow: /SiteFiles/");
+                    var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "version.txt");
+                    FileUtils.WriteText(filePath, ECharset.utf_8, SystemManager.Version);
+
+                    var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, WebConfigUtils.PhysicalApplicationPath);
+                    ioPermission.Demand();
+
                     isRootWritable = true;
                 }
                 catch
                 {
                     // ignored
                 }
+
                 var isSiteFilesWritable = false;
                 try
                 {
                     var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, "index.htm");
                     FileUtils.WriteText(filePath, ECharset.utf_8, StringUtils.Constants.Html5Empty);
+
+                    var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName));
+                    ioPermission.Demand();
+
                     isSiteFilesWritable = true;
                 }
                 catch
@@ -141,7 +150,7 @@ Disallow: /SiteFiles/");
 
                 if (!isRootWritable || !isSiteFilesWritable)
                 {
-                    FailMessage("系统检测到文件夹权限不足，您需要赋予可写权限");
+                    FailMessage("系统检测到文件夹权限不足，您需要赋予根目录 NETWORK SERVICE 以及 IIS_IUSRS 读写权限");
                     BtnStep2.Visible = false;
                 }
 

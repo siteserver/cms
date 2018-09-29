@@ -128,15 +128,15 @@ namespace SiteServer.BackgroundPages.Cms
                             ? $@"<a href=""{imageUrl}"" target=""_blank""><img src=""{smallImageUrl}"" border=""0"" /></a>"
                             : $@"<img src=""{smallImageUrl}"" border=""0"" />";
 
-                        scripts += "if(parent." + ETextEditorTypeUtils.GetEditorInstanceScript() + ") parent." +
-                                   ETextEditorTypeUtils.GetInsertHtmlScript("Content", insertHtml);
+                        scripts += "if(parent." + UEditorUtils.GetEditorInstanceScript() + ") parent." +
+                                   UEditorUtils.GetInsertHtmlScript("Content", insertHtml);
                     }
                     else
                     {
                         var insertHtml = $@"<img src=""{imageUrl}"" border=""0"" />";
 
-                        scripts += "if(parent." + ETextEditorTypeUtils.GetEditorInstanceScript() + ") parent." +
-                                      ETextEditorTypeUtils.GetInsertHtmlScript("Content", insertHtml);
+                        scripts += "if(parent." + UEditorUtils.GetEditorInstanceScript() + ") parent." +
+                                      UEditorUtils.GetInsertHtmlScript("Content", insertHtml);
                     }
                 }
             }

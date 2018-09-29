@@ -1,9 +1,10 @@
-﻿using SiteServer.Plugin;
+﻿using SiteServer.CMS.Plugin.Model;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Model.Attributes
 {
-    public class TableStyleInfoExtend : ExtendedAttributes
+    public class TableStyleInfoExtend : AttributesImpl
     {
         public TableStyleInfoExtend(string settings) : base(settings)
         {

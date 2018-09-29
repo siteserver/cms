@@ -6,8 +6,10 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -63,7 +65,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (_styleInfoList == null) return string.Empty;
 
-            var attributes = new ExtendedAttributes(formCollection);
+            var attributes = new AttributesImpl(formCollection);
 
             var builder = new StringBuilder();
             foreach (var styleInfo in _styleInfoList)
@@ -109,7 +111,9 @@ namespace SiteServer.BackgroundPages.Cms
 
 		    SiteInfo.SiteName = TbSiteName.Text;
 
-            BackgroundInputTypeParser.SaveAttributes(SiteInfo.Additional, SiteInfo, _styleInfoList, Page.Request.Form, null);
+            var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, _styleInfoList, Page.Request.Form, null);
+
+		    SiteInfo.Additional.Load(dict);
 
             DataProvider.SiteDao.Update(SiteInfo);
 

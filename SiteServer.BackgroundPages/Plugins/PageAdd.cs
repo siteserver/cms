@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 

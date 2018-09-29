@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
 
@@ -118,7 +119,6 @@ namespace SiteServer.CMS.ImportExport
 
             //导入辅助表
             var tableDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.Table);
-            importObject.ImportAuxiliaryTables(tableDirectoryPath, isUseTable);
 
             //导入站点设置
             var configurationFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);
@@ -127,8 +127,6 @@ namespace SiteServer.CMS.ImportExport
             //导入栏目及内容
             var siteContentDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.SiteContent);
             importObject.ImportChannelsAndContents(0, siteContentDirectoryPath, isOverride);
-
-            DataProvider.ChannelDao.UpdateContentNum(siteInfo);
 
             //导入表样式及清除缓存
             if (isUseTable)

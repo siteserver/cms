@@ -6,14 +6,14 @@ namespace SiteServer.CMS.Model.Enumerations
     {
         ContentTree,
         Channel,
-        ChannelSelect,
+        ChannelClickSelect,
         SiteAnalysis,
         TemplateFilePathRule,
         ConfigurationCreateDetails,
         ConfigurationCrossSiteTrans
     }
 
-    public class ELoadingTypeUtils
+    public static class ELoadingTypeUtils
     {
         public static string GetValue(ELoadingType type)
         {
@@ -25,9 +25,9 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "Channel";
             }
-            if (type == ELoadingType.ChannelSelect)
+            if (type == ELoadingType.ChannelClickSelect)
             {
-                return "ChannelSelect";
+                return "ChannelClickSelect";
             }
             if (type == ELoadingType.SiteAnalysis)
             {
@@ -60,9 +60,9 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 retval = ELoadingType.Channel;
             }
-            else if (Equals(ELoadingType.ChannelSelect, typeStr))
+            else if (Equals(ELoadingType.ChannelClickSelect, typeStr))
             {
-                retval = ELoadingType.ChannelSelect;
+                retval = ELoadingType.ChannelClickSelect;
             }
             else if (Equals(ELoadingType.SiteAnalysis, typeStr))
             {

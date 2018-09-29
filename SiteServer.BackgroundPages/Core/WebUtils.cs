@@ -4,10 +4,10 @@ using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -16,7 +16,7 @@ namespace SiteServer.BackgroundPages.Core
         public static string GetContentTitle(SiteInfo siteInfo, ContentInfo contentInfo, string pageUrl)
         {
             string url;
-            var title = ContentUtility.FormatTitle(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString), contentInfo.Title);
+            var title = ContentUtility.FormatTitle(contentInfo.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)), contentInfo.Title);
 
             var displayString = contentInfo.IsColor ? $"<span style='color:#ff0000;text-decoration:none' title='醒目'>{title}</span>" : title;
 
@@ -119,7 +119,9 @@ namespace SiteServer.BackgroundPages.Core
 </a>");
             }
 
-            if (channelInfo.ContentNum > 0 && permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete))
+            var count = ContentManager.GetCount(siteInfo, channelInfo);
+
+            if (count > 0 && permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete))
             {
                 builder.Append($@"
 <a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{PageContentDelete.GetRedirectClickStringForSingleChannel(siteInfo.Id, channelInfo.Id, false, pageUrl)}"">
@@ -128,7 +130,7 @@ namespace SiteServer.BackgroundPages.Core
 </a>");
             }
 
-            if (channelInfo.ContentNum > 0)
+            if (count > 0)
             {
                 if (permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentEdit))
                 {
@@ -184,7 +186,7 @@ namespace SiteServer.BackgroundPages.Core
 </a>");
             }
 
-            if (channelInfo.ContentNum > 0)
+            if (count > 0)
             {
                 builder.Append(@"
 <a href=""javascript:;;"" class=""btn btn-light text-secondary text-secondary"" onClick=""$('#contentSearch').toggle(); return false"">
@@ -196,42 +198,37 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetContentMoreCommands(PermissionManager permissionManager, SiteInfo siteInfo, ChannelInfo nodeInfo, string pageUrl)
+        public static string GetContentMoreCommands(PermissionManager permissionManager, SiteInfo siteInfo, ChannelInfo channelInfo, string pageUrl)
         {
             var builder = new StringBuilder();
 
-            if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && nodeInfo.Additional.IsContentAddable)
+            if (permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.Additional.IsContentAddable)
             {
                 builder.Append($@"
-<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentImport.GetOpenWindowString(siteInfo.Id, nodeInfo.Id)}"">
+<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentImport.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
     导 入
 </a>");
             }
 
-            if (nodeInfo.ContentNum > 0)
+            var count = ContentManager.GetCount(siteInfo, channelInfo);
+
+            if (count > 0)
             {
                 builder.Append($@"
-<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentExport.GetOpenWindowString(siteInfo.Id, nodeInfo.Id)}"">
+<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentExport.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
     导 出
 </a>");
-                if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ContentOrder))
+                if (permissionManager.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentOrder))
                 {
                     builder.Append($@"
-<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentTidyUp.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, pageUrl)}"">
+<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentTidyUp.GetOpenWindowString(siteInfo.Id, channelInfo.Id, pageUrl)}"">
     整 理
 </a>");
                 }
-                if (permissionManager.HasChannelPermissions(siteInfo.Id, nodeInfo.Id, ConfigManager.ChannelPermissions.ContentArchive))
+                if (CrossSiteTransUtility.IsCrossSiteTrans(siteInfo, channelInfo) && !CrossSiteTransUtility.IsAutomatic(channelInfo))
                 {
                     builder.Append($@"
-<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentArchive.GetOpenWindowString(siteInfo.Id, nodeInfo.Id, pageUrl)}"">
-    归 档
-</a>");
-                }
-                if (CrossSiteTransUtility.IsCrossSiteTrans(siteInfo, nodeInfo) && !CrossSiteTransUtility.IsAutomatic(nodeInfo))
-                {
-                    builder.Append($@"
-<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentCrossSiteTrans.GetOpenWindowString(siteInfo.Id, nodeInfo.Id)}"">
+<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentCrossSiteTrans.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
     跨站转发
 </a>");
                 }
@@ -245,7 +242,7 @@ namespace SiteServer.BackgroundPages.Core
             return $@"
 <script type=""text/javascript"">
 function getWordSpliter(){{
-    var pureText = {ETextEditorTypeUtils.GetPureTextScript(attributeName)}
+    var pureText = {UEditorUtils.GetPureTextScript(attributeName)}
 	$.post('{AjaxCmsService.GetWordSpliterUrl(siteInfo.Id)}&r=' + Math.random(), {{content:pureText}}, function(data) {{
 		if(data !=''){{
             $('.nav-pills').children('li').eq(1).find('a').click();
@@ -256,8 +253,8 @@ function getWordSpliter(){{
 	}});	
 }}
 function detection_{attributeName}(){{
-    var pureText = {ETextEditorTypeUtils.GetPureTextScript(attributeName)}
-    var htmlContent = {ETextEditorTypeUtils.GetContentScript(attributeName)}
+    var pureText = {UEditorUtils.GetPureTextScript(attributeName)}
+    var htmlContent = {UEditorUtils.GetContentScript(attributeName)}
     var keyword = '';
 	$.post('{AjaxCmsService.GetDetectionUrl(siteInfo.Id)}&r=' + Math.random(), {{content:pureText}}, function(data) {{
 		if(data){{
@@ -269,7 +266,7 @@ function detection_{attributeName}(){{
 				htmlContent = htmlContent.replace(reg,'<span style=""background-color:#ffff00;"">' + arr[i] + '</span>');
 			}}
             keyword=data;
-			{ETextEditorTypeUtils.GetSetContentScript(attributeName, "htmlContent")}
+			{UEditorUtils.GetSetContentScript(attributeName, "htmlContent")}
             {AlertUtils.Warning("敏感词检测", "共检测到' + i + '个敏感词，内容已用黄色背景标明", "取 消", string.Empty, string.Empty)}
 		}} else {{
             {AlertUtils.Success("敏感词检测", "检测成功，没有检测到任何敏感词")}
@@ -292,9 +289,9 @@ function detection_{attributeName}(){{
         {
             var isAutoCheckKeywords = siteInfo.Additional.IsAutoCheckKeywords.ToString().ToLower();
             var url = AjaxCmsService.GetDetectionReplaceUrl(siteInfo.Id);
-            var getPureText = ETextEditorTypeUtils.GetPureTextScript(BackgroundContentAttribute.Content);
-            var getContent = ETextEditorTypeUtils.GetContentScript(BackgroundContentAttribute.Content);
-            var setContent = ETextEditorTypeUtils.GetSetContentScript(BackgroundContentAttribute.Content, "htmlContent");
+            var getPureText = UEditorUtils.GetPureTextScript(BackgroundContentAttribute.Content);
+            var getContent = UEditorUtils.GetContentScript(BackgroundContentAttribute.Content);
+            var setContent = UEditorUtils.GetSetContentScript(BackgroundContentAttribute.Content, "htmlContent");
             var tipsWarn = AlertUtils.Warning("敏感词检测", "内容中共检测到' + i + '个敏感词，已用黄色背景标明", "取 消", "自动替换并保存",
                 "autoReplaceKeywords");
 

@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -86,13 +89,7 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlSelectTableStyle = "SELECT Id, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM siteserver_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
-
-        private const string SqlSelectId = "SELECT Id FROM siteserver_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
-
-        private const string SqlSelectTableStyleById = "SELECT Id, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM siteserver_TableStyle WHERE Id = @Id";
-
-        //private const string SqlSelectTableStyles = "SELECT Id, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM siteserver_TableStyle WHERE TableName = @TableName AND AttributeName = @AttributeName ORDER BY RelatedIdentity";
+        //private const string SqlSelectTableStyleById = "SELECT Id, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM siteserver_TableStyle WHERE Id = @Id";
 
         private const string SqlSelectAllTableStyle = "SELECT Id, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM siteserver_TableStyle ORDER BY Taxis DESC, Id DESC";
 
@@ -155,36 +152,9 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
+            TableStyleManager.IsChanged = true;
+
             return id;
-        }
-
-        public void InsertWithTransaction(TableStyleInfo styleInfo, IDbTransaction trans)
-        {
-            var insertParms = new IDataParameter[]
-		    {
-                GetParameter(ParmRelatedIdentity, DataType.Integer, styleInfo.RelatedIdentity),
-                GetParameter(ParmTableName, DataType.VarChar, 50, styleInfo.TableName),
-			    GetParameter(ParmAttributeName, DataType.VarChar, 50, styleInfo.AttributeName),
-                GetParameter(ParmTaxis, DataType.Integer, styleInfo.Taxis),
-                GetParameter(ParmDisplayName, DataType.VarChar, 255, styleInfo.DisplayName),
-                GetParameter(ParmHelpText, DataType.VarChar, 255, styleInfo.HelpText),
-                GetParameter(ParmIsVisibleInList, DataType.VarChar, 18, styleInfo.IsVisibleInList.ToString()),
-			    GetParameter(ParmInputType, DataType.VarChar, 50, styleInfo.InputType.Value),
-                GetParameter(ParmDefaultValue, DataType.VarChar, 255, styleInfo.DefaultValue),
-                GetParameter(ParmIsHorizontal, DataType.VarChar, 18, styleInfo.IsHorizontal.ToString()),
-                GetParameter(ParmExtendValues, DataType.Text, styleInfo.Additional.ToString())
-		    };
-
-            if (styleInfo.StyleItems == null || styleInfo.StyleItems.Count == 0)
-            {
-                ExecuteNonQuery(trans, SqlInsertTableStyle, insertParms);
-            }
-            else
-            {
-                var id = ExecuteNonQueryAndReturnId(TableName, nameof(TableStyleInfo.Id), trans, SqlInsertTableStyle, insertParms);
-
-                DataProvider.TableStyleItemDao.Insert(trans, id, styleInfo.StyleItems);
-            }
         }
 
         public void Update(TableStyleInfo info)
@@ -204,20 +174,6 @@ namespace SiteServer.CMS.Provider
 			};
 
             ExecuteNonQuery(SqlUpdateTableStyle, updateParms);
-        }
-
-        public void Delete(string tableName)
-        {
-            if (string.IsNullOrEmpty(tableName)) return;
-
-            const string sqlString = "DELETE FROM siteserver_TableStyle WHERE TableName = @TableName";
-
-            var parameters = new IDataParameter[]
-            {
-                GetParameter(ParmTableName, DataType.VarChar, 50, tableName)
-            };
-
-            ExecuteNonQuery(sqlString, parameters);
 
             TableStyleManager.IsChanged = true;
         }
@@ -232,6 +188,7 @@ namespace SiteServer.CMS.Provider
             };
 
             ExecuteNonQuery(SqlDeleteTableStyle, parms);
+
             TableStyleManager.IsChanged = true;
         }
 
@@ -239,97 +196,33 @@ namespace SiteServer.CMS.Provider
         {
             if (relatedIdentities == null || relatedIdentities.Count <= 0) return;
 
-            string sqlString =
-                $"DELETE FROM siteserver_TableStyle WHERE RelatedIdentity IN ({TranslateUtils.ToSqlInStringWithoutQuote(relatedIdentities)}) AND TableName = '{PageUtils.FilterSql(tableName)}'";
+            var sqlString =
+                $"DELETE FROM siteserver_TableStyle WHERE RelatedIdentity IN ({TranslateUtils.ToSqlInStringWithoutQuote(relatedIdentities)}) AND TableName = '{AttackUtils.FilterSql(tableName)}'";
             ExecuteNonQuery(sqlString);
+
             TableStyleManager.IsChanged = true;
         }
 
-        public List<TableStyleInfo> GetTableStyleInfoList(List<int> relatedIdentities, string tableName)
-        {
-            var list = new List<TableStyleInfo>();
+   //     public TableStyleInfo GetTableStyleInfo(int id)
+   //     {
+   //         TableStyleInfo styleInfo = null;
 
-            string sqlString =
-                $"SELECT Id, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM siteserver_TableStyle WHERE RelatedIdentity IN ({TranslateUtils.ToSqlInStringWithoutQuote(relatedIdentities)}) AND TableName = '{PageUtils.FilterSql(tableName)}' ORDER BY Id DESC";
+   //         var parms = new IDataParameter[]
+			//{
+   //             GetParameter(ParmId, DataType.Integer, id)
+			//};
 
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetTableStyleInfoByReader(rdr));
-                }
-                rdr.Close();
-            }
+   //         using (var rdr = ExecuteReader(SqlSelectTableStyleById, parms))
+   //         {
+   //             if (rdr.Read())
+   //             {
+   //                 styleInfo = GetTableStyleInfoByReader(rdr);
+   //             }
+   //             rdr.Close();
+   //         }
 
-            return list;
-        }
-
-        public bool IsExists(int relatedIdentity, string tableName, string attributeName)
-        {
-            var exists = false;
-
-            var parms = new IDataParameter[]
-			{
-                GetParameter(ParmRelatedIdentity, DataType.Integer, relatedIdentity),
-                GetParameter(ParmTableName, DataType.VarChar, 50, tableName),
-				GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
-			};
-
-            using (var rdr = ExecuteReader(SqlSelectId, parms))
-            {
-                if (rdr.Read() && !rdr.IsDBNull(0))
-                {
-                    exists = true;
-                }
-                rdr.Close();
-            }
-
-            return exists;
-        }
-
-        public TableStyleInfo GetTableStyleInfo(int id)
-        {
-            TableStyleInfo styleInfo = null;
-
-            var parms = new IDataParameter[]
-			{
-                GetParameter(ParmId, DataType.Integer, id)
-			};
-
-            using (var rdr = ExecuteReader(SqlSelectTableStyleById, parms))
-            {
-                if (rdr.Read())
-                {
-                    styleInfo = GetTableStyleInfoByReader(rdr);
-                }
-                rdr.Close();
-            }
-
-            return styleInfo;
-        }
-
-        public TableStyleInfo GetTableStyleInfo(int relatedIdentity, string tableName, string attributeName)
-        {
-            TableStyleInfo styleInfo = null;
-
-            var parms = new IDataParameter[]
-			{
-                GetParameter(ParmRelatedIdentity, DataType.Integer, relatedIdentity),
-                GetParameter(ParmTableName, DataType.VarChar, 50, tableName),
-				GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
-			};
-
-            using (var rdr = ExecuteReader(SqlSelectTableStyle, parms))
-            {
-                if (rdr.Read())
-                {
-                    styleInfo = GetTableStyleInfoByReader(rdr);
-                }
-                rdr.Close();
-            }
-
-            return styleInfo;
-        }
+   //         return styleInfo;
+   //     }
 
         private TableStyleInfo GetTableStyleInfoByReader(IDataReader rdr)
         {
@@ -352,25 +245,33 @@ namespace SiteServer.CMS.Provider
             return styleInfo;
         }
 
-        public PairList GetAllTableStyleInfoPairs()
+        public List<Tuple<string, TableStyleInfo>> GetAllTableStyles()
         {
-            var pairs = new PairList();
+            var pairs = new List<Tuple<string, TableStyleInfo>>();
+
+            var allItemsDict = DataProvider.TableStyleItemDao.GetAllTableStyleItems();
 
             using (var rdr = ExecuteReader(SqlSelectAllTableStyle))
             {
                 while (rdr.Read())
                 {
                     var styleInfo = GetTableStyleInfoByReader(rdr);
-                    var inputType = styleInfo.InputType;
-                    if (InputTypeUtils.IsWithStyleItems(inputType))
-                    {
-                        styleInfo.StyleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
-                    }
+
+                    List<TableStyleItemInfo> items;
+                    allItemsDict.TryGetValue(styleInfo.Id, out items);
+                    styleInfo.StyleItems = items;
+
+                    //var inputType = styleInfo.InputType;
+                    //if (InputTypeUtils.IsWithStyleItems(inputType))
+                    //{
+                    //styleInfo.StyleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
+                    //}
 
                     var key = TableStyleManager.GetCacheKey(styleInfo.RelatedIdentity, styleInfo.TableName, styleInfo.AttributeName);
-                    if (!pairs.ContainsKey(key))
+
+                    if (pairs.All(pair => pair.Item1 != key))
                     {
-                        var pair = new Pair(key, styleInfo);
+                        var pair = new Tuple<string, TableStyleInfo>(key, styleInfo);
                         pairs.Add(pair);
                     }
                 }
@@ -379,36 +280,5 @@ namespace SiteServer.CMS.Provider
 
             return pairs;
         }
-
-   //     public List<TableStyleInfo> GetTableStyleInfoWithItemsList(string tableName, string attributeName)
-   //     {
-   //         var list = new List<TableStyleInfo>();
-
-   //         var parms = new IDataParameter[]
-			//{
-			//	GetParameter(ParmTableName, DataType.VarChar, 50, tableName),
-   //             GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
-			//};
-
-   //         using (var rdr = ExecuteReader(SqlSelectTableStyles, parms))
-   //         {
-   //             while (rdr.Read())
-   //             {
-   //                 var styleInfo = GetTableStyleInfoByReader(rdr);
-   //                 if (InputTypeUtils.Equals(styleInfo.InputType, InputType.CheckBox) || InputTypeUtils.Equals(styleInfo.InputType, InputType.Radio) || InputTypeUtils.Equals(styleInfo.InputType, InputType.SelectMultiple) || InputTypeUtils.Equals(styleInfo.InputType, InputType.SelectOne))
-   //                 {
-   //                     var styleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
-   //                     if (styleItems != null && styleItems.Count > 0)
-   //                     {
-   //                         styleInfo.StyleItems = styleItems;
-   //                     }
-   //                 }
-   //                 list.Add(styleInfo);
-   //             }
-   //             rdr.Close();
-   //         }
-
-   //         return list;
-   //     }
     }
 }

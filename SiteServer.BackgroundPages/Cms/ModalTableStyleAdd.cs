@@ -5,6 +5,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin;
@@ -79,7 +80,7 @@ namespace SiteServer.BackgroundPages.Cms
             _attributeName = AuthRequest.GetQueryString("AttributeName");
             _redirectUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("RedirectUrl"));
 
-            _styleInfo = _tableStyleId != 0 ? DataProvider.TableStyleDao.GetTableStyleInfo(_tableStyleId) : TableStyleManager.GetTableStyleInfo(_tableName, _attributeName, _relatedIdentities);
+            _styleInfo = _tableStyleId != 0 ? TableStyleManager.GetTableStyleInfo(_tableStyleId) : TableStyleManager.GetTableStyleInfo(_tableName, _attributeName, _relatedIdentities);
 
             if (IsPostBack) return;
 
@@ -112,7 +113,7 @@ namespace SiteServer.BackgroundPages.Cms
             TbHeight.Text = _styleInfo.Additional.Height == 0 ? string.Empty : _styleInfo.Additional.Height.ToString();
             TbWidth.Text = _styleInfo.Additional.Width;
 
-            var styleItems = _styleInfo.StyleItems ?? DataProvider.TableStyleItemDao.GetStyleItemInfoList(_styleInfo.Id);
+            var styleItems = _styleInfo.StyleItems ?? new List<TableStyleItemInfo>();
             TbItemCount.Text = styleItems.Count.ToString();
             RptItems.DataSource = GetDataSource(styleItems.Count, styleItems);
             RptItems.ItemDataBound += RptItems_ItemDataBound;
@@ -240,7 +241,7 @@ namespace SiteServer.BackgroundPages.Cms
                 List<TableStyleItemInfo> styleItems = null;
                 if (_styleInfo.Id != 0)
                 {
-                    styleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(_styleInfo.Id);
+                    styleItems = _styleInfo.StyleItems;
                 }
                 RptItems.DataSource = GetDataSource(count, styleItems);
                 RptItems.DataBind();
@@ -294,7 +295,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             var isChanged = false;
             _styleInfo.AttributeName =TbAttributeName.Text;
-            _styleInfo.DisplayName = PageUtils.FilterXss(TbDisplayName.Text);
+            _styleInfo.DisplayName = AttackUtils.FilterXss(TbDisplayName.Text);
             _styleInfo.HelpText = TbHelpText.Text;
             _styleInfo.Taxis = TranslateUtils.ToInt(TbTaxis.Text);
             _styleInfo.InputType = inputType;
@@ -350,8 +351,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                TableStyleManager.Update(_styleInfo);
-                TableStyleManager.DeleteAndInsertStyleItems(_styleInfo.Id, styleItems);
+                DataProvider.TableStyleDao.Update(_styleInfo);
+                DataProvider.TableStyleItemDao.DeleteAndInsertStyleItems(_styleInfo.Id, styleItems);
 
                 if (SiteId > 0)
                 {
@@ -388,12 +389,12 @@ namespace SiteServer.BackgroundPages.Cms
                 return false;
             }
 
-            _styleInfo = DataProvider.TableMetadataDao.IsExists(_tableName, TbAttributeName.Text) ? TableStyleManager.GetTableStyleInfo(_tableName, TbAttributeName.Text, _relatedIdentities) : new TableStyleInfo();
+            _styleInfo = TableColumnManager.IsAttributeNameExists(_tableName, TbAttributeName.Text) ? TableStyleManager.GetTableStyleInfo(_tableName, TbAttributeName.Text, _relatedIdentities) : new TableStyleInfo();
 
             _styleInfo.RelatedIdentity = relatedIdentity;
             _styleInfo.TableName = _tableName;
             _styleInfo.AttributeName = TbAttributeName.Text;
-            _styleInfo.DisplayName =PageUtils.FilterXss(TbDisplayName.Text);
+            _styleInfo.DisplayName = AttackUtils.FilterXss(TbDisplayName.Text);
             _styleInfo.HelpText = TbHelpText.Text;
             _styleInfo.Taxis = TranslateUtils.ToInt(TbTaxis.Text);
             _styleInfo.InputType = inputType;
@@ -447,7 +448,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                TableStyleManager.Insert(_styleInfo);
+                DataProvider.TableStyleDao.Insert(_styleInfo);
 
                 if (SiteId > 0)
                 {

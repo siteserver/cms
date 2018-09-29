@@ -2,21 +2,31 @@
 using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "当前位置", Description = "通过 stl:location 标签在模板中插入页面的当前位置")]
+    [StlElement(Title = "当前位置", Description = "通过 stl:location 标签在模板中插入页面的当前位置")]
     public class StlLocation
     {
         private StlLocation() { }
         public const string ElementName = "stl:location";
 
-        private static readonly Attr Separator = new Attr("separator", "当前位置分隔符");
-        private static readonly Attr Target = new Attr("target", "打开窗口的目标");
-        private static readonly Attr LinkClass = new Attr("linkClass", "链接CSS样式");
-        private static readonly Attr WordNum = new Attr("wordNum", "链接字数");
-        private static readonly Attr IsContainSelf = new Attr("isContainSelf", "是否包含当前栏目");
+        [StlAttribute(Title = "当前位置分隔符")]
+        private const string Separator = nameof(Separator);
+
+        [StlAttribute(Title = "打开窗口的目标")]
+        private const string Target = nameof(Target);
+
+        [StlAttribute(Title = "链接CSS样式")]
+        private const string LinkClass = nameof(LinkClass);
+
+        [StlAttribute(Title = "链接字数")]
+        private const string WordNum = nameof(WordNum);
+
+        [StlAttribute(Title = "是否包含当前栏目")]
+        private const string IsContainSelf = nameof(IsContainSelf);
 
         //对“当前位置”（stl:location）元素进行解析
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
@@ -31,23 +41,23 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, Separator.Name))
+                if (StringUtils.EqualsIgnoreCase(name, Separator))
                 {
                     separator = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Target.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Target))
                 {
                     target = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, LinkClass.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, LinkClass))
                 {
                     linkClass = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, WordNum.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, WordNum))
                 {
                     wordNum = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsContainSelf.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsContainSelf))
                 {
                     isContainSelf = TranslateUtils.ToBool(value);
                 }

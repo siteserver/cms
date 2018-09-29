@@ -1,0 +1,54 @@
+﻿@{ Layout = "../Shared/_LayoutLayer.cshtml"; }
+
+<ul class="nav nav-tabs tabs-bordered nav-justified">
+  <li class="nav-item">
+    <a href="javascript:;" v-on:click="pageType = 'setGroup'" class="nav-link" :class="{active: pageType === 'setGroup'}">
+      设置内容组
+    </a>
+  </li>
+  <li class="nav-item">
+    <a href="javascript:;" v-on:click="pageType = 'cancelGroup'" class="nav-link" :class="{active: pageType === 'cancelGroup'}">
+      取消内容组
+    </a>
+  </li>
+  <li class="nav-item">
+    <a href="javascript:;" v-on:click="pageType = 'addGroup'" class="nav-link" :class="{active: pageType === 'addGroup'}">
+      添加并设置内容组
+    </a>
+  </li>
+</ul>
+<div class="pt-4">
+  <template v-if="pageType === 'addGroup'">
+
+    <div class="form-group">
+      <label>内容组名称</label>
+      <input v-model="groupName" type="text" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label>内容组简介</label>
+      <textarea v-model="description" class="form-control"></textarea>
+    </div>
+
+  </template>
+  <template v-else>
+
+    <div class="checkbox checkbox-primary ml-3 mr-3">
+      <div v-for="groupName in groupNames">
+        <input :id="groupName" type="checkbox" v-model="selected" :value="groupName" />
+        <label :for="groupName" class="mr-2">{{ groupName }}</label>
+      </div>
+    </div>
+
+  </template>
+</div>
+
+<hr />
+
+<div class="text-right mr-1">
+  <button v-on:click="btnSubmitClick" type="button" class="btn btn-primary m-l-5">确 定</button>
+  <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
+</div>
+
+@section Scripts{
+<script src="contentsLayerGroup.js" type="text/javascript"></script> }

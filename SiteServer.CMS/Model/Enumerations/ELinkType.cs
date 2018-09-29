@@ -1,4 +1,5 @@
 using System.Web.UI.WebControls;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.CMS.Model.Enumerations
 {
@@ -19,7 +20,7 @@ namespace SiteServer.CMS.Model.Enumerations
 		NoLink								                                //不可链接
 	}
 
-	public class ELinkTypeUtils
+	public static class ELinkTypeUtils
 	{
 		public static string GetValue(ELinkType type)
 		{
@@ -71,7 +72,7 @@ namespace SiteServer.CMS.Model.Enumerations
             return "None";
         }
 
-		public static string GetText(ELinkType type)
+	    private static string GetText(ELinkType type)
 		{
 		    if (type == ELinkType.NoLinkIfContentNotExists)
 			{
@@ -218,7 +219,7 @@ namespace SiteServer.CMS.Model.Enumerations
 		    listControl.Items.Add(GetListItem(ELinkType.NoLink, false));
 		}
 
-        public static bool IsCreatable(ChannelInfo channelInfo)
+        public static bool IsCreatable(SiteInfo siteInfo, ChannelInfo channelInfo)
         {
             var isCreatable = false;
 
@@ -230,22 +231,26 @@ namespace SiteServer.CMS.Model.Enumerations
             }
             else if (linkType == ELinkType.NoLinkIfContentNotExists)
             {
-                isCreatable = channelInfo.ContentNum != 0;
+                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                isCreatable = count != 0;
             }
             else if (linkType == ELinkType.LinkToOnlyOneContent)
             {
-                isCreatable = channelInfo.ContentNum != 1;
+                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                isCreatable = count != 1;
             }
             else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
             {
-                if (channelInfo.ContentNum != 0 && channelInfo.ContentNum != 1)
+                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                if (count != 0 && count != 1)
                 {
                     isCreatable = true;
                 }
             }
             else if (linkType == ELinkType.LinkToFirstContent)
             {
-                isCreatable = channelInfo.ContentNum < 1;
+                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                isCreatable = count < 1;
             }
             else if (linkType == ELinkType.NoLinkIfChannelNotExists)
             {

@@ -21,7 +21,7 @@ namespace SiteServer.Cli.Jobs
                 v => _webConfigFileName = v
             },
             {
-                "h|help", "show this message and exit",
+                "h|help", "命令说明",
                 v => _isHelp = v != null
             }
         };

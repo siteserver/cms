@@ -2,24 +2,34 @@
 using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.CMS.StlParser.Cache;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "标签", Description = "通过 stl:tags 标签在模板中显示内容标签")]
+    [StlElement(Title = "标签", Description = "通过 stl:tags 标签在模板中显示内容标签")]
     public class StlTags
 	{
         private StlTags() { }
         public const string ElementName = "stl:tags";
 
-        private static readonly Attr TagLevel = new Attr("tagLevel", "标签级别");
-        private static readonly Attr TotalNum = new Attr("totalNum", "显示标签数目");
-        private static readonly Attr IsOrderByCount = new Attr("isOrderByCount", "是否按引用次数排序");
-        private static readonly Attr Theme = new Attr("theme", "主题样式");
-        private static readonly Attr Context = new Attr("context", "所处上下文");
+        [StlAttribute(Title = "标签级别")]
+        private const string TagLevel = nameof(TagLevel);
+
+        [StlAttribute(Title = "显示标签数目")]
+        private const string TotalNum = nameof(TotalNum);
+
+        [StlAttribute(Title = "是否按引用次数排序")]
+        private const string IsOrderByCount = nameof(IsOrderByCount);
+
+        [StlAttribute(Title = "主题样式")]
+        private const string Theme = nameof(Theme);
+
+        [StlAttribute(Title = "所处上下文")]
+        private const string Context = nameof(Context);
+
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
@@ -33,23 +43,23 @@ namespace SiteServer.CMS.StlParser.StlElement
 		    {
 		        var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, TagLevel.Name))
+                if (StringUtils.EqualsIgnoreCase(name, TagLevel))
                 {
                     tagLevel = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, TotalNum.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, TotalNum))
                 {
                     totalNum = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsOrderByCount.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsOrderByCount))
                 {
                     isOrderByCount = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Theme.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Theme))
                 {
                     theme = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Context.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Context))
                 {
                     contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
                 }
@@ -85,7 +95,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 contentId = contextInfo.ContentId;
             }
 
-            var tagInfoList = Tag.GetTagInfoList(pageInfo.SiteId, contentId, isOrderByCount, totalNum);
+            var tagInfoList = StlTagCache.GetTagInfoList(pageInfo.SiteId, contentId, isOrderByCount, totalNum);
             tagInfoList = TagUtils.GetTagInfoList(tagInfoList, totalNum, tagLevel);
             if (contextInfo.ContextType == EContextType.Content && contextInfo.ContentInfo != null)
             {

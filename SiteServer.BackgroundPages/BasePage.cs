@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.UI;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
 
@@ -46,13 +47,13 @@ namespace SiteServer.BackgroundPages
                     return;
                 }
 
-#if !DEBUG
+                #if !DEBUG
                 if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.Version)
                 {
                     PageUtils.Redirect(PageSyncDatabase.GetRedirectUrl());
                     return;
                 }
-#endif
+                #endif
             }
 
             if (!IsAccessable) // 如果页面不能直接访问且又没有登录则直接跳登录页
@@ -217,19 +218,9 @@ setTimeout(function() {{
             LayerUtils.Close(Page);
         }
 
-        public static string GetShowHintScript()
+        public static string PageLoading()
         {
-            return GetShowHintScript("操作进行中");
-        }
-
-        public static string GetShowHintScript(string message)
-        {
-            return GetShowHintScript(message, 120);
-        }
-
-        public static string GetShowHintScript(string message, int top)
-        {
-            return $@"hideBoxAndShowHint(this, '{message}, 请稍候...', {top});";
+            return "pageUtils.loading(true);";
         }
 
         public void ClientScriptRegisterClientScriptBlock(string key, string script)

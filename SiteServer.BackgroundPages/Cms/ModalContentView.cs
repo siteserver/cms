@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
@@ -59,7 +60,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
 
-            _contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, _contentId);
+            _contentInfo = ContentManager.GetContentInfo(SiteInfo, channelInfo, _contentId);
 
             if (IsPostBack) return;
 
@@ -88,14 +89,13 @@ namespace SiteServer.BackgroundPages.Cms
             LtlAddUserName.Text = AdminManager.GetDisplayName(_contentInfo.AddUserName, true);
             LtlLastEditUserName.Text = AdminManager.GetDisplayName(_contentInfo.LastEditUserName, true);
 
-            LtlContentLevel.Text = CheckManager.GetCheckState(SiteInfo, _contentInfo.IsChecked, _contentInfo.CheckedLevel);
+            LtlContentLevel.Text = CheckManager.GetCheckState(SiteInfo, _contentInfo);
 
             if (_contentInfo.ReferenceId > 0 && _contentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
             {
                 var referenceSiteId = DataProvider.ChannelDao.GetSiteId(_contentInfo.SourceId);
                 var referenceSiteInfo = SiteManager.GetSiteInfo(referenceSiteId);
-                var referenceTableName = ChannelManager.GetTableName(referenceSiteInfo, _contentInfo.SourceId);
-                var referenceContentInfo = DataProvider.ContentDao.GetContentInfo(referenceTableName, _contentInfo.ReferenceId);
+                var referenceContentInfo = ContentManager.GetContentInfo(referenceSiteInfo, _contentInfo.SourceId, _contentInfo.ReferenceId);
 
                 if (referenceContentInfo != null)
                 {

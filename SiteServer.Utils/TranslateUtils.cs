@@ -781,11 +781,8 @@ namespace SiteServer.Utils
                 foreach (var key in attributes.Keys)
                 {
                     var value = attributes[key];
-                    if (!string.IsNullOrEmpty(value))
-                    {
-                        value = value.Replace("\"", "'");
-                    }
-                    builder.Append($@"{key}=""{value}"" ");
+
+                    builder.Append(value == null ? $"{key} " : $@"{key}=""{value.Replace("\"", "'")}"" ");
                 }
                 builder.Length--;
             }
@@ -948,6 +945,8 @@ namespace SiteServer.Utils
 
         public static string EscapeHtml(string content)
         {
+            if (string.IsNullOrEmpty(content)) return string.Empty;
+
             var sb = new StringBuilder();
             var ba = Encoding.Unicode.GetBytes(content);
             for (var i = 0; i < ba.Length; i += 2)

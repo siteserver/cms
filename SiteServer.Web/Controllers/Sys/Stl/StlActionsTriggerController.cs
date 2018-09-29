@@ -5,6 +5,7 @@ using System.Web.Http;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser;
@@ -35,9 +36,6 @@ namespace SiteServer.API.Controllers.Sys.Stl
                 var specialId = request.GetQueryInt("specialId");
                 var isRedirect = TranslateUtils.ToBool(request.GetQueryString("isRedirect"));
 
-                var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-                var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
-
                 if (specialId != 0)
                 {
                     await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Special, 0, 0, 0, specialId);
@@ -61,6 +59,8 @@ namespace SiteServer.API.Controllers.Sys.Stl
 
                 if (isRedirect)
                 {
+                    var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+
                     var redirectUrl = string.Empty;
                     if (specialId != 0)
                     {
@@ -72,12 +72,12 @@ namespace SiteServer.API.Controllers.Sys.Stl
                     }
                     else if (contentId != 0)
                     {
-                        var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                         redirectUrl = PageUtility.GetContentUrl(siteInfo, contentInfo, false);
                     }
                     else if (channelId != 0)
                     {
-                        redirectUrl = PageUtility.GetChannelUrl(siteInfo, nodeInfo, false);
+                        redirectUrl = PageUtility.GetChannelUrl(siteInfo, channelInfo, false);
                     }
                     else if (siteId != 0)
                     {

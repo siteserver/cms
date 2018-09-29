@@ -1,38 +1,68 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Plugin.Model;
 using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Model
 {
-    public class ContentInfo : ExtendedAttributes, IContentInfo
+    [JsonConverter(typeof(ContentConverter))]
+    public class ContentInfo : AttributesImpl, IContentInfo
 	{
-		public ContentInfo()
-		{
-			
-		}
-
-        public ContentInfo(IDataReader rdr) : base(rdr)
+	    public ContentInfo(IDataReader rdr) : base(rdr)
         {
-            Load(SettingsXml);
+            PostProcessing();
         }
 
 	    public ContentInfo(IDataRecord record) : base(record)
 	    {
-	        Load(SettingsXml);
-	    }
+	        PostProcessing();
+        }
 
         public ContentInfo(DataRowView view) : base(view)
 	    {
-	        Load(SettingsXml);
-	    }
+	        PostProcessing();
+        }
 
 	    public ContentInfo(DataRow row) : base(row)
 	    {
-	        Load(SettingsXml);
+	        PostProcessing();
+        }
+
+	    public ContentInfo(Dictionary<string, object> dict) : base(dict)
+	    {
+	        PostProcessing();
+	    }
+
+	    public ContentInfo(NameValueCollection nvc) : base(nvc)
+	    {
+	        PostProcessing();
+	    }
+
+	    public void AddParameters(object param)
+	    {
+	        if (param != null)
+	        {
+	            foreach (var p in param.GetType().GetProperties())
+	            {
+	                Set(p.Name.ToCamelCase(), p.GetValue(param));
+	            }
+            }
+	    }
+
+        private void PostProcessing()
+	    {
+	        if (ContainsKey(nameof(SettingsXml)))
+	        {
+	            Load(SettingsXml);
+	            Remove(nameof(SettingsXml));
+            }
 	    }
 
         public int Id
@@ -239,7 +269,6 @@ namespace SiteServer.CMS.Model
 	        set => Set(BackgroundContentAttribute.Content, value);
 	    }
 
-        [JsonIgnore]
         public string SettingsXml
         {
             get => GetString(ContentAttribute.SettingsXml);
@@ -248,29 +277,88 @@ namespace SiteServer.CMS.Model
 
 	    public override Dictionary<string, object> ToDictionary()
 	    {
-	        var dict = base.ToDictionary();
+	        //var dict = base.ToDictionary();
 
 	        var siteInfo = SiteManager.GetSiteInfo(SiteId);
+	        var channelInfo = ChannelManager.GetChannelInfo(SiteId, ChannelId);
+	        var styleInfoList = TableStyleManager.GetTableStyleInfoList(siteInfo, channelInfo);
 
-	        if (dict.ContainsKey(BackgroundContentAttribute.ImageUrl))
+            var dict = new Dictionary<string, object>();
+	        foreach (var styleInfo in styleInfoList)
 	        {
-	            var imageUrl = (string)dict[BackgroundContentAttribute.ImageUrl];
-	            if (!string.IsNullOrEmpty(imageUrl))
+	            if (styleInfo.InputType == InputType.Image || styleInfo.InputType == InputType.File || styleInfo.InputType == InputType.Video)
 	            {
-                    dict[BackgroundContentAttribute.ImageUrl] = PageUtility.ParseNavigationUrl(siteInfo, imageUrl, false);
+	                var value = GetString(styleInfo.AttributeName);
+	                if (!string.IsNullOrEmpty(value))
+	                {
+	                    value = PageUtility.ParseNavigationUrl(siteInfo, value, false);
+	                }
+
+	                dict[styleInfo.AttributeName] = value;
+                }
+                else if (styleInfo.InputType == InputType.TextEditor)
+	            {
+	                var value = GetString(styleInfo.AttributeName);
+	                if (!string.IsNullOrEmpty(value))
+	                {
+	                    value = ContentUtility.TextEditorContentDecode(siteInfo, value, false);
+	                }
+
+	                dict[styleInfo.AttributeName] = value;
 	            }
+	            else
+	            {
+	                dict[styleInfo.AttributeName] = Get(styleInfo.AttributeName);
+                }
 	        }
-	        if (dict.ContainsKey(BackgroundContentAttribute.FileUrl))
+
+	        foreach (var attributeName in ContentAttribute.AllAttributes)
 	        {
-	            var fileUrl = (string)dict[BackgroundContentAttribute.FileUrl];
-	            if (!string.IsNullOrEmpty(fileUrl))
+	            if (StringUtils.StartsWith(attributeName, "Is"))
 	            {
-	                dict[BackgroundContentAttribute.FileUrl] = PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false);
-	            }
-	        }
-            dict[BackgroundContentAttribute.NavigationUrl] = PageUtility.GetContentUrl(siteInfo, this, false);
+	                dict[attributeName] = GetBool(attributeName);
+                }
+	            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Title))
+	            {
+	                var value = GetString(ContentAttribute.Title);
+	                if (siteInfo.Additional.IsContentTitleBreakLine)
+	                {
+	                    value = value.Replace("  ", "<br />");
+	                }
+	                dict[attributeName] = value;
+                }
+                else
+	            {
+	                dict[attributeName] = Get(attributeName);
+                }
+            }
 
             return dict;
 	    }
-	}
+
+	    public class ContentConverter : JsonConverter
+	    {
+	        public override bool CanConvert(Type objectType)
+	        {
+	            return objectType == typeof(IAttributes);
+	        }
+
+	        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+	        {
+	            var attributes = value as IAttributes;
+	            serializer.Serialize(writer, attributes?.ToDictionary());
+	        }
+
+	        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+	            JsonSerializer serializer)
+	        {
+	            var value = (string)reader.Value;
+	            if (string.IsNullOrEmpty(value)) return null;
+                var dict = TranslateUtils.JsonDeserialize<Dictionary<string, object>>(value);
+	            var content = new ContentInfo(dict);
+
+                return content;
+	        }
+	    }
+    }
 }

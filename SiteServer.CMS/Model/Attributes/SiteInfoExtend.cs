@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using SiteServer.CMS.Plugin.Model;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Model.Attributes
 {
     [Serializable]
-    public class SiteInfoExtend : ExtendedAttributes
+    public class SiteInfoExtend : AttributesImpl
     {
         private readonly string _siteDir;
 
@@ -60,7 +62,7 @@ namespace SiteServer.CMS.Model.Attributes
 
         public bool IsContentTitleBreakLine
         {
-            get => GetBool(nameof(IsContentTitleBreakLine));
+            get => GetBool(nameof(IsContentTitleBreakLine), true);
             set => Set(nameof(IsContentTitleBreakLine), value);
         }
 
@@ -154,8 +156,8 @@ namespace SiteServer.CMS.Model.Attributes
 
         public string SeparatedWebUrl
         {
-            get => GetString(nameof(SeparatedWebUrl));
-            set => Set(nameof(SeparatedWebUrl), value);
+            get => PageUtils.AddEndSlashToUrl(GetString(nameof(SeparatedWebUrl)));
+            set => Set(nameof(SeparatedWebUrl), PageUtils.AddEndSlashToUrl(value));
         }
 
         public string WebUrl => IsSeparatedWeb ? SeparatedWebUrl : PageUtils.ParseNavigationUrl($"~/{_siteDir}");
@@ -230,7 +232,7 @@ namespace SiteServer.CMS.Model.Attributes
 
         public bool IsCreateWithJQuery
         {
-            get => GetBool(nameof(IsCreateWithJQuery));
+            get => GetBool(nameof(IsCreateWithJQuery), true);
             set => Set(nameof(IsCreateWithJQuery), value);
         }
 
@@ -286,16 +288,52 @@ namespace SiteServer.CMS.Model.Attributes
             set => Set(nameof(ConfigTemplateIsCodeMirror), value);
         }
 
-        public int ConfigVideoContentInsertWidth
+        public bool ConfigUEditorVideoIsImageUrl
         {
-            get => GetInt(nameof(ConfigVideoContentInsertWidth), 420);
-            set => Set(nameof(ConfigVideoContentInsertWidth), value);
+            get => GetBool(nameof(ConfigUEditorVideoIsImageUrl));
+            set => Set(nameof(ConfigUEditorVideoIsImageUrl), value);
         }
 
-        public int ConfigVideoContentInsertHeight
+        public bool ConfigUEditorVideoIsAutoPlay
         {
-            get => GetInt(nameof(ConfigVideoContentInsertHeight), 280);
-            set => Set(nameof(ConfigVideoContentInsertHeight), value);
+            get => GetBool(nameof(ConfigUEditorVideoIsAutoPlay));
+            set => Set(nameof(ConfigUEditorVideoIsAutoPlay), value);
+        }
+
+        public bool ConfigUEditorVideoIsWidth
+        {
+            get => GetBool(nameof(ConfigUEditorVideoIsWidth));
+            set => Set(nameof(ConfigUEditorVideoIsWidth), value);
+        }
+
+        public bool ConfigUEditorVideoIsHeight
+        {
+            get => GetBool(nameof(ConfigUEditorVideoIsHeight));
+            set => Set(nameof(ConfigUEditorVideoIsHeight), value);
+        }
+
+        public string ConfigUEditorVideoPlayBy
+        {
+            get => GetString(nameof(ConfigUEditorVideoPlayBy));
+            set => Set(nameof(ConfigUEditorVideoPlayBy), value);
+        }
+
+        public int ConfigUEditorVideoWidth
+        {
+            get => GetInt(nameof(ConfigUEditorVideoWidth), 600);
+            set => Set(nameof(ConfigUEditorVideoWidth), value);
+        }
+
+        public int ConfigUEditorVideoHeight
+        {
+            get => GetInt(nameof(ConfigUEditorVideoHeight), 400);
+            set => Set(nameof(ConfigUEditorVideoHeight), value);
+        }
+
+        public bool ConfigUEditorAudioIsAutoPlay
+        {
+            get => GetBool(nameof(ConfigUEditorAudioIsAutoPlay));
+            set => Set(nameof(ConfigUEditorAudioIsAutoPlay), value);
         }
 
         public string ConfigExportType
@@ -498,6 +536,106 @@ namespace SiteServer.CMS.Model.Attributes
         {
             get => GetString(nameof(TemplatesAssetsCssDir), "css");
             set => Set(nameof(TemplatesAssetsCssDir), value);
+        }
+
+        /****************内容数据统计********************/
+
+        //内容表
+        public List<string> ContentTableNames
+        {
+            get => TranslateUtils.StringCollectionToStringList(GetString(nameof(ContentTableNames)));
+            set => Set(nameof(ContentTableNames), TranslateUtils.ObjectCollectionToString(value));
+        }
+
+        //内容总数
+        public int ContentCountAll
+        {
+            get => GetInt(nameof(ContentCountAll), -1);
+            set => Set(nameof(ContentCountAll), value);
+        }
+
+        //草稿数
+        public int ContentCountCaoGao
+        {
+            get => GetInt(nameof(ContentCountCaoGao), -1);
+            set => Set(nameof(ContentCountCaoGao), value);
+        }
+
+        //待审数
+        public int ContentCountDaiShen
+        {
+            get => GetInt(nameof(ContentCountDaiShen), -1);
+            set => Set(nameof(ContentCountDaiShen), value);
+        }
+
+        //初审通过数
+        public int ContentCountPass1
+        {
+            get => GetInt(nameof(ContentCountPass1), -1);
+            set => Set(nameof(ContentCountPass1), value);
+        }
+
+        //二审通过数
+        public int ContentCountPass2
+        {
+            get => GetInt(nameof(ContentCountPass2), -1);
+            set => Set(nameof(ContentCountPass2), value);
+        }
+
+        //三审通过数
+        public int ContentCountPass3
+        {
+            get => GetInt(nameof(ContentCountPass3), -1);
+            set => Set(nameof(ContentCountPass3), value);
+        }
+
+        //四审通过数
+        public int ContentCountPass4
+        {
+            get => GetInt(nameof(ContentCountPass4), -1);
+            set => Set(nameof(ContentCountPass4), value);
+        }
+
+        //终审通过数
+        public int ContentCountPass5
+        {
+            get => GetInt(nameof(ContentCountPass5), -1);
+            set => Set(nameof(ContentCountPass5), value);
+        }
+
+        //初审退稿数
+        public int ContentCountFail1
+        {
+            get => GetInt(nameof(ContentCountFail1), -1);
+            set => Set(nameof(ContentCountFail1), value);
+        }
+
+        //二审退稿数
+        public int ContentCountFail2
+        {
+            get => GetInt(nameof(ContentCountFail2), -1);
+            set => Set(nameof(ContentCountFail2), value);
+        }
+
+        //三审退稿数
+        public int ContentCountFail3
+        {
+            get => GetInt(nameof(ContentCountFail3), -1);
+            set => Set(nameof(ContentCountFail3), value);
+        }
+
+        //四审退稿数
+        public int ContentCountFail4
+        {
+            get => GetInt(nameof(ContentCountFail4), -1);
+            set => Set(nameof(ContentCountFail4), value);
+        }
+
+        //终审退稿数
+        public int ContentCountFail5
+        {
+            get => GetInt(nameof(ContentCountFail5), -1);
+            set => Set(nameof(ContentCountFail5), value);
         }
     }
 }

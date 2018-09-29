@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 
@@ -27,11 +28,11 @@ namespace SiteServer.API.Controllers.V1
                 var attributes = request.GetPostCollection();
                 if (attributes == null) return BadRequest("无法从body中获取内容实体");
 
-                var contentInfo = new ContentInfo();
-                contentInfo.Load(attributes);
-
-                contentInfo.SiteId = siteId;
-                contentInfo.ChannelId = channelId;
+                var contentInfo = new ContentInfo(attributes)
+                {
+                    SiteId = siteId,
+                    ChannelId = channelId
+                };
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
@@ -54,7 +55,7 @@ namespace SiteServer.API.Controllers.V1
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-                contentInfo.Id = DataProvider.ContentDao.Insert(tableName, siteInfo, contentInfo);
+                contentInfo.Id = DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, contentInfo);
 
                 return Ok(new OResponse(contentInfo.ToDictionary()));
             }
@@ -77,12 +78,12 @@ namespace SiteServer.API.Controllers.V1
                 var attributes = request.GetPostCollection();
                 if (attributes == null) return BadRequest("无法从body中获取内容实体");
 
-                var contentInfo = new ContentInfo();
-                contentInfo.Load(attributes);
-
-                contentInfo.SiteId = siteId;
-                contentInfo.ChannelId = channelId;
-                contentInfo.Id = id;
+                var contentInfo = new ContentInfo(attributes)
+                {
+                    SiteId = siteId,
+                    ChannelId = channelId,
+                    Id = id
+                };
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
@@ -103,7 +104,7 @@ namespace SiteServer.API.Controllers.V1
 
                 if (!DataProvider.ContentDao.ApiIsExists(tableName, id)) return NotFound();
 
-                DataProvider.ContentDao.Update(tableName, siteInfo, contentInfo);
+                DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
 
                 return Ok(new OResponse(contentInfo.ToDictionary()));
             }
@@ -134,7 +135,7 @@ namespace SiteServer.API.Controllers.V1
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, id);
+                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
                 if (contentInfo == null) return NotFound();
 
                 DataProvider.ContentDao.DeleteContent(tableName, siteInfo, channelId, id);
@@ -166,9 +167,7 @@ namespace SiteServer.API.Controllers.V1
                 if (!request.AdminPermissions.HasChannelPermissions(siteId, channelId,
                     ConfigManager.ChannelPermissions.ContentView)) return Unauthorized();
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-
-                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, id);
+                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
                 if (contentInfo == null) return NotFound();
 
                 return Ok(new OResponse(contentInfo.ToDictionary()));
@@ -200,9 +199,9 @@ namespace SiteServer.API.Controllers.V1
                 int count;
                 var contentIdList = DataProvider.ContentDao.ApiGetContentIdListBySiteId(tableName, siteId, request.Top, request.Skip, request.Like, request.OrderBy, request.QueryString, out count);
                 var value = new List<Dictionary<string, object>>();
-                foreach (var contentId in contentIdList)
+                foreach (var tuple in contentIdList)
                 {
-                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, tuple.Item1, tuple.Item2);
                     if (contentInfo != null)
                     {
                         value.Add(contentInfo.ToDictionary());
@@ -243,7 +242,7 @@ namespace SiteServer.API.Controllers.V1
                 var value = new List<Dictionary<string, object>>();
                 foreach(var contentId in contentIdList)
                 {
-                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                     if (contentInfo != null)
                     {
                         value.Add(contentInfo.ToDictionary());

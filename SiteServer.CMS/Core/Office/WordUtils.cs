@@ -2,6 +2,7 @@
 using SiteServer.Utils;
 using Word.Plugin;
 using System.Collections.Specialized;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 
@@ -121,9 +122,9 @@ namespace SiteServer.CMS.Core.Office
                 {
                     title = PathUtils.GetFileNameWithoutExtension(fileName);
                 }
-                if (!string.IsNullOrEmpty(title) && title.Length > 255)
+                if (!string.IsNullOrEmpty(title))
                 {
-                    title = title.Substring(0, 255);
+                    title = StringUtils.MaxLengthText(title, 200, string.Empty);
                 }
                 formCollection[ContentAttribute.Title] = title;
 

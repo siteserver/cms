@@ -5,8 +5,9 @@ namespace SiteServer.CMS.Model
 {
 	public class ConfigInfo
 	{
-        public ConfigInfo(bool isInitialized, string databaseVersion, DateTime updateDate, string systemConfig) 
-		{
+        public ConfigInfo(int id, bool isInitialized, string databaseVersion, DateTime updateDate, string systemConfig)
+        {
+            Id = id;
             IsInitialized = isInitialized;
             DatabaseVersion = databaseVersion;
             UpdateDate = updateDate;

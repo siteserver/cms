@@ -2,34 +2,64 @@
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "搜索", Description = "通过 stl:search 标签在模板中显示搜索结果")]
+    [StlElement(Title = "搜索", Description = "通过 stl:search 标签在模板中显示搜索结果")]
     public class StlSearch
     {
         private StlSearch() { }
         public const string ElementName = "stl:search";
         public const string ElementName2 = "stl:searchOutput";
 
-        public static readonly Attr IsAllSites = new Attr("isAllSites", "是否对全部站点进行搜索");
-        public static readonly Attr SiteName = new Attr("siteName", "站点名称");
-        public static readonly Attr SiteDir = new Attr("siteDir", "站点文件夹");
-        public static readonly Attr SiteIds = new Attr("siteIds", "站点Id列表");
-        public static readonly Attr ChannelIndex = new Attr("channelIndex", "栏目索引");
-        public static readonly Attr ChannelName = new Attr("channelName", "栏目名称");
-        public static readonly Attr ChannelIds = new Attr("channelIds", "栏目Id列表");
-        public static readonly Attr Type = new Attr("type", "搜索类型");
-        public static readonly Attr Word = new Attr("word", "搜索关键词");
-        public static readonly Attr DateAttribute = new Attr("dateAttribute", "搜索时间字段");
-        public static readonly Attr DateFrom = new Attr("dateFrom", "搜索开始时间");
-        public static readonly Attr DateTo = new Attr("dateTo", "搜索结束时间");
-        public static readonly Attr Since = new Attr("since", "搜索时间段");
-        public static readonly Attr PageNum = new Attr("pageNum", "每页显示的内容数目");
-        public static readonly Attr IsHighlight = new Attr("isHighlight", "是否关键字高亮");
+        [StlAttribute(Title = "是否对全部站点进行搜索")]
+        public const string IsAllSites = nameof(IsAllSites);
+
+        [StlAttribute(Title = "站点名称")]
+        public const string SiteName = nameof(SiteName);
+
+        [StlAttribute(Title = "站点文件夹")]
+        public const string SiteDir = nameof(SiteDir);
+
+        [StlAttribute(Title = "站点Id列表")]
+        public const string SiteIds = nameof(SiteIds);
+
+        [StlAttribute(Title = "栏目索引")]
+        public const string ChannelIndex = nameof(ChannelIndex);
+
+        [StlAttribute(Title = "栏目名称")]
+        public const string ChannelName = nameof(ChannelName);
+
+        [StlAttribute(Title = "栏目Id列表")]
+        public const string ChannelIds = nameof(ChannelIds);
+
+        [StlAttribute(Title = "搜索类型")]
+        public const string Type = nameof(Type);
+
+        [StlAttribute(Title = "搜索关键词")]
+        public const string Word = nameof(Word);
+
+        [StlAttribute(Title = "搜索时间字段")]
+        public const string DateAttribute = nameof(DateAttribute);
+
+        [StlAttribute(Title = "搜索开始时间")]
+        public const string DateFrom = nameof(DateFrom);
+
+        [StlAttribute(Title = "搜索结束时间")]
+        public const string DateTo = nameof(DateTo);
+
+        [StlAttribute(Title = "搜索时间段")]
+        public const string Since = nameof(Since);
+
+        [StlAttribute(Title = "每页显示的内容数目")]
+        public const string PageNum = nameof(PageNum);
+
+        [StlAttribute(Title = "是否关键字高亮")]
+        public const string IsHighlight = nameof(IsHighlight);
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -53,63 +83,63 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, IsAllSites.Name))
+                if (StringUtils.EqualsIgnoreCase(name, IsAllSites))
                 {
                     isAllSites = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, SiteName.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, SiteName))
                 {
                     siteName = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, SiteDir.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, SiteDir))
                 {
                     siteDir = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, SiteIds.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, SiteIds))
                 {
                     siteIds = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, ChannelIndex.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
                 {
                     channelIndex = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, ChannelName.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelName))
                 {
                     channelName = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, ChannelIds.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelIds))
                 {
                     channelIds = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Type.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Word.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Word))
                 {
                     word = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, DateAttribute.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, DateAttribute))
                 {
                     dateAttribute = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, DateFrom.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, DateFrom))
                 {
                     dateFrom = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, DateTo.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, DateTo))
                 {
                     dateTo = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Since.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Since))
                 {
                     since = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, PageNum.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, PageNum))
                 {
                     pageNum = TranslateUtils.ToInt(value, 0);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsHighlight.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsHighlight))
                 {
                     isHighlight = TranslateUtils.ToBool(value);
                 }

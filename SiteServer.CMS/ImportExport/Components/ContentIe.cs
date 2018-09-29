@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using Atom.Core;
 using Atom.Core.Collections;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils.Enumerations;
@@ -30,13 +32,13 @@ namespace SiteServer.CMS.ImportExport.Components
             ImportContents(feed.Entries, nodeInfo, taxis, importStart, importCount, false, isChecked, checkedLevel, isOverride, adminName);
         }
 
-        public void ImportContents(AtomEntryCollection entries, ChannelInfo nodeInfo, int taxis, bool isOverride, string adminName)
+        public void ImportContents(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, bool isOverride, string adminName)
         {
-            ImportContents(entries, nodeInfo, taxis, 0, 0, true, true, 0, isOverride, adminName);
+            ImportContents(entries, channelInfo, taxis, 0, 0, true, true, 0, isOverride, adminName);
         }
 
         // 内部消化掉错误
-        private void ImportContents(AtomEntryCollection entries, ChannelInfo nodeInfo, int taxis, int importStart, int importCount, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, string adminName)
+        private void ImportContents(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, int importStart, int importCount, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, string adminName)
         {
             if (importStart > 1 || importCount > 0)
             {
@@ -71,7 +73,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 entries = theEntries;
             }
 
-            var tableName = ChannelManager.GetTableName(_siteInfo, nodeInfo);
+            var tableName = ChannelManager.GetTableName(_siteInfo, channelInfo);
 
             foreach (AtomEntry entry in entries)
             {
@@ -102,17 +104,19 @@ namespace SiteServer.CMS.ImportExport.Components
                     if (isTop)
                     {
                         topTaxis = taxis - 1;
-                        taxis = DataProvider.ContentDao.GetMaxTaxis(tableName, nodeInfo.Id, true) + 1;
+                        taxis = DataProvider.ContentDao.GetMaxTaxis(tableName, channelInfo.Id, true) + 1;
                     }
                     var tags = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Tags));
 
-                    var contentInfo = new ContentInfo
+                    var dict = new Dictionary<string, object>
                     {
-                        ChannelId= nodeInfo.Id,
-                        SiteId = _siteInfo.Id,
-                        AddUserName = adminName,
-                        AddDate = TranslateUtils.ToDateTime(addDate)
+                        {ContentAttribute.SiteId, _siteInfo.Id},
+                        {ContentAttribute.ChannelId, channelInfo.Id},
+                        {ContentAttribute.AddUserName, adminName},
+                        {ContentAttribute.AddDate, TranslateUtils.ToDateTime(addDate)}
                     };
+                    var contentInfo = new ContentInfo(dict);
+
                     contentInfo.LastEditUserName = contentInfo.AddUserName;
                     contentInfo.LastEditDate = TranslateUtils.ToDateTime(lastEditDate);
                     contentInfo.GroupNameCollection = groupNameCollection;
@@ -149,7 +153,7 @@ namespace SiteServer.CMS.ImportExport.Components
                             foreach (int id in existsIDs)
                             {
                                 contentInfo.Id = id;
-                                DataProvider.ContentDao.Update(tableName, _siteInfo, contentInfo);
+                                DataProvider.ContentDao.Update(_siteInfo, channelInfo, contentInfo);
                             }
                         }
                         else
@@ -164,7 +168,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     if (isInsert)
                     {
-                        var contentId = DataProvider.ContentDao.Insert(tableName, _siteInfo, contentInfo, false, taxis);
+                        var contentId = DataProvider.ContentDao.Insert(tableName, _siteInfo, channelInfo, contentInfo, taxis);
 
                         if (!string.IsNullOrEmpty(tags))
                         {
@@ -188,11 +192,12 @@ namespace SiteServer.CMS.ImportExport.Components
         public bool ExportContents(SiteInfo siteInfo, int channelId, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
         {
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
-            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
             var feed = AtomUtility.GetEmptyFeed();
 
             if (contentIdList == null || contentIdList.Count == 0)
             {
+                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
                 contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId, isPeriods, dateFrom, dateTo, checkedState);
             }
             if (contentIdList.Count == 0) return false;
@@ -201,7 +206,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                 try
                 {
                     ContentUtility.PutImagePaths(siteInfo, contentInfo, collection);
@@ -259,7 +264,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             foreach (var attributeName in contentInfo.ToDictionary().Keys)
             {
-                if (!ContentAttribute.AllAttributesLowercase.Contains(attributeName.ToLower()))
+                if (!StringUtils.ContainsIgnoreCase(ContentAttribute.AllAttributes, attributeName))
                 {
                     AtomUtility.AddDcElement(entry.AdditionalElements, attributeName, AtomUtility.Encrypt(contentInfo.GetString(attributeName)));
                 }

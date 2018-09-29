@@ -15,7 +15,9 @@ namespace SiteServer.API.Controllers.Sys.Packaging
         {
             var request = new AuthRequest();
 
-            if (!request.IsAdminLoggin)
+            var isDownload = TranslateUtils.ToBool(CacheDbUtils.GetValueAndRemove(PackageUtils.CacheKeySsCmsIsDownload));
+
+            if (!isDownload)
             {
                 return Unauthorized();
             }
@@ -26,14 +28,26 @@ namespace SiteServer.API.Controllers.Sys.Packaging
             var packagePath = PathUtils.GetPackagesPath(idWithVersion);
             var packageWebConfigPath = PathUtils.Combine(packagePath, WebConfigUtils.WebConfigFileName);
 
+            if (!FileUtils.IsFileExists(packageWebConfigPath))
+            {
+                return BadRequest($"升级包 {WebConfigUtils.WebConfigFileName} 文件不存在");
+            }
+
+            WebConfigUtils.UpdateWebConfig(packageWebConfigPath, WebConfigUtils.IsProtectData,
+                WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory,
+                WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
+
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), PathUtils.GetSiteFilesPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), PathUtils.GetAdminDirectoryPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), PathUtils.GetBinDirectoryPath(string.Empty), true);
-            FileUtils.CopyFile(packageWebConfigPath, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.WebConfigFileName), true);
+            var isCopyFiles = FileUtils.CopyFile(packageWebConfigPath, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.WebConfigFileName), true);
 
             //SystemManager.SyncDatabase();
 
-            return Ok();
+            return Ok(new
+            {
+                isCopyFiles
+            });
         }
     }
 }

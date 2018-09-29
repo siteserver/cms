@@ -2,7 +2,7 @@
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "成功模板", Description = "通过 stl:yes 标签在模板中显示成功模板")]
+    [StlElement(Title = "成功模板", Description = "通过 stl:yes 标签在模板中显示成功模板")]
     public sealed class StlYes
     {
         public const string ElementName = "stl:yes";

@@ -190,7 +190,7 @@ namespace SiteServer.CMS.Provider
         {
             //string sqlString =
             //    $"SELECT Keyword FROM siteserver_Keyword WHERE CHARINDEX(Keyword, '{PageUtils.FilterSql(content)}') > 0";
-            var sqlString = $"SELECT Keyword FROM siteserver_Keyword WHERE {SqlUtils.GetInStrReverse(PageUtils.FilterSql(content), nameof(KeywordInfo.Keyword))}";
+            var sqlString = $"SELECT Keyword FROM siteserver_Keyword WHERE {SqlUtils.GetInStrReverse(AttackUtils.FilterSql(content), nameof(KeywordInfo.Keyword))}";
             return DataProvider.DatabaseDao.GetStringList(sqlString);
         }
     }

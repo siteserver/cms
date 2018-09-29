@@ -16,7 +16,7 @@ var $vue = new Vue({
     account: null,
     password: null,
     isAutoLogin: false,
-    captcha: null, 
+    captcha: null,
     captchaUrl: null
   },
   directives: {
@@ -29,9 +29,11 @@ var $vue = new Vue({
   methods: {
     reload: function () {
       this.pageLoad = true;
+      this.captcha = '';
+      this.pageSubmit = false;
       this.captchaUrl = $captchaGetUrl + '?r=' + new Date().getTime();
     },
-    checkCaptcha: function() {
+    checkCaptcha: function () {
       var $this = this;
 
       pageUtils.loading(true);
@@ -39,10 +41,11 @@ var $vue = new Vue({
         captcha: $this.captcha
       }, function (err, res) {
         pageUtils.loading(false);
+        $this.reload();
         if (err) {
           $this.pageAlert = {
             type: 'danger',
-            html: '验证码不正确，请重新输入！'
+            html: err.message
           };
           return;
         }

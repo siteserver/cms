@@ -2,8 +2,9 @@
 using SiteServer.CMS.Model.Enumerations;
 using System;
 using SiteServer.CMS.Api.Preview;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -152,10 +153,9 @@ namespace SiteServer.CMS.Core
             return GetContentUrlById(siteInfo, contentInfo, isLocal);
         }
 
-        public static string GetContentUrl(SiteInfo siteInfo, ChannelInfo nodeInfo, int contentId, bool isLocal)
+        public static string GetContentUrl(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, bool isLocal)
         {
-            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
-            var contentInfo = Content.GetContentInfo(tableName, contentId);
+            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
             return GetContentUrlById(siteInfo, contentInfo, isLocal);
         }
 
@@ -182,12 +182,11 @@ namespace SiteServer.CMS.Core
                 if (sourceId > 0 && (ChannelManager.IsExists(siteInfo.Id, sourceId) || ChannelManager.IsExists(sourceId)))
                 {
                     var targetChannelId = sourceId;
-                    var targetSiteId = Node.GetSiteId(targetChannelId);
+                    var targetSiteId = StlChannelCache.GetSiteId(targetChannelId);
                     var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                     var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
-                    var tableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelInfo);
-                    var contentInfo = Content.GetContentInfo(tableName, referenceId);
+                    var contentInfo = ContentManager.GetContentInfo(targetSiteInfo, targetChannelInfo, referenceId);
                     if (contentInfo == null || contentInfo.ChannelId <= 0)
                     {
                         return PageUtils.UnclickedUrl;
@@ -202,13 +201,13 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-                    channelId = Content.GetChannelId(tableName, referenceId);
-                    linkUrl = Content.GetValue(tableName, referenceId, ContentAttribute.LinkUrl);
+                    channelId = StlContentCache.GetChannelId(tableName, referenceId);
+                    linkUrl = StlContentCache.GetValue(tableName, referenceId, ContentAttribute.LinkUrl);
                     if (ChannelManager.IsExists(siteInfo.Id, channelId))
                     {
                         return GetContentUrlById(siteInfo, channelId, referenceId, 0, 0, linkUrl, false);
                     }
-                    var targetSiteId = Node.GetSiteId(channelId);
+                    var targetSiteId = StlChannelCache.GetSiteId(channelId);
                     var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                     return GetContentUrlById(targetSiteInfo, channelId, referenceId, 0, 0, linkUrl, false);
                 }
@@ -229,20 +228,18 @@ namespace SiteServer.CMS.Core
                 return ApiRoutePreview.GetContentUrl(siteInfo.Id, channelId, contentId);
             }
 
-            var tableNameCurrent = ChannelManager.GetTableName(siteInfo, channelId);
-            var contentInfoCurrent = Content.GetContentInfo(tableNameCurrent, contentId);
+            var contentInfoCurrent = ContentManager.GetContentInfo(siteInfo, channelId, contentId);
 
             if (referenceId > 0 && contentInfoCurrent.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
             {
                 if (sourceId > 0 && (ChannelManager.IsExists(siteInfo.Id, sourceId) || ChannelManager.IsExists(sourceId)))
                 {
                     var targetChannelId = sourceId;
-                    var targetSiteId = Node.GetSiteId(targetChannelId);
+                    var targetSiteId = StlChannelCache.GetSiteId(targetChannelId);
                     var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                     var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
-                    var tableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelInfo);
-                    var contentInfo = Content.GetContentInfo(tableName, referenceId);
+                    var contentInfo = ContentManager.GetContentInfo(targetSiteInfo, targetChannelInfo, referenceId);
                     if (contentInfo == null || contentInfo.ChannelId <= 0)
                     {
                         return PageUtils.UnclickedUrl;
@@ -257,8 +254,8 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-                    channelId = Content.GetChannelId(tableName, referenceId);
-                    linkUrl = Content.GetValue(tableName, referenceId, ContentAttribute.LinkUrl);
+                    channelId = StlContentCache.GetChannelId(tableName, referenceId);
+                    linkUrl = StlContentCache.GetValue(tableName, referenceId, ContentAttribute.LinkUrl);
                     return GetContentUrlById(siteInfo, channelId, referenceId, 0, 0, linkUrl, false);
                 }
             }
@@ -302,27 +299,27 @@ namespace SiteServer.CMS.Core
         }
 
         //得到栏目经过计算后的连接地址
-        public static string GetChannelUrl(SiteInfo siteInfo, ChannelInfo nodeInfo, bool isLocal)
+        public static string GetChannelUrl(SiteInfo siteInfo, ChannelInfo channelInfo, bool isLocal)
         {
-            if (nodeInfo == null) return string.Empty;
+            if (channelInfo == null) return string.Empty;
 
             if (isLocal)
             {
-                return ApiRoutePreview.GetChannelUrl(siteInfo.Id, nodeInfo.Id);
+                return ApiRoutePreview.GetChannelUrl(siteInfo.Id, channelInfo.Id);
             }
 
             var url = string.Empty;
             
-            if (nodeInfo.ParentId == 0)
+            if (channelInfo.ParentId == 0)
             {
-                url = GetChannelUrlNotComputed(siteInfo, nodeInfo.Id, false);
+                url = GetChannelUrlNotComputed(siteInfo, channelInfo.Id, false);
             }
             else
             {
-                var linkType = ELinkTypeUtils.GetEnumType(nodeInfo.LinkType);
+                var linkType = ELinkTypeUtils.GetEnumType(channelInfo.LinkType);
                 if (linkType == ELinkType.None)
                 {
-                    url = GetChannelUrlNotComputed(siteInfo, nodeInfo.Id, false);
+                    url = GetChannelUrlNotComputed(siteInfo, channelInfo.Id, false);
                 }
                 else if (linkType == ELinkType.NoLink)
                 {
@@ -332,62 +329,65 @@ namespace SiteServer.CMS.Core
                 {
                     if (linkType == ELinkType.NoLinkIfContentNotExists)
                     {
-                        url = nodeInfo.ContentNum == 0 ? PageUtils.UnclickedUrl : GetChannelUrlNotComputed(siteInfo, nodeInfo.Id, false);
+                        var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                        url = count == 0 ? PageUtils.UnclickedUrl : GetChannelUrlNotComputed(siteInfo, channelInfo.Id, false);
                     }
                     else if (linkType == ELinkType.LinkToOnlyOneContent)
                     {
-                        if (nodeInfo.ContentNum == 1)
+                        var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                        if (count == 1)
                         {
-                            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
-                            //var contentId = StlCacheManager.FirstContentId.GetValue(siteInfo, nodeInfo);
-                            var contentId = Content.GetContentId(tableName, nodeInfo.Id, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(nodeInfo.Additional.DefaultTaxisType)));
-                            url = GetContentUrl(siteInfo, nodeInfo, contentId, false);
+                            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                            var contentId = StlContentCache.GetContentId(tableName, channelInfo.Id, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channelInfo.Additional.DefaultTaxisType)));
+                            url = GetContentUrl(siteInfo, channelInfo, contentId, false);
                         }
                         else
                         {
-                            url = GetChannelUrlNotComputed(siteInfo, nodeInfo.Id, false);
+                            url = GetChannelUrlNotComputed(siteInfo, channelInfo.Id, false);
                         }
                     }
                     else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
                     {
-                        if (nodeInfo.ContentNum == 0)
+                        var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                        if (count == 0)
                         {
                             url = PageUtils.UnclickedUrl;
                         }
-                        else if (nodeInfo.ContentNum == 1)
+                        else if (count == 1)
                         {
-                            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
-                            var contentId = Content.GetContentId(tableName, nodeInfo.Id, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(nodeInfo.Additional.DefaultTaxisType)));
-                            //var contentId = StlCacheManager.FirstContentId.GetValue(siteInfo, nodeInfo);
-                            url = GetContentUrl(siteInfo, nodeInfo, contentId, false);
+                            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                            var contentId = StlContentCache.GetContentId(tableName, channelInfo.Id, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channelInfo.Additional.DefaultTaxisType)));
+                            url = GetContentUrl(siteInfo, channelInfo, contentId, false);
                         }
                         else
                         {
-                            url = GetChannelUrlNotComputed(siteInfo, nodeInfo.Id, false);
+                            url = GetChannelUrlNotComputed(siteInfo, channelInfo.Id, false);
                         }
                     }
                     else if (linkType == ELinkType.LinkToFirstContent)
                     {
-                        if (nodeInfo.ContentNum >= 1)
+                        var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                        if (count >= 1)
                         {
-                            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
-                            var contentId = Content.GetContentId(tableName, nodeInfo.Id, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(nodeInfo.Additional.DefaultTaxisType)));
+                            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                            var contentId = StlContentCache.GetContentId(tableName, channelInfo.Id, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channelInfo.Additional.DefaultTaxisType)));
                             //var contentId = StlCacheManager.FirstContentId.GetValue(siteInfo, nodeInfo);
-                            url = GetContentUrl(siteInfo, nodeInfo, contentId, false);
+                            url = GetContentUrl(siteInfo, channelInfo, contentId, false);
                         }
                         else
                         {
-                            url = GetChannelUrlNotComputed(siteInfo, nodeInfo.Id, false);
+                            url = GetChannelUrlNotComputed(siteInfo, channelInfo.Id, false);
                         }
                     }
                     else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToFirstContent)
                     {
-                        if (nodeInfo.ContentNum >= 1)
+                        var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                        if (count >= 1)
                         {
-                            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
-                            var contentId = Content.GetContentId(tableName, nodeInfo.Id, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(nodeInfo.Additional.DefaultTaxisType)));
+                            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                            var contentId = StlContentCache.GetContentId(tableName, channelInfo.Id, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channelInfo.Additional.DefaultTaxisType)));
                             //var contentId = StlCacheManager.FirstContentId.GetValue(siteInfo, nodeInfo);
-                            url = GetContentUrl(siteInfo, nodeInfo, contentId, false);
+                            url = GetContentUrl(siteInfo, channelInfo, contentId, false);
                         }
                         else
                         {
@@ -396,26 +396,26 @@ namespace SiteServer.CMS.Core
                     }
                     else if (linkType == ELinkType.NoLinkIfChannelNotExists)
                     {
-                        url = nodeInfo.ChildrenCount == 0 ? PageUtils.UnclickedUrl : GetChannelUrlNotComputed(siteInfo, nodeInfo.Id, false);
+                        url = channelInfo.ChildrenCount == 0 ? PageUtils.UnclickedUrl : GetChannelUrlNotComputed(siteInfo, channelInfo.Id, false);
                     }
                     else if (linkType == ELinkType.LinkToLastAddChannel)
                     {
-                        var lastAddChannelInfo = Node.GetChannelInfoByLastAddDate(nodeInfo.Id);
-                        url = lastAddChannelInfo != null ? GetChannelUrl(siteInfo, lastAddChannelInfo, false) : GetChannelUrlNotComputed(siteInfo, nodeInfo.Id, false);
+                        var lastAddChannelInfo = StlChannelCache.GetChannelInfoByLastAddDate(channelInfo.Id);
+                        url = lastAddChannelInfo != null ? GetChannelUrl(siteInfo, lastAddChannelInfo, false) : GetChannelUrlNotComputed(siteInfo, channelInfo.Id, false);
                     }
                     else if (linkType == ELinkType.LinkToFirstChannel)
                     {
-                        var firstChannelInfo = Node.GetChannelInfoByTaxis(nodeInfo.Id);
-                        url = firstChannelInfo != null ? GetChannelUrl(siteInfo, firstChannelInfo, false) : GetChannelUrlNotComputed(siteInfo, nodeInfo.Id, false);
+                        var firstChannelInfo = StlChannelCache.GetChannelInfoByTaxis(channelInfo.Id);
+                        url = firstChannelInfo != null ? GetChannelUrl(siteInfo, firstChannelInfo, false) : GetChannelUrlNotComputed(siteInfo, channelInfo.Id, false);
                     }
                     else if (linkType == ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel)
                     {
-                        var lastAddChannelInfo = Node.GetChannelInfoByLastAddDate(nodeInfo.Id);
+                        var lastAddChannelInfo = StlChannelCache.GetChannelInfoByLastAddDate(channelInfo.Id);
                         url = lastAddChannelInfo != null ? GetChannelUrl(siteInfo, lastAddChannelInfo, false) : PageUtils.UnclickedUrl;
                     }
                     else if (linkType == ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel)
                     {
-                        var firstChannelInfo = Node.GetChannelInfoByTaxis(nodeInfo.Id);
+                        var firstChannelInfo = StlChannelCache.GetChannelInfoByTaxis(channelInfo.Id);
                         url = firstChannelInfo != null ? GetChannelUrl(siteInfo, firstChannelInfo, false) : PageUtils.UnclickedUrl;
                     }
                 }
@@ -459,6 +459,8 @@ namespace SiteServer.CMS.Core
         //根据发布系统属性判断是否为相对路径并返回解析后路径
         public static string ParseNavigationUrl(SiteInfo siteInfo, string url, bool isLocal)
         {
+            if (string.IsNullOrEmpty(url)) return string.Empty;
+
             if (siteInfo != null)
             {
                 if (!string.IsNullOrEmpty(url) && url.StartsWith("@"))

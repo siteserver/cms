@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 

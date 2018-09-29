@@ -3,6 +3,7 @@ using System.Web.Http;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
@@ -78,9 +79,8 @@ namespace SiteServer.API.Controllers.Sys.Stl
                     var contentId = request.GetQueryInt("contentId");
                     var fileUrl = TranslateUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"));
                     var siteInfo = SiteManager.GetSiteInfo(siteId);
-                    var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-                    var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
-                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+                    var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
 
                     if (!string.IsNullOrEmpty(contentInfo?.GetString(BackgroundContentAttribute.FileUrl)))
                     {

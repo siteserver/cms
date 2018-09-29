@@ -7,6 +7,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -82,7 +83,7 @@ namespace SiteServer.CMS.Plugin
 
         public string GetQueryString(string name)
         {
-            return !string.IsNullOrEmpty(HttpRequest.QueryString[name]) ? PageUtils.FilterSql(HttpRequest.QueryString[name]) : null;
+            return !string.IsNullOrEmpty(HttpRequest.QueryString[name]) ? AttackUtils.FilterSql(HttpRequest.QueryString[name]) : null;
         }
 
         public int GetQueryInt(string name, int defaultValue = 0)
@@ -140,12 +141,12 @@ namespace SiteServer.CMS.Plugin
 
         public int GetPostInt(string name, int defaultValue = 0)
         {
-            return TranslateUtils.ToInt(PostData[name]?.ToString(), defaultValue);
+            return TranslateUtils.ToIntWithNagetive(PostData[name]?.ToString(), defaultValue);
         }
 
         public decimal GetPostDecimal(string name, decimal defaultValue = 0)
         {
-            return TranslateUtils.ToDecimal(PostData[name]?.ToString(), defaultValue);
+            return TranslateUtils.ToDecimalWithNagetive(PostData[name]?.ToString(), defaultValue);
         }
 
         public bool GetPostBool(string name, bool defaultValue = false)

@@ -63,13 +63,13 @@ namespace SiteServer.Utils
 
         public static string GetDateAndTimeString(DateTime datetime)
         {
-            if (datetime == SqlMinValue) return string.Empty;
+            if (datetime == SqlMinValue || datetime == DateTime.MinValue) return string.Empty;
             return GetDateAndTimeString(datetime, EDateFormatType.Day, ETimeFormatType.ShortTime);
         }
 
         public static string GetDateString(DateTime datetime)
         {
-            if (datetime == SqlMinValue) return string.Empty;
+            if (datetime == SqlMinValue || datetime == DateTime.MinValue) return string.Empty;
             return GetDateString(datetime, EDateFormatType.Day);
         }
 

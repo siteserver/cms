@@ -25,11 +25,6 @@ namespace SiteServer.Utils
 
             public const string TitleImageAppendix = "t_";
             public const string SmallImageAppendix = "s_";
-
-            public static string GetStlUrl(bool isEntity, string label)
-            {
-                return isEntity ? $"http://stl.siteserver.cn/e-{label}/index.html" : $"http://stl.siteserver.cn/{label.Substring("stl:".Length)}/index.html";
-            }
         }
 
         public static bool IsMobile(string val)
@@ -83,18 +78,11 @@ namespace SiteServer.Utils
             return text.ToLower().IndexOf(inner.ToLower(), StringComparison.Ordinal) >= 0;
         }
 
-        public static bool ContainsIgnoreCase(List<string> list, string str)
+        public static bool ContainsIgnoreCase(List<string> list, string target)
         {
             if (list == null || list.Count == 0) return false;
-            foreach (var item in list)
-            {
-                if (EqualsIgnoreCase(item, str))
-                {
-                    return true;
-                }
-            }
 
-            return false;
+            return list.Any(element => EqualsIgnoreCase(element, target));
         }
 
         public static string Trim(string text)
@@ -198,7 +186,8 @@ namespace SiteServer.Utils
         {
             if (a == b) return true;
             if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(b)) return false;
-            return string.Equals(a.Trim().ToLower(), b.Trim().ToLower());
+
+            return a.Equals(b, StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool EqualsIgnoreNull(string a, string b)
@@ -206,36 +195,10 @@ namespace SiteServer.Utils
             return string.IsNullOrEmpty(a) ? string.IsNullOrEmpty(b) : string.Equals(a, b);
         }
 
-        public static bool EqualsIgnoreOrder(List<int> idList, string idCollection)
-        {
-            if (idList == null || idList.Count == 0)
-            {
-                return string.IsNullOrEmpty(idCollection);
-            }
-            if (idList.Count > 0 && string.IsNullOrEmpty(idCollection)) return false;
-
-            var idList2 = TranslateUtils.StringCollectionToIntList(idCollection);
-
-            if (idList.Count != idList2.Count) return false;
-
-            idList.Sort();
-            idList2.Sort();
-
-            for (var i = 0; i < idList.Count; i++)
-            {
-                if (idList[i] != idList2[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         public static bool StartsWithIgnoreCase(string text, string startString)
         {
             if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(startString)) return false;
-            return text.Trim().ToLower().StartsWith(startString.Trim().ToLower()) || string.Equals(text.Trim(), startString.Trim(), StringComparison.CurrentCultureIgnoreCase);
+            return text.Trim().ToLower().StartsWith(startString.Trim().ToLower()) || string.Equals(text.Trim(), startString.Trim(), StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool EndsWithIgnoreCase(string text, string endString)
@@ -1079,6 +1042,16 @@ namespace SiteServer.Utils
                     for (var i = 0; i < replaceList.Count; i++)
                     {
                         parsedContent = parsedContent.Replace(replaceList[i], toList[i]);
+                    }
+
+                    return parsedContent;
+                }
+
+                if (toList.Count == 1)
+                {
+                    foreach (var replaceStr in replaceList)
+                    {
+                        parsedContent = parsedContent.Replace(replaceStr, to);
                     }
 
                     return parsedContent;

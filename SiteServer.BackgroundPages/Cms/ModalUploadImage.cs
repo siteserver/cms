@@ -195,7 +195,7 @@ if (parent.document.getElementById('{_textBoxClientId}'))
 
                     var insertHtml = CbIsLinkToOriginal.Checked ? $@"<a href=""{imageUrl}"" target=""_blank""><img src=""{smallImageUrl}"" border=""0"" /></a>" : $@"<img src=""{smallImageUrl}"" border=""0"" />";
 
-                    script += "if(parent." + ETextEditorTypeUtils.GetEditorInstanceScript() + ") parent." + ETextEditorTypeUtils.GetInsertHtmlScript("Content", insertHtml);
+                    script += "if(parent." + UEditorUtils.GetEditorInstanceScript() + ") parent." + UEditorUtils.GetInsertHtmlScript("Content", insertHtml);
                 }
 
                 LtlScript.Text = $@"

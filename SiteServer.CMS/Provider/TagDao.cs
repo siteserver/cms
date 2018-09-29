@@ -32,7 +32,7 @@ namespace SiteServer.CMS.Provider
             {
                 AttributeName = nameof(TagInfo.ContentIdCollection),
                 DataType = DataType.VarChar,
-                DataLength = 255
+                DataLength = 2000
             },
             new TableColumn
             {
@@ -60,7 +60,7 @@ namespace SiteServer.CMS.Provider
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmSiteId, DataType.Integer, tagInfo.SiteId),
-				GetParameter(ParmContentIdCollection, DataType.VarChar, 255, tagInfo.ContentIdCollection),
+				GetParameter(ParmContentIdCollection, DataType.VarChar, 2000, tagInfo.ContentIdCollection),
                 GetParameter(ParmTag, DataType.VarChar, 255, tagInfo.Tag),
                 GetParameter(ParmUseNum, DataType.Integer, tagInfo.UseNum)
 			};
@@ -74,7 +74,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmContentIdCollection, DataType.VarChar, 255, tagInfo.ContentIdCollection),
+				GetParameter(ParmContentIdCollection, DataType.VarChar, 2000, tagInfo.ContentIdCollection),
                 GetParameter(ParmUseNum, DataType.Integer, tagInfo.UseNum),
                 GetParameter(ParmId, DataType.Integer, tagInfo.Id)
 			};
@@ -168,7 +168,7 @@ namespace SiteServer.CMS.Provider
         public List<string> GetTagListByStartString(int siteId, string startString, int totalNum)
         {
             var sqlString = SqlUtils.GetDistinctTopSqlString("siteserver_Tag", "Tag, UseNum",
-                $"WHERE SiteId = {siteId} AND {SqlUtils.GetInStr("Tag", PageUtils.FilterSql(startString))}",
+                $"WHERE SiteId = {siteId} AND {SqlUtils.GetInStr("Tag", AttackUtils.FilterSql(startString))}",
                 "ORDER BY UseNum DESC", totalNum);
             return DataProvider.DatabaseDao.GetStringList(sqlString);
         }
@@ -206,7 +206,7 @@ namespace SiteServer.CMS.Provider
             builder.Append($" WHERE SiteId = {siteId} ");
             if (!string.IsNullOrEmpty(tag))
             {
-                builder.Append($"AND Tag = '{PageUtils.FilterSql(tag)}' ");
+                builder.Append($"AND Tag = '{AttackUtils.FilterSql(tag)}' ");
             }
             if (contentId > 0)
             {

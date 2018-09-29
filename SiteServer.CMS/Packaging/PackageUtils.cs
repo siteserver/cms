@@ -16,6 +16,8 @@ namespace SiteServer.CMS.Packaging
         public const string PackageIdSsCms = "SS.CMS";
         public const string VersionDev = "0.0.0";
 
+        public const string CacheKeySsCmsIsDownload = nameof(CacheKeySsCmsIsDownload);
+
         //private const string NuGetPackageSource = "https://packages.nuget.org/api/v2";
         //private const string MyGetPackageSource = "https://www.myget.org/F/siteserver/api/v2";
 

@@ -1,39 +1,73 @@
 ﻿using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    [StlClass(Usage = "获取内容值", Description = "通过 stl:content 标签在模板中显示指定内容的属性值")]
+    [StlElement(Title = "获取内容值", Description = "通过 stl:content 标签在模板中显示指定内容的属性值")]
     public class StlContent
     {
         private StlContent() { }
         public const string ElementName = "stl:content";
 
-        private static readonly Attr Type = new Attr("type", "显示的类型");
-        private static readonly Attr LeftText = new Attr("leftText", "显示在信息前的文字");
-        private static readonly Attr RightText = new Attr("rightText", "显示在信息后的文字");
-        private static readonly Attr FormatString = new Attr("formatString", "显示的格式");
-        private static readonly Attr No = new Attr("no", "显示第几项");
-        private static readonly Attr Separator = new Attr("separator", "显示多项时的分割字符串");
-        private static readonly Attr StartIndex = new Attr("startIndex", "字符开始位置");
-        private static readonly Attr Length = new Attr("length", "指定字符长度");
-        private static readonly Attr WordNum = new Attr("wordNum", "显示字符的数目");
-        private static readonly Attr Ellipsis = new Attr("ellipsis", "文字超出部分显示的文字");
-        private static readonly Attr Replace = new Attr("replace", "需要替换的文字，可以是正则表达式");
-        private static readonly Attr To = new Attr("to", "替换replace的文字信息");
-        private static readonly Attr IsClearTags = new Attr("isClearTags", "是否清除HTML标签");
-        private static readonly Attr IsReturnToBr = new Attr("isReturnToBr", "是否将回车替换为HTML换行标签");
-        private static readonly Attr IsLower = new Attr("isLower", "是否转换为小写");
-        private static readonly Attr IsUpper = new Attr("isUpper", "是否转换为大写");
-        private static readonly Attr IsOriginal = new Attr("isOriginal", "如果是引用内容，是否获取所引用内容的值");
+        [StlAttribute(Title = "显示的类型")]
+        private const string Type = nameof(Type);
 
+        [StlAttribute(Title = "显示在信息前的文字")]
+        private const string LeftText = nameof(LeftText);
+
+        [StlAttribute(Title = "显示在信息后的文字")]
+        private const string RightText = nameof(RightText);
+
+        [StlAttribute(Title = "显示的格式")]
+        private const string FormatString = nameof(FormatString);
+
+        [StlAttribute(Title = "显示第几项")]
+        private const string No = nameof(No);
+
+        [StlAttribute(Title = "显示多项时的分割字符串")]
+        private const string Separator = nameof(Separator);
+
+        [StlAttribute(Title = "字符开始位置")]
+        private const string StartIndex = nameof(StartIndex);
+
+        [StlAttribute(Title = "指定字符长度")]
+        private const string Length = nameof(Length);
+
+        [StlAttribute(Title = "显示字符的数目")]
+        private const string WordNum = nameof(WordNum);
+
+        [StlAttribute(Title = "文字超出部分显示的文字")]
+        private const string Ellipsis = nameof(Ellipsis);
+
+        [StlAttribute(Title = "需要替换的文字，可以是正则表达式")]
+        private const string Replace = nameof(Replace);
+
+        [StlAttribute(Title = "替换replace的文字信息")]
+        private const string To = nameof(To);
+
+        [StlAttribute(Title = "是否清除HTML标签")]
+        private const string IsClearTags = nameof(IsClearTags);
+
+        [StlAttribute(Title = "是否将回车替换为HTML换行标签")]
+        private const string IsReturnToBr = nameof(IsReturnToBr);
+
+        [StlAttribute(Title = "是否转换为小写")]
+        private const string IsLower = nameof(IsLower);
+
+        [StlAttribute(Title = "是否转换为大写")]
+        private const string IsUpper = nameof(IsUpper);
+
+        [StlAttribute(Title = "如果是引用内容，是否获取所引用内容的值")]
+        private const string IsOriginal = nameof(IsOriginal);
+        
         public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
             var leftText = string.Empty;
@@ -58,71 +92,71 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, Type.Name))
+                if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
                     type = value.ToLower();
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, LeftText.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, LeftText))
                 {
                     leftText = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, RightText.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, RightText))
                 {
                     rightText = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, FormatString.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, FormatString))
                 {
                     formatString = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, No.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, No))
                 {
                     no = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Separator.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Separator))
                 {
                     separator = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, StartIndex.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, StartIndex))
                 {
                     startIndex = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Length.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Length))
                 {
                     length = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, WordNum.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, WordNum))
                 {
                     wordNum = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Ellipsis.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Ellipsis))
                 {
                     ellipsis = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Replace.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, Replace))
                 {
                     replace = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, To.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, To))
                 {
                     to = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsClearTags.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsClearTags))
                 {
                     isClearTags = TranslateUtils.ToBool(value, true);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsReturnToBr.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsReturnToBr))
                 {
                     isReturnToBrStr = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsLower.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsLower))
                 {
                     isLower = TranslateUtils.ToBool(value, true);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsUpper.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsUpper))
                 {
                     isUpper = TranslateUtils.ToBool(value, true);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, IsOriginal.Name))
+                else if (StringUtils.EqualsIgnoreCase(name, IsOriginal))
                 {
                     isOriginal = TranslateUtils.ToBool(value, true);
                 }
@@ -177,13 +211,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var targetChannelId = contentInfo.SourceId;
                     //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
-                    var targetSiteId = Node.GetSiteId(targetChannelId);
+                    var targetSiteId = StlChannelCache.GetSiteId(targetChannelId);
                     var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                     var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
-                    var tableName = ChannelManager.GetTableName(targetSiteInfo, targetNodeInfo);
                     //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                    var targetContentInfo = Content.GetContentInfo(tableName, contentInfo.ReferenceId);
+                    var targetContentInfo = ContentManager.GetContentInfo(targetSiteInfo, targetNodeInfo, contentInfo.ReferenceId);
                     if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                     {
                         //标题可以使用自己的
@@ -218,9 +251,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                     parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo.Title, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
                     parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
-                    if (!isClearTags && !string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString)))
+                    if (!isClearTags && !string.IsNullOrEmpty(contentInfo.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title))))
                     {
-                        parsedContent = ContentUtility.FormatTitle(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString), parsedContent);
+                        parsedContent = ContentUtility.FormatTitle(contentInfo.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)), parsedContent);
                     }
 
                     if (pageInfo.SiteInfo.Additional.IsContentTitleBreakLine)
@@ -256,7 +289,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         parsedContent = string.Format(formatString, parsedContent);
                     }
                 }
-                else if (BackgroundContentAttribute.PageContent.ToLower().Equals(type))
+                else if (ContentAttribute.PageContent.ToLower().Equals(type))
                 {
                     //if (contextInfo.IsInnerElement)
                     // {
@@ -501,7 +534,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
 
                 }
-                else if (BackgroundContentAttribute.NavigationUrl.ToLower().Equals(type))
+                else if (ContentAttribute.NavigationUrl.ToLower().Equals(type))
                 {
                     parsedContent = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, pageInfo.IsLocal);
                 }
@@ -519,7 +552,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     if (!string.IsNullOrEmpty(contentInfo.AddUserName))
                     {
                         //var displayName = DataProvider.AdministratorDao.GetDisplayName(contentInfo.AddUserName);
-                        var displayName = Administrator.GetDisplayName(contentInfo.AddUserName);
+                        var displayName = StlAdministratorCache.GetDisplayName(contentInfo.AddUserName);
                         parsedContent = string.IsNullOrEmpty(displayName) ? contentInfo.AddUserName : displayName;
                     }
                 }
@@ -529,7 +562,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     if (contentInfo.ContainsKey(type))
                     {
-                        if (!ContentAttribute.AllAttributesLowercase.Contains(type.ToLower()))
+                        if (!StringUtils.ContainsIgnoreCase(ContentAttribute.AllAttributes, type))
                         {
                             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, contentInfo.ChannelId);
                             var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, nodeInfo);

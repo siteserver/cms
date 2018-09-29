@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.DataCache;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -56,7 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
                 CreateManager.CreateFile(SiteId, templateId);
             }
 
-            PageCreateStatus.Redirect(SiteId);
+            PageUtils.Redirect(CmsPages.GetCreateStatusUrl(SiteId));
         }
     }
 }

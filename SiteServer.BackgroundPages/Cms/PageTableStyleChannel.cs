@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -53,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     try
                     {
-                        TableStyleManager.Delete(_channelInfo.Id, _tableName, attributeName);
+                        DataProvider.TableStyleDao.Delete(_channelInfo.Id, _tableName, attributeName);
                         AuthRequest.AddSiteLog(SiteId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
                         SuccessDeleteMessage();
                     }
