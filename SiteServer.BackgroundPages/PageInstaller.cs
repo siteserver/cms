@@ -5,7 +5,6 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -316,7 +315,7 @@ namespace SiteServer.BackgroundPages
             {
                 databaseName = databaseType == DatabaseType.Oracle ? TbSqlOracleDatabase.Text : DdlSqlDatabaseName.SelectedValue;
             }
-            return SqlUtils.GetConnectionString(databaseType, TbSqlServer.Text, TranslateUtils.ToBool(DdlIsDefaultPort.SelectedValue), TranslateUtils.ToInt(TbSqlPort.Text), TbSqlUserName.Text, HihSqlHiddenPassword.Value, databaseName);
+            return WebConfigUtils.GetConnectionString(databaseType, TbSqlServer.Text, TranslateUtils.ToBool(DdlIsDefaultPort.SelectedValue), TranslateUtils.ToInt(TbSqlPort.Text), TbSqlUserName.Text, HihSqlHiddenPassword.Value, databaseName);
         }
 
         private bool CheckLoginValid(out string errorMessage)

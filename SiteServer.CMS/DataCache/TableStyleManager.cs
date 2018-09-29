@@ -271,51 +271,60 @@ namespace SiteServer.CMS.DataCache
 
             if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.Title)))
             {
+                styleInfo.AttributeName = nameof(ContentInfo.Title);
                 styleInfo.DisplayName = "标题";
                 styleInfo.Taxis = 1;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.SubTitle)))
             {
+                styleInfo.AttributeName = nameof(ContentInfo.SubTitle);
                 styleInfo.DisplayName = "副标题";
                 styleInfo.Taxis = 2;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.ImageUrl)))
             {
+                styleInfo.AttributeName = nameof(ContentInfo.ImageUrl);
                 styleInfo.DisplayName = "图片";
                 styleInfo.InputType = InputType.Image;
                 styleInfo.Taxis = 3;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.VideoUrl)))
             {
+                styleInfo.AttributeName = nameof(ContentInfo.VideoUrl);
                 styleInfo.DisplayName = "视频";
                 styleInfo.InputType = InputType.Video;
                 styleInfo.Taxis = 4;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.FileUrl)))
             {
+                styleInfo.AttributeName = nameof(ContentInfo.FileUrl);
                 styleInfo.DisplayName = "附件";
                 styleInfo.InputType = InputType.File;
                 styleInfo.Taxis = 5;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.Content)))
             {
+                styleInfo.AttributeName = nameof(ContentInfo.Content);
                 styleInfo.DisplayName = "内容";
                 styleInfo.InputType = InputType.TextEditor;
                 styleInfo.Taxis = 6;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.Summary)))
             {
+                styleInfo.AttributeName = nameof(ContentInfo.Summary);
                 styleInfo.DisplayName = "内容摘要";
                 styleInfo.InputType = InputType.TextArea;
                 styleInfo.Taxis = 7;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.Author)))
             {
+                styleInfo.AttributeName = nameof(ContentInfo.Author);
                 styleInfo.DisplayName = "作者";
                 styleInfo.Taxis = 8;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.Source)))
             {
+                styleInfo.AttributeName = nameof(ContentInfo.Source);
                 styleInfo.DisplayName = "来源";
                 styleInfo.Taxis = 9;
             }

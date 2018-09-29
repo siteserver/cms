@@ -1,8 +1,8 @@
 bin/
 obj/
-home/
 /channels/
 /contents/
+/home/
 SiteFiles/BackupFiles/
 SiteFiles/Plugins/
 SiteFiles/packages/
@@ -12,6 +12,7 @@ SiteFiles/UserFiles/test/
 Template
 /sapprft/
 
+test/
 ## sqlserver
 test1/
 test2/

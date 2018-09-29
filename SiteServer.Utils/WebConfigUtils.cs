@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Xml;
 using SiteServer.Plugin;
 
@@ -25,7 +26,7 @@ namespace SiteServer.Utils
             private set
             {
                 _connectionString = value;
-                ConnectionStringUserId = SqlUtils.GetConnectionStringUserId(_connectionString);
+                ConnectionStringUserId = GetConnectionStringUserId(_connectionString);
             }
         }
 
@@ -131,7 +132,7 @@ namespace SiteServer.Utils
 
             IsProtectData = isProtectData;
             DatabaseType = DatabaseTypeUtils.GetEnumType(databaseType);
-            ConnectionString = SqlUtils.GetConnectionString(DatabaseType, connectionString);
+            ConnectionString = GetConnectionString(DatabaseType, connectionString);
             if (string.IsNullOrEmpty(AdminDirectory))
             {
                 AdminDirectory = "siteserver";
@@ -147,7 +148,7 @@ namespace SiteServer.Utils
         {
             PhysicalApplicationPath = physicalApplicationPath;
             DatabaseType = DatabaseTypeUtils.GetEnumType(databaseType);
-            ConnectionString = SqlUtils.GetConnectionString(DatabaseType, connectionString);
+            ConnectionString = GetConnectionString(DatabaseType, connectionString);
         }
 
         public static void ResetWebConfig()
@@ -165,7 +166,7 @@ namespace SiteServer.Utils
         public static void UpdateWebConfig(bool isProtectData, DatabaseType databaseType, string connectionString,
             string adminDirectory, string secretKey, bool isNightlyUpdate)
         {
-            connectionString = SqlUtils.GetConnectionString(databaseType, connectionString);
+            connectionString = GetConnectionString(databaseType, connectionString);
 
             var configPath = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
             UpdateWebConfig(configPath, isProtectData, databaseType, connectionString, adminDirectory, secretKey, isNightlyUpdate);
@@ -177,7 +178,7 @@ namespace SiteServer.Utils
 
         public static void UpdateWebConfig(string configPath, bool isProtectData, DatabaseType databaseType, string connectionString, string adminDirectory, string secretKey, bool isNightlyUpdate)
         {
-            connectionString = SqlUtils.GetConnectionString(databaseType, connectionString);
+            connectionString = GetConnectionString(databaseType, connectionString);
 
             var doc = new XmlDocument();
             doc.Load(configPath);
@@ -309,6 +310,110 @@ namespace SiteServer.Utils
             }
 
             return connectionString;
+        }
+
+        public static string GetConnectionString(DatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string database)
+        {
+            var connectionString = string.Empty;
+
+            if (databaseType == DatabaseType.MySql)
+            {
+                connectionString = $"Server={server};";
+                if (!isDefaultPort && port > 0)
+                {
+                    connectionString += $"Port={port};";
+                }
+                connectionString += $"Uid={userName};Pwd={password};";
+                if (!string.IsNullOrEmpty(database))
+                {
+                    connectionString += $"Database={database};";
+                }
+                connectionString += "SslMode=none;CharSet=utf8;";
+            }
+            else if (databaseType == DatabaseType.SqlServer)
+            {
+                connectionString = $"Server={server};";
+                if (!isDefaultPort && port > 0)
+                {
+                    connectionString += $"Port={port};";
+                }
+                connectionString += $"Uid={userName};Pwd={password};";
+                if (!string.IsNullOrEmpty(database))
+                {
+                    connectionString += $"Database={database};";
+                }
+            }
+            else if (databaseType == DatabaseType.PostgreSql)
+            {
+                connectionString = $"Host={server};";
+                if (!isDefaultPort && port > 0)
+                {
+                    connectionString += $"Port={port};";
+                }
+                connectionString += $"Username={userName};Password={password};";
+                if (!string.IsNullOrEmpty(database))
+                {
+                    connectionString += $"Database={database};";
+                }
+            }
+            else if (databaseType == DatabaseType.Oracle)
+            {
+                port = !isDefaultPort && port > 0 ? port : 1521;
+                database = string.IsNullOrEmpty(database)
+                    ? string.Empty
+                    : $"(CONNECT_DATA=(SERVICE_NAME={database}))";
+                connectionString = $"Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={server})(PORT={port})){database});User ID={userName};Password={password};pooling=false;";
+            }
+
+            return connectionString;
+        }
+
+        public static string GetConnectionString(DatabaseType databaseType, string connectionString)
+        {
+            if (databaseType == DatabaseType.MySql)
+            {
+                connectionString = connectionString.TrimEnd(';');
+                if (!StringUtils.ContainsIgnoreCase(connectionString, "SslMode="))
+                {
+                    connectionString += ";SslMode=none;";
+                }
+                if (!StringUtils.ContainsIgnoreCase(connectionString, "CharSet="))
+                {
+                    connectionString += ";CharSet=utf8;";
+                }
+            }
+            else if (databaseType == DatabaseType.Oracle)
+            {
+                connectionString = connectionString.TrimEnd(';');
+                if (!StringUtils.ContainsIgnoreCase(connectionString, "pooling="))
+                {
+                    connectionString += ";pooling=false;";
+                }
+            }
+
+            return connectionString;
+        }
+
+        public static string GetConnectionStringUserId(string connectionString)
+        {
+            var userId = string.Empty;
+
+            foreach (var pair in TranslateUtils.StringCollectionToStringList(connectionString, ';'))
+            {
+                if (!string.IsNullOrEmpty(pair) && pair.IndexOf("=", StringComparison.Ordinal) != -1)
+                {
+                    var key = pair.Substring(0, pair.IndexOf("=", StringComparison.Ordinal));
+                    var value = pair.Substring(pair.IndexOf("=", StringComparison.Ordinal) + 1);
+                    if (StringUtils.EqualsIgnoreCase(key, "Uid") ||
+                        StringUtils.EqualsIgnoreCase(key, "Username") ||
+                        StringUtils.EqualsIgnoreCase(key, "User ID"))
+                    {
+                        return value;
+                    }
+                }
+            }
+
+            return userId;
         }
     }
 }

@@ -277,13 +277,13 @@ namespace SiteServer.CMS.Model
 
 	    public override Dictionary<string, object> ToDictionary()
 	    {
-	        //var dict = base.ToDictionary();
+	        var dict = base.ToDictionary();
+	        dict.Remove(nameof(SettingsXml));
 
-	        var siteInfo = SiteManager.GetSiteInfo(SiteId);
+            var siteInfo = SiteManager.GetSiteInfo(SiteId);
 	        var channelInfo = ChannelManager.GetChannelInfo(SiteId, ChannelId);
 	        var styleInfoList = TableStyleManager.GetTableStyleInfoList(siteInfo, channelInfo);
 
-            var dict = new Dictionary<string, object>();
 	        foreach (var styleInfo in styleInfoList)
 	        {
 	            if (styleInfo.InputType == InputType.Image || styleInfo.InputType == InputType.File || styleInfo.InputType == InputType.Video)
@@ -294,7 +294,8 @@ namespace SiteServer.CMS.Model
 	                    value = PageUtility.ParseNavigationUrl(siteInfo, value, false);
 	                }
 
-	                dict[styleInfo.AttributeName] = value;
+	                dict.Remove(styleInfo.AttributeName);
+                    dict[styleInfo.AttributeName] = value;
                 }
                 else if (styleInfo.InputType == InputType.TextEditor)
 	            {
@@ -303,12 +304,13 @@ namespace SiteServer.CMS.Model
 	                {
 	                    value = ContentUtility.TextEditorContentDecode(siteInfo, value, false);
 	                }
-
-	                dict[styleInfo.AttributeName] = value;
+	                dict.Remove(styleInfo.AttributeName);
+                    dict[styleInfo.AttributeName] = value;
 	            }
 	            else
 	            {
-	                dict[styleInfo.AttributeName] = Get(styleInfo.AttributeName);
+	                dict.Remove(styleInfo.AttributeName);
+                    dict[styleInfo.AttributeName] = Get(styleInfo.AttributeName);
                 }
 	        }
 
@@ -316,7 +318,8 @@ namespace SiteServer.CMS.Model
 	        {
 	            if (StringUtils.StartsWith(attributeName, "Is"))
 	            {
-	                dict[attributeName] = GetBool(attributeName);
+	                dict.Remove(attributeName);
+                    dict[attributeName] = GetBool(attributeName);
                 }
 	            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Title))
 	            {
@@ -325,13 +328,34 @@ namespace SiteServer.CMS.Model
 	                {
 	                    value = value.Replace("  ", "<br />");
 	                }
-	                dict[attributeName] = value;
+	                dict.Remove(attributeName);
+                    dict[attributeName] = value;
                 }
                 else
 	            {
-	                dict[attributeName] = Get(attributeName);
+	                dict.Remove(attributeName);
+                    dict[attributeName] = Get(attributeName);
                 }
             }
+
+	        foreach (var attributeName in ContentAttribute.HiddenAttributes)
+	        {
+	            if (attributeName == ContentAttribute.NavigationUrl)
+	            {
+	                dict.Remove(attributeName);
+                    dict[attributeName] = PageUtility.GetContentUrl(siteInfo, this, false);
+	            }
+	            else if (attributeName == ContentAttribute.CheckState)
+	            {
+	                dict.Remove(attributeName);
+                    dict[attributeName] = CheckManager.GetCheckState(siteInfo, this);
+	            }
+	            else
+	            {
+	                dict.Remove(attributeName);
+                    dict[attributeName] = Get(attributeName);
+	            }
+	        }
 
             return dict;
 	    }

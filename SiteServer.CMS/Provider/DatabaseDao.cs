@@ -1070,7 +1070,7 @@ SELECT * FROM (
 
         private List<TableColumn> GetOracleColumns(string connectionString, string tableName)
         {
-            var owner = SqlUtils.GetConnectionStringUserId(connectionString).ToUpper();
+            var owner = WebConfigUtils.GetConnectionStringUserId(connectionString).ToUpper();
             tableName = tableName.ToUpper();
 
             var list = new List<TableColumn>();
