@@ -6,6 +6,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -22,7 +23,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -49,7 +50,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -57,7 +58,7 @@ namespace SiteServer.API.Controllers.Pages
 
                 var unCheckedList = new List<object>();
 
-                if (request.AdminPermissions.IsConsoleAdministrator)
+                if (request.AdminPermissionsImpl.IsConsoleAdministrator)
                 {
                     foreach(var siteInfo in SiteManager.GetSiteInfoList())
                     {
@@ -73,7 +74,7 @@ namespace SiteServer.API.Controllers.Pages
                         }
                     }
                 }
-                else if (request.AdminPermissions.IsSystemAdministrator)
+                else if (request.AdminPermissionsImpl.IsSystemAdministrator)
                 {
                     foreach (var siteId in TranslateUtils.StringCollectionToIntList(request.AdminInfo.SiteIdCollection))
                     {

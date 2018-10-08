@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Plugin;
 
@@ -20,27 +23,27 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public IUserInfo GetUserInfoByUserId(int userId)
         {
-            return DataProvider.UserDao.GetUserInfo(userId);
+            return UserManager.GetUserInfoByUserId(userId);
         }
 
         public IUserInfo GetUserInfoByUserName(string userName)
         {
-            return DataProvider.UserDao.GetUserInfoByUserName(userName);
+            return UserManager.GetUserInfoByUserName(userName);
         }
 
         public IUserInfo GetUserInfoByEmail(string email)
         {
-            return DataProvider.UserDao.GetUserInfoByEmail(email);
+            return UserManager.GetUserInfoByEmail(email);
         }
 
         public IUserInfo GetUserInfoByMobile(string mobile)
         {
-            return DataProvider.UserDao.GetUserInfoByMobile(mobile);
+            return UserManager.GetUserInfoByMobile(mobile);
         }
 
         public IUserInfo GetUserInfoByAccount(string account)
         {
-            return DataProvider.UserDao.GetUserInfoByAccount(account);
+            return UserManager.GetUserInfoByAccount(account);
         }
 
         public bool IsUserNameExists(string userName)
@@ -60,22 +63,13 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public bool Insert(IUserInfo userInfo, string password, out string errorMessage)
         {
-            return DataProvider.UserDao.Insert(userInfo, password, PageUtils.GetIpAddress(), out errorMessage);
+            var userId = DataProvider.UserDao.Insert(userInfo as UserInfo, password, PageUtils.GetIpAddress(), out errorMessage);
+            return userId > 0;
         }
 
         public bool Validate(string account, string password, out string userName, out string errorMessage)
         {
             return DataProvider.UserDao.Validate(account, password, false, out userName, out errorMessage);
-        }
-
-        public void UpdateLastActivityDateAndCountOfFailedLogin(string userName)
-        {
-            DataProvider.UserDao.UpdateLastActivityDateAndCountOfFailedLogin(userName);
-        }
-
-        public void UpdateLastActivityDateAndCountOfLogin(string userName)
-        {
-            DataProvider.UserDao.UpdateLastActivityDateAndCountOfLogin(userName);
         }
 
         public bool ChangePassword(string userName, string password, out string errorMessage)
@@ -85,7 +79,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public void Update(IUserInfo userInfo)
         {
-            DataProvider.UserDao.Update(userInfo);
+            DataProvider.UserDao.Update(userInfo as UserInfo);
         }
 
         public bool IsPasswordCorrect(string password, out string errorMessage)
@@ -101,6 +95,16 @@ namespace SiteServer.CMS.Plugin.Apis
         public List<ILogInfo> GetLogs(string userName, int totalNum, string action = "")
         {
             return DataProvider.UserLogDao.List(userName, totalNum, action);
+        }
+
+        public string GetAccessToken(int userId, string userName, DateTime expiresAt)
+        {
+            return RequestImpl.GetAccessToken(userId, userName, expiresAt);
+        }
+
+        public IAccessToken ParseAccessToken(string accessToken)
+        {
+            return RequestImpl.ParseAccessToken(accessToken);
         }
     }
 }

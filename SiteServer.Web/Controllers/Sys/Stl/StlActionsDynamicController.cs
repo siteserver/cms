@@ -4,6 +4,7 @@ using System.Web.Http;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.StlElement;
 
 namespace SiteServer.API.Controllers.Sys.Stl
@@ -16,7 +17,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
 
                 var siteId = request.GetPostInt("siteId");
                 var pageChannelId = request.GetPostInt("pageChannelId");

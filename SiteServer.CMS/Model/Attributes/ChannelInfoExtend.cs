@@ -1,5 +1,5 @@
 ﻿using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 

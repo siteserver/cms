@@ -149,7 +149,7 @@ namespace SiteServer.BackgroundPages.Cms
             LbChannelId.Items.Clear();
             if (PhSite.Visible && DdlSiteId.Items.Count > 0)
             {
-                ChannelManager.AddListItemsForAddContent(LbChannelId.Items, SiteManager.GetSiteInfo(int.Parse(DdlSiteId.SelectedValue)), false, AuthRequest.AdminPermissions);
+                ChannelManager.AddListItemsForAddContent(LbChannelId.Items, SiteManager.GetSiteInfo(int.Parse(DdlSiteId.SelectedValue)), false, AuthRequest.AdminPermissionsImpl);
             }
         }
 

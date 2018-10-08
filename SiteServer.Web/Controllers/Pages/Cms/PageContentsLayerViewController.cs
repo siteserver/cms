@@ -3,6 +3,7 @@ using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
@@ -16,14 +17,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
                 var contentId = request.GetQueryInt("contentId");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentView))
                 {
                     return Unauthorized();
@@ -38,7 +39,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                 if (contentInfo == null) return BadRequest("无法确定对应的内容");
 
-                contentInfo.AddParameters(new
+                contentInfo.Load(new
                 {
                     CheckState =
                         CheckManager.GetCheckState(siteInfo, contentInfo)

@@ -1132,6 +1132,8 @@ namespace SiteServer.Utils
             return new Dictionary<string, object>(json.ToObject<IDictionary<string, object>>(), StringComparer.CurrentCultureIgnoreCase);
         }
 
+        public const string EncryptStingIndicator = "0secret0";
+
         public static string EncryptStringBySecretKey(string inputString)
         {
             return EncryptStringBySecretKey(inputString, WebConfigUtils.SecretKey);
@@ -1151,7 +1153,7 @@ namespace SiteServer.Utils
             var retval = encryptor.OutString;
             retval = retval.Replace("+", "0add0").Replace("=", "0equals0").Replace("&", "0and0").Replace("?", "0question0").Replace("'", "0quote0").Replace("/", "0slash0");
 
-            return retval;
+            return retval + EncryptStingIndicator;
         }
 
         public static string DecryptStringBySecretKey(string inputString)
@@ -1163,7 +1165,7 @@ namespace SiteServer.Utils
         {
             if (string.IsNullOrEmpty(inputString)) return string.Empty;
 
-            inputString = inputString.Replace("0add0", "+").Replace("0equals0", "=").Replace("0and0", "&").Replace("0question0", "?").Replace("0quote0", "'").Replace("0slash0", "/");
+            inputString = inputString.Replace(EncryptStingIndicator, string.Empty).Replace("0add0", "+").Replace("0equals0", "=").Replace("0and0", "&").Replace("0question0", "?").Replace("0quote0", "'").Replace("0slash0", "/");
 
             var encryptor = new DesEncryptor
             {

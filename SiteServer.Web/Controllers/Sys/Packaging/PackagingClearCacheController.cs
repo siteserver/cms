@@ -2,6 +2,7 @@
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys.Packaging
@@ -12,7 +13,7 @@ namespace SiteServer.API.Controllers.Sys.Packaging
         [HttpPost, Route(ApiRouteClearCache.Route)]
         public IHttpActionResult Main()
         {
-            var request = new AuthRequest();
+            var request = new RequestImpl();
 
             if (!request.IsAdminLoggin)
             {

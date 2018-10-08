@@ -138,8 +138,14 @@ namespace SiteServer.CMS.Core
         private static UserDao _userDao;
         public static UserDao UserDao => _userDao ?? (_userDao = new UserDao());
 
+        private static UserGroupDao _userGroupDao;
+        public static UserGroupDao UserGroupDao => _userGroupDao ?? (_userGroupDao = new UserGroupDao());
+
         private static UserLogDao _userLogDao;
         public static UserLogDao UserLogDao => _userLogDao ?? (_userLogDao = new UserLogDao());
+
+        private static UserMenuDao _userMenuDao;
+        public static UserMenuDao UserMenuDao => _userMenuDao ?? (_userMenuDao = new UserMenuDao());
 
         public static void Reset()
         {
@@ -179,7 +185,9 @@ namespace SiteServer.CMS.Core
             _templateLogDao = null;
             _templateMatchDao = null;
             _userDao = null;
+            _userGroupDao = null;
             _userLogDao = null;
+            _userMenuDao = null;
         }
 
         public static List<DataProviderBase> AllProviders => new List<DataProviderBase>
@@ -218,7 +226,9 @@ namespace SiteServer.CMS.Core
             TemplateLogDao,
             TemplateMatchDao,
             UserDao,
-            UserLogDao
+            UserGroupDao,
+            UserLogDao,
+            UserMenuDao
         };
     }
 }

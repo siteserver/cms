@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ConfigurationCrossSiteTrans, null, AuthRequest.AdminPermissions);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ConfigurationCrossSiteTrans, null, AuthRequest.AdminPermissionsImpl);
         }
 	}
 }

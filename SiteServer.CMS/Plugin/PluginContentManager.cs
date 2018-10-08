@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 

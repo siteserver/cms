@@ -383,7 +383,7 @@ namespace SiteServer.BackgroundPages
                 var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
                 var connectionString = GetConnectionString(true);
 
-                WebConfigUtils.UpdateWebConfig(isProtectData, databaseType, connectionString, "SiteServer", StringUtils.GetShortGuid(), false);
+                WebConfigUtils.UpdateWebConfig(isProtectData, databaseType, connectionString, "SiteServer", "Home", StringUtils.GetShortGuid(), false);
 
                 DataProvider.Reset();
 

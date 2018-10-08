@@ -9,7 +9,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin.Apis;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin

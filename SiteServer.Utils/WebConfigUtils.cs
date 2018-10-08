@@ -22,7 +22,7 @@ namespace SiteServer.Utils
 
         public static string ConnectionString
         {
-            get { return _connectionString; }
+            get => _connectionString;
             private set
             {
                 _connectionString = value;
@@ -31,16 +31,12 @@ namespace SiteServer.Utils
         }
 
         public static string AdminDirectory { get; private set; }
+        public static string HomeDirectory { get; private set; }
         public static string SecretKey { get; private set; }
 
         public static bool IsNightlyUpdate { get; private set; }
 
-        public static void Load(string physicalApplicationPath)
-        {
-            Load(physicalApplicationPath, WebConfigFileName);
-        }
-
-        public static void Load(string physicalApplicationPath, string webConfigFileName)
+        public static void Load(string physicalApplicationPath, string webConfigFileName = WebConfigFileName)
         {
             PhysicalApplicationPath = physicalApplicationPath;
 
@@ -97,6 +93,14 @@ namespace SiteServer.Utils
                                         AdminDirectory = attrValue.Value;
                                     }
                                 }
+                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(HomeDirectory)))
+                                {
+                                    var attrValue = setting.Attributes["value"];
+                                    if (attrValue != null)
+                                    {
+                                        HomeDirectory = attrValue.Value;
+                                    }
+                                }
                                 else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(SecretKey)))
                                 {
                                     var attrValue = setting.Attributes["value"];
@@ -135,7 +139,11 @@ namespace SiteServer.Utils
             ConnectionString = GetConnectionString(DatabaseType, connectionString);
             if (string.IsNullOrEmpty(AdminDirectory))
             {
-                AdminDirectory = "siteserver";
+                AdminDirectory = "SiteServer";
+            }
+            if (string.IsNullOrEmpty(HomeDirectory))
+            {
+                HomeDirectory = "Home";
             }
             if (string.IsNullOrEmpty(SecretKey))
             {
@@ -144,39 +152,19 @@ namespace SiteServer.Utils
             }
         }
 
-        public static void Load(string physicalApplicationPath, string databaseType, string connectionString)
-        {
-            PhysicalApplicationPath = physicalApplicationPath;
-            DatabaseType = DatabaseTypeUtils.GetEnumType(databaseType);
-            ConnectionString = GetConnectionString(DatabaseType, connectionString);
-        }
-
-        public static void ResetWebConfig()
-        {
-            var configPath = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
-            ResetWebConfig(configPath);
-        }
-
-        public static void ResetWebConfig(string configPath)
-        {
-            var content = FileUtils.ReadText(configPath, Encoding.UTF8);
-            FileUtils.WriteText(configPath, Encoding.UTF8, content);
-        }
-
-        public static void UpdateWebConfig(bool isProtectData, DatabaseType databaseType, string connectionString,
-            string adminDirectory, string secretKey, bool isNightlyUpdate)
+        public static void UpdateWebConfig(bool isProtectData, DatabaseType databaseType, string connectionString, string adminDirectory, string homeDirectory, string secretKey, bool isNightlyUpdate)
         {
             connectionString = GetConnectionString(databaseType, connectionString);
 
             var configPath = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
-            UpdateWebConfig(configPath, isProtectData, databaseType, connectionString, adminDirectory, secretKey, isNightlyUpdate);
+            UpdateWebConfig(configPath, isProtectData, databaseType, connectionString, adminDirectory, homeDirectory, secretKey, isNightlyUpdate);
 
             IsProtectData = isProtectData;
             DatabaseType = databaseType;
             ConnectionString = connectionString;
         }
 
-        public static void UpdateWebConfig(string configPath, bool isProtectData, DatabaseType databaseType, string connectionString, string adminDirectory, string secretKey, bool isNightlyUpdate)
+        public static void UpdateWebConfig(string configPath, bool isProtectData, DatabaseType databaseType, string connectionString, string adminDirectory, string homeDirectory, string secretKey, bool isNightlyUpdate)
         {
             connectionString = GetConnectionString(databaseType, connectionString);
 
@@ -234,6 +222,15 @@ namespace SiteServer.Utils
                                 if (attrValue != null)
                                 {
                                     attrValue.Value = adminDirectory;
+                                    dirty = true;
+                                }
+                            }
+                            else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(HomeDirectory)))
+                            {
+                                var attrValue = setting.Attributes["value"];
+                                if (attrValue != null)
+                                {
+                                    attrValue.Value = homeDirectory;
                                     dirty = true;
                                 }
                             }
@@ -368,7 +365,7 @@ namespace SiteServer.Utils
             return connectionString;
         }
 
-        public static string GetConnectionString(DatabaseType databaseType, string connectionString)
+        private static string GetConnectionString(DatabaseType databaseType, string connectionString)
         {
             if (databaseType == DatabaseType.MySql)
             {

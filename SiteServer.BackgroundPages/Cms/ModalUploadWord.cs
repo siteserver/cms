@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             int checkedLevel;
-            var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, SiteId, out checkedLevel);
+            var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, SiteId, out checkedLevel);
             CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, null, isChecked, checkedLevel);
             ControlUtils.SelectSingleItem(DdlContentLevel, CheckManager.LevelInt.CaoGao.ToString());
         }
@@ -77,8 +77,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (fileNames.Count > 1)
             {
                 var tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
-                var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelInfo.Id);
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
+                var styleInfoList = TableStyleManager.GetContentStyleInfoList(SiteInfo, _channelInfo);
 
                 foreach (var fileName in fileNames)
                 {
@@ -88,7 +87,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                         if (!string.IsNullOrEmpty(formCollection[ContentAttribute.Title]))
                         {
-                            var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributes);
+                            var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributes.Value);
 
                             var contentInfo = new ContentInfo(dict)
                             {

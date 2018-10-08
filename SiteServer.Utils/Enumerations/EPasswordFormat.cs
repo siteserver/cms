@@ -48,7 +48,7 @@ namespace SiteServer.Utils.Enumerations
 
         public static EPasswordFormat GetEnumType(string typeStr)
         {
-            var retval = EPasswordFormat.Clear;
+            var retval = EPasswordFormat.Encrypted;
 
             if (Equals(EPasswordFormat.Clear, typeStr))
             {

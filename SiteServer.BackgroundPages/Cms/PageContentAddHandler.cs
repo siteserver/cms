@@ -7,7 +7,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -32,15 +32,12 @@ namespace SiteServer.BackgroundPages.Cms
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(siteId, channelId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
-
-            
+            var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
 
             var form = AuthRequest.HttpRequest.Form;
 
-            var dict = BackgroundInputTypeParser.SaveAttributes(siteInfo, styleInfoList, form, ContentAttribute.AllAttributes);
+            var dict = BackgroundInputTypeParser.SaveAttributes(siteInfo, styleInfoList, form, ContentAttribute.AllAttributes.Value);
             var contentInfo = new ContentInfo(dict)
             {
                 ChannelId = channelId,

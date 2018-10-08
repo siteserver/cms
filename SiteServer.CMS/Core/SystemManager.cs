@@ -47,7 +47,7 @@ namespace SiteServer.CMS.Core
                     Password = adminPassword
                 };
 
-                AdminManager.CreateAdministrator(administratorInfo, out _);
+                DataProvider.AdministratorDao.Insert(administratorInfo, out _);
                 DataProvider.AdministratorsInRolesDao.AddUserToRole(adminName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
             }
         }

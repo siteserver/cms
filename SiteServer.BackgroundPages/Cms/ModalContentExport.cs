@@ -33,9 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
         private void LoadDisplayAttributeCheckBoxList()
         {
             var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
-            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
-            var tableName = ChannelManager.GetTableName(SiteInfo, nodeInfo);
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities));
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(SiteInfo, nodeInfo));
 
             foreach (var styleInfo in styleInfoList)
             {

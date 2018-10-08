@@ -8,6 +8,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
@@ -26,7 +27,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 var form = request.GetPostCollection();
 
                 var isAllSites = request.GetPostBool(StlSearch.IsAllSites.ToLower());

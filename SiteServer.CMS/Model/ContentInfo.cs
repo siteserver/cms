@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -15,54 +15,44 @@ namespace SiteServer.CMS.Model
     [JsonConverter(typeof(ContentConverter))]
     public class ContentInfo : AttributesImpl, IContentInfo
 	{
-	    public ContentInfo(IDataReader rdr) : base(rdr)
+        public ContentInfo()
         {
-            PostProcessing();
+
         }
 
-	    public ContentInfo(IDataRecord record) : base(record)
-	    {
-	        PostProcessing();
+        public ContentInfo(IDataReader rdr) : base(rdr)
+        {
+
+        }
+
+        public ContentInfo(IDataRecord record) : base(record)
+        {
+
         }
 
         public ContentInfo(DataRowView view) : base(view)
-	    {
-	        PostProcessing();
+        {
+
         }
 
-	    public ContentInfo(DataRow row) : base(row)
-	    {
-	        PostProcessing();
+        public ContentInfo(DataRow row) : base(row)
+        {
+
         }
 
 	    public ContentInfo(Dictionary<string, object> dict) : base(dict)
 	    {
-	        PostProcessing();
+
 	    }
 
 	    public ContentInfo(NameValueCollection nvc) : base(nvc)
-	    {
-	        PostProcessing();
-	    }
+        {
 
-	    public void AddParameters(object param)
-	    {
-	        if (param != null)
-	        {
-	            foreach (var p in param.GetType().GetProperties())
-	            {
-	                Set(p.Name.ToCamelCase(), p.GetValue(param));
-	            }
-            }
-	    }
+        }
 
-        private void PostProcessing()
+	    public ContentInfo(object anonymous) : base(anonymous)
 	    {
-	        if (ContainsKey(nameof(SettingsXml)))
-	        {
-	            Load(SettingsXml);
-	            Remove(nameof(SettingsXml));
-            }
+
 	    }
 
         public int Id
@@ -278,11 +268,11 @@ namespace SiteServer.CMS.Model
 	    public override Dictionary<string, object> ToDictionary()
 	    {
 	        var dict = base.ToDictionary();
-	        dict.Remove(nameof(SettingsXml));
+	        //dict.Remove(nameof(SettingsXml));
 
             var siteInfo = SiteManager.GetSiteInfo(SiteId);
 	        var channelInfo = ChannelManager.GetChannelInfo(SiteId, ChannelId);
-	        var styleInfoList = TableStyleManager.GetTableStyleInfoList(siteInfo, channelInfo);
+	        var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
 
 	        foreach (var styleInfo in styleInfoList)
 	        {
@@ -314,7 +304,7 @@ namespace SiteServer.CMS.Model
                 }
 	        }
 
-	        foreach (var attributeName in ContentAttribute.AllAttributes)
+	        foreach (var attributeName in ContentAttribute.AllAttributes.Value)
 	        {
 	            if (StringUtils.StartsWith(attributeName, "Is"))
 	            {
@@ -338,7 +328,7 @@ namespace SiteServer.CMS.Model
                 }
             }
 
-	        foreach (var attributeName in ContentAttribute.HiddenAttributes)
+	        foreach (var attributeName in ContentAttribute.IncludedAttributes.Value)
 	        {
 	            if (attributeName == ContentAttribute.NavigationUrl)
 	            {
@@ -357,10 +347,15 @@ namespace SiteServer.CMS.Model
 	            }
 	        }
 
-            return dict;
+	        foreach (var attributeName in ContentAttribute.ExcludedAttributes.Value)
+	        {
+	            dict.Remove(attributeName);
+            }
+
+	        return dict;
 	    }
 
-	    public class ContentConverter : JsonConverter
+	    private class ContentConverter : JsonConverter
 	    {
 	        public override bool CanConvert(Type objectType)
 	        {

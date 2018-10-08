@@ -1,4 +1,7 @@
-﻿using SiteServer.CMS.Core;
+﻿using System;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Apis
@@ -10,36 +13,54 @@ namespace SiteServer.CMS.Plugin.Apis
         private static AdminApi _instance;
         public static AdminApi Instance => _instance ?? (_instance = new AdminApi());
 
-        public bool IsAdminNameExists(string adminName)
+        public IAdministratorInfo GetAdminInfoByUserId(int userId)
         {
-            return DataProvider.AdministratorDao.IsAdminNameExists(adminName);
+            return AdminManager.GetAdminInfoByUserId(userId);
         }
 
-        public string AdminName
+        public IAdministratorInfo GetAdminInfoByUserName(string userName)
         {
-            get
-            {
-                var request = new AuthRequest();
-                return request.AdminName;
-            }
+            return AdminManager.GetAdminInfoByUserName(userName);
         }
 
-        public bool HasSystemPermissions(params string[] systemPermissions)
+        public IAdministratorInfo GetAdminInfoByEmail(string email)
         {
-            var request = new AuthRequest();
-            return request.AdminPermissions.HasSystemPermissions(systemPermissions);
+            return AdminManager.GetAdminInfoByEmail(email);
         }
 
-        public bool HasSitePermissions(int siteId, params string[] sitePermissions)
+        public IAdministratorInfo GetAdminInfoByMobile(string mobile)
         {
-            var request = new AuthRequest();
-            return request.AdminPermissions.HasSitePermissions(siteId, sitePermissions);
+            return AdminManager.GetAdminInfoByMobile(mobile);
         }
 
-        public bool HasChannelPermissions(int siteId, int channelId, params string[] channelPermissions)
+        public IAdministratorInfo GetAdminInfoByAccount(string account)
         {
-            var request = new AuthRequest();
-            return request.AdminPermissions.HasChannelPermissions(siteId, channelId, channelPermissions);
+            return AdminManager.GetAdminInfoByAccount(account);
+        }
+
+        public bool IsUserNameExists(string userName)
+        {
+            return DataProvider.AdministratorDao.IsUserNameExists(userName);
+        }
+
+        public bool IsEmailExists(string email)
+        {
+            return DataProvider.AdministratorDao.IsEmailExists(email);
+        }
+
+        public bool IsMobileExists(string mobile)
+        {
+            return DataProvider.AdministratorDao.IsMobileExists(mobile);
+        }
+
+        public string GetAccessToken(int userId, string userName, DateTime expiresAt)
+        {
+            return RequestImpl.GetAccessToken(userId, userName, expiresAt);
+        }
+
+        public IAccessToken ParseAccessToken(string accessToken)
+        {
+            return RequestImpl.ParseAccessToken(accessToken);
         }
     }
 }

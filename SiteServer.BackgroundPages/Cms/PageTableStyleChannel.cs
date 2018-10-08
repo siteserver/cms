@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.Cms
             var channelId = AuthRequest.GetQueryInt("channelId", SiteId);
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             _redirectUrl = GetRedirectUrl(SiteId, channelId);
-            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, channelId);
+            _relatedIdentities = TableStyleManager.GetRelatedIdentities(_channelInfo);
 
             if (IsPostBack) return;
 
@@ -65,10 +65,10 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissions);
+            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissionsImpl);
             ControlUtils.SelectSingleItem(DdlChannelId, channelId.ToString());
 
-            RptContents.DataSource = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);
+            RptContents.DataSource = TableStyleManager.GetChannelStyleInfoList(_channelInfo);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 

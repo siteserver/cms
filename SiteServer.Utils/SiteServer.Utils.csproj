@@ -59,8 +59,8 @@
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.2.0.4\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=2.0.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.2.0.11\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -89,14 +89,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlertUtils.cs" />
-    <Compile Include="Auth\AdministratorToken.cs" />
     <Compile Include="Auth\AuthUtils.cs" />
     <Compile Include="Auth\Base64Utils.cs" />
     <Compile Include="Auth\DefaultJsonSerializer.cs" />
     <Compile Include="Auth\DesEncryptor.cs" />
     <Compile Include="Auth\IJsonSerializer.cs" />
     <Compile Include="Auth\JWT.cs" />
-    <Compile Include="Auth\UserToken.cs" />
     <Compile Include="Base64Decoder.cs" />
     <Compile Include="Base64Encoder.cs" />
     <Compile Include="CacheUtils.cs" />
@@ -138,6 +136,7 @@
     <Compile Include="Enumerations\EVoteItemType.cs" />
     <Compile Include="Enumerations\EVoteRestrictType.cs" />
     <Compile Include="Enumerations\EVoteType.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="IO\FileManager.cs" />
     <Compile Include="FileUtils.cs" />
     <Compile Include="HtmlClearUtils.cs" />
@@ -146,7 +145,6 @@
     <Compile Include="Images\FloatPoint.cs" />
     <Compile Include="Images\ImageUtils.cs" />
     <Compile Include="InputParserUtils.cs" />
-    <Compile Include="InputTypeUtils.cs" />
     <Compile Include="IO\EncodedStringWriter.cs" />
     <Compile Include="IO\FileSystemInfoExtend.cs" />
     <Compile Include="IO\FileSystemInfosExtend.cs" />

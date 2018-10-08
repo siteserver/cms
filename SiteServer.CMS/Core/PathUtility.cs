@@ -548,9 +548,8 @@ namespace SiteServer.CMS.Core
                     {LowerChannelIndex, "栏目索引(小写)"}
                 };
 
-                var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(siteInfo.Id, channelId);
-
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName, relatedIdentities);
+                var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                var styleInfoList = TableStyleManager.GetChannelStyleInfoList(channelInfo);
                 foreach (var styleInfo in styleInfoList)
                 {
                     if (styleInfo.InputType == InputType.Text)
@@ -721,10 +720,8 @@ namespace SiteServer.CMS.Core
                     {LowerChannelIndex, "栏目索引(小写)"}
                 };
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-                var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(siteInfo.Id, channelId);
-
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
+                var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
                 foreach (var styleInfo in styleInfoList)
                 {
                     if (styleInfo.InputType == InputType.Text)

@@ -3,6 +3,7 @@ using System.Web.Http;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
@@ -16,9 +17,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasSitePermissions(request.SiteId, ConfigManager.WebSitePermissions.Create))
+                    !request.AdminPermissionsImpl.HasSitePermissions(request.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
                     return Unauthorized();
                 }

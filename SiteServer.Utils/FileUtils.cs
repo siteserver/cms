@@ -10,6 +10,25 @@ namespace SiteServer.Utils
 {	
 	public static class FileUtils
 	{
+	    public static string TryReadText(string filePath)
+	    {
+	        var text = string.Empty;
+
+	        try
+	        {
+	            if (IsFileExists(filePath))
+	            {
+	                text = ReadText(filePath, Encoding.UTF8);
+	            }
+	        }
+	        catch
+	        {
+	            // ignored
+	        }
+
+	        return text;
+	    }
+
         public static string ReadText(string filePath, ECharset charset)
 		{
 			var sr = new StreamReader(filePath, ECharsetUtils.GetEncoding(charset));

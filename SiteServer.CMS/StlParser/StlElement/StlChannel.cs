@@ -420,25 +420,22 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var attributeName = type;
 
-                if (channel.Additional.Count > 0)
+                var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.ChannelDao.TableName, attributeName, TableStyleManager.GetRelatedIdentities(channel));
+                // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
+                if (styleInfo.Id > 0)
                 {
-                    var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.ChannelDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, channel.Id));
-                    // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
-                    if (styleInfo.Id > 0)
+                    parsedContent = GetValue(attributeName, channel.Additional, false, styleInfo.DefaultValue);
+                    if (!string.IsNullOrEmpty(parsedContent))
                     {
-                        parsedContent = GetValue(attributeName, channel.Additional, false, styleInfo.DefaultValue);
-                        if (!string.IsNullOrEmpty(parsedContent))
-                        {
-                            parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
-                            inputType = styleInfo.InputType;
-                        }
+                        parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                        inputType = styleInfo.InputType;
                     }
                 }
             }
 
             if (string.IsNullOrEmpty(parsedContent)) return string.Empty;
 
-            parsedContent = StringUtils.ParseString(inputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+            parsedContent = InputTypeUtils.ParseString(inputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
             return leftText + parsedContent + rightText;
         }
 

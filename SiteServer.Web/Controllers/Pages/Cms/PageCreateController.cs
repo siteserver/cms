@@ -6,6 +6,7 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -21,9 +22,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasSitePermissions(request.SiteId, ConfigManager.WebSitePermissions.Create))
+                    !request.AdminPermissionsImpl.HasSitePermissions(request.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
                     return Unauthorized();
                 }
@@ -42,11 +43,11 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 foreach (var channelId in channelIdList)
                 {
-                    var enabled = request.AdminPermissions.IsOwningChannelId(channelId);
+                    var enabled = request.AdminPermissionsImpl.IsOwningChannelId(channelId);
                     
                     if (!enabled)
                     {
-                        if (!request.AdminPermissions.IsDescendantOwningChannelId(siteId, channelId)) continue;
+                        if (!request.AdminPermissionsImpl.IsDescendantOwningChannelId(siteId, channelId)) continue;
                     }
 
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
@@ -83,9 +84,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
+                    !request.AdminPermissionsImpl.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
                     return Unauthorized();
                 }
@@ -191,9 +192,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
+                    !request.AdminPermissionsImpl.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
                     return Unauthorized();
                 }

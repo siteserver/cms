@@ -62,7 +62,17 @@ namespace SiteServer.CMS.Model
 
 	    public bool IsHorizontal { get; set; }
 
-	    public string ExtendValues { get; set; }
+	    private string _extendValues;
+
+	    public string ExtendValues
+	    {
+	        get => _extendValues;
+	        set
+	        {
+	            _additional = null;
+	            _extendValues = value;
+	        }
+	    }
 
 	    private TableStyleInfoExtend _additional;
         public TableStyleInfoExtend Additional => _additional ?? (_additional = new TableStyleInfoExtend(ExtendValues));

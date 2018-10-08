@@ -5,6 +5,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
@@ -20,9 +21,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -59,14 +60,14 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
 
-                var columns = TableColumnManager.GetTableColumnInfoList(tableName, ContentAttribute.MetadataAttributes);
+                var columns = TableColumnManager.GetTableColumnInfoList(tableName, ContentAttribute.MetadataAttributes.Value);
 
                 return Ok(new
                 {
@@ -85,16 +86,16 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
 
                 TableColumnManager.ClearCache();
 
-                var columns = TableColumnManager.GetTableColumnInfoList(tableName, ContentAttribute.MetadataAttributes);
+                var columns = TableColumnManager.GetTableColumnInfoList(tableName, ContentAttribute.MetadataAttributes.Value);
 
                 return Ok(new
                 {

@@ -7,6 +7,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys.Stl
@@ -21,7 +22,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
             var isSuccess = false;
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
 
                 if (!string.IsNullOrEmpty(request.GetQueryString("siteId")) && !string.IsNullOrEmpty(request.GetQueryString("fileUrl")) && string.IsNullOrEmpty(request.GetQueryString("contentId")))
                 {

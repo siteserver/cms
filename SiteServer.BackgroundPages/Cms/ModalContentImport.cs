@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             int checkedLevel;
-            var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, SiteId, out checkedLevel);
+            var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, SiteId, out checkedLevel);
             CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, null, isChecked, checkedLevel);
         }
 

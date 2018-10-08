@@ -9,6 +9,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -309,7 +310,7 @@ namespace SiteServer.CMS.Provider
 
             //OwningIdCache.IsChanged = true;
             ChannelManager.RemoveCache(channelInfo.SiteId);
-            PermissionManager.ClearAllCache();
+            PermissionsImpl.ClearAllCache();
         }
 
         /// <summary>
@@ -679,7 +680,8 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            DataProvider.AdministratorDao.UpdateSiteId(administratorName, channelInfo.Id);
+            var adminInfo = AdminManager.GetAdminInfoByUserName(administratorName);
+            DataProvider.AdministratorDao.UpdateSiteId(adminInfo, channelInfo.Id);
 
             var sqlString =
                 $"UPDATE siteserver_Channel SET SiteId = {channelInfo.Id} WHERE Id = {channelInfo.Id}";

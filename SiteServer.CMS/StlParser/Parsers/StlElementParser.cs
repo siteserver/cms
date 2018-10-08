@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;

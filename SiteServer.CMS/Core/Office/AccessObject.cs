@@ -1,4 +1,3 @@
-using System.Collections;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using System;
@@ -20,10 +19,8 @@ namespace SiteServer.CMS.Core.Office
             var sourceFilePath = SiteServerAssets.GetPath(SiteServerAssets.Default.AccessMdb);
             FileUtils.CopyFile(sourceFilePath, filePath);
 
-            var relatedidentityes = RelatedIdentities.GetChannelRelatedIdentities(siteInfo.Id, nodeInfo.Id);
-
             var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedidentityes);
+            var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, nodeInfo);
             styleInfoList = ContentUtility.GetAllTableStyleInfoList(styleInfoList);
 
             var accessDao = new AccessDao(filePath);
@@ -53,18 +50,14 @@ namespace SiteServer.CMS.Core.Office
             {
                 foreach (var tableName in tableNames)
                 {
-                    string sqlString = $"SELECT * FROM [{tableName}]";
+                    var sqlString = $"SELECT * FROM [{tableName}]";
                     var dataset = accessDao.ReturnDataSet(sqlString);
 
                     var oleDt = dataset.Tables[0];
 
                     if (oleDt.Rows.Count > 0)
                     {
-                        var relatedidentityes = RelatedIdentities.GetChannelRelatedIdentities(siteInfo.Id, nodeInfo.Id);
-
-                        var theTableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
-
-                        var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(theTableName, relatedidentityes);
+                        var tableStyleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, nodeInfo);
 
                         var nameValueCollection = new NameValueCollection();
 
@@ -73,14 +66,14 @@ namespace SiteServer.CMS.Core.Office
                             nameValueCollection[styleInfo.DisplayName] = styleInfo.AttributeName.ToLower();
                         }
 
-                        var attributeNames = new ArrayList();
-                        for (var i = 0; i < oleDt.Columns.Count; i++)
-                        {
-                            var columnName = oleDt.Columns[i].ColumnName;
-                            attributeNames.Add(!string.IsNullOrEmpty(nameValueCollection[columnName])
-                                ? nameValueCollection[columnName]
-                                : columnName);
-                        }
+                        //var attributeNames = new ArrayList();
+                        //for (var i = 0; i < oleDt.Columns.Count; i++)
+                        //{
+                        //    var columnName = oleDt.Columns[i].ColumnName;
+                        //    attributeNames.Add(!string.IsNullOrEmpty(nameValueCollection[columnName])
+                        //        ? nameValueCollection[columnName]
+                        //        : columnName);
+                        //}
 
                         foreach (DataRow row in oleDt.Rows)
                         {

@@ -323,6 +323,11 @@ namespace SiteServer.Utils
             return Combine(SiteServerAssets.GetPath("menus"), Combine(paths));
         }
 
+        public static string GetHomePath(params string[] paths)
+        {
+            return Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.HomeDirectory, Combine(paths));
+        }
+
         public static string GetUserFilesPath(string userName, string relatedPath)
         {
             return Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.UserFiles, userName, relatedPath);

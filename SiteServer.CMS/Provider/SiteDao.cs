@@ -6,6 +6,7 @@ using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -112,7 +113,7 @@ namespace SiteServer.CMS.Provider
 
             SiteManager.ClearCache();
             ChannelManager.RemoveCache(siteId);
-            PermissionManager.ClearAllCache();
+            PermissionsImpl.ClearAllCache();
         }
 
         public void Update(SiteInfo info)

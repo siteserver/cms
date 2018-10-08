@@ -276,9 +276,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         if (!string.IsNullOrEmpty(addUserName))
                         {
-                            //var displayName = DataProvider.AdministratorDao.GetDisplayName(addUserName);
-                            var displayName = StlAdministratorCache.GetDisplayName(addUserName);
-                            parsedContent = string.IsNullOrEmpty(displayName) ? addUserName : displayName;
+                            parsedContent = addUserName;
                         }
                     }
                     else if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex) && contextInfo.ItemContainer?.ContentItem != null)
@@ -308,8 +306,10 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, contentChannelId);
-                            var styleInfo = TableStyleManager.GetTableStyleInfo(pageInfo.SiteInfo.TableName, attributeName, relatedIdentities);
+                            var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contentChannelId);
+                            var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, channelInfo);
+                            var relatedIdentities = TableStyleManager.GetRelatedIdentities(channelInfo);
+                            var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, attributeName, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
                             parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, ",", pageInfo.SiteInfo, styleInfo, string.Empty, null, string.Empty, true);

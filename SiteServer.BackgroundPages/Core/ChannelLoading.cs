@@ -7,15 +7,16 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Core
 {
     public static class ChannelLoading
     {
-        public static string GetChannelRowHtml(SiteInfo siteInfo, ChannelInfo nodeInfo, bool enabled, ELoadingType loadingType, NameValueCollection additional, PermissionManager permissionManager)
+        public static string GetChannelRowHtml(SiteInfo siteInfo, ChannelInfo nodeInfo, bool enabled, ELoadingType loadingType, NameValueCollection additional, PermissionsImpl permissionsImpl)
         {
-            var nodeTreeItem = ChannelTreeItem.CreateInstance(siteInfo, nodeInfo, enabled, permissionManager);
+            var nodeTreeItem = ChannelTreeItem.CreateInstance(siteInfo, nodeInfo, enabled, permissionsImpl);
             var title = nodeTreeItem.GetItemHtml(loadingType, PageChannel.GetRedirectUrl(siteInfo.Id, nodeInfo.Id), additional);
 
             var rowHtml = string.Empty;
@@ -37,7 +38,7 @@ namespace SiteServer.BackgroundPages.Core
 
                 if (enabled)
                 {
-                    if (permissionManager.HasChannelPermissions(nodeInfo.SiteId, nodeInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit))
+                    if (permissionsImpl.HasChannelPermissions(nodeInfo.SiteId, nodeInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit))
                     {
                         editUrl = $@"<a href=""{PageChannelEdit.GetRedirectUrl(nodeInfo.SiteId, nodeInfo.Id, PageChannel.GetRedirectUrl(nodeInfo.SiteId, nodeInfo.Id))}"" onclick=""event.stopPropagation()"">编辑</a>";
                         upLink =
@@ -119,23 +120,20 @@ namespace SiteServer.BackgroundPages.Core
                     editChannelLink = $"<a href=\"javascript:;\" onclick=\"{showPopWinString}\">触发栏目</a>";
                 }
 
-                if (nodeInfo.Additional.Count > 0)
+                var nodeNameBuilder = new StringBuilder();
+                var channelIdList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.CreateChannelIdsIfContentChanged);
+                foreach (var theChannelId in channelIdList)
                 {
-                    var nodeNameBuilder = new StringBuilder();
-                    var channelIdList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.CreateChannelIdsIfContentChanged);
-                    foreach (var theChannelId in channelIdList)
+                    var theNodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, theChannelId);
+                    if (theNodeInfo != null)
                     {
-                        var theNodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, theChannelId);
-                        if (theNodeInfo != null)
-                        {
-                            nodeNameBuilder.Append(theNodeInfo.ChannelName).Append(",");
-                        }
+                        nodeNameBuilder.Append(theNodeInfo.ChannelName).Append(",");
                     }
-                    if (nodeNameBuilder.Length > 0)
-                    {
-                        nodeNameBuilder.Length--;
-                        nodeNames = nodeNameBuilder.ToString();
-                    }
+                }
+                if (nodeNameBuilder.Length > 0)
+                {
+                    nodeNameBuilder.Length--;
+                    nodeNames = nodeNameBuilder.ToString();
                 }
 
                 rowHtml = $@"

@@ -10,6 +10,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -25,13 +26,13 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();
@@ -43,7 +44,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissions, siteInfo, siteId, out var checkedLevel);
+                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
                 var checkedLevels = CheckManager.GetCheckedLevels(siteInfo, isChecked, checkedLevel, false);
 
                 return Ok(new
@@ -64,13 +65,13 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();
@@ -128,7 +129,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -143,7 +144,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var fileNames = TranslateUtils.StringCollectionToStringList(request.GetPostString("fileNames"));
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();
@@ -156,8 +157,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-                var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(siteId, channelInfo.Id);
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
+                var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
                 var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
                 checkedLevel = isChecked ? 0 : checkedLevel;
 
@@ -171,7 +171,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                     if (string.IsNullOrEmpty(formCollection[ContentAttribute.Title])) continue;
 
-                    var dict = BackgroundInputTypeParser.SaveAttributes(siteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributes);
+                    var dict = BackgroundInputTypeParser.SaveAttributes(siteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributes.Value);
 
                     var contentInfo = new ContentInfo(dict)
                     {

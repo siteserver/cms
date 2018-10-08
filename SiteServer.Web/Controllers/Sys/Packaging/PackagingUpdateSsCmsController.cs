@@ -3,6 +3,7 @@ using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys.Packaging
@@ -13,7 +14,7 @@ namespace SiteServer.API.Controllers.Sys.Packaging
         [HttpPost, Route(ApiRouteUpdateSsCms.Route)]
         public IHttpActionResult Main()
         {
-            var request = new AuthRequest();
+            var request = new RequestImpl();
 
             var isDownload = TranslateUtils.ToBool(CacheDbUtils.GetValueAndRemove(PackageUtils.CacheKeySsCmsIsDownload));
 
@@ -34,7 +35,7 @@ namespace SiteServer.API.Controllers.Sys.Packaging
             }
 
             WebConfigUtils.UpdateWebConfig(packageWebConfigPath, WebConfigUtils.IsProtectData,
-                WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory,
+                WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,
                 WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
 
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), PathUtils.GetSiteFilesPath(string.Empty), true);

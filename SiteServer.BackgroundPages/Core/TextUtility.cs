@@ -9,7 +9,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Core
@@ -119,9 +119,9 @@ namespace SiteServer.BackgroundPages.Core
             return value;
         }
 
-        public static bool IsEdit(SiteInfo siteInfo, int channelId, PermissionManager permissionManager)
+        public static bool IsEdit(SiteInfo siteInfo, int channelId, PermissionsImpl permissionsImpl)
         {
-            return permissionManager.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentEdit);
+            return permissionsImpl.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentEdit);
         }
 
         //public static bool IsComment(SiteInfo siteInfo, int channelId, string administratorName)

@@ -1,9 +1,10 @@
 ﻿using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Api.V1
 {
-    public class ORequest: AuthRequest
+    public class ORequest: RequestImpl
     {
         //{"select", "ID,Name"},
         //{"expand", "ProductDetail"},

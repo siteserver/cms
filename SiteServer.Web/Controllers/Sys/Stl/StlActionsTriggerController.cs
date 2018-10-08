@@ -8,6 +8,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser;
 
 namespace SiteServer.API.Controllers.Sys.Stl
@@ -19,7 +20,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
         [Route(ApiRouteActionsTrigger.Route)]
         public async Task Main()
         {
-            var request = new AuthRequest();
+            var request = new RequestImpl();
 
             var siteId = request.GetQueryInt("siteId");
             var siteInfo = SiteManager.GetSiteInfo(siteId);

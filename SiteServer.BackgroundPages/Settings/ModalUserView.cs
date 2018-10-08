@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 
@@ -9,28 +10,13 @@ namespace SiteServer.BackgroundPages.Settings
 {
     public class ModalUserView : BasePage
     {
+        protected Literal LtlUserId;
         protected Literal LtlUserName;
-        protected Literal LtlDisplayName;
         protected Literal LtlCreateDate;
+        protected Literal LtlLoginCount;
         protected Literal LtlLastResetPasswordDate;
         protected Literal LtlLastActivityDate;
-        protected Literal LtlEmail;
-        protected Literal LtlMobile;
-        protected Literal LtlLoginCount;
-        protected Literal LtlWritingCount;
-        protected Literal LtlOrganization;
-        protected Literal LtlDepartment;
-        protected Literal LtlPosition;
-        protected Literal LtlGender;
-        protected Literal LtlBirthday;
-        protected Literal LtlEducation;
-        protected Literal LtlGraduation;
-        protected Literal LtlAddress;
-        protected Literal LtlWeiXin;
-        protected Literal LtlQq;
-        protected Literal LtlWeiBo;
-        protected Literal LtlInterests;
-        protected Literal LtlSignature;
+        protected Literal LtlAttributes;
 
         private UserInfo _userInfo;
 
@@ -39,7 +25,7 @@ namespace SiteServer.BackgroundPages.Settings
             return LayerUtils.GetOpenScript("查看用户信息", PageUtils.GetSettingsUrl(nameof(ModalUserView), new NameValueCollection
             {
                 {"UserName", userName}
-            }), 700, 560);
+            }));
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -47,30 +33,40 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
 
             var userName = Request.QueryString["UserName"];
-            _userInfo = DataProvider.UserDao.GetUserInfoByAccount(userName);
+            _userInfo = UserManager.GetUserInfoByUserName(userName);
 
+            LtlUserId.Text = _userInfo.Id.ToString();
             LtlUserName.Text = _userInfo.UserName;
-            LtlDisplayName.Text = _userInfo.DisplayName;
             LtlCreateDate.Text = DateUtils.GetDateAndTimeString(_userInfo.CreateDate);
             LtlLastActivityDate.Text = DateUtils.GetDateAndTimeString(_userInfo.LastActivityDate);
             LtlLastResetPasswordDate.Text = DateUtils.GetDateAndTimeString(_userInfo.LastResetPasswordDate);
-            LtlEmail.Text = _userInfo.Email;
-            LtlMobile.Text = _userInfo.Mobile;
             LtlLoginCount.Text = _userInfo.CountOfLogin.ToString();
-            LtlWritingCount.Text = _userInfo.CountOfWriting.ToString();
-            LtlOrganization.Text = _userInfo.Organization;
-            LtlDepartment.Text = _userInfo.Department;
-            LtlPosition.Text = _userInfo.Position;
-            LtlGender.Text = _userInfo.Gender;
-            LtlBirthday.Text = _userInfo.Birthday;
-            LtlEducation.Text = _userInfo.Education;
-            LtlGraduation.Text = _userInfo.Graduation;
-            LtlAddress.Text = _userInfo.Address;
-            LtlWeiXin.Text = _userInfo.WeiXin;
-            LtlQq.Text = _userInfo.Qq;
-            LtlWeiBo.Text = _userInfo.WeiBo;
-            LtlInterests.Text = _userInfo.Interests;
-            LtlSignature.Text = _userInfo.Signature;
+
+            var builder = new StringBuilder();
+            var sep = true;
+            foreach (var styleInfo in TableStyleManager.GetUserStyleInfoList())
+            {
+                if (sep)
+                {
+                    builder.Append(@"<div class=""form-group form-row"">");
+                }
+
+                builder.Append($@"
+<label class=""col-2 text-right col-form-label"">{styleInfo.DisplayName}</label>
+<div class=""col-4 form-control-plaintext"">
+    {_userInfo.Get(styleInfo.AttributeName)}
+</div>
+");
+
+                if (!sep)
+                {
+                    builder.Append("</div>");
+                }
+
+                sep = !sep;
+            }
+
+            LtlAttributes.Text = builder.ToString();
         }
     }
 }

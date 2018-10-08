@@ -7,6 +7,7 @@ using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -20,19 +21,19 @@ namespace SiteServer.BackgroundPages.Core
         private readonly SiteInfo _siteInfo;
         private readonly ChannelInfo _channelInfo;
         private readonly bool _enabled;
-        private readonly PermissionManager _permissionManager;
+        private readonly PermissionsImpl _permissionsImpl;
 
-        public static ChannelTreeItem CreateInstance(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, PermissionManager permissionManager)
+        public static ChannelTreeItem CreateInstance(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, PermissionsImpl permissionsImpl)
         {
-            return new ChannelTreeItem(siteInfo, channelInfo, enabled, permissionManager);
+            return new ChannelTreeItem(siteInfo, channelInfo, enabled, permissionsImpl);
         }
 
-        private ChannelTreeItem(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, PermissionManager permissionManager)
+        private ChannelTreeItem(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, PermissionsImpl permissionsImpl)
         {
             _siteInfo = siteInfo;
             _channelInfo = channelInfo;
             _enabled = enabled;
-            _permissionManager = permissionManager;
+            _permissionsImpl = permissionsImpl;
 
             var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
             
@@ -118,7 +119,7 @@ namespace SiteServer.BackgroundPages.Core
                 }
                 else
                 {
-                    if (_permissionManager.HasChannelPermissions(_channelInfo.SiteId, _channelInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit))
+                    if (_permissionsImpl.HasChannelPermissions(_channelInfo.SiteId, _channelInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit))
                     {
                         var onClickUrl = ModalChannelEdit.GetOpenWindowString(_channelInfo.SiteId, _channelInfo.Id, returnUrl);
                         htmlBuilder.Append(

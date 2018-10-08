@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser;
 using SiteServer.Utils;
 
@@ -18,7 +19,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();

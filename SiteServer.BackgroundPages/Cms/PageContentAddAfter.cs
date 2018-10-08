@@ -94,7 +94,7 @@ namespace SiteServer.BackgroundPages.Cms
         public void DdlSiteId_SelectedIndexChanged(object sender, EventArgs e)
         {
             var psId = int.Parse(DdlSiteId.SelectedValue);
-            CrossSiteTransUtility.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, _channelInfo, AuthRequest.AdminPermissions);
+            CrossSiteTransUtility.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, _channelInfo, AuthRequest.AdminPermissionsImpl);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)

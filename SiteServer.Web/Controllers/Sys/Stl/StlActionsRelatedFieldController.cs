@@ -5,6 +5,7 @@ using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Sys.Stl
 {
@@ -14,7 +15,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
         [HttpPost, Route(ApiRouteActionsRelatedField.Route)]
         public void Main(int siteId)
         {
-            var request = new AuthRequest();
+            var request = new RequestImpl();
 
             var callback = request.GetQueryString("callback");
             var relatedFieldId = request.GetQueryInt("relatedFieldId");

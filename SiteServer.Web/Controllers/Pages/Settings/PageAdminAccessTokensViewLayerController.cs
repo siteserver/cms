@@ -3,6 +3,7 @@ using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings
@@ -18,9 +19,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -45,9 +46,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }

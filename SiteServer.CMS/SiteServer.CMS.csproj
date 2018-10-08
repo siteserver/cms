@@ -80,8 +80,8 @@
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.2.0.4\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=2.0.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.2.0.11\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -111,7 +111,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\IdObj.cs" />
     <Compile Include="Api\V1\StlRequest.cs" />
     <Compile Include="Api\ApiRoutePlugin.cs" />
     <Compile Include="Api\Preview\ApiRoutePreview.cs" />
@@ -139,6 +138,9 @@
     <Compile Include="Api\V1\OResponse.cs" />
     <Compile Include="Core\CmsPages.cs" />
     <Compile Include="Core\ContentCountInfo.cs" />
+    <Compile Include="Core\InputTypeUtils.cs" />
+    <Compile Include="DataCache\UserMenuManager .cs" />
+    <Compile Include="DataCache\UserGroupManager.cs" />
     <Compile Include="DataCache\ChannelGroupManager.cs" />
     <Compile Include="DataCache\ContentGroupManager.cs" />
     <Compile Include="DataCache\Core\DataCacheManager.cs" />
@@ -170,10 +172,9 @@
     <Compile Include="Core\OnlineTemplateManager.cs" />
     <Compile Include="Core\PageUtility.cs" />
     <Compile Include="Core\PathUtility.cs" />
-    <Compile Include="Core\RelatedIdentities.cs" />
     <Compile Include="Core\RoleManager.cs" />
     <Compile Include="DataCache\PermissionConfigManager.cs" />
-    <Compile Include="DataCache\PermissionManager.cs" />
+    <Compile Include="Plugin\Impl\PermissionsImpl.cs" />
     <Compile Include="DataCache\SiteManager.cs" />
     <Compile Include="Core\SiteTemplateManager.cs" />
     <Compile Include="Core\SourceManager.cs" />
@@ -190,8 +191,9 @@
     <Compile Include="Core\UEditorUtils.cs" />
     <Compile Include="Core\VisualInfo.cs" />
     <Compile Include="Core\WordSpliter.cs" />
+    <Compile Include="DataCache\UserManager.cs" />
     <Compile Include="Data\DataProviderBase.cs" />
-    <Compile Include="Data\DatabaseApi.cs" />
+    <Compile Include="Plugin\Apis\DatabaseApi.cs" />
     <Compile Include="Data\MySql.cs" />
     <Compile Include="Data\Oracle.cs" />
     <Compile Include="Data\PostgreSql.cs" />
@@ -210,6 +212,7 @@
     <Compile Include="ImportExport\ExportObject.cs" />
     <Compile Include="ImportExport\ImportObject.cs" />
     <Compile Include="Model\AdministratorInfo.cs" />
+    <Compile Include="Model\Attributes\UserAttribute.cs" />
     <Compile Include="Model\DbCacheInfo.cs" />
     <Compile Include="Model\AreaInfo.cs" />
     <Compile Include="Model\Attributes\BackgroundContentAttribute.cs" />
@@ -252,7 +255,9 @@
     <Compile Include="Model\Enumerations\ETranslateType.cs" />
     <Compile Include="Model\Enumerations\EWriteBackMethod.cs" />
     <Compile Include="Model\ErrorLogInfo.cs" />
-    <Compile Include="Plugin\Model\AttributesImpl.cs" />
+    <Compile Include="Model\UserGroupInfo.cs" />
+    <Compile Include="Model\UserMenuInfo.cs" />
+    <Compile Include="Plugin\Impl\AttributesImpl.cs" />
     <Compile Include="Model\AccessTokenInfo.cs" />
     <Compile Include="Model\KeywordInfo.cs" />
     <Compile Include="Model\LogInfo.cs" />
@@ -297,13 +302,14 @@
     <Compile Include="Plugin\Apis\ParseApi.cs" />
     <Compile Include="Plugin\Apis\SiteApi.cs" />
     <Compile Include="Plugin\Apis\UserApi.cs" />
-    <Compile Include="Plugin\Model\ApiCollectionImpl.cs" />
-    <Compile Include="Plugin\Model\EnvironmentImpl.cs" />
+    <Compile Include="Plugin\Impl\ApiCollectionImpl.cs" />
+    <Compile Include="Plugin\Impl\EnvironmentImpl.cs" />
+    <Compile Include="Plugin\Impl\AccessTokenImpl.cs" />
     <Compile Include="Plugin\PluginInstance.cs" />
-    <Compile Include="Plugin\Model\ContentContextImpl.cs" />
-    <Compile Include="Plugin\Model\ParseContextImpl.cs" />
-    <Compile Include="Plugin\Model\ServiceImpl.cs" />
-    <Compile Include="Plugin\AuthRequest.cs" />
+    <Compile Include="Plugin\Impl\ContentContextImpl.cs" />
+    <Compile Include="Plugin\Impl\ParseContextImpl.cs" />
+    <Compile Include="Plugin\Impl\ServiceImpl.cs" />
+    <Compile Include="Plugin\Impl\RequestImpl.cs" />
     <Compile Include="Plugin\PluginContentManager.cs" />
     <Compile Include="Plugin\PluginContentTableManager.cs" />
     <Compile Include="Plugin\PluginDatabaseTableManager.cs" />
@@ -347,9 +353,10 @@
     <Compile Include="Provider\TemplateLogDao.cs" />
     <Compile Include="Provider\TemplateMatchDao.cs" />
     <Compile Include="Provider\UserDao.cs" />
+    <Compile Include="Provider\UserMenuDao.cs" />
+    <Compile Include="Provider\UserGroupDao.cs" />
     <Compile Include="Provider\UserLogDao.cs" />
     <Compile Include="StlControls\CommentInput.cs" />
-    <Compile Include="DataCache\Stl\StlAdministratorCache.cs" />
     <Compile Include="DataCache\Stl\StlContentCache.cs" />
     <Compile Include="DataCache\Stl\StlDatabaseCache.cs" />
     <Compile Include="DataCache\Stl\StlChannelCache.cs" />

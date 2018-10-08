@@ -10,6 +10,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Ajax
@@ -128,7 +129,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request["type"];
             var retval = new NameValueCollection();
             string retString = null;
-            var request = new AuthRequest();
+            var request = new RequestImpl();
             if (!request.IsAdminLoggin) return;
 
             if (type == TypeGetCountArray)
@@ -394,7 +395,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
-        public string GetLoadingChannels(int siteId, string contentModelPluginId, int parentId, string loadingType, string additional, AuthRequest request)
+        public string GetLoadingChannels(int siteId, string contentModelPluginId, int parentId, string loadingType, string additional, RequestImpl request)
         {
             var list = new List<string>();
 
@@ -413,7 +414,7 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
-                var enabled = request.AdminPermissions.IsOwningChannelId(channelId);
+                var enabled = request.AdminPermissionsImpl.IsOwningChannelId(channelId);
                 if (!string.IsNullOrEmpty(contentModelPluginId) &&
                             !StringUtils.EqualsIgnoreCase(channelInfo.ContentModelPluginId, contentModelPluginId))
                 {
@@ -421,11 +422,11 @@ namespace SiteServer.BackgroundPages.Ajax
                 }
                 if (!enabled)
                 {
-                    if (!request.AdminPermissions.IsDescendantOwningChannelId(siteId, channelId)) continue;
+                    if (!request.AdminPermissionsImpl.IsDescendantOwningChannelId(siteId, channelId)) continue;
                     if (!IsDesendantContentModelPluginIdExists(channelInfo, contentModelPluginId)) continue;
                 }
 
-                list.Add(ChannelLoading.GetChannelRowHtml(siteInfo, channelInfo, enabled, eLoadingType, nameValueCollection, request.AdminPermissions));
+                list.Add(ChannelLoading.GetChannelRowHtml(siteInfo, channelInfo, enabled, eLoadingType, nameValueCollection, request.AdminPermissionsImpl));
             }
 
             //arraylist.Reverse();

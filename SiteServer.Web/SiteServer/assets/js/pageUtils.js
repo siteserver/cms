@@ -10,7 +10,7 @@ var pageUtils = {
   loading: function (isLoading) {
     if (isLoading) {
       return layer.load(1, {
-        shade: [0.2, '#000'] //0.1透明度的白色背景
+        shade: [0.2, '#000']
       });
     } else {
       layer.close(layer.index);
@@ -69,7 +69,7 @@ var pageUtils = {
             className: 'btn'
           },
           confirm: {
-            text: '确认删除',
+            text: config.button ? config.button : '确认删除',
             visible: true,
             className: 'btn btn-danger'
           }
@@ -84,3 +84,25 @@ var pageUtils = {
     return false;
   }
 };
+
+if (window.Vue && window.VeeValidate) {
+  VeeValidate.Validator.localize('zh_CN');
+  Vue.use(VeeValidate);
+  VeeValidate.Validator.localize({
+    zh_CN: {
+      messages: {
+        required: function (name) {
+          return name + '不能为空'
+        },
+      }
+    }
+  });
+  VeeValidate.Validator.extend('mobile', {
+    getMessage: function () {
+      return " 请输入正确的手机号码"
+    },
+    validate: function (value, args) {
+      return value.length == 11 && /^((13|14|15|16|17|18|19)[0-9]{1}\d{8})$/.test(value)
+    }
+  });
+}

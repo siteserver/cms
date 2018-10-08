@@ -20,10 +20,8 @@ namespace SiteServer.CMS.Core.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var relatedidentityes =
-                RelatedIdentities.GetChannelRelatedIdentities(siteInfo.Id, channelInfo.Id);
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetTableStyleInfoList(tableName, relatedidentityes));
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo));
 
             foreach (var styleInfo in styleInfoList)
             {
@@ -86,7 +84,7 @@ namespace SiteServer.CMS.Core.Office
 
             foreach (var userId in userIdList)
             {
-                var userInfo = DataProvider.UserDao.GetUserInfo(userId);
+                var userInfo = UserManager.GetUserInfoByUserId(userId);
 
                 rows.Add(new List<string>
                 {
@@ -111,13 +109,7 @@ namespace SiteServer.CMS.Core.Office
 
             if (rows.Count <= 0) return contentInfoList;
 
-            var relatedidentityes =
-                RelatedIdentities.GetChannelRelatedIdentities(
-                    siteInfo.Id, nodeInfo.Id);
-            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
-            // ArrayList tableStyleInfoArrayList = TableStyleManager.GetTableStyleInfoArrayList(ETableStyle.BackgroundContent, siteInfo.AuxiliaryTableForContent, relatedidentityes);
-
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetTableStyleInfoList(tableName, relatedidentityes));
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(siteInfo, nodeInfo));
             var nameValueCollection = new NameValueCollection();
             foreach (var styleInfo in styleInfoList)
             {

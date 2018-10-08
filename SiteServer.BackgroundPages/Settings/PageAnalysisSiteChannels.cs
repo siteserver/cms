@@ -141,7 +141,7 @@ yArrayUpdate.push('{yValueUpdate}');";
 
             var ltlRow = (Literal)e.Item.FindControl("ltlRow");
 
-            ltlRow.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.SiteAnalysis, _additional, AuthRequest.AdminPermissions);
+            ltlRow.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.SiteAnalysis, _additional, AuthRequest.AdminPermissionsImpl);
         }
 
         public void Analysis_OnClick(object sender, EventArgs e)

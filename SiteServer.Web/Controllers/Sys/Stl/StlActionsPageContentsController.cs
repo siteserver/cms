@@ -6,6 +6,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 
@@ -19,7 +20,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
 
                 var siteId = request.GetPostInt("siteId");
                 var siteInfo = SiteManager.GetSiteInfo(siteId);

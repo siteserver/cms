@@ -4,6 +4,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages
 {
@@ -25,7 +26,7 @@ namespace SiteServer.BackgroundPages
 
         protected bool IsForbidden { get; private set; }
 
-        public AuthRequest AuthRequest { get; private set; }
+        public RequestImpl AuthRequest { get; private set; }
 
         private void SetMessage(MessageUtils.Message.EMessageType messageType, Exception ex, string message)
         {
@@ -37,7 +38,7 @@ namespace SiteServer.BackgroundPages
         {
             base.OnInit(e);
 
-            AuthRequest = new AuthRequest(Request);
+            AuthRequest = new RequestImpl(Request);
 
             if (!IsInstallerPage)
             {
@@ -205,7 +206,7 @@ setTimeout(function() {{
 
         public void VerifySystemPermissions(params string[] permissionArray)
         {
-            if (AuthRequest.AdminPermissions.HasSystemPermissions(permissionArray))
+            if (AuthRequest.AdminPermissionsImpl.HasSystemPermissions(permissionArray))
             {
                 return;
             }

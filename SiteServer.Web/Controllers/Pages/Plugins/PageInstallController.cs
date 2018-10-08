@@ -5,6 +5,7 @@ using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Plugins
@@ -19,9 +20,9 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }

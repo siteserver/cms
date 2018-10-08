@@ -1001,15 +1001,6 @@ namespace SiteServer.Utils
             return retval;
         }
 
-        public static string ToCamelCase(this string str)
-        {
-            if (!string.IsNullOrEmpty(str) && str.Length > 1)
-            {
-                return Char.ToLowerInvariant(str[0]) + str.Substring(1);
-            }
-            return str;
-        }
-
         public static string ToJsString(string value)
         {
             var retval = string.Empty;
@@ -1025,12 +1016,7 @@ namespace SiteServer.Utils
             return Environment.Version.Major;
         }
 
-        public static string ParseString(InputType inputType, string content, string replace, string to, int startIndex, int length, int wordNum, string ellipsis, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string formatString)
-        {
-            return InputTypeUtils.IsPureString(inputType) ? ParseString(content, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString) : content;
-        }
-
-        private static string ParseReplace(string parsedContent, string replace, string to)
+        public static string ParseReplace(string parsedContent, string replace, string to)
         {
             if (replace.IndexOf(',') != -1)
             {
@@ -1069,62 +1055,6 @@ namespace SiteServer.Utils
             }
 
             return retval;
-        }
-
-        public static string ParseString(string content, string replace, string to, int startIndex, int length, int wordNum, string ellipsis, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string formatString)
-        {
-            var parsedContent = content;
-
-            if (!string.IsNullOrEmpty(replace))
-            {
-                parsedContent = ParseReplace(parsedContent, replace, to);
-            }
-
-            if (isClearTags)
-            {
-                parsedContent = StripTags(parsedContent);
-            }
-
-            if (!string.IsNullOrEmpty(parsedContent))
-            {
-                if (startIndex > 0 || length > 0)
-                {
-                    try
-                    {
-                        parsedContent = length > 0 ? parsedContent.Substring(startIndex, length) : parsedContent.Substring(startIndex);
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
-                }
-
-                if (wordNum > 0)
-                {
-                    parsedContent = MaxLengthText(parsedContent, wordNum, ellipsis);
-                }
-
-                if (isReturnToBr)
-                {
-                    parsedContent = ReplaceNewlineToBr(parsedContent);
-                }
-
-                if (!string.IsNullOrEmpty(formatString))
-                {
-                    parsedContent = string.Format(formatString, parsedContent);
-                }
-
-                if (isLower)
-                {
-                    parsedContent = parsedContent.ToLower();
-                }
-                if (isUpper)
-                {
-                    parsedContent = parsedContent.ToUpper();
-                }
-            }
-
-            return parsedContent;
         }
 
         public static string IntToSignString(int i)

@@ -106,12 +106,13 @@ namespace SiteServer.CMS.ImportExport.Components
 
         public static void SingleExportTableStyles(string tableName, int siteId, int relatedIdentity, string styleDirectoryPath)
         {
-            var relatedIdentities = RelatedIdentities.GetRelatedIdentities(siteId, relatedIdentity);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, relatedIdentity);
+            var relatedIdentities = TableStyleManager.GetRelatedIdentities(channelInfo);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
+            var styleInfoList = TableStyleManager.GetStyleInfoList(tableName, relatedIdentities);
             foreach (var tableStyleInfo in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
@@ -136,7 +137,7 @@ namespace SiteServer.CMS.ImportExport.Components
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
+            var styleInfoList = TableStyleManager.GetStyleInfoList(tableName, relatedIdentities);
             foreach (var tableStyleInfo in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");

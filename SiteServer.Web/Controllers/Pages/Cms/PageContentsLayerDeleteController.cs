@@ -7,6 +7,7 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -21,14 +22,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
                 var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetQueryString("contentIds"));
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentDelete))
                 {
                     return Unauthorized();
@@ -70,7 +71,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -78,7 +79,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var isRetainFiles = request.GetPostBool("isRetainFiles");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentDelete))
                 {
                     return Unauthorized();

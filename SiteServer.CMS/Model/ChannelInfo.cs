@@ -171,8 +171,7 @@ namespace SiteServer.CMS.Model
         {
             var jObject = JObject.FromObject(this);
 
-            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, Id);
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName, relatedIdentities);
+            var styleInfoList = TableStyleManager.GetChannelStyleInfoList(this);
 
             foreach (var styleInfo in styleInfoList)
             {

@@ -35,7 +35,5 @@ namespace SiteServer.CMS.Api
         {
             return PageUtils.Combine(InnerApiUrl, route);
         }
-
-        public static string SignalrHubsUrl => PageUtils.ParseNavigationUrl("~/signalr/hubs");
     }
 }

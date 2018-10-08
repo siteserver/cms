@@ -494,11 +494,12 @@ namespace SiteServer.BackgroundPages.Settings
                     DataProvider.SiteDao.UpdateTableName(siteId, tableName);
                 }
 
-                if (AuthRequest.AdminPermissions.IsSystemAdministrator && !AuthRequest.AdminPermissions.IsConsoleAdministrator)
+                if (AuthRequest.AdminPermissionsImpl.IsSystemAdministrator && !AuthRequest.AdminPermissionsImpl.IsConsoleAdministrator)
                 {
-                    var siteIdList = AuthRequest.AdminPermissions.SiteIdList ?? new List<int>();
+                    var siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdList() ?? new List<int>();
                     siteIdList.Add(siteId);
-                    DataProvider.AdministratorDao.UpdateSiteIdCollection(AuthRequest.AdminName, TranslateUtils.ObjectCollectionToString(siteIdList));
+                    var adminInfo = AdminManager.GetAdminInfoByUserId(AuthRequest.AdminId);
+                    DataProvider.AdministratorDao.UpdateSiteIdCollection(adminInfo, TranslateUtils.ObjectCollectionToString(siteIdList));
                 }
 
                 AuthRequest.AddAdminLog("创建新站点", $"站点名称：{AttackUtils.FilterXss(TbSiteName.Text)}");

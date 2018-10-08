@@ -28,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
             VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
 
             TemplateTypeUtils.AddListItems(DdlTemplateType);
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissions);
+            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissionsImpl);
             if (AuthRequest.IsQueryExists("fromCache"))
             {
                 TbTemplate.Text = TranslateUtils.DecryptStringBySecretKey(CacheUtils.Get<string>("SiteServer.BackgroundPages.Cms.PageTemplatePreview"));

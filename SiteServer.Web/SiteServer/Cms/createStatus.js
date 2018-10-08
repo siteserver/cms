@@ -1,4 +1,4 @@
-﻿var $apiUrl = $apiConfig.apiUrl;
+﻿var $apiUrl = $apiConfig.innerApiUrl;
 var $api = new apiUtils.Api($apiUrl + '/pages/cms/createStatus');
 var $siteId = parseInt(pageUtils.getQueryStringByName('siteId'));
 

@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages
         {
             if (IsPostBack) return;
 
-            if (!AuthRequest.AdminPermissions.IsConsoleAdministrator)
+            if (!AuthRequest.AdminPermissionsImpl.IsConsoleAdministrator)
             {
                 Page.Response.Write("非授权管理员，向导被禁用");
                 Page.Response.End();

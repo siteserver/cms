@@ -9,7 +9,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -33,8 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId");
 
-            var relatedIdentities = RelatedIdentities.GetRelatedIdentities(SiteId, SiteId);
-            _styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.SiteDao.TableName, relatedIdentities);
+            _styleInfoList = TableStyleManager.GetSiteStyleInfoList(SiteId);
 
             if (!IsPostBack)
 			{

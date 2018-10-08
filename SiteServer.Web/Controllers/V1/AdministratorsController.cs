@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;using System.Web.Http;
+using System.Web.Http;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
-using SiteServer.Utils;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.V1
 {
@@ -28,8 +27,7 @@ namespace SiteServer.API.Controllers.V1
                 var oRequest = new ORequest(AccessTokenManager.ScopeAdministrators);
                 if (!oRequest.IsApiAuthorized) return Unauthorized();
 
-                string errorMessage;
-                var retval = DataProvider.AdministratorDao.ApiInsert(adminInfo, out errorMessage);
+                var retval = DataProvider.AdministratorDao.ApiInsert(adminInfo, out var errorMessage);
                 if (retval == null)
                 {
                     return BadRequest(errorMessage);
@@ -56,8 +54,7 @@ namespace SiteServer.API.Controllers.V1
 
                 if (!DataProvider.AdministratorDao.ApiIsExists(id)) return NotFound();
 
-                string errorMessage;
-                var retval = DataProvider.AdministratorDao.ApiUpdate(id, adminInfo, out errorMessage);
+                var retval = DataProvider.AdministratorDao.ApiUpdate(id, adminInfo, out var errorMessage);
                 if (retval == null)
                 {
                     return BadRequest(errorMessage);
@@ -135,29 +132,38 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPost, Route(RouteActionsLogin)]
-        public IHttpActionResult Login([FromBody] ActionsLoginBody body)
+        public IHttpActionResult Login()
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
 
-                string userName;
-                string errorMessage;
-                if (!DataProvider.AdministratorDao.Validate(body.Account, body.Password, true, out userName, out errorMessage))
+                var account = request.GetPostString("account");
+                var password = request.GetPostString("password");
+                var isAutoLogin = request.GetPostBool("isAutoLogin");
+
+                AdministratorInfo adminInfo;
+
+                if (!DataProvider.AdministratorDao.Validate(account, password, true, out var userName, out var errorMessage))
                 {
-                    DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfFailedLogin(userName); // 记录最后登录时间、失败次数+1
+                    adminInfo = AdminManager.GetAdminInfoByUserName(userName);
+                    if (adminInfo != null)
+                    {
+                        DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfFailedLogin(adminInfo); // 记录最后登录时间、失败次数+1
+                    }
                     return BadRequest(errorMessage);
                 }
 
-                var adminInfo = DataProvider.AdministratorDao.GetByUserName(userName);
-
-                DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLogin(userName); // 记录最后登录时间、失败次数清零
-                var accessToken = request.AdminLogin(userName, body.IsAutoLogin);
+                adminInfo = AdminManager.GetAdminInfoByUserName(userName);
+                DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLogin(adminInfo); // 记录最后登录时间、失败次数清零
+                var accessToken = request.AdminLogin(adminInfo.UserName, isAutoLogin);
+                var expiresAt = DateTime.Now.AddDays(RequestImpl.AccessTokenExpireDays);
 
                 return Ok(new
                 {
                     Value = adminInfo,
-                    AccessToken = accessToken
+                    AccessToken = accessToken,
+                    ExpiresAt = expiresAt
                 });
             }
             catch (Exception ex)
@@ -172,7 +178,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 var response = new OResponse(request.IsAdminLoggin ? request.AdminInfo : null);
                 request.AdminLogout();
                 return Ok(response);
@@ -185,26 +191,28 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPost, Route(RouteActionsResetPassword)]
-        public IHttpActionResult ResetPassword([FromBody] ActionsResetPasswordBody body)
+        public IHttpActionResult ResetPassword()
         {
             try
             {
                 var oRequest = new ORequest(AccessTokenManager.ScopeAdministrators);
                 if (!oRequest.IsApiAuthorized) return Unauthorized();
 
-                string userName;
-                string errorMessage;
-                if (!DataProvider.AdministratorDao.Validate(body.Account, body.Password, true, out userName, out errorMessage))
+                var account = oRequest.GetPostString("account");
+                var password = oRequest.GetPostString("password");
+                var newPassword = oRequest.GetPostString("newPassword");
+
+                if (!DataProvider.AdministratorDao.Validate(account, password, true, out var userName, out var errorMessage))
                 {
                     return BadRequest(errorMessage);
                 }
 
-                if (!DataProvider.AdministratorDao.ChangePassword(userName, body.NewPassword, out errorMessage))
+                var adminInfo = AdminManager.GetAdminInfoByUserName(userName);
+
+                if (!DataProvider.AdministratorDao.ChangePassword(adminInfo, newPassword, out errorMessage))
                 {
                     return BadRequest(errorMessage);
                 }
-
-                var adminInfo = DataProvider.AdministratorDao.GetByUserName(userName);
 
                 return Ok(new OResponse(adminInfo));
             }
@@ -213,20 +221,6 @@ namespace SiteServer.API.Controllers.V1
                 LogUtils.AddErrorLog(ex);
                 return InternalServerError(ex);
             }
-        }
-
-        public class ActionsLoginBody
-        {
-            public string Account { get; set; }
-            public string Password { get; set; }
-            public bool IsAutoLogin { get; set; }
-        }
-
-        public class ActionsResetPasswordBody
-        {
-            public string Account { get; set; }
-            public string Password { get; set; }
-            public string NewPassword { get; set; }
         }
     }
 }

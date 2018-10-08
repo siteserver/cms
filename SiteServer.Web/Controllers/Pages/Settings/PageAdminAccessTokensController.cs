@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
-using SiteServer.CMS.Api;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
@@ -19,16 +19,16 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
                 var adminNames = new List<string>();
 
-                if (request.AdminPermissions.IsConsoleAdministrator)
+                if (request.AdminPermissionsImpl.IsConsoleAdministrator)
                 {
                     adminNames = DataProvider.AdministratorDao.GetUserNameList();
                 }
@@ -62,18 +62,20 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpDelete, Route(Route)]
-        public IHttpActionResult Delete([FromBody] IdObj delObj)
+        public IHttpActionResult Delete()
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                DataProvider.AccessTokenDao.Delete(delObj.Id);
+                var id = request.GetPostInt("id");
+
+                DataProvider.AccessTokenDao.Delete(id);
 
                 return Ok(new
                 {
@@ -91,9 +93,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthRequest();
+                var request = new RequestImpl();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
