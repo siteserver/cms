@@ -189,9 +189,6 @@ var methods = {
   onPageSelect(option) {
     this.loadContents(option);
   },
-  scrollToTop() {
-    document.documentElement.scrollTop = document.body.scrollTop = 0;
-  },
   loadContents: function (page) {
     var $this = this;
 
@@ -200,14 +197,14 @@ var methods = {
     }
 
     $api.get({
-      siteId: $this.site.id,
-      channelId: $this.channel.id,
-      page: page
-    },
+        siteId: $this.site.id,
+        channelId: $this.channel.id,
+        page: page
+      },
       function (err, res) {
         if ($this.pageLoad) {
           pageUtils.loading(false);
-          $this.scrollToTop();
+          pageUtils.scrollToTop();
         } else {
           $this.pageLoad = true;
         }

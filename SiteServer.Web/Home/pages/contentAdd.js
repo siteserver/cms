@@ -16,219 +16,160 @@ var data = {
   pageConfig: null,
   pageLoad: false,
   pageAlert: null,
-  pageType: null,
-  contentDict: null,
-  count: null,
-  pages: null,
+  pageType: '',
+
   sites: [],
   channels: [],
   site: {},
   channel: {},
+  groupNames: [],
+
+  content: {},
   styles: [],
-  isTop: false,
-  isRecommend: false,
-  isHot: false,
-  isColor: false,
-  groupIds: [],
-  tags: []
 };
 
 var methods = {
-  load: function (res) {
+  loadSite: function (res) {
     this.pageConfig = res.value;
     this.sites = res.sites;
     this.channels = res.channels;
     this.site = res.site;
     this.channel = res.channel;
-    this.styles = res.styles;
+    this.groupNames = res.groupNames;
+    this.loadContent(res.styles, res.content);
   },
-  btnAddClick: function () {
-    location.href = 'pageContentAdd.aspx?siteId=' + this.site.id + '&channelId=' + this.channel.Id;
-  },
-  btnSearchClick: function () {
-    parent.location.href = 'pageContentSearch.aspx?siteId=' + this.site.id + '&channelId=' + this.channel.Id;
-  },
-  btnCreateClick: function () {
-    var $this = this;
-    $this.pageAlert = null;
-    if ($this.selectedContentIds.length === 0) return;
 
-    pageUtils.loading(true);
-    $createApi.post({
-      siteId: $this.site.id,
-      channelId: $this.channel.Id,
-      contentIds: $this.selectedContentIds.join(',')
-    }, function (err, res) {
-      pageUtils.loading(false);
-      if (err) {
-        $this.pageAlert = {
-          type: 'danger',
-          html: err.message
-        };
-        return;
+  loadChannel: function (res) {
+    this.loadContent(res.styles, res.value);
+  },
+
+  loadContent: function (styles, content) {
+    var $this = this;
+
+    this.styles = [];
+    for (let i = 0; i < styles.length; i++) {
+      var style = styles[i];
+      style.value = style.defaultValue || '';
+      this.styles.push(style);
+    }
+
+    content.groupNames = [];
+    if (content.groupNameCollection) {
+      content.groupNames = content.groupNameCollection.split(',');
+    }
+    this.content = content;
+
+    setTimeout(function () {
+      for (var i = 0; i < $this.styles.length; i++) {
+        var style = $this.styles[i];
+        if (style.inputType === 'TextEditor') {
+          var editor = UE.getEditor(style.attributeName, {
+            allowDivTransToP: false,
+            maximumWords: 99999999
+          });
+          editor.styleIndex = i;
+          editor.ready(function () {
+            editor.addListener("contentChange", function () {
+              $this.styles[this.styleIndex].value = this.getContent();
+            });
+          });
+
+          $('#' + style.attributeName).show();
+        }
       }
 
-      $this.pageAlert = {
-        type: "success",
-        html: "内容已添加至生成列队！<a href='createStatus.cshtml?siteId=" + $this.site.id + "'>生成进度查看</a>"
-      };
-    });
+    }, 100);
   },
-  btnFuncClick: function (options) {
-    this.pageAlert = null;
 
-    if (options.withoutContents) {
-      pageUtils.openLayer({
-        title: "批量" + options.title,
-        url: "contentsLayer" + options.name + ".cshtml?siteId=" +
-          this.site.id +
-          "&channelId=" +
-          this.channel.Id,
-        full: options.full,
-        width: options.width ? options.width : 700,
-        height: options.height ? options.height : 500
-      });
-      return;
-    }
-
-    if (this.selectedContentIds.length === 0) return;
-
-    if (options.redirect) {
-      location.href =
-        "pageContent" + options.name + ".aspx?siteId=" +
-        this.site.id +
-        "&channelId=" +
-        this.channel.Id +
-        "&contentIdCollection=" +
-        this.selectedContentIds.join(",");
-    } else {
-      pageUtils.openLayer({
-        title: "批量" + options.title,
-        url: "contentsLayer" +
-          options.name +
-          ".cshtml?siteId=" +
-          this.site.id +
-          "&channelId=" +
-          this.channel.Id +
-          "&contentIds=" +
-          this.selectedContentIds.join(","),
-        full: options.full,
-        width: options.width ? options.width : 700,
-        height: options.height ? options.height : 500
-      });
-    }
-  },
-  btnContentViewClick: function (contentId) {
-    pageUtils.openLayer({
-      title: "查看内容",
-      url: "contentsLayerView.cshtml?siteId=" +
-        this.site.id +
-        "&channelId=" +
-        this.channel.Id +
-        "&contentId=" +
-        contentId,
-      full: true
-    });
-  },
-  btnContentStateClick: function (contentId) {
-    pageUtils.openLayer({
-      title: "查看审核状态",
-      url: "contentsLayerState.cshtml?siteId=" +
-        this.site.id +
-        "&channelId=" +
-        this.channel.Id +
-        "&contentId=" +
-        contentId,
-      full: true
-    });
-  },
-  toggleChecked: function (content) {
-    content.isSelected = !content.isSelected;
-    if (!content.isSelected) {
-      this.isAllChecked = false;
-    }
-  },
-  selectAll: function () {
-    this.isAllChecked = !this.isAllChecked;
-    for (var i = 0; i < this.pageContents.length; i++) {
-      this.pageContents[i].isSelected = this.isAllChecked;
-    }
-  },
   onSiteSelect: function (site) {
     if (site.id === this.site.id) return;
     var $this = this;
     this.pageLoad = false;
     pageUtils.getConfig({
-      pageName: 'contents',
+      pageName: 'contentAdd',
       siteId: site.id
     }, function (res) {
       $this.pageLoad = true;
-      $this.load(res.value, res.sites, res.channels, res.site, res.channel);
+      $this.loadSite(res);
     });
   },
+
   onChannelSelect: function (channel) {
     if (channel.id === this.channel.id) return;
-    this.channel = channel;
-    this.loadContents(1);
+    var $this = this;
+    this.pageLoad = false;
+    pageUtils.getConfig({
+      pageName: 'contentAdd',
+      siteId: this.site.id,
+      channelId: channel.id
+    }, function (res) {
+      $this.pageLoad = true;
+      $this.loadChannel(res);
+    });
   },
-  onPageSelect: function (option) {
-    this.loadContents(option);
-  },
-  btnSubmitClick: function () {
 
-  },
-  scrollToTop() {
-    document.documentElement.scrollTop = document.body.scrollTop = 0;
-  },
-  loadContents: function (page) {
+  submit: function () {
     var $this = this;
 
-    if ($this.pageLoad) {
-      pageUtils.loading(true);
+    var payload = {
+      id: this.content.id,
+      groupNameCollection: this.groupNames.join(','),
+      isColor: this.content.isColor,
+      isHot: this.content.isHot,
+      isRecommend: this.content.isRecommend,
+      isTop: this.content.isTop,
+      tags: this.content.tags
+    };
+    for (var i = 0; i < this.styles.length; i++) {
+      var style = this.styles[i];
+      payload[style.attributeName] = style.value;
     }
 
-    $api.get({
-        siteId: $this.site.id,
-        channelId: $this.channel.id,
-        page: page
-      },
-      function (err, res) {
-        if ($this.pageLoad) {
+    pageUtils.loading(true);
+    if (payload.id) {
+      new apiUtils.Api(apiUrl + '/v1/contents/' + this.site.id + '/' + this.channel.id + '/' + payload.id + '?sourceId=-1')
+        .put(payload, function (err, res) {
           pageUtils.loading(false);
-          $this.scrollToTop();
-        } else {
-          $this.pageLoad = true;
-        }
 
-        if (err) {
-          $this.pageAlert = {
-            type: 'danger',
-            html: err.message
-          };
-          return;
-        }
+          if (err) {
+            $this.pageAlert = {
+              type: 'danger',
+              html: err.message
+            };
+            return;
+          }
+          $this.pageType = 'success';
+        });
+    } else {
+      new apiUtils.Api(apiUrl + '/v1/contents/' + this.site.id + '/' + this.channel.id + '?sourceId=-1')
+        .post(payload, function (err, res) {
+          pageUtils.loading(false);
 
-        $this.permissions = res.permissions;
-        $this.attributes = res.attributes;
+          if (err) {
+            $this.pageAlert = {
+              type: 'danger',
+              html: err.message
+            };
+            return;
+          }
+          $this.pageType = 'success';
+        });
+    }
+  },
 
-        var pageContents = [];
-        for (var i = 0; i < res.value.length; i++) {
+  btnSubmitClick: function () {
+    var $this = this;
+    this.pageAlert = null;
 
-          var content = _.assign({}, res.value[i], {
-            isSelected: false
-          });
-          pageContents.push(content);
-        }
-        $this.pageContents = pageContents;
-        $this.count = res.count;
-        $this.pages = res.pages;
-        $this.page = page;
-        $this.pageOptions = [];
-        for (var i = 1; i <= $this.pages; i++) {
-          $this.pageOptions.push(i);
-        }
+    this.$validator.validate().then(function (result) {
+      if (result) {
+        $this.submit();
       }
-    );
+    });
+  },
+
+  btnContinueAddClick: function () {
+    location.reload();
   }
 };
 
@@ -238,25 +179,12 @@ var $vue = new Vue({
   el: "#main",
   data: data,
   methods: methods,
-  computed: {
-    selectedContentIds: function () {
-      var retval = [];
-      if (this.pageContents) {
-        for (var i = 0; i < this.pageContents.length; i++) {
-          if (this.pageContents[i].isSelected) {
-            retval.push(this.pageContents[i].id);
-          }
-        }
-      }
-      return retval;
-    }
-  },
   created: function () {
     var $this = this;
     if (authUtils.isAuthenticated()) {
       pageUtils.getConfig('contentAdd', function (res) {
         if (res.isUserLoggin) {
-          $this.load(res);
+          $this.loadSite(res);
         } else {
           authUtils.redirectLogin();
         }

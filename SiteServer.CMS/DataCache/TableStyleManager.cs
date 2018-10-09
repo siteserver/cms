@@ -338,6 +338,7 @@ namespace SiteServer.CMS.DataCache
             {
                 styleInfo.AttributeName = nameof(ContentInfo.Title);
                 styleInfo.DisplayName = "标题";
+                styleInfo.Additional.VeeValidate = "required";
                 styleInfo.Taxis = 1;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.SubTitle)))
@@ -371,6 +372,7 @@ namespace SiteServer.CMS.DataCache
             {
                 styleInfo.AttributeName = nameof(ContentInfo.Content);
                 styleInfo.DisplayName = "内容";
+                styleInfo.Additional.VeeValidate = "required";
                 styleInfo.InputType = InputType.TextEditor;
                 styleInfo.Taxis = 6;
             }

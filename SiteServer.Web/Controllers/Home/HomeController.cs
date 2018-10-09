@@ -200,7 +200,10 @@ namespace SiteServer.API.Controllers.Home
             var channels = new List<object>();
             object site = null;
             object channel = null;
+            List<string> groupNames = null;
+            ContentInfo contentInfo = null;
             List<TableStyleInfo> styles = null;
+            
 
             if (request.IsUserLoggin)
             {
@@ -250,6 +253,8 @@ namespace SiteServer.API.Controllers.Home
                         siteInfo.SiteName,
                         SiteUrl = PageUtility.GetSiteUrl(siteInfo, false)
                     };
+
+                    groupNames = ContentGroupManager.GetGroupNameList(siteInfo.Id);
                 }
 
                 if (channelInfo != null)
@@ -261,6 +266,12 @@ namespace SiteServer.API.Controllers.Home
                     };
 
                     styles = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
+
+                    contentInfo = new ContentInfo(new
+                    {
+                        SiteId = siteInfo.Id,
+                        ChannelId = channelInfo.Id
+                    });
                 }
             }
 
@@ -272,7 +283,9 @@ namespace SiteServer.API.Controllers.Home
                 Channels = channels,
                 Site = site,
                 Channel = channel,
-                Styles = styles
+                GroupNames = groupNames,
+                Styles = styles,
+                Content = contentInfo,
             };
         }
     }

@@ -17,6 +17,10 @@ var pageUtils = {
     }
   },
 
+  scrollToTop: function () {
+    document.documentElement.scrollTop = document.body.scrollTop = 0;
+  },
+
   closeLayer: function () {
     parent.layer.closeAll();
     return false;

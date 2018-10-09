@@ -5,7 +5,6 @@ using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.V1
@@ -22,18 +21,30 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl(AccessTokenManager.ScopeContents);
-                if (request.IsApiAuthenticated && !request.IsApiAuthorized) return Unauthorized();
-                if (!request.IsAdminLoggin) return Unauthorized();
+                var request = new RequestImpl();
+
+                var sourceId = request.GetQueryInt("sourceId");
+                bool isAuth;
+                if (sourceId == SourceManager.User)
+                {
+                    isAuth = request.IsUserLoggin && request.UserPermissions.HasChannelPermissions(siteId, channelId, ConfigManager.ChannelPermissions.ContentAdd);
+                }
+                else
+                {
+                    isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
+                             request.IsUserLoggin &&
+                             request.UserPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentAdd) ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentAdd);
+                }
+
+                if (!isAuth) return Unauthorized();
 
                 var attributes = request.GetPostCollection();
                 if (attributes == null) return BadRequest("无法从body中获取内容实体");
-
-                var contentInfo = new ContentInfo(attributes)
-                {
-                    SiteId = siteId,
-                    ChannelId = channelId
-                };
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
@@ -43,18 +54,33 @@ namespace SiteServer.API.Controllers.V1
 
                 if (!channelInfo.Additional.IsContentAddable) return BadRequest("此栏目不能添加内容");
 
-                contentInfo.AddUserName = request.AdminName;
+                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                var adminName = request.AdminName;
 
-                if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
-                    ConfigManager.ChannelPermissions.ContentAdd)) return Unauthorized();
-
-                if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
-                    ConfigManager.ChannelPermissions.ContentCheck))
+                var isChecked = true;
+                if (sourceId == SourceManager.User || request.IsUserLoggin)
                 {
-                    contentInfo.IsChecked = false;
+                    isChecked = request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                        ConfigManager.ChannelPermissions.ContentCheck);
+                }
+                else if (request.IsAdminLoggin)
+                {
+                    isChecked = request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                        ConfigManager.ChannelPermissions.ContentCheck);
                 }
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                var contentInfo = new ContentInfo(attributes)
+                {
+                    SiteId = siteId,
+                    ChannelId = channelId,
+                    AddUserName = adminName,
+                    AddDate = DateTime.Now,
+                    LastEditDate = DateTime.Now,
+                    LastEditUserName = adminName,
+                    WritingUserName = request.UserName,
+                    SourceId = sourceId,
+                    IsChecked = isChecked
+                };
 
                 contentInfo.Id = DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, contentInfo);
 
@@ -197,8 +223,7 @@ namespace SiteServer.API.Controllers.V1
 
                 var tableName = siteInfo.TableName;
 
-                int count;
-                var contentIdList = DataProvider.ContentDao.ApiGetContentIdListBySiteId(tableName, siteId, request.Top, request.Skip, request.Like, request.OrderBy, request.QueryString, out count);
+                var contentIdList = DataProvider.ContentDao.ApiGetContentIdListBySiteId(tableName, siteId, request.Top, request.Skip, request.Like, request.OrderBy, request.QueryString, out var count);
                 var value = new List<Dictionary<string, object>>();
                 foreach (var tuple in contentIdList)
                 {

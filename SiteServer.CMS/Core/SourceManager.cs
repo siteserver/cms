@@ -4,7 +4,7 @@ namespace SiteServer.CMS.Core
 {
     public static class SourceManager
 	{
-        public const int CaiJi = -2;        //采集
+	    public const int User = -1;         //用户投稿
         public const int Preview = -99;     //预览
         public const int Default = 0;       //正常录入
 
@@ -14,9 +14,9 @@ namespace SiteServer.CMS.Core
             {
                 return "正常录入";
             }
-            if (sourceId == CaiJi)
+            if (sourceId == User)
             {
-                return "系统采集";
+                return "用户投稿";
             }
             if (sourceId == Preview)
             {

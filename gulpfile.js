@@ -78,7 +78,7 @@ gulp.task("build-siteserver-all", function () {
   return gulp.src("./SiteServer.Web/SiteServer/**/*").pipe(gulp.dest("./build/SiteServer"));
 });
 
-gulp.task("build-siteserver-cshtml", function () {
+gulp.task("build-siteserver-html", function () {
   return gulp
     .src(["./SiteServer.Web/SiteServer/**/*.html", "./SiteServer.Web/SiteServer/**/*.aspx", "./SiteServer.Web/SiteServer/**/*.cshtml"])
     .pipe(replace('.css"', ".css?v=" + version + '"'))
@@ -110,6 +110,42 @@ gulp.task("build-siteserver-min-js", function () {
     .pipe(gulp.dest("./build/SiteServer"));
 });
 
+gulp.task("build-home-all", function () {
+  return gulp.src("./SiteServer.Web/Home/**/*").pipe(gulp.dest("./build/Home"));
+});
+
+gulp.task("build-home-html", function () {
+  return gulp
+    .src(["./SiteServer.Web/Home/**/*.html"])
+    .pipe(replace('.css"', ".css?v=" + version + '"'))
+    .pipe(replace('.js"', "-min.js?v=" + version + '"'))
+    .pipe(gulp.dest("./build/Home"));
+});
+
+gulp.task("build-home-min-css", function () {
+  return gulp
+    .src(["./SiteServer.Web/Home/**/*.css"])
+    .pipe(
+      minifier({
+        minify: true,
+        collapseWhitespace: true,
+        conservativeCollapse: true,
+        minifyJS: false,
+        minifyCSS: true,
+        minifyHTML: false,
+        ignoreFiles: ['.min.css']
+      })
+    )
+    .pipe(gulp.dest("./build/Home"));
+});
+
+gulp.task("build-home-min-js", function () {
+  return gulp
+    .src(["./SiteServer.Web/Home/**/*.js"])
+    .pipe(minify())
+    .pipe(gulp.dest("./build/Home"));
+});
+
 gulp.task("build-docs", function () {
   return gulp.src(["./SiteServer.Web/安装向导.html", "./SiteServer.Web/favicon.ico"]).pipe(gulp.dest("./build"));
 });
@@ -131,9 +167,13 @@ gulp.task("build", function (callback) {
     "build-sitefiles-all",
     "build-sitefiles-min",
     "build-siteserver-all",
-    "build-siteserver-cshtml",
+    "build-siteserver-html",
     "build-siteserver-min-css",
-    "build-siteserver-min-js"
+    "build-siteserver-min-js",
+    "build-home-all",
+    "build-home-html",
+    "build-home-min-css",
+    "build-home-min-js"
   );
 });
 

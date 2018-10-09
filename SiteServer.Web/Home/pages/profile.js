@@ -102,7 +102,8 @@ var methods = {
         type: 'success',
         html: '个人资料修改成功'
       };
-      document.documentElement.scrollTop = document.body.scrollTop = 0;
+
+      pageUtils.scrollToTop();
     });
   },
 
