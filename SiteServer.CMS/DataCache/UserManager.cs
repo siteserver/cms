@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.DataCache
@@ -307,6 +309,51 @@ namespace SiteServer.CMS.DataCache
             {
                 CacheUtils.InsertMinutes($"SiteServer.CMS.Provider.UserDao.Insert.IpAddress.{ipAddress}", ipAddress, ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes);
             }
+        }
+
+        public const string UserUploadDirectoryName = "upload";
+
+        public static string GetHomePath(params string[] paths)
+        {
+            var path = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.HomeDirectory, PathUtils.Combine(paths));
+            DirectoryUtils.CreateDirectoryIfNotExists(path);
+            return path;
+        }
+
+        public static string GetUserUploadPath(int userId, string relatedPath)
+        {
+            return GetHomePath(UserUploadDirectoryName, userId.ToString(), relatedPath);
+        }
+
+        public static string GetUserUploadFileName(string filePath)
+        {
+            var dt = DateTime.Now;
+            string strDateTime = $"{dt.Day}{dt.Hour}{dt.Minute}{dt.Second}{dt.Millisecond}";
+            return $"{strDateTime}{PathUtils.GetExtension(filePath)}";
+        }
+
+        public static string GetHomeUrl(params string[] paths)
+        {
+            return PageUtils.Combine(PageUtils.ApplicationPath, WebConfigUtils.HomeDirectory, PageUtils.Combine(paths));
+        }
+
+        public static string DefaultAvatarUrl => GetHomeUrl("assets/images/default_avatar.png");
+
+        public static string GetUserUploadUrl(int userId, string relatedUrl)
+        {
+            return GetHomeUrl(UserUploadDirectoryName, userId.ToString(), relatedUrl);
+        }
+
+        public static string GetUserAvatarUrl(IUserInfo userInfo)
+        {
+            var imageUrl = userInfo?.AvatarUrl;
+
+            if (!string.IsNullOrEmpty(imageUrl))
+            {
+                return PageUtils.IsProtocolUrl(imageUrl) ? imageUrl : GetUserUploadUrl(userInfo.Id, imageUrl);
+            }
+
+            return DefaultAvatarUrl;
         }
     }
 }

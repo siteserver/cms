@@ -45,6 +45,15 @@
         </td>
       </tr>
       <tr>
+        <td width="35%">允许用户销注</td>
+        <td width="65%">
+          <a href="javascript:;" v-on:click="pageType = 'isUserUnRegistrationAllowed'" class="editable">
+            <span v-show="config.isUserUnRegistrationAllowed">允许</span>
+            <span v-show="!config.isUserUnRegistrationAllowed">禁止</span>
+          </a>
+        </td>
+      </tr>
+      <tr>
         <td>密码最小长度</td>
         <td>
           <a href="javascript:;" v-on:click="pageType = 'userPasswordMinLength'" class="editable">
@@ -93,6 +102,18 @@
         <option v-bind:value="false">禁止</option>
       </select>
       <small class="form-text text-muted">选择否将禁止新用户注册, 但不影响过去已注册的会员的使用</small>
+    </div>
+
+  </template>
+  <template v-else-if="pageType === 'isUserUnRegistrationAllowed'">
+
+    <div class="form-group">
+      <label>允许用户销注</label>
+      <select v-model="isUserUnRegistrationAllowed" class="form-control">
+        <option v-bind:value="true">允许</option>
+        <option v-bind:value="false">禁止</option>
+      </select>
+      <small class="form-text text-muted">用户销注将永久删除此用户账户以及帐户中的所有数据</small>
     </div>
 
   </template>

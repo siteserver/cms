@@ -39,7 +39,11 @@ var methods = {
     this.channels = channels;
     this.site = site;
     this.channel = channel;
-    this.loadContents(1);
+    if (this.site && this.channel) {
+      this.loadContents(1);
+    } else {
+      this.pageType = 'Unauthorized'
+    }
   },
   btnAddClick: function () {
     location.href = 'pageContentAdd.aspx?siteId=' + this.site.id + '&channelId=' + this.channel.Id;

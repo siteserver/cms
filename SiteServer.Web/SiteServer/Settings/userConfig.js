@@ -9,6 +9,7 @@ var data = {
 
   isUserRegistrationAllowed: null,
   isUserRegistrationChecked: null,
+  isUserUnRegistrationAllowed: null,
   userPasswordMinLength: null,
   userPasswordRestriction: null,
   userRegistrationMinMinutes: null,
@@ -30,6 +31,7 @@ var methods = {
 
       $this.isUserRegistrationAllowed = res.value.isUserRegistrationAllowed;
       $this.isUserRegistrationChecked = res.value.isUserRegistrationChecked;
+      $this.isUserUnRegistrationAllowed = res.value.isUserUnRegistrationAllowed;
       $this.userPasswordMinLength = res.value.userPasswordMinLength;
       $this.userPasswordRestriction = res.value.userPasswordRestriction;
       $this.userRegistrationMinMinutes = res.value.userRegistrationMinMinutes;
@@ -50,6 +52,7 @@ var methods = {
     $api.post({
       isUserRegistrationAllowed: $this.isUserRegistrationAllowed,
       isUserRegistrationChecked: $this.isUserRegistrationChecked,
+      isUserUnRegistrationAllowed: $this.isUserUnRegistrationAllowed,
       userPasswordMinLength: $this.userPasswordMinLength,
       userPasswordRestriction: $this.userPasswordRestriction,
       userRegistrationMinMinutes: $this.userRegistrationMinMinutes,

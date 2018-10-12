@@ -73,6 +73,14 @@
         </td>
       </tr>
       <tr v-show="!config.isHomeClosed">
+        <td width="35%">用户注册用户组</td>
+        <td width="65%">
+          <a href="javascript:;" v-on:click="pageType = 'isUserRegistrationGroup'" class="editable">
+            {{ config.isUserRegistrationGroup ? '注册时可选择用户组' : '注册时不可选择用户组' }}
+          </a>
+        </td>
+      </tr>
+      <tr v-show="!config.isHomeClosed">
         <td>用户协议</td>
         <td>
           <a href="javascript:;" v-on:click="pageType = 'homeAgreement'" class="editable">
@@ -176,6 +184,18 @@
     </div>
 
   </template>
+  <template v-else-if="pageType === 'isUserRegistrationGroup'">
+
+    <div class="form-group">
+      <label>用户注册是否选择用户组</label>
+      <select v-model="isUserRegistrationGroup" class="form-control">
+        <option v-bind:value="true">注册时可选择用户组</option>
+        <option v-bind:value="false">注册时不可选择用户组</option>
+      </select>
+      <small class="form-text text-muted">如果设置为可选择，用户注册界面将显示用户组列表。</small>
+    </div>
+
+  </template>
   <template v-else-if="pageType === 'homeAgreement'">
 
     <div class="form-group">
@@ -184,17 +204,18 @@
         <option v-bind:value="true">显示用户协议</option>
         <option v-bind:value="false">不显示用户协议</option>
       </select>
-      <small class="form-text text-muted">设置显示用户协议后，新用户注册时必须勾选阅读并接受《用户协议》</small>
+      <small class="form-text text-muted">设置显示用户协议后，新用户注册时必须勾选阅读并接受《用户协议》。</small>
     </div>
 
     <div v-show="isHomeAgreement" class="form-group">
       <label>
-        用户协议内容
-        <small v-show="errors.has('homeAgreement')" class="text-danger">{{
-          errors.first('homeAgreement') }}</small>
+        用户协议
+        <small v-show="errors.has('homeAgreementHtml')" class="text-danger">{{
+          errors.first('homeAgreementHtml') }}</small>
       </label>
-      <textarea v-model="homeAgreement" name="homeAgreement" data-vv-as="用户协议内容" v-validate="'required'" :class="{'is-invalid': errors.has('homeAgreement') }"
-        style="height: 300px" class="form-control"></textarea>
+      <textarea v-model="homeAgreementHtml" name="homeAgreementHtml" data-vv-as="用户协议" v-validate="'required'" :class="{'is-invalid': errors.has('homeAgreement') }"
+        style="height: 100px" class="form-control"></textarea>
+      <small class="form-text text-muted">请在用户协议中填写显示在勾选框后面的文字，支持HTML格式。</small>
     </div>
 
   </template>

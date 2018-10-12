@@ -58,10 +58,7 @@
       </div>
 
       <div class="form-group">
-        <label class="col-form-label">姓名
-          <asp:RequiredFieldValidator ControlToValidate="TbDisplayName" ErrorMessage=" *" ForeColor="red" Display="Dynamic"
-            runat="server" />
-        </label>
+        <label class="col-form-label">姓名</label>
         <asp:TextBox ID="TbDisplayName" class="form-control" runat="server"></asp:TextBox>
       </div>
 

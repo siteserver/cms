@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -30,14 +27,10 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
-                var agreementPath = PathUtils.GetHomePath("agreement.html");
-                var homeAgreement = FileUtils.TryReadText(agreementPath);
-
                 return Ok(new
                 {
                     Value = ConfigManager.Instance.SystemConfigInfo,
                     WebConfigUtils.HomeDirectory,
-                    HomeAgreement = homeAgreement,
                     request.AdminToken,
                     Styles = TableStyleManager.GetUserStyleInfoList()
                 });
@@ -49,7 +42,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpPost, Route(Route)]
-        public async Task<IHttpActionResult> Submit()
+        public IHttpActionResult Submit()
         {
             try
             {
@@ -66,14 +59,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 ConfigManager.SystemConfigInfo.HomeLogoUrl = request.GetPostString("homeLogoUrl");
                 ConfigManager.SystemConfigInfo.HomeDefaultAvatarUrl = request.GetPostString("homeDefaultAvatarUrl");
                 ConfigManager.SystemConfigInfo.UserRegistrationAttributes = request.GetPostString("userRegistrationAttributes");
+                ConfigManager.SystemConfigInfo.IsUserRegistrationGroup = request.GetPostBool("isUserRegistrationGroup");
                 ConfigManager.SystemConfigInfo.IsHomeAgreement = request.GetPostBool("isHomeAgreement");
-                
-                if (ConfigManager.SystemConfigInfo.IsHomeAgreement)
-                {
-                    var homeAgreement = request.GetPostString("homeAgreement");
-                    var agreementPath = PathUtils.GetHomePath("agreement.html");
-                    await FileUtils.WriteTextAsync(agreementPath, Encoding.UTF8, homeAgreement);
-                }
+                ConfigManager.SystemConfigInfo.HomeAgreementHtml = request.GetPostString("homeAgreementHtml");
 
                 DataProvider.ConfigDao.Update(ConfigManager.Instance);
 
@@ -120,8 +108,8 @@ namespace SiteServer.API.Controllers.Pages.Settings
                         return BadRequest("Could not read image from body");
                     }
 
-                    var fileName = PathUtils.GetUserUploadFileName(postFile.FileName);
-                    var filePath = PathUtils.GetUserFilesPath(string.Empty, fileName);
+                    var fileName = postFile.FileName;
+                    var filePath = UserManager.GetHomePath(UserManager.UserUploadDirectoryName, fileName);
 
                     if (!EFileSystemTypeUtils.IsImage(PathUtils.GetExtension(fileName)))
                     {
@@ -130,7 +118,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                     postFile.SaveAs(filePath);
 
-                    homeLogoUrl = PageUtils.AddProtocolToUrl(PageUtils.GetUserFilesUrl(string.Empty, fileName));
+                    homeLogoUrl = PageUtils.AddProtocolToUrl(UserManager.GetHomeUrl(UserManager.UserUploadDirectoryName, fileName));
                 }
 
                 return Ok(new

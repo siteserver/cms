@@ -940,15 +940,6 @@ namespace SiteServer.Utils
             return AddQueryString(GetAdminDirectoryUrl(Combine("ajax", className.ToLower() + ".aspx")), queryString);
         }
 
-        public static string GetUserFilesUrl(string userName, string relatedUrl)
-        {
-            if (IsVirtualUrl(relatedUrl))
-            {
-                return ParseNavigationUrl(relatedUrl);
-            }
-            return Combine(ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.UserFiles, userName, relatedUrl);
-        }
-
         public static void RedirectToErrorPage(int logId)
         {
             Redirect(GetErrorPageUrl(logId));

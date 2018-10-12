@@ -30,7 +30,7 @@ namespace SiteServer.CMS.Core
 	        public const int All = -200;//全部
 	    }
 
-	    private static class Level
+	    public static class Level
 	    {
 	        public const string All = "全部";//全部
             public const string CaoGao = "草稿";//草稿
@@ -1023,7 +1023,7 @@ namespace SiteServer.CMS.Core
 	        return false;
 	    }
 
-	    private static KeyValuePair<bool, int> GetUserCheckLevel(PermissionsImpl permissionsImpl, SiteInfo siteInfo, int channelId)
+	    public static KeyValuePair<bool, int> GetUserCheckLevel(PermissionsImpl permissionsImpl, SiteInfo siteInfo, int channelId)
         {
             if (permissionsImpl.IsSystemAdministrator)
             {

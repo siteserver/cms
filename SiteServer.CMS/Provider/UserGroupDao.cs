@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using Dapper;
-using Dapper.Contrib.Extensions;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -40,12 +40,23 @@ namespace SiteServer.CMS.Provider
 
         public int Insert(UserGroupInfo groupInfo)
         {
-            int groupId;
+            var sqlString =
+                $@"
+INSERT INTO {TableName} (
+    {nameof(UserGroupInfo.GroupName)},
+    {nameof(UserGroupInfo.AdminName)}
+) VALUES (
+    @{nameof(UserGroupInfo.GroupName)},
+    @{nameof(UserGroupInfo.AdminName)}
+)";
 
-            using (var connection = GetConnection())
+            var parms = new IDataParameter[]
             {
-                groupId = (int)connection.Insert(groupInfo);
-            }
+                GetParameter($"@{nameof(UserGroupInfo.GroupName)}", DataType.VarChar, 200, groupInfo.GroupName),
+                GetParameter($"@{nameof(UserGroupInfo.AdminName)}", DataType.VarChar, 200, groupInfo.AdminName)
+            };
+
+            var groupId = ExecuteNonQueryAndReturnId(TableName, nameof(UserGroupInfo.Id), sqlString, parms);
 
             UserGroupManager.ClearCache();
 
@@ -54,20 +65,33 @@ namespace SiteServer.CMS.Provider
 
         public void Update(UserGroupInfo groupInfo)
         {
-            using (var connection = GetConnection())
+            var sqlString = $@"UPDATE {TableName} SET
+                {nameof(UserGroupInfo.GroupName)} = @{nameof(UserGroupInfo.GroupName)},  
+                {nameof(UserGroupInfo.AdminName)} = @{nameof(UserGroupInfo.AdminName)}
+            WHERE {nameof(UserGroupInfo.Id)} = @{nameof(UserGroupInfo.Id)}";
+
+            IDataParameter[] parameters =
             {
-                connection.Update(groupInfo);
-            }
+                GetParameter(nameof(UserGroupInfo.GroupName), DataType.VarChar, 200, groupInfo.GroupName),
+                GetParameter(nameof(UserGroupInfo.AdminName), DataType.VarChar, 200, groupInfo.AdminName),
+                GetParameter(nameof(UserGroupInfo.Id), DataType.Integer, groupInfo.Id)
+            };
+
+            ExecuteNonQuery(sqlString, parameters);
 
             UserGroupManager.ClearCache();
         }
 
         public void Delete(int groupId)
         {
-            using (var connection = GetConnection())
+            var sqlString = $"DELETE FROM {TableName} WHERE Id = @Id";
+
+            var parms = new IDataParameter[]
             {
-                connection.Delete(new UserGroupInfo { Id = groupId });
-            }
+                GetParameter("@Id", DataType.Integer, groupId)
+            };
+
+            ExecuteNonQuery(sqlString, parms);
 
             UserGroupManager.ClearCache();
         }

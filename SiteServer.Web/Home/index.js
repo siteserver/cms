@@ -50,8 +50,10 @@ new Vue({
       var topHeight = this.elTopnav.height();
       this.elFrmMain.css({
         top: topHeight + 'px',
-        height: ($(window).height() - topHeight) + 'px',
+        minHeight: ($(window).height() - topHeight) + 'px',
         display: 'block'
+      }).iFrameResize({
+        log: false
       });
     },
     getPageUrl: function () {

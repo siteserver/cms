@@ -74,7 +74,7 @@ namespace SiteServer.CMS.DataCache
 	                    Taxis = 1,
 	                    Title = "用户中心",
 	                    Url = "pages/dashboard.html",
-                        IconClass = "ti-home",
+                        IconClass = "fa fa-home",
 	                    IsOpenWindow = false
 	                }, null),
 	                new KeyValuePair<UserMenuInfo, List<UserMenuInfo>>(new UserMenuInfo
@@ -87,7 +87,7 @@ namespace SiteServer.CMS.DataCache
 	                    Taxis = 2,
 	                    Title = "新增稿件",
 	                    Url = "pages/contentAdd.html",
-                        IconClass = "ti-plus",
+                        IconClass = "fa fa-plus",
 	                    IsOpenWindow = false
 	                }, null),
 	                new KeyValuePair<UserMenuInfo, List<UserMenuInfo>>(new UserMenuInfo
@@ -100,7 +100,7 @@ namespace SiteServer.CMS.DataCache
 	                    Taxis = 3,
 	                    Title = "稿件管理",
 	                    Url = "pages/contents.html",
-                        IconClass = "ti-files",
+                        IconClass = "fa fa-list",
 	                    IsOpenWindow = false
 	                }, null)
 	            });

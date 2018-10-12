@@ -659,6 +659,16 @@ namespace SiteServer.CMS.Provider
             UserManager.ClearCache();
         }
 
+        private UserInfo GetByAccount(string account)
+        {
+            if (StringUtils.IsMobile(account))
+            {
+                return GetByMobile(account);
+            }
+
+            return StringUtils.IsEmail(account) ? GetByEmail(account) : GetByUserName(account);
+        }
+
         public UserInfo GetByUserName(string userName)
         {
             if (string.IsNullOrEmpty(userName)) return null;
@@ -944,7 +954,7 @@ namespace SiteServer.CMS.Provider
                 return false;
             }
 
-            var userInfo = UserManager.GetUserInfoByAccount(account);
+            var userInfo = GetByAccount(account);
 
             if (string.IsNullOrEmpty(userInfo?.UserName))
             {

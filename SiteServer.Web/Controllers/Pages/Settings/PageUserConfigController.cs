@@ -2,7 +2,6 @@
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Pages.Settings
@@ -49,6 +48,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 ConfigManager.SystemConfigInfo.IsUserRegistrationAllowed = request.GetPostBool("isUserRegistrationAllowed");
                 ConfigManager.SystemConfigInfo.IsUserRegistrationChecked = request.GetPostBool("isUserRegistrationChecked");
+                ConfigManager.SystemConfigInfo.IsUserUnRegistrationAllowed = request.GetPostBool("isUserUnRegistrationAllowed");
                 ConfigManager.SystemConfigInfo.UserPasswordMinLength = request.GetPostInt("userPasswordMinLength");
                 ConfigManager.SystemConfigInfo.UserPasswordRestriction = request.GetPostString("userPasswordRestriction");
                 ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes = request.GetPostInt("userRegistrationMinMinutes");

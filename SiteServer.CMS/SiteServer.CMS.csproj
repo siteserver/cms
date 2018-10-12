@@ -139,6 +139,7 @@
     <Compile Include="Core\CmsPages.cs" />
     <Compile Include="Core\ContentCountInfo.cs" />
     <Compile Include="Core\InputTypeUtils.cs" />
+    <Compile Include="DataCache\ContentTagManager.cs" />
     <Compile Include="DataCache\UserMenuManager .cs" />
     <Compile Include="DataCache\UserGroupManager.cs" />
     <Compile Include="DataCache\ChannelGroupManager.cs" />
@@ -174,6 +175,7 @@
     <Compile Include="Core\PathUtility.cs" />
     <Compile Include="Core\RoleManager.cs" />
     <Compile Include="DataCache\PermissionConfigManager.cs" />
+    <Compile Include="Model\ContentTagInfo.cs" />
     <Compile Include="Plugin\Impl\PermissionsImpl.cs" />
     <Compile Include="DataCache\SiteManager.cs" />
     <Compile Include="Core\SiteTemplateManager.cs" />
@@ -327,6 +329,7 @@
     <Compile Include="Provider\ConfigDao.cs" />
     <Compile Include="Provider\ContentCheckDao.cs" />
     <Compile Include="Provider\ContentDao.cs" />
+    <Compile Include="Provider\ContentTagDao.cs" />
     <Compile Include="Provider\ContentGroupDao.cs" />
     <Compile Include="Provider\DatabaseDao.cs" />
     <Compile Include="Provider\DbCacheDao.cs" />

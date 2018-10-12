@@ -299,20 +299,6 @@ namespace SiteServer.Utils
             return aExt.All(t => !StringUtils.EqualsIgnoreCase(sExt, t));
         }
 
-        public static string GetClientUserPath(string applicationName, string userName, string relatedPath)
-        {
-            string systemName;
-            if (!string.IsNullOrEmpty(applicationName) && applicationName.IndexOf("_", StringComparison.Ordinal) != -1)
-            {
-                systemName = applicationName.Split('_')[1];
-            }
-            else
-            {
-                systemName = applicationName;
-            }
-            return GetSiteFilesPath($"{DirectoryUtils.SiteFiles.UserFiles}/{userName}/{systemName}/{relatedPath}");
-        }
-
         public static string GetTemporaryFilesPath(string relatedPath)
         {
             return Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedPath);
@@ -321,45 +307,6 @@ namespace SiteServer.Utils
         public static string GetMenusPath(params string[] paths)
         {
             return Combine(SiteServerAssets.GetPath("menus"), Combine(paths));
-        }
-
-        public static string GetHomePath(params string[] paths)
-        {
-            return Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.HomeDirectory, Combine(paths));
-        }
-
-        public static string GetUserFilesPath(string userName, string relatedPath)
-        {
-            return Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.UserFiles, userName, relatedPath);
-        }
-
-        public static string GetUserUploadDirectoryPath(string userName)
-        {
-            string directoryPath;
-            var dateFormatType = EDateFormatType.Month;
-            var datetime = DateTime.Now;
-            var userFilesPath = GetUserFilesPath(userName, string.Empty);
-            if (dateFormatType == EDateFormatType.Year)
-            {
-                directoryPath = Combine(userFilesPath, datetime.Year.ToString());
-            }
-            else if (dateFormatType == EDateFormatType.Day)
-            {
-                directoryPath = Combine(userFilesPath, datetime.Year.ToString(), datetime.Month.ToString(), datetime.Day.ToString());
-            }
-            else
-            {
-                directoryPath = Combine(userFilesPath, datetime.Year.ToString(), datetime.Month.ToString());
-            }
-            DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
-            return directoryPath;
-        }
-
-        public static string GetUserUploadFileName(string filePath)
-        {
-            var dt = DateTime.Now;
-            string strDateTime = $"{dt.Day}{dt.Hour}{dt.Minute}{dt.Second}{dt.Millisecond}";
-            return $"{strDateTime}{GetExtension(filePath)}";
         }
 
         public static string PhysicalSiteServerPath => Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory);

@@ -70,7 +70,7 @@ var pageUtils = {
             swal({
               title: "用户中心已关闭！",
               text: ' ',
-              icon: 'error',
+              type: 'error',
               button: false,
               closeOnClickOutside: false,
               closeOnEsc: false
@@ -83,7 +83,7 @@ var pageUtils = {
         swal({
           title: "用户中心已关闭！",
           text: ' ',
-          icon: 'error',
+          type: 'error',
           button: false,
           closeOnClickOutside: false,
           closeOnEsc: false
@@ -97,7 +97,7 @@ var pageUtils = {
     swal({
       title: "系统错误，请联系管理员协助解决！",
       text: err.message,
-      icon: 'error',
+      type: 'error',
       button: false,
       closeOnClickOutside: false,
       closeOnEsc: false
@@ -110,7 +110,7 @@ var pageUtils = {
     swal({
         title: config.title,
         text: config.text,
-        icon: 'warning',
+        type: 'warning',
         buttons: {
           cancel: {
             text: '取 消',

@@ -355,50 +355,15 @@ namespace SiteServer.CMS.Provider
             AdminManager.ClearCache();
         }
 
-        //private AdministratorInfo GetByAccount(string account)
-        //{
-        //    AdministratorInfo info = null;
+        private AdministratorInfo GetByAccount(string account)
+        {
+            if (StringUtils.IsMobile(account))
+            {
+                return GetByMobile(account);
+            }
 
-        //    string sqlString;
-        //    IDataParameter[] parms;
-        //    if (StringUtils.IsMobile(account))
-        //    {
-        //        sqlString = SqlSelectUserByMobile;
-        //        parms = new IDataParameter[]
-        //        {
-        //            GetParameter(ParmMobile, DataType.VarChar, 50, account)
-        //        };
-        //    }
-        //    else if (StringUtils.IsEmail(account))
-        //    {
-        //        sqlString = SqlSelectUserByEmail;
-        //        parms = new IDataParameter[]
-        //        {
-        //            GetParameter(ParmEmail, DataType.VarChar, 50, account)
-        //        };
-        //    }
-        //    else
-        //    {
-        //        sqlString = SqlSelectUser;
-        //        parms = new IDataParameter[]
-        //        {
-        //            GetParameter(ParmUsername, DataType.VarChar, 255, account)
-        //        };
-        //    }
-
-        //    using (var rdr = ExecuteReader(sqlString, parms))
-        //    {
-        //        if (rdr.Read())
-        //        {
-        //            var i = 0;
-        //            info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
-        //                GetString(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
-        //        }
-        //        rdr.Close();
-        //    }
-
-        //    return info;
-        //}
+            return StringUtils.IsEmail(account) ? GetByEmail(account) : GetByUserName(account);
+        }
 
         public AdministratorInfo GetByUserId(int userId)
         {
@@ -1045,7 +1010,7 @@ namespace SiteServer.CMS.Provider
                 return false;
             }
 
-            var adminInfo = AdminManager.GetAdminInfoByAccount(account);
+            var adminInfo = GetByAccount(account);
             if (string.IsNullOrEmpty(adminInfo?.UserName))
             {
                 errorMessage = "帐号或密码错误";

@@ -10,41 +10,25 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <link rel="shortcut icon" href="../assets/images/favicon.ico">
   <link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-  <link href="../assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/lib/vue-multiselect-2.1.0/style.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/font-awesome-4.7.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/ionicons-2.0.0.min.css" rel="stylesheet" type="text/css" />
   <link href="../assets/css/siteserver.min.css" rel="stylesheet" type="text/css" />
-  <link href="../assets/js/vue-multiselect-2.1.0/style.min.css" rel="stylesheet" type="text/css" />
-  <script src="../assets/js/modernizr.min.js"></script>
-  <style>
-    .multiselect__tags {
-min-height: 34px;
-display: block;
-padding: 6px 40px 0 8px;
-}
-
-.multiselect__single {
-margin-bottom: 4px;
-}
-
-.multiselect__option, .multiselect__input, .multiselect__single {
-font-size: 14px;
-}
-
-.multiselect__select {
-min-height: 34px;
-}
-
-.multiselect__option--selected.multiselect__option--highlight {
-background: #41b883;
-}
-  </style>
-
+  <script src="../assets/lib/modernizr.min.js"></script>
+  <script type="text/javascript" src="../assets/lib/iframe-resizer-3.6.2/iframeResizer.contentWindow.min.js"></script>
 </head>
 
 <body class="p-0">
 
   <div id="main" class="container-fluid">
 
-    <template v-if="pageConfig">
+    <template v-if="pageType === 'Unauthorized'">
+      <div class="card m-3 card-body">
+        <h4 class="card-title text-danger">错误！</h4>
+        <p>您的投稿权限尚未开通，请联系管理员解决。</p>
+      </div>
+    </template>
+    <template v-else-if="pageConfig">
 
       <div class="row">
         <div class="col-sm-12">
@@ -55,7 +39,8 @@ background: #41b883;
                 <li class="breadcrumb-item active">{{ channel.channelName }}</li>
               </ol>
             </div>
-            <h4 class="page-title">新增稿件</h4>
+            <h4 v-if="contentId" class="page-title">修改稿件</h4>
+            <h4 v-else class="page-title">新增稿件</h4>
           </div>
         </div>
       </div>
@@ -66,7 +51,6 @@ background: #41b883;
       </div>
 
       <div v-if="pageType === 'success'" class="card m-b-20 card-body">
-        <h4 v-if="content.id" class="card-title text-primary">内容修改成功!</h4>
         <h4 v-else class="card-title text-primary">内容添加成功!</h4>
 
         <div class="form-group form-row">
@@ -99,39 +83,39 @@ background: #41b883;
 
       <div v-else class="card-box">
 
-        <div class="row">
-          <div class="col-md-9">
-            <h4 class="m-t-0 m-b-30 header-title">基础字段</h4>
+        <form v-on:submit="btnSubmitClick">
 
-            <div class="form-row">
-              <div class="form-group col-md-6">
-                <label for="inputEmail4" class="col-form-label">站点</label>
-                <multiselect v-on:select="onSiteSelect" v-model="site" placeholder="选择或者输入文字搜索站点..." :options="sites"
-                  :searchable="true" :show-labels="false" label="siteName" track-by="siteName">
-                  <template slot="singleLabel" slot-scope="props">{{ props.option.siteName }}</template>
-                  <template slot="option" slot-scope="props">
-                    {{ props.option.siteName }}
-                  </template>
-                </multiselect>
+          <div class="row">
+            <div class="col-md-9">
+              <h4 class="m-t-0 m-b-30 header-title">基础字段</h4>
+
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="inputEmail4" class="col-form-label">站点</label>
+                  <multiselect v-on:select="onSiteSelect" v-model="site" placeholder="选择或者输入文字搜索站点..." :options="sites"
+                    :searchable="true" :show-labels="false" label="siteName" track-by="siteName">
+                    <template slot="singleLabel" slot-scope="props">{{ props.option.siteName }}</template>
+                    <template slot="option" slot-scope="props">
+                      {{ props.option.siteName }}
+                    </template>
+                  </multiselect>
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="inputPassword4" class="col-form-label">栏目</label>
+                  <multiselect v-on:select="onChannelSelect" v-model="channel" placeholder="选择或者输入文字搜索栏目..." :options="channels"
+                    :searchable="true" :show-labels="false" label="channelName" track-by="channelName">
+                    <template slot="singleLabel" slot-scope="props">{{ props.option.channelName }}</template>
+                    <template slot="option" slot-scope="props">
+                      {{ props.option.channelName }}
+                    </template>
+                  </multiselect>
+                </div>
               </div>
-              <div class="form-group col-md-6">
-                <label for="inputPassword4" class="col-form-label">栏目</label>
-                <multiselect v-on:select="onChannelSelect" v-model="channel" placeholder="选择或者输入文字搜索栏目..." :options="channels"
-                  :searchable="true" :show-labels="false" label="channelName" track-by="channelName">
-                  <template slot="singleLabel" slot-scope="props">{{ props.option.channelName }}</template>
-                  <template slot="option" slot-scope="props">
-                    {{ props.option.channelName }}
-                  </template>
-                </multiselect>
+
+              <div v-if="pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
+                <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
+                <span v-html="pageAlert.html"></span>
               </div>
-            </div>
-
-            <div v-if="pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
-              <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
-              <span v-html="pageAlert.html"></span>
-            </div>
-
-            <form v-on:submit="btnSubmitClick">
 
               <div v-for="style in styles" class="form-group">
                 <label>
@@ -171,59 +155,83 @@ background: #41b883;
 
               </div>
 
-            </form>
-          </div>
+            </div>
 
-          <div class="col-md-3">
-            <h4 class="m-t-0 m-b-30 header-title">其他字段</h4>
+            <div class="col-md-3">
+              <h4 class="m-t-0 m-b-30 header-title">其他字段</h4>
 
-            <form role="form">
               <div class="form-group">
                 <label>属性</label>
                 <div class="m-2">
                   <div class="checkbox checkbox-primary form-check-inline">
-                    <input type="checkbox" id="isTop" v-model="content.isTop">
+                    <input type="checkbox" id="isTop" v-model="isTop">
                     <label for="isTop"> 置顶 </label>
                   </div>
                   <div class="checkbox checkbox-primary form-check-inline">
-                    <input type="checkbox" id="isRecommend" v-model="content.isRecommend">
+                    <input type="checkbox" id="isRecommend" v-model="isRecommend">
                     <label for="isRecommend"> 推荐 </label>
                   </div>
                   <div class="checkbox checkbox-primary form-check-inline">
-                    <input type="checkbox" id="isHot" v-model="content.isHot">
+                    <input type="checkbox" id="isHot" v-model="isHot">
                     <label for="isHot"> 热点 </label>
                   </div>
                   <div class="checkbox checkbox-primary form-check-inline">
-                    <input type="checkbox" id="isColor" v-model="content.isColor">
+                    <input type="checkbox" id="isColor" v-model="isColor">
                     <label for="isColor"> 醒目 </label>
                   </div>
                 </div>
               </div>
-              <div v-if="groupNames.length > 0" class="form-group">
+              <div v-if="allGroupNames.length > 0" class="form-group">
                 <label>内容组</label>
                 <div class="m-2">
-
-                  <div v-for="groupName in groupNames" class="checkbox checkbox-primary form-check-inline">
-                    <input type="checkbox" :id="groupName" v-model="content.groupNames">
+                  <div v-for="groupName in allGroupNames" class="checkbox checkbox-primary">
+                    <input type="checkbox" :id="groupName" :value="groupName" v-model="groupNames">
                     <label :for="groupName"> {{ groupName }} </label>
                   </div>
-
                 </div>
               </div>
               <div class="form-group">
                 <label>标签</label>
-                <input v-model="content.tags" type="text" class="form-control">
+                <multiselect v-model="tagNames" tag-placeholder="新增标签" placeholder="在此选择或者添加标签" :options="allTagNames"
+                  :multiple="true" :taggable="true" @tag="addTag"></multiselect>
               </div>
-            </form>
+              <div class="form-group">
+                <label>
+                  外部链接
+                  <small v-show="errors.has('linkUrl')" class="text-danger">{{ errors.first('linkUrl') }}</small>
+                </label>
+                <input v-model="linkUrl" name="linkUrl" data-vv-as="外部链接" v-validate="'url'" :class="{'is-invalid': errors.has('linkUrl') }"
+                  type="text" class="form-control form-control-sm" />
+                <small class="form-text text-muted">设置后链接将指向此地址</small>
+              </div>
+              <div class="form-group">
+                <label>
+                  添加时间
+                </label>
+                <div>
+                  <date-picker style="width: 100%" v-model="addDate" type="datetime" format="YYYY年MM月DD日 HH:mm"
+                    :minute-step="1" :clearable="false" :editable="false"></date-picker>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>状态</label>
+                <select v-model="checkedLevel" class="form-control form-control-sm">
+                  <option v-for="level in allCheckedLevels" :value="level.key">{{ level.value }}</option>
+                </select>
+              </div>
+            </div>
+
           </div>
 
-        </div>
+          <hr />
 
-        <hr />
+          <div class="text-center">
+            <button type="button" @click="btnSubmitClick" class="btn btn-primary w-md mr-2">保 存</button>
+            <button type="button" @click="btnPreviewClick" class="btn btn-secondary w-md mr-2">预 览</button>
+            <button v-if="contentId" type="button" @click="btnReturnClick" class="btn btn-default w-md">返 回</button>
+          </div>
 
-        <div class="text-center">
-          <button type="button" @click="btnSubmitClick" class="btn btn-primary w-md">保 存</button>
-        </div>
+        </form>
 
       </div>
 
@@ -241,26 +249,27 @@ background: #41b883;
 
 </html>
 
-<script src="../assets/js/jquery-1.9.1.min.js" type="text/javascript"></script>
-<script src="../assets/js/popper.min.js"></script>
-<script src="../assets/js/bootstrap.min.js"></script>
-<script src="../assets/js/lodash-4.17.10.min.js" type="text/javascript"></script>
-<script src="../assets/js/layer-3.1.1/layer.js" type="text/javascript"></script>
-<script src="../assets/js/sweetalert-2.1.0.min.js" type="text/javascript"></script>
-<script src="../assets/js/vue-2.5.16.min.js" type="text/javascript"></script>
-<script src="../assets/js/vee-validate-2.1.0.js"></script>
-<script src="../assets/js/vee-validate-locale-zh_CN-2.1.0.js"></script>
-<script src="../assets/js/js.cookie-2.2.0.js"></script>
-<script src="../assets/utils/apiUtils.js" type="text/javascript"></script>
-<script src="../assets/utils/pageUtils.js" type="text/javascript"></script>
-<script src="../assets/utils/authUtils.js" type="text/javascript"></script>
+<script src="../assets/lib/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="../assets/lib/popper.min.js"></script>
+<script src="../assets/lib/bootstrap.min.js"></script>
+<script src="../assets/lib/lodash-4.17.10.min.js" type="text/javascript"></script>
+<script src="../assets/lib/layer-3.1.1/layer.js" type="text/javascript"></script>
+<script src="../assets/lib/sweetalert2-7.28.4.all.min.js" type="text/javascript"></script>
+<script src="../assets/lib/vue-2.5.16.min.js" type="text/javascript"></script>
+<script src="../assets/lib/vee-validate-2.1.0.js"></script>
+<script src="../assets/lib/vee-validate-locale-zh_CN-2.1.0.js"></script>
+<script src="../assets/lib/js.cookie-2.2.0.js"></script>
+<script src="../assets/js/apiUtils.js" type="text/javascript"></script>
+<script src="../assets/js/pageUtils.js" type="text/javascript"></script>
+<script src="../assets/js/authUtils.js" type="text/javascript"></script>
 <script src="../config.js" type="text/javascript"></script>
 
-<script src="../assets/js/vue-multiselect-2.1.0/script.min.js"></script>
+<script src="../assets/lib/vue-multiselect-2.1.0/script.min.js"></script>
+<script src="../assets/lib/vue2-datepicker-2.4.3.min.js"></script>
 <script type="text/javascript">
-  window.UEDITOR_HOME_URL = "../assets/ueditor/";
+  window.UEDITOR_HOME_URL = "../assets/lib/ueditor/";
   window.UEDITOR_CONTROLLER_URL = "/api/sys/editors/ueditor/35";
 </script>
-<script type="text/javascript" src="../assets/ueditor/editor_config.js"></script>
-<script type="text/javascript" src="../assets/ueditor/ueditor_all_min.js"></script>
+<script type="text/javascript" src="../assets/lib/ueditor/editor_config.js"></script>
+<script type="text/javascript" src="../assets/lib/ueditor/ueditor_all_min.js"></script>
 <script src="contentAdd.js" type="text/javascript"></script>

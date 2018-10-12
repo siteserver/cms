@@ -14,11 +14,13 @@ var data = {
   captcha: null,
   captchaUrl: null,
   styles: [],
+  groups: [],
+  groupId: 0,
   isAgreement: false,
 };
 
 var methods = {
-  load: function (pageConfig, styles) {
+  load: function (pageConfig, styles, groups) {
     this.pageConfig = pageConfig;
 
     var userRegistrationAttributes = this.pageConfig.userRegistrationAttributes.split(',');
@@ -30,6 +32,7 @@ var methods = {
         this.styles.push(style);
       }
     }
+    this.groups = groups;
     this.reload();
   },
   reload: function () {
@@ -62,7 +65,8 @@ var methods = {
 
     var payload = {
       userName: this.userName,
-      password: this.password
+      password: this.password,
+      groupId: this.groupId
     };
     for (var i = 0; i < this.styles.length; i++) {
       var style = this.styles[i];
@@ -107,9 +111,9 @@ var methods = {
     var $this = this;
     this.$validator.validate().then(function (result) {
       if ($this.pageConfig.isHomeAgreement && !$this.isAgreement) {
-        $this.pageAlert = {
+        return $this.pageAlert = {
           type: 'danger',
-          html: '请勾选“阅读并接受用户协议”'
+          html: '请勾选' + $this.pageConfig.homeAgreementHtml
         };
       }
       if (result) {
@@ -133,7 +137,7 @@ new Vue({
   created: function () {
     var $this = this;
     pageUtils.getConfig('register', function (res) {
-      $this.load(res.value, res.styles);
+      $this.load(res.value, res.styles, res.groups);
     });
   }
 });

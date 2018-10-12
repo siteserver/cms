@@ -1,5 +1,6 @@
 ﻿using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -59,7 +60,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.AvatarUrl, attributeName))
                 {
-                    parsedContent = PageUtility.GetUserAvatarUrl(pageInfo.ApiUrl, pageInfo.UserInfo);
+                    parsedContent = UserManager.GetUserAvatarUrl(pageInfo.UserInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.Gender, attributeName))
                 {

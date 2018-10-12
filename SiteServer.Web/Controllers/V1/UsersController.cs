@@ -6,7 +6,6 @@ using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -32,6 +31,10 @@ namespace SiteServer.API.Controllers.V1
             {
                 var request = new RequestImpl(AccessTokenManager.ScopeUsers);
                 var userInfo = new UserInfo(request.GetPostObject<Dictionary<string, object>>());
+                if (!ConfigManager.SystemConfigInfo.IsUserRegistrationGroup)
+                {
+                    userInfo.GroupId = 0;
+                }
                 var password = request.GetPostString("password");
 
                 var userId = DataProvider.UserDao.Insert(userInfo, password, PageUtils.GetIpAddress(), out var errorMessage);
@@ -128,7 +131,7 @@ namespace SiteServer.API.Controllers.V1
         {
             var userInfo = UserManager.GetUserInfoByUserId(id);
 
-            var avatarUrl = !string.IsNullOrEmpty(userInfo?.AvatarUrl) ? userInfo.AvatarUrl : PageUtils.GetUserFilesUrl(string.Empty, "default_avatar.png");
+            var avatarUrl = !string.IsNullOrEmpty(userInfo?.AvatarUrl) ? userInfo.AvatarUrl : UserManager.DefaultAvatarUrl;
             avatarUrl = PageUtils.AddProtocolToUrl(avatarUrl);
 
             return Ok(new OResponse(avatarUrl));
@@ -154,8 +157,8 @@ namespace SiteServer.API.Controllers.V1
                         return BadRequest("Could not read image from body");
                     }
 
-                    var fileName = PathUtils.GetUserUploadFileName(postFile.FileName);
-                    var filePath = PathUtils.GetUserFilesPath(userInfo.UserName, fileName);
+                    var fileName = UserManager.GetUserUploadFileName(postFile.FileName);
+                    var filePath = UserManager.GetUserUploadPath(userInfo.Id, fileName);
                     
                     if (!EFileSystemTypeUtils.IsImage(PathUtils.GetExtension(fileName)))
                     {
@@ -165,7 +168,7 @@ namespace SiteServer.API.Controllers.V1
                     DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                     postFile.SaveAs(filePath);
 
-                    userInfo.AvatarUrl = PageUtils.AddProtocolToUrl(PageUtils.GetUserFilesUrl(userInfo.UserName, fileName));
+                    userInfo.AvatarUrl = UserManager.GetUserUploadUrl(userInfo.Id, fileName);
 
                     DataProvider.UserDao.Update(userInfo);
                 }

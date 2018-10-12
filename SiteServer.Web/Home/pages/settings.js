@@ -10,11 +10,9 @@ var data = {
   accountAlertType: "",
   accountAlertMessage: "",
   mobile: "",
-  code: "",
-  isAccountSubmit: false,
+  email: "",
   passwordAlertType: "",
   passwordAlertMessage: "",
-  isPasswordSubmit: false,
   oldPassword: "",
   newPassword: "",
   confirmPassword: "",
@@ -28,11 +26,8 @@ var methods = {
     this.avatarUrl = this.pageUser.avatarUrl || this.pageConfig.homeDefaultAvatarUrl || '../assets/images/default_avatar.png';
     this.uploadUrl = apiUrl + '/v1/users/' + this.pageUser.id + '/avatar?userToken=' + authUtils.getToken();
 
-    this.styles = styles;
-    for (var i = 0; i < this.styles.length; i++) {
-      var style = this.styles[i];
-      style.value = this.pageUser[_.camelCase(style.attributeName)];
-    }
+    this.mobile = this.pageUser.mobile;
+    this.email = this.pageUser.email;
   },
 
   editSave: function () {
@@ -88,69 +83,65 @@ var methods = {
   },
 
   updateAccount: function () {
-    if (this.errors.any("account")) return;
-    this.isAccountSubmit = true;
-    if (
-      !this.user.userName ||
-      !this.user.mobile ||
-      (this.mobile !== this.user.mobile && !this.code)
-    )
-      return;
-
-    this.isAccountLoading = true;
+    var $this = this;
     this.accountAlertMessage = "";
 
-    Users.update(this.user)
-      .then(response => {
-        this.isAccountLoading = false;
-        this.mobile = response.data.mobile;
-        this.$store.dispatch("update", response.data);
-        this.accountAlertType = "success";
-        this.accountAlertMessage = "个人资料设置成功";
-      })
-      .catch(error => {
-        this.isAccountLoading = false;
-        this.accountAlertType = "danger";
-        this.accountAlertMessage = error.response.data.message;
-      });
+    this.$validator.validate("account.*").then(function (result) {
+      if (result) {
+        pageUtils.loading(true);
+        new apiUtils.Api(apiUrl + '/v1/users/' + $this.pageUser.id).put({
+          mobile: $this.mobile,
+          email: $this.email
+        }, function (err, res) {
+          pageUtils.loading(false);
+
+          if (err) {
+            $this.accountAlertType = "danger";
+            $this.accountAlertMessage = err.message;
+            return;
+          }
+
+          authUtils.saveUser(res.value);
+          $this.accountAlertType = "success";
+          $this.accountAlertMessage = '登录账号设置修改成功';
+        });
+      }
+    });
   },
 
   updatePassword: function () {
-    this.isPasswordSubmit = true;
-    if (
-      !this.oldPassword ||
-      !this.newPassword ||
-      !this.confirmPassword ||
-      this.newPassword !== this.confirmPassword
-    )
-      return;
-
-    this.isPasswordLoading = true;
+    var $this = this;
     this.passwordAlertMessage = "";
 
-    Users.resetPassword(
-        this.user.userName,
-        this.oldPassword,
-        this.newPassword
-      )
-      .then(() => {
-        this.isPasswordLoading = false;
-        this.passwordAlertType = "success";
-        this.passwordAlertMessage = "新密码设置成功";
-      })
-      .catch(error => {
-        this.isPasswordLoading = false;
-        this.passwordAlertType = "danger";
-        this.passwordAlertMessage = error.response.data.message;
-      });
+    this.$validator.validate("password.*").then(function (result) {
+      if (result) {
+        pageUtils.loading(true);
+        new apiUtils.Api(apiUrl + '/v1/users/' + $this.pageUser.id + '/actions/resetPassword').post({
+          password: $this.oldPassword,
+          newPassword: $this.newPassword
+        }, function (err, res) {
+          pageUtils.loading(false);
+
+          if (err) {
+            $this.passwordAlertType = "danger";
+            $this.passwordAlertMessage = err.message;
+            return;
+          }
+
+          authUtils.saveUser(res.value);
+          $this.passwordAlertType = "success";
+          $this.passwordAlertMessage = '新密码设置成功';
+        });
+      }
+    });
   },
 
   deleteAccount: function () {
     var $this = this;
 
     swal({
-      title: "永久关闭账户",
-      text: "帐户关闭操作无法撤销，此操作会删除您的帐户以及帐户中的所有数据",
+      title: "永久删除账户",
+      text: "帐户删除操作无法撤销，此操作会删除您的帐户以及帐户中的所有数据",
       icon: "warning",
       buttons: {
         cancel: {
@@ -161,7 +152,7 @@ var methods = {
           closeModal: true
         },
         confirm: {
-          text: "永久关闭账户",
+          text: "永久删除账户",
           value: true,
           visible: true,
           className: "",

@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 
 namespace SiteServer.API.Controllers.V1
 {
@@ -22,7 +25,6 @@ namespace SiteServer.API.Controllers.V1
             try
             {
                 var request = new RequestImpl();
-
                 var sourceId = request.GetQueryInt("sourceId");
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -40,11 +42,7 @@ namespace SiteServer.API.Controllers.V1
                              request.AdminPermissions.HasChannelPermissions(siteId, channelId,
                                  ConfigManager.ChannelPermissions.ContentAdd);
                 }
-
                 if (!isAuth) return Unauthorized();
-
-                var attributes = request.GetPostCollection();
-                if (attributes == null) return BadRequest("无法从body中获取内容实体");
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
@@ -54,19 +52,26 @@ namespace SiteServer.API.Controllers.V1
 
                 if (!channelInfo.Additional.IsContentAddable) return BadRequest("此栏目不能添加内容");
 
+                var attributes = request.GetPostObject<Dictionary<string, object>>();
+                if (attributes == null) return BadRequest("无法从body中获取内容实体");
+                var checkedLevel = request.GetPostInt("checkedLevel");
+
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
                 var adminName = request.AdminName;
 
-                var isChecked = true;
-                if (sourceId == SourceManager.User || request.IsUserLoggin)
+                var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
+                if (isChecked)
                 {
-                    isChecked = request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
-                        ConfigManager.ChannelPermissions.ContentCheck);
-                }
-                else if (request.IsAdminLoggin)
-                {
-                    isChecked = request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
-                        ConfigManager.ChannelPermissions.ContentCheck);
+                    if (sourceId == SourceManager.User || request.IsUserLoggin)
+                    {
+                        isChecked = request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                            ConfigManager.ChannelPermissions.ContentCheck);
+                    }
+                    else if (request.IsAdminLoggin)
+                    {
+                        isChecked = request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                            ConfigManager.ChannelPermissions.ContentCheck);
+                    }
                 }
 
                 var contentInfo = new ContentInfo(attributes)
@@ -74,15 +79,36 @@ namespace SiteServer.API.Controllers.V1
                     SiteId = siteId,
                     ChannelId = channelId,
                     AddUserName = adminName,
-                    AddDate = DateTime.Now,
                     LastEditDate = DateTime.Now,
                     LastEditUserName = adminName,
                     WritingUserName = request.UserName,
                     SourceId = sourceId,
-                    IsChecked = isChecked
+                    IsChecked = isChecked,
+                    CheckedLevel = checkedLevel
                 };
 
                 contentInfo.Id = DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, contentInfo);
+
+                foreach (var service in PluginManager.Services)
+                {
+                    try
+                    {
+                        service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, new AttributesImpl(attributes), contentInfo));
+                    }
+                    catch (Exception ex)
+                    {
+                        LogUtils.AddErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
+                    }
+                }
+
+                if (contentInfo.IsChecked)
+                {
+                    CreateManager.CreateContent(siteId, channelId, contentInfo.Id);
+                    CreateManager.TriggerContentChangedEvent(siteId, channelId);
+                }
+
+                request.AddSiteLog(siteId, channelId, contentInfo.Id, "添加内容",
+                    $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
                 return Ok(new OResponse(contentInfo.ToDictionary()));
             }
@@ -98,19 +124,25 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl(AccessTokenManager.ScopeContents);
-                if (request.IsApiAuthenticated && !request.IsApiAuthorized) return Unauthorized();
-                if (!request.IsAdminLoggin) return Unauthorized();
-
-                var attributes = request.GetPostCollection();
-                if (attributes == null) return BadRequest("无法从body中获取内容实体");
-
-                var contentInfo = new ContentInfo(attributes)
+                var request = new RequestImpl();
+                var sourceId = request.GetQueryInt("sourceId");
+                bool isAuth;
+                if (sourceId == SourceManager.User)
                 {
-                    SiteId = siteId,
-                    ChannelId = channelId,
-                    Id = id
-                };
+                    isAuth = request.IsUserLoggin && request.UserPermissions.HasChannelPermissions(siteId, channelId, ConfigManager.ChannelPermissions.ContentEdit);
+                }
+                else
+                {
+                    isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
+                             request.IsUserLoggin &&
+                             request.UserPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentEdit) ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentEdit);
+                }
+                if (!isAuth) return Unauthorized();
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
@@ -118,20 +150,66 @@ namespace SiteServer.API.Controllers.V1
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
-                    ConfigManager.ChannelPermissions.ContentEdit)) return Unauthorized();
-
-                if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
-                    ConfigManager.ChannelPermissions.ContentCheck))
-                {
-                    contentInfo.IsChecked = false;
-                }
+                var attributes = request.GetPostObject<Dictionary<string, object>>();
+                if (attributes == null) return BadRequest("无法从body中获取内容实体");
+                var checkedLevel = request.GetPostInt("checkedLevel");
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                var adminName = request.AdminName;
+
+                var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
+                if (isChecked)
+                {
+                    if (sourceId == SourceManager.User || request.IsUserLoggin)
+                    {
+                        isChecked = request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                            ConfigManager.ChannelPermissions.ContentCheck);
+                    }
+                    else if (request.IsAdminLoggin)
+                    {
+                        isChecked = request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                            ConfigManager.ChannelPermissions.ContentCheck);
+                    }
+                }
+
+                var contentInfo = new ContentInfo(attributes)
+                {
+                    Id = id,
+                    SiteId = siteId,
+                    ChannelId = channelId,
+                    AddUserName = adminName,
+                    LastEditDate = DateTime.Now,
+                    LastEditUserName = adminName,
+                    WritingUserName = request.UserName,
+                    SourceId = sourceId,
+                    IsChecked = isChecked,
+                    CheckedLevel = checkedLevel
+                };
 
                 if (!DataProvider.ContentDao.ApiIsExists(tableName, id)) return NotFound();
 
                 DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+
+                foreach (var service in PluginManager.Services)
+                {
+                    try
+                    {
+                        service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, new AttributesImpl(attributes), contentInfo));
+                    }
+                    catch (Exception ex)
+                    {
+                        LogUtils.AddErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
+                    }
+                }
+
+                if (contentInfo.IsChecked)
+                {
+                    CreateManager.CreateContent(siteId, channelId, contentInfo.Id);
+                    CreateManager.TriggerContentChangedEvent(siteId, channelId);
+                }
+
+                request.AddSiteLog(siteId, channelId, contentInfo.Id, "修改内容",
+                    $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
                 return Ok(new OResponse(contentInfo.ToDictionary()));
             }

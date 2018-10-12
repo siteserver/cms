@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using SiteServer.CMS.Plugin.Impl;
+﻿using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -134,10 +133,22 @@ namespace SiteServer.CMS.Model.Attributes
             set => Set("UserRegistrationAttributes", value);
         }
 
+        public bool IsUserRegistrationGroup
+        {
+            get => GetBool("IsUserRegistrationGroup");
+            set => Set("IsUserRegistrationGroup", value);
+        }
+
         public bool IsUserRegistrationChecked
         {
             get => GetBool("IsUserRegistrationChecked", true);
             set => Set("IsUserRegistrationChecked", value);
+        }
+
+        public bool IsUserUnRegistrationAllowed
+        {
+            get => GetBool("IsUserUnRegistrationAllowed", true);
+            set => Set("IsUserUnRegistrationAllowed", value);
         }
 
         public int UserPasswordMinLength
@@ -224,6 +235,12 @@ namespace SiteServer.CMS.Model.Attributes
         {
             get => GetBool("IsHomeAgreement");
             set => Set("IsHomeAgreement", value);
+        }
+
+        public string HomeAgreementHtml
+        {
+            get => GetString("HomeAgreementHtml", @"阅读并接受<a href=""/agreement.html"" target=""_blank"">《用户协议》</a>");
+            set => Set("HomeAgreementHtml", value);
         }
     }
 }

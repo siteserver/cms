@@ -1,31 +1,30 @@
-var $api = new apiUtils.Api(apiUrl + "/home/contentAdd");
-var $createApi = new apiUtils.Api(apiUrl + "/home/contents/actions/create");
-
-Object.defineProperty(Object.prototype, "getProp", {
-  value: function (prop) {
-    var key, self = this;
-    for (key in self) {
-      if (key.toLowerCase() == prop.toLowerCase()) {
-        return self[key];
-      }
-    }
-  }
-});
+var sourceIdUser = -1;
+var sourceIdPreview = -99;
 
 var data = {
   pageConfig: null,
   pageLoad: false,
   pageAlert: null,
   pageType: '',
-
   sites: [],
   channels: [],
   site: {},
   channel: {},
-  groupNames: [],
-
-  content: {},
+  allGroupNames: [],
+  allTagNames: [],
   styles: [],
+  allCheckedLevels: [],
+
+  contentId: 0,
+  isColor: false,
+  isHot: false,
+  isRecommend: false,
+  isTop: false,
+  groupNames: [],
+  tagNames: [],
+  linkUrl: '',
+  addDate: new Date(),
+  checkedLevel: 0,
 };
 
 var methods = {
@@ -35,29 +34,50 @@ var methods = {
     this.channels = res.channels;
     this.site = res.site;
     this.channel = res.channel;
-    this.groupNames = res.groupNames;
-    this.loadContent(res.styles, res.content);
+    this.allGroupNames = res.allGroupNames;
+    this.allTagNames = res.allTagNames;
+    if (this.site && this.channel) {
+      this.loadContent(res.styles, res.checkedLevels, res.checkedLevel, res.content);
+    } else {
+      this.pageType = 'Unauthorized';
+    }
   },
 
   loadChannel: function (res) {
-    this.loadContent(res.styles, res.value);
+    this.loadContent(res.styles, res.checkedLevels, res.checkedLevel, res.value);
   },
 
-  loadContent: function (styles, content) {
+  loadContent: function (styles, checkedLevels, checkedLevel, content) {
     var $this = this;
 
     this.styles = [];
     for (let i = 0; i < styles.length; i++) {
       var style = styles[i];
-      style.value = style.defaultValue || '';
+      if (content.id) {
+        style.value = content[_.camelCase(style.attributeName)];
+      } else {
+        style.value = style.defaultValue || '';
+      }
       this.styles.push(style);
     }
+    this.allCheckedLevels = checkedLevels;
 
-    content.groupNames = [];
+    this.contentId = content.id;
+    this.isTop = content.isTop;
+    this.isRecommend = content.isRecommend;
+    this.isHot = content.isHot;
+    this.isColor = content.isColor;
+    this.groupNames = [];
     if (content.groupNameCollection) {
-      content.groupNames = content.groupNameCollection.split(',');
+      this.groupNames = content.groupNameCollection.split(',');
     }
-    this.content = content;
+    this.tagNames = [];
+    if (content.tags) {
+      this.tagNames = content.tags.split(',');
+    }
+    this.linkUrl = content.linkUrl;
+    this.addDate = content.addDate;
+    this.checkedLevel = checkedLevel;
 
     setTimeout(function () {
       for (var i = 0; i < $this.styles.length; i++) {
@@ -108,17 +128,52 @@ var methods = {
     });
   },
 
-  submit: function () {
+  addTag: function (newTag) {
+    this.allTagNames.push(newTag);
+    this.tagNames.push(newTag);
+  },
+
+  preview: function () {
+    var $this = this;
+
+    var options = {
+      beforeSubmit: function () {
+        return true;
+      },
+      url: '/SiteServer/cms/pagecontentaddhandler.ashx?siteId=35&channelId=35&contentId=358062',
+      type: 'POST',
+      dataType: 'json',
+      success: function (data) {
+        isPreviewSaving = false;
+        if (data && data.previewUrl) {
+          window.open(data.previewUrl);
+        }
+      }
+    };
+
+    if (UE) {
+      $.each(UE.instants, function (index, editor) {
+        editor.sync();
+      });
+    }
+    $('#myForm').ajaxSubmit(options);
+
+  },
+
+  submit: function (sourceId) {
     var $this = this;
 
     var payload = {
-      id: this.content.id,
+      id: this.contentId,
+      isTop: this.isTop,
+      isRecommend: this.isRecommend,
+      isHot: this.isHot,
+      isColor: this.isColor,
+      linkUrl: this.linkUrl,
+      addDate: this.addDate,
       groupNameCollection: this.groupNames.join(','),
-      isColor: this.content.isColor,
-      isHot: this.content.isHot,
-      isRecommend: this.content.isRecommend,
-      isTop: this.content.isTop,
-      tags: this.content.tags
+      tags: this.tagNames.join(','),
+      checkedLevel: this.checkedLevel
     };
     for (var i = 0; i < this.styles.length; i++) {
       var style = this.styles[i];
@@ -126,22 +181,8 @@ var methods = {
     }
 
     pageUtils.loading(true);
-    if (payload.id) {
-      new apiUtils.Api(apiUrl + '/v1/contents/' + this.site.id + '/' + this.channel.id + '/' + payload.id + '?sourceId=-1')
-        .put(payload, function (err, res) {
-          pageUtils.loading(false);
-
-          if (err) {
-            $this.pageAlert = {
-              type: 'danger',
-              html: err.message
-            };
-            return;
-          }
-          $this.pageType = 'success';
-        });
-    } else {
-      new apiUtils.Api(apiUrl + '/v1/contents/' + this.site.id + '/' + this.channel.id + '?sourceId=-1')
+    if (sourceId == sourceIdPreview) {
+      new apiUtils.Api(apiUrl + '/v1/contents/' + this.site.id + '/' + this.channel.id + '?sourceId=' + sourceId)
         .post(payload, function (err, res) {
           pageUtils.loading(false);
 
@@ -152,9 +193,54 @@ var methods = {
             };
             return;
           }
+
+          var contentId = $this.contentId ? $this.contentId : res.value.id;
+          window.open(apiUrl + '/preview/' + $this.site.id + '/' + $this.channel.id + '/' + contentId + '?isPreview=true&previewId=' + res.value.id);
+        });
+    } else if (payload.id) {
+      new apiUtils.Api(apiUrl + '/v1/contents/' + this.site.id + '/' + this.channel.id + '/' + payload.id + '?sourceId=' + sourceId)
+        .put(payload, function (err, res) {
+          pageUtils.loading(false);
+
+          if (err) {
+            $this.pageAlert = {
+              type: 'danger',
+              html: err.message
+            };
+            return;
+          }
+
+          swal({
+            toast: true,
+            position: 'bottom-end',
+            type: 'success',
+            title: "稿件修改成功",
+            showConfirmButton: false,
+            timer: 3000
+          }).then(function () {
+            location.href = 'contents.html?siteId=' + $this.site.id + '&channelId=' + $this.channel.id;
+          });
+        });
+    } else {
+      new apiUtils.Api(apiUrl + '/v1/contents/' + this.site.id + '/' + this.channel.id + '?sourceId=' + sourceId)
+        .post(payload, function (err, res) {
+          pageUtils.loading(false);
+
+          if (err) {
+            $this.pageAlert = {
+              type: 'danger',
+              html: err.message
+            };
+            return;
+          }
+
           $this.pageType = 'success';
         });
     }
+  },
+
+  btnContinueAddClick: function () {
+    location.reload();
   },
 
   btnSubmitClick: function () {
@@ -163,17 +249,29 @@ var methods = {
 
     this.$validator.validate().then(function (result) {
       if (result) {
-        $this.submit();
+        $this.submit(sourceIdUser);
       }
     });
   },
 
-  btnContinueAddClick: function () {
-    location.reload();
+  btnPreviewClick: function () {
+    var $this = this;
+    this.pageAlert = null;
+
+    this.$validator.validate().then(function (result) {
+      if (result) {
+        $this.submit(sourceIdPreview);
+      }
+    });
+  },
+
+  btnReturnClick: function () {
+    location.href = 'contents.html?siteId=' + this.site.id + '&channelId=' + this.channel.id;
   }
 };
 
 Vue.component("multiselect", window.VueMultiselect.default);
+Vue.component("date-picker", window.DatePicker.default);
 
 var $vue = new Vue({
   el: "#main",
@@ -182,13 +280,31 @@ var $vue = new Vue({
   created: function () {
     var $this = this;
     if (authUtils.isAuthenticated()) {
-      pageUtils.getConfig('contentAdd', function (res) {
-        if (res.isUserLoggin) {
-          $this.loadSite(res);
-        } else {
-          authUtils.redirectLogin();
-        }
-      });
+
+      var siteId = 0;
+      var channelId = 0;
+      var contentId = parseInt(pageUtils.getQueryString('id') || 0);
+      if (contentId == 0) {
+        siteId = parseInt(Cookies.get('SS-USER-SITE-ID') || 0);
+        channelId = parseInt(Cookies.get('SS-USER-CHANNEL-ID') || 0);
+      } else {
+        siteId = parseInt(pageUtils.getQueryString('siteId') || 0);
+        channelId = parseInt(pageUtils.getQueryString('channelId') || 0);
+      }
+
+      pageUtils.getConfig({
+          pageName: 'contentAdd',
+          siteId: siteId,
+          channelId: channelId,
+          contentId: contentId
+        },
+        function (res) {
+          if (res.isUserLoggin) {
+            $this.loadSite(res);
+          } else {
+            authUtils.redirectLogin();
+          }
+        });
     } else {
       authUtils.redirectLogin();
     }
