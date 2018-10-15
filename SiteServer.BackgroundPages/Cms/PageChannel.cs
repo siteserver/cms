@@ -131,6 +131,10 @@ namespace SiteServer.BackgroundPages.Cms
 ");
             }
 
+            builder.Append($@"
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalChannelTaxis.GetOpenWindowString(SiteId)}"">排 序</a>
+");
+
             return builder.ToString();
         }
 
