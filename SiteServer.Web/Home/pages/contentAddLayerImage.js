@@ -1,9 +1,9 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/home/contentAddLayerImage');
-var $uploadUrl = apiUrl + '/home/contentAddLayerImage';
+﻿var $api = new utils.Api('/home/contentAddLayerImage');
+var $uploadUrl = utils.getApiUrl('/home/contentAddLayerImage');
 
 var data = {
-  siteId: parseInt(pageUtils.getQueryString('siteId')),
-  channelId: parseInt(pageUtils.getQueryString('channelId')),
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
   pageLoad: false,
   pageAlert: null,
   file: null,
@@ -45,7 +45,7 @@ var methods = {
     var boxDropArea = document.getElementById("drop-area");
 
     var uploader = new Uploader({
-      url: $uploadUrl + '/actions/upload?siteId=' + $this.siteId + '&channelId=' + $this.channelId + '&userToken=' + authUtils.getToken(),
+      url: $uploadUrl + '/actions/upload?siteId=' + $this.siteId + '&channelId=' + $this.channelId + '&userToken=' + utils.getToken(),
       target: document.getElementById("drop-area"),
       allows: ".doc,.docx",
       on: {
@@ -117,7 +117,7 @@ var methods = {
       });
     }
 
-    parent.pageUtils.loading(true);
+    parent.utils.loading(true);
     $api.post({
       siteId: $this.siteId,
       channelId: $this.channelId,

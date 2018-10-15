@@ -1,8 +1,8 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/home/contentsLayerArrange');
+﻿var $api = new utils.Api('/home/contentsLayerArrange');
 
 var data = {
-  siteId: parseInt(pageUtils.getQueryString('siteId')),
-  channelId: parseInt(pageUtils.getQueryString('channelId')),
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
   pageLoad: false,
   pageAlert: null,
   attributeName: 'Id',
@@ -16,7 +16,7 @@ var methods = {
   btnSubmitClick: function () {
     var $this = this;
 
-    parent.pageUtils.loading(true);
+    parent.utils.loading(true);
     $api.post({
         siteId: $this.siteId,
         channelId: $this.channelId,

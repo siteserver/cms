@@ -27,9 +27,6 @@ namespace SiteServer.CMS.Plugin.Impl
         private const string AuthKeyApiCookie = "SS-API-KEY";
         private const string AuthKeyApiQuery = "apiKey";
 
-        private const string CookieUser = "SS-USER";
-        private const string CookieUserExpiresAt = "SS-USER-EXPIRES-AT";
-
         public const int AccessTokenExpireDays = 7;
 
         private readonly string _scope;
@@ -528,14 +525,10 @@ namespace SiteServer.CMS.Plugin.Impl
             if (isAutoLogin)
             {
                 CookieUtils.SetCookie(AuthKeyUserCookie, accessToken, expiresAt);
-                CookieUtils.SetCookie(CookieUser, TranslateUtils.JsonSerialize(UserInfo), expiresAt, false);
-                CookieUtils.SetCookie(CookieUserExpiresAt, DateUtils.ToUnixTime(expiresAt).ToString(), expiresAt, false);
             }
             else
             {
                 CookieUtils.SetCookie(AuthKeyUserCookie, accessToken);
-                CookieUtils.SetCookie(CookieUser, TranslateUtils.JsonSerialize(UserInfo), false);
-                CookieUtils.SetCookie(CookieUserExpiresAt, DateUtils.ToUnixTime(expiresAt).ToString(), false);
             }
 
             return accessToken;
@@ -545,8 +538,6 @@ namespace SiteServer.CMS.Plugin.Impl
         {
             UserInfo = null;
             CookieUtils.Erase(AuthKeyUserCookie);
-            CookieUtils.Erase(CookieUser);
-            CookieUtils.Erase(CookieUserExpiresAt);
         }
 
         #endregion

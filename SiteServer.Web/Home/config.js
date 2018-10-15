@@ -1,1 +1,1 @@
-var apiUrl = '/api';
+config.apiUrl = "../api/";

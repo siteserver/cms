@@ -1,4 +1,4 @@
-var $api = new apiUtils.Api(apiUrl + "/home/contents");
+var $api = new utils.Api('/home/contents');
 
 Object.defineProperty(Object.prototype, "getProp", {
   value: function (prop) {
@@ -81,7 +81,7 @@ var methods = {
     }
     url += '&returnUrl=' + encodeURIComponent(parent.location.hash);
 
-    parent.pageUtils.openLayer({
+    parent.utils.openLayer({
       title: options.title,
       url: url,
       full: options.full,
@@ -128,7 +128,7 @@ var methods = {
     if (site.id === this.site.id) return;
     var $this = this;
     this.pageLoad = false;
-    pageUtils.getConfig({
+    utils.getConfig({
       pageName: 'contents',
       siteId: site.id
     }, function (res) {
@@ -151,7 +151,7 @@ var methods = {
     var $this = this;
 
     if ($this.pageLoad) {
-      parent.pageUtils.loading(true);
+      parent.utils.loading(true);
     }
 
     $api.get({
@@ -161,8 +161,8 @@ var methods = {
       },
       function (err, res) {
         if ($this.pageLoad) {
-          parent.pageUtils.loading(false);
-          parent.pageUtils.scrollToTop();
+          parent.utils.loading(false);
+          parent.utils.scrollToTop();
         } else {
           $this.pageLoad = true;
         }
@@ -220,24 +220,19 @@ var $vue = new Vue({
   },
   created: function () {
     var $this = this;
-    if (authUtils.isAuthenticated()) {
+    var siteId = parseInt(utils.getQueryString('siteId') || Cookies.get('SS-USER-SITE-ID') || 0);
+    var channelId = parseInt(utils.getQueryString('channelId') || Cookies.get('SS-USER-CHANNEL-ID') || 0);
 
-      var siteId = parseInt(pageUtils.getQueryString('siteId') || Cookies.get('SS-USER-SITE-ID') || 0);
-      var channelId = parseInt(pageUtils.getQueryString('channelId') || Cookies.get('SS-USER-CHANNEL-ID') || 0);
-
-      pageUtils.getConfig({
-        pageName: 'contents',
-        siteId: siteId,
-        channelId: channelId
-      }, function (res) {
-        if (res.isUserLoggin) {
-          $this.load(res.value, res.sites, res.channels, res.site, res.channel);
-        } else {
-          authUtils.redirectLogin();
-        }
-      });
-    } else {
-      authUtils.redirectLogin();
-    }
+    utils.getConfig({
+      pageName: 'contents',
+      siteId: siteId,
+      channelId: channelId
+    }, function (res) {
+      if (res.value) {
+        $this.load(res.config, res.sites, res.channels, res.site, res.channel);
+      } else {
+        utils.redirectLogin();
+      }
+    });
   }
 });

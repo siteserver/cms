@@ -1,8 +1,8 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/home/contentsLayerExport');
+﻿var $api = new utils.Api('/home/contentsLayerExport');
 
 var data = {
-  siteId: parseInt(pageUtils.getQueryString('siteId')),
-  channelId: parseInt(pageUtils.getQueryString('channelId')),
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
   pageLoad: false,
   pageAlert: null,
   columns: null,
@@ -81,7 +81,7 @@ var methods = {
       };
     }
 
-    parent.pageUtils.loading(true);
+    parent.utils.loading(true);
     $api.post({
         siteId: $this.siteId,
         channelId: $this.channelId,
@@ -94,7 +94,7 @@ var methods = {
         columnNames: $this.columnNames
       },
       function (err, res) {
-        parent.pageUtils.loading(false);
+        parent.utils.loading(false);
 
         if (err) {
           return $this.pageAlert = {

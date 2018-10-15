@@ -1,6 +1,6 @@
-var $api = new apiUtils.Api(apiUrl + '/v1/users/actions/login');
-var $captchaGetUrl = apiUrl + '/v1/captcha/LOGIN-CAPTCHA';
-var $captchaCheckApi = new apiUtils.Api(apiUrl + '/v1/captcha/LOGIN-CAPTCHA/actions/check');
+var $api = new utils.Api('/v1/users/actions/login');
+var $captchaGetUrl = utils.getApiUrl('/v1/captcha/LOGIN-CAPTCHA');
+var $captchaCheckApi = new utils.Api('/v1/captcha/LOGIN-CAPTCHA/actions/check');
 
 if (window.top != self) {
   window.top.location = self.location;
@@ -30,11 +30,11 @@ var methods = {
   checkCaptcha: function () {
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $captchaCheckApi.post({
       captcha: $this.captcha
     }, function (err, res) {
-      pageUtils.loading(false);
+      utils.loading(false);
       $this.reload();
       if (err) {
         $this.pageAlert = {
@@ -50,13 +50,13 @@ var methods = {
   login: function () {
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.post({
       account: $this.account,
       password: md5($this.password),
       isAutoLogin: $this.isAutoLogin
     }, function (err, res) {
-      pageUtils.loading(false);
+      utils.loading(false);
       if (err) {
         $this.pageAlert = {
           type: 'danger',
@@ -65,7 +65,9 @@ var methods = {
         return;
       }
 
-      location.href = pageUtils.getQueryString('returnUrl') || '../index.html';
+      utils.setToken(res.accessToken, res.expiresAt);
+
+      location.href = utils.getQueryString('returnUrl') || '../index.html';
     });
   },
   btnLoginClick: function (e) {
@@ -91,8 +93,8 @@ new Vue({
   methods: methods,
   created: function () {
     var $this = this;
-    pageUtils.getConfig('login', function (res) {
-      $this.load(res.value);
+    utils.getConfig('login', function (res) {
+      $this.load(res.config);
     });
   }
 });

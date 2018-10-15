@@ -311,18 +311,17 @@ namespace SiteServer.CMS.DataCache
             }
         }
 
-        public const string UserUploadDirectoryName = "upload";
-
-        public static string GetHomePath(params string[] paths)
+        public static string GetHomeUploadPath(params string[] paths)
         {
-            var path = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.HomeDirectory, PathUtils.Combine(paths));
+            var path = PathUtils.GetSiteFilesPath("Home", PathUtils.Combine(paths));
+            //var path = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.HomeDirectory, PathUtils.Combine(paths));
             DirectoryUtils.CreateDirectoryIfNotExists(path);
             return path;
         }
 
         public static string GetUserUploadPath(int userId, string relatedPath)
         {
-            return GetHomePath(UserUploadDirectoryName, userId.ToString(), relatedPath);
+            return GetHomeUploadPath(userId.ToString(), relatedPath);
         }
 
         public static string GetUserUploadFileName(string filePath)
@@ -332,16 +331,17 @@ namespace SiteServer.CMS.DataCache
             return $"{strDateTime}{PathUtils.GetExtension(filePath)}";
         }
 
-        public static string GetHomeUrl(params string[] paths)
+        public static string GetHomeUploadUrl(params string[] paths)
         {
-            return PageUtils.Combine(PageUtils.ApplicationPath, WebConfigUtils.HomeDirectory, PageUtils.Combine(paths));
+            return PageUtils.GetSiteFilesUrl(PageUtils.Combine("Home", PageUtils.Combine(paths)));
+            //return PageUtils.Combine(PageUtils.ApplicationPath, WebConfigUtils.HomeDirectory, PageUtils.Combine(paths));
         }
 
-        public static string DefaultAvatarUrl => GetHomeUrl("assets/images/default_avatar.png");
+        public static string DefaultAvatarUrl => GetHomeUploadUrl("default_avatar.png");
 
         public static string GetUserUploadUrl(int userId, string relatedUrl)
         {
-            return GetHomeUrl(UserUploadDirectoryName, userId.ToString(), relatedUrl);
+            return GetHomeUploadUrl(userId.ToString(), relatedUrl);
         }
 
         public static string GetUserAvatarUrl(IUserInfo userInfo)

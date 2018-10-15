@@ -14,7 +14,7 @@ var data = {
   allTagNames: [],
   styles: [],
   allCheckedLevels: [],
-  returnUrl: pageUtils.getQueryString('returnUrl'),
+  returnUrl: utils.getQueryString('returnUrl'),
 
   contentId: 0,
   isColor: false,
@@ -30,7 +30,7 @@ var data = {
 
 var methods = {
   loadSite: function (res) {
-    this.pageConfig = res.value;
+    this.pageConfig = res.config;
     this.sites = res.sites;
     this.channels = res.channels;
     this.site = res.site;
@@ -106,7 +106,7 @@ var methods = {
     if (site.id === this.site.id) return;
     var $this = this;
     this.pageLoad = false;
-    pageUtils.getConfig({
+    utils.getConfig({
       pageName: 'contentAdd',
       siteId: site.id
     }, function (res) {
@@ -119,7 +119,7 @@ var methods = {
     if (channel.id === this.channel.id) return;
     var $this = this;
     this.pageLoad = false;
-    pageUtils.getConfig({
+    utils.getConfig({
       pageName: 'contentAdd',
       siteId: this.site.id,
       channelId: channel.id
@@ -155,11 +155,11 @@ var methods = {
       payload[style.attributeName] = style.value;
     }
 
-    parent.pageUtils.loading(true);
+    parent.utils.loading(true);
     if (sourceId == sourceIdPreview) {
-      new apiUtils.Api(apiUrl + '/v1/contents/' + this.site.id + '/' + this.channel.id)
+      new utils.Api('/v1/contents/' + this.site.id + '/' + this.channel.id)
         .post(payload, function (err, res) {
-          parent.pageUtils.loading(false);
+          parent.utils.loading(false);
 
           if (err) {
             $this.pageAlert = {
@@ -170,12 +170,12 @@ var methods = {
           }
 
           var contentId = $this.contentId ? $this.contentId : res.value.id;
-          window.open(apiUrl + '/preview/' + $this.site.id + '/' + $this.channel.id + '/' + contentId + '?isPreview=true&previewId=' + res.value.id);
+          window.open(utils.getApiUrl('/preview/' + $this.site.id + '/' + $this.channel.id + '/' + contentId + '?isPreview=true&previewId=' + res.value.id));
         });
     } else if (payload.id) {
-      new apiUtils.Api(apiUrl + '/v1/contents/' + this.site.id + '/' + this.channel.id + '/' + payload.id)
+      new utils.Api('/v1/contents/' + this.site.id + '/' + this.channel.id + '/' + payload.id)
         .put(payload, function (err, res) {
-          parent.pageUtils.loading(false);
+          parent.utils.loading(false);
 
           if (err) {
             $this.pageAlert = {
@@ -196,9 +196,9 @@ var methods = {
           });
         });
     } else {
-      new apiUtils.Api(apiUrl + '/v1/contents/' + this.site.id + '/' + this.channel.id)
+      new utils.Api('/v1/contents/' + this.site.id + '/' + this.channel.id)
         .post(payload, function (err, res) {
-          parent.pageUtils.loading(false);
+          parent.utils.loading(false);
 
           if (err) {
             $this.pageAlert = {
@@ -226,7 +226,7 @@ var methods = {
       url += "&contentId=" + options.contentId
     }
 
-    parent.pageUtils.openLayer({
+    parent.utils.openLayer({
       title: options.title,
       url: url,
       full: options.full,
@@ -271,34 +271,29 @@ var $vue = new Vue({
   methods: methods,
   created: function () {
     var $this = this;
-    if (authUtils.isAuthenticated()) {
-
-      var siteId = 0;
-      var channelId = 0;
-      var contentId = parseInt(pageUtils.getQueryString('contentId') || 0);
-      if (contentId == 0) {
-        siteId = parseInt(Cookies.get('SS-USER-SITE-ID') || 0);
-        channelId = parseInt(Cookies.get('SS-USER-CHANNEL-ID') || 0);
-      } else {
-        siteId = parseInt(pageUtils.getQueryString('siteId') || 0);
-        channelId = parseInt(pageUtils.getQueryString('channelId') || 0);
-      }
-
-      pageUtils.getConfig({
-          pageName: 'contentAdd',
-          siteId: siteId,
-          channelId: channelId,
-          contentId: contentId
-        },
-        function (res) {
-          if (res.isUserLoggin) {
-            $this.loadSite(res);
-          } else {
-            authUtils.redirectLogin();
-          }
-        });
+    var siteId = 0;
+    var channelId = 0;
+    var contentId = parseInt(utils.getQueryString('contentId') || 0);
+    if (contentId == 0) {
+      siteId = parseInt(Cookies.get('SS-USER-SITE-ID') || 0);
+      channelId = parseInt(Cookies.get('SS-USER-CHANNEL-ID') || 0);
     } else {
-      authUtils.redirectLogin();
+      siteId = parseInt(utils.getQueryString('siteId') || 0);
+      channelId = parseInt(utils.getQueryString('channelId') || 0);
     }
+
+    utils.getConfig({
+        pageName: 'contentAdd',
+        siteId: siteId,
+        channelId: channelId,
+        contentId: contentId
+      },
+      function (res) {
+        if (res.value) {
+          $this.loadSite(res);
+        } else {
+          utils.redirectLogin();
+        }
+      });
   }
 });

@@ -1,6 +1,6 @@
-var $api = new apiUtils.Api(apiUrl + '/v1/users');
-var $captchaGetUrl = apiUrl + '/v1/captcha/REGISTER-CAPTCHA';
-var $captchaCheckApi = new apiUtils.Api(apiUrl + '/v1/captcha/REGISTER-CAPTCHA/actions/check');
+var $api = new utils.Api('/v1/users');
+var $captchaGetUrl = utils.getApiUrl('/v1/captcha/REGISTER-CAPTCHA');
+var $captchaCheckApi = new utils.Api('/v1/captcha/REGISTER-CAPTCHA/actions/check');
 
 if (window.top != self) {
   window.top.location = self.location;
@@ -42,11 +42,11 @@ var methods = {
   checkCaptcha: function () {
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $captchaCheckApi.post({
       captcha: $this.captcha
     }, function (err) {
-      pageUtils.loading(false);
+      utils.loading(false);
 
       if (err) {
         $this.reload();
@@ -73,9 +73,9 @@ var methods = {
       payload[style.attributeName] = style.value;
     }
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.post(payload, function (err, res) {
-      pageUtils.loading(false);
+      utils.loading(false);
       if (err) {
         $this.reload();
         $this.pageAlert = {
@@ -136,7 +136,7 @@ new Vue({
   methods: methods,
   created: function () {
     var $this = this;
-    pageUtils.getConfig('register', function (res) {
+    utils.getConfig('register', function (res) {
       $this.load(res.value, res.styles, res.groups);
     });
   }

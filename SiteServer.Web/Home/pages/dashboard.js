@@ -1,27 +1,23 @@
 new Vue({
   el: '#main',
   data: {
-    pageConfig: null,
-    pageUser: null
+    pageUser: null,
+    pageConfig: null
   },
   methods: {
-    load: function (pageConfig) {
+    load: function (pageUser, pageConfig) {
+      this.pageUser = pageUser;
       this.pageConfig = pageConfig;
-      this.pageUser = authUtils.getUser();
     }
   },
   created: function () {
     var $this = this;
-    if (authUtils.isAuthenticated()) {
-      pageUtils.getConfig('dashboard', function (res) {
-        if (res.isUserLoggin) {
-          $this.load(res.value);
-        } else {
-          authUtils.redirectLogin();
-        }
-      });
-    } else {
-      authUtils.redirectLogin();
-    }
+    utils.getConfig('dashboard', function (res) {
+      if (res.value) {
+        $this.load(res.value, res.config);
+      } else {
+        utils.redirectLogin();
+      }
+    });
   }
 });

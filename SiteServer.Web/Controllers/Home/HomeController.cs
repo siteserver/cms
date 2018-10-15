@@ -51,8 +51,8 @@ namespace SiteServer.API.Controllers.Home
 
                 return Ok(new
                 {
-                    Value = ConfigManager.Instance.SystemConfigInfo,
-                    request.IsUserLoggin
+                    Value = request.UserInfo,
+                    Config = ConfigManager.Instance.SystemConfigInfo
                 });
             }
             catch (Exception ex)
@@ -66,8 +66,8 @@ namespace SiteServer.API.Controllers.Home
         {
             return new
             {
-                Value = ConfigManager.Instance.SystemConfigInfo,
-                request.IsUserLoggin,
+                Value = request.UserInfo,
+                Config = ConfigManager.Instance.SystemConfigInfo,
                 Styles = TableStyleManager.GetUserStyleInfoList(),
                 Groups = UserGroupManager.GetUserGroupInfoList()
             };
@@ -113,8 +113,8 @@ namespace SiteServer.API.Controllers.Home
 
             return new
             {
-                Value = ConfigManager.Instance.SystemConfigInfo,
-                request.IsUserLoggin,
+                Value = request.UserInfo,
+                Config = ConfigManager.Instance.SystemConfigInfo,
                 Menus = menus
             };
         }
@@ -123,8 +123,8 @@ namespace SiteServer.API.Controllers.Home
         {
             return new
             {
-                Value = ConfigManager.Instance.SystemConfigInfo,
-                request.IsUserLoggin,
+                Value = request.UserInfo,
+                Config = ConfigManager.Instance.SystemConfigInfo,
                 Styles = TableStyleManager.GetUserStyleInfoList()
             };
         }
@@ -201,8 +201,8 @@ namespace SiteServer.API.Controllers.Home
 
             return new
             {
-                Value = ConfigManager.Instance.SystemConfigInfo,
-                request.IsUserLoggin,
+                Value = request.UserInfo,
+                Config = ConfigManager.Instance.SystemConfigInfo,
                 Sites = sites,
                 Channels = channels,
                 Site = site,
@@ -320,8 +320,8 @@ namespace SiteServer.API.Controllers.Home
 
             return new
             {
-                Value = ConfigManager.Instance.SystemConfigInfo,
-                request.IsUserLoggin,
+                Value = request.UserInfo,
+                Config = ConfigManager.Instance.SystemConfigInfo,
                 Sites = sites,
                 Channels = channels,
                 Site = site,

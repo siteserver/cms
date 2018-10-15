@@ -1,9 +1,9 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/home/contentsLayerImport');
-var $uploadUrl = apiUrl + '/home/contentsLayerImport';
+﻿var $api = new utils.Api('/home/contentsLayerImport');
+var $uploadUrl = utils.getApiUrl('/home/contentsLayerImport');
 
 var data = {
-  siteId: parseInt(pageUtils.getQueryString('siteId')),
-  channelId: parseInt(pageUtils.getQueryString('channelId')),
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
   pageLoad: false,
   pageAlert: null,
   checkedLevels: null,
@@ -43,7 +43,7 @@ var methods = {
     var boxDropArea = document.getElementById("drop-area");
 
     var uploader = new Uploader({
-      url: $uploadUrl + '/actions/upload?siteId=' + $this.siteId + '&channelId=' + $this.channelId + '&userToken=' + authUtils.getToken(),
+      url: $uploadUrl + '/actions/upload?siteId=' + $this.siteId + '&channelId=' + $this.channelId + '&userToken=' + utils.getToken(),
       target: document.getElementById("drop-area"),
       allows: ".zip,.csv,.txt",
       on: {
@@ -121,7 +121,7 @@ var methods = {
       });
     }
 
-    parent.pageUtils.loading(true);
+    parent.utils.loading(true);
     $api.post({
         siteId: $this.siteId,
         channelId: $this.channelId,
@@ -131,7 +131,7 @@ var methods = {
         isOverride: $this.isOverride
       },
       function (err, res) {
-        parent.pageUtils.loading(false);
+        parent.utils.loading(false);
 
         if (err) {
           return $this.pageAlert = {

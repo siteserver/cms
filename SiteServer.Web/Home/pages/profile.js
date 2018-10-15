@@ -1,6 +1,6 @@
 var data = {
-  pageConfig: null,
   pageUser: null,
+  pageConfig: null,
   pageAlert: null,
   avatarUrl: null,
   uploadUrl: null,
@@ -11,11 +11,11 @@ var data = {
 };
 
 var methods = {
-  load: function (pageConfig, styles) {
+  load: function (pageUser, pageConfig, styles) {
+    this.pageUser = pageUser;
     this.pageConfig = pageConfig;
-    this.pageUser = authUtils.getUser();
     this.avatarUrl = this.pageUser.avatarUrl || this.pageConfig.homeDefaultAvatarUrl || '../assets/images/default_avatar.png';
-    this.uploadUrl = apiUrl + '/v1/users/' + this.pageUser.id + '/avatar?userToken=' + authUtils.getToken();
+    this.uploadUrl = utils.getApiUrl('/v1/users/' + this.pageUser.id + '/avatar?userToken=' + utils.getToken());
 
     this.styles = styles;
     for (var i = 0; i < this.styles.length; i++) {
@@ -56,8 +56,8 @@ var methods = {
     }
 
     if (newFile && oldFile && newFile.xhr && newFile.success !== oldFile.success) {
-      authUtils.saveUser(newFile.response.value);
-      this.avatarUrl = newFile.response.value.avatarUrl;
+      this.pageUser = newFile.response.value;
+      this.avatarUrl = this.pageUser.avatarUrl;
     }
   },
 
@@ -85,9 +85,9 @@ var methods = {
       payload[style.attributeName] = style.value;
     }
 
-    parent.pageUtils.loading(true);
-    new apiUtils.Api(apiUrl + '/v1/users/' + this.pageUser.id).put(payload, function (err, res) {
-      parent.pageUtils.loading(false);
+    parent.utils.loading(true);
+    new utils.Api('/v1/users/' + this.pageUser.id).put(payload, function (err, res) {
+      parent.utils.loading(false);
 
       if (err) {
         $this.pageAlert = {
@@ -97,13 +97,13 @@ var methods = {
         return;
       }
 
-      authUtils.saveUser(res.value);
+      $this.pageUser = res.value;
       $this.pageAlert = {
         type: 'success',
         html: '个人资料修改成功'
       };
 
-      pageUtils.scrollToTop();
+      utils.scrollToTop();
     });
   },
 
@@ -150,16 +150,12 @@ new Vue({
   methods: methods,
   created: function () {
     var $this = this;
-    if (authUtils.isAuthenticated()) {
-      pageUtils.getConfig('profile', function (res) {
-        if (res.isUserLoggin) {
-          $this.load(res.value, res.styles);
-        } else {
-          authUtils.redirectLogin();
-        }
-      });
-    } else {
-      authUtils.redirectLogin();
-    }
+    utils.getConfig('profile', function (res) {
+      if (res.value) {
+        $this.load(res.value, res.config, res.styles);
+      } else {
+        utils.redirectLogin();
+      }
+    });
   }
 });

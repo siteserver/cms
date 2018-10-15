@@ -1,4 +1,4 @@
-var $api = new apiUtils.Api(apiUrl + '/v1/users/actions/logout');
+var $api = new utils.Api('/v1/users/actions/logout');
 
 if (window.top != self) {
   window.top.location = self.location;
@@ -10,7 +10,8 @@ new Vue({
   methods: {
     logout: function () {
       $api.post(null, function () {
-        location.href = pageUtils.getQueryString('returnUrl') || 'login.html';
+        utils.removeToken();
+        location.href = utils.getQueryString('returnUrl') || 'login.html';
       });
     }
   },
