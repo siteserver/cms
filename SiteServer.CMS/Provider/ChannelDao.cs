@@ -391,7 +391,7 @@ namespace SiteServer.CMS.Provider
         {
             var channelInfo = ChannelManager.GetChannelInfo(siteId, selectedId);
             if (channelInfo == null || channelInfo.ParentId == 0 || channelInfo.SiteId == 0) return;
-            UpdateWholeTaxisBySiteId(channelInfo.SiteId);
+            //UpdateWholeTaxisBySiteId(channelInfo.SiteId);
             //Get Lower Taxis and Id
             int lowerId;
             int lowerChildrenCount;
@@ -441,7 +441,7 @@ namespace SiteServer.CMS.Provider
         {
             var channelInfo = ChannelManager.GetChannelInfo(siteId, selectedId);
             if (channelInfo == null || channelInfo.ParentId == 0 || channelInfo.SiteId == 0) return;
-            UpdateWholeTaxisBySiteId(channelInfo.SiteId);
+            //UpdateWholeTaxisBySiteId(channelInfo.SiteId);
             //Get Higher Taxis and Id
             int higherId;
             int higherChildrenCount;

@@ -86,6 +86,9 @@
     <Compile Include="BasePageCms.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Cms\ModalChannelTaxis.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Cms\ModalTemplateAssetsConfig.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
