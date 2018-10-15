@@ -6,9 +6,11 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.V1
 {
@@ -25,7 +27,7 @@ namespace SiteServer.API.Controllers.V1
             try
             {
                 var request = new RequestImpl();
-                var sourceId = request.GetQueryInt("sourceId");
+                var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
                 {
@@ -81,7 +83,8 @@ namespace SiteServer.API.Controllers.V1
                     AddUserName = adminName,
                     LastEditDate = DateTime.Now,
                     LastEditUserName = adminName,
-                    WritingUserName = request.UserName,
+                    AdminId = request.AdminId,
+                    UserId = request.UserId,
                     SourceId = sourceId,
                     IsChecked = isChecked,
                     CheckedLevel = checkedLevel
@@ -125,7 +128,7 @@ namespace SiteServer.API.Controllers.V1
             try
             {
                 var request = new RequestImpl();
-                var sourceId = request.GetQueryInt("sourceId");
+                var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
                 {
@@ -152,41 +155,38 @@ namespace SiteServer.API.Controllers.V1
 
                 var attributes = request.GetPostObject<Dictionary<string, object>>();
                 if (attributes == null) return BadRequest("无法从body中获取内容实体");
-                var checkedLevel = request.GetPostInt("checkedLevel");
+                
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
                 var adminName = request.AdminName;
 
-                var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
-                if (isChecked)
-                {
-                    if (sourceId == SourceManager.User || request.IsUserLoggin)
-                    {
-                        isChecked = request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
-                            ConfigManager.ChannelPermissions.ContentCheck);
-                    }
-                    else if (request.IsAdminLoggin)
-                    {
-                        isChecked = request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
-                            ConfigManager.ChannelPermissions.ContentCheck);
-                    }
-                }
+                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
+                if (contentInfo == null) return NotFound();
+                var isChecked = contentInfo.IsChecked;
+                var checkedLevel = contentInfo.CheckedLevel;
 
-                var contentInfo = new ContentInfo(attributes)
+                contentInfo.Load(attributes);
+                contentInfo.Load(new
                 {
-                    Id = id,
                     SiteId = siteId,
                     ChannelId = channelId,
                     AddUserName = adminName,
                     LastEditDate = DateTime.Now,
                     LastEditUserName = adminName,
-                    WritingUserName = request.UserName,
-                    SourceId = sourceId,
+                    SourceId = sourceId
+                });
+
+                var postCheckedLevel = request.GetPostInt(ContentAttribute.CheckedLevel.ToCamelCase());
+                if (postCheckedLevel != CheckManager.LevelInt.NotChange)
+                {
+                    isChecked = postCheckedLevel >= siteInfo.Additional.CheckContentLevel;
+                    checkedLevel = postCheckedLevel;
+                }
+
+                contentInfo.Load(new
+                {
                     IsChecked = isChecked,
                     CheckedLevel = checkedLevel
-                };
-
-                if (!DataProvider.ContentDao.ApiIsExists(tableName, id)) return NotFound();
+                });
 
                 DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
 

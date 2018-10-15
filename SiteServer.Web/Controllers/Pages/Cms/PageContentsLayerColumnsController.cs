@@ -39,7 +39,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var attributes = ChannelManager.GetContentAttributesToList(siteInfo, channelInfo, true);
+                var attributes = ChannelManager.GetContentsColumns(siteInfo, channelInfo, true);
 
                 return Ok(new
                 {

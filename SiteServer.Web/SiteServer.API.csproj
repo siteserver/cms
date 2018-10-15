@@ -63,8 +63,8 @@
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=2.0.11.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.2.0.11\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=2.0.12.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.2.0.12\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
@@ -127,8 +127,28 @@
     <Content Include="安装向导.html" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\Home\HomeContentAddLayerImageController.cs" />
+    <Compile Include="Controllers\Home\HomeContentsLayerCopyController.cs" />
+    <Compile Include="Controllers\Home\HomeContentsLayerCutController.cs" />
+    <Compile Include="Controllers\Home\HomeContentsLayerImportController.cs" />
+    <Compile Include="Controllers\Home\HomeContentsLayerExportController.cs" />
+    <Compile Include="Controllers\Home\HomeContentsLayerArrangeController.cs" />
     <Compile Include="Controllers\Home\HomeController.cs" />
     <Compile Include="Controllers\Home\HomeContentsController.cs" />
+    <Compile Include="Controllers\Home\HomeContentsLayerAttributesController.cs" />
+    <Compile Include="Controllers\Home\HomeContentsLayerCheckController.cs" />
+    <Compile Include="Controllers\Home\HomeContentsLayerColumnsController.cs" />
+    <Compile Include="Controllers\Home\HomeContentsLayerDeleteController.cs" />
+    <Compile Include="Controllers\Home\HomeContentsLayerGroupController.cs" />
+    <Compile Include="Controllers\Home\HomeContentsLayerStateController.cs" />
+    <Compile Include="Controllers\Home\HomeContentsLayerTaxisController.cs" />
+    <Compile Include="Controllers\Home\HomeContentsLayerViewController.cs" />
+    <Compile Include="Controllers\Home\HomeContentsLayerWordController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PageContentsLayerCopyController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PageContentsLayerCutController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PageContentsLayerArrangeController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PageContentsLayerImportController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PageContentsLayerExportController.cs" />
     <Compile Include="Controllers\Pages\Cms\PageContentsLayerCheckController.cs" />
     <Compile Include="Controllers\Pages\Cms\PageContentsLayerViewController.cs" />
     <Compile Include="Controllers\Pages\Cms\PageContentsLayerStateController.cs" />

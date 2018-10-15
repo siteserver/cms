@@ -61,14 +61,18 @@ namespace SiteServer.CMS.Provider
             },
             new TableColumn
             {
-                AttributeName = nameof(ContentInfo.WritingUserName),
-                DataType = DataType.VarChar,
-                DataLength = 255,
+                AttributeName = nameof(ContentInfo.LastEditDate),
+                DataType = DataType.DateTime
             },
             new TableColumn
             {
-                AttributeName = nameof(ContentInfo.LastEditDate),
-                DataType = DataType.DateTime
+                AttributeName = nameof(ContentInfo.AdminId),
+                DataType = DataType.Integer
+            },
+            new TableColumn
+            {
+                AttributeName = nameof(ContentInfo.UserId),
+                DataType = DataType.Integer
             },
             new TableColumn
             {
@@ -512,7 +516,7 @@ namespace SiteServer.CMS.Provider
             }
         }
 
-        public void UpdateTidyUp(string tableName, int channelId, string attributeName, bool isDesc)
+        public void UpdateArrangeTaxis(string tableName, int channelId, string attributeName, bool isDesc)
         {
             var taxisDirection = isDesc ? "ASC" : "DESC";//升序,但由于页面排序是按Taxis的Desc排序的，所以这里sql里面的ASC/DESC取反
 
@@ -965,23 +969,23 @@ namespace SiteServer.CMS.Provider
                 values.Append($",@{columnInfo.AttributeName}").AppendLine();
                 if (columnInfo.DataType == DataType.Integer)
                 {
-                    paras.Add(GetParameter($"@{columnInfo.AttributeName}", columnInfo.DataType, contentInfo.GetInt(columnInfo.AttributeName)));
+                    paras.Add(GetParameter(columnInfo.AttributeName, columnInfo.DataType, contentInfo.GetInt(columnInfo.AttributeName)));
                 }
                 else if (columnInfo.DataType == DataType.Decimal)
                 {
-                    paras.Add(GetParameter($"@{columnInfo.AttributeName}", columnInfo.DataType, contentInfo.GetDecimal(columnInfo.AttributeName)));
+                    paras.Add(GetParameter(columnInfo.AttributeName, columnInfo.DataType, contentInfo.GetDecimal(columnInfo.AttributeName)));
                 }
                 else if (columnInfo.DataType == DataType.Boolean)
                 {
-                    paras.Add(GetParameter($"@{columnInfo.AttributeName}", columnInfo.DataType, contentInfo.GetBool(columnInfo.AttributeName)));
+                    paras.Add(GetParameter(columnInfo.AttributeName, columnInfo.DataType, contentInfo.GetBool(columnInfo.AttributeName)));
                 }
                 else if (columnInfo.DataType == DataType.DateTime)
                 {
-                    paras.Add(GetParameter($"@{columnInfo.AttributeName}", columnInfo.DataType, contentInfo.GetDateTime(columnInfo.AttributeName, DateTime.Now)));
+                    paras.Add(GetParameter(columnInfo.AttributeName, columnInfo.DataType, contentInfo.GetDateTime(columnInfo.AttributeName, DateTime.Now)));
                 }
                 else
                 {
-                    paras.Add(GetParameter($"@{columnInfo.AttributeName}", columnInfo.DataType, contentInfo.GetString(columnInfo.AttributeName)));
+                    paras.Add(GetParameter(columnInfo.AttributeName, columnInfo.DataType, contentInfo.GetString(columnInfo.AttributeName)));
                 }
             }
 
@@ -991,8 +995,9 @@ INSERT INTO {tableName} (
     {nameof(ContentInfo.SiteId)},
     {nameof(ContentInfo.AddUserName)},
     {nameof(ContentInfo.LastEditUserName)},
-    {nameof(ContentInfo.WritingUserName)},
     {nameof(ContentInfo.LastEditDate)},
+    {nameof(ContentInfo.AdminId)},
+    {nameof(ContentInfo.UserId)},
     {nameof(ContentInfo.Taxis)},
     {nameof(ContentInfo.GroupNameCollection)},
     {nameof(ContentInfo.Tags)},
@@ -1019,8 +1024,9 @@ INSERT INTO {tableName} (
     @{nameof(ContentInfo.SiteId)},
     @{nameof(ContentInfo.AddUserName)},
     @{nameof(ContentInfo.LastEditUserName)},
-    @{nameof(ContentInfo.WritingUserName)},
     @{nameof(ContentInfo.LastEditDate)},
+    @{nameof(ContentInfo.AdminId)},
+    @{nameof(ContentInfo.UserId)},
     @{nameof(ContentInfo.Taxis)},
     @{nameof(ContentInfo.GroupNameCollection)},
     @{nameof(ContentInfo.Tags)},
@@ -1046,32 +1052,33 @@ INSERT INTO {tableName} (
 
             var parameters = new List<IDataParameter>
             {
-                GetParameter($"@{nameof(ContentInfo.ChannelId)}", DataType.Integer, contentInfo.ChannelId),
-                GetParameter($"@{nameof(ContentInfo.SiteId)}", DataType.Integer, contentInfo.SiteId),
-                GetParameter($"@{nameof(ContentInfo.AddUserName)}", DataType.VarChar, 255, contentInfo.AddUserName),
-                GetParameter($"@{nameof(ContentInfo.LastEditUserName)}", DataType.VarChar, 255, contentInfo.LastEditUserName),
-                GetParameter($"@{nameof(ContentInfo.WritingUserName)}", DataType.VarChar, 255, contentInfo.WritingUserName),
-                GetParameter($"@{nameof(ContentInfo.LastEditDate)}", DataType.DateTime, contentInfo.LastEditDate),
-                GetParameter($"@{nameof(ContentInfo.Taxis)}", DataType.Integer, contentInfo.Taxis),
-                GetParameter($"@{nameof(ContentInfo.GroupNameCollection)}", DataType.VarChar, 255, contentInfo.GroupNameCollection),
-                GetParameter($"@{nameof(ContentInfo.Tags)}", DataType.VarChar, 255, contentInfo.Tags),
-                GetParameter($"@{nameof(ContentInfo.SourceId)}", DataType.Integer, contentInfo.SourceId),
-                GetParameter($"@{nameof(ContentInfo.ReferenceId)}", DataType.Integer, contentInfo.ReferenceId),
-                GetParameter($"@{nameof(ContentInfo.IsChecked)}", DataType.VarChar, 18, contentInfo.IsChecked.ToString()),
-                GetParameter($"@{nameof(ContentInfo.CheckedLevel)}", DataType.Integer, contentInfo.CheckedLevel),
-                GetParameter($"@{nameof(ContentInfo.Hits)}", DataType.Integer, contentInfo.Hits),
-                GetParameter($"@{nameof(ContentInfo.HitsByDay)}", DataType.Integer, contentInfo.HitsByDay),
-                GetParameter($"@{nameof(ContentInfo.HitsByWeek)}", DataType.Integer, contentInfo.HitsByWeek),
-                GetParameter($"@{nameof(ContentInfo.HitsByMonth)}", DataType.Integer, contentInfo.HitsByMonth),
-                GetParameter($"@{nameof(ContentInfo.LastHitsDate)}", DataType.DateTime, contentInfo.LastHitsDate),
-                GetParameter($"@{nameof(ContentInfo.SettingsXml)}", DataType.Text, contentInfo.ToString(excludeAttributesNames)),
-                GetParameter($"@{nameof(ContentInfo.Title)}", DataType.VarChar, 255, contentInfo.Title),
-                GetParameter($"@{nameof(ContentInfo.IsTop)}", DataType.VarChar, 18, contentInfo.IsTop.ToString()),
-                GetParameter($"@{nameof(ContentInfo.IsRecommend)}", DataType.VarChar, 18, contentInfo.IsRecommend.ToString()),
-                GetParameter($"@{nameof(ContentInfo.IsHot)}", DataType.VarChar, 18, contentInfo.IsHot.ToString()),
-                GetParameter($"@{nameof(ContentInfo.IsColor)}", DataType.VarChar, 18, contentInfo.IsColor.ToString()),
-                GetParameter($"@{nameof(ContentInfo.LinkUrl)}", DataType.VarChar, 200, contentInfo.LinkUrl),
-                GetParameter($"@{nameof(ContentInfo.AddDate)}", DataType.DateTime, contentInfo.AddDate)
+                GetParameter(nameof(ContentInfo.ChannelId), DataType.Integer, contentInfo.ChannelId),
+                GetParameter(nameof(ContentInfo.SiteId), DataType.Integer, contentInfo.SiteId),
+                GetParameter(nameof(ContentInfo.AddUserName), DataType.VarChar, 255, contentInfo.AddUserName),
+                GetParameter(nameof(ContentInfo.LastEditUserName), DataType.VarChar, 255, contentInfo.LastEditUserName),
+                GetParameter(nameof(ContentInfo.LastEditDate), DataType.DateTime, contentInfo.LastEditDate),
+                GetParameter(nameof(ContentInfo.AdminId), DataType.Integer, contentInfo.AdminId),
+                GetParameter(nameof(ContentInfo.UserId), DataType.Integer, contentInfo.UserId),
+                GetParameter(nameof(ContentInfo.Taxis), DataType.Integer, contentInfo.Taxis),
+                GetParameter(nameof(ContentInfo.GroupNameCollection), DataType.VarChar, 255, contentInfo.GroupNameCollection),
+                GetParameter(nameof(ContentInfo.Tags), DataType.VarChar, 255, contentInfo.Tags),
+                GetParameter(nameof(ContentInfo.SourceId), DataType.Integer, contentInfo.SourceId),
+                GetParameter(nameof(ContentInfo.ReferenceId), DataType.Integer, contentInfo.ReferenceId),
+                GetParameter(nameof(ContentInfo.IsChecked), DataType.VarChar, 18, contentInfo.IsChecked.ToString()),
+                GetParameter(nameof(ContentInfo.CheckedLevel), DataType.Integer, contentInfo.CheckedLevel),
+                GetParameter(nameof(ContentInfo.Hits), DataType.Integer, contentInfo.Hits),
+                GetParameter(nameof(ContentInfo.HitsByDay), DataType.Integer, contentInfo.HitsByDay),
+                GetParameter(nameof(ContentInfo.HitsByWeek), DataType.Integer, contentInfo.HitsByWeek),
+                GetParameter(nameof(ContentInfo.HitsByMonth), DataType.Integer, contentInfo.HitsByMonth),
+                GetParameter(nameof(ContentInfo.LastHitsDate), DataType.DateTime, contentInfo.LastHitsDate),
+                GetParameter(nameof(ContentInfo.SettingsXml), DataType.Text, contentInfo.ToString(excludeAttributesNames)),
+                GetParameter(nameof(ContentInfo.Title), DataType.VarChar, 255, contentInfo.Title),
+                GetParameter(nameof(ContentInfo.IsTop), DataType.VarChar, 18, contentInfo.IsTop.ToString()),
+                GetParameter(nameof(ContentInfo.IsRecommend), DataType.VarChar, 18, contentInfo.IsRecommend.ToString()),
+                GetParameter(nameof(ContentInfo.IsHot), DataType.VarChar, 18, contentInfo.IsHot.ToString()),
+                GetParameter(nameof(ContentInfo.IsColor), DataType.VarChar, 18, contentInfo.IsColor.ToString()),
+                GetParameter(nameof(ContentInfo.LinkUrl), DataType.VarChar, 200, contentInfo.LinkUrl),
+                GetParameter(nameof(ContentInfo.AddDate), DataType.DateTime, contentInfo.AddDate)
             };
             parameters.AddRange(paras);
 
@@ -1120,27 +1127,27 @@ INSERT INTO {tableName} (
                 sets.Append($",{columnInfo.AttributeName} = @{columnInfo.AttributeName}").AppendLine();
                 if (columnInfo.DataType == DataType.Integer)
                 {
-                    paras.Add(GetParameter($"@{columnInfo.AttributeName}", columnInfo.DataType,
+                    paras.Add(GetParameter(columnInfo.AttributeName, columnInfo.DataType,
                         contentInfo.GetInt(columnInfo.AttributeName)));
                 }
                 else if (columnInfo.DataType == DataType.Decimal)
                 {
-                    paras.Add(GetParameter($"@{columnInfo.AttributeName}", columnInfo.DataType,
+                    paras.Add(GetParameter(columnInfo.AttributeName, columnInfo.DataType,
                         contentInfo.GetDecimal(columnInfo.AttributeName)));
                 }
                 else if (columnInfo.DataType == DataType.Boolean)
                 {
-                    paras.Add(GetParameter($"@{columnInfo.AttributeName}", columnInfo.DataType,
+                    paras.Add(GetParameter(columnInfo.AttributeName, columnInfo.DataType,
                         contentInfo.GetBool(columnInfo.AttributeName)));
                 }
                 else if (columnInfo.DataType == DataType.DateTime)
                 {
-                    paras.Add(GetParameter($"@{columnInfo.AttributeName}", columnInfo.DataType,
+                    paras.Add(GetParameter(columnInfo.AttributeName, columnInfo.DataType,
                         contentInfo.GetDateTime(columnInfo.AttributeName, DateTime.Now)));
                 }
                 else
                 {
-                    paras.Add(GetParameter($"@{columnInfo.AttributeName}", columnInfo.DataType,
+                    paras.Add(GetParameter(columnInfo.AttributeName, columnInfo.DataType,
                         contentInfo.GetString(columnInfo.AttributeName)));
                 }
             }
@@ -1151,8 +1158,9 @@ UPDATE {tableName} SET
     {nameof(ContentInfo.SiteId)} = @{nameof(ContentInfo.SiteId)},
     {nameof(ContentInfo.AddUserName)} = @{nameof(ContentInfo.AddUserName)},
     {nameof(ContentInfo.LastEditUserName)} = @{nameof(ContentInfo.LastEditUserName)},
-    {nameof(ContentInfo.WritingUserName)} = @{nameof(ContentInfo.WritingUserName)},
     {nameof(ContentInfo.LastEditDate)} = @{nameof(ContentInfo.LastEditDate)},
+    {nameof(ContentInfo.AdminId)} = @{nameof(ContentInfo.AdminId)},
+    {nameof(ContentInfo.UserId)} = @{nameof(ContentInfo.UserId)},
     {nameof(ContentInfo.Taxis)} = @{nameof(ContentInfo.Taxis)},
     {nameof(ContentInfo.GroupNameCollection)} = @{nameof(ContentInfo.GroupNameCollection)},
     {nameof(ContentInfo.Tags)} = @{nameof(ContentInfo.Tags)},
@@ -1185,66 +1193,68 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
 
             var parameters = new List<IDataParameter>
             {
-                GetParameter($"@{nameof(ContentInfo.ChannelId)}", DataType.Integer, channelInfo.Id),
-                GetParameter($"@{nameof(ContentInfo.SiteId)}", DataType.Integer, siteInfo.Id),
-                GetParameter($"@{nameof(ContentInfo.AddUserName)}", DataType.VarChar, 255, contentInfo.AddUserName),
-                GetParameter($"@{nameof(ContentInfo.LastEditUserName)}", DataType.VarChar, 255,
+                GetParameter(nameof(ContentInfo.ChannelId), DataType.Integer, channelInfo.Id),
+                GetParameter(nameof(ContentInfo.SiteId), DataType.Integer, siteInfo.Id),
+                GetParameter(nameof(ContentInfo.AddUserName), DataType.VarChar, 255, contentInfo.AddUserName),
+                GetParameter(nameof(ContentInfo.LastEditUserName), DataType.VarChar, 255,
                     contentInfo.LastEditUserName),
-                GetParameter($"@{nameof(ContentInfo.WritingUserName)}", DataType.VarChar, 255,
-                    contentInfo.WritingUserName),
-                GetParameter($"@{nameof(ContentInfo.LastEditDate)}", DataType.DateTime, contentInfo.LastEditDate),
-                GetParameter($"@{nameof(ContentInfo.Taxis)}", DataType.Integer, contentInfo.Taxis),
-                GetParameter($"@{nameof(ContentInfo.GroupNameCollection)}", DataType.VarChar, 255,
+                GetParameter(nameof(ContentInfo.LastEditDate), DataType.DateTime, contentInfo.LastEditDate),
+                GetParameter(nameof(ContentInfo.AdminId), DataType.Integer,
+                    contentInfo.AdminId),
+                GetParameter(nameof(ContentInfo.UserId), DataType.Integer,
+                    contentInfo.UserId),
+                GetParameter(nameof(ContentInfo.Taxis), DataType.Integer, contentInfo.Taxis),
+                GetParameter(nameof(ContentInfo.GroupNameCollection), DataType.VarChar, 255,
                     contentInfo.GroupNameCollection),
-                GetParameter($"@{nameof(ContentInfo.Tags)}", DataType.VarChar, 255, contentInfo.Tags),
-                GetParameter($"@{nameof(ContentInfo.SourceId)}", DataType.Integer, contentInfo.SourceId),
-                GetParameter($"@{nameof(ContentInfo.ReferenceId)}", DataType.Integer, contentInfo.ReferenceId),
+                GetParameter(nameof(ContentInfo.Tags), DataType.VarChar, 255, contentInfo.Tags),
+                GetParameter(nameof(ContentInfo.SourceId), DataType.Integer, contentInfo.SourceId),
+                GetParameter(nameof(ContentInfo.ReferenceId), DataType.Integer, contentInfo.ReferenceId),
             };
             if (contentInfo.CheckedLevel != CheckManager.LevelInt.NotChange)
             {
-                parameters.Add(GetParameter($"@{nameof(ContentInfo.IsChecked)}", DataType.VarChar, 18,
+                parameters.Add(GetParameter(nameof(ContentInfo.IsChecked), DataType.VarChar, 18,
                     contentInfo.IsChecked.ToString()));
-                parameters.Add(GetParameter($"@{nameof(ContentInfo.CheckedLevel)}", DataType.Integer,
+                parameters.Add(GetParameter(nameof(ContentInfo.CheckedLevel), DataType.Integer,
                     contentInfo.CheckedLevel));
             }
-            parameters.Add(GetParameter($"@{nameof(ContentInfo.Hits)}", DataType.Integer, contentInfo.Hits));
+            parameters.Add(GetParameter(nameof(ContentInfo.Hits), DataType.Integer, contentInfo.Hits));
             parameters.Add(
-                GetParameter($"@{nameof(ContentInfo.HitsByDay)}", DataType.Integer, contentInfo.HitsByDay));
+                GetParameter(nameof(ContentInfo.HitsByDay), DataType.Integer, contentInfo.HitsByDay));
             parameters.Add(
-                GetParameter($"@{nameof(ContentInfo.HitsByWeek)}", DataType.Integer, contentInfo.HitsByWeek));
+                GetParameter(nameof(ContentInfo.HitsByWeek), DataType.Integer, contentInfo.HitsByWeek));
             parameters.Add(
-                GetParameter($"@{nameof(ContentInfo.HitsByMonth)}", DataType.Integer,
+                GetParameter(nameof(ContentInfo.HitsByMonth), DataType.Integer,
                     contentInfo.HitsByMonth));
             parameters.Add(
-                GetParameter($"@{nameof(ContentInfo.LastHitsDate)}", DataType.DateTime,
+                GetParameter(nameof(ContentInfo.LastHitsDate), DataType.DateTime,
                     contentInfo.LastHitsDate));
             parameters.Add(
-                GetParameter($"@{nameof(ContentInfo.SettingsXml)}", DataType.Text,
+                GetParameter(nameof(ContentInfo.SettingsXml), DataType.Text,
                     contentInfo.ToString(excludeAttributesNames)));
             parameters.Add(
-                GetParameter($"@{nameof(ContentInfo.Title)}", DataType.VarChar, 255,
+                GetParameter(nameof(ContentInfo.Title), DataType.VarChar, 255,
                     contentInfo.Title));
             parameters.Add(
-                GetParameter($"@{nameof(ContentInfo.IsTop)}", DataType.VarChar, 18,
+                GetParameter(nameof(ContentInfo.IsTop), DataType.VarChar, 18,
                     contentInfo.IsTop.ToString()));
             parameters.Add(
-                GetParameter($"@{nameof(ContentInfo.IsRecommend)}", DataType.VarChar,
+                GetParameter(nameof(ContentInfo.IsRecommend), DataType.VarChar,
                     18, contentInfo.IsRecommend.ToString()));
             parameters.Add(
-                GetParameter($"@{nameof(ContentInfo.IsHot)}", DataType.VarChar, 18,
+                GetParameter(nameof(ContentInfo.IsHot), DataType.VarChar, 18,
                     contentInfo.IsHot.ToString()));
             parameters.Add(
-                GetParameter($"@{nameof(ContentInfo.IsColor)}",
+                GetParameter(nameof(ContentInfo.IsColor),
                     DataType.VarChar, 18, contentInfo.IsColor.ToString()));
             parameters.Add(
-                GetParameter($"@{nameof(ContentInfo.LinkUrl)}",
+                GetParameter(nameof(ContentInfo.LinkUrl),
                     DataType.VarChar, 200, contentInfo.LinkUrl));
             parameters.Add(GetParameter(
                 $"@{nameof(ContentInfo.AddDate)}", DataType.DateTime,
                 contentInfo.AddDate));
 
             parameters.AddRange(paras);
-            parameters.Add(GetParameter($"@{nameof(ContentInfo.Id)}", DataType.Integer, contentInfo.Id));
+            parameters.Add(GetParameter(nameof(ContentInfo.Id), DataType.Integer, contentInfo.Id));
 
             ExecuteNonQuery(sqlString, parameters.ToArray());
 
@@ -1321,11 +1331,6 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             var sqlString = $"SELECT COUNT(*) FROM {tableName} {whereString}";
 
             return DataProvider.DatabaseDao.GetIntResult(sqlString);
-        }
-
-        public string GetCountSqlString(string tableName, int channelId)
-        {
-            return $"SELECT COUNT(*) FROM {tableName} WHERE {ContentAttribute.ChannelId} = {channelId}  AND {nameof(ContentInfo.SourceId)} != {SourceManager.Preview}";
         }
 
         public List<ContentCountInfo> GetTableContentCounts(string tableName)
@@ -2340,11 +2345,11 @@ group by tmp.userName";
 
             if (!string.IsNullOrEmpty(userNameOnly))
             {
-                whereString.Append($" AND AddUserName = '{userNameOnly}' ");
+                whereString.Append($" AND {ContentAttribute.AddUserName} = '{userNameOnly}' ");
             }
             if (isWritingOnly)
             {
-                whereString.Append(" AND WritingUserName <> '' ");
+                whereString.Append($" AND {ContentAttribute.UserId} > 0 ");
             }
 
             whereString.Append(" ").Append(orderByString);
@@ -2469,7 +2474,7 @@ group by tmp.userName";
 
             if (isWritingOnly)
             {
-                whereList.Add($"{nameof(ContentAttribute.WritingUserName)} <> ''");
+                whereList.Add($"{nameof(ContentAttribute.UserId)} > 0");
             }
 
             return $"WHERE {string.Join(" AND ", whereList)}";

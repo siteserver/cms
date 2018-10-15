@@ -47,7 +47,7 @@
           <div class="col-12">
             <div class="input-group">
               <div class="input-group-prepend">
-                <span class="input-group-text"><i class="mdi mdi-account"></i></span>
+                <span class="input-group-text"><i class="fa fa-user-circle-o"></i></span>
               </div>
               <input v-model="account" v-bind:class="{ 'is-invalid': pageSubmit && !account }" class="form-control"
                 type="text" v-focus placeholder="请输入用户名/手机号/邮箱">
@@ -59,7 +59,7 @@
           <div class="col-12">
             <div class="input-group">
               <div class="input-group-prepend">
-                <span class="input-group-text"><i class="mdi mdi-key"></i></span>
+                <span class="input-group-text"><i class="fa fa-key"></i></span>
               </div>
               <input v-model="password" v-bind:class="{ 'is-invalid': pageSubmit && !password }" class="form-control"
                 type="password" placeholder="请输入密码">
@@ -71,7 +71,7 @@
           <div class="col-12">
             <div class="input-group">
               <div class="input-group-prepend">
-                <span class="input-group-text"><i class="mdi mdi-code-tags-check"></i></span>
+                <span class="input-group-text"><i class="fa fa-picture-o"></i></span>
               </div>
               <input v-model="captcha" v-bind:class="{ 'is-invalid': pageSubmit && !captcha }" class="form-control"
                 type="text" placeholder="请输入验证码">

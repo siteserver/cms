@@ -11,6 +11,7 @@ using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
+using System.Linq;
 
 namespace SiteServer.CMS.Core
 {
@@ -233,97 +234,20 @@ namespace SiteServer.CMS.Core
 
         public static List<TableStyleInfo> GetAllTableStyleInfoList(List<TableStyleInfo> tableStyleInfoList)
         {
+            var taxis = 1;
             var list = new List<TableStyleInfo>
             {
                 new TableStyleInfo
                 {
                     AttributeName = ContentAttribute.Id,
-                    DisplayName = "内容Id"
+                    DisplayName = "内容Id",
+                    Taxis = taxis++
                 },
                 new TableStyleInfo
                 {
                     AttributeName = ContentAttribute.Title,
-                    DisplayName = "标题"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.LinkUrl,
-                    DisplayName = "外部链接"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.AddDate,
-                    DisplayName = "添加时间"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.LastEditDate,
-                    DisplayName = "修改时间"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.GroupNameCollection,
-                    DisplayName = "内容组"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.Tags,
-                    DisplayName = "标签"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.AddUserName,
-                    DisplayName = "添加人"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.LastEditUserName,
-                    DisplayName = "修改人"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.CheckUserName,
-                    DisplayName = "审核人"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.CheckDate,
-                    DisplayName = "审核时间"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.CheckReasons,
-                    DisplayName = "审核原因"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.SourceId,
-                    DisplayName = "来源标识"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.Hits,
-                    DisplayName = "点击量"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.HitsByDay,
-                    DisplayName = "日点击"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.HitsByWeek,
-                    DisplayName = "周点击"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.HitsByMonth,
-                    DisplayName = "月点击"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.LastHitsDate,
-                    DisplayName = "最后点击时间"
+                    DisplayName = "标题",
+                    Taxis = taxis++
                 }
             };
 
@@ -333,12 +257,118 @@ namespace SiteServer.CMS.Core
                 {
                     if (!list.Exists(t => t.AttributeName == tableStyleInfo.AttributeName))
                     {
-                        list.Insert(2, tableStyleInfo);
+                        list.Add(new TableStyleInfo
+                        {
+                            AttributeName = tableStyleInfo.AttributeName,
+                            DisplayName = tableStyleInfo.DisplayName,
+                            InputType = tableStyleInfo.InputType,
+                            Taxis = taxis++
+                        });
                     }
                 }
             }
 
-            return list;
+            list.AddRange(new List<TableStyleInfo>
+            {
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.LinkUrl,
+                    DisplayName = "外部链接",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.AddDate,
+                    DisplayName = "添加时间",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.LastEditDate,
+                    DisplayName = "修改时间",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.GroupNameCollection,
+                    DisplayName = "内容组",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.Tags,
+                    DisplayName = "标签",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.AdminId,
+                    DisplayName = "管理员",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.UserId,
+                    DisplayName = "投稿用户",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.SourceId,
+                    DisplayName = "来源标识",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.Hits,
+                    DisplayName = "点击量",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.HitsByDay,
+                    DisplayName = "日点击",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.HitsByWeek,
+                    DisplayName = "周点击",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.HitsByMonth,
+                    DisplayName = "月点击",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.LastHitsDate,
+                    DisplayName = "最后点击时间",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.CheckUserName,
+                    DisplayName = "审核人",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.CheckDate,
+                    DisplayName = "审核时间",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.CheckReasons,
+                    DisplayName = "审核原因",
+                    Taxis = taxis
+                },
+            });
+
+            return list.OrderBy(styleInfo => styleInfo.Taxis == 0 ? int.MaxValue : styleInfo.Taxis).ToList();
         }
 
         public static List<TableStyleInfo> GetEditableTableStyleInfoList(List<TableStyleInfo> tableStyleInfoList)

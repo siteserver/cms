@@ -824,16 +824,28 @@ SELECT * FROM (
             }
         }
 
-        public void AlterSystemTable(string tableName, List<TableColumn> tableColumns)
+        public void AlterSystemTable(string tableName, List<TableColumn> tableColumns, List<string> dropColumnNames = null)
         {
             var list = new List<string>();
 
             var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
             foreach (var tableColumn in tableColumns)
             {
-                if (StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName)) continue;
+                if (!StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName))
+                {
+                    list.Add(SqlUtils.GetAddColumnsSqlString(tableName, SqlUtils.GetColumnSqlString(tableColumn)));
+                }
+            }
 
-                list.Add(SqlUtils.GetAddColumnsSqlString(tableName, SqlUtils.GetColumnSqlString(tableColumn)));
+            if (dropColumnNames != null)
+            {
+                foreach (var columnName in columnNameList)
+                {
+                    if (StringUtils.ContainsIgnoreCase(dropColumnNames, columnName))
+                    {
+                        list.Add(SqlUtils.GetDropColumnsSqlString(tableName, columnName));
+                    }
+                }
             }
 
             if (list.Count > 0)

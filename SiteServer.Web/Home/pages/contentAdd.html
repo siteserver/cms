@@ -87,7 +87,7 @@
 
           <div class="row">
             <div class="col-md-9">
-              <h4 class="m-t-0 m-b-30 header-title">基础字段</h4>
+              <h4 class="m-t-0 m-b-30 header-title">内容字段</h4>
 
               <div class="form-row">
                 <div class="form-group col-md-6">
@@ -118,47 +118,63 @@
               </div>
 
               <div v-for="style in styles" class="form-group">
-                <label>
-                  {{ style.displayName }}
-                  <small v-if="style.helpText" class="text-muted">{{ style.helpText }}</small>
-                  <span v-if="style.additional.veeValidate.indexOf('required') !== -1" class="text-danger">*</span>
-                  <small v-show="errors.has(style.attributeName)" class="text-danger">{{
-                    errors.first(style.attributeName) }}</small>
-                </label>
+                <div class="mb-1">
+                  <label>
+                    {{ style.displayName }}
+                    <small v-if="style.helpText" class="text-muted">{{ style.helpText }}</small>
+                    <span v-if="style.additional.veeValidate.indexOf('required') !== -1" class="text-danger">*</span>
+                    <small v-show="errors.has(style.attributeName)" class="text-danger">{{
+                      errors.first(style.attributeName) }}</small>
+                  </label>
 
-                <template v-if="style.inputType === 'Text'">
-                  <input v-model="style.value" type="text" class="form-control" :name="style.attributeName" :data-vv-as="style.displayName"
-                    v-validate="style.additional.veeValidate" :class="{'is-invalid': errors.has(style.attributeName)}">
-                </template>
-                <template v-else-if="style.inputType === 'TextArea'">
-                  <textarea v-model="style.value" class="form-control" :style="'height: ' + (style.additional.height ? style.additional.height : 125) + 'px;'"
-                    :name="style.attributeName" :data-vv-as="style.displayName" v-validate="style.additional.veeValidate"
-                    :class="{'is-invalid': errors.has(style.attributeName)}"></textarea>
-                </template>
-                <template v-else-if="style.inputType === 'TextEditor'">
-                  <textarea v-model="style.value" :id="style.attributeName" :name="style.attributeName" :data-vv-as="style.displayName"
-                    v-validate="style.additional.veeValidate" style="display:none"></textarea>
-                </template>
-                <template v-else-if="style.inputType === 'Radio'">
-                  <div class="m-2">
-                    <div v-for="(styleItem, index) in style.styleItems" class="radio radio-primary form-check-inline">
-                      <input v-model="style.value" type="radio" :id="styleItem.itemValue" :value="styleItem.itemValue"
-                        :name="style.attributeName">
-                      <label :for="styleItem.itemValue"> {{ styleItem.itemTitle }} </label>
+                  <template v-if="style.inputType === 'Image'">
+                    <div class="float-right btn-group btn-group-sm">
+                      <a v-on:click="btnLayerClick({title: '上传图片', name: 'Image', full: true})" href="javascritp:;"
+                        class="btn btn-outline-primary">上传</a>
+                      <button class="btn btn-outline-primary">选择</button>
+                      <button class="btn btn-outline-primary">裁切</button>
+                      <button class="btn btn-outline-primary">预览</button>
+                      <button class="btn btn-outline-primary">新增</button>
                     </div>
-                  </div>
-                </template>
-                <template v-else>
-                  <input v-model="style.value" type="text" class="form-control" :name="style.attributeName" :data-vv-as="style.displayName"
-                    v-validate="style.additional.veeValidate" :class="{'is-invalid': errors.has(style.attributeName)}">
-                </template>
+                  </template>
+
+                </div>
+
+                <div>
+                  <template v-if="style.inputType === 'Text'">
+                    <input v-model="style.value" type="text" class="form-control" :name="style.attributeName"
+                      :data-vv-as="style.displayName" v-validate="style.additional.veeValidate" :class="{'is-invalid': errors.has(style.attributeName)}">
+                  </template>
+                  <template v-else-if="style.inputType === 'TextArea'">
+                    <textarea v-model="style.value" class="form-control" :style="'height: ' + (style.additional.height ? style.additional.height : 125) + 'px;'"
+                      :name="style.attributeName" :data-vv-as="style.displayName" v-validate="style.additional.veeValidate"
+                      :class="{'is-invalid': errors.has(style.attributeName)}"></textarea>
+                  </template>
+                  <template v-else-if="style.inputType === 'TextEditor'">
+                    <textarea v-model="style.value" :id="style.attributeName" :name="style.attributeName" :data-vv-as="style.displayName"
+                      v-validate="style.additional.veeValidate" style="display:none"></textarea>
+                  </template>
+                  <template v-else-if="style.inputType === 'Radio'">
+                    <div class="m-2">
+                      <div v-for="(styleItem, index) in style.styleItems" class="radio radio-primary form-check-inline">
+                        <input v-model="style.value" type="radio" :id="styleItem.itemValue" :value="styleItem.itemValue"
+                          :name="style.attributeName">
+                        <label :for="styleItem.itemValue"> {{ styleItem.itemTitle }} </label>
+                      </div>
+                    </div>
+                  </template>
+                  <template v-else>
+                    <input v-model="style.value" type="text" class="form-control" :name="style.attributeName"
+                      :data-vv-as="style.displayName" v-validate="style.additional.veeValidate" :class="{'is-invalid': errors.has(style.attributeName)}">
+                  </template>
+                </div>
 
               </div>
 
             </div>
 
             <div class="col-md-3">
-              <h4 class="m-t-0 m-b-30 header-title">其他字段</h4>
+              <h4 class="m-t-0 m-b-30 header-title">内容设置</h4>
 
               <div class="form-group">
                 <label>属性</label>
@@ -228,7 +244,8 @@
           <div class="text-center">
             <button type="button" @click="btnSubmitClick" class="btn btn-primary w-md mr-2">保 存</button>
             <button type="button" @click="btnPreviewClick" class="btn btn-secondary w-md mr-2">预 览</button>
-            <button v-if="contentId" type="button" @click="btnReturnClick" class="btn btn-default w-md">返 回</button>
+            <button v-if="returnUrl" type="button" @click="parent.location.hash = returnUrl" class="btn btn-default w-md">返
+              回</button>
           </div>
 
         </form>

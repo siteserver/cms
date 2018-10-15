@@ -1,5 +1,4 @@
-﻿var $apiUrl = $apiConfig.apiUrl;
-var $api = new apiUtils.Api($apiUrl + '/pages/settings/userConfig');
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/userConfig');
 
 var data = {
   pageLoad: false,

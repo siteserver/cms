@@ -101,6 +101,19 @@ namespace SiteServer.CMS.Plugin
             });
         }
 
+        public static string GetMenuContentHrefPrefix(string pluginId, string href)
+        {
+            if (PageUtils.IsAbsoluteUrl(href))
+            {
+                return href;
+            }
+            return PageUtils.AddQueryStringIfNotExists(PageUtils.ParsePluginUrl(pluginId, href), new NameValueCollection
+            {
+                {"apiUrl", ApiManager.ApiUrl},
+                {"v", StringUtils.GetRandomInt(1, 1000).ToString()}
+            });
+        }
+
         private static Menu GetMenu(string pluginId, int siteId, Menu metadataMenu, int i)
         {
             var menu = new Menu

@@ -324,5 +324,23 @@ namespace SiteServer.CMS.ImportExport
             }
             return isExport;
         }
+
+        public bool ExportContents(string filePath, List<ContentInfo> contentInfoList)
+        {
+            var siteContentDirectoryPath = PathUtils.Combine(DirectoryUtils.GetDirectoryPath(filePath), PathUtils.GetFileNameWithoutExtension(filePath));
+
+            FileUtils.DeleteFileIfExists(filePath);
+            DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
+            DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
+
+            var contentIe = new ContentIe(_siteInfo, siteContentDirectoryPath);
+            var isExport = contentIe.ExportContents(_siteInfo, contentInfoList);
+            if (isExport)
+            {
+                ZipUtils.CreateZip(filePath, siteContentDirectoryPath);
+                DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
+            }
+            return isExport;
+        }
     }
 }

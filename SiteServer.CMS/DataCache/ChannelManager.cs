@@ -622,7 +622,7 @@ namespace SiteServer.CMS.DataCache
             return nodeInfo.Additional.ContentAttributesOfDisplay;
         }
 
-        public static List<InputListItem> GetContentAttributesToList(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll)
+        public static List<InputListItem> GetContentsColumns(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll)
         {
             var items = new List<InputListItem>();
 

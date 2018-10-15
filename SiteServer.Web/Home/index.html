@@ -114,13 +114,14 @@
               <ul class="navigation-menu">
 
                 <li v-for="menu in pageMenus" class="has-submenu">
-                  <a :href="(menu.menus && menu.menus.length > 0 ? '#' : menu.url)" :target="(menu.menus && menu.menus.length > 0 ? '' : (menu.isOpenWindow ? '_blank' : 'frmMain'))">
+                  <a :href="(menu.menus && menu.menus.length > 0 ? '#' : (menu.isOpenWindow ? menu.url : '#' + menu.url))"
+                    :target="(menu.menus && menu.menus.length > 0 ? '' : (menu.isOpenWindow ? '_blank' : ''))">
                     <i v-if="menu.iconClass" :class="menu.iconClass"></i>
                     {{ menu.title }}
                   </a>
                   <ul v-if="menu.menus && menu.menus.length > 0" class="submenu">
                     <li v-for="child in menu.menus">
-                      <a :href="child.url" :target="(child.isOpenWindow ? '_blank' : 'frmMain')">
+                      <a :href="(child.isOpenWindow ? child.url : '#' + child.url)" :target="(child.isOpenWindow ? '_blank' : '')">
                         <i v-if="child.iconClass" :class="child.iconClass"></i>
                         {{ child.title }}
                       </a>

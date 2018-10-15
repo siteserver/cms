@@ -1,5 +1,4 @@
-﻿var $apiUrl = $apiConfig.apiUrl;
-var $api = new apiUtils.Api($apiUrl + '/pages/cms/contentsLayerGroup');
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerGroup');
 
 var data = {
   siteId: parseInt(pageUtils.getQueryStringByName('siteId')),

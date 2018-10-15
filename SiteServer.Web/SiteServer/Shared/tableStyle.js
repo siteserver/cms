@@ -1,5 +1,4 @@
-﻿var $apiUrl = $apiConfig.apiUrl;
-var $api = new apiUtils.Api($apiUrl + '/pages/shared/tableStyle');
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/shared/tableStyle');
 
 var data = {
   tableName: pageUtils.getQueryStringByName('tableName'),

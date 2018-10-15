@@ -60,6 +60,44 @@ namespace SiteServer.CMS.Core.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
+        public static void CreateExcelFileForContents(string filePath, SiteInfo siteInfo,
+            ChannelInfo channelInfo, List<ContentInfo> contentInfoList, List<string> columnNames)
+        {
+            DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
+            FileUtils.DeleteFileIfExists(filePath);
+
+            var head = new List<string>();
+            var rows = new List<List<string>>();
+
+            var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, true);
+
+            foreach (var column in columns)
+            {
+                if (StringUtils.ContainsIgnoreCase(columnNames, column.AttributeName))
+                {
+                    head.Add(column.DisplayName);
+                }
+            }
+
+            foreach (var contentInfo in contentInfoList)
+            {
+                var row = new List<string>();
+
+                foreach (var column in columns)
+                {
+                    if (StringUtils.ContainsIgnoreCase(columnNames, column.AttributeName))
+                    {
+                        var value = contentInfo.GetString(column.AttributeName);
+                        row.Add(StringUtils.StripTags(value));
+                    }
+                }
+
+                rows.Add(row);
+            }
+
+            CsvUtils.Export(filePath, head, rows);
+        }
+
         public static void CreateExcelFileForUsers(string filePath, ETriState checkedState)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));

@@ -2,7 +2,6 @@
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -76,12 +75,6 @@ namespace SiteServer.BackgroundPages.Core
             if (!string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.FileUrl)))
             {
                 image += "&nbsp;<img src='../pic/icon/attachment.gif' title='附件' align='absmiddle' border=0 />";
-            }
-            if (!string.IsNullOrEmpty(contentInfo.WritingUserName))
-            {
-                var openWindowString = ModalUserView.GetOpenWindowString(contentInfo.WritingUserName);
-                image +=
-                    $@"&nbsp;（<a href=""javascript:;"" onclick=""{openWindowString}"">投稿用户:{contentInfo.WritingUserName}</a>）";
             }
             return url + image;
         }

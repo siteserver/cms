@@ -1,6 +1,5 @@
-﻿var $apiUrl = $apiConfig.apiUrl;
-var $api = new apiUtils.Api($apiUrl + "/pages/cms/contents");
-var $createApi = new apiUtils.Api($apiUrl + "/pages/cms/contents/actions/create");
+﻿var $api = new apiUtils.Api(apiUrl + "/pages/cms/contents");
+var $createApi = new apiUtils.Api(apiUrl + "/pages/cms/contents/actions/create");
 
 Object.defineProperty(Object.prototype, "getProp", {
   value: function (prop) {
@@ -21,23 +20,25 @@ var data = {
   pageType: null,
   page: 1,
   pageContents: null,
-  contentDict: null,
   count: null,
   pages: null,
   permissions: null,
-  attributes: null,
+  columns: null,
+  menus: null,
   pageOptions: null,
   isAllChecked: false
 };
 
 var methods = {
   btnAddClick: function () {
+    event.stopPropagation();
+
     location.href = 'pageContentAdd.aspx?siteId=' + this.siteId + '&channelId=' + this.channelId;
   },
-  btnSearchClick: function () {
-    parent.location.href = 'pageContentSearch.aspx?siteId=' + this.siteId + '&channelId=' + this.channelId;
-  },
+
   btnCreateClick: function () {
+    event.stopPropagation();
+
     var $this = this;
     $this.pageAlert = null;
     if ($this.selectedContentIds.length === 0) return;
@@ -56,51 +57,37 @@ var methods = {
       };
     });
   },
-  btnFuncClick: function (options) {
+
+  btnLayerClick: function (options) {
+    event.stopPropagation();
+
     this.pageAlert = null;
-
-    if (options.withoutContents) {
-      pageUtils.openLayer({
-        title: "批量" + options.title,
-        url: "contentsLayer" + options.name + ".cshtml?siteId=" +
-          this.siteId +
-          "&channelId=" +
-          this.channelId,
-        full: options.full,
-        width: options.width ? options.width : 700,
-        height: options.height ? options.height : 500
-      });
-      return;
+    var url = "contentsLayer" +
+      options.name +
+      ".cshtml?siteId=" +
+      this.siteId +
+      "&channelId=" +
+      this.channelId;
+    if (options.withContents) {
+      if (this.selectedContentIds.length === 0) return;
+      url += "&contentIds=" + this.selectedContentIds.join(",")
+    } else if (options.contentId) {
+      url += "&contentId=" + options.contentId
     }
+    url += '&returnUrl=' + encodeURIComponent(location.href);
 
-    if (this.selectedContentIds.length === 0) return;
-
-    if (options.redirect) {
-      location.href =
-        "pageContent" + options.name + ".aspx?siteId=" +
-        this.siteId +
-        "&channelId=" +
-        this.channelId +
-        "&contentIdCollection=" +
-        this.selectedContentIds.join(",");
-    } else {
-      pageUtils.openLayer({
-        title: "批量" + options.title,
-        url: "contentsLayer" +
-          options.name +
-          ".cshtml?siteId=" +
-          this.siteId +
-          "&channelId=" +
-          this.channelId +
-          "&contentIds=" +
-          this.selectedContentIds.join(","),
-        full: options.full,
-        width: options.width ? options.width : 700,
-        height: options.height ? options.height : 500
-      });
-    }
+    pageUtils.openLayer({
+      title: options.title,
+      url: url,
+      full: options.full,
+      width: options.width ? options.width : 700,
+      height: options.height ? options.height : 500
+    });
   },
+
   btnContentViewClick: function (contentId) {
+    event.stopPropagation();
+
     pageUtils.openLayer({
       title: "查看内容",
       url: "contentsLayerView.cshtml?siteId=" +
@@ -112,7 +99,10 @@ var methods = {
       full: true
     });
   },
+
   btnContentStateClick: function (contentId) {
+    event.stopPropagation();
+
     pageUtils.openLayer({
       title: "查看审核状态",
       url: "contentsLayerState.cshtml?siteId=" +
@@ -124,40 +114,68 @@ var methods = {
       full: true
     });
   },
+
   toggleChecked: function (content) {
     content.isSelected = !content.isSelected;
     if (!content.isSelected) {
       this.isAllChecked = false;
     }
   },
+
   selectAll: function () {
     this.isAllChecked = !this.isAllChecked;
     for (var i = 0; i < this.pageContents.length; i++) {
       this.pageContents[i].isSelected = this.isAllChecked;
     }
   },
+
   loadFirstPage: function () {
     if (this.page === 1) return;
     this.loadContents(1);
   },
+
   loadPrevPage: function () {
     if (this.page - 1 <= 0) return;
     this.loadContents(this.page - 1);
   },
+
   loadNextPage: function () {
     if (this.page + 1 > this.pages) return;
     this.loadContents(this.page + 1);
   },
+
   loadLastPage: function () {
     if (this.page + 1 > this.pages) return;
     this.loadContents(this.pages);
   },
-  onPageSelect(option) {
+
+  onPageSelect: function (option) {
     this.loadContents(option);
   },
-  scrollToTop() {
+
+  scrollToTop: function () {
     document.documentElement.scrollTop = document.body.scrollTop = 0;
   },
+
+  getMenuHref: function (menu, content) {
+    if (menu.target) {
+      return menu.href + '&siteId=' + this.siteId + '&channelId=' + this.channelId + '&contentId=' + content.id;
+    }
+    return 'javascript:;';
+  },
+
+  btnMenuClick: function (menu, content) {
+    event.stopPropagation();
+
+    if (!menu.target) {
+      pageUtils.openLayer({
+        title: menu.text,
+        url: menu.href + '&siteId=' + this.siteId + '&channelId=' + this.channelId + '&contentId=' + content.id,
+        full: true
+      });
+    }
+  },
+
   loadContents: function (page) {
     var $this = this;
 
@@ -184,10 +202,9 @@ var methods = {
         $this.pageContents = pageContents;
         $this.count = res.count;
         $this.pages = res.pages;
-        if (page === 1) {
-          $this.permissions = res.permissions;
-          $this.attributes = res.attributes;
-        }
+        $this.permissions = res.permissions;
+        $this.columns = res.columns;
+        $this.menus = res.menus;
         $this.page = page;
         $this.pageOptions = [];
         for (var i = 1; i <= $this.pages; i++) {

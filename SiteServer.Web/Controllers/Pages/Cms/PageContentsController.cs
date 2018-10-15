@@ -7,6 +7,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -41,9 +42,13 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
+                var pluginColumns = PluginContentManager.GetContentColumns(channelInfo);
+
+                var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, false);
+
                 var pageContentInfoList = new List<ContentInfo>();
                 var count = ContentManager.GetCount(siteInfo, channelInfo);
-                var pages = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(count / siteInfo.Additional.PageSize)));
+                var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
                 if (pages == 0) pages = 1;
 
                 if (count > 0)
@@ -53,31 +58,45 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                     var pageContentIds = ContentManager.GetContentIdList(siteInfo, channelInfo, offset, limit);
 
+                    var sequence = offset + 1;
                     foreach (var contentId in pageContentIds)
                     {
                         var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                         if (contentInfo == null) continue;
-
-                        pageContentInfoList.Add(contentInfo);
+                        
+                        pageContentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
                     }
                 }
 
-                object permissions = null;
-                if (page == 1)
+                var permissions = new
                 {
-                    permissions = new
-                    {
-                        IsAdd = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.Additional.IsContentAddable,
-                        IsDelete = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete),
-                        IsEdit = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentEdit),
-                        IsTranslate = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentTranslate),
-                        IsCheck = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentCheck),
-                        IsCreate = request.AdminPermissionsImpl.HasSitePermissions(siteInfo.Id, ConfigManager.WebSitePermissions.Create) || request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.CreatePage),
-                        IsChannelEdit = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit)
-                    };
-                }
+                    IsAdd = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.Additional.IsContentAddable,
+                    IsDelete = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete),
+                    IsEdit = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentEdit),
+                    IsTranslate = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentTranslate),
+                    IsCheck = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentCheck),
+                    IsCreate = request.AdminPermissionsImpl.HasSitePermissions(siteInfo.Id, ConfigManager.WebSitePermissions.Create) || request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.CreatePage),
+                    IsChannelEdit = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit)
+                };
 
-                var attributes = ChannelManager.GetContentAttributesToList(siteInfo, channelInfo, false);
+                var menus = new List<Menu>();
+                var pluginMenus = PluginContentManager.GetContentMenus(channelInfo);
+                if (pluginMenus != null)
+                {
+                    foreach (var pluginId in pluginMenus.Keys)
+                    {
+                        var contentMenus = pluginMenus[pluginId];
+                        if (contentMenus != null && contentMenus.Count > 0)
+                        {
+                            foreach (var menu in contentMenus)
+                            {
+                                menu.Href = PluginMenuManager.GetMenuContentHrefPrefix(pluginId, menu.Href);
+
+                                menus.Add(menu);
+                            }
+                        }
+                    }
+                }
 
                 return Ok(new
                 {
@@ -85,7 +104,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     Count = count,
                     Pages = pages,
                     Permissions = permissions,
-                    Attributes = attributes
+                    Columns = columns,
+                    Menus = menus
                 });
             }
             catch (Exception ex)

@@ -14,6 +14,7 @@ var data = {
   allTagNames: [],
   styles: [],
   allCheckedLevels: [],
+  returnUrl: pageUtils.getQueryString('returnUrl'),
 
   contentId: 0,
   isColor: false,
@@ -133,33 +134,6 @@ var methods = {
     this.tagNames.push(newTag);
   },
 
-  preview: function () {
-    var $this = this;
-
-    var options = {
-      beforeSubmit: function () {
-        return true;
-      },
-      url: '/SiteServer/cms/pagecontentaddhandler.ashx?siteId=35&channelId=35&contentId=358062',
-      type: 'POST',
-      dataType: 'json',
-      success: function (data) {
-        isPreviewSaving = false;
-        if (data && data.previewUrl) {
-          window.open(data.previewUrl);
-        }
-      }
-    };
-
-    if (UE) {
-      $.each(UE.instants, function (index, editor) {
-        editor.sync();
-      });
-    }
-    $('#myForm').ajaxSubmit(options);
-
-  },
-
   submit: function (sourceId) {
     var $this = this;
 
@@ -173,18 +147,19 @@ var methods = {
       addDate: this.addDate,
       groupNameCollection: this.groupNames.join(','),
       tags: this.tagNames.join(','),
-      checkedLevel: this.checkedLevel
+      checkedLevel: this.checkedLevel,
+      sourceId: sourceId
     };
     for (var i = 0; i < this.styles.length; i++) {
       var style = this.styles[i];
       payload[style.attributeName] = style.value;
     }
 
-    pageUtils.loading(true);
+    parent.pageUtils.loading(true);
     if (sourceId == sourceIdPreview) {
-      new apiUtils.Api(apiUrl + '/v1/contents/' + this.site.id + '/' + this.channel.id + '?sourceId=' + sourceId)
+      new apiUtils.Api(apiUrl + '/v1/contents/' + this.site.id + '/' + this.channel.id)
         .post(payload, function (err, res) {
-          pageUtils.loading(false);
+          parent.pageUtils.loading(false);
 
           if (err) {
             $this.pageAlert = {
@@ -198,9 +173,9 @@ var methods = {
           window.open(apiUrl + '/preview/' + $this.site.id + '/' + $this.channel.id + '/' + contentId + '?isPreview=true&previewId=' + res.value.id);
         });
     } else if (payload.id) {
-      new apiUtils.Api(apiUrl + '/v1/contents/' + this.site.id + '/' + this.channel.id + '/' + payload.id + '?sourceId=' + sourceId)
+      new apiUtils.Api(apiUrl + '/v1/contents/' + this.site.id + '/' + this.channel.id + '/' + payload.id)
         .put(payload, function (err, res) {
-          pageUtils.loading(false);
+          parent.pageUtils.loading(false);
 
           if (err) {
             $this.pageAlert = {
@@ -210,21 +185,20 @@ var methods = {
             return;
           }
 
-          swal({
+          parent.swal({
             toast: true,
-            position: 'bottom-end',
             type: 'success',
             title: "稿件修改成功",
             showConfirmButton: false,
             timer: 3000
           }).then(function () {
-            location.href = 'contents.html?siteId=' + $this.site.id + '&channelId=' + $this.channel.id;
+            parent.location.hash = $this.returnUrl;
           });
         });
     } else {
-      new apiUtils.Api(apiUrl + '/v1/contents/' + this.site.id + '/' + this.channel.id + '?sourceId=' + sourceId)
+      new apiUtils.Api(apiUrl + '/v1/contents/' + this.site.id + '/' + this.channel.id)
         .post(payload, function (err, res) {
-          pageUtils.loading(false);
+          parent.pageUtils.loading(false);
 
           if (err) {
             $this.pageAlert = {
@@ -237,6 +211,28 @@ var methods = {
           $this.pageType = 'success';
         });
     }
+  },
+
+  btnLayerClick: function (options) {
+    this.pageAlert = null;
+    var url = "pages/contentAddLayer" +
+      options.name +
+      ".html?siteId=" +
+      this.site.id +
+      "&channelId=" +
+      this.channel.id;
+
+    if (options.contentId) {
+      url += "&contentId=" + options.contentId
+    }
+
+    parent.pageUtils.openLayer({
+      title: options.title,
+      url: url,
+      full: options.full,
+      width: options.width ? options.width : 700,
+      height: options.height ? options.height : 500
+    });
   },
 
   btnContinueAddClick: function () {
@@ -263,10 +259,6 @@ var methods = {
         $this.submit(sourceIdPreview);
       }
     });
-  },
-
-  btnReturnClick: function () {
-    location.href = 'contents.html?siteId=' + this.site.id + '&channelId=' + this.channel.id;
   }
 };
 
@@ -283,7 +275,7 @@ var $vue = new Vue({
 
       var siteId = 0;
       var channelId = 0;
-      var contentId = parseInt(pageUtils.getQueryString('id') || 0);
+      var contentId = parseInt(pageUtils.getQueryString('contentId') || 0);
       if (contentId == 0) {
         siteId = parseInt(Cookies.get('SS-USER-SITE-ID') || 0);
         channelId = parseInt(Cookies.get('SS-USER-CHANNEL-ID') || 0);

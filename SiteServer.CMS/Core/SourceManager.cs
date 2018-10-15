@@ -1,4 +1,5 @@
-﻿using SiteServer.CMS.DataCache;
+﻿using System.Linq;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.CMS.Core
 {
@@ -12,7 +13,7 @@ namespace SiteServer.CMS.Core
         {
             if (sourceId == Default)
             {
-                return "正常录入";
+                return "后台录入";
             }
             if (sourceId == User)
             {
@@ -24,11 +25,11 @@ namespace SiteServer.CMS.Core
             }
             if (sourceId <= 0) return string.Empty;
 
-            var siteId = DataProvider.ChannelDao.GetSiteId(sourceId);
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var sourceSiteId = DataProvider.ChannelDao.GetSiteId(sourceId);
+            var siteInfo = SiteManager.GetSiteInfo(sourceSiteId);
             if (siteInfo == null) return "内容转移";
 
-            var nodeNames = ChannelManager.GetChannelNameNavigation(siteId, sourceId);
+            var nodeNames = ChannelManager.GetChannelNameNavigation(siteInfo.Id, sourceId);
             if (!string.IsNullOrEmpty(nodeNames))
             {
                 return siteInfo.SiteName + "：" + nodeNames;

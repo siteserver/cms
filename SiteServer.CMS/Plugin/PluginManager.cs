@@ -136,6 +136,8 @@ namespace SiteServer.CMS.Plugin
             {
                 if (metadata == null || type == null) return null;
 
+                if (StringUtils.EqualsIgnoreCase(metadata.Id, "SS.Home")) return null;
+
                 var s = Stopwatch.StartNew();
 
                 //var plugin = (IPlugin)Activator.CreateInstance(type);

@@ -1,5 +1,4 @@
-﻿var $apiUrl = $apiConfig.apiUrl;
-var $api = new apiUtils.Api($apiUrl + '/pages/settings/userHome');
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/userHome');
 
 var data = {
   pageLoad: false,
@@ -42,7 +41,7 @@ var methods = {
       $this.isUserRegistrationGroup = res.value.isUserRegistrationGroup;
       $this.isHomeAgreement = res.value.isHomeAgreement;
       $this.homeAgreementHtml = res.value.homeAgreementHtml;
-      $this.uploadUrl = $apiUrl + '/pages/settings/userHome/upload?adminToken=' + res.adminToken;
+      $this.uploadUrl = apiUrl + '/pages/settings/userHome/upload?adminToken=' + res.adminToken;
       $this.styles = res.styles;
 
       $this.pageType = 'list';

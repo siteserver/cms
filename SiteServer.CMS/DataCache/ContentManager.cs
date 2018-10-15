@@ -1,10 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
+using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.DataCache
@@ -274,6 +279,169 @@ namespace SiteServer.CMS.DataCache
             dict[tableName] = countList;
 
             return countList;
+        }
+
+        public static List<ContentColumn> GetContentColumns(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll)
+        {
+            var columns = new List<ContentColumn>();
+
+            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.Additional.ContentAttributesOfDisplay);
+            var pluginColumns = PluginContentManager.GetContentColumns(channelInfo);
+
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo));
+
+            styleInfoList.Insert(0, new TableStyleInfo
+            {
+                AttributeName = ContentAttribute.Sequence,
+                DisplayName = "序号"
+            });
+
+            foreach (var styleInfo in styleInfoList)
+            {
+                if (styleInfo.InputType == InputType.TextEditor) continue;
+
+                var column = new ContentColumn
+                {
+                    AttributeName = styleInfo.AttributeName,
+                    DisplayName = styleInfo.DisplayName,
+                    InputType = styleInfo.InputType
+                };
+                if (styleInfo.AttributeName == ContentAttribute.Title)
+                {
+                    column.IsList = true;
+                }
+                else
+                {
+                    if (attributesOfDisplay.Contains(styleInfo.AttributeName))
+                    {
+                        column.IsList = true;
+                    }
+                }
+
+                if (StringUtils.ContainsIgnoreCase(ContentAttribute.CalculateAttributes.Value, styleInfo.AttributeName))
+                {
+                    column.IsCalculate = true;
+                }
+
+                if (includeAll || column.IsList)
+                {
+                    columns.Add(column);
+                }
+            }
+
+            if (pluginColumns != null)
+            {
+                foreach (var pluginId in pluginColumns.Keys)
+                {
+                    var contentColumns = pluginColumns[pluginId];
+                    if (contentColumns == null || contentColumns.Count == 0) continue;
+
+                    foreach (var columnName in contentColumns.Keys)
+                    {
+                        var attributeName = $"{pluginId}:{columnName}";
+                        var column = new ContentColumn
+                        {
+                            AttributeName = attributeName,
+                            DisplayName = $"{columnName}({pluginId})",
+                            InputType = InputType.Text,
+                            IsCalculate = true
+                        };
+
+                        if (attributesOfDisplay.Contains(attributeName))
+                        {
+                            column.IsList = true;
+                        }
+
+                        if (includeAll || column.IsList)
+                        {
+                            columns.Add(column);
+                        }
+                    }
+                }
+            }
+
+            return columns;
+        }
+
+        public static ContentInfo Calculate(int sequence, ContentInfo contentInfo, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
+        {
+            if (contentInfo == null) return null;
+
+            var retval = new ContentInfo(contentInfo.ToDictionary());
+
+            foreach (var column in columns)
+            {
+                if (!column.IsCalculate) continue;
+
+                if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.Sequence))
+                {
+                    retval.Set(ContentAttribute.Sequence, sequence);
+                }
+                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.AdminId))
+                {
+                    var value = string.Empty;
+                    if (contentInfo.AdminId > 0)
+                    {
+                        var adminInfo = AdminManager.GetAdminInfoByUserId(contentInfo.AdminId);
+                        if (adminInfo != null)
+                        {
+                            value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
+                        }
+                    }
+                    retval.Set(ContentAttribute.AdminId, value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.UserId))
+                {
+                    var value = string.Empty;
+                    if (contentInfo.UserId > 0)
+                    {
+                        var userInfo = UserManager.GetUserInfoByUserId(contentInfo.UserId);
+                        if (userInfo != null)
+                        {
+                            value = string.IsNullOrEmpty(userInfo.DisplayName) ? userInfo.UserName : userInfo.DisplayName;
+                        }
+                    }
+                    retval.Set(ContentAttribute.UserId, value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.SourceId))
+                {
+                    retval.Set(ContentAttribute.SourceId, SourceManager.GetSourceName(contentInfo.SourceId));
+                }
+            }
+
+            if (pluginColumns != null)
+            {
+                foreach (var pluginId in pluginColumns.Keys)
+                {
+                    var contentColumns = pluginColumns[pluginId];
+                    if (contentColumns == null || contentColumns.Count == 0) continue;
+
+                    foreach (var columnName in contentColumns.Keys)
+                    {
+                        var attributeName = $"{pluginId}:{columnName}";
+                        if (columns.All(x => x.AttributeName != attributeName)) continue;
+
+                        try
+                        {
+                            var func = contentColumns[columnName];
+                            var value = func(new ContentContextImpl
+                            {
+                                SiteId = contentInfo.SiteId,
+                                ChannelId = contentInfo.ChannelId,
+                                ContentId = contentInfo.Id
+                            });
+
+                            retval.Set(attributeName, value);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogUtils.AddErrorLog(pluginId, ex);
+                        }
+                    }
+                }
+            }
+
+            return retval;
         }
     }
 }

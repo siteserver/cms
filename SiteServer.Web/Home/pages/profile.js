@@ -85,9 +85,9 @@ var methods = {
       payload[style.attributeName] = style.value;
     }
 
-    pageUtils.loading(true);
+    parent.pageUtils.loading(true);
     new apiUtils.Api(apiUrl + '/v1/users/' + this.pageUser.id).put(payload, function (err, res) {
-      pageUtils.loading(false);
+      parent.pageUtils.loading(false);
 
       if (err) {
         $this.pageAlert = {

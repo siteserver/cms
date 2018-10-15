@@ -9,7 +9,6 @@ using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
@@ -159,7 +158,6 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
                 var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
                 var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
-                checkedLevel = isChecked ? 0 : checkedLevel;
 
                 var contentIdList = new List<int>();
 
@@ -167,7 +165,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 {
                     if (string.IsNullOrEmpty(fileName)) continue;
 
-                    var formCollection = WordUtils.GetWordNameValueCollection(siteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, checkedLevel, fileName);
+                    var formCollection = WordUtils.GetWordNameValueCollection(siteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
 
                     if (string.IsNullOrEmpty(formCollection[ContentAttribute.Title])) continue;
 

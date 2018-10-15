@@ -1,6 +1,5 @@
-﻿var $apiUrl = $apiConfig.innerApiUrl;
-var $api = new apiUtils.Api($apiUrl + '/pages/cms/create');
-var $apiAll = new apiUtils.Api($apiUrl + '/pages/cms/create/all');
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/create');
+var $apiAll = new apiUtils.Api(apiUrl + '/pages/cms/create/all');
 var $siteId = parseInt(pageUtils.getQueryStringByName('siteId'));
 var $type = pageUtils.getQueryStringByName('type');
 

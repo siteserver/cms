@@ -489,6 +489,30 @@ SELECT * FROM (
             return retval;
         }
 
+        public static string GetDropColumnsSqlString(string tableName, string columnName)
+        {
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                retval = $"ALTER TABLE `{tableName}` DROP COLUMN `{columnName}`";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"ALTER TABLE [{tableName}] DROP COLUMN [{columnName}]";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"ALTER TABLE {tableName} DROP COLUMN {columnName}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"ALTER TABLE {tableName} DROP COLUMN {columnName}";
+            }
+
+            return retval;
+        }
+
         public static string GetAutoIncrementDataType(bool alterTable = false)
         {
             var retval = string.Empty;

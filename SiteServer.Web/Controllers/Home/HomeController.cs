@@ -132,6 +132,8 @@ namespace SiteServer.API.Controllers.Home
         public object GetContents(RequestImpl request)
         {
             var requestSiteId = request.SiteId;
+            var requestChannelId = request.ChannelId;
+
             var sites = new List<object>();
             var channels = new List<object>();
             object site = null;
@@ -168,7 +170,7 @@ namespace SiteServer.API.Controllers.Home
                     foreach (var permissionChannelId in channelIdList)
                     {
                         var permissionChannelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, permissionChannelId);
-                        if (channelInfo == null)
+                        if (channelInfo == null || requestChannelId == permissionChannelId)
                         {
                             channelInfo = permissionChannelInfo;
                         }

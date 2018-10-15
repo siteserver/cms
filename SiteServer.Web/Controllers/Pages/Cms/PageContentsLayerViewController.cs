@@ -47,7 +47,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var channelName = ChannelManager.GetChannelNameNavigation(siteId, channelId);
 
-                var attributes = ChannelManager.GetContentAttributesToList(siteInfo, channelInfo, true);
+                var attributes = ChannelManager.GetContentsColumns(siteInfo, channelInfo, true);
 
                 return Ok(new
                 {

@@ -40,13 +40,13 @@ namespace SiteServer.BackgroundPages.Cms
 
         protected override bool IsSinglePage => true;
 
-        //public static string GetRedirectUrl(int siteId, int channelId)
-        //{
-        //    return PageUtils.GetCmsUrl(siteId, nameof(PageContent), new NameValueCollection
-        //    {
-        //        {"channelId", channelId.ToString()}
-        //    });
-        //}
+        public static string GetRedirectUrl(int siteId, int channelId)
+        {
+            return PageUtils.GetCmsUrl(siteId, nameof(PageContent), new NameValueCollection
+            {
+                {"channelId", channelId.ToString()}
+            });
+        }
 
         public void Page_Load(object sender, EventArgs e)
         {

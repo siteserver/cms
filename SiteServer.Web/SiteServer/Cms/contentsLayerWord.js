@@ -1,6 +1,5 @@
-﻿var $apiUrl = $apiConfig.apiUrl;
-var $api = new apiUtils.Api($apiUrl + '/pages/cms/contentsLayerWord');
-var $uploadUrl = $apiUrl + '/pages/cms/contentsLayerWord';
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerWord');
+var $uploadUrl = apiUrl + '/pages/cms/contentsLayerWord';
 
 var data = {
   siteId: parseInt(pageUtils.getQueryStringByName('siteId')),

@@ -88,12 +88,12 @@ var methods = {
 
     this.$validator.validate("account.*").then(function (result) {
       if (result) {
-        pageUtils.loading(true);
+        parent.pageUtils.loading(true);
         new apiUtils.Api(apiUrl + '/v1/users/' + $this.pageUser.id).put({
           mobile: $this.mobile,
           email: $this.email
         }, function (err, res) {
-          pageUtils.loading(false);
+          parent.pageUtils.loading(false);
 
           if (err) {
             $this.accountAlertType = "danger";
@@ -115,12 +115,12 @@ var methods = {
 
     this.$validator.validate("password.*").then(function (result) {
       if (result) {
-        pageUtils.loading(true);
+        parent.pageUtils.loading(true);
         new apiUtils.Api(apiUrl + '/v1/users/' + $this.pageUser.id + '/actions/resetPassword').post({
           password: $this.oldPassword,
           newPassword: $this.newPassword
         }, function (err, res) {
-          pageUtils.loading(false);
+          parent.pageUtils.loading(false);
 
           if (err) {
             $this.passwordAlertType = "danger";
@@ -162,11 +162,11 @@ var methods = {
       dangerMode: true
     }).then(function (willDelete) {
       if (willDelete) {
-        pageUtils.loading(true);
+        parent.pageUtils.loading(true);
         $this.deleteAlertMessage = "";
 
         new apiUtils.Api(apiUrl + '/v1/users/' + $this.pageUser.id).delete(null, function (err, res) {
-          pageUtils.loading(false);
+          parent.pageUtils.loading(false);
 
           if (err) {
             $this.deleteAlertMessage = error.response.data.message;

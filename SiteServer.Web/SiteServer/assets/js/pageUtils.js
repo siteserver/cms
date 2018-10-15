@@ -7,6 +7,14 @@ var pageUtils = {
     return decodeURIComponent(result[1]);
   },
 
+  getQueryString: function (name) {
+    var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
+    if (!result || result.length < 1) {
+      return "";
+    }
+    return decodeURIComponent(result[1]);
+  },
+
   loading: function (isLoading) {
     if (isLoading) {
       return layer.load(1, {

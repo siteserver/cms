@@ -296,6 +296,11 @@ namespace SiteServer.CMS.Plugin.Impl
             return TranslateUtils.ToBool(PostData[name]?.ToString(), defaultValue);
         }
 
+        public DateTime GetPostDateTime(string name)
+        {
+            return Convert.ToDateTime(PostData[name]);
+        }
+
         public NameValueCollection GetPostCollection()
         {
             var formCollection = new NameValueCollection();
@@ -317,6 +322,11 @@ namespace SiteServer.CMS.Plugin.Impl
         public void AddSiteLog(int siteId, string action, string summary)
         {
             AddSiteLog(siteId, 0, 0, action, summary);
+        }
+
+        public void AddSiteLog(int siteId, int channelId, string action, string summary)
+        {
+            LogUtils.AddSiteLog(siteId, channelId, 0, AdminName, action, summary);
         }
 
         public void AddSiteLog(int siteId, int channelId, int contentId, string action, string summary)

@@ -10,8 +10,9 @@ namespace SiteServer.CMS.Model.Attributes
         public const string SiteId = nameof(ContentInfo.SiteId);
         public const string AddUserName = nameof(ContentInfo.AddUserName);
         public const string LastEditUserName = nameof(ContentInfo.LastEditUserName);
-        public const string WritingUserName = nameof(ContentInfo.WritingUserName);
         public const string LastEditDate = nameof(ContentInfo.LastEditDate);
+        public const string AdminId = nameof(ContentInfo.AdminId);
+        public const string UserId = nameof(ContentInfo.UserId);
         public const string Taxis = nameof(ContentInfo.Taxis);
         public const string GroupNameCollection = nameof(ContentInfo.GroupNameCollection);
         public const string Tags = nameof(ContentInfo.Tags);
@@ -62,8 +63,9 @@ namespace SiteServer.CMS.Model.Attributes
             SiteId,
             AddUserName,
             LastEditUserName,
-            WritingUserName,
             LastEditDate,
+            AdminId,
+            UserId,
             Taxis,
             GroupNameCollection,
             Tags,
@@ -93,8 +95,9 @@ namespace SiteServer.CMS.Model.Attributes
             SiteId,
             AddUserName,
             LastEditUserName,
-            WritingUserName,
             LastEditDate,
+            AdminId,
+            UserId,
             Taxis,
             GroupNameCollection,
             Tags,
@@ -131,6 +134,22 @@ namespace SiteServer.CMS.Model.Attributes
         public static readonly Lazy<List<string>> ExcludedAttributes = new Lazy<List<string>>(() => new List<string>
         {
             SettingsXml
+        });
+
+        public static readonly Lazy<List<string>> CalculateAttributes = new Lazy<List<string>>(() => new List<string>
+        {
+            Sequence,
+            AdminId,
+            UserId,
+            SourceId
+        });
+
+        public static readonly Lazy<List<string>> DropAttributes = new Lazy<List<string>>(() => new List<string>
+        {
+            "WritingUserName",
+            "ConsumePoint",
+            "Comments",
+            "Reply"
         });
     }
 }

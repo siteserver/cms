@@ -1,5 +1,4 @@
-﻿var $apiUrl = $apiConfig.apiUrl;
-var $api = new apiUtils.Api($apiUrl + '/pages/shared/tableValidate');
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/shared/tableValidate');
 
 var data = {
   allRules: [{

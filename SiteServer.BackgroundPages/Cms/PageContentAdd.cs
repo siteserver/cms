@@ -179,7 +179,7 @@ namespace SiteServer.BackgroundPages.Cms
                         var contentLevel = AuthRequest.GetQueryInt("contentLevel");
                         var fileName = AuthRequest.GetQueryString("fileName");
 
-                        var formCollection = WordUtils.GetWordNameValueCollection(SiteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, contentLevel, fileName);
+                        var formCollection = WordUtils.GetWordNameValueCollection(SiteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
                         attributes.Load(formCollection);
 
                         TbTitle.Text = formCollection[ContentAttribute.Title];

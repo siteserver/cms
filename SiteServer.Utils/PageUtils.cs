@@ -856,6 +856,11 @@ namespace SiteServer.Utils
             return Combine(ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, relatedUrl);
         }
 
+        public static string GetTemporaryFilesUrl(string relatedUrl)
+        {
+            return Combine(ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedUrl);
+        }
+
         public static string GetSiteTemplatesUrl(string relatedUrl)
         {
             return Combine(ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteTemplates.DirectoryName, relatedUrl);
