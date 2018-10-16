@@ -31,6 +31,11 @@ namespace SiteServer.Utils
             public const string DirectoryName = "SiteServer";
         }
 
+        public static class Home
+        {
+            public const string DirectoryName = "Home";
+        }
+
         public static class SiteFiles
         {
             public const string DirectoryName = "SiteFiles";

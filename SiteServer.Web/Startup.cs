@@ -3,7 +3,12 @@ using System.Web.Http;
 using Microsoft.Owin;
 using Owin;
 using SiteServer.API;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Apis;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 
 [assembly: OwinStartup(typeof(Startup))]
 

@@ -9,14 +9,12 @@ namespace SiteServer.CMS.Plugin.Apis
 {
     public class PluginApi : IPluginApi
     {
-        private readonly IMetadata _metadata;
+        private PluginApi() { }
 
-        public PluginApi(IMetadata metadata)
-        {
-            _metadata = metadata;
-        }
+        private static PluginApi _instance;
+        public static PluginApi Instance => _instance ?? (_instance = new PluginApi());
 
-        public string GetPluginUrl(string relatedUrl = "")
+        public string GetPluginUrl(string pluginId, string relatedUrl = "")
         {
             if (string.IsNullOrEmpty(relatedUrl)) return string.Empty;
 
@@ -32,14 +30,17 @@ namespace SiteServer.CMS.Plugin.Apis
                 return PageUtils.GetAdminDirectoryUrl(relatedUrl.Substring(1));
             }
 
-            return PageUtility.GetSiteFilesUrl(ApiManager.ApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
+            return PageUtility.GetSiteFilesUrl(ApiManager.ApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, relatedUrl));
         }
 
-        public string PluginApiUrl => ApiManager.GetApiUrl($"plugins/{_metadata.Id}");
-
-        public string GetPluginPath(string relatedPath = "")
+        public string GetPluginApiUrl(string pluginId)
         {
-            var path = PathUtils.Combine(PathUtils.GetPluginPath(_metadata.Id), relatedPath);
+            return ApiManager.GetApiUrl($"plugins/{pluginId}");
+        }
+
+        public string GetPluginPath(string pluginId, string relatedPath = "")
+        {
+            var path = PathUtils.Combine(PathUtils.GetPluginPath(pluginId), relatedPath);
             DirectoryUtils.CreateDirectoryIfNotExists(path);
             return path;
         }

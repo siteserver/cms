@@ -26,7 +26,6 @@ namespace SiteServer.CMS.Plugin
 
             private static SortedList<string, PluginInstance> Load()
             {
-                Environment = new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath);
                 var dict = new SortedList<string, PluginInstance>();
 
                 Thread.Sleep(2000);
@@ -143,19 +142,7 @@ namespace SiteServer.CMS.Plugin
                 //var plugin = (IPlugin)Activator.CreateInstance(type);
 
                 var plugin = (PluginBase)Activator.CreateInstance(type);
-                plugin.Initialize(metadata, Environment, new ApiCollectionImpl
-                {
-                    AdminApi = AdminApi.Instance,
-                    ConfigApi = new ConfigApi(metadata),
-                    ContentApi = ContentApi.Instance,
-                    DatabaseApi = DataProvider.DatabaseApi,
-                    ChannelApi = ChannelApi.Instance,
-                    ParseApi = ParseApi.Instance,
-                    PluginApi = new PluginApi(metadata),
-                    SiteApi = SiteApi.Instance,
-                    UserApi = UserApi.Instance,
-                    UtilsApi = UtilsApi.Instance
-                });
+                plugin.Initialize(metadata);
 
                 var service = new ServiceImpl(metadata);
 
@@ -191,14 +178,26 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        public static EnvironmentImpl Environment { get; private set; }
-
         private static List<PluginInstance> _pluginInfoListRunnable;
 
         public static void LoadPlugins(string applicationPhysicalPath)
         {
             WebConfigUtils.Load(applicationPhysicalPath);
             _pluginInfoListRunnable = PluginInfoListRunnable;
+
+            PluginContext.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath), new ApiCollectionImpl
+            {
+                AdminApi = AdminApi.Instance,
+                ConfigApi = ConfigApi.Instance,
+                ContentApi = ContentApi.Instance,
+                DatabaseApi = DataProvider.DatabaseApi,
+                ChannelApi = ChannelApi.Instance,
+                ParseApi = ParseApi.Instance,
+                PluginApi = PluginApi.Instance,
+                SiteApi = SiteApi.Instance,
+                UserApi = UserApi.Instance,
+                UtilsApi = UtilsApi.Instance
+            });
         }
 
         public static void ClearCache()

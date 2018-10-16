@@ -199,6 +199,12 @@ namespace SiteServer.Utils
             return Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory, relatedPath);
         }
 
+        public static string GetHomeDirectoryPath(string relatedPath)
+        {
+            relatedPath = RemoveParentPath(relatedPath);
+            return Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.HomeDirectory, relatedPath);
+        }
+
         public static string PluginsPath => GetSiteFilesPath(DirectoryUtils.SiteFiles.Plugins);
 
         public static string GetPluginPath(string pluginId, params string[] paths)
