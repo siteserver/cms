@@ -6,14 +6,14 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Api.V1
 {
-    public class OResponse
+    public class PageResponse
     {
         private int? _count;
         private int? _top;
         private int? _skip;
         private string _rowUrl;
 
-        public OResponse(object value, int top, int skip, string rowUrl)
+        public PageResponse(object value, int top, int skip, string rowUrl)
         {
             Value = value;
             _top = top;

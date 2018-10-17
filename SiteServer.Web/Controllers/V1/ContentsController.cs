@@ -376,7 +376,7 @@ namespace SiteServer.API.Controllers.V1
                     }
                 }
 
-                return Ok(new OResponse(value, top, skip, request.HttpRequest.Url.AbsoluteUri) {Count = count});
+                return Ok(new PageResponse(value, top, skip, request.HttpRequest.Url.AbsoluteUri) {Count = count});
             }
             catch (Exception ex)
             {
@@ -438,7 +438,7 @@ namespace SiteServer.API.Controllers.V1
                     }
                 }
 
-                return Ok(new OResponse(value, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
+                return Ok(new PageResponse(value, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
             }
             catch (Exception ex)
             {

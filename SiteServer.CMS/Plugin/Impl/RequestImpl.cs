@@ -89,7 +89,6 @@ namespace SiteServer.CMS.Plugin.Impl
         }
 
         public bool IsApiAuthenticated { get; }
-        public bool IsApiAuthorized { get; }
 
         public bool IsUserLoggin { get; }
 

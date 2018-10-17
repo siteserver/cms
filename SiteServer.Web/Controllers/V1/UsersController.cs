@@ -242,7 +242,7 @@ namespace SiteServer.API.Controllers.V1
                 var users = DataProvider.UserDao.GetUsers(skip, top);
                 var count = DataProvider.UserDao.GetCount();
 
-                return Ok(new OResponse(users, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
+                return Ok(new PageResponse(users, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
             }
             catch (Exception ex)
             {
@@ -365,7 +365,7 @@ namespace SiteServer.API.Controllers.V1
 
                 var logs = DataProvider.UserLogDao.ApiGetLogs(userInfo.UserName, skip, top);
 
-                return Ok(new OResponse(logs, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = DataProvider.UserDao.GetCount() });
+                return Ok(new PageResponse(logs, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = DataProvider.UserDao.GetCount() });
             }
             catch (Exception ex)
             {

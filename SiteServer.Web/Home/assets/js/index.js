@@ -4,18 +4,20 @@ new Vue({
     pageUser: null,
     pageConfig: null,
     pageMenus: null,
+    defaultPageUrl: null,
 
-    pageUrl: "pages/dashboard.html",
+    pageUrl: null,
     elTopnav: null,
     elFrmMain: null,
     avatarUrl: null
   },
   methods: {
-    load: function (pageUser, pageConfig, pageMenus) {
+    load: function (pageUser, pageConfig, pageMenus, defaultPageUrl) {
       var $this = this;
       this.pageUser = pageUser;
       this.pageConfig = pageConfig;
       this.pageMenus = pageMenus;
+      this.defaultPageUrl = defaultPageUrl;
 
       this.avatarUrl = this.pageUser.avatarUrl || this.pageConfig.homeDefaultAvatarUrl || 'assets/images/default_avatar.png';
       this.pageUrl = this.getPageUrl();
@@ -62,7 +64,7 @@ new Vue({
       if (location.hash && location.hash.length > 1) {
         return location.hash.substr(1, location.hash.length - 1);
       } else {
-        return 'pages/dashboard.html';
+        return this.defaultPageUrl || 'pages/dashboard.html';
       }
     }
   },
@@ -71,7 +73,7 @@ new Vue({
     utils.getConfig('index', function (res) {
       console.log(res);
       if (res.value) {
-        $this.load(res.value, res.config, res.menus);
+        $this.load(res.value, res.config, res.menus, res.defaultPageUrl);
       } else {
         location.href = 'pages/login.html';
       }

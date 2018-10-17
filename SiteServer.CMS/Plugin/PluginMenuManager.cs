@@ -11,19 +11,63 @@ namespace SiteServer.CMS.Plugin
 {
     public static class PluginMenuManager
     {
+        public static string GetSystemDefaultPageUrl()
+        {
+            string pageUrl = null;
+
+            foreach (var service in PluginManager.Services)
+            {
+                if (service.SystemDefaultPageUrl == null) continue;
+
+                try
+                {
+                    pageUrl = GetMenuHref(service.PluginId, service.SystemDefaultPageUrl, 0);
+                }
+                catch (Exception ex)
+                {
+                    LogUtils.AddErrorLog(service.PluginId, ex);
+                }
+            }
+
+            return pageUrl;
+        }
+
+        public static string GetHomeDefaultPageUrl()
+        {
+            string pageUrl = null;
+
+            foreach (var service in PluginManager.Services)
+            {
+                if (service.SystemDefaultPageUrl == null) continue;
+
+                try
+                {
+                    pageUrl = GetMenuHref(service.PluginId, service.HomeDefaultPageUrl, 0);
+                }
+                catch (Exception ex)
+                {
+                    LogUtils.AddErrorLog(service.PluginId, ex);
+                }
+            }
+
+            return pageUrl;
+        }
+
         public static Dictionary<string, Menu> GetTopMenus()
         {
             var menus = new Dictionary<string, Menu>();
 
             foreach (var service in PluginManager.Services)
             {
-                if (service.PluginMenu == null) continue;
+                if (service.SystemMenus == null) continue;
 
                 try
                 {
-                    var pluginMenu = GetMenu(service.PluginId, 0, service.PluginMenu, 0);
-
-                    menus.Add(service.PluginId, pluginMenu);
+                    foreach (var systemMenu in service.SystemMenus)
+                    {
+                        var pluginMenu = GetMenu(service.PluginId, 0, systemMenu, 0);
+                        menus.Add(service.PluginId, pluginMenu);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -40,23 +84,32 @@ namespace SiteServer.CMS.Plugin
 
             foreach (var service in PluginManager.Services)
             {
-                if (service.SiteMenuFunc == null) continue;
+                if (service.SiteMenuFuncs == null) continue;
 
-                Menu metadataMenu = null;
+                var metadataMenus = new List<Menu>();
                 try
                 {
-                    metadataMenu = service.SiteMenuFunc.Invoke(siteId);
+                    foreach (var menuFunc in service.SiteMenuFuncs)
+                    {
+                        var metadataMenu = menuFunc.Invoke(siteId);
+                        if (metadataMenu != null)
+                        {
+                            metadataMenus.Add(metadataMenu);
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
                     LogUtils.AddErrorLog(service.PluginId, ex);
                 }
 
-                if (metadataMenu == null) continue;
+                if (metadataMenus.Count == 0) continue;
 
-                var pluginMenu = GetMenu(service.PluginId, siteId, metadataMenu, 0);
-
-                menus.Add(service.PluginId, pluginMenu);
+                foreach (var metadataMenu in metadataMenus)
+                {
+                    var pluginMenu = GetMenu(service.PluginId, siteId, metadataMenu, 0);
+                    menus.Add(service.PluginId, pluginMenu);
+                }
             }
 
             return menus;
@@ -160,7 +213,7 @@ namespace SiteServer.CMS.Plugin
 
             foreach (var service in PluginManager.Services)
             {
-                if (service.PluginMenu != null)
+                if (service.SystemMenus != null)
                 {
                     permissions.Add(new PermissionConfigManager.PermissionConfig(service.PluginId, $"系统管理 -> {service.Metadata.Title}（插件）"));
                 }
@@ -175,7 +228,7 @@ namespace SiteServer.CMS.Plugin
 
             foreach (var service in PluginManager.Services)
             {
-                if (service.SiteMenuFunc != null)
+                if (service.SiteMenuFuncs != null)
                 {
                     permissions.Add(new PermissionConfigManager.PermissionConfig(service.PluginId, $"{service.Metadata.Title}"));
                 }

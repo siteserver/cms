@@ -74,9 +74,7 @@ namespace SiteServer.API.Controllers.Home
                 }
 
                 var fileName = request.HttpRequest["fileName"];
-
                 var fileCount = request.HttpRequest.Files.Count;
-
                 string filePath = null;
 
                 if (fileCount > 0)
@@ -89,6 +87,7 @@ namespace SiteServer.API.Controllers.Home
                     if (extendName == ".zip" || extendName == ".csv" || extendName == ".txt")
                     {
                         filePath = PathUtils.GetTemporaryFilesPath(fileName);
+                        DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                         file.SaveAs(filePath);
                     }
                 }

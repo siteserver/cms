@@ -89,6 +89,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     if (extendName == ".zip" || extendName == ".csv" || extendName == ".txt")
                     {
                         filePath = PathUtils.GetTemporaryFilesPath(fileName);
+                        DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                         file.SaveAs(filePath);
                     }
                 }

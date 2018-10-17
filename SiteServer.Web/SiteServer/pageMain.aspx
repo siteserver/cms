@@ -137,7 +137,7 @@
     </div>
 
     <div class="content-page" id="content">
-      <iframe id="frmMain" frameborder="0" id="right" name="right" src="dashboard.cshtml" style="width:100%; height: 100%"></iframe>
+      <iframe id="frmMain" frameborder="0" id="right" name="right" src="<%=DefaultPageUrl%>" style="width:100%; height: 100%"></iframe>
     </div>
   </div>
 </body>

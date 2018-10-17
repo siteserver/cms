@@ -133,7 +133,7 @@
       <td class="text-center text-nowrap" style="min-width: 80px">
         <a :href="'pageContentAdd.aspx?siteId=' + siteId + '&channelId=' + channelId + '&id=' + content.id" onclick="event.stopPropagation()">编辑</a>
 
-        <a v-for="menu in menus" :href="getMenuHref(menu, content)" onclick="btnMenuClick(menu, content)" :target="menu.target"
+        <a v-for="menu in menus" :href="getMenuHref(menu, content)" v-on:click="btnMenuClick(menu, content)" :target="menu.target"
           class="m-l-5">
           {{ menu.text }}
         </a>

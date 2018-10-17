@@ -12,8 +12,11 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public IMetadata Metadata { get; }
 
-        public Menu PluginMenu { get; private set; }
-        public Func<int, Menu> SiteMenuFunc { get; private set; }
+        public string SystemDefaultPageUrl { get; private set; }
+        public string HomeDefaultPageUrl { get; private set; }
+        public List<Menu> SystemMenus { get; private set; }
+        public List<Func<int, Menu>> SiteMenuFuncs { get; private set; }
+        public List<Menu> HomeMenus { get; private set; }
         public string ContentTableName { get; private set; }
         public bool IsApiAuthorization { get; private set; }
 
@@ -68,15 +71,45 @@ namespace SiteServer.CMS.Plugin.Impl
             Metadata = metadata;
         }
 
+        public IService SetSystemDefaltPage(string pageUrl)
+        {
+            SystemDefaultPageUrl = pageUrl;
+            return this;
+        }
+
+        public IService SetHomeDefaultPage(string pageUrl)
+        {
+            HomeDefaultPageUrl = pageUrl;
+            return this;
+        }
+
         public IService AddSystemMenu(Menu menu)
         {
-            PluginMenu = menu;
+            if (SystemMenus == null)
+            {
+                SystemMenus = new List<Menu>();
+            }
+            SystemMenus.Add(menu);
             return this;
         }
 
         public IService AddSiteMenu(Func<int, Menu> siteMenuFunc)
         {
-            SiteMenuFunc = siteMenuFunc;
+            if (SiteMenuFuncs == null)
+            {
+                SiteMenuFuncs = new List<Func<int, Menu>>();
+            }
+            SiteMenuFuncs.Add(siteMenuFunc);
+            return this;
+        }
+
+        public IService AddHomeMenu(Menu menu)
+        {
+            if (HomeMenus == null)
+            {
+                HomeMenus = new List<Menu>();
+            }
+            HomeMenus.Add(menu);
             return this;
         }
 

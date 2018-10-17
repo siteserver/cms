@@ -141,7 +141,7 @@ namespace SiteServer.API.Controllers.V1
                 var administrators = DataProvider.AdministratorDao.ApiGetAdministrators(skip, top);
                 var count = DataProvider.AdministratorDao.ApiGetCount();
 
-                return Ok(new OResponse(administrators, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
+                return Ok(new PageResponse(administrators, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
             }
             catch (Exception ex)
             {

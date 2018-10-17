@@ -4,6 +4,7 @@ using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
@@ -76,6 +77,8 @@ namespace SiteServer.API.Controllers.Home
         public object GetIndex(RequestImpl request)
         {
             var menus = new List<object>();
+            var defaultPageUrl = string.Empty;
+
             if (request.IsUserLoggin)
             {
                 var userMenus = UserMenuManager.GetAllUserMenuInfoList();
@@ -109,13 +112,16 @@ namespace SiteServer.API.Controllers.Home
                         Menus = children
                     });
                 }
+
+                defaultPageUrl = PluginMenuManager.GetSystemDefaultPageUrl();
             }
 
             return new
             {
                 Value = request.UserInfo,
                 Config = ConfigManager.Instance.SystemConfigInfo,
-                Menus = menus
+                Menus = menus,
+                DefaultPageUrl = defaultPageUrl
             };
         }
 
