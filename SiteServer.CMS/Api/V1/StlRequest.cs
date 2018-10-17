@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Plugin;
@@ -25,8 +23,8 @@ namespace SiteServer.CMS.Api.V1
 
         public StlRequest()
         {
-            Request = new RequestImpl(AccessTokenManager.ScopeStl);
-            IsApiAuthorized = Request.IsApiAuthorized;
+            Request = new RequestImpl();
+            IsApiAuthorized = Request.IsApiAuthenticated && AccessTokenManager.IsScope(Request.ApiToken, AccessTokenManager.ScopeStl);
 
             if (!IsApiAuthorized) return;
 

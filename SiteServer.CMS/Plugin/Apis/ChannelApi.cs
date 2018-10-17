@@ -100,7 +100,8 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public void Update(int siteId, IChannelInfo channelInfo)
         {
-            DataProvider.ChannelDao.Update(channelInfo);
+            if (channelInfo == null) return;
+            DataProvider.ChannelDao.Update((ChannelInfo)channelInfo);
         }
 
         public void Delete(int siteId, int channelId)

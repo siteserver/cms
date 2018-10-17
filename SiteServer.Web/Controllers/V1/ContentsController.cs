@@ -113,7 +113,10 @@ namespace SiteServer.API.Controllers.V1
                 request.AddSiteLog(siteId, channelId, contentInfo.Id, "添加内容",
                     $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
-                return Ok(new OResponse(contentInfo.ToDictionary()));
+                return Ok(new
+                {
+                    Value = contentInfo
+                });
             }
             catch (Exception ex)
             {
@@ -155,7 +158,6 @@ namespace SiteServer.API.Controllers.V1
 
                 var attributes = request.GetPostObject<Dictionary<string, object>>();
                 if (attributes == null) return BadRequest("无法从body中获取内容实体");
-                
 
                 var adminName = request.AdminName;
 
@@ -211,7 +213,10 @@ namespace SiteServer.API.Controllers.V1
                 request.AddSiteLog(siteId, channelId, contentInfo.Id, "修改内容",
                     $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
-                return Ok(new OResponse(contentInfo.ToDictionary()));
+                return Ok(new
+                {
+                    Value = contentInfo
+                });
             }
             catch (Exception ex)
             {
@@ -225,9 +230,25 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl(AccessTokenManager.ScopeContents);
-                if (request.IsApiAuthenticated && !request.IsApiAuthorized) return Unauthorized();
-                if (!request.IsAdminLoggin) return Unauthorized();
+                var request = new RequestImpl();
+                var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
+                bool isAuth;
+                if (sourceId == SourceManager.User)
+                {
+                    isAuth = request.IsUserLoggin && request.UserPermissions.HasChannelPermissions(siteId, channelId, ConfigManager.ChannelPermissions.ContentDelete);
+                }
+                else
+                {
+                    isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
+                             request.IsUserLoggin &&
+                             request.UserPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentDelete) ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentDelete);
+                }
+                if (!isAuth) return Unauthorized();
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
@@ -245,7 +266,10 @@ namespace SiteServer.API.Controllers.V1
 
                 DataProvider.ContentDao.DeleteContent(tableName, siteInfo, channelId, id);
 
-                return Ok(new OResponse(contentInfo.ToDictionary()));
+                return Ok(new
+                {
+                    Value = contentInfo
+                });
             }
             catch (Exception ex)
             {
@@ -259,9 +283,25 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl(AccessTokenManager.ScopeContents);
-                if (request.IsApiAuthenticated && !request.IsApiAuthorized) return Unauthorized();
-                if (!request.IsAdminLoggin) return Unauthorized();
+                var request = new RequestImpl();
+                var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
+                bool isAuth;
+                if (sourceId == SourceManager.User)
+                {
+                    isAuth = request.IsUserLoggin && request.UserPermissions.HasChannelPermissions(siteId, channelId, ConfigManager.ChannelPermissions.ContentView);
+                }
+                else
+                {
+                    isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
+                             request.IsUserLoggin &&
+                             request.UserPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentView) ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentView);
+                }
+                if (!isAuth) return Unauthorized();
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
@@ -275,7 +315,10 @@ namespace SiteServer.API.Controllers.V1
                 var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
                 if (contentInfo == null) return NotFound();
 
-                return Ok(new OResponse(contentInfo.ToDictionary()));
+                return Ok(new
+                {
+                    Value = contentInfo
+                });
             }
             catch (Exception ex)
             {
@@ -289,9 +332,25 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new ORequest(AccessTokenManager.ScopeContents);
-                if (request.IsApiAuthenticated && !request.IsApiAuthorized) return Unauthorized();
-                if (!request.IsAdminLoggin) return Unauthorized();
+                var request = new RequestImpl();
+                var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
+                bool isAuth;
+                if (sourceId == SourceManager.User)
+                {
+                    isAuth = request.IsUserLoggin && request.UserPermissions.HasChannelPermissions(siteId, siteId, ConfigManager.ChannelPermissions.ContentView);
+                }
+                else
+                {
+                    isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
+                             request.IsUserLoggin &&
+                             request.UserPermissions.HasChannelPermissions(siteId, siteId,
+                                 ConfigManager.ChannelPermissions.ContentView) ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasChannelPermissions(siteId, siteId,
+                                 ConfigManager.ChannelPermissions.ContentView);
+                }
+                if (!isAuth) return Unauthorized();
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
@@ -301,7 +360,12 @@ namespace SiteServer.API.Controllers.V1
 
                 var tableName = siteInfo.TableName;
 
-                var contentIdList = DataProvider.ContentDao.ApiGetContentIdListBySiteId(tableName, siteId, request.Top, request.Skip, request.Like, request.OrderBy, request.QueryString, out var count);
+                var top = request.GetQueryInt("top", 20);
+                var skip = request.GetQueryInt("skip");
+                var like = request.GetQueryString("like");
+                var orderBy = request.GetQueryString("orderBy");
+
+                var contentIdList = DataProvider.ContentDao.ApiGetContentIdListBySiteId(tableName, siteId, top, skip, like, orderBy, request.QueryString, out var count);
                 var value = new List<Dictionary<string, object>>();
                 foreach (var tuple in contentIdList)
                 {
@@ -312,7 +376,7 @@ namespace SiteServer.API.Controllers.V1
                     }
                 }
 
-                return Ok(new OResponse(request, value) {Count = count});
+                return Ok(new OResponse(value, top, skip, request.HttpRequest.Url.AbsoluteUri) {Count = count});
             }
             catch (Exception ex)
             {
@@ -326,9 +390,25 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new ORequest(AccessTokenManager.ScopeContents);
-                if (request.IsApiAuthenticated && !request.IsApiAuthorized) return Unauthorized();
-                if (!request.IsAdminLoggin) return Unauthorized();
+                var request = new RequestImpl();
+                var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
+                bool isAuth;
+                if (sourceId == SourceManager.User)
+                {
+                    isAuth = request.IsUserLoggin && request.UserPermissions.HasChannelPermissions(siteId, channelId, ConfigManager.ChannelPermissions.ContentView);
+                }
+                else
+                {
+                    isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
+                             request.IsUserLoggin &&
+                             request.UserPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentView) ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentView);
+                }
+                if (!isAuth) return Unauthorized();
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
@@ -341,8 +421,13 @@ namespace SiteServer.API.Controllers.V1
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
+                var top = request.GetQueryInt("top", 20);
+                var skip = request.GetQueryInt("skip");
+                var like = request.GetQueryString("like");
+                var orderBy = request.GetQueryString("orderBy");
+
                 int count;
-                var contentIdList = DataProvider.ContentDao.ApiGetContentIdListByChannelId(tableName, siteId, channelId, request.Top, request.Skip, request.Like, request.OrderBy, request.QueryString, out count);
+                var contentIdList = DataProvider.ContentDao.ApiGetContentIdListByChannelId(tableName, siteId, channelId, top, skip, like, orderBy, request.QueryString, out count);
                 var value = new List<Dictionary<string, object>>();
                 foreach(var contentId in contentIdList)
                 {
@@ -353,7 +438,7 @@ namespace SiteServer.API.Controllers.V1
                     }
                 }
 
-                return Ok(new OResponse(request, value) { Count = count });
+                return Ok(new OResponse(value, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
             }
             catch (Exception ex)
             {

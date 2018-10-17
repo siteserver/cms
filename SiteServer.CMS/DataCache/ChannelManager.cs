@@ -21,18 +21,6 @@ namespace SiteServer.CMS.DataCache
         {
             private static readonly object LockObject = new object();
             private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(ChannelManager));
-            //private static readonly FileWatcherClass FileWatcher;
-
-            //static ChannelManagerCache()
-            //{
-            //    FileWatcher = new FileWatcherClass(FileWatcherClass.Channel);
-            //    FileWatcher.OnFileChange += FileWatcher_OnFileChange;
-            //}
-
-            //private static void FileWatcher_OnFileChange(object sender, EventArgs e)
-            //{
-            //    CacheManager.Remove(CacheKey);
-            //}
 
             private static void Update(Dictionary<int, Dictionary<int, ChannelInfo>> allDict, Dictionary<int, ChannelInfo> dic, int siteId)
             {
@@ -60,8 +48,16 @@ namespace SiteServer.CMS.DataCache
                 {
                     allDict.Remove(siteId);
                 }
+            }
 
-                //FileWatcher.UpdateCacheFile();
+            public static void Update(int siteId, ChannelInfo channelInfo)
+            {
+                var dict = GetChannelInfoDictionaryBySiteId(siteId);
+
+                lock (LockObject)
+                {
+                    dict[channelInfo.Id] = channelInfo;
+                }
             }
 
             public static Dictionary<int, ChannelInfo> GetChannelInfoDictionaryBySiteId(int siteId)
@@ -79,9 +75,15 @@ namespace SiteServer.CMS.DataCache
             }
         }
 
-        public static void RemoveCache(int siteId)
+        public static void RemoveCacheBySiteId(int siteId)
         {
             ChannelManagerCache.Remove(siteId);
+            StlChannelCache.ClearCache();
+        }
+
+        public static void UpdateCache(int siteId, ChannelInfo channelInfo)
+        {
+            ChannelManagerCache.Update(siteId, channelInfo);
             StlChannelCache.ClearCache();
         }
 

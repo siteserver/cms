@@ -305,16 +305,6 @@ namespace SiteServer.CMS.DataCache
             }
         }
 
-        public static void UpdateChannelTemplateId(int siteId, int channelId, int channelTemplateId)
-        {
-            DataProvider.ChannelDao.UpdateChannelTemplateId(channelId, channelTemplateId);
-        }
-
-        public static void UpdateContentTemplateId(int siteId, int channelId, int contentTemplateId)
-        {
-            DataProvider.ChannelDao.UpdateContentTemplateId(channelId, contentTemplateId);
-        }
-
         public static int GetIndexTempalteId(int siteId)
         {
             return GetDefaultTemplateId(siteId, TemplateType.IndexPageTemplate);

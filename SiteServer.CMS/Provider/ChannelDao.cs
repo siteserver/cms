@@ -309,7 +309,7 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(trans, sqlUpdateIsLastNode);
 
             //OwningIdCache.IsChanged = true;
-            ChannelManager.RemoveCache(channelInfo.SiteId);
+            ChannelManager.RemoveCacheBySiteId(channelInfo.SiteId);
             PermissionsImpl.ClearAllCache();
         }
 
@@ -691,7 +691,7 @@ namespace SiteServer.CMS.Provider
             return channelInfo.Id;
         }
 
-        public void Update(IChannelInfo channelInfo)
+        public void Update(ChannelInfo channelInfo)
         {
             var updateParms = new IDataParameter[]
             {
@@ -721,9 +721,29 @@ namespace SiteServer.CMS.Provider
 
             ExecuteNonQuery(SqlUpdate, updateParms);
 
-            ChannelManager.RemoveCache(channelInfo.ParentId == 0
-                ? channelInfo.Id
-                : channelInfo.SiteId);
+            ChannelManager.UpdateCache(channelInfo.SiteId, channelInfo);
+
+            //ChannelManager.RemoveCache(channelInfo.ParentId == 0
+            //    ? channelInfo.Id
+            //    : channelInfo.SiteId);
+        }
+
+        public void UpdateChannelTemplateId(ChannelInfo channelInfo)
+        {
+            string sqlString =
+                $"UPDATE siteserver_Channel SET ChannelTemplateId = {channelInfo.ChannelTemplateId} WHERE Id = {channelInfo.Id}";
+            ExecuteNonQuery(sqlString);
+
+            ChannelManager.UpdateCache(channelInfo.SiteId, channelInfo);
+        }
+
+        public void UpdateContentTemplateId(ChannelInfo channelInfo)
+        {
+            string sqlString =
+                $"UPDATE siteserver_Channel SET ContentTemplateId = {channelInfo.ContentTemplateId} WHERE Id = {channelInfo.Id}";
+            ExecuteNonQuery(sqlString);
+
+            ChannelManager.UpdateCache(channelInfo.SiteId, channelInfo);
         }
 
         public void UpdateAdditional(ChannelInfo channelInfo)
@@ -736,9 +756,11 @@ namespace SiteServer.CMS.Provider
 
             ExecuteNonQuery(SqlUpdateExtendValues, updateParms);
 
-            ChannelManager.RemoveCache(channelInfo.ParentId == 0
-                ? channelInfo.Id
-                : channelInfo.SiteId);
+            ChannelManager.UpdateCache(channelInfo.SiteId, channelInfo);
+
+            //ChannelManager.RemoveCache(channelInfo.ParentId == 0
+            //    ? channelInfo.Id
+            //    : channelInfo.SiteId);
         }
 
         /// <summary>
@@ -754,19 +776,7 @@ namespace SiteServer.CMS.Provider
             {
                 TaxisAdd(siteId, selectedId);
             }
-            ChannelManager.RemoveCache(siteId);
-        }
-
-        private void UpdateGroupNameCollection(int siteId, int channelId, string groupNameCollection)
-        {
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmGroupNameCollection, DataType.VarChar, 255, groupNameCollection),
-                GetParameter(ParmId, DataType.Integer, channelId)
-            };
-
-            ExecuteNonQuery(SqlUpdateGroupNameCollection, parms);
-            ChannelManager.RemoveCache(siteId);
+            ChannelManager.RemoveCacheBySiteId(siteId);
         }
 
         public void AddGroupNameList(int siteId, int channelId, List<string> groupList)
@@ -779,7 +789,18 @@ namespace SiteServer.CMS.Provider
             {
                 if (!list.Contains(groupName)) list.Add(groupName);
             }
-            UpdateGroupNameCollection(siteId, channelId, TranslateUtils.ObjectCollectionToString(list));
+
+            channelInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
+
+            var parms = new IDataParameter[]
+            {
+                GetParameter(ParmGroupNameCollection, DataType.VarChar, 255, channelInfo.GroupNameCollection),
+                GetParameter(ParmId, DataType.Integer, channelId)
+            };
+
+            ExecuteNonQuery(SqlUpdateGroupNameCollection, parms);
+
+            ChannelManager.UpdateCache(siteId, channelInfo);
         }
 
         public void Delete(int siteId, int channelId)
@@ -837,7 +858,7 @@ namespace SiteServer.CMS.Provider
             }
             else
             {
-                ChannelManager.RemoveCache(channelInfo.SiteId);
+                ChannelManager.RemoveCacheBySiteId(channelInfo.SiteId);
             }
         }
 
@@ -1107,24 +1128,6 @@ namespace SiteServer.CMS.Provider
                 $"SELECT COUNT(*) AS TotalNum FROM siteserver_Channel WHERE SiteId = {siteId} AND ParentId = {channelInfo.ParentId} AND Taxis > (SELECT Taxis FROM siteserver_Channel WHERE Id = {channelId})";
 
             return DataProvider.DatabaseDao.GetIntResult(sqlString) + 1;
-        }
-
-        public void UpdateChannelTemplateId(int channelId, int channelTemplateId)
-        {
-            string sqlString =
-                $"UPDATE siteserver_Channel SET ChannelTemplateId = {channelTemplateId} WHERE Id = {channelId}";
-            ExecuteNonQuery(sqlString);
-
-            ChannelManager.RemoveCache(channelId);
-        }
-
-        public void UpdateContentTemplateId(int channelId, int contentTemplateId)
-        {
-            string sqlString =
-                $"UPDATE siteserver_Channel SET ContentTemplateId = {contentTemplateId} WHERE Id = {channelId}";
-            ExecuteNonQuery(sqlString);
-
-            ChannelManager.RemoveCache(channelId);
         }
 
         public List<int> GetIdListByTotalNum(List<int> channelIdList, int totalNum, string orderByString, string whereString)

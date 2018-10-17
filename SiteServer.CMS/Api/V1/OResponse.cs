@@ -8,18 +8,17 @@ namespace SiteServer.CMS.Api.V1
 {
     public class OResponse
     {
-        private ORequest _request;
         private int? _count;
+        private int? _top;
+        private int? _skip;
+        private string _rowUrl;
 
-        public OResponse(object value)
+        public OResponse(object value, int top, int skip, string rowUrl)
         {
             Value = value;
-        }
-
-        public OResponse(ORequest request, object value)
-        {
-            _request = request;
-            Value = value;
+            _top = top;
+            _skip = skip;
+            _rowUrl = rowUrl;
         }
 
         [JsonProperty(PropertyName = "value")]
@@ -37,8 +36,6 @@ namespace SiteServer.CMS.Api.V1
         [JsonProperty(PropertyName = "last", NullValueHandling = NullValueHandling.Ignore)]
         public string Last { get; private set; }
 
-        
-
         [JsonProperty(PropertyName = "count", NullValueHandling = NullValueHandling.Ignore)]
         public int? Count
         {
@@ -46,45 +43,45 @@ namespace SiteServer.CMS.Api.V1
             set
             {
                 _count = value;
-                if (_request != null && _count != null)
+                if (_count != null && _top != null && _skip != null && _rowUrl != null)
                 {
-                    var url = PageUtils.RemoveQueryString(_request.RawUrl, new List<string> {"top", "skip"});
-                    var pages = Convert.ToInt32(Math.Ceiling(Convert.ToDouble((int)_count / _request.Top)));
-                    var pageIndex = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(_request.Skip / _request.Top)));
+                    var url = PageUtils.RemoveQueryString(_rowUrl, new List<string> {"top", "skip"});
+                    var pages = Convert.ToInt32(Math.Ceiling(Convert.ToDouble((int)_count / _top)));
+                    var pageIndex = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(_skip / _top)));
 
-                    if (_request.Skip > 0)
+                    if (_skip > 0)
                     {
                         First = PageUtils.AddQueryString(url,
                             new NameValueCollection
                             {
-                                {"top", _request.Top.ToString()},
+                                {"top", _top.ToString()},
                                 {"skip", "0"}
                             });
 
                         Prev = PageUtils.AddQueryString(url,
                             new NameValueCollection
                             {
-                                {"top", _request.Top.ToString()},
-                                {"skip", ((pageIndex - 1) * _request.Top).ToString()}
+                                {"top", _top.ToString()},
+                                {"skip", ((pageIndex - 1) * _top).ToString()}
                             });
                     }
 
-                    if (_request.Top + _request.Skip < _count)
+                    if (_top + _skip < _count)
                     {
                         Next =
                             PageUtils.AddQueryString(url,
                                 new NameValueCollection
                                 {
-                                    {"top", _request.Top.ToString()},
-                                    {"skip", ((pageIndex + 1) * _request.Top).ToString()}
+                                    {"top", _top.ToString()},
+                                    {"skip", ((pageIndex + 1) * _top).ToString()}
                                 });
 
                         Last =
                             PageUtils.AddQueryString(url,
                                 new NameValueCollection
                                 {
-                                    {"top", _request.Top.ToString()},
-                                    {"skip", ((pages - 1) * _request.Top).ToString()}
+                                    {"top", _top.ToString()},
+                                    {"skip", ((pages - 1) * _top).ToString()}
                                 });
                     }
                 }

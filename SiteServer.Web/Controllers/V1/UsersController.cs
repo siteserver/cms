@@ -29,7 +29,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl(AccessTokenManager.ScopeUsers);
+                var request = new RequestImpl();
                 var userInfo = new UserInfo(request.GetPostObject<Dictionary<string, object>>());
                 if (!ConfigManager.SystemConfigInfo.IsUserRegistrationGroup)
                 {
@@ -43,7 +43,10 @@ namespace SiteServer.API.Controllers.V1
                     return BadRequest(errorMessage);
                 }
 
-                return Ok(new OResponse(UserManager.GetUserInfoByUserId(userId)));
+                return Ok(new
+                {
+                    Value = UserManager.GetUserInfoByUserId(userId)
+                });
             }
             catch (Exception ex)
             {
@@ -57,8 +60,14 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl(AccessTokenManager.ScopeUsers);
-                if (!request.IsUserAuthorized(id)) return Unauthorized();
+                var request = new RequestImpl();
+                var isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             request.IsUserLoggin &&
+                             request.UserId == id ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                if (!isAuth) return Unauthorized();
 
                 var body = request.GetPostObject<Dictionary<string, object>>();
 
@@ -73,7 +82,10 @@ namespace SiteServer.API.Controllers.V1
                     return BadRequest(errorMessage);
                 }
 
-                return Ok(new OResponse(retval));
+                return Ok(new
+                {
+                    Value = retval
+                });
             }
             catch (Exception ex)
             {
@@ -87,8 +99,14 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl(AccessTokenManager.ScopeUsers);
-                if (!request.IsUserAuthorized(id)) return Unauthorized();
+                var request = new RequestImpl();
+                var isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             request.IsUserLoggin &&
+                             request.UserId == id ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                if (!isAuth) return Unauthorized();
 
                 var userInfo = UserManager.GetUserInfoByUserId(id);
                 if (userInfo == null) return NotFound();
@@ -96,7 +114,10 @@ namespace SiteServer.API.Controllers.V1
                 request.UserLogout();
                 DataProvider.UserDao.Delete(userInfo);
 
-                return Ok(new OResponse(userInfo));
+                return Ok(new
+                {
+                    Value = userInfo
+                });
             }
             catch (Exception ex)
             {
@@ -110,14 +131,23 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl(AccessTokenManager.ScopeUsers);
-                if (!request.IsUserAuthorized(id)) return Unauthorized();
+                var request = new RequestImpl();
+                var isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             request.IsUserLoggin &&
+                             request.UserId == id ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                if (!isAuth) return Unauthorized();
 
                 if (!DataProvider.UserDao.IsExists(id)) return NotFound();
 
                 var user = UserManager.GetUserInfoByUserId(id);
 
-                return Ok(new OResponse(user));
+                return Ok(new
+                {
+                    Value = user
+                });
             }
             catch (Exception ex)
             {
@@ -134,7 +164,10 @@ namespace SiteServer.API.Controllers.V1
             var avatarUrl = !string.IsNullOrEmpty(userInfo?.AvatarUrl) ? userInfo.AvatarUrl : UserManager.DefaultAvatarUrl;
             avatarUrl = PageUtils.AddProtocolToUrl(avatarUrl);
 
-            return Ok(new OResponse(avatarUrl));
+            return Ok(new
+            {
+                Value = avatarUrl
+            });
         }
 
         [HttpPost, Route(RouteUserAvatar)]
@@ -142,8 +175,14 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl(AccessTokenManager.ScopeUsers);
-                if (!request.IsUserAuthorized(id)) return Unauthorized();
+                var request = new RequestImpl();
+                var isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             request.IsUserLoggin &&
+                             request.UserId == id ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                if (!isAuth) return Unauthorized();
 
                 var userInfo = UserManager.GetUserInfoByUserId(id);
                 if (userInfo == null) return NotFound();
@@ -173,9 +212,10 @@ namespace SiteServer.API.Controllers.V1
                     DataProvider.UserDao.Update(userInfo);
                 }
 
-                var oResponse = new OResponse(userInfo);
-
-                return Ok(oResponse);
+                return Ok(new
+                {
+                    Value = userInfo
+                });
             }
             catch (Exception ex)
             {
@@ -189,13 +229,20 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new ORequest(AccessTokenManager.ScopeUsers);
-                if (!request.IsApiAuthorized) return Unauthorized();
+                var request = new RequestImpl();
+                var isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                if (!isAuth) return Unauthorized();
 
-                var users = DataProvider.UserDao.GetUsers(request.Skip, request.Top);
+                var top = request.GetQueryInt("top", 20);
+                var skip = request.GetQueryInt("skip");
+
+                var users = DataProvider.UserDao.GetUsers(skip, top);
                 var count = DataProvider.UserDao.GetCount();
 
-                return Ok(new OResponse(request, users) { Count = count });
+                return Ok(new OResponse(users, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
             }
             catch (Exception ex)
             {
@@ -250,9 +297,13 @@ namespace SiteServer.API.Controllers.V1
             try
             {
                 var request = new RequestImpl();
-                var response = new OResponse(request.IsUserLoggin ? request.UserInfo : null);
+                var userInfo = request.IsUserLoggin ? request.UserInfo : null;
                 request.UserLogout();
-                return Ok(response);
+
+                return Ok(new
+                {
+                    Value = userInfo
+                });
             }
             catch (Exception ex)
             {
@@ -266,15 +317,24 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var oRequest = new ORequest(AccessTokenManager.ScopeUsers);
-                if (!oRequest.IsApiAuthorized) return Unauthorized();
+                var request = new RequestImpl();
+                var isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             request.IsUserLoggin &&
+                             request.UserId == id ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                if (!isAuth) return Unauthorized();
 
                 var userInfo = UserManager.GetUserInfoByUserId(id);
                 if (userInfo == null) return NotFound();
 
                 var retval = DataProvider.UserLogDao.ApiInsert(userInfo.UserName, logInfo);
 
-                return Ok(new OResponse(retval));
+                return Ok(new
+                {
+                    Value = retval
+                });
             }
             catch (Exception ex)
             {
@@ -288,15 +348,24 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var oRequest = new ORequest(AccessTokenManager.ScopeUsers);
-                if (!oRequest.IsApiAuthorized) return Unauthorized();
+                var request = new RequestImpl();
+                var isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             request.IsUserLoggin &&
+                             request.UserId == id ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                if (!isAuth) return Unauthorized();
 
                 var userInfo = UserManager.GetUserInfoByUserId(id);
                 if (userInfo == null) return NotFound();
 
-                var logs = DataProvider.UserLogDao.ApiGetLogs(userInfo.UserName, oRequest.Skip, oRequest.Top);
+                var top = request.GetQueryInt("top", 20);
+                var skip = request.GetQueryInt("skip");
 
-                return Ok(new OResponse(oRequest, logs) { Count = DataProvider.UserDao.GetCount() });
+                var logs = DataProvider.UserLogDao.ApiGetLogs(userInfo.UserName, skip, top);
+
+                return Ok(new OResponse(logs, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = DataProvider.UserDao.GetCount() });
             }
             catch (Exception ex)
             {
@@ -310,8 +379,14 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl(AccessTokenManager.ScopeUsers);
-                if (!request.IsUserAuthorized(id)) return Unauthorized();
+                var request = new RequestImpl();
+                var isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             request.IsUserLoggin &&
+                             request.UserId == id ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                if (!isAuth) return Unauthorized();
 
                 var userInfo = UserManager.GetUserInfoByUserId(id);
                 if (userInfo == null) return NotFound();
@@ -328,8 +403,11 @@ namespace SiteServer.API.Controllers.V1
                 {
                     return BadRequest(errorMessage);
                 }
-
-                return Ok(new OResponse(userInfo));
+                
+                return Ok(new
+                {
+                    Value = userInfo
+                });
             }
             catch (Exception ex)
             {

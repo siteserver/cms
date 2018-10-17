@@ -29,13 +29,6 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public const int AccessTokenExpireDays = 7;
 
-        private readonly string _scope;
-
-        public RequestImpl(string scope) : this(HttpContext.Current.Request)
-        {
-            _scope = scope;
-        }
-
         public RequestImpl() : this(HttpContext.Current.Request)
         {
         }
@@ -56,6 +49,7 @@ namespace SiteServer.CMS.Plugin.Impl
                         if (adminInfo != null && !adminInfo.IsLockedOut)
                         {
                             AdminInfo = adminInfo;
+                            IsAdminLoggin = true;
                         }
                     }
 
@@ -73,11 +67,9 @@ namespace SiteServer.CMS.Plugin.Impl
                     if (userInfo != null && !userInfo.IsLockedOut && userInfo.IsChecked && userInfo.UserName == tokenImpl.UserName)
                     {
                         UserInfo = userInfo;
-
                         IsUserLoggin = true;
                     }
                 }
-                
             }
 
             var adminToken = AdminToken;
@@ -90,7 +82,6 @@ namespace SiteServer.CMS.Plugin.Impl
                     if (adminInfo != null && !adminInfo.IsLockedOut && adminInfo.UserName == tokenImpl.UserName)
                     {
                         AdminInfo = adminInfo;
-
                         IsAdminLoggin = true;
                     }
                 }
@@ -98,10 +89,11 @@ namespace SiteServer.CMS.Plugin.Impl
         }
 
         public bool IsApiAuthenticated { get; }
+        public bool IsApiAuthorized { get; }
 
         public bool IsUserLoggin { get; }
 
-        public bool IsAdminLoggin { get; }
+        public bool IsAdminLoggin { get; private set; }
 
         public string ApiToken
         {
@@ -453,6 +445,7 @@ namespace SiteServer.CMS.Plugin.Impl
             if (adminInfo == null || adminInfo.IsLockedOut) return null;
 
             AdminInfo = adminInfo;
+            IsAdminLoggin = true;
 
             var expiresAt = DateTime.Now.AddDays(AccessTokenExpireDays);
             var accessToken = GetAccessToken(adminInfo.Id, adminInfo.UserName, expiresAt);
@@ -474,27 +467,6 @@ namespace SiteServer.CMS.Plugin.Impl
         public void AdminLogout()
         {
             CookieUtils.Erase(AuthKeyAdminCookie);
-        }
-
-        #endregion
-
-        #region ApiKey
-
-        public bool IsApiAuthorized => IsApiAuthenticated && !string.IsNullOrEmpty(_scope) && AccessTokenManager.IsScope(ApiToken, _scope);
-
-        public bool IsUserAuthorized(int userId)
-        {
-            var isAuthorized = false;
-            if (IsApiAuthenticated && IsApiAuthorized)
-            {
-                isAuthorized = true;
-            }
-            else if (IsUserLoggin && UserId == userId)
-            {
-                isAuthorized = true;
-            }
-
-            return isAuthorized;
         }
 
         #endregion

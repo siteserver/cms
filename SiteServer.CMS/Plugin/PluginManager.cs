@@ -185,7 +185,7 @@ namespace SiteServer.CMS.Plugin
             WebConfigUtils.Load(applicationPhysicalPath);
             _pluginInfoListRunnable = PluginInfoListRunnable;
 
-            PluginContext.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath), new ApiCollectionImpl
+            Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath), new ApiCollectionImpl
             {
                 AdminApi = AdminApi.Instance,
                 ConfigApi = ConfigApi.Instance,

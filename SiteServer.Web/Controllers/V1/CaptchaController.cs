@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Web;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
 
@@ -101,7 +99,10 @@ namespace SiteServer.API.Controllers.V1
                     return BadRequest("验证码不正确，请重新输入！");
                 }
 
-                return Ok(new OResponse(true));
+                return Ok(new
+                {
+                    Value = true
+                });
             }
             catch (Exception ex)
             {

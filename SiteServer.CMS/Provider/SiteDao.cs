@@ -112,7 +112,7 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery($"DELETE FROM siteserver_Site WHERE Id  = {siteId}");
 
             SiteManager.ClearCache();
-            ChannelManager.RemoveCache(siteId);
+            ChannelManager.RemoveCacheBySiteId(siteId);
             PermissionsImpl.ClearAllCache();
         }
 

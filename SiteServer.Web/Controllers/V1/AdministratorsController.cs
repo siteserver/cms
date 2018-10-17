@@ -4,7 +4,6 @@ using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.V1
@@ -24,8 +23,9 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var oRequest = new ORequest(AccessTokenManager.ScopeAdministrators);
-                if (!oRequest.IsApiAuthorized) return Unauthorized();
+                var request = new RequestImpl();
+                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                if (!isApiAuthorized) return Unauthorized();
 
                 var retval = DataProvider.AdministratorDao.ApiInsert(adminInfo, out var errorMessage);
                 if (retval == null)
@@ -33,7 +33,10 @@ namespace SiteServer.API.Controllers.V1
                     return BadRequest(errorMessage);
                 }
 
-                return Ok(new OResponse(retval));
+                return Ok(new
+                {
+                    Value = retval
+                });
             }
             catch (Exception ex)
             {
@@ -47,8 +50,9 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var oRequest = new ORequest(AccessTokenManager.ScopeAdministrators);
-                if (!oRequest.IsApiAuthorized) return Unauthorized();
+                var request = new RequestImpl();
+                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                if (!isApiAuthorized) return Unauthorized();
 
                 if (adminInfo == null) return BadRequest("Could not read administrator from body");
 
@@ -60,7 +64,10 @@ namespace SiteServer.API.Controllers.V1
                     return BadRequest(errorMessage);
                 }
 
-                return Ok(new OResponse(retval));
+                return Ok(new
+                {
+                    Value = retval
+                });
             }
             catch (Exception ex)
             {
@@ -74,14 +81,18 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var oRequest = new ORequest(AccessTokenManager.ScopeAdministrators);
-                if (!oRequest.IsApiAuthorized) return Unauthorized();
+                var request = new RequestImpl();
+                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                if (!isApiAuthorized) return Unauthorized();
 
                 if (!DataProvider.AdministratorDao.ApiIsExists(id)) return NotFound();
 
                 var adminInfo = DataProvider.AdministratorDao.ApiDelete(id);
 
-                return Ok(new OResponse(adminInfo));
+                return Ok(new
+                {
+                    Value = adminInfo
+                });
             }
             catch (Exception ex)
             {
@@ -95,14 +106,18 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var oRequest = new ORequest(AccessTokenManager.ScopeAdministrators);
-                if (!oRequest.IsApiAuthorized) return Unauthorized();
+                var request = new RequestImpl();
+                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                if (!isApiAuthorized) return Unauthorized();
 
                 if (!DataProvider.AdministratorDao.ApiIsExists(id)) return NotFound();
 
                 var adminInfo = DataProvider.AdministratorDao.ApiGetAdministrator(id);
 
-                return Ok(new OResponse(adminInfo));
+                return Ok(new
+                {
+                    Value = adminInfo
+                });
             }
             catch (Exception ex)
             {
@@ -116,13 +131,17 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var oRequest = new ORequest(AccessTokenManager.ScopeAdministrators);
-                if (!oRequest.IsApiAuthorized) return Unauthorized();
+                var request = new RequestImpl();
+                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                if (!isApiAuthorized) return Unauthorized();
 
-                var administrators = DataProvider.AdministratorDao.ApiGetAdministrators(oRequest.Skip, oRequest.Top);
+                var top = request.GetQueryInt("top", 20);
+                var skip = request.GetQueryInt("skip");
+
+                var administrators = DataProvider.AdministratorDao.ApiGetAdministrators(skip, top);
                 var count = DataProvider.AdministratorDao.ApiGetCount();
 
-                return Ok(new OResponse(oRequest, administrators) { Count = count });
+                return Ok(new OResponse(administrators, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
             }
             catch (Exception ex)
             {
@@ -179,9 +198,13 @@ namespace SiteServer.API.Controllers.V1
             try
             {
                 var request = new RequestImpl();
-                var response = new OResponse(request.IsAdminLoggin ? request.AdminInfo : null);
+                var adminInfo = request.IsAdminLoggin ? request.AdminInfo : null;
                 request.AdminLogout();
-                return Ok(response);
+
+                return Ok(new
+                {
+                    Value = adminInfo
+                });
             }
             catch (Exception ex)
             {
@@ -195,12 +218,13 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var oRequest = new ORequest(AccessTokenManager.ScopeAdministrators);
-                if (!oRequest.IsApiAuthorized) return Unauthorized();
+                var request = new RequestImpl();
+                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                if (!isApiAuthorized) return Unauthorized();
 
-                var account = oRequest.GetPostString("account");
-                var password = oRequest.GetPostString("password");
-                var newPassword = oRequest.GetPostString("newPassword");
+                var account = request.GetPostString("account");
+                var password = request.GetPostString("password");
+                var newPassword = request.GetPostString("newPassword");
 
                 if (!DataProvider.AdministratorDao.Validate(account, password, true, out var userName, out var errorMessage))
                 {
@@ -214,7 +238,10 @@ namespace SiteServer.API.Controllers.V1
                     return BadRequest(errorMessage);
                 }
 
-                return Ok(new OResponse(adminInfo));
+                return Ok(new
+                {
+                    Value = adminInfo
+                });
             }
             catch (Exception ex)
             {

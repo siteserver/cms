@@ -53,7 +53,10 @@ namespace SiteServer.API.Controllers.V1
                     }
                 }
 
-                return Ok(new OResponse(value));
+                return Ok(new
+                {
+                    Value = value
+                });
             }
             catch (Exception ex)
             {

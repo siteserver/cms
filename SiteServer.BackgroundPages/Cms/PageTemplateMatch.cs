@@ -252,14 +252,18 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     foreach (var channelId in channelIdList)
                     {
-                        TemplateManager.UpdateChannelTemplateId(SiteId, channelId, templateId);
+                        var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                        channelInfo.ChannelTemplateId = templateId;
+                        DataProvider.ChannelDao.UpdateChannelTemplateId(channelInfo);
                     }
                 }
                 else
                 {
                     foreach (var channelId in channelIdList)
                     {
-                        TemplateManager.UpdateContentTemplateId(SiteId, channelId, templateId);
+                        var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                        channelInfo.ContentTemplateId = templateId;
+                        DataProvider.ChannelDao.UpdateContentTemplateId(channelInfo);
                     }
                 }
 			}
@@ -340,7 +344,10 @@ namespace SiteServer.BackgroundPages.Cms
 		            var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, AuthRequest.AdminName);
 		            if (nodeInfo.ParentId > 0)
 		            {
-		                TemplateManager.UpdateChannelTemplateId(SiteId, channelId, insertedTemplateId);
+		                nodeInfo.ChannelTemplateId = insertedTemplateId;
+		                DataProvider.ChannelDao.UpdateChannelTemplateId(nodeInfo);
+
+                        //TemplateManager.UpdateChannelTemplateId(SiteId, channelId, insertedTemplateId);
 		                //DataProvider.BackgroundNodeDAO.UpdateChannelTemplateID(channelId, insertedTemplateID);
 		            }
 								
@@ -381,7 +388,11 @@ namespace SiteServer.BackgroundPages.Cms
 		        var childChannelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, channelId), EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
 		        foreach (var childChannelId in childChannelIdList)
 		        {
-		            TemplateManager.UpdateChannelTemplateId(SiteId, childChannelId, insertedTemplateId);
+		            var childChannelInfo = ChannelManager.GetChannelInfo(SiteId, childChannelId);
+		            childChannelInfo.ChannelTemplateId = insertedTemplateId;
+		            DataProvider.ChannelDao.UpdateChannelTemplateId(childChannelInfo);
+
+                    //TemplateManager.UpdateChannelTemplateId(SiteId, childChannelId, insertedTemplateId);
 		            //DataProvider.BackgroundNodeDAO.UpdateChannelTemplateID(childChannelId, insertedTemplateID);
 		        }
 		    }
@@ -430,7 +441,12 @@ namespace SiteServer.BackgroundPages.Cms
 		                continue;
 		            }
 		            var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, AuthRequest.AdminName);
-		            TemplateManager.UpdateContentTemplateId(SiteId, channelId, insertedTemplateId);
+
+		            var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+		            channelInfo.ContentTemplateId = insertedTemplateId;
+		            DataProvider.ChannelDao.UpdateContentTemplateId(channelInfo);
+
+                    //TemplateManager.UpdateContentTemplateId(SiteId, channelId, insertedTemplateId);
 		            //DataProvider.BackgroundNodeDAO.UpdateContentTemplateID(channelId, insertedTemplateID);
 		        }
 		    }
@@ -469,7 +485,11 @@ namespace SiteServer.BackgroundPages.Cms
                 var childChannelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, channelId), EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
                 foreach (var childChannelId in childChannelIdList)
 		        {
-		            TemplateManager.UpdateContentTemplateId(SiteId, childChannelId, insertedTemplateId);
+		            var childChannelInfo = ChannelManager.GetChannelInfo(SiteId, childChannelId);
+		            childChannelInfo.ContentTemplateId = insertedTemplateId;
+		            DataProvider.ChannelDao.UpdateContentTemplateId(childChannelInfo);
+
+                    //TemplateManager.UpdateContentTemplateId(SiteId, childChannelId, insertedTemplateId);
 		            //DataProvider.BackgroundNodeDAO.UpdateContentTemplateID(childChannelId, insertedTemplateID);
 		        }
 		    }
