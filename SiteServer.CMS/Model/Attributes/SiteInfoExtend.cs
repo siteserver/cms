@@ -426,6 +426,54 @@ namespace SiteServer.CMS.Model.Attributes
             set => Set(nameof(ConfigUploadImageSmallImageHeight), value);
         }
 
+        public bool ConfigImageIsFix
+        {
+            get => GetBool(nameof(ConfigImageIsFix), true);
+            set => Set(nameof(ConfigImageIsFix), value);
+        }
+
+        public string ConfigImageFixWidth
+        {
+            get => GetString(nameof(ConfigImageFixWidth), "300");
+            set => Set(nameof(ConfigImageFixWidth), value);
+        }
+
+        public string ConfigImageFixHeight
+        {
+            get => GetString(nameof(ConfigImageFixHeight), string.Empty);
+            set => Set(nameof(ConfigImageFixHeight), value);
+        }
+
+        public bool ConfigImageIsEditor
+        {
+            get => GetBool(nameof(ConfigImageIsEditor), true);
+            set => Set(nameof(ConfigImageIsEditor), value);
+        }
+
+        public bool ConfigImageEditorIsFix
+        {
+            get => GetBool(nameof(ConfigImageEditorIsFix), true);
+            set => Set(nameof(ConfigImageEditorIsFix), value);
+        }
+
+        public string ConfigImageEditorFixWidth
+        {
+            get => GetString(nameof(ConfigImageEditorFixWidth), "500");
+            set => Set(nameof(ConfigImageEditorFixWidth), value);
+        }
+
+        public string ConfigImageEditorFixHeight
+        {
+            get => GetString(nameof(ConfigImageEditorFixHeight), string.Empty);
+            set => Set(nameof(ConfigImageEditorFixHeight), value);
+        }
+
+        public bool ConfigImageEditorIsLinkToOriginal
+        {
+            get => GetBool(nameof(ConfigImageEditorIsLinkToOriginal));
+            set => Set(nameof(ConfigImageEditorIsLinkToOriginal), value);
+        }
+
         /****************上传设置*************************/
 
         public string ImageUploadDirectoryName
@@ -448,7 +496,7 @@ namespace SiteServer.CMS.Model.Attributes
 
         public string ImageUploadTypeCollection
         {
-            get => GetString(nameof(ImageUploadTypeCollection), "gif|jpg|jpeg|bmp|png|pneg|swf");
+            get => GetString(nameof(ImageUploadTypeCollection), "gif|jpg|jpeg|bmp|png|pneg|swf|webp");
             set => Set(nameof(ImageUploadTypeCollection), value);
         }
 

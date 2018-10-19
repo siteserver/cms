@@ -4,9 +4,6 @@ using System.Web;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Script.Serialization;
-using SiteServer.Utils.Enumerations;
-using SiteServer.Plugin;
 
 namespace SiteServer.Utils
 {
@@ -35,11 +32,6 @@ namespace SiteServer.Utils
         public static bool IsEmail(string val)
         {
             return Regex.IsMatch(val, @"^\w+([-_+.]\w+)*@\w+([-_.]\w+)*\.\w+([-_.]\w+)*$", RegexOptions.IgnoreCase);
-        }
-
-        public static bool IsIpAddress(string ip)
-        {
-            return Regex.IsMatch(ip, @"^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$");
         }
 
         public static bool IsNumber(string val)
@@ -109,33 +101,6 @@ namespace SiteServer.Utils
             return text.Substring(0, startIndex);
         }
 
-        public static string RemoveAttribute(string content, string attributeName)
-        {
-            string regex = $@"\s{attributeName}=\""[^\""]*\""";
-            return RegexUtils.Replace(regex, content, string.Empty);
-        }
-
-        public static string RemoveNewline(string inputString)
-        {
-            if (string.IsNullOrEmpty(inputString)) return string.Empty;
-            var retVal = new StringBuilder();
-            inputString = inputString.Trim();
-            for (var i = 0; i < inputString.Length; i++)
-            {
-                switch (i)
-                {
-                    case '\n':
-                        break;
-                    case '\r':
-                        break;
-                    default:
-                        retVal.Append(i);
-                        break;
-                }
-            }
-            return retVal.ToString();
-        }
-
         public static string Guid()
         {
             return System.Guid.NewGuid().ToString();
@@ -160,26 +125,6 @@ namespace SiteServer.Utils
             }
             string retval = $"{i - DateTime.Now.Ticks:x}";
             return isUppercase ? retval.ToUpper() : retval.ToLower();
-        }
-
-        /// <summary>
-        /// 获取json对象值
-        /// </summary>
-        public static string GetJsonValue(string attributeName, string jsonContent)
-        {
-            var serializer = new JavaScriptSerializer();
-            var json = (Dictionary<string, object>)serializer.DeserializeObject(jsonContent);
-            object value;
-            if (json.TryGetValue(attributeName, out value))
-            {
-                return Convert.ToString(value);
-            }
-            return string.Empty;
-        }
-
-        public static string GetBoolText(bool type)
-        {
-            return type ? "是" : "否";
         }
 
         public static bool EqualsIgnoreCase(string a, string b)
@@ -219,67 +164,20 @@ namespace SiteServer.Utils
             return text.EndsWith(endString);
         }
 
-        public static bool StringEndsWith(string s, char c)
+        public static void InsertBefore(string[] insertBeforeArray, StringBuilder contentBuilder, string insertContent)
         {
-            var num1 = s.Length;
-            if (num1 != 0)
-            {
-                return s[num1 - 1] == c;
-            }
-            return false;
-        }
-
-        public static bool StringStartsWith(string s, char c)
-        {
-            if (s.Length != 0)
-            {
-                return s[0] == c;
-            }
-            return false;
-        }
-
-        public static string InsertBefore(string[] insertBeforeArray, string content, string insertContent)
-        {
-            if (content == null) return string.Empty;
-            foreach (var insertBefore in insertBeforeArray)
-            {
-                if (content.IndexOf(insertBefore, StringComparison.Ordinal) != -1)
-                {
-                    return InsertBefore(insertBefore, content, insertContent);
-                }
-            }
-            return content;
-        }
-
-        public static string InsertBefore(string insertBefore, string content, string insertContent)
-        {
-            var retval = content;
-            if (insertBefore != null && content != null)
-            {
-                var startIndex = content.IndexOf(insertBefore, StringComparison.Ordinal);
-                if (startIndex != -1)
-                {
-                    retval = content.Substring(0, startIndex) + insertContent + insertBefore + content.Substring(startIndex + insertBefore.Length);
-                }
-            }
-            return retval;
-        }
-
-        public static bool InsertBefore(string[] insertBeforeArray, StringBuilder contentBuilder, string insertContent)
-        {
-            if (contentBuilder == null) return false;
+            if (contentBuilder == null) return;
             foreach (var insertBefore in insertBeforeArray)
             {
                 if (contentBuilder.ToString().IndexOf(insertBefore, StringComparison.Ordinal) != -1)
                 {
                     InsertBefore(insertBefore, contentBuilder, insertContent);
-                    return true;
+                    return;
                 }
             }
-            return false;
         }
 
-        public static void InsertBefore(string insertBefore, StringBuilder contentBuilder, string insertContent)
+        private static void InsertBefore(string insertBefore, StringBuilder contentBuilder, string insertContent)
         {
             if (string.IsNullOrEmpty(insertBefore) || contentBuilder == null) return;
             var startIndex = contentBuilder.ToString().IndexOf(insertBefore, StringComparison.Ordinal);
@@ -289,23 +187,7 @@ namespace SiteServer.Utils
             }
         }
 
-        public static void InsertBeforeOrAppend(string[] insertBeforeArray, StringBuilder contentBuilder, string insertContent)
-        {
-            if (!InsertBefore(insertBeforeArray, contentBuilder, insertContent))
-            {
-                contentBuilder.Append(insertContent);
-            }
-        }
-
-        public static void InsertAfterOrAppend(string[] insertAfterArray, StringBuilder contentBuilder, string insertContent)
-        {
-            if (!InsertAfter(insertAfterArray, contentBuilder, insertContent))
-            {
-                contentBuilder.Append(insertContent);
-            }
-        }
-
-        public static bool InsertAfter(string[] insertAfterArray, StringBuilder contentBuilder, string insertContent)
+        public static void InsertAfter(string[] insertAfterArray, StringBuilder contentBuilder, string insertContent)
         {
             if (contentBuilder != null)
             {
@@ -314,14 +196,13 @@ namespace SiteServer.Utils
                     if (contentBuilder.ToString().IndexOf(insertAfter, StringComparison.Ordinal) != -1)
                     {
                         InsertAfter(insertAfter, contentBuilder, insertContent);
-                        return true;
+                        return;
                     }
                 }
             }
-            return false;
         }
 
-        public static void InsertAfter(string insertAfter, StringBuilder contentBuilder, string insertContent)
+        private static void InsertAfter(string insertAfter, StringBuilder contentBuilder, string insertContent)
         {
             if (string.IsNullOrEmpty(insertAfter) || contentBuilder == null) return;
             var startIndex = contentBuilder.ToString().IndexOf(insertAfter, StringComparison.Ordinal);
@@ -359,14 +240,6 @@ namespace SiteServer.Utils
             return retval;
         }
 
-        public static string StripTagsExcludeBr(string inputString)
-        {
-            var content = RegexUtils.Replace("<[\\/]?br[^>]*>", inputString, "[_LineBreak_]");
-            content = StripTags(content);
-            content = content.Replace("[_LineBreak_]", "<br />");
-            return content;
-        }
-
         public static string StripTags(string inputString, params string[] tagNames)
         {
             var retval = inputString;
@@ -381,27 +254,6 @@ namespace SiteServer.Utils
         {
             var retval = RegexUtils.Replace("&[^;]*;", inputString, string.Empty);
             return retval;
-        }
-
-        public static string CleanText(string text)
-        {
-            return StripTags(text);
-        }
-
-        public static string CleanTextArea(string text)
-        {
-            text = StripTags(text);
-            text = ReplaceNewlineToBr(text);
-            return text;
-        }
-
-        public static string ParseWordString(string wordString)
-        {
-            var parsedContent = RegexUtils.GetInnerContent("body", wordString);
-            parsedContent = parsedContent.Replace(@"
-<p class=MsoNormal><span lang=EN-US><o:p>&nbsp;</o:p></span></p>
-", string.Empty);
-            return CleanTextArea(parsedContent.Trim());
         }
 
         public static string ReplaceIgnoreCase(string original, string pattern, string replacement)
@@ -471,45 +323,6 @@ namespace SiteServer.Utils
             return input;
         }
 
-        public static string ReplaceSpecified(string replace, string input, string to, int specified)
-        {
-            if (specified <= 1)
-            {
-                return ReplaceFirst(replace, input, to);
-            }
-            var pos = 0;
-            for (var i = 1; i <= specified; i++)
-            {
-                pos = input.IndexOf(replace, pos + 1, StringComparison.Ordinal);
-            }
-
-            if (pos > 0)
-            {
-                //取位置前部分+替换字符串+位置（加上查找字符长度）后部分
-                return input.Substring(0, pos) + to + input.Substring(pos + replace.Length);
-            }
-            if (pos == 0)
-            {
-                return to + input.Substring(replace.Length);
-            }
-            return input;
-        }
-
-        public static string ReplaceAfterIndex(string replace, string input, string to, int index)
-        {
-            index = input.IndexOf(replace, index + 1, StringComparison.Ordinal);
-            if (index > 0)
-            {
-                //取位置前部分+替换字符串+位置（加上查找字符长度）后部分
-                return input.Substring(0, index) + to + input.Substring(index + replace.Length);
-            }
-            if (index == 0)
-            {
-                return to + input.Substring(replace.Length);
-            }
-            return input;
-        }
-
         public static string ReplaceStartsWith(string input, string replace, string to)
         {
             var retval = input;
@@ -530,16 +343,6 @@ namespace SiteServer.Utils
             return retval;
         }
 
-        public static string ReplaceEndsWith(string input, string replace, string to)
-        {
-            var retval = input;
-            if (!string.IsNullOrEmpty(input) && !string.IsNullOrEmpty(replace) && input.EndsWith(replace))
-            {
-                retval = input.Substring(0, input.LastIndexOf(replace, StringComparison.Ordinal)) + to;
-            }
-            return retval;
-        }
-
         public static string ReplaceNewlineToBr(string inputString)
         {
             if (string.IsNullOrEmpty(inputString)) return string.Empty;
@@ -553,38 +356,6 @@ namespace SiteServer.Utils
                         retVal.Append("<br />");
                         break;
                     case '\r':
-                        break;
-                    default:
-                        retVal.Append(t);
-                        break;
-                }
-            }
-            return retVal.ToString();
-        }
-
-        public static string ReplaceBrToNewline(string inputString)
-        {
-            return RegexUtils.Replace("<br[^>]*>", inputString, "\n");
-        }
-
-        /// <summary>
-        /// 将回车换行符替换为Tab符
-        /// </summary>
-        /// <param name="inputString"></param>
-        /// <returns></returns>
-        public static string ReplaceNewlineToTab(string inputString)
-        {
-            if (string.IsNullOrEmpty(inputString)) return string.Empty;
-            var retVal = new StringBuilder();
-            inputString = inputString.Trim();
-            foreach (var t in inputString)
-            {
-                switch (t)
-                {
-                    case '\r':
-                        retVal.Append("\t");
-                        break;
-                    case '\n':
                         break;
                     default:
                         retVal.Append(t);
@@ -616,77 +387,7 @@ namespace SiteServer.Utils
             return retVal.ToString();
         }
 
-        public static string CutLengthText(string inputString, int length)
-        {
-            var retval = inputString;
-            if (string.IsNullOrEmpty(retval)) return retval;
-            retval = retval.Substring(0, length);
-            if (retval.Length != inputString.Length)
-            {
-                retval += Constants.Ellipsis;
-            }
-            return retval;
-        }
-
-        public static string CutString(string str, int startIndex)
-        {
-            return CutString(str, startIndex, str.Length);
-        }
-
-        public static string CutString(string str, int startIndex, int length)
-        {
-            if (startIndex >= 0)
-            {
-                if (length < 0)
-                {
-                    length = length * -1;
-                    if (startIndex - length < 0)
-                    {
-                        length = startIndex;
-                        startIndex = 0;
-                    }
-                    else
-                    {
-                        startIndex = startIndex - length;
-                    }
-                }
-
-                if (startIndex > str.Length)
-                {
-                    return string.Empty;
-                }
-            }
-            else
-            {
-                if (length < 0)
-                {
-                    return string.Empty;
-                }
-                if (length + startIndex > 0)
-                {
-                    length = length + startIndex;
-                    startIndex = 0;
-                }
-                else
-                {
-                    return string.Empty;
-                }
-            }
-
-            if (str.Length - startIndex < length)
-            {
-                length = str.Length - startIndex;
-            }
-
-            return str.Substring(startIndex, length);
-        }
-
-        public static string MaxLengthText(string inputString, int maxLength)
-        {
-            return MaxLengthText(inputString, maxLength, Constants.Ellipsis);
-        }
-
-        public static string MaxLengthText(string inputString, int maxLength, string endString)
+        public static string MaxLengthText(string inputString, int maxLength, string endString = Constants.Ellipsis)
         {
             var retval = inputString;
             try
@@ -785,69 +486,13 @@ namespace SiteServer.Utils
             return retval;
         }
 
-        /// <summary>
-        /// 分割字符串
-        /// </summary>
-        public static string[] SplitStringIgnoreCase(string strContent, string strSplit)
-        {
-            if (!string.IsNullOrEmpty(strContent))
-            {
-                if (strContent.ToLower().IndexOf(strSplit.ToLower(), StringComparison.Ordinal) < 0)
-                {
-                    return new[] { strContent };
-                }
+        private static Encoding Gb2312 { get; } = Encoding.GetEncoding("gb2312");
 
-                return Regex.Split(strContent, Regex.Escape(strSplit), RegexOptions.IgnoreCase);
-            }
-            return new string[] { };
-        }
-
-        /// <summary>
-        /// 分割字符串
-        /// </summary>
-        /// <returns></returns>
-        public static string[] SplitStringIgnoreCase(string strContent, string strSplit, int count)
-        {
-            var result = new string[count];
-            var splited = SplitStringIgnoreCase(strContent, strSplit);
-
-            for (var i = 0; i < count; i++)
-            {
-                if (i < splited.Length)
-                    result[i] = splited[i];
-                else
-                    result[i] = string.Empty;
-            }
-
-            return result;
-        }
-
-        public static bool IsTwoBytesChar(char chr)
+        private static bool IsTwoBytesChar(char chr)
         {
             // 使用中文支持编码
-            return ECharsetUtils.GB2312.GetByteCount(new[] { chr }) == 2;
+            return Gb2312.GetByteCount(new[] { chr }) == 2;
         }
-
-        public static bool IsContainTwoBytesChar(string str)
-        {
-            if (!string.IsNullOrEmpty(str))
-            {
-                foreach (var c in str)
-                {
-                    if (IsTwoBytesChar(c))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        public static int GetByteCount(string content)
-        {
-            return string.IsNullOrEmpty(content) ? 0 : Encoding.GetEncoding("gb2312").GetByteCount(content);
-        }
-
 
         /// <summary>
         /// 得到innerText在content中的数目
@@ -915,11 +560,6 @@ namespace SiteServer.Utils
             return count;
         }
 
-        public static string GetFirstOfStringCollection(string collection)
-        {
-            return GetFirstOfStringCollection(collection, ',');
-        }
-
         public static string GetFirstOfStringCollection(string collection, char separator)
         {
             if (!string.IsNullOrEmpty(collection))
@@ -956,47 +596,12 @@ namespace SiteServer.Utils
             return retval;
         }
 
-        public static string ValueToUrl(string value, bool replaceSlash)
-        {
-
-            var retval = string.Empty;
-            if (replaceSlash)
-            {
-                if (!string.IsNullOrEmpty(value))
-                {
-                    retval = value.Replace("=", "_equals_").Replace("&", "_and_").Replace("?", "_question_").Replace("'", "_quote_").Replace("+", "_add_").Replace("/", "_slash_");
-                }
-            }
-            else
-            {
-                retval = ValueToUrl(value);
-            }
-            return retval;
-        }
-
         public static string ValueFromUrl(string value)
         {
             var retval = string.Empty;
             if (!string.IsNullOrEmpty(value))
             {
                 retval = value.Replace("_equals_", "=").Replace("_and_", "&").Replace("_question_", "?").Replace("_quote_", "'").Replace("_add_", "+");
-            }
-            return retval;
-        }
-
-        public static string ValueFromUrl(string value, bool replaceSlash)
-        {
-            var retval = string.Empty;
-            if (replaceSlash)
-            {
-                if (!string.IsNullOrEmpty(value))
-                {
-                    retval = value.Replace("_equals_", "=").Replace("_and_", "&").Replace("_question_", "?").Replace("_quote_", "'").Replace("_add_", "+").Replace("_slash_", "/");
-                }
-            }
-            else
-            {
-                retval = ValueFromUrl(value);
             }
             return retval;
         }
@@ -1009,11 +614,6 @@ namespace SiteServer.Utils
                 retval = value.Replace("'", @"\'").Replace("\r", "\\r").Replace("\n", "\\n");
             }
             return retval;
-        }
-
-        public static int GetDotNetVersion()
-        {
-            return Environment.Version.Major;
         }
 
         public static string ParseReplace(string parsedContent, string replace, string to)
@@ -1057,63 +657,12 @@ namespace SiteServer.Utils
             return retval;
         }
 
-        public static string IntToSignString(int i)
-        {
-            var retval = "0";
-            if (i != 0)
-            {
-                retval = i > 0 ? "+" + i : i.ToString();
-            }
-            return retval;
-        }
-
-        public static string GetPercentage(int num, int totalNum)
-        {
-            return Convert.ToDouble(num / (double)totalNum).ToString("0.00%");
-        }
-
-        /// <summary>
-        /// 去除HTML标记
-        /// </summary>
-        /// <param name="htmlstring">包括HTML的源码 </param>
-        /// <returns>已经去除后的文字</returns>
-        public static string NoHtml(string htmlstring)
-        {
-            //删除脚本
-            htmlstring = htmlstring.Replace("\r\n", "");
-            htmlstring = Regex.Replace(htmlstring, @"<script.*?</script>", "", RegexOptions.IgnoreCase);
-            htmlstring = Regex.Replace(htmlstring, @"<style.*?</style>", "", RegexOptions.IgnoreCase);
-            htmlstring = Regex.Replace(htmlstring, @"<.*?>", "", RegexOptions.IgnoreCase);
-            //删除HTML
-            htmlstring = Regex.Replace(htmlstring, @"<(.[^>]*)>", "", RegexOptions.IgnoreCase);
-            htmlstring = Regex.Replace(htmlstring, @"([\r\n])[\s]+", "", RegexOptions.IgnoreCase);
-            htmlstring = Regex.Replace(htmlstring, @"-->", "", RegexOptions.IgnoreCase);
-            htmlstring = Regex.Replace(htmlstring, @"<!--.*", "", RegexOptions.IgnoreCase);
-            htmlstring = Regex.Replace(htmlstring, @"&(quot|#34);", "\"", RegexOptions.IgnoreCase);
-            htmlstring = Regex.Replace(htmlstring, @"&(amp|#38);", "&", RegexOptions.IgnoreCase);
-            htmlstring = Regex.Replace(htmlstring, @"&(lt|#60);", "<", RegexOptions.IgnoreCase);
-            htmlstring = Regex.Replace(htmlstring, @"&(gt|#62);", ">", RegexOptions.IgnoreCase);
-            htmlstring = Regex.Replace(htmlstring, @"&(nbsp|#160);", "", RegexOptions.IgnoreCase);
-            htmlstring = Regex.Replace(htmlstring, @"&(iexcl|#161);", "\xa1", RegexOptions.IgnoreCase);
-            htmlstring = Regex.Replace(htmlstring, @"&(cent|#162);", "\xa2", RegexOptions.IgnoreCase);
-            htmlstring = Regex.Replace(htmlstring, @"&(pound|#163);", "\xa3", RegexOptions.IgnoreCase);
-            htmlstring = Regex.Replace(htmlstring, @"&(copy|#169);", "\xa9", RegexOptions.IgnoreCase);
-            htmlstring = Regex.Replace(htmlstring, @"&#(\d+);", "", RegexOptions.IgnoreCase);
-            htmlstring = htmlstring.Replace("&ldquo;", "\"");
-            htmlstring = htmlstring.Replace("&rdquo;", "\"");
-            htmlstring = htmlstring.Replace("<", "");
-            htmlstring = htmlstring.Replace(">", "");
-            htmlstring = htmlstring.Replace("\r\n", "");
-            htmlstring = HttpContext.Current.Server.HtmlEncode(htmlstring).Trim();
-            return htmlstring;
-        }
-
         public static string GetTrueImageHtml(string isDefaultStr)
         {
             return GetTrueImageHtml(TranslateUtils.ToBool(isDefaultStr));
         }
 
-        public static string GetTrueImageHtml(bool isDefault)
+        private static string GetTrueImageHtml(bool isDefault)
         {
             var retval = string.Empty;
             if (isDefault)
@@ -1121,57 +670,6 @@ namespace SiteServer.Utils
                 retval = "<img src='../pic/icon/right.gif' border='0'/>";
             }
             return retval;
-        }
-
-        public static string GetFalseImageHtml(string isDefaultStr)
-        {
-            return GetFalseImageHtml(TranslateUtils.ToBool(isDefaultStr));
-        }
-
-        public static string GetFalseImageHtml(bool isDefault)
-        {
-            var retval = string.Empty;
-            if (isDefault == false)
-            {
-                retval = "<img src='../pic/icon/wrong.gif' border='0'/>";
-            }
-            return retval;
-        }
-
-        public static string GetTrueOrFalseImageHtml(string isDefaultStr)
-        {
-            return GetTrueOrFalseImageHtml(TranslateUtils.ToBool(isDefaultStr));
-        }
-
-        public static string GetTrueOrFalseImageHtml(bool isDefault)
-        {
-            return isDefault ? "<img src='../pic/icon/right.gif' border='0'/>" : "<img src='../pic/icon/wrong.gif' border='0'/>";
-        }
-
-        public static string ReplaceInvalidChar(string input)
-        {
-            var invalidChars = new List<char>();
-            invalidChars.AddRange(PathUtils.InvalidPathChars);
-            invalidChars.Add(' ');
-            invalidChars.Add('　');
-            invalidChars.Add('\'');
-            invalidChars.Add(':');
-            invalidChars.Add('.');
-            foreach (var item in input)
-            {
-                if (invalidChars.IndexOf(item) != -1)
-                {
-                    input = input.Remove(input.IndexOf(item), 1);
-                }
-            }
-
-            return input;
-        }
-
-        public static string UpperFirst(string input)
-        {
-            if (string.IsNullOrEmpty(input)) return string.Empty;
-            return input.First().ToString().ToUpper() + input.Substring(1);
         }
 
         public static string LowerFirst(string input)

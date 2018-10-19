@@ -10,11 +10,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.V1
 {
-    [RoutePrefix("api")]
+    [RoutePrefix("api/v1/captcha")]
     public class CaptchaController : ApiController
     {
-        private const string ApiRoute = "v1/captcha/{name}";
-        private const string ApiRouteActionsCheck = "v1/captcha/{name}/actions/check";
+        private const string ApiRoute = "{name}";
+        private const string ApiRouteActionsCheck = "{name}/actions/check";
 
         private static readonly Color[] Colors = { Color.FromArgb(37, 72, 91), Color.FromArgb(68, 24, 25), Color.FromArgb(17, 46, 2), Color.FromArgb(70, 16, 100), Color.FromArgb(24, 88, 74) };
 

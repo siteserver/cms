@@ -1300,7 +1300,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public DataSet GetStlDataSourceChecked(List<int> channelIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, LowerNameValueCollection others)
+        public DataSet GetStlDataSourceChecked(List<int> channelIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, NameValueCollection others)
         {
             return GetStlDataSourceChecked(tableName, channelIdList, startNum, totalNum, orderByString, whereString, others);
         }
@@ -1371,7 +1371,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             return DataProvider.DatabaseDao.GetIntList(sqlString);
         }
 
-        private DataSet GetStlDataSourceChecked(string tableName, List<int> channelIdList, int startNum, int totalNum, string orderByString, string whereString, LowerNameValueCollection others)
+        private DataSet GetStlDataSourceChecked(string tableName, List<int> channelIdList, int startNum, int totalNum, string orderByString, string whereString, NameValueCollection others)
         {
             if (channelIdList == null || channelIdList.Count == 0)
             {
@@ -1383,7 +1383,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             {
                 var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
 
-                foreach (var attributeName in others.Keys)
+                foreach (var attributeName in others.AllKeys)
                 {
                     if (StringUtils.ContainsIgnoreCase(columnNameList, attributeName))
                     {
@@ -2631,13 +2631,13 @@ GO");
             return list;
         }
 
-        public ContentInfo GetCacheContentInfo(string tableName, int contentId)
+        public ContentInfo GetCacheContentInfo(string tableName, int channelId, int contentId)
         {
             if (string.IsNullOrEmpty(tableName) || contentId <= 0) return null;
 
             ContentInfo contentInfo = null;
 
-            var sqlWhere = $"WHERE Id = {contentId}";
+            var sqlWhere = $"WHERE {ContentAttribute.ChannelId} = {channelId} AND {ContentAttribute.Id} = {contentId}";
             var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
 
             using (var rdr = ExecuteReader(sqlSelect))

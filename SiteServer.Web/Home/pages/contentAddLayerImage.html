@@ -28,58 +28,84 @@
         <span v-html="pageAlert.html"></span>
       </div>
 
-      <div id="drop-area" style="height: 200px; line-height: 200px; text-align: center; font-size: 18px; color: #777; border: 2px dashed #0000004d; background: #eee;	border-radius: 6px; cursor: pointer; margin-bottom: 20px">
-        点击批量上传Word文件或者将Word文件拖拽到此区域
-      </div>
-
-      <div class="row">
-        <div class="col-sm-4 col-lg-3 col-xs-12" v-for="(file, index) in files">
+      <div v-if="files.length > 0" class="row">
+        <div v-for="(file, index) in files" class="col-sm-4 col-lg-3 col-xs-12">
           <div class="card m-b-20">
+            <img class="card-img-top img-fluid" :src="file.url">
             <div class="card-body">
-              <p class="card-text">
-                {{ file.fileName }}
-                <br /> 大小：{{ Math.round(file.length/1024) + ' KB' }}
-              </p>
-              <a v-on:click="del(file)" href="javascript:;" class="card-link text-danger">删 除</a>
+              <small class="text-muted">图片大小：{{ file.contentLength > 1048576 ? Math.round(file.contentLength/1048576) +
+                ' MB' : Math.round(file.contentLength/1024) +
+                ' KB' }}</small>
+              <a v-on:click="del(file)" href="javascript:;" class="card-link text-danger float-right">删 除</a>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="form-group form-row">
-        <label class="col-1 text-right col-form-label col-form-label-sm">设置</label>
-        <div class="col-10">
-          <div class="checkbox checkbox-primary">
-            <input id="isNotFirstLineTitle" type="checkbox" v-model="isFirstLineTitle" true-value="false" false-value="true" />
-            <label for="isNotFirstLineTitle" class="mr-2">将文件名称作为标题</label>
-            <input id="isFirstLineTitle" type="checkbox" v-model="isFirstLineTitle" true-value="true" false-value="false" />
-            <label for="isFirstLineTitle" class="mr-2">将Word第一行作为标题</label>
-            <input id="isFirstLineRemove" type="checkbox" v-model="isFirstLineRemove" />
-            <label for="isFirstLineRemove" class="mr-2">内容正文删除标题</label>
-            <br />
-            <input id="isClearFormat" type="checkbox" v-model="isClearFormat" />
-            <label for="isClearFormat" class="mr-2">清除格式</label>
-            <input id="isFirstLineIndent" type="checkbox" v-model="isFirstLineIndent" />
-            <label for="isFirstLineIndent" class="mr-2">首行缩进</label>
-            <input id="isClearFontSize" type="checkbox" v-model="isClearFontSize" />
-            <label for="isClearFontSize" class="mr-2">清除字号</label>
-            <input id="isClearFontFamily" type="checkbox" v-model="isClearFontFamily" />
-            <label for="isClearFontFamily" class="mr-2">清除字体</label>
-            <input id="isClearImages" type="checkbox" v-model="isClearImages" />
-            <label for="isClearImages" class="mr-2">清除图片</label>
-          </div>
-        </div>
-        <div class="col-1 help-block"></div>
+      <div v-if="inputType === 'TextEditor' || files.length === 0" id="drop-area" style="height: 200px; line-height: 200px; text-align: center; font-size: 18px; color: #777; border: 2px dashed #0000004d; background: #eee;	border-radius: 6px; cursor: pointer; margin-bottom: 20px">
+        点击批量上传图片或者将图片拖拽到此区域
       </div>
 
-      <div class="form-group form-row">
-        <label class="col-1 text-right col-form-label col-form-label-sm">状态</label>
-        <div class="col-10">
-          <select v-model="checkedLevel" class="form-control form-control-sm">
-            <option v-for="level in checkedLevels" :value="level.key">{{ level.value }}</option>
-          </select>
+      <div v-if="inputType !== 'TextEditor'" class="form-row align-items-center ml-3">
+        <div class="col-auto">
+          <div class="checkbox checkbox-primary form-check-inline">
+            <input type="checkbox" id="isFix" v-model="isFix">
+            <label for="isFix"> 压缩图片 </label>
+          </div>
         </div>
-        <div class="col-1 help-block"></div>
+        <div v-if="isFix" class="col-auto">
+          <div class="input-group mb-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text">宽</div>
+            </div>
+            <input type="text" class="form-control" v-model="fixWidth">
+          </div>
+        </div>
+        <div v-if="isFix" class="col-auto">
+          <div class="input-group mb-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text">高</div>
+            </div>
+            <input type="text" class="form-control" placeholder="不设置将按比例缩放" v-model="fixHeight">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row align-items-center ml-3">
+        <div v-if="inputType !== 'TextEditor'" class="col-auto">
+          <div class="checkbox checkbox-primary form-check-inline">
+            <input type="checkbox" id="isEditor" v-model="isEditor">
+            <label for="isEditor"> 将图片显示在内容编辑框中 </label>
+          </div>
+        </div>
+        <div class="col-auto">
+          <div class="checkbox checkbox-primary form-check-inline">
+            <input type="checkbox" id="editorIsFix" v-model="editorIsFix">
+            <label for="editorIsFix"> 显示缩略图 </label>
+          </div>
+        </div>
+        <div v-if="editorIsFix" class="col-auto">
+          <div class="input-group mb-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text">宽</div>
+            </div>
+            <input type="text" class="form-control" v-model="editorFixWidth">
+          </div>
+        </div>
+        <div v-if="editorIsFix" class="col-auto">
+          <div class="input-group mb-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text">高</div>
+            </div>
+            <input type="text" class="form-control" placeholder="不设置将按比例缩放" v-model="editorFixHeight">
+          </div>
+        </div>
+        <div v-if="editorIsFix" class="col-auto">
+          <div class="checkbox checkbox-primary form-check-inline">
+            <input type="checkbox" id="editorIsLinkToOriginal" v-model="editorIsLinkToOriginal">
+            <label for="editorIsLinkToOriginal"> 图片可链接到原图 </label>
+          </div>
+        </div>
       </div>
 
       <hr />

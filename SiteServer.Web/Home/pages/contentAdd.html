@@ -127,16 +127,20 @@
                       errors.first(style.attributeName) }}</small>
                   </label>
 
-                  <template v-if="style.inputType === 'Image'">
-                    <div class="float-right btn-group btn-group-sm">
-                      <a v-on:click="btnLayerClick({title: '上传图片', name: 'Image', full: true})" href="javascritp:;"
-                        class="btn btn-outline-primary">上传</a>
-                      <button class="btn btn-outline-primary">选择</button>
-                      <button class="btn btn-outline-primary">裁切</button>
-                      <button class="btn btn-outline-primary">预览</button>
-                      <button class="btn btn-outline-primary">新增</button>
-                    </div>
-                  </template>
+                  <div class="float-right btn-group btn-group-sm">
+
+                    <template v-if="style.inputType === 'Image'">
+                      <a v-on:click="btnLayerClick({ title: '上传图片', name: 'Image', full: true, args: {attributeName: style.attributeName, inputType: style.inputType} })"
+                        href="javascritp:;" class="btn btn-outline-primary">上传</a>
+                      <a href="javascript:;" v-if="style.value" v-on:click="btnImageClick(style.value)" class="btn btn-outline-primary">预览</a>
+                    </template>
+
+                    <template v-else-if="style.inputType === 'TextEditor'">
+                      <a v-on:click="btnLayerClick({ title: '插入图片', name: 'Image', full: true, args: {attributeName: style.attributeName, inputType: style.inputType} })"
+                        href="javascritp:;" class="btn btn-outline-primary">插入图片</a>
+                    </template>
+
+                  </div>
 
                 </div>
 

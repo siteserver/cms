@@ -23,15 +23,18 @@ var methods = {
   load: function (pageConfig, styles, groups) {
     this.pageConfig = pageConfig;
 
-    var userRegistrationAttributes = this.pageConfig.userRegistrationAttributes.split(',');
-    for (var i = 0; i < styles.length; i++) {
-      var style = styles[i];
-      if (userRegistrationAttributes.indexOf(style.attributeName) !== -1) {
-        style.value = style.defaultValue;
+    if (this.pageConfig.userRegistrationAttributes) {
+      var userRegistrationAttributes = this.pageConfig.userRegistrationAttributes.split(',');
+      for (var i = 0; i < styles.length; i++) {
+        var style = styles[i];
+        if (userRegistrationAttributes.indexOf(style.attributeName) !== -1) {
+          style.value = style.defaultValue;
 
-        this.styles.push(style);
+          this.styles.push(style);
+        }
       }
     }
+
     this.groups = groups;
     this.reload();
   },
@@ -137,7 +140,7 @@ new Vue({
   created: function () {
     var $this = this;
     utils.getConfig('register', function (res) {
-      $this.load(res.value, res.styles, res.groups);
+      $this.load(res.config, res.styles, res.groups);
     });
   }
 });

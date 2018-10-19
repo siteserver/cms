@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Web.UI.WebControls;
+using static System.Text.Encoding;
 
 namespace SiteServer.Utils.Enumerations
 {
@@ -275,7 +276,6 @@ namespace SiteServer.Utils.Enumerations
             return Encoding.GetEncoding(typeStr);
         }
 
-        private static readonly Encoding gb2312 = Encoding.GetEncoding("gb2312");
-        public static Encoding GB2312 => gb2312;
+	    public static Encoding Gb2312 { get; } = Encoding.GetEncoding("gb2312");
 	}
 }

@@ -55,6 +55,11 @@ namespace SiteServer.CMS.Model
 
 	    }
 
+	    public ContentInfo(ContentInfo contentInfo)
+	    {
+	        Load(contentInfo);
+        }
+
         public int Id
 		{
             get => GetInt(ContentAttribute.Id);
@@ -271,7 +276,7 @@ namespace SiteServer.CMS.Model
             set => Set(ContentAttribute.SettingsXml, value);
         }
 
-	    public override Dictionary<string, object> ToDictionary()
+        public override Dictionary<string, object> ToDictionary()
 	    {
 	        var dict = base.ToDictionary();
 	        //dict.Remove(nameof(SettingsXml));

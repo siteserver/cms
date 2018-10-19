@@ -149,7 +149,9 @@ namespace SiteServer.CMS.Model.Attributes
             "WritingUserName",
             "ConsumePoint",
             "Comments",
-            "Reply"
+            "Reply",
+            "CheckTaskDate",
+            "UnCheckTaskDate"
         });
     }
 }

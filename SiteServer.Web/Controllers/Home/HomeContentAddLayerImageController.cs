@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
+using SiteServer.Utils.Images;
 
 namespace SiteServer.API.Controllers.Home
 {
@@ -43,13 +39,9 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
-                var checkedLevels = CheckManager.GetCheckedLevels(siteInfo, isChecked, checkedLevel, false);
-
                 return Ok(new
                 {
-                    Value = checkedLevels,
-                    CheckedLevel = CheckManager.LevelInt.CaoGao
+                    Value = siteInfo.Additional
                 });
             }
             catch (Exception ex)
@@ -76,45 +68,44 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var fileName = request.HttpRequest["fileName"];
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
 
-                var fileCount = request.HttpRequest.Files.Count;
+                var path = string.Empty;
+                var url = string.Empty;
+                var contentLength = 0;
 
-                string filePath = null;
-
-                if (fileCount > 0)
+                if (request.HttpRequest.Files.Count > 0)
                 {
                     var file = request.HttpRequest.Files[0];
 
-                    if (string.IsNullOrEmpty(fileName)) fileName = Path.GetFileName(file.FileName);
+                    var filePath = file.FileName;
+                    var fileExtName = PathUtils.GetExtension(filePath).ToLower();
+                    var localDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, fileExtName);
+                    var localFileName = PathUtility.GetUploadFileName(siteInfo, filePath);
+                    path = PathUtils.Combine(localDirectoryPath, localFileName);
+                    contentLength = file.ContentLength;
 
-                    var extendName = fileName.Substring(fileName.LastIndexOf(".", StringComparison.Ordinal)).ToLower();
-                    if (extendName == ".doc" || extendName == ".docx")
+                    if (!PathUtility.IsImageExtenstionAllowed(siteInfo, fileExtName))
                     {
-                        filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                        DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-                        file.SaveAs(filePath);
+                        return BadRequest("上传失败，上传图片格式不正确！");
                     }
-                }
-
-                FileInfo fileInfo = null;
-                if (!string.IsNullOrEmpty(filePath))
-                {
-                    fileInfo = new FileInfo(filePath);
-                }
-                if (fileInfo != null)
-                {
-                    return Ok(new
+                    if (!PathUtility.IsImageSizeAllowed(siteInfo, contentLength))
                     {
-                        fileName,
-                        length = fileInfo.Length,
-                        ret = 1
-                    });
+                        return BadRequest("上传失败，上传图片超出规定文件大小！");
+                    }
+
+                    file.SaveAs(path);
+                    FileUtility.AddWaterMark(siteInfo, path);
+
+                    url = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, path, true);
                 }
 
                 return Ok(new
                 {
-                    ret = 0
+                    Path = path,
+                    Url = url,
+                    ContentLength = contentLength
                 });
             }
             catch (Exception ex)
@@ -133,15 +124,15 @@ namespace SiteServer.API.Controllers.Home
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
-                var isFirstLineTitle = request.GetPostBool("isFirstLineTitle");
-                var isFirstLineRemove = request.GetPostBool("isFirstLineRemove");
-                var isClearFormat = request.GetPostBool("isClearFormat");
-                var isFirstLineIndent = request.GetPostBool("isFirstLineIndent");
-                var isClearFontSize = request.GetPostBool("isClearFontSize");
-                var isClearFontFamily = request.GetPostBool("isClearFontFamily");
-                var isClearImages = request.GetPostBool("isClearImages");
-                var checkedLevel = request.GetPostInt("checkedLevel");
-                var fileNames = TranslateUtils.StringCollectionToStringList(request.GetPostString("fileNames"));
+                var isFix = request.GetPostBool("isFix");
+                var fixWidth = request.GetPostString("fixWidth");
+                var fixHeight = request.GetPostString("fixHeight");
+                var isEditor = request.GetPostBool("isEditor");
+                var editorIsFix = request.GetPostBool("editorIsFix");
+                var editorFixWidth = request.GetPostString("editorFixWidth");
+                var editorFixHeight = request.GetPostString("editorFixHeight");
+                var editorIsLinkToOriginal = request.GetPostBool("editorIsLinkToOriginal");
+                var filePaths = TranslateUtils.StringCollectionToStringList(request.GetPostString("filePaths"));
 
                 if (!request.IsUserLoggin ||
                     !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
@@ -156,57 +147,106 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-                var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
-                var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
+                var retval = new List<string>();
+                var editors = new List<object>();
 
-                var contentIdList = new List<int>();
-
-                foreach (var fileName in fileNames)
+                foreach (var filePath in filePaths)
                 {
-                    if (string.IsNullOrEmpty(fileName)) continue;
+                    if (string.IsNullOrEmpty(filePath)) continue;
 
-                    var formCollection = WordUtils.GetWordNameValueCollection(siteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
+                    var fileExtName = PathUtils.GetExtension(filePath).ToLower();
+                    var fileName = PathUtility.GetUploadFileName(siteInfo, filePath);
 
-                    if (string.IsNullOrEmpty(formCollection[ContentAttribute.Title])) continue;
+                    var directoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, fileExtName);
+                    var fixFilePath = PathUtils.Combine(directoryPath, StringUtils.Constants.TitleImageAppendix + fileName);
+                    var editorFixFilePath = PathUtils.Combine(directoryPath, StringUtils.Constants.SmallImageAppendix + fileName);
 
-                    var dict = BackgroundInputTypeParser.SaveAttributes(siteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributes.Value);
+                    var isImage = EFileSystemTypeUtils.IsImage(fileExtName);
 
-                    var contentInfo = new ContentInfo(dict)
+                    if (isImage)
                     {
-                        ChannelId = channelInfo.Id,
-                        SiteId = siteId,
-                        AddUserName = request.AdminName,
-                        AddDate = DateTime.Now,
-                        SourceId = SourceManager.User,
-                        AdminId = request.AdminId,
-                        UserId = request.UserId
-                    };
+                        if (isFix)
+                        {
+                            var width = TranslateUtils.ToInt(fixWidth);
+                            var height = TranslateUtils.ToInt(fixHeight);
+                            ImageUtils.MakeThumbnail(filePath, fixFilePath, width, height, true);
+                        }
 
-                    contentInfo.LastEditUserName = contentInfo.AddUserName;
-                    contentInfo.LastEditDate = contentInfo.AddDate;
-                    contentInfo.IsChecked = isChecked;
-                    contentInfo.CheckedLevel = checkedLevel;
+                        if (isEditor)
+                        {
+                            if (editorIsFix)
+                            {
+                                var width = TranslateUtils.ToInt(editorFixWidth);
+                                var height = TranslateUtils.ToInt(editorFixHeight);
+                                ImageUtils.MakeThumbnail(filePath, editorFixFilePath, width, height, true);
+                            }
+                        }
+                    }
 
-                    contentInfo.Title = formCollection[ContentAttribute.Title];
+                    var imageUrl = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, filePath, true);
+                    var fixImageUrl = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, fixFilePath, true);
+                    var editorFixImageUrl = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, editorFixFilePath, true);
 
-                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, contentInfo);
+                    retval.Add(isFix ? fixImageUrl : imageUrl);
 
-                    contentIdList.Add(contentInfo.Id);
+                    editors.Add(new
+                    {
+                        ImageUrl = isFix ? editorFixImageUrl : imageUrl,
+                        OriginalUrl = imageUrl
+                    });
                 }
 
-                if (isChecked)
+                var changed = false;
+                if (siteInfo.Additional.ConfigImageIsFix != isFix)
                 {
-                    foreach (var contentId in contentIdList)
-                    {
-                        CreateManager.CreateContent(siteId, channelInfo.Id, contentId);
-                    }
-                    CreateManager.TriggerContentChangedEvent(siteId, channelInfo.Id);
+                    changed = true;
+                    siteInfo.Additional.ConfigImageIsFix = isFix;
+                }
+                if (siteInfo.Additional.ConfigImageFixWidth != fixWidth)
+                {
+                    changed = true;
+                    siteInfo.Additional.ConfigImageFixWidth = fixWidth;
+                }
+                if (siteInfo.Additional.ConfigImageFixHeight != fixHeight)
+                {
+                    changed = true;
+                    siteInfo.Additional.ConfigImageFixHeight = fixHeight;
+                }
+                if (siteInfo.Additional.ConfigImageIsEditor != isEditor)
+                {
+                    changed = true;
+                    siteInfo.Additional.ConfigImageIsEditor = isEditor;
+                }
+                if (siteInfo.Additional.ConfigImageEditorIsFix != editorIsFix)
+                {
+                    changed = true;
+                    siteInfo.Additional.ConfigImageEditorIsFix = editorIsFix;
+                }
+                if (siteInfo.Additional.ConfigImageEditorFixWidth != editorFixWidth)
+                {
+                    changed = true;
+                    siteInfo.Additional.ConfigImageEditorFixWidth = editorFixWidth;
+                }
+                if (siteInfo.Additional.ConfigImageEditorFixHeight != editorFixHeight)
+                {
+                    changed = true;
+                    siteInfo.Additional.ConfigImageEditorFixHeight = editorFixHeight;
+                }
+                if (siteInfo.Additional.ConfigImageEditorIsLinkToOriginal != editorIsLinkToOriginal)
+                {
+                    changed = true;
+                    siteInfo.Additional.ConfigImageEditorIsLinkToOriginal = editorIsLinkToOriginal;
+                }
+
+                if (changed)
+                {
+                    DataProvider.SiteDao.Update(siteInfo);
                 }
 
                 return Ok(new
                 {
-                    Value = contentIdList
+                    Value = retval,
+                    Editors = editors
                 });
             }
             catch (Exception ex)

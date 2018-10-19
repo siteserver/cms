@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Plugin.Impl
         private const string SettingsXml = nameof(SettingsXml);
         private const string ExtendedValues = nameof(ExtendedValues);
 
-        private readonly Dictionary<string, object> _dataDict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, object> _dataDict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
         public AttributesImpl()
         {
@@ -23,6 +23,21 @@ namespace SiteServer.CMS.Plugin.Impl
         public AttributesImpl(IDataReader reader)
         {
             Load(reader);
+        }
+
+        public AttributesImpl(AttributesImpl attributes)
+        {
+            Load(attributes);
+        }
+
+        public void Load(AttributesImpl attributes)
+        {
+            _dataDict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (KeyValuePair<string, object> entry in attributes._dataDict)
+            {
+                _dataDict.Add(entry.Key, entry.Value);
+            }
         }
 
         public void Load(IDataReader reader)

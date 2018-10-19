@@ -55,7 +55,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var sites = new List<object>();
                 var channels = new List<object>();
 
-                var siteIdList = request.UserPermissionsImpl.GetSiteIdList();
+                var siteIdList = request.AdminPermissions.GetSiteIdList();
                 foreach (var permissionSiteId in siteIdList)
                 {
                     var permissionSiteInfo = SiteManager.GetSiteInfo(permissionSiteId);
@@ -66,7 +66,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     });
                 }
 
-                var channelIdList = request.UserPermissionsImpl.GetChannelIdList(siteInfo.Id,
+                var channelIdList = request.AdminPermissions.GetChannelIdList(siteInfo.Id,
                     ConfigManager.ChannelPermissions.ContentAdd);
                 foreach (var permissionChannelId in channelIdList)
                 {
@@ -103,7 +103,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var siteId = request.GetQueryInt("siteId");
 
                 var channels = new List<object>();
-                var channelIdList = request.UserPermissionsImpl.GetChannelIdList(siteId,
+                var channelIdList = request.AdminPermissions.GetChannelIdList(siteId,
                     ConfigManager.ChannelPermissions.ContentAdd);
                 foreach (var permissionChannelId in channelIdList)
                 {

@@ -12,17 +12,16 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.V1
 {
-    [RoutePrefix("api")]
+    [RoutePrefix("api/v1/users")]
     public class UsersController : ApiController
     {
-        private const string Route = "v1/users";
-        private const string RouteActionsLogin = "v1/users/actions/login";
-        private const string RouteActionsLogout = "v1/users/actions/logout";
-
-        private const string RouteUser = "v1/users/{id:int}";
-        private const string RouteUserAvatar = "v1/users/{id:int}/avatar";
-        private const string RouteUserLogs = "v1/users/{id:int}/logs";
-        private const string RouteUserResetPassword = "v1/users/{id:int}/actions/resetPassword";
+        private const string Route = "";
+        private const string RouteActionsLogin = "actions/login";
+        private const string RouteActionsLogout = "actions/logout";
+        private const string RouteUser = "{id:int}";
+        private const string RouteUserAvatar = "{id:int}/avatar";
+        private const string RouteUserLogs = "{id:int}/logs";
+        private const string RouteUserResetPassword = "{id:int}/actions/resetPassword";
 
         [HttpPost, Route(Route)]
         public IHttpActionResult Create()

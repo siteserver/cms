@@ -166,7 +166,6 @@
     <Compile Include="LitJson\JsonWriter.cs" />
     <Compile Include="LitJson\Lexer.cs" />
     <Compile Include="LitJson\ParserToken.cs" />
-    <Compile Include="LowerNameValueCollection.cs" />
     <Compile Include="MessageUtils.cs" />
     <Compile Include="AttackUtils.cs" />
     <Compile Include="PageUtils.cs" />

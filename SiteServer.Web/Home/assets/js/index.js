@@ -71,7 +71,6 @@ new Vue({
   created: function () {
     var $this = this;
     utils.getConfig('index', function (res) {
-      console.log(res);
       if (res.value) {
         $this.load(res.value, res.config, res.menus, res.defaultPageUrl);
       } else {
@@ -80,3 +79,7 @@ new Vue({
     }, true);
   }
 });
+
+var getContentWindow = function () {
+  return document.getElementById('frmMain').contentWindow;
+};

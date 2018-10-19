@@ -4,19 +4,20 @@ var $uploadUrl = utils.getApiUrl('/home/contentAddLayerImage');
 var data = {
   siteId: parseInt(utils.getQueryString('siteId')),
   channelId: parseInt(utils.getQueryString('channelId')),
+  attributeName: utils.getQueryString('attributeName'),
+  inputType: utils.getQueryString('inputType'),
   pageLoad: false,
   pageAlert: null,
   file: null,
   files: [],
-  isFirstLineTitle: false,
-  isFirstLineRemove: true,
-  isClearFormat: true,
-  isFirstLineIndent: true,
-  isClearFontSize: true,
-  isClearFontFamily: true,
-  isClearImages: false,
-  checkedLevels: null,
-  checkedLevel: null
+  isFix: true,
+  fixWidth: '300',
+  fixHeight: '',
+  isEditor: true,
+  editorIsFix: true,
+  editorFixWidth: '500',
+  editorFixHeight: '',
+  editorIsLinkToOriginal: false
 };
 
 var methods = {
@@ -30,8 +31,14 @@ var methods = {
     }, function (err, res) {
       if (err || !res || !res.value) return;
 
-      $this.checkedLevels = res.value;
-      $this.checkedLevel = res.checkedLevel;
+      $this.isFix = res.value.configImageIsFix;
+      $this.fixWidth = res.value.configImageFixWidth;
+      $this.fixHeight = res.value.configImageFixHeight;
+      $this.isEditor = res.value.configImageIsEditor;
+      $this.editorIsFix = res.value.configImageEditorIsFix;
+      $this.editorFixWidth = res.value.configImageEditorFixWidth;
+      $this.editorFixHeight = res.value.configImageEditorFixHeight;
+      $this.editorIsLinkToOriginal = res.value.configImageEditorIsLinkToOriginal;
 
       $this.loadUploader();
     });
@@ -47,8 +54,13 @@ var methods = {
     var uploader = new Uploader({
       url: $uploadUrl + '/actions/upload?siteId=' + $this.siteId + '&channelId=' + $this.channelId + '&userToken=' + utils.getToken(),
       target: document.getElementById("drop-area"),
-      allows: ".doc,.docx",
+      allows: ".gif,.jpg,.jpeg,.bmp,.png,.pneg,.webp",
+      multiple: $this.inputType === 'TextEditor',
       on: {
+        select: function () {
+          if ($this.inputType !== 'TextEditor' && $this.files.length > 0) return false;
+          return true;
+        },
         add: function (task) {
           if (task.disabled) {
             return swal({
@@ -61,15 +73,13 @@ var methods = {
         },
         complete: function (task) {
           var json = task.json;
-          if (!json || json.ret != 1) {
+          if (!json || !json.path || !json.url) {
             return swal({
-              title: "Word 文件上传失败！",
+              title: "图片传失败！",
               type: 'error',
               showConfirmButton: false
             });
-          }
-
-          if (json && json.fileName) {
+          } else {
             $this.files.push(json);
           }
         }
@@ -78,7 +88,7 @@ var methods = {
 
     //若浏览器不支持html5上传，则禁止拖拽上传
     if (!Uploader.support.html5 || !uploader.html5) {
-      boxDropArea.innerHTML = "点击批量上传Word文件";
+      boxDropArea.innerHTML = "点击批量上传图片";
       return;
     }
 
@@ -96,49 +106,71 @@ var methods = {
       uploader.addList(files);
     });
   },
+
   del: function (file) {
     this.files.splice(this.files.indexOf(file), 1);
   },
-  getFileNames: function () {
+
+  getFilePaths: function () {
     var arr = [];
     for (var i = 0; i < this.files.length; i++) {
-      arr.push(this.files[i].fileName);
+      arr.push(this.files[i].path);
     }
     return arr;
   },
+
   btnSubmitClick: function () {
     var $this = this;
-    var fileNames = this.getFileNames().join(',');
-    if (!fileNames) {
+    var filePaths = this.getFilePaths().join(',');
+    if (!filePaths) {
       return swal({
-        title: "请选择需要导入的Word文件！",
+        title: "请选择需要上传的图片！",
         type: 'warning',
         showConfirmButton: false
       });
     }
 
-    parent.utils.loading(true);
+    top.utils.loading(true);
     $api.post({
       siteId: $this.siteId,
       channelId: $this.channelId,
-      isFirstLineTitle: $this.isFirstLineTitle,
-      isFirstLineRemove: $this.isFirstLineRemove,
-      isClearFormat: $this.isClearFormat,
-      isFirstLineIndent: $this.isFirstLineIndent,
-      isClearFontSize: $this.isClearFontSize,
-      isClearFontFamily: $this.isClearFontFamily,
-      isClearImages: $this.isClearImages,
-      checkedLevel: $this.checkedLevel,
-      fileNames: fileNames
+      isFix: $this.isFix,
+      fixWidth: $this.fixWidth,
+      fixHeight: $this.fixHeight,
+      isEditor: $this.isEditor,
+      editorIsFix: $this.editorIsFix,
+      editorFixWidth: $this.editorFixWidth,
+      editorFixHeight: $this.editorFixHeight,
+      editorIsLinkToOriginal: $this.editorIsLinkToOriginal,
+      filePaths: filePaths
     }, function (err, res) {
+      top.utils.loading(false);
       if (err || !res || !res.value) return;
 
-      var contentIdList = res.value;
-      if (contentIdList.length === 1) {
-        parent.location.href = 'contentAdd.html?siteId=' + $this.siteId + '&channelId=' + $this.channelId + '&contentId=' + contentIdList[0] + 'returnUrl=' + encodeURIComponent(parent.location.href);
-      } else {
-        parent.location.reload(true);
+      var win = top.getContentWindow();
+      var editorAttributeName = $this.attributeName;
+
+      if ($this.inputType != 'TextEditor') {
+        editorAttributeName = 'Content';
+        for (var i = 0; i < res.value.length; i++) {
+          var val = res.value[i];
+          win.setValue($this.attributeName, val);
+        }
       }
+
+      var ue = win.UE.getEditor(editorAttributeName);
+      if (ue && typeof ue.execCommand === "function") {
+        for (var i = 0; i < res.editors.length; i++) {
+          var editor = res.editors[i];
+          var html = '<img src="' + editor.imageUrl + '" border="0" />';
+          if ($this.editorIsFix && $this.editorIsLinkToOriginal) {
+            html = '<a href="' + editor.originalUrl + '" target="_blank">' + html + '</a>';
+          }
+          ue.execCommand("insertHTML", html);
+        }
+      }
+
+      top.layer.closeAll();
     });
   }
 };

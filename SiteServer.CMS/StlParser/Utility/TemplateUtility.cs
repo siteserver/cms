@@ -1,7 +1,7 @@
-﻿using System.Text;
+﻿using System.Collections.Specialized;
+using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
@@ -11,13 +11,9 @@ using SiteServer.CMS.StlParser.StlElement;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
-	public class TemplateUtility
+	public static class TemplateUtility
 	{
-		private TemplateUtility()
-		{
-		}
-
-        public static string GetContentsItemTemplateString(string templateString, LowerNameValueCollection selectedItems, LowerNameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
+        public static string GetContentsItemTemplateString(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
         {
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
             //var contentInfo = new BackgroundContentInfo(itemContainer.ContentItem.DataItem);
@@ -53,7 +49,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
             if (selectedItems != null && selectedItems.Count > 0)
             {
-                foreach (var itemTypes in selectedItems.Keys)
+                foreach (var itemTypes in selectedItems.AllKeys)
                 {
                     var itemTypeArrayList = TranslateUtils.StringCollectionToStringList(itemTypes);
                     var isTrue = true;
@@ -90,7 +86,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return innerBuilder.ToString();
         }
 
-        private static bool IsContentTemplateString(string itemType, string itemTypes, ref string templateString, LowerNameValueCollection selectedItems, LowerNameValueCollection selectedValues, PageInfo pageInfo, ContextInfo contextInfo)
+        private static bool IsContentTemplateString(string itemType, string itemTypes, ref string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, PageInfo pageInfo, ContextInfo contextInfo)
         {
             if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedCurrent))//当前内容
             {
@@ -179,7 +175,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return false;
         }
 
-        public static string GetChannelsItemTemplateString(string templateString, LowerNameValueCollection selectedItems, LowerNameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
+        public static string GetChannelsItemTemplateString(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
         {
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
 
@@ -194,7 +190,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
             if (selectedItems != null && selectedItems.Count > 0)
             {
-                foreach (var itemType in selectedItems.Keys)
+                foreach (var itemType in selectedItems.AllKeys)
                 {
                     if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedCurrent))//当前栏目
                     {
@@ -254,7 +250,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return innerBuilder.ToString();
         }
 
-        public static string GetSqlContentsTemplateString(string templateString, LowerNameValueCollection selectedItems, LowerNameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
+        public static string GetSqlContentsTemplateString(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
         {
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
 
@@ -265,7 +261,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
             if (selectedItems != null && selectedItems.Count > 0)
             {
-                foreach (var itemType in selectedItems.Keys)
+                foreach (var itemType in selectedItems.AllKeys)
                 {
                     if (IsNumberInRange(itemContainer.SqlItem.ItemIndex + 1, itemType))
                     {
@@ -310,7 +306,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return innerBuilder.ToString();
         }
 
-        public static string GetEachsTemplateString(string templateString, LowerNameValueCollection selectedItems, LowerNameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
+        public static string GetEachsTemplateString(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
         {
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
 
@@ -321,7 +317,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
             if (selectedItems != null && selectedItems.Count > 0)
             {
-                foreach (var itemType in selectedItems.Keys)
+                foreach (var itemType in selectedItems.AllKeys)
                 {
                     if (IsNumberInRange(itemContainer.SqlItem.ItemIndex + 1, itemType))
                     {
@@ -375,9 +371,9 @@ namespace SiteServer.CMS.StlParser.Utility
                 myDataList.RepeatLayout = RepeatLayout.Flow;
             }
 
-            foreach (var attributeName in listInfo.Others.Keys)
+            foreach (var attributeName in listInfo.Others.AllKeys)
             {
-                myDataList.AddAttribute(attributeName, listInfo.Others.Get(attributeName));
+                myDataList.AddAttribute(attributeName, listInfo.Others[attributeName]);
             }
         }
         
