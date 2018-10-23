@@ -26,22 +26,22 @@
 
   <div class="form-group">
     <label class="col-form-label">
-      标题
-      <small v-show="errors.has('title')" class="text-danger">{{
-        errors.first('title') }}</small>
+      菜单
+      <small v-show="errors.has('text')" class="text-danger">{{
+        errors.first('text') }}</small>
     </label>
-    <input v-model="item.title" type="text" class="form-control" name="title" data-vv-as="标题" v-validate="'required'"
-      :class="{'is-invalid': errors.has('title') }" />
+    <input v-model="item.text" type="text" class="form-control" name="text" data-vv-as="标题" v-validate="'required'"
+      :class="{'is-invalid': errors.has('text') }" />
   </div>
 
   <div class="form-group">
     <label class="col-form-label">
       链接
-      <small v-show="errors.has('url')" class="text-danger">{{
-        errors.first('url') }}</small>
+      <small v-show="errors.has('href')" class="text-danger">{{
+        errors.first('href') }}</small>
     </label>
-    <input v-model="item.url" type="text" class="form-control" name="url" data-vv-as="链接" v-validate="'required'"
-      :class="{'is-invalid': errors.has('url') }" />
+    <input v-model="item.href" type="text" class="form-control" name="href" data-vv-as="链接" v-validate="'required'"
+      :class="{'is-invalid': errors.has('href') }" />
   </div>
 
   <div class="form-group">
@@ -55,9 +55,10 @@
     <label class="col-form-label">
       目标窗口
     </label>
-    <select v-model="item.isOpenWindow" class="form-control">
-      <option v-bind:value="false">当前窗口</option>
-      <option v-bind:value="true">弹出新窗口</option>
+    <select v-model="item.target" class="form-control">
+      <option value="_top">载入整个窗口</option>
+      <option value="_self">载入框架窗口</option>
+      <option value="_blank">弹出新窗口</option>
     </select>
   </div>
 
@@ -116,7 +117,6 @@
           <th>标题 </th>
           <th>链接 </th>
           <th class="text-center text-nowrap">用户组 </th>
-          <th class="text-center text-nowrap">弹出窗口 </th>
           <th class="text-center text-nowrap">状态 </th>
           <th class="text-center">操作</th>
         </tr>
@@ -128,16 +128,13 @@
             {{ item.taxis }}
           </td>
           <td>
-            {{ item.title }}
+            {{ item.text }}
           </td>
           <td>
-            {{ item.url }}
+            {{ item.href }}
           </td>
           <td>
             {{ getUserGroups(item) }}
-          </td>
-          <td class="text-center">
-            {{ (item.isOpenWindow ? '是' : '否') }}
           </td>
           <td class="text-center">
             {{ (item.isDisabled ? '禁用' : '启用') }}
@@ -159,7 +156,6 @@
                   <th>标题 </th>
                   <th>链接 </th>
                   <th class="text-center text-nowrap">用户组 </th>
-                  <th class="text-center text-nowrap">弹出窗口 </th>
                   <th class="text-center text-nowrap">状态 </th>
                   <th class="text-center">操作</th>
                 </tr>
@@ -171,16 +167,13 @@
                     {{ child.taxis }}
                   </td>
                   <td>
-                    {{ child.title }}
+                    {{ child.text }}
                   </td>
                   <td>
-                    {{ child.url }}
+                    {{ child.href }}
                   </td>
                   <td>
                     {{ getUserGroups(child) }}
-                  </td>
-                  <td class="text-center">
-                    {{ (child.isOpenWindow ? '是' : '否') }}
                   </td>
                   <td class="text-center">
                     {{ (child.isDisabled ? '禁用' : '启用') }}

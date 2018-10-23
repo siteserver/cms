@@ -261,15 +261,9 @@ namespace SiteServer.API.Controllers.V1
                 var password = request.GetPostString("password");
                 var isAutoLogin = request.GetPostBool("isAutoLogin");
 
-                var userInfo = UserManager.GetUserInfoByAccount(account);
+                var userInfo = DataProvider.UserDao.Validate(account, password, true, out var _, out var errorMessage);
                 if (userInfo == null)
                 {
-                    return BadRequest("帐号或密码错误");
-                }
-
-                if (!DataProvider.UserDao.Validate(account, password, true, out var _, out var errorMessage))
-                {
-                    DataProvider.UserDao.UpdateLastActivityDateAndCountOfFailedLogin(userInfo);
                     return BadRequest(errorMessage);
                 }
 

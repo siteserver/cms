@@ -80,13 +80,13 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 {
                     DataProvider.UserMenuDao.Insert(menuInfo);
 
-                    request.AddAdminLog("新增用户菜单", $"用户菜单:{menuInfo.Title}");
+                    request.AddAdminLog("新增用户菜单", $"用户菜单:{menuInfo.Text}");
                 }
                 else if (menuInfo.Id > 0)
                 {
                     DataProvider.UserMenuDao.Update(menuInfo);
 
-                    request.AddAdminLog("修改用户菜单", $"用户菜单:{menuInfo.Title}");
+                    request.AddAdminLog("修改用户菜单", $"用户菜单:{menuInfo.Text}");
                 }
 
                 return Ok(new

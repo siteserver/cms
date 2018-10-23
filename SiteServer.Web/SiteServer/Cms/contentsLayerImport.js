@@ -49,7 +49,7 @@ var methods = {
       on: {
         add: function (task) {
           if (task.ext != '.' + $this.importType) {
-            swal({
+            alert({
               title: '文件错误！',
               text: '允许上传的文件格式为：.' + $this.importType,
               type: 'error',
@@ -61,7 +61,7 @@ var methods = {
         complete: function (task) {
           var json = task.json;
           if (!json || json.ret != 1) {
-            return swal({
+            return alert({
               title: "文件上传失败！",
               type: 'error',
               showConfirmButton: false
@@ -114,7 +114,7 @@ var methods = {
 
     var fileNames = this.getFileNames().join(',');
     if (!fileNames) {
-      return swal({
+      return alert({
         title: "请选择需要导入的文件！",
         type: 'warning',
         showConfirmButton: false

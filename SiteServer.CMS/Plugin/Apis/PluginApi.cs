@@ -1,6 +1,4 @@
-﻿using System;
-using System.Web;
-using SiteServer.CMS.Api;
+﻿using SiteServer.CMS.Api;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -45,9 +43,9 @@ namespace SiteServer.CMS.Plugin.Apis
             return path;
         }
 
-        public T GetPlugin<T>(string pluginId) where T : PluginBase
+        public T GetPlugin<T>() where T : PluginBase
         {
-            var pluginInfo = PluginManager.GetPluginInfo(pluginId);
+            var pluginInfo = PluginManager.GetPluginInfo<T>();
             return pluginInfo?.Plugin as T;
         }
     }

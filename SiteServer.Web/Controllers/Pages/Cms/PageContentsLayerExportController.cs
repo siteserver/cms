@@ -92,7 +92,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, true);
-                var pluginColumns = PluginContentManager.GetContentColumns(channelInfo);
+                var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
+                var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
                 var contentInfoList = new List<ContentInfo>();
                 var count = ContentManager.GetCount(siteInfo, channelInfo);

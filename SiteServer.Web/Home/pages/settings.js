@@ -139,29 +139,16 @@ var methods = {
   deleteAccount: function () {
     var $this = this;
 
-    swal({
+    alert({
       title: "永久删除账户",
       text: "帐户删除操作无法撤销，此操作会删除您的帐户以及帐户中的所有数据",
-      icon: "warning",
-      buttons: {
-        cancel: {
-          text: "取 消",
-          value: null,
-          visible: true,
-          className: "",
-          closeModal: true
-        },
-        confirm: {
-          text: "永久删除账户",
-          value: true,
-          visible: true,
-          className: "",
-          closeModal: true
-        }
-      },
-      dangerMode: true
-    }).then(function (willDelete) {
-      if (willDelete) {
+      type: "warning",
+      confirmButtonClass: 'btn btn-danger',
+      confirmButtonText: '永久删除账户',
+      showCancelButton: true,
+      cancelButtonText: '取 消'
+    }).then(function (result) {
+      if (result.value) {
         parent.utils.loading(true);
         $this.deleteAlertMessage = "";
 
@@ -173,9 +160,10 @@ var methods = {
             return;
           }
 
-          swal({
+          alert({
             title: "账户已关闭",
-            icon: "success"
+            type: "success",
+            showConfirmButton: false
           }).then(function () {
             location.href = 'login.html';
           });

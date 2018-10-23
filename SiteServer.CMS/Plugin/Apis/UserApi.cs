@@ -69,7 +69,8 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public bool Validate(string account, string password, out string userName, out string errorMessage)
         {
-            return DataProvider.UserDao.Validate(account, password, false, out userName, out errorMessage);
+            var userInfo = DataProvider.UserDao.Validate(account, password, false, out userName, out errorMessage);
+            return userInfo != null;
         }
 
         public bool ChangePassword(string userName, string password, out string errorMessage)

@@ -13,7 +13,6 @@
   <link href="assets/css/pages.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/ionicons.min.css" rel="stylesheet" type="text/css" />
-  <link href="assets/icons/favicon.png" rel="icon" type="image/png">
   <script type="text/javascript" src="assets/jquery/jquery-1.9.1.min.js"></script>
   <script type="text/javascript">
     if (window.top != self) {

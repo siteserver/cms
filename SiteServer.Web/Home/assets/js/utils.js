@@ -2,11 +2,40 @@ var config = {
   apiUrl: '../api'
 };
 
+var alert = swal.mixin({
+  confirmButtonClass: 'btn btn-primary',
+  cancelButtonClass: 'btn btn-default ml-3',
+  buttonsStyling: false,
+});
+
+VeeValidate.Validator.localize('zh_CN');
+Vue.use(VeeValidate);
+VeeValidate.Validator.localize({
+  zh_CN: {
+    messages: {
+      required: function (name) {
+        return name + '不能为空';
+      }
+    }
+  }
+});
+VeeValidate.Validator.extend('mobile', {
+  getMessage: function () {
+    return ' 请输入正确的手机号码';
+  },
+  validate: function (value, args) {
+    return (
+      value.length == 11 &&
+      /^((13|14|15|16|17|18|19)[0-9]{1}\d{8})$/.test(value)
+    );
+  }
+});
+
 var utils = {
-  Api: function(path, isRoot) {
+  Api: function (path, isRoot) {
     this.apiUrl = utils.getApiUrl(path, isRoot);
 
-    this._getURL = function(url, data, method) {
+    this._getURL = function (url, data, method) {
       url += /\?/.test(url) ? '&' : '?';
       if (typeof data === 'object' && method === 'GET') {
         var pairs = [];
@@ -22,19 +51,18 @@ var utils = {
       return (url + '&' + new Date().getTime()).replace('?&', '?');
     };
 
-    this.request = function(method, path, data, cb) {
+    this.request = function (method, path, data, cb) {
       var xhr = new XMLHttpRequest();
       xhr.open(method, this._getURL(path, data, method), true);
       xhr.withCredentials = true;
       if (cb) {
-        xhr.onreadystatechange = function() {
+        xhr.onreadystatechange = function () {
           if (xhr.readyState === 4) {
             if (xhr.status < 400) {
               cb(null, utils.parse(xhr.responseText), xhr.status);
             } else {
               var err = utils.parse(xhr.responseText);
-              cb(
-                {
+              cb({
                   status: xhr.status,
                   message: err.message || utils.errorCode(xhr.status)
                 },
@@ -59,7 +87,7 @@ var utils = {
       }
     };
 
-    this.get = function(data, cb, path) {
+    this.get = function (data, cb, path) {
       var url = this.apiUrl;
       if (path) {
         url += '/' + path;
@@ -67,7 +95,7 @@ var utils = {
       return this.request('GET', url, data, cb);
     };
 
-    this.post = function(data, cb, path) {
+    this.post = function (data, cb, path) {
       var url = this.apiUrl;
       if (path) {
         url += '/' + path;
@@ -75,7 +103,7 @@ var utils = {
       return this.request('POST', url, data, cb);
     };
 
-    this.put = function(data, cb, path) {
+    this.put = function (data, cb, path) {
       var url = this.apiUrl;
       if (path) {
         url += '/' + path;
@@ -83,7 +111,7 @@ var utils = {
       return this.request('PUT', url, data, cb);
     };
 
-    this.delete = function(data, cb, path) {
+    this.delete = function (data, cb, path) {
       var url = this.apiUrl;
       if (path) {
         url += '/' + path;
@@ -91,7 +119,7 @@ var utils = {
       return this.request('DELETE', url, data, cb);
     };
 
-    this.patch = function(data, cb, path) {
+    this.patch = function (data, cb, path) {
       var url = this.apiUrl;
       if (path) {
         url += '/' + path;
@@ -100,7 +128,7 @@ var utils = {
     };
   },
 
-  getApiUrl: function(path, isRoot) {
+  getApiUrl: function (path, isRoot) {
     var apiUrl = _.trimEnd(config.apiUrl, '/');
     if (!isRoot && apiUrl.indexOf('..') !== -1) {
       apiUrl = '../' + apiUrl;
@@ -109,7 +137,7 @@ var utils = {
     return apiUrl;
   },
 
-  parse: function(responseText) {
+  parse: function (responseText) {
     try {
       return responseText ? JSON.parse(responseText) : {};
     } catch (e) {
@@ -117,7 +145,7 @@ var utils = {
     }
   },
 
-  errorCode: function(status) {
+  errorCode: function (status) {
     switch (status) {
       case 400:
         return 'Bad Request';
@@ -149,7 +177,7 @@ var utils = {
     return 'Unknown Error';
   },
 
-  getQueryString: function(name) {
+  getQueryString: function (name) {
     var result = location.search.match(
       new RegExp('[?&]' + name + '=([^&]+)', 'i')
     );
@@ -159,21 +187,21 @@ var utils = {
     return decodeURIComponent(result[1]);
   },
 
-  getToken: function() {
+  getToken: function () {
     return Cookies.get('SS-USER-TOKEN-CLIENT');
   },
 
-  setToken: function(accessToken, expiresAt) {
+  setToken: function (accessToken, expiresAt) {
     Cookies.set('SS-USER-TOKEN-CLIENT', accessToken, {
       expires: new Date(expiresAt)
     });
   },
 
-  removeToken: function() {
+  removeToken: function () {
     Cookies.remove('SS-USER-TOKEN-CLIENT');
   },
 
-  redirectLogin: function() {
+  redirectLogin: function () {
     if (location.hash) {
       location.href = 'pages/login.html';
     } else {
@@ -181,7 +209,7 @@ var utils = {
     }
   },
 
-  loading: function(isLoading) {
+  loading: function (isLoading) {
     if (isLoading) {
       return layer.load(1, {
         shade: [0.2, '#000']
@@ -191,16 +219,16 @@ var utils = {
     }
   },
 
-  scrollToTop: function() {
+  scrollToTop: function () {
     document.documentElement.scrollTop = document.body.scrollTop = 0;
   },
 
-  closeLayer: function() {
+  closeLayer: function () {
     parent.layer.closeAll();
     return false;
   },
 
-  openLayer: function(config) {
+  openLayer: function (config) {
     if (!config || !config.url) return false;
 
     if (!config.width) {
@@ -229,7 +257,7 @@ var utils = {
     return false;
   },
 
-  openImagesLayer: function(imageUrls) {
+  openImagesLayer: function (imageUrls) {
     var data = [];
     for (var i = 0; i < imageUrls.length; i++) {
       var imageUrl = imageUrls[i];
@@ -246,76 +274,67 @@ var utils = {
     });
   },
 
-  getConfig: function(params, callback, isRoot) {
+  getConfig: function (params, callback, isRoot) {
     var api = new utils.Api('/home', isRoot);
     if (typeof params === 'string') {
       params = {
         pageName: params
       };
     }
-    api.get(params, function(err, res) {
+    api.get(params, function (err, res) {
       if (err) {
-        api.get(params, function(err, res) {
+        api.get(params, function (err, res) {
           if (err) return utils.alertError(err);
           if (res.config.isHomeClosed) {
-            swal({
+            alert({
               title: '用户中心已关闭！',
-              text: ' ',
               type: 'error',
-              button: false,
-              closeOnClickOutside: false,
-              closeOnEsc: false
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              allowEscapeKey: false
             });
           }
           callback(res);
         });
       }
       if (res.config.isHomeClosed) {
-        swal({
+        alert({
           title: '用户中心已关闭！',
           text: ' ',
           type: 'error',
-          button: false,
-          closeOnClickOutside: false,
-          closeOnEsc: false
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          allowEscapeKey: false
         });
       }
       callback(res);
     });
   },
 
-  alertError: function(err) {
-    swal({
+  alertError: function (err) {
+    alert({
       title: '系统错误！',
       text: '请联系管理员协助解决',
       type: 'error',
-      button: false,
-      closeOnClickOutside: false,
-      closeOnEsc: false
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false
     });
   },
 
-  alertDelete: function(config) {
+  alertDelete: function (config) {
     if (!config) return false;
 
-    swal({
+    alert({
       title: config.title,
       text: config.text,
-      type: 'warning',
-      buttons: {
-        cancel: {
-          text: '取 消',
-          visible: true,
-          className: 'btn'
-        },
-        confirm: {
-          text: '确认删除',
-          visible: true,
-          className: 'btn btn-danger'
-        }
-      }
-    }).then(function(isConfirm) {
-      if (isConfirm) {
+      type: 'question',
+      confirmButtonText: '确认删除',
+      confirmButtonClass: 'btn btn-danger',
+      showCancelButton: true,
+      cancelButtonText: '取 消'
+    }).then(function (result) {
+      if (result.value) {
         config.callback();
       }
     });
@@ -323,26 +342,3 @@ var utils = {
     return false;
   }
 };
-
-VeeValidate.Validator.localize('zh_CN');
-Vue.use(VeeValidate);
-VeeValidate.Validator.localize({
-  zh_CN: {
-    messages: {
-      required: function(name) {
-        return name + '不能为空';
-      }
-    }
-  }
-});
-VeeValidate.Validator.extend('mobile', {
-  getMessage: function() {
-    return ' 请输入正确的手机号码';
-  },
-  validate: function(value, args) {
-    return (
-      value.length == 11 &&
-      /^((13|14|15|16|17|18|19)[0-9]{1}\d{8})$/.test(value)
-    );
-  }
-});

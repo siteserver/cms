@@ -18,12 +18,12 @@ namespace SiteServer.CMS.Model
 
         public int Taxis { get; set; }
 
-        public string Title { get; set; }
-
-        public string Url { get; set; }
+        public string Text { get; set; }
 
         public string IconClass { get; set; }
 
-        public bool IsOpenWindow { get; set; }
+        public string Href { get; set; }
+
+        public string Target { get; set; }
     }
 }

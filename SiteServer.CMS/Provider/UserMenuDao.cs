@@ -53,15 +53,9 @@ namespace SiteServer.CMS.Provider
             },
             new TableColumn
             {
-                AttributeName = nameof(UserMenuInfo.Title),
+                AttributeName = nameof(UserMenuInfo.Text),
                 DataType = DataType.VarChar,
                 DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserMenuInfo.Url),
-                DataType = DataType.VarChar,
-                DataLength = 200
             },
             new TableColumn
             {
@@ -71,8 +65,15 @@ namespace SiteServer.CMS.Provider
             },
             new TableColumn
             {
-                AttributeName = nameof(UserMenuInfo.IsOpenWindow),
-                DataType = DataType.Boolean
+                AttributeName = nameof(UserMenuInfo.Href),
+                DataType = DataType.VarChar,
+                DataLength = 200
+            },
+            new TableColumn
+            {
+                AttributeName = nameof(UserMenuInfo.Target),
+                DataType = DataType.VarChar,
+                DataLength = 50
             }
         };
 
@@ -86,20 +87,20 @@ INSERT INTO {TableName} (
     {nameof(UserMenuInfo.IsDisabled)}, 
     {nameof(UserMenuInfo.ParentId)}, 
     {nameof(UserMenuInfo.Taxis)}, 
-    {nameof(UserMenuInfo.Title)}, 
-    {nameof(UserMenuInfo.Url)}, 
+    {nameof(UserMenuInfo.Text)}, 
     {nameof(UserMenuInfo.IconClass)}, 
-    {nameof(UserMenuInfo.IsOpenWindow)}
+    {nameof(UserMenuInfo.Href)}, 
+    {nameof(UserMenuInfo.Target)}
 ) VALUES (
     @{nameof(UserMenuInfo.SystemId)}, 
     @{nameof(UserMenuInfo.GroupIdCollection)}, 
     @{nameof(UserMenuInfo.IsDisabled)}, 
     @{nameof(UserMenuInfo.ParentId)}, 
     @{nameof(UserMenuInfo.Taxis)}, 
-    @{nameof(UserMenuInfo.Title)}, 
-    @{nameof(UserMenuInfo.Url)}, 
+    @{nameof(UserMenuInfo.Text)}, 
     @{nameof(UserMenuInfo.IconClass)}, 
-    @{nameof(UserMenuInfo.IsOpenWindow)}
+    @{nameof(UserMenuInfo.Href)}, 
+    @{nameof(UserMenuInfo.Target)}
 )";
 
             var parms = new IDataParameter[]
@@ -109,10 +110,10 @@ INSERT INTO {TableName} (
                 GetParameter($"@{nameof(UserMenuInfo.IsDisabled)}", DataType.Boolean, menuInfo.IsDisabled),
                 GetParameter($"@{nameof(UserMenuInfo.ParentId)}", DataType.Integer, menuInfo.ParentId),
                 GetParameter($"@{nameof(UserMenuInfo.Taxis)}", DataType.Integer, menuInfo.Taxis),
-                GetParameter($"@{nameof(UserMenuInfo.Title)}", DataType.VarChar, 50, menuInfo.Title),
-                GetParameter($"@{nameof(UserMenuInfo.Url)}", DataType.VarChar, 200, menuInfo.Url),
+                GetParameter($"@{nameof(UserMenuInfo.Text)}", DataType.VarChar, 50, menuInfo.Text),
                 GetParameter($"@{nameof(UserMenuInfo.IconClass)}", DataType.VarChar, 50, menuInfo.IconClass),
-                GetParameter($"@{nameof(UserMenuInfo.IsOpenWindow)}", DataType.Boolean, menuInfo.IsOpenWindow)
+                GetParameter($"@{nameof(UserMenuInfo.Href)}", DataType.VarChar, 200, menuInfo.Href),
+                GetParameter($"@{nameof(UserMenuInfo.Target)}", DataType.VarChar, 50, menuInfo.Target)
             };
 
             var menuId = ExecuteNonQueryAndReturnId(TableName, nameof(UserMenuInfo.Id), sqlString, parms);
@@ -130,10 +131,10 @@ INSERT INTO {TableName} (
                 {nameof(UserMenuInfo.IsDisabled)} = @{nameof(UserMenuInfo.IsDisabled)}, 
                 {nameof(UserMenuInfo.ParentId)} = @{nameof(UserMenuInfo.ParentId)}, 
                 {nameof(UserMenuInfo.Taxis)} = @{nameof(UserMenuInfo.Taxis)}, 
-                {nameof(UserMenuInfo.Title)} = @{nameof(UserMenuInfo.Title)}, 
-                {nameof(UserMenuInfo.Url)} = @{nameof(UserMenuInfo.Url)}, 
+                {nameof(UserMenuInfo.Text)} = @{nameof(UserMenuInfo.Text)}, 
                 {nameof(UserMenuInfo.IconClass)} = @{nameof(UserMenuInfo.IconClass)}, 
-                {nameof(UserMenuInfo.IsOpenWindow)} = @{nameof(UserMenuInfo.IsOpenWindow)}
+                {nameof(UserMenuInfo.Href)} = @{nameof(UserMenuInfo.Href)}, 
+                {nameof(UserMenuInfo.Target)} = @{nameof(UserMenuInfo.Target)}
             WHERE {nameof(UserMenuInfo.Id)} = @{nameof(UserMenuInfo.Id)}";
 
             IDataParameter[] parameters =
@@ -143,10 +144,10 @@ INSERT INTO {TableName} (
                 GetParameter(nameof(UserMenuInfo.IsDisabled), DataType.Boolean, menuInfo.IsDisabled),
                 GetParameter(nameof(UserMenuInfo.ParentId), DataType.Integer, menuInfo.ParentId),
                 GetParameter(nameof(UserMenuInfo.Taxis), DataType.Integer, menuInfo.Taxis),
-                GetParameter(nameof(UserMenuInfo.Title), DataType.VarChar, 50, menuInfo.Title),
-                GetParameter(nameof(UserMenuInfo.Url), DataType.VarChar, 200, menuInfo.Url),
+                GetParameter(nameof(UserMenuInfo.Text), DataType.VarChar, 50, menuInfo.Text),
                 GetParameter(nameof(UserMenuInfo.IconClass), DataType.VarChar, 50, menuInfo.IconClass),
-                GetParameter(nameof(UserMenuInfo.IsOpenWindow), DataType.Boolean, menuInfo.IsOpenWindow),
+                GetParameter(nameof(UserMenuInfo.Href), DataType.VarChar, 200, menuInfo.Href),
+                GetParameter(nameof(UserMenuInfo.Target), DataType.VarChar, 50, menuInfo.Target),
                 GetParameter(nameof(UserMenuInfo.Id), DataType.Integer, menuInfo.Id)
             };
 

@@ -89,18 +89,18 @@ var methods = {
       }
 
       if (res.isChecked) {
-        swal({
+        alert({
           title: "恭喜，账号注册成功",
-          icon: "success",
-          button: "进入登录页",
+          type: "success",
+          confirmButtonText: "进入登录页"
         }).then(function () {
           location.href = 'login.html';
         });
       } else {
-        swal({
+        alert({
           title: "账号注册成功，请等待管理员审核",
-          icon: "success",
-          button: "进入登录页",
+          type: "success",
+          confirmButtonText: "进入登录页"
         }).then(function () {
           location.href = 'login.html';
         });

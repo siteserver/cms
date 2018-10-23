@@ -204,7 +204,7 @@ var methods = {
             return;
           }
 
-          parent.swal({
+          parent.alert({
             toast: true,
             type: 'success',
             title: "稿件修改成功",

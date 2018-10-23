@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
         private List<TableStyleInfo> _styleInfoList;
         private StringCollection _attributesOfDisplay;
         private List<TableStyleInfo> _allStyleInfoList;
-        private Dictionary<string, List<Plugin.Menu>> _pluginMenus;
+        private List<string> _pluginIds;
         private Dictionary<string, Dictionary<string, Func<IContentContext, string>>> _pluginColumns;
         private bool _isEdit;
         private readonly Dictionary<string, string> _nameValueCacheDict = new Dictionary<string, string>();
@@ -60,8 +60,8 @@ namespace SiteServer.BackgroundPages.Cms
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplay(SiteId, channelId));
             _allStyleInfoList = ContentUtility.GetAllTableStyleInfoList(_styleInfoList);
 
-            _pluginMenus = PluginContentManager.GetContentMenus(_channelInfo);
-            _pluginColumns = PluginContentManager.GetContentColumns(_channelInfo);
+            _pluginIds = PluginContentManager.GetContentPluginIds(_channelInfo);
+            _pluginColumns = PluginContentManager.GetContentColumns(_pluginIds);
             _isEdit = TextUtility.IsEdit(SiteInfo, channelId, AuthRequest.AdminPermissionsImpl);
 
             if (_channelInfo.Additional.IsPreviewContentsExists)
@@ -196,7 +196,8 @@ $(document).ready(function() {
             ltlStatus.Text =
                 $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{ModalCheckState.GetOpenWindowString(SiteId, contentInfo, PageUrl)}"">{CheckManager.GetCheckState(SiteInfo, contentInfo)}</a>";
 
-            ltlCommands.Text = TextUtility.GetCommandsHtml(SiteInfo, _pluginMenus, contentInfo, PageUrl, AuthRequest.AdminName, _isEdit);
+            var pluginMenus = PluginMenuManager.GetContentMenus(_pluginIds, contentInfo);
+            ltlCommands.Text = TextUtility.GetCommandsHtml(SiteInfo, pluginMenus, contentInfo, PageUrl, AuthRequest.AdminName, _isEdit);
 
             ltlSelect.Text = $@"<input type=""checkbox"" name=""contentIdCollection"" value=""{contentInfo.Id}"" />";
         }

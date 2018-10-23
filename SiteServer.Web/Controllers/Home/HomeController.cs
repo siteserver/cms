@@ -96,24 +96,24 @@ namespace SiteServer.API.Controllers.Home
 
                         children.Add(new
                         {
-                            menuInfo2.Title,
-                            menuInfo2.Url,
+                            menuInfo2.Text,
                             menuInfo2.IconClass,
-                            menuInfo2.IsOpenWindow
+                            menuInfo2.Href,
+                            menuInfo2.Target
                         });
                     }
 
                     menus.Add(new
                     {
-                        menuInfo1.Title,
-                        menuInfo1.Url,
+                        menuInfo1.Text,
                         menuInfo1.IconClass,
-                        menuInfo1.IsOpenWindow,
+                        menuInfo1.Href,
+                        menuInfo1.Target,
                         Menus = children
                     });
                 }
 
-                defaultPageUrl = PluginMenuManager.GetSystemDefaultPageUrl();
+                defaultPageUrl = PluginMenuManager.GetHomeDefaultPageUrl();
             }
 
             return new

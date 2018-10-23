@@ -59,6 +59,7 @@ namespace SiteServer.CMS.DataCache
 	    private const string Dashboard = nameof(Dashboard);
 	    private const string ContentAdd = nameof(ContentAdd);
 	    private const string Contents = nameof(Contents);
+	    private const string Return = nameof(Return);
 
         public static readonly Lazy<List<KeyValuePair<UserMenuInfo, List<UserMenuInfo>>>> SystemMenus =
 	        new Lazy<List<KeyValuePair<UserMenuInfo, List<UserMenuInfo>>>>(() =>
@@ -72,10 +73,10 @@ namespace SiteServer.CMS.DataCache
 	                    IsDisabled = false,
 	                    ParentId = 0,
 	                    Taxis = 1,
-	                    Title = "用户中心",
-	                    Url = "pages/dashboard.html",
-                        IconClass = "fa fa-home",
-	                    IsOpenWindow = false
+	                    Text = "用户中心",
+	                    IconClass = "fa fa-home",
+                        Href = "index.html",
+	                    Target = "_top"
 	                }, null),
 	                new KeyValuePair<UserMenuInfo, List<UserMenuInfo>>(new UserMenuInfo
 	                {
@@ -85,11 +86,11 @@ namespace SiteServer.CMS.DataCache
 	                    IsDisabled = false,
 	                    ParentId = 0,
 	                    Taxis = 2,
-	                    Title = "新增稿件",
-	                    Url = "pages/contentAdd.html",
-                        IconClass = "fa fa-plus",
-	                    IsOpenWindow = false
-	                }, null),
+	                    Text = "新增稿件",
+	                    IconClass = "fa fa-plus",
+	                    Href = "pages/contentAdd.html",
+	                    Target = "_self"
+                    }, null),
 	                new KeyValuePair<UserMenuInfo, List<UserMenuInfo>>(new UserMenuInfo
 	                {
 	                    Id = 0,
@@ -98,11 +99,24 @@ namespace SiteServer.CMS.DataCache
 	                    IsDisabled = false,
 	                    ParentId = 0,
 	                    Taxis = 3,
-	                    Title = "稿件管理",
-	                    Url = "pages/contents.html",
-                        IconClass = "fa fa-list",
-	                    IsOpenWindow = false
+	                    Text = "稿件管理",
+	                    IconClass = "fa fa-list",
+	                    Href = "pages/contents.html",
+	                    Target = "_self"
+                    }, null),
+	                new KeyValuePair<UserMenuInfo, List<UserMenuInfo>>(new UserMenuInfo
+	                {
+	                    Id = 0,
+	                    SystemId = Return,
+	                    GroupIdCollection = string.Empty,
+	                    IsDisabled = false,
+	                    ParentId = 0,
+	                    Taxis = 4,
+	                    Text = "返回网站",
+	                    IconClass = "fa fa-arrow-left",
+	                    Href = "/",
+	                    Target = "_top"
 	                }, null)
-	            });
+                });
 	}
 }

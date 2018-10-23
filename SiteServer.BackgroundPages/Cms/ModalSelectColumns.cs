@@ -38,7 +38,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
             var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.Additional.ContentAttributesOfDisplay);
-            _pluginColumns = PluginContentManager.GetContentColumns(channelInfo);
+            var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
+            _pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
             if (IsPostBack) return;
 

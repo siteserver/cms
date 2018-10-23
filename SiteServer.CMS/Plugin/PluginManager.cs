@@ -274,12 +274,13 @@ namespace SiteServer.CMS.Plugin
 
             var dict = PluginManagerCache.GetPluginSortedList();
 
-            PluginInstance pluginInfo;
-            if (dict.TryGetValue(pluginId, out pluginInfo))
-            {
-                return pluginInfo;
-            }
-            return null;
+            return dict.TryGetValue(pluginId, out var pluginInfo) ? pluginInfo : null;
+        }
+
+        public static PluginInstance GetPluginInfo<T>() where T : PluginBase
+        {
+            var dict = PluginManagerCache.GetPluginSortedList();
+            return dict.Values.Where(instance => instance.Plugin is T).FirstOrDefault(instance => instance.IsRunnable && !instance.IsDisabled);
         }
 
         public static Dictionary<string, string> GetPluginIdAndVersionDict()

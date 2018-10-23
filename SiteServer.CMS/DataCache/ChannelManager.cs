@@ -629,7 +629,8 @@ namespace SiteServer.CMS.DataCache
             var items = new List<InputListItem>();
 
             var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.Additional.ContentAttributesOfDisplay);
-            var pluginColumns = PluginContentManager.GetContentColumns(channelInfo);
+            var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
+            var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
             var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo));
 

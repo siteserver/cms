@@ -7,7 +7,6 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -42,7 +41,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var pluginColumns = PluginContentManager.GetContentColumns(channelInfo);
+                var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
+                var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
                 var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, false);
 
@@ -63,7 +63,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     {
                         var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                         if (contentInfo == null) continue;
-                        
+
+                        var menus = PluginMenuManager.GetContentMenus(pluginIds, contentInfo);
+                        contentInfo.Set("PluginMenus", menus);
+
                         pageContentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
                     }
                 }
@@ -79,33 +82,13 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     IsChannelEdit = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit)
                 };
 
-                var menus = new List<Menu>();
-                var pluginMenus = PluginContentManager.GetContentMenus(channelInfo);
-                if (pluginMenus != null)
-                {
-                    foreach (var pluginId in pluginMenus.Keys)
-                    {
-                        var contentMenus = pluginMenus[pluginId];
-                        if (contentMenus != null && contentMenus.Count > 0)
-                        {
-                            foreach (var menu in contentMenus)
-                            {
-                                menu.Href = PluginMenuManager.GetMenuContentHrefPrefix(pluginId, menu.Href);
-
-                                menus.Add(menu);
-                            }
-                        }
-                    }
-                }
-
                 return Ok(new
                 {
                     Value = pageContentInfoList,
                     Count = count,
                     Pages = pages,
                     Permissions = permissions,
-                    Columns = columns,
-                    Menus = menus
+                    Columns = columns
                 });
             }
             catch (Exception ex)
