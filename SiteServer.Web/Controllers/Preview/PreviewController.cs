@@ -19,7 +19,6 @@ using SiteServer.Plugin;
 
 namespace SiteServer.API.Controllers.Preview
 {
-    [RoutePrefix("api")]
     public class PreviewController : ApiController
     {
         [HttpGet, Route(ApiRoutePreview.Route)]

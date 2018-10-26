@@ -8,7 +8,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
-    [RoutePrefix("api/home/contentsLayerGroup")]
+    [RoutePrefix("home/contentsLayerGroup")]
     public class HomeContentsLayerGroupController : ApiController
     {
         private const string Route = "";

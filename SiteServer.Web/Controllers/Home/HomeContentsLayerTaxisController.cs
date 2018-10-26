@@ -9,7 +9,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Home
 {
-    [RoutePrefix("api/home/contentsLayerTaxis")]
+    [RoutePrefix("home/contentsLayerTaxis")]
     public class HomeContentsLayerTaxisController : ApiController
     {
         private const string Route = "";

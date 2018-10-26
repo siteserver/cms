@@ -11,7 +11,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Home
 {
-    [RoutePrefix("api/home/contentsLayerImport")]
+    [RoutePrefix("home/contentsLayerImport")]
     public class HomeContentsLayerImportController : ApiController
     {
         private const string Route = "";

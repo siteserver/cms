@@ -12,7 +12,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
-    [RoutePrefix("api/home/contentsLayerExport")]
+    [RoutePrefix("home/contentsLayerExport")]
     public class HomeContentsLayerExportController : ApiController
     {
         private const string Route = "";

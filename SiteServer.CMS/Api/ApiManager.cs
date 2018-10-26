@@ -20,7 +20,7 @@ namespace SiteServer.CMS.Api
             {
                 if (string.IsNullOrEmpty(_innerApiUrl))
                 {
-                    _innerApiUrl = PageUtils.ParseNavigationUrl("~/api");
+                    _innerApiUrl = PageUtils.ParseNavigationUrl($"~/{WebConfigUtils.ApiPrefix}");
                 }
                 return _innerApiUrl;
             }

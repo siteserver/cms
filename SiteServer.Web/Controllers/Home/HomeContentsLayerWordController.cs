@@ -14,7 +14,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
-    [RoutePrefix("api/home/contentsLayerWord")]
+    [RoutePrefix("home/contentsLayerWord")]
     public class HomeContentsLayerWordController : ApiController
     {
         private const string Route = "";

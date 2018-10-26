@@ -1,10 +1,12 @@
 ﻿using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using System.Web.Http.Dispatcher;
 using System.Web.Routing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using SiteServer.Utils;
 
 namespace SiteServer.API
 {
@@ -13,8 +15,8 @@ namespace SiteServer.API
     {
         public static void Register(HttpConfiguration config)
         {
-            config.MapHttpAttributeRoutes();
-
+            config.MapHttpAttributeRoutes(new CentralizedPrefixProvider(WebConfigUtils.ApiPrefix));
+            
             var corsAttr = new EnableCorsAttribute("*", "*", "*")
             {
                 SupportsCredentials = true

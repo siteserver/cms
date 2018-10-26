@@ -10,7 +10,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
-    [RoutePrefix("api/home/contentsLayerCopy")]
+    [RoutePrefix("home/contentsLayerCopy")]
     public class HomeContentsLayerCopyController : ApiController
     {
         private const string Route = "";

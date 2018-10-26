@@ -6,7 +6,7 @@ using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Home
 {
-    [RoutePrefix("api/home/contentsLayerView")]
+    [RoutePrefix("home/contentsLayerView")]
     public class HomeContentsLayerViewController : ApiController
     {
         private const string Route = "";

@@ -10,7 +10,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
-    [RoutePrefix("api/home")]
+    [RoutePrefix("home")]
     public class HomeController : ApiController
     {
         private const string Route = "";

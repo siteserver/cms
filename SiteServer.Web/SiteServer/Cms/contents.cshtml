@@ -131,13 +131,11 @@
       </td>
 
       <td class="text-center text-nowrap" style="min-width: 80px">
-        <a :href="'pageContentAdd.aspx?siteId=' + siteId + '&channelId=' + channelId + '&id=' + content.id" onclick="event.stopPropagation()">编辑</a>
-
-        <a v-for="menu in menus" :href="getMenuHref(menu, content)" v-on:click="btnMenuClick(menu, content)" :target="menu.target"
-          class="m-l-5">
-          {{ menu.text }}
+        <a v-for="pluginMenu in content.pluginMenus" :target="pluginMenu.target" :href="(pluginMenu.target === '_layer' ? 'javascript:;' : pluginMenu.href)"
+          v-on:click="btnPluginMenuClick(pluginMenu, content)" class="mr-2">
+          {{ pluginMenu.text }}
         </a>
-
+        <a :href="'pageContentAdd.aspx?siteId=' + siteId + '&channelId=' + channelId + '&id=' + content.id" onclick="event.stopPropagation()">编辑</a>
       </td>
       <td class="text-center text-nowrap" style="width: 80px">
         <a v-on:click="btnContentStateClick(content.id)" href="javascript:;" :class="{'text-danger' : !content.isChecked}">

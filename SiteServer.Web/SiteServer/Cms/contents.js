@@ -24,7 +24,6 @@ var data = {
   pages: null,
   permissions: null,
   columns: null,
-  menus: null,
   pageOptions: null,
   isAllChecked: false
 };
@@ -157,20 +156,13 @@ var methods = {
     document.documentElement.scrollTop = document.body.scrollTop = 0;
   },
 
-  getMenuHref: function (menu, content) {
-    if (menu.target) {
-      return menu.href + '&siteId=' + this.siteId + '&channelId=' + this.channelId + '&contentId=' + content.id;
-    }
-    return 'javascript:;';
-  },
-
-  btnMenuClick: function (menu, content) {
+  btnPluginMenuClick: function (pluginMenu, content) {
     event.stopPropagation();
 
-    if (!menu.target) {
+    if (menu.target === '_layer') {
       pageUtils.openLayer({
         title: menu.text,
-        url: menu.href + '&siteId=' + this.siteId + '&channelId=' + this.channelId + '&contentId=' + content.id,
+        url: pluginMenu.href,
         full: true
       });
     }
@@ -204,7 +196,6 @@ var methods = {
         $this.pages = res.pages;
         $this.permissions = res.permissions;
         $this.columns = res.columns;
-        $this.menus = res.menus;
         $this.page = page;
         $this.pageOptions = [];
         for (var i = 1; i <= $this.pages; i++) {

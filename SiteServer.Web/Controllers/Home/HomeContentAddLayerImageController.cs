@@ -10,7 +10,7 @@ using SiteServer.Utils.Images;
 
 namespace SiteServer.API.Controllers.Home
 {
-    [RoutePrefix("api/home/contentAddLayerImage")]
+    [RoutePrefix("home/contentAddLayerImage")]
     public class HomeContentAddLayerImageController : ApiController
     {
         private const string Route = "";

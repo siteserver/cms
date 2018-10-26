@@ -23,7 +23,7 @@ namespace SiteServer.CMS.Model.Attributes
             set => Set("SeparatedApiUrl", value);
         }
 
-        public string ApiUrl => IsSeparatedApi ? SeparatedApiUrl : PageUtils.ParseNavigationUrl("~/api");
+        public string ApiUrl => IsSeparatedApi ? SeparatedApiUrl : PageUtils.ParseNavigationUrl($"~/{WebConfigUtils.ApiPrefix}");
 
         public bool IsLogSite
         {

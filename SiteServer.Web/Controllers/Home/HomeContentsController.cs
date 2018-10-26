@@ -9,7 +9,7 @@ using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Home
 {
-    [RoutePrefix("api/home/contents")]
+    [RoutePrefix("home/contents")]
     public class HomeContentsController : ApiController
     {
         private const string Route = "";

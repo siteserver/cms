@@ -11,7 +11,6 @@ using SiteServer.Plugin;
 
 namespace SiteServer.API.Controllers.Plugins
 {
-    [RoutePrefix("api")]
     public class PluginController : ApiController
     {
         [HttpGet, Route(ApiRoutePlugin.Route)]

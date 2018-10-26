@@ -10,7 +10,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
-    [RoutePrefix("api/home/contentsLayerDelete")]
+    [RoutePrefix("home/contentsLayerDelete")]
     public class HomeContentsLayerDeleteController : ApiController
     {
         private const string Route = "";
