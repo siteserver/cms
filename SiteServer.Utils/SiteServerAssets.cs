@@ -8,7 +8,7 @@ namespace SiteServer.Utils
 
         public static string GetUrl(string relatedUrl)
         {
-            return PageUtils.Combine(PageUtils.GetAdminDirectoryUrl(DirectoryName), relatedUrl);
+            return PageUtils.Combine(PageUtils.GetAdminUrl(DirectoryName), relatedUrl);
         }
 
         public static string GetPath(params string[] paths)

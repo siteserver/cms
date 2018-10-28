@@ -15,8 +15,16 @@ namespace SiteServer.API
 
         protected override string GetRoutePrefix(HttpControllerDescriptor controllerDescriptor)
         {
+            var prefix = _centralizedPrefix;
+
+            var dllName = controllerDescriptor.ControllerType.Assembly.GetName().Name.ToLower();
+            if (dllName != "siteserver.api")
+            {
+                prefix += "/" + dllName;
+            }
+
             var existingPrefix = base.GetRoutePrefix(controllerDescriptor);
-            return existingPrefix == null ? _centralizedPrefix : $"{_centralizedPrefix}/{existingPrefix}";
+            return existingPrefix == null ? prefix : $"{prefix}/{existingPrefix}";
         }
     }
 }

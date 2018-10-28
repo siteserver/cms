@@ -65,7 +65,7 @@ namespace SiteServer.BackgroundPages
                 return;
             }
             AuthRequest.AdminLogout();
-            PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
+            PageUtils.Redirect(PageUtils.GetAdminUrl(string.Empty));
         }
 
         public void VerifyChannelPermissions(int channelId, params string[] channelPermissions)
@@ -75,7 +75,7 @@ namespace SiteServer.BackgroundPages
                 return;
             }
             AuthRequest.AdminLogout();
-            PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
+            PageUtils.Redirect(PageUtils.GetAdminUrl(string.Empty));
         }
 
         private NameValueCollection _attributes;

@@ -25,7 +25,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
             if (StringUtils.StartsWith(relatedUrl, "@/"))
             {
-                return PageUtils.GetAdminDirectoryUrl(relatedUrl.Substring(1));
+                return PageUtils.GetAdminUrl(relatedUrl.Substring(1));
             }
 
             return PageUtility.GetSiteFilesUrl(ApiManager.ApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, relatedUrl));

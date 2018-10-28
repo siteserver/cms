@@ -86,7 +86,7 @@ namespace SiteServer.BackgroundPages
             EBooleanUtils.AddListItems(DdlIsProtectData, "加密", "不加密");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsProtectData, false.ToString());
 
-            LtlGo.Text = $@"<a class=""btn btn-success m-l-5"" href=""{PageUtils.GetAdminDirectoryUrl(string.Empty)}"">进入后台</a>";
+            LtlGo.Text = $@"<a class=""btn btn-success m-l-5"" href=""{PageUtils.GetAdminUrl(string.Empty)}"">进入后台</a>";
         }
 
         public void DdlSqlDatabaseType_SelectedIndexChanged(object sender, EventArgs e)

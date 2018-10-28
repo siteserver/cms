@@ -16,7 +16,10 @@ namespace SiteServer.API
         public static void Register(HttpConfiguration config)
         {
             config.MapHttpAttributeRoutes(new CentralizedPrefixProvider(WebConfigUtils.ApiPrefix));
-            
+
+            config.Services.Replace(typeof(IHttpControllerSelector),
+                new NamespaceHttpControllerSelector(config));
+
             var corsAttr = new EnableCorsAttribute("*", "*", "*")
             {
                 SupportsCredentials = true

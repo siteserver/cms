@@ -5,7 +5,6 @@ using SiteServer.CMS.Api;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -254,7 +253,7 @@ namespace SiteServer.CMS.Plugin
             {
                 menu.Href = GetMenuHref(pluginId, menu.Href, siteId, channelId, contentId);
             }
-            if (string.IsNullOrEmpty(menu.Target))
+            if (channelId == 0 && contentId == 0 && string.IsNullOrEmpty(menu.Target))
             {
                 menu.Target = "right";
             }

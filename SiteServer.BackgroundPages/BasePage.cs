@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages
             {
                 if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
                 {
-                    PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl("Installer"));
+                    PageUtils.Redirect(PageUtils.GetAdminUrl("Installer"));
                     return;
                 }
 
@@ -211,7 +211,7 @@ setTimeout(function() {{
                 return;
             }
             AuthRequest.AdminLogout();
-            PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
+            PageUtils.Redirect(PageUtils.GetAdminUrl(string.Empty));
         }
 
         public virtual void Submit_OnClick(object sender, EventArgs e)

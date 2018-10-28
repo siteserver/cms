@@ -377,7 +377,7 @@ namespace SiteServer.CMS.DataCache
                 var list = PluginContentManager.GetContentPlugins(nodeInfo, true);
                 if (list != null && list.Count > 0)
                 {
-                    imageHtml += @"<i class=""ion-cube"" style=""font-size: 15px""></i>&nbsp;";
+                    imageHtml += @"<i class=""ion-cube"" style=""font-size: 15px;vertical-align: baseline;""></i>&nbsp;";
                 }
             }
             return imageHtml;

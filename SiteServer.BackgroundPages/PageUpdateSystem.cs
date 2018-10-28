@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages
 
         public string InstalledVersion => SystemManager.Version;
 
-        public string AdminUrl => PageUtils.GetAdminDirectoryUrl(string.Empty);
+        public string AdminUrl => PageUtils.GetAdminUrl(string.Empty);
 
         public string DownloadApiUrl => ApiRouteDownload.GetUrl(ApiManager.InnerApiUrl);
 

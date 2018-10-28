@@ -31,7 +31,6 @@ var data = {
 var methods = {
   btnAddClick: function () {
     event.stopPropagation();
-
     location.href = 'pageContentAdd.aspx?siteId=' + this.siteId + '&channelId=' + this.channelId;
   },
 
@@ -156,13 +155,17 @@ var methods = {
     document.documentElement.scrollTop = document.body.scrollTop = 0;
   },
 
-  btnPluginMenuClick: function (pluginMenu, content) {
+  getPluginMenuUrl: function (pluginMenu) {
+    return pluginMenu.href + '&returnUrl=' + encodeURIComponent(location.href);
+  },
+
+  btnPluginMenuClick: function (pluginMenu) {
     event.stopPropagation();
 
-    if (menu.target === '_layer') {
+    if (pluginMenu.target === '_layer') {
       pageUtils.openLayer({
-        title: menu.text,
-        url: pluginMenu.href,
+        title: pluginMenu.text,
+        url: this.getPluginMenuUrl(pluginMenu),
         full: true
       });
     }

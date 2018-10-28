@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Controls
 		{
 		    if (!string.IsNullOrEmpty(Href))
 		    {
-                writer.Write($@"<link rel=""stylesheet"" href=""{(Href.StartsWith("~") ? PageUtils.ParseNavigationUrl(Href) : PageUtils.GetAdminDirectoryUrl(Href))}"" type=""text/css"" />");
+                writer.Write($@"<link rel=""stylesheet"" href=""{(Href.StartsWith("~") ? PageUtils.ParseNavigationUrl(Href) : PageUtils.GetAdminUrl(Href))}"" type=""text/css"" />");
             }
 		}
 	}
