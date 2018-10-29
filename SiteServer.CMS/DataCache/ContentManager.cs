@@ -78,7 +78,7 @@ namespace SiteServer.CMS.DataCache
                     if (dict == null)
                     {
                         dict = new Dictionary<int, ContentInfo>();
-                        DataCacheManager.InsertHours(cacheKey, dict, 12);
+                        DataCacheManager.InsertHours(cacheKey, dict, 1);
                     }
 
                     return dict;
