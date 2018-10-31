@@ -33,6 +33,9 @@
             <b>专题页</b>
           </span>
         </div>
+        <div v-if="channelsCount > 0 || contentsCount > 0 || filesCount > 0 || specialsCount > 0">
+          <button type="button" v-on:click="btnCancelClick" class="btn btn-danger m-l-5">取消生成任务</button>
+        </div>
       </div>
     </div>
   </div>

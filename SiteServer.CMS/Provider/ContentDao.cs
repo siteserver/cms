@@ -1518,7 +1518,8 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             DataSet dataset = null;
             if (!string.IsNullOrEmpty(tableName))
             {
-                var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, MinListColumns, whereString, orderByString);
+                //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, MinListColumns, whereString, orderByString);
+                var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(tableName, MinListColumns, whereString, orderByString, startNum - 1, totalNum);
                 dataset = ExecuteDataset(sqlSelect);
             }
             return dataset;
@@ -2045,7 +2046,8 @@ group by tmp.userName";
 
             if (!string.IsNullOrEmpty(tableName))
             {
-                return DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, MinListColumns, sqlWhereString, orderByString);
+                //return DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, MinListColumns, sqlWhereString, orderByString);
+                return DataProvider.DatabaseDao.GetPageSqlString(tableName, MinListColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
             }
             return string.Empty;
         }
@@ -2057,7 +2059,8 @@ group by tmp.userName";
 
             if (!string.IsNullOrEmpty(tableName))
             {
-                return DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, TranslateUtils.ObjectCollectionToString(ContentAttribute.AllAttributes.Value), sqlWhereString, orderByString);
+                //return DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, TranslateUtils.ObjectCollectionToString(ContentAttribute.AllAttributes.Value), sqlWhereString, orderByString);
+                return DataProvider.DatabaseDao.GetPageSqlString(tableName, TranslateUtils.ObjectCollectionToString(ContentAttribute.AllAttributes.Value), sqlWhereString, orderByString, startNum - 1, totalNum);
             }
             return string.Empty;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
@@ -85,7 +86,7 @@ namespace SiteServer.CMS.StlParser.Parsers
             {StlPageItems.ElementName.ToLower(), StlParserManager.StlEncrypt}
         };
 
-        internal static string ParseStlElement(string stlElement, PageInfo pageInfo, ContextInfo contextInfo)
+        private static string ParseStlElement(string stlElement, PageInfo pageInfo, ContextInfo contextInfo)
         {
             string parsedContent = null;
 
@@ -97,8 +98,7 @@ namespace SiteServer.CMS.StlParser.Parsers
 
                 if (ElementsToTranslateDic.ContainsKey(elementName))
                 {
-                    Func<string, string> func;
-                    if (ElementsToTranslateDic.TryGetValue(elementName, out func))
+                    if (ElementsToTranslateDic.TryGetValue(elementName, out var func))
                     {
                         parsedContent = func(stlElement);
                     }
@@ -113,8 +113,7 @@ namespace SiteServer.CMS.StlParser.Parsers
                     {
                         try
                         {
-                            Func<PageInfo, ContextInfo, object> func;
-                            if (ElementsToParseDic.TryGetValue(elementName, out func))
+                            if (ElementsToParseDic.TryGetValue(elementName, out var func))
                             {
                                 var contextInfoClone = contextInfo.Clone(stlElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
@@ -136,7 +135,7 @@ namespace SiteServer.CMS.StlParser.Parsers
                         }
                         catch (Exception ex)
                         {
-                            parsedContent = StlParserUtility.GetStlErrorMessage(elementName, stlElement, ex);
+                            parsedContent = LogUtils.AddStlErrorLog(pageInfo, elementName, stlElement, ex);
                         }
                     }
                 }
@@ -153,8 +152,7 @@ namespace SiteServer.CMS.StlParser.Parsers
                         {
                             try
                             {
-                                Func<ParseContextImpl, string> func;
-                                if (parsers.TryGetValue(elementName, out func))
+                                if (parsers.TryGetValue(elementName, out var func))
                                 {
                                     var context = new ParseContextImpl(stlElementInfo.OuterHtml, stlElementInfo.InnerHtml, stlElementInfo.Attributes, pageInfo, contextInfo);
                                     parsedContent = func(context);
@@ -162,7 +160,7 @@ namespace SiteServer.CMS.StlParser.Parsers
                             }
                             catch (Exception ex)
                             {
-                                parsedContent = StlParserUtility.GetStlErrorMessage(elementName, stlElement, ex);
+                                parsedContent = LogUtils.AddStlErrorLog(pageInfo, elementName, stlElement, ex);
                             }
                         }
                     }

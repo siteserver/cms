@@ -190,7 +190,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, _stlPageContentsElement, ex);
+                parsedContent = LogUtils.AddStlErrorLog(_pageInfo, ElementName, _stlPageContentsElement, ex);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex

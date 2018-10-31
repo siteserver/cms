@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
@@ -165,7 +166,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, _stlPageChannelsElement, ex);
+                parsedContent = LogUtils.AddStlErrorLog(_pageInfo, ElementName, _stlPageChannelsElement, ex);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex

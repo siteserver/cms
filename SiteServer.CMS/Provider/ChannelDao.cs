@@ -815,7 +815,7 @@ namespace SiteServer.CMS.Provider
             }
             idList.Add(channelId);
 
-            string deleteCmd =
+            var deleteCmd =
                 $"DELETE FROM siteserver_Channel WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
 
             int deletedNum;
@@ -1140,20 +1140,28 @@ namespace SiteServer.CMS.Provider
             string sqlString;
             if (totalNum > 0)
             {
-//                sqlString = $@"SELECT TOP {totalNum} Id
-//FROM siteserver_Channel 
-//WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
-//";
+                //                sqlString = $@"SELECT TOP {totalNum} Id
+                //FROM siteserver_Channel 
+                //WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
+                //";
+                //var where =
+                //    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})";
+                var where =
+                    $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString})";
                 sqlString = SqlUtils.ToTopSqlString(TableName, "Id",
-                    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})",
+                    where,
                     orderByString,
                     totalNum);
             }
             else
             {
+                //                sqlString = $@"SELECT Id
+                //FROM siteserver_Channel 
+                //WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
+                //";
                 sqlString = $@"SELECT Id
 FROM siteserver_Channel 
-WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
+WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByString}
 ";
             }
 
@@ -1194,9 +1202,10 @@ ORDER BY Taxis";
 
         public DataSet GetStlDataSourceBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
         {
-            string sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
+            var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
 
-            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
             return ExecuteDataset(sqlSelect);
         }
@@ -1208,19 +1217,24 @@ ORDER BY Taxis";
                 return null;
             }
 
-            string sqlWhereString =
-                $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})";
+            //var sqlWhereString =
+            //    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})";
 
-            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlWhereString =
+                $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString}";
+
+            //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
             return ExecuteDataset(sqlSelect);
         }
 
         public DataSet GetStlDataSetBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
         {
-            string sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
+            var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
 
-            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
             return ExecuteDataset(sqlSelect);
         }

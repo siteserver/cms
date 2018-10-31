@@ -40,8 +40,9 @@ namespace SiteServer.CMS.Core.Create
         {
             lock (LockObject)
             {
-                if (PendingTasks.Count == 0) return null;
-                var taskInfo = PendingTasks[0];
+                var taskInfo = PendingTasks.FirstOrDefault(task => !task.Executing);
+                if (taskInfo == null) return null;
+                //var taskInfo = PendingTasks[0];
                 taskInfo.Executing = true;
                 PendingTasks.Remove(taskInfo);
                 PendingTasks.Add(taskInfo);

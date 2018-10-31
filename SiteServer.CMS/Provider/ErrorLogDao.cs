@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -23,6 +22,12 @@ namespace SiteServer.CMS.Provider
                 DataType = DataType.Integer,
                 IsIdentity = true,
                 IsPrimaryKey = true
+            },
+            new TableColumn
+            {
+                AttributeName = nameof(ErrorLogInfo.Category),
+                DataType = DataType.VarChar,
+                DataLength = 50
             },
             new TableColumn
             {
@@ -53,6 +58,7 @@ namespace SiteServer.CMS.Provider
             }
         };
 
+        private const string ParmCategory = "@Category";
         private const string ParmPluginId = "@PluginId";
         private const string ParmMessage = "@Message";
         private const string ParmStacktrace = "@Stacktrace";
@@ -61,10 +67,11 @@ namespace SiteServer.CMS.Provider
 
         public int Insert(ErrorLogInfo logInfo)
         {
-            var sqlString = $"INSERT INTO {TableName} (PluginId, Message, Stacktrace, Summary, AddDate) VALUES (@PluginId, @Message, @Stacktrace, @Summary, @AddDate)";
+            var sqlString = $"INSERT INTO {TableName} (Category, PluginId, Message, Stacktrace, Summary, AddDate) VALUES (@Category, @PluginId, @Message, @Stacktrace, @Summary, @AddDate)";
 
             var parms = new IDataParameter[]
             {
+                GetParameter(ParmCategory, DataType.VarChar, 50, logInfo.Category),
                 GetParameter(ParmPluginId, DataType.VarChar, 200, logInfo.PluginId),
                 GetParameter(ParmMessage, DataType.VarChar, 255, logInfo.Message),
                 GetParameter(ParmStacktrace, DataType.Text, logInfo.Stacktrace),
@@ -102,28 +109,11 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString);
         }
 
-        public int GetCount()
-        {
-            var count = 0;
-            var sqlString = $"SELECT Count(*) FROM {TableName}";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read() && !rdr.IsDBNull(0))
-                {
-                    count = GetInt(rdr, 0);
-                }
-                rdr.Close();
-            }
-
-            return count;
-        }
-
         public ErrorLogInfo GetErrorLogInfo(int logId)
         {
             ErrorLogInfo logInfo = null;
 
-            var sqlString = $"SELECT Id, PluginId, Message, Stacktrace, Summary, AddDate FROM {TableName} WHERE Id = @Id";
+            var sqlString = $"SELECT Id, Category, PluginId, Message, Stacktrace, Summary, AddDate FROM {TableName} WHERE Id = @Id";
 
             var parms = new IDataParameter[]
             {
@@ -135,7 +125,7 @@ namespace SiteServer.CMS.Provider
                 if (rdr.Read())
                 {
                     var i = 0;
-                    logInfo = new ErrorLogInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i));
+                    logInfo = new ErrorLogInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i));
                 }
                 rdr.Close();
             }
@@ -161,9 +151,14 @@ namespace SiteServer.CMS.Provider
             return pair;
         }
 
-        public string GetSelectCommend(string pluginId, string keyword, string dateFrom, string dateTo)
+        public string GetSelectCommend(string category, string pluginId, string keyword, string dateFrom, string dateTo)
         {
             var whereString = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(category))
+            {
+                whereString.Append($"Category = '{AttackUtils.FilterSql(category)}'");
+            }
 
             if (!string.IsNullOrEmpty(pluginId))
             {
@@ -200,8 +195,8 @@ namespace SiteServer.CMS.Provider
             }
 
             return whereString.Length > 0
-                ? $"SELECT Id, PluginId, Message, Stacktrace, Summary, AddDate FROM {TableName} WHERE {whereString}"
-                : $"SELECT Id, PluginId, Message, Stacktrace, Summary, AddDate FROM {TableName}";
+                ? $"SELECT Id, Category, PluginId, Message, Stacktrace, Summary, AddDate FROM {TableName} WHERE {whereString}"
+                : $"SELECT Id, Category, PluginId, Message, Stacktrace, Summary, AddDate FROM {TableName}";
         }
     }
 }

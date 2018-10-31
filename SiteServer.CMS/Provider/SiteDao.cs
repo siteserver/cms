@@ -361,7 +361,8 @@ namespace SiteServer.CMS.Provider
             {
                 orderByString = "ORDER BY IsRoot DESC, ParentId, Taxis DESC, Id";
 
-                var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+                //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+                var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlUtils.Asterisk, sqlWhereString, orderByString, startNum - 1, totalNum);
 
                 ie = ExecuteReader(sqlSelect);
             }

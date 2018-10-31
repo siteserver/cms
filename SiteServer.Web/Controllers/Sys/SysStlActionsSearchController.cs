@@ -23,6 +23,8 @@ namespace SiteServer.API.Controllers.Sys
         [HttpPost, Route(ApiRouteActionsSearch.Route)]
         public IHttpActionResult Main()
         {
+            PageInfo pageInfo = null;
+            var template = string.Empty;
             try
             {
                 var request = new RequestImpl();
@@ -45,12 +47,12 @@ namespace SiteServer.API.Controllers.Sys
                 var isHighlight = request.GetPostBool(StlSearch.IsHighlight.ToLower());
                 var siteId = request.GetPostInt("siteid");
                 var ajaxDivId = AttackUtils.FilterSqlAndXss(request.GetPostString("ajaxdivid"));
-                var template = TranslateUtils.DecryptStringBySecretKey(request.GetPostString("template"));
+                template = TranslateUtils.DecryptStringBySecretKey(request.GetPostString("template"));
                 var pageIndex = request.GetPostInt("page", 1) - 1;
 
                 var templateInfo = new TemplateInfo(0, siteId, string.Empty, TemplateType.FileTemplate, string.Empty, string.Empty, string.Empty, ECharset.utf_8, false);
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                var pageInfo = new PageInfo(siteId, 0, siteInfo, templateInfo, new Dictionary<string, object>())
+                pageInfo = new PageInfo(siteId, 0, siteInfo, templateInfo, new Dictionary<string, object>())
                 {
                     UserInfo = request.UserInfo
                 };
@@ -68,10 +70,7 @@ namespace SiteServer.API.Controllers.Sys
                     var whereString = DataProvider.ContentDao.GetWhereStringByStlSearch(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, siteId, ApiRouteActionsSearch.ExlcudeAttributeNames, form);
 
                     var stlPageContents = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, pageNum, siteInfo.TableName, whereString);
-
-                    int totalNum;
-                    var pageCount = stlPageContents.GetPageCount(out totalNum);
-
+                    var pageCount = stlPageContents.GetPageCount(out var totalNum);
                     if (totalNum == 0)
                     {
                         return NotFound();
@@ -99,13 +98,49 @@ namespace SiteServer.API.Controllers.Sys
                         return Ok(pagedBuilder.ToString());
                     }
                 }
+                else if (StlParserUtility.IsStlElementExists(StlPageSqlContents.ElementName, stlLabelList))
+                {
+                    var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
+                    var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
+
+                    var stlPageSqlContents = new StlPageSqlContents(stlElement, pageInfo, contextInfo);
+                    
+                    var pageCount = stlPageSqlContents.GetPageCount(out var totalNum);
+                    if (totalNum == 0)
+                    {
+                        return NotFound();
+                    }
+
+                    for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
+                    {
+                        if (currentPageIndex != pageIndex) continue;
+
+                        var pageHtml = stlPageSqlContents.Parse(currentPageIndex, pageCount);
+                        var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
+
+                        StlParserManager.ReplacePageElementsInSearchPage(pagedBuilder, pageInfo, stlLabelList, ajaxDivId, pageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
+
+                        if (isHighlight && !string.IsNullOrEmpty(word))
+                        {
+                            var pagedContents = pagedBuilder.ToString();
+                            pagedBuilder = new StringBuilder();
+                            pagedBuilder.Append(RegexUtils.Replace(
+                                $"({word.Replace(" ", "\\s")})(?!</a>)(?![^><]*>)", pagedContents,
+                                $"<span style='color:#cc0000'>{word}</span>"));
+                        }
+
+                        Parser.Parse(pageInfo, contextInfo, pagedBuilder, string.Empty, false);
+                        return Ok(pagedBuilder.ToString());
+                    }
+                }
 
                 Parser.Parse(pageInfo, contextInfo, contentBuilder, string.Empty, false);
                 return Ok(contentBuilder.ToString());
             }
             catch (Exception ex)
             {
-                return InternalServerError(ex);
+                var message = LogUtils.AddStlErrorLog(pageInfo, StlSearch.ElementName, template, ex);
+                return BadRequest(message);
             }
         }
     }

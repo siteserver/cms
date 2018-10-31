@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
@@ -55,6 +56,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 _contextInfo = contextInfo.Clone(stlPageSqlContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
                 _listInfo = ListInfo.GetListInfo(_pageInfo, _contextInfo, EContextType.SqlContent);
+
                 _dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString);
             }
             catch
@@ -182,7 +184,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, _stlPageSqlContentsElement, ex);
+                parsedContent = LogUtils.AddStlErrorLog(_pageInfo, ElementName, _stlPageSqlContentsElement, ex);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex

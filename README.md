@@ -56,7 +56,7 @@ SiteServer CMS 基于.NET平台，能够以最低的成本、最少的人力投�
 ├─SiteServer.Cli                  命令行工具
 ├─SiteServer.CMS                  CMS 源文件
 ├─SiteServer.Utils                基础类库
-└─SiteServer.Web                  API 源文件及aspx页面
+└─SiteServer.API                  API 源文件及页面
 ```
 
 ## 生成安装包

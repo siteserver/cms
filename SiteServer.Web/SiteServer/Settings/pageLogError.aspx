@@ -35,11 +35,6 @@
 
     <div class="card-box">
       <div class="form-inline">
-        <div class="form-group">
-          <label class="col-form-label m-r-10">来源</label>
-          <asp:DropDownList id="DdlPluginId" class="form-control" runat="server" />
-        </div>
-
         <div class="form-group m-l-10">
           <label class="col-form-label m-r-10">时间：从</label>
           <ctrl:DateTimeTextBox id="TbDateFrom" class="form-control" runat="server" />
@@ -48,6 +43,18 @@
         <div class="form-group m-l-10">
           <label class="col-form-label m-r-10">到</label>
           <ctrl:DateTimeTextBox id="TbDateTo" class="form-control" runat="server" />
+        </div>
+      </div>
+
+      <div class="form-inline">
+        <div class="form-group m-l-10">
+          <label class="col-form-label m-r-10">类型</label>
+          <asp:DropDownList id="DdlCategory" class="form-control" runat="server" />
+        </div>
+
+        <div class="form-group m-l-10">
+          <label class="col-form-label m-r-10">来源</label>
+          <asp:DropDownList id="DdlPluginId" class="form-control" runat="server" />
         </div>
 
         <div class="form-group m-l-10">
