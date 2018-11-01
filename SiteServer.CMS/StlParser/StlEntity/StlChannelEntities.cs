@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
@@ -58,7 +59,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 if (!string.IsNullOrEmpty(channelIndex))
                 {
                     //channelId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
-                    channelId = Node.GetIdByIndexName(pageInfo.SiteId, channelIndex);
+                    channelId = ChannelManager.GetChannelIdByIndexName(pageInfo.SiteId, channelIndex);
                     if (channelId == 0)
                     {
                         channelId = contextInfo.ChannelId;
@@ -154,23 +155,20 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     //var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Channel, DataProvider.ChannelDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, nodeInfo.ChannelId));
                     //parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, ",", pageInfo.SiteInfo, ETableStyle.Channel, styleInfo, string.Empty, null, string.Empty, true);
 
-                    if (nodeInfo.Additional.Count > 0)
+                    var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.ChannelDao.TableName, attributeName, TableStyleManager.GetRelatedIdentities(nodeInfo));
+                    // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
+                    if (styleInfo.Id > 0)
                     {
-                        var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.ChannelDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, nodeInfo.Id));
-                        // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
-                        if (styleInfo.Id > 0)
+                        parsedContent = GetValue(attributeName, nodeInfo.Additional, false, styleInfo.DefaultValue);
+                        if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = GetValue(attributeName, nodeInfo.Additional, false, styleInfo.DefaultValue); 
-                            if (!string.IsNullOrEmpty(parsedContent))
+                            if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
                             {
-                                if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
-                                {
-                                    parsedContent = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, parsedContent, pageInfo.IsLocal); 
-                                }
-                                else
-                                {
-                                    parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, null, pageInfo.SiteInfo, styleInfo, string.Empty, null, string.Empty, true);
-                                }
+                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, parsedContent, pageInfo.IsLocal);
+                            }
+                            else
+                            {
+                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, null, pageInfo.SiteInfo, styleInfo, string.Empty, null, string.Empty, true);
                             }
                         }
                     }

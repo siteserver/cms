@@ -3,8 +3,8 @@ using System.Collections.Specialized;
 using System.Text;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.StlParser.Cache;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.StlEntity;
@@ -146,7 +146,7 @@ function {functionName}(pageNum)
 
         public static string ParseDynamicContent(int siteId, int channelId, int contentId, int templateId, bool isPageRefresh, string templateContent, string pageUrl, int pageIndex, string ajaxDivId, NameValueCollection queryString, IUserInfo userInfo)
         {
-            StlCacheUtils.ClearAll();
+            StlCacheManager.ClearAll();
 
             var templateInfo = TemplateManager.GetTemplateInfo(siteId, templateId);
             //TemplateManager.GetTemplateInfo(siteID, channelID, templateType);

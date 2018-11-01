@@ -28,11 +28,11 @@
           <div class="input-group">
             <div class="input-group-prepend">
               <span class="input-group-text">
-                <i class="ion-person"></i>
+                <i class="fa fa-user-circle-o"></i>
               </span>
             </div>
-            <input v-model="account" v-bind:class="{ 'is-invalid': pageSubmit && !account }" class="form-control" type="text" v-focus
-              placeholder="请输入用户名/手机号/邮箱">
+            <input v-model="account" v-bind:class="{ 'is-invalid': pageSubmit && !account }" class="form-control" type="text"
+              v-focus placeholder="请输入用户名/手机号/邮箱">
           </div>
         </div>
       </div>
@@ -42,10 +42,11 @@
           <div class="input-group">
             <div class="input-group-prepend">
               <span class="input-group-text">
-                <i class="ion-locked"></i>
+                <i class="fa fa-key"></i>
               </span>
             </div>
-            <input v-model="password" v-bind:class="{ 'is-invalid': pageSubmit && !password }" class="form-control" type="password" placeholder="请输入密码">
+            <input v-model="password" v-bind:class="{ 'is-invalid': pageSubmit && !password }" class="form-control"
+              type="password" placeholder="请输入密码">
           </div>
         </div>
       </div>
@@ -55,10 +56,11 @@
           <div class="input-group">
             <div class="input-group-prepend">
               <span class="input-group-text">
-                <i class="ion-image"></i>
+                <i class="fa fa-picture-o"></i>
               </span>
             </div>
-            <input v-model="captcha" v-bind:class="{ 'is-invalid': pageSubmit && !captcha }" class="form-control" type="text" placeholder="请输入验证码">
+            <input v-model="captcha" v-bind:class="{ 'is-invalid': pageSubmit && !captcha }" class="form-control" type="text"
+              placeholder="请输入验证码">
           </div>
         </div>
       </div>
@@ -81,7 +83,8 @@
 
       <div class="form-group row">
         <div class="col-12">
-          <button v-on:click="btnLoginClick" style="width: 100%" class="btn btn-primary btn-large btn-custom w-md" type="submit">登 录
+          <button v-on:click="btnLoginClick" style="width: 100%" class="btn btn-primary btn-large btn-custom w-md" type="submit">登
+            录
           </button>
         </div>
       </div>

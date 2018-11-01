@@ -8,6 +8,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -135,7 +136,7 @@ yArrayUpdate.push('{yValueUpdate}');";
             var ltlContentUpdate = (Literal)e.Item.FindControl("ltlContentUpdate");
 
             ltlUserName.Text = userName;
-            ltlDisplayName.Text = DataProvider.AdministratorDao.GetDisplayName(userName);
+            ltlDisplayName.Text = AdminManager.GetDisplayName(userName, false);
 
             ltlContentAdd.Text = addCount == 0 ? "0" : $"<strong>{addCount}</strong>";
             ltlContentUpdate.Text = updateCount == 0 ? "0" : $"<strong>{updateCount}</strong>";

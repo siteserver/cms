@@ -7,47 +7,46 @@ namespace SiteServer.Utils
     /// <summary>
     /// 封装操作文件夹代码的类
     /// </summary>
-    public class DirectoryUtils
+    public static class DirectoryUtils
     {
-        public class AspnetClient
+        public static class AspnetClient
         {
             public const string DirectoryName = "aspnet_client";
         }
 
-        public class Bin
+        public static class Bin
         {
             public const string DirectoryName = "Bin";
         }
 
-        public class Obj
-        {
-            public const string DirectoryName = "obj";
-        }
-
-        public class PublishmentSytem
+        public static class PublishmentSytem
         {
             public const string Include = "Include";
             public const string Template = "Template";
             public const string Content = "Content";
         }
 
-        public class SiteServer
+        public static class SiteServer
         {
             public const string DirectoryName = "SiteServer";
         }
 
-        public class SiteFiles
+        public static class Home
+        {
+            public const string DirectoryName = "Home";
+        }
+
+        public static class SiteFiles
         {
             public const string DirectoryName = "SiteFiles";
 
-            public const string UserFiles = "UserFiles";
             public const string BackupFiles = "BackupFiles";
             public const string TemporaryFiles = "TemporaryFiles";
             public const string Plugins = "Plugins";
             public const string Packages = "packages";
         }
 
-        public class SiteTemplates
+        public static class SiteTemplates
         {
             public const string DirectoryName = "SiteTemplates";
             //文件夹

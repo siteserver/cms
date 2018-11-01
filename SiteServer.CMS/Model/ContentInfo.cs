@@ -1,39 +1,64 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Model
 {
-    public class ContentInfo : ExtendedAttributes, IContentInfo
+    [JsonConverter(typeof(ContentConverter))]
+    public class ContentInfo : AttributesImpl, IContentInfo
 	{
-		public ContentInfo()
-		{
-			
-		}
+        public ContentInfo()
+        {
+
+        }
 
         public ContentInfo(IDataReader rdr) : base(rdr)
         {
-            Load(SettingsXml);
+
         }
 
-	    public ContentInfo(IDataRecord record) : base(record)
-	    {
-	        Load(SettingsXml);
-	    }
+        public ContentInfo(IDataRecord record) : base(record)
+        {
+
+        }
 
         public ContentInfo(DataRowView view) : base(view)
+        {
+
+        }
+
+        public ContentInfo(DataRow row) : base(row)
+        {
+
+        }
+
+	    public ContentInfo(Dictionary<string, object> dict) : base(dict)
 	    {
-	        Load(SettingsXml);
+
 	    }
 
-	    public ContentInfo(DataRow row) : base(row)
+	    public ContentInfo(NameValueCollection nvc) : base(nvc)
+        {
+
+        }
+
+	    public ContentInfo(object anonymous) : base(anonymous)
 	    {
-	        Load(SettingsXml);
+
 	    }
+
+	    public ContentInfo(ContentInfo contentInfo)
+	    {
+	        Load(contentInfo);
+        }
 
         public int Id
 		{
@@ -65,17 +90,23 @@ namespace SiteServer.CMS.Model
             set => Set(ContentAttribute.LastEditUserName, value);
         }
 
-        public string WritingUserName
-        {
-            get => GetString(ContentAttribute.WritingUserName);
-            set => Set(ContentAttribute.WritingUserName, value);
-        }
-
         public DateTime LastEditDate
 		{
             get => GetDateTime(ContentAttribute.LastEditDate, DateTime.Now);
             set => Set(ContentAttribute.LastEditDate, value);
         }
+
+	    public int AdminId
+	    {
+	        get => GetInt(ContentAttribute.AdminId);
+	        set => Set(ContentAttribute.AdminId, value);
+	    }
+
+	    public int UserId
+	    {
+	        get => GetInt(ContentAttribute.UserId);
+	        set => Set(ContentAttribute.UserId, value);
+	    }
 
         public int Taxis
         {
@@ -239,38 +270,125 @@ namespace SiteServer.CMS.Model
 	        set => Set(BackgroundContentAttribute.Content, value);
 	    }
 
-        [JsonIgnore]
         public string SettingsXml
         {
             get => GetString(ContentAttribute.SettingsXml);
             set => Set(ContentAttribute.SettingsXml, value);
         }
 
-	    public override Dictionary<string, object> ToDictionary()
+        public override Dictionary<string, object> ToDictionary()
 	    {
 	        var dict = base.ToDictionary();
+	        //dict.Remove(nameof(SettingsXml));
 
-	        var siteInfo = SiteManager.GetSiteInfo(SiteId);
+            var siteInfo = SiteManager.GetSiteInfo(SiteId);
+	        var channelInfo = ChannelManager.GetChannelInfo(SiteId, ChannelId);
+	        var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
 
-	        if (dict.ContainsKey(BackgroundContentAttribute.ImageUrl))
+	        foreach (var styleInfo in styleInfoList)
 	        {
-	            var imageUrl = (string)dict[BackgroundContentAttribute.ImageUrl];
-	            if (!string.IsNullOrEmpty(imageUrl))
+	            if (styleInfo.InputType == InputType.Image || styleInfo.InputType == InputType.File || styleInfo.InputType == InputType.Video)
 	            {
-                    dict[BackgroundContentAttribute.ImageUrl] = PageUtility.ParseNavigationUrl(siteInfo, imageUrl, false);
+	                var value = GetString(styleInfo.AttributeName);
+	                if (!string.IsNullOrEmpty(value))
+	                {
+	                    value = PageUtility.ParseNavigationUrl(siteInfo, value, false);
+	                }
+
+	                dict.Remove(styleInfo.AttributeName);
+                    dict[styleInfo.AttributeName] = value;
+                }
+                else if (styleInfo.InputType == InputType.TextEditor)
+	            {
+	                var value = GetString(styleInfo.AttributeName);
+	                if (!string.IsNullOrEmpty(value))
+	                {
+	                    value = ContentUtility.TextEditorContentDecode(siteInfo, value, false);
+	                }
+	                dict.Remove(styleInfo.AttributeName);
+                    dict[styleInfo.AttributeName] = value;
+	            }
+	            else
+	            {
+	                dict.Remove(styleInfo.AttributeName);
+                    dict[styleInfo.AttributeName] = Get(styleInfo.AttributeName);
+                }
+	        }
+
+	        foreach (var attributeName in ContentAttribute.AllAttributes.Value)
+	        {
+	            if (StringUtils.StartsWith(attributeName, "Is"))
+	            {
+	                dict.Remove(attributeName);
+                    dict[attributeName] = GetBool(attributeName);
+                }
+	            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Title))
+	            {
+	                var value = GetString(ContentAttribute.Title);
+	                if (siteInfo.Additional.IsContentTitleBreakLine)
+	                {
+	                    value = value.Replace("  ", "<br />");
+	                }
+	                dict.Remove(attributeName);
+                    dict[attributeName] = value;
+                }
+                else
+	            {
+	                dict.Remove(attributeName);
+                    dict[attributeName] = Get(attributeName);
+                }
+            }
+
+	        foreach (var attributeName in ContentAttribute.IncludedAttributes.Value)
+	        {
+	            if (attributeName == ContentAttribute.NavigationUrl)
+	            {
+	                dict.Remove(attributeName);
+                    dict[attributeName] = PageUtility.GetContentUrl(siteInfo, this, false);
+	            }
+	            else if (attributeName == ContentAttribute.CheckState)
+	            {
+	                dict.Remove(attributeName);
+                    dict[attributeName] = CheckManager.GetCheckState(siteInfo, this);
+	            }
+	            else
+	            {
+	                dict.Remove(attributeName);
+                    dict[attributeName] = Get(attributeName);
 	            }
 	        }
-	        if (dict.ContainsKey(BackgroundContentAttribute.FileUrl))
-	        {
-	            var fileUrl = (string)dict[BackgroundContentAttribute.FileUrl];
-	            if (!string.IsNullOrEmpty(fileUrl))
-	            {
-	                dict[BackgroundContentAttribute.FileUrl] = PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false);
-	            }
-	        }
-            dict[BackgroundContentAttribute.NavigationUrl] = PageUtility.GetContentUrl(siteInfo, this, false);
 
-            return dict;
+	        foreach (var attributeName in ContentAttribute.ExcludedAttributes.Value)
+	        {
+	            dict.Remove(attributeName);
+            }
+
+	        return dict;
 	    }
-	}
+
+	    private class ContentConverter : JsonConverter
+	    {
+	        public override bool CanConvert(Type objectType)
+	        {
+	            return objectType == typeof(IAttributes);
+	        }
+
+	        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+	        {
+	            var attributes = value as IAttributes;
+	            serializer.Serialize(writer, attributes?.ToDictionary());
+	        }
+
+	        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+	            JsonSerializer serializer)
+	        {
+	            var value = (string)reader.Value;
+	            if (string.IsNullOrEmpty(value)) return null;
+                var dict = TranslateUtils.JsonDeserialize<Dictionary<string, object>>(value);
+	            var content = new ContentInfo(dict);
+
+                return content;
+	        }
+	    }
+    }
 }

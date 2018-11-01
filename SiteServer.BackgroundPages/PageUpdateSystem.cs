@@ -5,6 +5,7 @@ using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Packaging;
 
 namespace SiteServer.BackgroundPages
@@ -24,7 +25,7 @@ namespace SiteServer.BackgroundPages
 
         public string InstalledVersion => SystemManager.Version;
 
-        public string AdminUrl => PageUtils.GetAdminDirectoryUrl(string.Empty);
+        public string AdminUrl => PageUtils.GetAdminUrl(string.Empty);
 
         public string DownloadApiUrl => ApiRouteDownload.GetUrl(ApiManager.InnerApiUrl);
 
@@ -36,7 +37,7 @@ namespace SiteServer.BackgroundPages
         {
             if (IsPostBack) return;
 
-            if (!AuthRequest.AdminPermissions.IsConsoleAdministrator)
+            if (!AuthRequest.AdminPermissionsImpl.IsConsoleAdministrator)
             {
                 Page.Response.Write("非授权管理员，向导被禁用");
                 Page.Response.End();

@@ -1,5 +1,6 @@
 ﻿using System;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.BackgroundPages.Settings
 {

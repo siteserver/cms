@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.CMS.Core
 {
@@ -139,7 +141,7 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void LoadChannelIdListBox(ListBox channelIdListBox, SiteInfo siteInfo, int psId, ChannelInfo channelInfo, PermissionManager permissionManager)
+        public static void LoadChannelIdListBox(ListBox channelIdListBox, SiteInfo siteInfo, int psId, ChannelInfo channelInfo, PermissionsImpl permissionsImpl)
         {
             channelIdListBox.Items.Clear();
 
@@ -180,7 +182,7 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    ChannelManager.AddListItemsForAddContent(channelIdListBox.Items, SiteManager.GetSiteInfo(psId), false, permissionManager);
+                    ChannelManager.AddListItemsForAddContent(channelIdListBox.Items, SiteManager.GetSiteInfo(psId), false, permissionsImpl);
                 }
             }
         }
@@ -248,8 +250,7 @@ namespace SiteServer.CMS.Core
         {
             var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelId);
 
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-            var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
             FileUtility.MoveFileByContentInfo(siteInfo, targetSiteInfo, contentInfo);
             contentInfo.SiteId = targetSiteInfo.Id;
             contentInfo.SourceId = channelInfo.Id;
@@ -283,7 +284,7 @@ namespace SiteServer.CMS.Core
 
             if (!string.IsNullOrEmpty(targetTableName))
             {
-                DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, contentInfo);
+                DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, channelInfo, contentInfo);
 
                 #region 复制资源
                 //资源：图片，文件，视频

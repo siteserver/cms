@@ -6,9 +6,8 @@ namespace SiteServer.Utils.IO
 {
     public class FileWatcherClass
     {
-        public const string Node = nameof(Node);
         public const string Site = nameof(Site);
-        public const string TableMetadata = nameof(TableMetadata);
+        public const string Channel = nameof(Channel);
         public const string TableColumn = nameof(TableColumn);
 
         private FileSystemWatcher _fileSystemWatcher;
@@ -24,11 +23,6 @@ namespace SiteServer.Utils.IO
         public void UpdateCacheFile()
         {
             FileUtils.WriteText(_cacheFilePath, ECharset.utf_8, "cache chaged:" + DateUtils.GetDateAndTimeString(DateTime.Now));
-        }
-
-        public void DeleteCacheFile()
-        {
-            FileUtils.DeleteFileIfExists(_cacheFilePath);
         }
 
         public delegate void FileChange(object sender, EventArgs e);

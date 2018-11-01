@@ -4,6 +4,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -93,7 +94,7 @@ namespace SiteServer.BackgroundPages.Cms
         public void DdlSiteId_SelectedIndexChanged(object sender, EventArgs e)
         {
             var psId = int.Parse(DdlSiteId.SelectedValue);
-            CrossSiteTransUtility.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, _channelInfo, AuthRequest.AdminPermissions);
+            CrossSiteTransUtility.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, _channelInfo, AuthRequest.AdminPermissionsImpl);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)

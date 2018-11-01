@@ -86,7 +86,7 @@ namespace SiteServer.BackgroundPages
             EBooleanUtils.AddListItems(DdlIsProtectData, "加密", "不加密");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsProtectData, false.ToString());
 
-            LtlGo.Text = $@"<a class=""btn btn-success m-l-5"" href=""{PageUtils.GetAdminDirectoryUrl(string.Empty)}"">进入后台</a>";
+            LtlGo.Text = $@"<a class=""btn btn-success m-l-5"" href=""{PageUtils.GetAdminUrl(string.Empty)}"">进入后台</a>";
         }
 
         public void DdlSqlDatabaseType_SelectedIndexChanged(object sender, EventArgs e)
@@ -315,7 +315,7 @@ namespace SiteServer.BackgroundPages
             {
                 databaseName = databaseType == DatabaseType.Oracle ? TbSqlOracleDatabase.Text : DdlSqlDatabaseName.SelectedValue;
             }
-            return SqlUtils.GetConnectionString(databaseType, TbSqlServer.Text, TranslateUtils.ToBool(DdlIsDefaultPort.SelectedValue), TranslateUtils.ToInt(TbSqlPort.Text), TbSqlUserName.Text, HihSqlHiddenPassword.Value, databaseName);
+            return WebConfigUtils.GetConnectionString(databaseType, TbSqlServer.Text, TranslateUtils.ToBool(DdlIsDefaultPort.SelectedValue), TranslateUtils.ToInt(TbSqlPort.Text), TbSqlUserName.Text, HihSqlHiddenPassword.Value, databaseName);
         }
 
         private bool CheckLoginValid(out string errorMessage)
@@ -383,7 +383,7 @@ namespace SiteServer.BackgroundPages
                 var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
                 var connectionString = GetConnectionString(true);
 
-                WebConfigUtils.UpdateWebConfig(isProtectData, databaseType, connectionString, "SiteServer", StringUtils.GetShortGuid(), false);
+                WebConfigUtils.UpdateWebConfig(isProtectData, databaseType, connectionString, "api", "SiteServer", "Home", StringUtils.GetShortGuid(), false);
 
                 DataProvider.Reset();
 

@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
@@ -12,10 +13,11 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalSelectColumns : BasePageCms
     {
+        protected override bool IsSinglePage => true;
+
         protected CheckBoxList CblDisplayAttributes;
 
         private int _channelId;
-        private List<int> _relatedIdentities;
         private Dictionary<string, Dictionary<string, Func<IContentContext, string>>> _pluginColumns;
 
         public static string GetOpenWindowString(int siteId, int channelId)
@@ -35,14 +37,13 @@ namespace SiteServer.BackgroundPages.Cms
             _channelId = AuthRequest.GetQueryInt("channelId");
 
             var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
-            var tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
-            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
             var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.Additional.ContentAttributesOfDisplay);
-            _pluginColumns = PluginContentManager.GetContentColumns(channelInfo);
+            var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
+            _pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
             if (IsPostBack) return;
 
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetTableStyleInfoList(tableName, _relatedIdentities));
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(SiteInfo, channelInfo));
             foreach (var styleInfo in styleInfoList)
             {
                 if (styleInfo.InputType == InputType.TextEditor) continue;

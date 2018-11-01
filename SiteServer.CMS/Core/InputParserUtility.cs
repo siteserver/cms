@@ -63,15 +63,18 @@ namespace SiteServer.CMS.Core
             {
                 var selectedTexts = new ArrayList();
                 var selectedValues = TranslateUtils.StringCollectionToStringList(content);
-                var styleItems = styleInfo.StyleItems ??
-                                 DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
-                foreach (var itemInfo in styleItems)
+                var styleItems = styleInfo.StyleItems;
+                if (styleItems != null)
                 {
-                    if (selectedValues.Contains(itemInfo.ItemValue))
+                    foreach (var itemInfo in styleItems)
                     {
-                        selectedTexts.Add(isStlEntity ? itemInfo.ItemValue : itemInfo.ItemTitle);
+                        if (selectedValues.Contains(itemInfo.ItemValue))
+                        {
+                            selectedTexts.Add(isStlEntity ? itemInfo.ItemValue : itemInfo.ItemTitle);
+                        }
                     }
                 }
+                
                 parsedContent = separator == null ? TranslateUtils.ObjectCollectionToString(selectedTexts) : TranslateUtils.ObjectCollectionToString(selectedTexts, separator);
             }
             //else if (styleInfo.InputType == InputType.TextArea)
@@ -133,15 +136,18 @@ namespace SiteServer.CMS.Core
             {
                 var selectedTexts = new ArrayList();
                 var selectedValues = TranslateUtils.StringCollectionToStringList(value);
-                var styleItems = styleInfo.StyleItems ??
-                                 DataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.Id);
-                foreach (var itemInfo in styleItems)
+                var styleItems = styleInfo.StyleItems;
+                if (styleItems != null)
                 {
-                    if (selectedValues.Contains(itemInfo.ItemValue))
+                    foreach (var itemInfo in styleItems)
                     {
-                        selectedTexts.Add(isStlEntity ? itemInfo.ItemValue : itemInfo.ItemTitle);
+                        if (selectedValues.Contains(itemInfo.ItemValue))
+                        {
+                            selectedTexts.Add(isStlEntity ? itemInfo.ItemValue : itemInfo.ItemTitle);
+                        }
                     }
                 }
+                
                 parsedContent = separator == null ? TranslateUtils.ObjectCollectionToString(selectedTexts) : TranslateUtils.ObjectCollectionToString(selectedTexts, separator);
             }
             else if (inputType == InputType.TextEditor)

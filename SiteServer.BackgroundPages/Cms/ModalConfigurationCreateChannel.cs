@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -39,8 +40,8 @@ namespace SiteServer.BackgroundPages.Cms
                 ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateChannelIfContentChanged, nodeInfo.Additional.IsCreateChannelIfContentChanged.ToString());
 
                 //NodeManager.AddListItemsForAddContent(this.channelIdCollection.Items, base.SiteInfo, false);
-                ChannelManager.AddListItemsForCreateChannel(LbChannelId.Items, SiteInfo, false, AuthRequest.AdminPermissions);
-                ControlUtils.SelectMultiItems(LbChannelId, TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.CreateChannelIDsIfContentChanged));
+                ChannelManager.AddListItemsForCreateChannel(LbChannelId.Items, SiteInfo, false, AuthRequest.AdminPermissionsImpl);
+                ControlUtils.SelectMultiItems(LbChannelId, TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.CreateChannelIdsIfContentChanged));
 			}
 		}
 
@@ -53,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
 
                 nodeInfo.Additional.IsCreateChannelIfContentChanged = TranslateUtils.ToBool(DdlIsCreateChannelIfContentChanged.SelectedValue);
-                nodeInfo.Additional.CreateChannelIDsIfContentChanged = ControlUtils.GetSelectedListControlValueCollection(LbChannelId);
+                nodeInfo.Additional.CreateChannelIdsIfContentChanged = ControlUtils.GetSelectedListControlValueCollection(LbChannelId);
 
                 DataProvider.ChannelDao.Update(nodeInfo);
 

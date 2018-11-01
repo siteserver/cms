@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Core
@@ -55,12 +55,12 @@ namespace SiteServer.BackgroundPages.Core
                     }
                 }
             }
-            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckCheckDate))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckDate))
             {
-                var checkDate = contentInfo.GetString(ContentAttribute.CheckCheckDate);
-                if (!string.IsNullOrEmpty(checkDate))
+                var checkDate = contentInfo.GetDateTime(ContentAttribute.CheckDate, DateTime.MinValue);
+                if (checkDate != DateTime.MinValue)
                 {
-                    value = DateUtils.GetDateAndTimeString(TranslateUtils.ToDateTime(checkDate));
+                    value = DateUtils.GetDateAndTimeString(checkDate);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckReasons))
@@ -118,9 +118,9 @@ namespace SiteServer.BackgroundPages.Core
             return value;
         }
 
-        public static bool IsEdit(SiteInfo siteInfo, int channelId, PermissionManager permissionManager)
+        public static bool IsEdit(SiteInfo siteInfo, int channelId, PermissionsImpl permissionsImpl)
         {
-            return permissionManager.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentEdit);
+            return permissionsImpl.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentEdit);
         }
 
         //public static bool IsComment(SiteInfo siteInfo, int channelId, string administratorName)
@@ -206,7 +206,7 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetCommandsHtml(SiteInfo siteInfo, Dictionary<string, List<Menu>> pluginMenus, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
+        public static string GetCommandsHtml(SiteInfo siteInfo, List<Menu> pluginMenus, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
         {
             var builder = new StringBuilder();
 
@@ -217,21 +217,11 @@ namespace SiteServer.BackgroundPages.Core
 
             if (pluginMenus != null)
             {
-                foreach (var pluginId in pluginMenus.Keys)
+                foreach (var menu in pluginMenus)
                 {
-                    var contentMenus = pluginMenus[pluginId];
-                    if (contentMenus != null && contentMenus.Count > 0)
-                    {
-                        foreach (var menu in contentMenus)
-                        {
-                            var href = PluginMenuManager.GetMenuContentHref(pluginId, menu.Href, siteInfo.Id,
-                                contentInfo.ChannelId, contentInfo.Id, pageUrl);
-
-                            builder.Append(string.IsNullOrEmpty(menu.Target)
-                                ? $@"<a class=""m-l-5"" href=""javascript:;"" onclick=""{LayerUtils.GetOpenScript(menu.Text, href)}"">{menu.Text}</a>"
-                                : $@"<a class=""m-l-5"" href=""{href}"" target=""{menu.Target}"">{menu.Text}</a>");
-                        }
-                    }
+                    builder.Append(string.IsNullOrEmpty(menu.Target)
+                        ? $@"<a class=""m-l-5"" href=""javascript:;"" onclick=""{LayerUtils.GetOpenScript(menu.Text, menu.Href)}"">{menu.Text}</a>"
+                        : $@"<a class=""m-l-5"" href=""{menu.Href}"" target=""{menu.Target}"">{menu.Text}</a>");
                 }
             }
 

@@ -2,8 +2,8 @@
 using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
@@ -104,12 +104,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (contextInfo.ContentInfo == null)
                     {
-                        playUrl = Content.GetValue(pageInfo.SiteInfo.TableName, contentId, type);
+                        playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
                             if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.VideoUrl))
                             {
-                                playUrl = Content.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.VideoUrl);
+                                playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.VideoUrl);
                             }
                         }
                     }

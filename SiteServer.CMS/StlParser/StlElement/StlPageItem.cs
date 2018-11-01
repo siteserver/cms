@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.Utils;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -143,9 +144,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                 }
 
-                string successTemplateString;
-                string failureTemplateString;
-                StlParserUtility.GetYesNo(stlElementInfo.InnerHtml, out successTemplateString, out failureTemplateString);
+                StlParserUtility.GetYesNo(stlElementInfo.InnerHtml, out var successTemplateString, out var failureTemplateString);
                 if (!string.IsNullOrEmpty(stlElementInfo.InnerHtml) && string.IsNullOrEmpty(failureTemplateString))
                 {
                     failureTemplateString = successTemplateString;
@@ -455,7 +454,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
+                parsedContent = LogUtils.AddStlErrorLog(pageInfo, ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -537,7 +536,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlEntity, ex);
+                parsedContent = LogUtils.AddStlErrorLog(pageInfo, ElementName, stlEntity, ex);
             }
 
             return parsedContent;
@@ -942,7 +941,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
+                parsedContent = LogUtils.AddStlErrorLog(pageInfo, ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -1010,7 +1009,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlEntity, ex);
+                parsedContent = LogUtils.AddStlErrorLog(pageInfo, ElementName, stlEntity, ex);
             }
 
             return parsedContent;
@@ -1410,7 +1409,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
+                parsedContent = LogUtils.AddStlErrorLog(pageInfo, ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -1480,7 +1479,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlEntity, ex);
+                parsedContent = LogUtils.AddStlErrorLog(pageInfo, ElementName, stlEntity, ex);
             }
 
             return parsedContent;

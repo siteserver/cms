@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.Net.Compilers.2.7.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.2.7.0\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="..\packages\Microsoft.Net.Compilers.2.9.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.2.9.0\build\Microsoft.Net.Compilers.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -40,8 +40,8 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.2.0.0\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.2.1.0\lib\net45\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -86,6 +86,9 @@
     <Compile Include="BasePageCms.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Cms\ModalChannelTaxis.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Cms\ModalTemplateAssetsConfig.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -117,9 +120,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalConfigurationCreateChannel.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\ModalContentArchive.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalContentAttributes.cs">
@@ -348,22 +348,10 @@
     <Compile Include="Cms\ModalContentView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageCreateAll.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageCreateChannel.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageCreateContent.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\PageCreateSpecial.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageCreateFile.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageCreateIndex.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageNodeGroup.cs">
@@ -434,7 +422,6 @@
     <Compile Include="Controls\ChannelTree.cs" />
     <Compile Include="Controls\NoTagText.cs" />
     <Compile Include="Controls\Script.cs" />
-    <Compile Include="Controls\SqlCountPager.cs" />
     <Compile Include="Controls\Pager.cs" />
     <Compile Include="Controls\SqlPager.cs" />
     <Compile Include="Controls\Style.cs" />
@@ -452,7 +439,6 @@
     <Compile Include="Core\NodeNaviTreeItem.cs" />
     <Compile Include="Core\ChannelTreeItem.cs" />
     <Compile Include="Core\PagerStyle.cs" />
-    <Compile Include="Core\PagingMode.cs" />
     <Compile Include="Core\SortMode.cs" />
     <Compile Include="Core\TextUtility.cs" />
     <Compile Include="Core\VCManager.cs" />
@@ -485,9 +471,7 @@
     <Compile Include="PageRedirect.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="PageTest.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="PageTest.cs" />
     <Compile Include="PageValidateCode.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -520,9 +504,6 @@
     <Compile Include="Settings\ModalAreaAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\ModalAuxiliaryTableAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\ModalChangeSiteType.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -542,9 +523,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\ModalPermissionsSet.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\ModalTableMetadataAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\ModalUserExport.cs">
@@ -601,9 +579,6 @@
     <Compile Include="Settings\PageAnalysisUser.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageCreateStatus.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\PageLogAdmin.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -628,9 +603,6 @@
     <Compile Include="Settings\PageSiteAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageSiteAuxiliaryTable.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\PageSiteDelete.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -643,7 +615,7 @@
     <Compile Include="Settings\PageSiteSave.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageSiteTableMetadata.cs">
+    <Compile Include="Settings\PageSiteTable.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageSiteTableStyle.cs">
@@ -674,15 +646,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageUserAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageUserCheck.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageUserConfiguration.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageAdminAccessTokensAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageUtilityCache.cs">
@@ -720,6 +683,6 @@
     <PropertyGroup>
       <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.7.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.7.0\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.9.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.9.0\build\Microsoft.Net.Compilers.props'))" />
   </Target>
 </Project>

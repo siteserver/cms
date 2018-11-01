@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport.Components;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
@@ -175,7 +176,6 @@ namespace SiteServer.CMS.ImportExport
         public void ExportTablesAndStyles(string tableDirectoryPath)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(tableDirectoryPath);
-            var tableIe = new TableIe(tableDirectoryPath);
             var styleIe = new TableStyleIe(tableDirectoryPath, _adminName);
 
             var siteInfo = SiteManager.GetSiteInfo(_siteInfo.Id);
@@ -183,7 +183,6 @@ namespace SiteServer.CMS.ImportExport
 
             foreach (var tableName in tableNameList)
             {
-                tableIe.ExportAuxiliaryTable(tableName);
                 styleIe.ExportTableStyles(siteInfo.Id, tableName);
             }
 
@@ -318,6 +317,24 @@ namespace SiteServer.CMS.ImportExport
 
             var contentIe = new ContentIe(_siteInfo, siteContentDirectoryPath);
             var isExport = contentIe.ExportContents(_siteInfo, channelId, contentIdArrayList, isPeriods, dateFrom, dateTo, checkedState);
+            if (isExport)
+            {
+                ZipUtils.CreateZip(filePath, siteContentDirectoryPath);
+                DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
+            }
+            return isExport;
+        }
+
+        public bool ExportContents(string filePath, List<ContentInfo> contentInfoList)
+        {
+            var siteContentDirectoryPath = PathUtils.Combine(DirectoryUtils.GetDirectoryPath(filePath), PathUtils.GetFileNameWithoutExtension(filePath));
+
+            FileUtils.DeleteFileIfExists(filePath);
+            DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
+            DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
+
+            var contentIe = new ContentIe(_siteInfo, siteContentDirectoryPath);
+            var isExport = contentIe.ExportContents(_siteInfo, contentInfoList);
             if (isExport)
             {
                 ZipUtils.CreateZip(filePath, siteContentDirectoryPath);

@@ -7,6 +7,7 @@ using Dapper;
 using Dapper.Contrib.Extensions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;

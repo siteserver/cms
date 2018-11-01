@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Settings;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Core
@@ -177,7 +178,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (loadingType == EDepartmentLoadingType.ContentTree)
             {
-                var linkUrl = PageContent.GetRedirectUrl(TranslateUtils.ToInt(additional["SiteId"]), _departmentInfo.Id);
+                var linkUrl = CmsPages.GetContentsUrl(TranslateUtils.ToInt(additional["SiteId"]), _departmentInfo.Id);
 
                 htmlBuilder.Append(
                     $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_departmentInfo.DepartmentName}</a>");

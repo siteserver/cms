@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -29,7 +30,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            if (!string.IsNullOrEmpty(_userName) && DataProvider.AdministratorDao.IsAdminNameExists(_userName))
+            if (!string.IsNullOrEmpty(_userName) && DataProvider.AdministratorDao.IsUserNameExists(_userName))
             {
                 LbUserName.Text = _userName;
             }
@@ -45,8 +46,8 @@ namespace SiteServer.BackgroundPages.Settings
 
             try
             {
-                string errorMessage;
-                if (!DataProvider.AdministratorDao.ChangePassword(_userName, TbPassword.Text, out errorMessage))
+                var adminInfo = AdminManager.GetAdminInfoByUserName(_userName);
+                if (!DataProvider.AdministratorDao.ChangePassword(adminInfo, TbPassword.Text, out string errorMessage))
                 {
                     FailMessage(errorMessage);
                     return;

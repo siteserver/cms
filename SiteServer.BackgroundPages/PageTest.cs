@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Security.AccessControl;
@@ -19,16 +20,64 @@ using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages
 {
+    public class MyTableInfo
+    {
+        public List<TableColumn> Columns { get; set; }
+        public int TotalCount { get; set; }
+        public List<string> RowFiles { get; set; }
+    }
+
     public class PageTest : Page
     {
         public Literal LtlContent;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            // Check permissions exist to write to the directory.
-            // Will throw a System.Security.SecurityException if the demand fails.
-            FileIOPermission ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, WebConfigUtils.PhysicalApplicationPath);
-            ioPermission.Demand();
+            var json = @"{
+    ""columns"": [
+        {
+            ""attributeName"": ""IsAbolition"",
+            ""dataType"": ""VarChar"",
+            ""dataLength"": 10,
+            ""isPrimaryKey"": false,
+            ""isIdentity"": false,
+            ""inputStyle"": {
+                ""inputType"": ""Radio"",
+                ""displayName"": ""是否废止"",
+                ""helpText"": null,
+                ""listItems"": [
+                    {
+                        ""text"": ""是"",
+                        ""value"": ""True"",
+                        ""selected"": false
+                    },
+                    {
+                        ""text"": ""否"",
+                        ""value"": ""False"",
+                        ""selected"": true
+                    }
+                ],
+                ""defaultValue"": null,
+                ""isRequired"": true,
+                ""validateType"": null,
+                ""minNum"": 0,
+                ""maxNum"": 0,
+                ""regExp"": null,
+                ""width"": null,
+                ""height"": null
+            }
+        }
+    ],
+    ""totalCount"": 796,
+    ""rowFiles"": [
+        ""1.json"",
+        ""2.json""
+    ]
+}";
+
+            var tableInfo = TranslateUtils.JsonDeserialize<MyTableInfo>(json);
+
+            LtlContent.Text = "";
         }
 
         // MODEL Reference

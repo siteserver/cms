@@ -18,6 +18,8 @@ namespace SiteServer.Cli.Jobs
         private static string _directory;
         private static List<string> _includes;
         private static List<string> _excludes;
+        private static string _webConfig;
+        private static int _maxRows;
 
         private static readonly OptionSet Options = new OptionSet() {
             { "d|directory=", "指定保存备份文件的文件夹名称",
@@ -26,6 +28,10 @@ namespace SiteServer.Cli.Jobs
                 v => _includes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
             { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
                 v => _excludes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
+            { "web-config=", "指定Web.config文件名",
+                v => _webConfig = v },
+            { "max-rows=", "指定需要备份的表的最大行数",
+                v => _maxRows = v == null ? 0 : TranslateUtils.ToInt(v) },
             { "h|help",  "命令说明",
                 v => _isHelp = v != null }
         };
@@ -55,20 +61,22 @@ namespace SiteServer.Cli.Jobs
             var treeInfo = new TreeInfo(_directory);
             DirectoryUtils.CreateDirectoryIfNotExists(treeInfo.DirectoryPath);
 
-            var webConfigPath = PathUtils.Combine(CliUtils.PhysicalApplicationPath, "web.config");
+            var webConfigName = string.IsNullOrEmpty(_webConfig) ? "web.config" : _webConfig;
+
+            var webConfigPath = PathUtils.Combine(CliUtils.PhysicalApplicationPath, webConfigName);
             if (!FileUtils.IsFileExists(webConfigPath))
             {
                 await CliUtils.PrintErrorAsync($"系统配置文件不存在：{webConfigPath}！");
                 return;
             }
 
+            WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, webConfigName);
+
             if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
             {
-                await CliUtils.PrintErrorAsync("web.config 中数据库连接字符串 connectionString 未设置");
+                await CliUtils.PrintErrorAsync($"{webConfigName} 中数据库连接字符串 connectionString 未设置");
                 return;
             }
-
-            WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, "web.config");
 
             await Console.Out.WriteLineAsync($"数据库类型: {WebConfigUtils.DatabaseType.Value}");
             await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
@@ -76,7 +84,7 @@ namespace SiteServer.Cli.Jobs
 
             if (!DataProvider.DatabaseDao.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             {
-                await CliUtils.PrintErrorAsync("系统无法连接到 web.config 中设置的数据库");
+                await CliUtils.PrintErrorAsync($"系统无法连接到 {webConfigName} 中设置的数据库");
                 return;
             }
 
@@ -90,7 +98,16 @@ namespace SiteServer.Cli.Jobs
             _excludes.Add("siteserver_Log");
             _excludes.Add("siteserver_Tracking");
 
-            var tableNames = DataProvider.DatabaseDao.GetTableNameList();
+            var allTableNames = DataProvider.DatabaseDao.GetTableNameList();
+            var tableNames = new List<string>();
+
+            foreach (var tableName in allTableNames)
+            {
+                if (_includes != null && !StringUtils.ContainsIgnoreCase(_includes, tableName)) continue;
+                if (StringUtils.ContainsIgnoreCase(_excludes, tableName)) continue;
+                if (StringUtils.ContainsIgnoreCase(tableNames, tableName)) continue;
+                tableNames.Add(tableName);
+            }
 
             await FileUtils.WriteTextAsync(treeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(tableNames));
 
@@ -100,18 +117,17 @@ namespace SiteServer.Cli.Jobs
 
             foreach (var tableName in tableNames)
             {
-                if (_includes != null)
-                {
-                    if (!StringUtils.ContainsIgnoreCase(_includes, tableName)) continue;
-                }
-                if (StringUtils.ContainsIgnoreCase(_excludes, tableName)) continue;
-
                 var tableInfo = new TableInfo
                 {
                     Columns = DataProvider.DatabaseDao.GetTableColumnInfoList(WebConfigUtils.ConnectionString, tableName),
                     TotalCount = DataProvider.DatabaseDao.GetCount(tableName),
                     RowFiles = new List<string>()
                 };
+
+                if (_maxRows > 0 && tableInfo.TotalCount > _maxRows)
+                {
+                    tableInfo.TotalCount = _maxRows;
+                }
 
                 await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 

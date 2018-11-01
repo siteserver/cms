@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using SiteServer.CMS.Api.Preview;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.BackgroundPages
 {

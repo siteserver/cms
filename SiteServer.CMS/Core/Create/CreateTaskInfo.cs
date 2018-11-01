@@ -15,6 +15,7 @@ namespace SiteServer.CMS.Core.Create
             FileTemplateId = fileTemplateId;
             SpecialId = specialId;
             PageCount = pageCount;
+            Executing = false;
         }
 
         public int Id { get; set; }
@@ -27,9 +28,6 @@ namespace SiteServer.CMS.Core.Create
         public int SpecialId { get; set; }
         public int PageCount { get; set; }
 
-        public bool Equals(CreateTaskInfo taskInfo)
-        {
-            return CreateType == taskInfo?.CreateType && SiteId == taskInfo.SiteId && ChannelId == taskInfo.ChannelId && ContentId == taskInfo.ContentId && FileTemplateId == taskInfo.FileTemplateId && SpecialId == taskInfo.SpecialId;
-        }
+        public bool Executing { get; set; }
     }
 }

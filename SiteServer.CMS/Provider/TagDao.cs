@@ -32,7 +32,7 @@ namespace SiteServer.CMS.Provider
             {
                 AttributeName = nameof(TagInfo.ContentIdCollection),
                 DataType = DataType.VarChar,
-                DataLength = 255
+                DataLength = 2000
             },
             new TableColumn
             {
@@ -60,7 +60,7 @@ namespace SiteServer.CMS.Provider
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmSiteId, DataType.Integer, tagInfo.SiteId),
-				GetParameter(ParmContentIdCollection, DataType.VarChar, 255, tagInfo.ContentIdCollection),
+				GetParameter(ParmContentIdCollection, DataType.VarChar, 2000, tagInfo.ContentIdCollection),
                 GetParameter(ParmTag, DataType.VarChar, 255, tagInfo.Tag),
                 GetParameter(ParmUseNum, DataType.Integer, tagInfo.UseNum)
 			};
@@ -74,7 +74,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmContentIdCollection, DataType.VarChar, 255, tagInfo.ContentIdCollection),
+				GetParameter(ParmContentIdCollection, DataType.VarChar, 2000, tagInfo.ContentIdCollection),
                 GetParameter(ParmUseNum, DataType.Integer, tagInfo.UseNum),
                 GetParameter(ParmId, DataType.Integer, tagInfo.Id)
 			};

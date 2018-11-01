@@ -6,10 +6,12 @@ using System.Web.UI.WebControls;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
+using System.Linq;
 
 namespace SiteServer.CMS.Core
 {
@@ -65,6 +67,7 @@ namespace SiteServer.CMS.Core
                 assetsUrl = siteInfo.Additional.AssetsUrl;
             }
             StringUtils.ReplaceHrefOrSrc(builder, virtualAssetsUrl, assetsUrl);
+            StringUtils.ReplaceHrefOrSrc(builder, "@/", siteInfo.Additional.WebUrl);
             StringUtils.ReplaceHrefOrSrc(builder, "@", siteInfo.Additional.WebUrl);
 
             builder.Replace("&#xa0;", "&nbsp;");
@@ -231,97 +234,20 @@ namespace SiteServer.CMS.Core
 
         public static List<TableStyleInfo> GetAllTableStyleInfoList(List<TableStyleInfo> tableStyleInfoList)
         {
+            var taxis = 1;
             var list = new List<TableStyleInfo>
             {
                 new TableStyleInfo
                 {
                     AttributeName = ContentAttribute.Id,
-                    DisplayName = "编号"
+                    DisplayName = "内容Id",
+                    Taxis = taxis++
                 },
                 new TableStyleInfo
                 {
                     AttributeName = ContentAttribute.Title,
-                    DisplayName = "标题"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.LinkUrl,
-                    DisplayName = "外部链接"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.AddDate,
-                    DisplayName = "添加时间"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.LastEditDate,
-                    DisplayName = "修改时间"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.GroupNameCollection,
-                    DisplayName = "内容组"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.Tags,
-                    DisplayName = "标签"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.AddUserName,
-                    DisplayName = "添加人"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.LastEditUserName,
-                    DisplayName = "修改人"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.CheckUserName,
-                    DisplayName = "审核人"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.CheckCheckDate,
-                    DisplayName = "审核时间"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.CheckReasons,
-                    DisplayName = "审核原因"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.SourceId,
-                    DisplayName = "来源标识"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.Hits,
-                    DisplayName = "点击量"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.HitsByDay,
-                    DisplayName = "日点击"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.HitsByWeek,
-                    DisplayName = "周点击"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.HitsByMonth,
-                    DisplayName = "月点击"
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.LastHitsDate,
-                    DisplayName = "最后点击时间"
+                    DisplayName = "标题",
+                    Taxis = taxis++
                 }
             };
 
@@ -331,12 +257,118 @@ namespace SiteServer.CMS.Core
                 {
                     if (!list.Exists(t => t.AttributeName == tableStyleInfo.AttributeName))
                     {
-                        list.Insert(2, tableStyleInfo);
+                        list.Add(new TableStyleInfo
+                        {
+                            AttributeName = tableStyleInfo.AttributeName,
+                            DisplayName = tableStyleInfo.DisplayName,
+                            InputType = tableStyleInfo.InputType,
+                            Taxis = taxis++
+                        });
                     }
                 }
             }
 
-            return list;
+            list.AddRange(new List<TableStyleInfo>
+            {
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.LinkUrl,
+                    DisplayName = "外部链接",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.AddDate,
+                    DisplayName = "添加时间",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.LastEditDate,
+                    DisplayName = "修改时间",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.GroupNameCollection,
+                    DisplayName = "内容组",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.Tags,
+                    DisplayName = "标签",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.AdminId,
+                    DisplayName = "管理员",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.UserId,
+                    DisplayName = "投稿用户",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.SourceId,
+                    DisplayName = "来源标识",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.Hits,
+                    DisplayName = "点击量",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.HitsByDay,
+                    DisplayName = "日点击",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.HitsByWeek,
+                    DisplayName = "周点击",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.HitsByMonth,
+                    DisplayName = "月点击",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.LastHitsDate,
+                    DisplayName = "最后点击时间",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.CheckUserName,
+                    DisplayName = "审核人",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.CheckDate,
+                    DisplayName = "审核时间",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.CheckReasons,
+                    DisplayName = "审核原因",
+                    Taxis = taxis
+                },
+            });
+
+            return list.OrderBy(styleInfo => styleInfo.Taxis == 0 ? int.MaxValue : styleInfo.Taxis).ToList();
         }
 
         public static List<TableStyleInfo> GetEditableTableStyleInfoList(List<TableStyleInfo> tableStyleInfoList)
@@ -458,13 +490,13 @@ namespace SiteServer.CMS.Core
             if (siteInfo == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
 
             var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
-
-            var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelId);
+            var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
+            var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelInfo);
 
             var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-            var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
 
             if (contentInfo == null) return;
 
@@ -477,7 +509,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
-                var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, contentInfo);
+                var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
 
                 foreach (var service in PluginManager.Services)
                 {
@@ -491,7 +523,8 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                CreateManager.CreateContentAndTrigger(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
+                CreateManager.CreateContent(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
+                CreateManager.TriggerContentChangedEvent(targetSiteInfo.Id, contentInfo.ChannelId);
             }
             else if (translateType == ETranslateContentType.Cut)
             {
@@ -503,11 +536,8 @@ namespace SiteServer.CMS.Core
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
 
-                var newContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, contentInfo);
+                var newContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
                 DataProvider.ContentDao.DeleteContents(siteInfo.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
-
-                DataProvider.ChannelDao.UpdateContentNum(siteInfo, channelId, true);
-                DataProvider.ChannelDao.UpdateContentNum(targetSiteInfo, targetChannelId, true);
 
                 foreach (var service in PluginManager.Services)
                 {
@@ -530,7 +560,8 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                CreateManager.CreateContentAndTrigger(targetSiteInfo.Id, contentInfo.ChannelId, newContentId);
+                CreateManager.CreateContent(targetSiteInfo.Id, contentInfo.ChannelId, newContentId);
+                CreateManager.TriggerContentChangedEvent(targetSiteInfo.Id, contentInfo.ChannelId);
             }
             else if (translateType == ETranslateContentType.Reference)
             {
@@ -542,7 +573,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.ReferenceId = contentId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
-                DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, contentInfo);
+                DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
             }
             else if (translateType == ETranslateContentType.ReferenceContent)
             {
@@ -555,7 +586,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
-                var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, contentInfo);
+                var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
 
                 foreach (var service in PluginManager.Services)
                 {
@@ -569,7 +600,8 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                CreateManager.CreateContentAndTrigger(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
+                CreateManager.CreateContent(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
+                CreateManager.TriggerContentChangedEvent(targetSiteInfo.Id, contentInfo.ChannelId);
             }
         }
 

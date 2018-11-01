@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
@@ -16,101 +17,6 @@ namespace SiteServer.Utils
     {
         public const string Asterisk = "*";
         public const string OracleEmptyValue = "_EMPTY_";
-
-        public static string GetConnectionString(DatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string database)
-        {
-            var connectionString = string.Empty;
-
-            if (databaseType == DatabaseType.MySql)
-            {
-                connectionString = $"Server={server};";
-                if (!isDefaultPort && port > 0)
-                {
-                    connectionString += $"Port={port};";
-                }
-                connectionString += $"Uid={userName};Pwd={password};";
-                if (!string.IsNullOrEmpty(database))
-                {
-                    connectionString += $"Database={database};";
-                }
-                connectionString += "SslMode=none;CharSet=utf8;";
-            }
-            else if (databaseType == DatabaseType.SqlServer)
-            {
-                connectionString = $"Server={server};";
-                if (!isDefaultPort && port > 0)
-                {
-                    connectionString += $"Port={port};";
-                }
-                connectionString += $"Uid={userName};Pwd={password};";
-                if (!string.IsNullOrEmpty(database))
-                {
-                    connectionString += $"Database={database};";
-                }
-            }
-            else if (databaseType == DatabaseType.PostgreSql)
-            {
-                connectionString = $"Host={server};";
-                if (!isDefaultPort && port > 0)
-                {
-                    connectionString += $"Port={port};";
-                }
-                connectionString += $"Username={userName};Password={password};";
-                if (!string.IsNullOrEmpty(database))
-                {
-                    connectionString += $"Database={database};";
-                }
-            }
-            else if (databaseType == DatabaseType.Oracle)
-            {
-                port = !isDefaultPort && port > 0 ? port : 1521;
-                database = string.IsNullOrEmpty(database)
-                    ? string.Empty
-                    : $"(CONNECT_DATA=(SERVICE_NAME={database}))";
-                connectionString = $"Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={server})(PORT={port})){database});User ID={userName};Password={password};";
-            }
-
-            return connectionString;
-        }
-
-        public static string GetConnectionString(DatabaseType databaseType, string connectionString)
-        {
-            if (databaseType == DatabaseType.MySql)
-            {
-                if (!StringUtils.ContainsIgnoreCase(connectionString, "SslMode="))
-                {
-                    connectionString += ";SslMode=none;";
-                }
-                if (!StringUtils.ContainsIgnoreCase(connectionString, "CharSet="))
-                {
-                    connectionString += ";CharSet=utf8;";
-                }
-            }
-
-            return connectionString;
-        }
-
-        public static string GetConnectionStringUserId(string connectionString)
-        {
-            var userId = string.Empty;
-
-            foreach (var pair in TranslateUtils.StringCollectionToStringList(connectionString, ';'))
-            {
-                if (!string.IsNullOrEmpty(pair) && pair.IndexOf("=", StringComparison.Ordinal) != -1)
-                {
-                    var key = pair.Substring(0, pair.IndexOf("=", StringComparison.Ordinal));
-                    var value = pair.Substring(pair.IndexOf("=", StringComparison.Ordinal) + 1);
-                    if (StringUtils.EqualsIgnoreCase(key, "Uid") ||
-                        StringUtils.EqualsIgnoreCase(key, "Username") ||
-                        StringUtils.EqualsIgnoreCase(key, "User ID"))
-                    {
-                        return value;
-                    }
-                }
-            }
-
-            return userId;
-        }
 
         public static IDbConnection GetIDbConnection(DatabaseType databaseType, string connectionString)
         {
@@ -158,30 +64,6 @@ namespace SiteServer.Utils
             }
 
             return command;
-        }
-
-        public static IDbDataAdapter GetIDbDataAdapter(string text, string connectionString)
-        {
-            IDbDataAdapter adapter = null;
-
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-            {
-                adapter = new MySqlDataAdapter(text, connectionString);
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-            {
-                adapter = new SqlDataAdapter(text, connectionString);
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            {
-                adapter = new NpgsqlDataAdapter(text, connectionString);
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-            {
-                adapter = new OracleDataAdapter(text, connectionString);
-            }
-
-            return adapter;
         }
 
         public static IDbDataAdapter GetIDbDataAdapter()
@@ -298,6 +180,32 @@ namespace SiteServer.Utils
             return parameter;
         }
 
+        public static string GetSqlColumnInList(string columnName, List<int> idList)
+        {
+            if (idList == null || idList.Count == 0) return string.Empty;
+
+            if (idList.Count < 1000)
+            {
+                return $"{columnName} IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
+            }
+
+            var sql = new StringBuilder();
+            sql.Append(" ").Append(columnName).Append(" IN ( ");
+            for (var i = 0; i < idList.Count; i++)
+            {
+                sql.Append(idList[i] + ",");
+                if ((i + 1) % 1000 == 0 && i + 1 < idList.Count)
+                {
+                    sql.Length -= 1;
+                    sql.Append(" ) OR ").Append(columnName).Append(" IN (");
+                }
+            }
+            sql.Length -= 1;
+            sql.Append(" )");
+
+            return $"({sql})";
+        }
+
         public static string GetInStr(string columnName, string inStr)
         {
             var retval = string.Empty;
@@ -365,54 +273,6 @@ namespace SiteServer.Utils
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"INSTR({columnName}, '{inStr}') = 0";
-            }
-
-            return retval;
-        }
-
-        public static string GetNotNullAndEmpty(string columnName)
-        {
-            var retval = string.Empty;
-
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-            {
-                retval = $"LENGTH(IFNULL({columnName},'')) > 0";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-            {
-                retval = $"DATALENGTH({columnName}) > 0";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            {
-                retval = $"LENGTH(COALESCE({columnName}, '')) > 0";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-            {
-                retval = $"LENGTH(COALESCE({columnName}, '')) > 0";
-            }
-
-            return retval;
-        }
-
-        public static string GetNullOrEmpty(string columnName)
-        {
-            var retval = string.Empty;
-
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-            {
-                retval = $"LENGTH(IFNULL({columnName},'')) = 0";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-            {
-                retval = $"DATALENGTH({columnName}) = 0";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            {
-                retval = $"LENGTH(COALESCE({columnName}, '')) = 0";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-            {
-                retval = $"LENGTH(COALESCE({columnName}, '')) = 0";
             }
 
             return retval;
@@ -571,29 +431,66 @@ SELECT * FROM (
                 $"SELECT {builder} FROM ({ToTopSqlString(tableName, columns, whereString, orderString, topN)})";
         }
 
-        public static string GetColumnSqlString(DataType dataType, string attributeName, int length)
+        public static string GetColumnSqlString(TableColumn tableColumn)
         {
-            var retval = string.Empty;
+            if (tableColumn.IsIdentity)
+            {
+                return $@"{tableColumn.AttributeName} {GetAutoIncrementDataType()}";
+            }
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = ToMySqlColumnString(dataType, attributeName, length);
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-            {
-                retval = ToSqlServerColumnString(dataType, attributeName, length);
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            {
-                retval = ToPostgreColumnString(dataType, attributeName, length);
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-            {
-                retval = ToOracleColumnString(dataType, attributeName, length);
+                return ToMySqlColumnString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
             }
 
-            return retval;
+            if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                return ToSqlServerColumnString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
+            }
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                return ToPostgreColumnString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
+            }
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                return ToOracleColumnString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
+            }
+
+            return string.Empty;
         }
+
+        public static string GetPrimaryKeySqlString(string tableName, string attributeName)
+        {
+            return WebConfigUtils.DatabaseType == DatabaseType.MySql
+                ? $@"PRIMARY KEY ({attributeName})"
+                : $@"CONSTRAINT PK_{tableName}_{attributeName} PRIMARY KEY ({attributeName})";
+        }
+
+        //public static string GetColumnSqlString(DataType dataType, string attributeName, int length)
+        //{
+        //    var retval = string.Empty;
+
+        //    if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+        //    {
+        //        retval = ToMySqlColumnString(dataType, attributeName, length);
+        //    }
+        //    else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+        //    {
+        //        retval = ToSqlServerColumnString(dataType, attributeName, length);
+        //    }
+        //    else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+        //    {
+        //        retval = ToPostgreColumnString(dataType, attributeName, length);
+        //    }
+        //    else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+        //    {
+        //        retval = ToOracleColumnString(dataType, attributeName, length);
+        //    }
+
+        //    return retval;
+        //}
 
         public static string GetAddColumnsSqlString(string tableName, string columnsSqlString)
         {
@@ -619,25 +516,25 @@ SELECT * FROM (
             return retval;
         }
 
-        public static string GetDropTableSqlString(string tableName)
+        public static string GetDropColumnsSqlString(string tableName, string columnName)
         {
             var retval = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"DROP TABLE `{tableName}`";
+                retval = $"ALTER TABLE `{tableName}` DROP COLUMN `{columnName}`";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"DROP TABLE [{tableName}]";
+                retval = $"ALTER TABLE [{tableName}] DROP COLUMN [{columnName}]";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"DROP TABLE {tableName}";
+                retval = $"ALTER TABLE {tableName} DROP COLUMN {columnName}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"DROP TABLE {tableName}";
+                retval = $"ALTER TABLE {tableName} DROP COLUMN {columnName}";
             }
 
             return retval;
@@ -653,14 +550,7 @@ SELECT * FROM (
             //}
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                if (alterTable)
-                {
-                    retval = "INTEGER AUTO_INCREMENT UNIQUE KEY";
-                }
-                else
-                {
-                    retval = "INTEGER AUTO_INCREMENT";
-                }
+                retval = alterTable ? "INT AUTO_INCREMENT UNIQUE KEY" : "INT AUTO_INCREMENT";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
@@ -672,13 +562,13 @@ SELECT * FROM (
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = "NUMBER GENERATED BY DEFAULT ON NULL AS IDENTITY (START WITH 1 INCREMENT BY 1)";
+                retval = "NUMBER GENERATED BY DEFAULT ON NULL AS IDENTITY";
             }
 
             return retval;
         }
 
-        public static DataType ToDataType(DatabaseType databaseType, string dataTypeStr)
+        public static DataType ToDataType(string dataTypeStr)
         {
             if (string.IsNullOrEmpty(dataTypeStr)) return DataType.VarChar;
 
@@ -724,6 +614,9 @@ SELECT * FROM (
                         dataType = DataType.Boolean;
                         break;
                     case "datetime":
+                        dataType = DataType.DateTime;
+                        break;
+                    case "datetime2":
                         dataType = DataType.DateTime;
                         break;
                     case "decimal":
@@ -803,7 +696,7 @@ SELECT * FROM (
             return dataType;
         }
 
-        public static SqlDbType ToSqlServerDbType(DataType type)
+        private static SqlDbType ToSqlServerDbType(DataType type)
         {
             if (type == DataType.Boolean)
             {
@@ -832,7 +725,7 @@ SELECT * FROM (
             return SqlDbType.VarChar;
         }
 
-        public static MySqlDbType ToMySqlDbType(DataType type)
+        private static MySqlDbType ToMySqlDbType(DataType type)
         {
             if (type == DataType.Boolean)
             {
@@ -862,7 +755,7 @@ SELECT * FROM (
             return MySqlDbType.VarString;
         }
 
-        public static NpgsqlDbType ToNpgsqlDbType(DataType type)
+        private static NpgsqlDbType ToNpgsqlDbType(DataType type)
         {
             if (type == DataType.Boolean)
             {
@@ -870,7 +763,7 @@ SELECT * FROM (
             }
             if (type == DataType.DateTime)
             {
-                return NpgsqlDbType.TimestampTZ;
+                return NpgsqlDbType.TimestampTz;
             }
             if (type == DataType.Decimal)
             {
@@ -897,7 +790,7 @@ SELECT * FROM (
             return value;
         }
 
-        public static OracleDbType ToOracleDbType(DataType type)
+        private static OracleDbType ToOracleDbType(DataType type)
         {
             if (type == DataType.Boolean)
             {
@@ -922,7 +815,7 @@ SELECT * FROM (
             return OracleDbType.NVarchar2;
         }
 
-        public static string ToMySqlColumnString(DataType type, string attributeName, int length)
+        private static string ToMySqlColumnString(DataType type, string attributeName, int length)
         {
             if (type == DataType.Boolean)
             {
@@ -947,7 +840,7 @@ SELECT * FROM (
             return $"`{attributeName}` varchar({length})";
         }
 
-        public static string ToSqlServerColumnString(DataType type, string attributeName, int length)
+        private static string ToSqlServerColumnString(DataType type, string attributeName, int length)
         {
             if (type == DataType.Boolean)
             {
@@ -972,7 +865,7 @@ SELECT * FROM (
             return $"[{attributeName}] [nvarchar] ({length})";
         }
 
-        public static string ToPostgreColumnString(DataType type, string attributeName, int length)
+        private static string ToPostgreColumnString(DataType type, string attributeName, int length)
         {
             if (type == DataType.Boolean)
             {
@@ -997,7 +890,7 @@ SELECT * FROM (
             return $"{attributeName} varchar({length})";
         }
 
-        public static string ToOracleColumnString(DataType type, string attributeName, int length)
+        private static string ToOracleColumnString(DataType type, string attributeName, int length)
         {
             if (type == DataType.Boolean)
             {
@@ -1035,16 +928,6 @@ SELECT * FROM (
         public static string GetDateDiffLessThanDays(string fieldName, string days)
         {
             return GetDateDiffLessThan(fieldName, days, "DAY");
-        }
-
-        public static string GetDateDiffLessThanHours(string fieldName, string hours)
-        {
-            return GetDateDiffLessThan(fieldName, hours, "HOUR");
-        }
-
-        public static string GetDateDiffLessThanMinutes(string fieldName, string minutes)
-        {
-            return GetDateDiffLessThan(fieldName, minutes, "MINUTE");
         }
 
         private static int GetSecondsByUnit(string unit)
@@ -1097,29 +980,9 @@ SELECT * FROM (
             return retval;
         }
 
-        public static string GetDateDiffGreatThanYears(string fieldName, string years)
-        {
-            return GetDateDiffGreatThan(fieldName, years, "YEAR");
-        }
-
-        public static string GetDateDiffGreatThanMonths(string fieldName, string months)
-        {
-            return GetDateDiffGreatThan(fieldName, months, "MONTH");
-        }
-
         public static string GetDateDiffGreatThanDays(string fieldName, string days)
         {
             return GetDateDiffGreatThan(fieldName, days, "DAY");
-        }
-
-        public static string GetDateDiffGreatThanHours(string fieldName, string hours)
-        {
-            return GetDateDiffGreatThan(fieldName, hours, "HOUR");
-        }
-
-        public static string GetDateDiffGreatThanMinutes(string fieldName, string minutes)
-        {
-            return GetDateDiffGreatThan(fieldName, minutes, "MINUTE");
         }
 
         private static string GetDateDiffGreatThan(string fieldName, string fieldValue, string unit)
@@ -1213,78 +1076,6 @@ SELECT * FROM (
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"EXTRACT(day from {fieldName})";
-            }
-
-            return retval;
-        }
-
-        public static string GetDatePartHour(string fieldName)
-        {
-            var retval = string.Empty;
-
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-            {
-                retval = $"DATE_FORMAT({fieldName}, '%k')";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-            {
-                retval = $"DATEPART([HOUR], {fieldName})";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            {
-                retval = $"date_part('hour', {fieldName})";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-            {
-                retval = $"EXTRACT(hour from {fieldName})";
-            }
-
-            return retval;
-        }
-
-        public static string GetDatePartDayOfYear(string fieldName)
-        {
-            var retval = string.Empty;
-
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-            {
-                retval = $"DATE_FORMAT({fieldName}, '%j')";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-            {
-                retval = $"DATEPART([DAYOFYEAR], {fieldName})";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            {
-                retval = $"date_part('doy', {fieldName})";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-            {
-                retval = $"TO_CHAR({fieldName}, 'DDD')";
-            }
-
-            return retval;
-        }
-
-        public static string GetComparableString(string value)
-        {
-            var retval = string.Empty;
-
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-            {
-                retval = $"'{AttackUtils.FilterSql(value)}'";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-            {
-                retval = $"N'{AttackUtils.FilterSql(value)}'";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            {
-                retval = $"'{AttackUtils.FilterSql(value)}'";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-            {
-                retval = $"'{AttackUtils.FilterSql(value)}'";
             }
 
             return retval;
@@ -1434,45 +1225,9 @@ SELECT * FROM (
             return retval;
         }
 
-        public static int GetMaxLengthForNVarChar()
-        {
-            return 4000;
-        }
-
         public static string ToSqlString(string inputString)
         {
             return !string.IsNullOrEmpty(inputString) ? inputString.Replace("'", "''") : string.Empty;
-        }
-
-        public static string ToSqlString(string inputString, int maxLength)
-        {
-            if (string.IsNullOrEmpty(inputString)) return string.Empty;
-
-            if (maxLength > 0 && inputString.Length > maxLength)
-            {
-                inputString = inputString.Substring(0, maxLength);
-            }
-            return inputString.Replace("'", "''");
-        }
-
-        /// <summary>
-        /// 验证此字符串是否合作作为字段名称
-        /// </summary>
-        public static bool IsAttributeNameCompliant(string attributeName)
-        {
-            if (string.IsNullOrEmpty(attributeName) || attributeName.IndexOf(" ", StringComparison.Ordinal) != -1) return false;
-            if (-1 != attributeName.IndexOfAny(PathUtils.InvalidPathChars))
-            {
-                return false;
-            }
-            foreach (var t in attributeName)
-            {
-                if (StringUtils.IsTwoBytesChar(t))
-                {
-                    return false;
-                }
-            }
-            return true;
         }
 
         public static string ReadNextSqlString(StreamReader reader)
@@ -1539,7 +1294,7 @@ SELECT * FROM (
             }
         }
 
-        public static object Eval(object dataItem, string name)
+        private static object Eval(object dataItem, string name)
         {
             object o = null;
             try
@@ -1561,12 +1316,6 @@ SELECT * FROM (
         {
             var o = Eval(dataItem, name);
             return o == null ? 0 : Convert.ToInt32(o);
-        }
-
-        public static decimal EvalDecimal(object dataItem, string name)
-        {
-            var o = Eval(dataItem, name);
-            return o == null ? 0 : Convert.ToDecimal(o);
         }
 
         public static string EvalString(object dataItem, string name)
@@ -1609,10 +1358,10 @@ SELECT * FROM (
                 var index2 = connectionString.IndexOf(")));", StringComparison.Ordinal);
                 return connectionString.Substring(index1 + 13, index2 - index1 - 13);
             }
-            return GetValueFromConnectionString(databaseType, connectionString, "Database");
+            return GetValueFromConnectionString(connectionString, "Database");
         }
 
-        public static string GetValueFromConnectionString(DatabaseType databaseType, string connectionString, string attribute)
+        private static string GetValueFromConnectionString(string connectionString, string attribute)
         {
             var retval = string.Empty;
             if (!string.IsNullOrEmpty(connectionString) && !string.IsNullOrEmpty(attribute))

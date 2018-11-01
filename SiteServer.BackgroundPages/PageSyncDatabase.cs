@@ -4,6 +4,7 @@ using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.BackgroundPages
 {
@@ -16,7 +17,7 @@ namespace SiteServer.BackgroundPages
 
         public string UpdateDatabaseApiUrl => ApiRouteSyncDatabase.GetUrl(ApiManager.InnerApiUrl);
 
-        public string AdminUrl => PageUtils.GetAdminDirectoryUrl(string.Empty);
+        public string AdminUrl => PageUtils.GetAdminUrl(string.Empty);
 
         public void Page_Load(object sender, EventArgs e)
         {

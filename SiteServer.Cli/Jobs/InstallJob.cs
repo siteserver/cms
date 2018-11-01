@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using NDesk.Options;
-using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
@@ -103,7 +100,7 @@ namespace SiteServer.Cli.Jobs
                     return;
                 }
 
-                WebConfigUtils.UpdateWebConfig(WebConfigUtils.IsProtectData, WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, StringUtils.GetShortGuid(), false);
+                WebConfigUtils.UpdateWebConfig(WebConfigUtils.IsProtectData, WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.ApiPrefix, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory, StringUtils.GetShortGuid(), false);
 
                 DataProvider.Reset();
 

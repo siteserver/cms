@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -42,7 +43,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Admin);
 
-            RptContents.DataSource = AuthRequest.AdminPermissions.IsConsoleAdministrator
+            RptContents.DataSource = AuthRequest.AdminPermissionsImpl.IsConsoleAdministrator
                 ? DataProvider.RoleDao.GetRoleNameList()
                 : DataProvider.RoleDao.GetRoleNameListByCreatorUserName(AuthRequest.AdminName);
             RptContents.ItemDataBound += RptContents_ItemDataBound;

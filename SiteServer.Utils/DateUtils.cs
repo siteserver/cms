@@ -4,12 +4,8 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils
 {
-	public class DateUtils
+	public static class DateUtils
 	{
-        private DateUtils()
-		{
-		}
-
         public const string FormatStringDateTime = "yyyy-MM-dd HH:mm:ss";
         public const string FormatStringDateOnly = "yyyy-MM-dd";
 
@@ -332,5 +328,12 @@ namespace SiteServer.Utils
             }
             return retval;
         }
-	}
+
+	    private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1);
+
+	    public static long ToUnixTime(DateTime dateTime)
+	    {
+	        return (dateTime - UnixEpoch).Ticks / TimeSpan.TicksPerMillisecond;
+	    }
+    }
 }

@@ -4,6 +4,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
 
@@ -62,7 +63,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ConfigurationCrossSiteTrans, null, AuthRequest.AdminPermissions);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ConfigurationCrossSiteTrans, null, AuthRequest.AdminPermissionsImpl);
         }
 	}
 }

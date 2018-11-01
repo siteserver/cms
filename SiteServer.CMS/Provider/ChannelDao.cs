@@ -5,9 +5,11 @@ using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -15,6 +17,8 @@ namespace SiteServer.CMS.Provider
 {
     public class ChannelDao : DataProviderBase
     {
+        private string SqlColumns => $"{ChannelAttribute.Id}, {ChannelAttribute.AddDate}, {ChannelAttribute.Taxis}";
+
         public override string TableName => "siteserver_Channel";
 
         public override List<TableColumn> TableColumns => new List<TableColumn>
@@ -111,11 +115,6 @@ namespace SiteServer.CMS.Provider
             },
             new TableColumn
             {
-                AttributeName = nameof(ChannelInfo.ContentNum),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
                 AttributeName = nameof(ChannelInfo.FilePath),
                 DataType = DataType.VarChar,
                 DataLength = 200
@@ -173,17 +172,9 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string SqlSelect = "SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues FROM siteserver_Channel WHERE Id = @Id";
+        private const string SqlSelectByLastAddDate = "SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues FROM siteserver_Channel WHERE ParentId = @ParentId ORDER BY AddDate Desc";
 
-        private const string SqlSelectByLastAddDate = "SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues FROM siteserver_Channel WHERE ParentId = @ParentId ORDER BY AddDate Desc";
-
-        private const string SqlSelectId = "SELECT Id FROM siteserver_Channel WHERE Id = @Id";
-
-        private const string SqlSelectByTaxis = "SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues FROM siteserver_Channel WHERE ParentId = @ParentId ORDER BY Taxis";
-
-        //private const string SqlSelectByParentIdAndContentModelPluginId = "SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues FROM siteserver_Channel WHERE (SiteId = @SiteId OR Id = @SiteId) AND ContentModelPluginId = @ContentModelPluginId";
-
-        private const string SqlSelectGroupNameCollection = "SELECT GroupNameCollection FROM siteserver_Channel WHERE Id = @Id";
+        private const string SqlSelectByTaxis = "SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues FROM siteserver_Channel WHERE ParentId = @ParentId ORDER BY Taxis";
 
         private const string SqlSelectParentId = "SELECT ParentId FROM siteserver_Channel WHERE Id = @Id";
 
@@ -193,11 +184,7 @@ namespace SiteServer.CMS.Provider
 
         private const string SqlSelectIndexNameCollection = "SELECT DISTINCT IndexName FROM siteserver_Channel WHERE SiteId = @SiteId";
 
-        private const string SqlSelectIdByIndex = "SELECT Id FROM siteserver_Channel WHERE (SiteId = @SiteId OR Id = @SiteId) AND IndexName = @IndexName";
-
-        private const string SqlSelectIdByContentModelPluginId = "SELECT Id FROM siteserver_Channel WHERE (SiteId = @SiteId OR Id = @SiteId) AND ContentModelPluginId = @ContentModelPluginId";
-
-        private const string SqlUpdate = "UPDATE siteserver_Channel SET ChannelName = @ChannelName, ContentModelPluginId = @ContentModelPluginId, ContentRelatedPluginIds = @ContentRelatedPluginIds, ParentsPath = @ParentsPath, ParentsCount = @ParentsCount, ChildrenCount = @ChildrenCount, IsLastNode = @IsLastNode, IndexName = @IndexName, GroupNameCollection = @GroupNameCollection, ImageUrl = @ImageUrl, Content = @Content, ContentNum = @ContentNum, FilePath = @FilePath, ChannelFilePathRule = @ChannelFilePathRule, ContentFilePathRule = @ContentFilePathRule, LinkUrl = @LinkUrl,LinkType = @LinkType, ChannelTemplateId = @ChannelTemplateId, ContentTemplateId = @ContentTemplateId, Keywords = @Keywords, Description = @Description, ExtendValues = @ExtendValues WHERE Id = @Id";
+        private const string SqlUpdate = "UPDATE siteserver_Channel SET ChannelName = @ChannelName, ContentModelPluginId = @ContentModelPluginId, ContentRelatedPluginIds = @ContentRelatedPluginIds, ParentsPath = @ParentsPath, ParentsCount = @ParentsCount, ChildrenCount = @ChildrenCount, IsLastNode = @IsLastNode, IndexName = @IndexName, GroupNameCollection = @GroupNameCollection, ImageUrl = @ImageUrl, Content = @Content, FilePath = @FilePath, ChannelFilePathRule = @ChannelFilePathRule, ContentFilePathRule = @ContentFilePathRule, LinkUrl = @LinkUrl,LinkType = @LinkType, ChannelTemplateId = @ChannelTemplateId, ContentTemplateId = @ContentTemplateId, Keywords = @Keywords, Description = @Description, ExtendValues = @ExtendValues WHERE Id = @Id";
 
         private const string SqlUpdateExtendValues = "UPDATE siteserver_Channel SET ExtendValues = @ExtendValues WHERE Id = @Id";
 
@@ -219,7 +206,6 @@ namespace SiteServer.CMS.Provider
         private const string ParmAddDate = "@AddDate";
         private const string ParmImageUrl = "@ImageUrl";
         private const string ParmContent = "@Content";
-        private const string ParmContentNum = "@ContentNum";
         private const string ParmFilePath = "@FilePath";
         private const string ParmChannelFilePathRule = "@ChannelFilePathRule";
         private const string ParmContentFilePathRule = "@ContentFilePathRule";
@@ -258,7 +244,7 @@ namespace SiteServer.CMS.Provider
                 channelInfo.Taxis = 1;
             }
 
-            const string sqlInsertNode = "INSERT INTO siteserver_Channel (ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues) VALUES (@ChannelName, @SiteId, @ContentModelPluginId, @ContentRelatedPluginIds, @ParentId, @ParentsPath, @ParentsCount, @ChildrenCount, @IsLastNode, @IndexName, @GroupNameCollection, @Taxis, @AddDate, @ImageUrl, @Content, @ContentNum, @FilePath, @ChannelFilePathRule, @ContentFilePathRule, @LinkUrl, @LinkType, @ChannelTemplateId, @ContentTemplateId, @Keywords, @Description, @ExtendValues)";
+            const string sqlInsertNode = "INSERT INTO siteserver_Channel (ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues) VALUES (@ChannelName, @SiteId, @ContentModelPluginId, @ContentRelatedPluginIds, @ParentId, @ParentsPath, @ParentsCount, @ChildrenCount, @IsLastNode, @IndexName, @GroupNameCollection, @Taxis, @AddDate, @ImageUrl, @Content, @FilePath, @ChannelFilePathRule, @ContentFilePathRule, @LinkUrl, @LinkType, @ChannelTemplateId, @ContentTemplateId, @Keywords, @Description, @ExtendValues)";
 
             var insertParms = new IDataParameter[]
             {
@@ -277,7 +263,6 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmAddDate, DataType.DateTime, channelInfo.AddDate),
                 GetParameter(ParmImageUrl, DataType.VarChar, 200, channelInfo.ImageUrl),
                 GetParameter(ParmContent, DataType.Text, channelInfo.Content),
-                GetParameter(ParmContentNum, DataType.Integer, channelInfo.ContentNum),
                 GetParameter(ParmFilePath, DataType.VarChar, 200, channelInfo.FilePath),
                 GetParameter(ParmChannelFilePathRule, DataType.VarChar, 200, channelInfo.ChannelFilePathRule),
                 GetParameter(ParmContentFilePathRule, DataType.VarChar, 200, channelInfo.ContentFilePathRule),
@@ -324,10 +309,9 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(trans, sqlUpdateIsLastNode);
 
             //OwningIdCache.IsChanged = true;
-            ChannelManager.RemoveCache(channelInfo.SiteId);
-            PermissionManager.ClearAllCache();
+            ChannelManager.RemoveCacheBySiteId(channelInfo.SiteId);
+            PermissionsImpl.ClearAllCache();
         }
-
 
         /// <summary>
         /// 将节点数减1
@@ -342,7 +326,6 @@ namespace SiteServer.CMS.Provider
                 ExecuteNonQuery(sqlString);
             }
         }
-
 
         /// <summary>
         /// 更新发布系统下的所有节点的排序号
@@ -401,7 +384,6 @@ namespace SiteServer.CMS.Provider
             }
         }
 
-
         /// <summary>
         /// Change The Texis To Lowerer Level
         /// </summary>
@@ -409,7 +391,7 @@ namespace SiteServer.CMS.Provider
         {
             var channelInfo = ChannelManager.GetChannelInfo(siteId, selectedId);
             if (channelInfo == null || channelInfo.ParentId == 0 || channelInfo.SiteId == 0) return;
-            UpdateWholeTaxisBySiteId(channelInfo.SiteId);
+            //UpdateWholeTaxisBySiteId(channelInfo.SiteId);
             //Get Lower Taxis and Id
             int lowerId;
             int lowerChildrenCount;
@@ -459,7 +441,7 @@ namespace SiteServer.CMS.Provider
         {
             var channelInfo = ChannelManager.GetChannelInfo(siteId, selectedId);
             if (channelInfo == null || channelInfo.ParentId == 0 || channelInfo.SiteId == 0) return;
-            UpdateWholeTaxisBySiteId(channelInfo.SiteId);
+            //UpdateWholeTaxisBySiteId(channelInfo.SiteId);
             //Get Higher Taxis and Id
             int higherId;
             int higherChildrenCount;
@@ -518,7 +500,6 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString);
         }
 
-
         private void UpdateIsLastNode(int parentId)
         {
             if (parentId <= 0) return;
@@ -541,7 +522,6 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString);
         }
 
-
         private int GetMaxTaxisByParentPath(string parentPath)
         {
             var cmd = string.Concat("SELECT MAX(Taxis) AS MaxTaxis FROM siteserver_Channel WHERE (ParentsPath = '", parentPath, "') OR (ParentsPath like '", parentPath, ",%')");
@@ -556,26 +536,6 @@ namespace SiteServer.CMS.Provider
                 rdr.Close();
             }
             return maxTaxis;
-        }
-
-        private string GetGroupNameCollection(int channelId)
-        {
-            var groupNameCollection = string.Empty;
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmId, DataType.Integer, channelId)
-            };
-
-            using (var rdr = ExecuteReader(SqlSelectGroupNameCollection, parms))
-            {
-                if (rdr.Read())
-                {
-                    groupNameCollection = GetString(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return groupNameCollection;
         }
 
         private int GetParentId(int channelId)
@@ -617,49 +577,6 @@ namespace SiteServer.CMS.Provider
                 rdr.Close();
             }
             return channelId;
-        }
-
-        public int Insert(int siteId, int parentId, string channelName, string indexName, string contentModelPluginId)
-        {
-            if (siteId > 0 && parentId == 0) return 0;
-
-            var defaultChannelTemplateInfo = TemplateManager.GetDefaultTemplateInfo(siteId, TemplateType.ChannelTemplate);
-            var defaultContentTemplateInfo = TemplateManager.GetDefaultTemplateInfo(siteId, TemplateType.ContentTemplate);
-
-            var channelInfo = new ChannelInfo
-            {
-                ParentId = parentId,
-                SiteId = siteId,
-                ChannelName = channelName,
-                IndexName = indexName,
-                ContentModelPluginId = contentModelPluginId,
-                AddDate = DateTime.Now,
-                ChannelTemplateId = defaultChannelTemplateInfo.Id,
-                ContentTemplateId = defaultContentTemplateInfo.Id
-            };
-
-            var parentChannelInfo = ChannelManager.GetChannelInfo(siteId, parentId);
-
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        InsertChannelInfoWithTrans(parentChannelInfo, channelInfo, trans);
-
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
-
-            return channelInfo.Id;
         }
 
         public int Insert(int siteId, int parentId, string channelName, string indexName, string contentModelPluginId, string contentRelatedPluginIds, int channelTemplateId, int contentTemplateId)
@@ -718,7 +635,7 @@ namespace SiteServer.CMS.Provider
                 {
                     try
                     {
-                        var parentChannelInfo = GetChannelInfo(channelInfo.ParentId);
+                        var parentChannelInfo = ChannelManager.GetChannelInfo(channelInfo.SiteId, channelInfo.ParentId);
 
                         InsertChannelInfoWithTrans(parentChannelInfo, channelInfo, trans);
 
@@ -738,7 +655,7 @@ namespace SiteServer.CMS.Provider
         /// <summary>
         /// 添加后台发布节点
         /// </summary>
-        public int InsertSiteInfo(ChannelInfo channelInfo, SiteInfo psInfo, string administratorName)
+        public int InsertSiteInfo(ChannelInfo channelInfo, SiteInfo siteInfo, string administratorName)
         {
             using (var conn = GetConnection())
             {
@@ -749,9 +666,9 @@ namespace SiteServer.CMS.Provider
                     {
                         InsertChannelInfoWithTrans(null, channelInfo, trans);
 
-                        psInfo.Id = channelInfo.Id;
+                        siteInfo.Id = channelInfo.Id;
 
-                        DataProvider.SiteDao.InsertWithTrans(psInfo, trans);
+                        DataProvider.SiteDao.InsertWithTrans(siteInfo, trans);
 
                         trans.Commit();
                     }
@@ -763,7 +680,8 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            DataProvider.AdministratorDao.UpdateSiteId(administratorName, channelInfo.Id);
+            var adminInfo = AdminManager.GetAdminInfoByUserName(administratorName);
+            DataProvider.AdministratorDao.UpdateSiteId(adminInfo, channelInfo.Id);
 
             var sqlString =
                 $"UPDATE siteserver_Channel SET SiteId = {channelInfo.Id} WHERE Id = {channelInfo.Id}";
@@ -773,7 +691,7 @@ namespace SiteServer.CMS.Provider
             return channelInfo.Id;
         }
 
-        public void Update(IChannelInfo channelInfo)
+        public void Update(ChannelInfo channelInfo)
         {
             var updateParms = new IDataParameter[]
             {
@@ -788,7 +706,6 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmGroupNameCollection, DataType.VarChar, 255, channelInfo.GroupNameCollection),
                 GetParameter(ParmImageUrl, DataType.VarChar, 200, channelInfo.ImageUrl),
                 GetParameter(ParmContent, DataType.Text, channelInfo.Content),
-                GetParameter(ParmContentNum, DataType.Integer, channelInfo.ContentNum),
                 GetParameter(ParmFilePath, DataType.VarChar, 200, channelInfo.FilePath),
                 GetParameter(ParmChannelFilePathRule, DataType.VarChar, 200, channelInfo.ChannelFilePathRule),
                 GetParameter(ParmContentFilePathRule, DataType.VarChar, 200, channelInfo.ContentFilePathRule),
@@ -804,9 +721,29 @@ namespace SiteServer.CMS.Provider
 
             ExecuteNonQuery(SqlUpdate, updateParms);
 
-            ChannelManager.RemoveCache(channelInfo.ParentId == 0
-                ? channelInfo.Id
-                : channelInfo.SiteId);
+            ChannelManager.UpdateCache(channelInfo.SiteId, channelInfo);
+
+            //ChannelManager.RemoveCache(channelInfo.ParentId == 0
+            //    ? channelInfo.Id
+            //    : channelInfo.SiteId);
+        }
+
+        public void UpdateChannelTemplateId(ChannelInfo channelInfo)
+        {
+            string sqlString =
+                $"UPDATE siteserver_Channel SET ChannelTemplateId = {channelInfo.ChannelTemplateId} WHERE Id = {channelInfo.Id}";
+            ExecuteNonQuery(sqlString);
+
+            ChannelManager.UpdateCache(channelInfo.SiteId, channelInfo);
+        }
+
+        public void UpdateContentTemplateId(ChannelInfo channelInfo)
+        {
+            string sqlString =
+                $"UPDATE siteserver_Channel SET ContentTemplateId = {channelInfo.ContentTemplateId} WHERE Id = {channelInfo.Id}";
+            ExecuteNonQuery(sqlString);
+
+            ChannelManager.UpdateCache(channelInfo.SiteId, channelInfo);
         }
 
         public void UpdateAdditional(ChannelInfo channelInfo)
@@ -819,9 +756,11 @@ namespace SiteServer.CMS.Provider
 
             ExecuteNonQuery(SqlUpdateExtendValues, updateParms);
 
-            ChannelManager.RemoveCache(channelInfo.ParentId == 0
-                ? channelInfo.Id
-                : channelInfo.SiteId);
+            ChannelManager.UpdateCache(channelInfo.SiteId, channelInfo);
+
+            //ChannelManager.RemoveCache(channelInfo.ParentId == 0
+            //    ? channelInfo.Id
+            //    : channelInfo.SiteId);
         }
 
         /// <summary>
@@ -837,88 +776,36 @@ namespace SiteServer.CMS.Provider
             {
                 TaxisAdd(siteId, selectedId);
             }
-            ChannelManager.RemoveCache(siteId);
-        }
-
-        private void UpdateGroupNameCollection(int siteId, int channelId, string groupNameCollection)
-        {
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmGroupNameCollection, DataType.VarChar, 255, groupNameCollection),
-                GetParameter(ParmId, DataType.Integer, channelId)
-            };
-
-            ExecuteNonQuery(SqlUpdateGroupNameCollection, parms);
-            ChannelManager.RemoveCache(siteId);
+            ChannelManager.RemoveCacheBySiteId(siteId);
         }
 
         public void AddGroupNameList(int siteId, int channelId, List<string> groupList)
         {
-            var list = TranslateUtils.StringCollectionToStringList(GetGroupNameCollection(channelId));
-            foreach (string groupName in groupList)
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            if (channelInfo == null) return;
+
+            var list = TranslateUtils.StringCollectionToStringList(channelInfo.GroupNameCollection);
+            foreach (var groupName in groupList)
             {
                 if (!list.Contains(groupName)) list.Add(groupName);
             }
-            UpdateGroupNameCollection(siteId, channelId, TranslateUtils.ObjectCollectionToString(list));
-        }
 
-        public void UpdateContentNum(SiteInfo siteInfo)
-        {
-            var idList = ChannelManager.GetChannelIdList(siteInfo.Id);
-            foreach (var channelId in idList)
+            channelInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
+
+            var parms = new IDataParameter[]
             {
-                UpdateContentNum(siteInfo, channelId, false);
-            }
+                GetParameter(ParmGroupNameCollection, DataType.VarChar, 255, channelInfo.GroupNameCollection),
+                GetParameter(ParmId, DataType.Integer, channelId)
+            };
 
-            ChannelManager.RemoveCache(siteInfo.Id);
-        }
+            ExecuteNonQuery(SqlUpdateGroupNameCollection, parms);
 
-        public virtual void UpdateContentNum(SiteInfo siteInfo, int channelId, bool isRemoveCache)
-        {
-            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-            var sqlString = string.Empty;
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-            if (!string.IsNullOrEmpty(tableName))
-            {
-                sqlString =
-                    $"UPDATE {TableName} SET ContentNum = ({DataProvider.ContentDao.GetCountSqlString(tableName, channelId)}) WHERE Id = {channelId}";
-            }
-            if (!string.IsNullOrEmpty(sqlString))
-            {
-                ExecuteNonQuery(sqlString);
-            }
-
-            if (isRemoveCache)
-            {
-                ChannelManager.RemoveCache(siteInfo.Id);
-            }
-        }
-
-        public void UpdateContentNumToZero(string tableName)
-        {
-            var siteIdList = new List<int>();
-            var psIdList = SiteManager.GetSiteIdList();
-
-            foreach (var siteId in psIdList)
-            {
-                var psInfo = SiteManager.GetSiteInfo(siteId);
-                if (psInfo.TableName == tableName)
-                {
-                    siteIdList.Add(siteId);
-                    ChannelManager.RemoveCache(siteId);
-                }
-            }
-            if (siteIdList.Count == 0) return;
-
-            var inString = TranslateUtils.ToSqlInStringWithoutQuote(siteIdList);
-            string sqlString =
-                $"UPDATE siteserver_Channel SET ContentNum = 0 WHERE SiteId IN ({inString}) OR Id IN ({inString})";
-            ExecuteNonQuery(sqlString);
+            ChannelManager.UpdateCache(siteId, channelInfo);
         }
 
         public void Delete(int siteId, int channelId)
         {
-            var channelInfo = GetChannelInfo(channelId);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             if (channelInfo == null) return;
 
             var idList = new List<int>();
@@ -928,7 +815,7 @@ namespace SiteServer.CMS.Provider
             }
             idList.Add(channelId);
 
-            string deleteCmd =
+            var deleteCmd =
                 $"DELETE FROM siteserver_Channel WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
 
             int deletedNum;
@@ -971,28 +858,8 @@ namespace SiteServer.CMS.Provider
             }
             else
             {
-                ChannelManager.RemoveCache(channelInfo.SiteId);
+                ChannelManager.RemoveCacheBySiteId(channelInfo.SiteId);
             }
-        }
-
-        public ChannelInfo GetChannelInfo(int channelId)
-        {
-            ChannelInfo channelInfo = null;
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmId, DataType.Integer, channelId)
-            };
-
-            using (var rdr = ExecuteReader(SqlSelect, parms))
-            {
-                if (rdr.Read())
-                {
-                    channelInfo = GetChannelInfo(rdr);
-                }
-                rdr.Close();
-            }
-            return channelInfo;
         }
 
         /// <summary>
@@ -1039,67 +906,6 @@ namespace SiteServer.CMS.Provider
                 rdr.Close();
             }
             return channelInfo;
-        }
-
-        //public ChannelInfo GetChannelInfoByParentId(int siteId, int parentId, string contentModelPluginId)
-        //{
-        //    ChannelInfo channelInfo = null;
-        //    var parms = new IDataParameter[]
-        //    {
-        //        GetParameter(ParmSiteId, DataType.Integer, siteId),
-        //        GetParameter(ParmParentId, DataType.Integer, parentId),
-        //        GetParameter(ParmContentModelPluginId, DataType.VarChar, 50, contentModelPluginId)
-        //    };
-        //    using (var rdr = ExecuteReader(SqlSelectByParentIdAndContentModelPluginId, parms))
-        //    {
-        //        if (rdr.Read())
-        //        {
-        //            channelInfo = GetChannelInfo(rdr);
-        //        }
-        //        rdr.Close();
-        //    }
-        //    return channelInfo;
-        //}
-
-        public int GetIdByParentIdAndChannelName(int siteId, int parentId, string channelName, bool recursive)
-        {
-            var channelId = 0;
-            string sqlString;
-
-            if (recursive)
-            {
-                if (siteId == parentId)
-                {
-                    sqlString =
-                        $"SELECT Id FROM siteserver_Channel WHERE (SiteId = {siteId} AND ChannelName = '{AttackUtils.FilterSql(channelName)}') ORDER BY Taxis";
-                }
-                else
-                {
-                    sqlString = $@"SELECT Id
-FROM siteserver_Channel 
-WHERE ((ParentId = {parentId}) OR
-      (ParentsPath = '{parentId}') OR
-      (ParentsPath LIKE '{parentId},%') OR
-      (ParentsPath LIKE '%,{parentId},%') OR
-      (ParentsPath LIKE '%,{parentId}')) AND ChannelName = '{AttackUtils.FilterSql(channelName)}'
-ORDER BY Taxis";
-                }
-            }
-            else
-            {
-                sqlString =
-                    $"SELECT Id FROM siteserver_Channel WHERE (ParentId = {parentId} AND ChannelName = '{AttackUtils.FilterSql(channelName)}') ORDER BY Taxis";
-            }
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    channelId = GetInt(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return channelId;
         }
 
         public int GetIdByParentIdAndTaxis(int parentId, int taxis, bool isNextChannel)
@@ -1186,25 +992,7 @@ ORDER BY Taxis";
             return retval;
         }
 
-        //public List<int> GetIdListByGroupName(int siteId, string groupName)
-        //{
-        //    var idList = new List<int>();
-        //    string sqlString =
-        //        $"SELECT Id FROM siteserver_Channel WHERE SiteId={siteId} AND (GroupNameCollection LIKE '{PageUtils.FilterSql(groupName)},%' OR GroupNameCollection LIKE '%,{PageUtils.FilterSql(groupName)}' OR GroupNameCollection LIKE '%,{PageUtils.FilterSql(groupName)},%' OR GroupNameCollection='{PageUtils.FilterSql(groupName)}') ORDER By Id";
-
-        //    using (var rdr = ExecuteReader(sqlString))
-        //    {
-        //        while (rdr.Read())
-        //        {
-        //            idList.Add(GetInt(rdr, 0));
-        //        }
-        //        rdr.Close();
-        //    }
-
-        //    return idList;
-        //}
-
-        public int GetOrderInSibling(int channelId, int parentId)
+        private int GetOrderInSibling(int channelId, int parentId)
         {
             string cmd = $"SELECT Id FROM siteserver_Channel WHERE (ParentId = {parentId}) ORDER BY Taxis";
             var idList = new List<int>();
@@ -1293,7 +1081,7 @@ ORDER BY Taxis";
             return whereStringBuilder.ToString();
         }
 
-        public string GetWhereString(int siteId, string group, string groupNot, bool isImageExists, bool isImage, string where)
+        public string GetWhereString(string group, string groupNot, bool isImageExists, bool isImage, string where)
         {
             var whereStringBuilder = new StringBuilder();
             if (isImageExists)
@@ -1311,24 +1099,6 @@ ORDER BY Taxis";
             }
 
             return whereStringBuilder.ToString();
-        }
-
-        public int GetCountBySiteId(int siteId)
-        {
-            var count = 0;
-            string cmd =
-                $"SELECT COUNT(*) AS TotalNum FROM siteserver_Channel WHERE (SiteId = {siteId} AND (Id = {siteId} OR ParentId > 0))";
-
-            using (var rdr = ExecuteReader(cmd))
-            {
-                if (rdr.Read())
-                {
-                    count = GetInt(rdr, 0);
-                }
-                rdr.Close();
-            }
-
-            return count;
         }
 
         public int GetCount(int channelId)
@@ -1360,92 +1130,6 @@ ORDER BY Taxis";
             return DataProvider.DatabaseDao.GetIntResult(sqlString) + 1;
         }
 
-        public int GetIdByIndexName(int siteId, string indexName)
-        {
-            var channelId = 0;
-            if (string.IsNullOrEmpty(indexName)) return channelId;
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmSiteId, DataType.Integer, siteId),
-                GetParameter(ParmIndexName, DataType.VarChar, 255, indexName)
-            };
-
-            using (var rdr = ExecuteReader(SqlSelectIdByIndex, parms))
-            {
-                if (rdr.Read())
-                {
-                    channelId = GetInt(rdr, 0);
-                }
-                rdr.Close();
-            }
-
-            return channelId;
-        }
-
-        public int GetIdByContentModelType(int siteId, string contentModelPluginId)
-        {
-            var channelId = 0;
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmSiteId, DataType.Integer, siteId),
-                GetParameter(ParmContentModelPluginId, DataType.VarChar, 50, contentModelPluginId)
-            };
-
-            using (var rdr = ExecuteReader(SqlSelectIdByContentModelPluginId, parms))
-            {
-                if (rdr.Read())
-                {
-                    channelId = GetInt(rdr, 0);
-                }
-                rdr.Close();
-            }
-
-            return channelId;
-        }
-
-        public bool IsExists(int channelId)
-        {
-            var exists = false;
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmId, DataType.Integer, channelId)
-            };
-
-            using (var rdr = ExecuteReader(SqlSelectId, parms))
-            {
-                if (rdr.Read())
-                {
-                    if (!rdr.IsDBNull(0))
-                    {
-                        exists = true;
-                    }
-                }
-                rdr.Close();
-            }
-            return exists;
-        }
-
-        public void UpdateChannelTemplateId(int channelId, int channelTemplateId)
-        {
-            string sqlString =
-                $"UPDATE siteserver_Channel SET ChannelTemplateId = {channelTemplateId} WHERE Id = {channelId}";
-            ExecuteNonQuery(sqlString);
-
-            ChannelManager.RemoveCache(channelId);
-        }
-
-        public void UpdateContentTemplateId(int channelId, int contentTemplateId)
-        {
-            string sqlString =
-                $"UPDATE siteserver_Channel SET ContentTemplateId = {contentTemplateId} WHERE Id = {channelId}";
-            ExecuteNonQuery(sqlString);
-
-            ChannelManager.RemoveCache(channelId);
-        }
-
         public List<int> GetIdListByTotalNum(List<int> channelIdList, int totalNum, string orderByString, string whereString)
         {
             if (channelIdList == null || channelIdList.Count == 0)
@@ -1456,20 +1140,28 @@ ORDER BY Taxis";
             string sqlString;
             if (totalNum > 0)
             {
-//                sqlString = $@"SELECT TOP {totalNum} Id
-//FROM siteserver_Channel 
-//WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
-//";
+                //                sqlString = $@"SELECT TOP {totalNum} Id
+                //FROM siteserver_Channel 
+                //WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
+                //";
+                //var where =
+                //    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})";
+                var where =
+                    $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString})";
                 sqlString = SqlUtils.ToTopSqlString(TableName, "Id",
-                    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})",
+                    where,
                     orderByString,
                     totalNum);
             }
             else
             {
+                //                sqlString = $@"SELECT Id
+                //FROM siteserver_Channel 
+                //WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
+                //";
                 sqlString = $@"SELECT Id
 FROM siteserver_Channel 
-WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
+WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByString}
 ";
             }
 
@@ -1486,246 +1178,11 @@ WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereS
             return list;
         }
 
-//        public List<int> GetIdListByScopeType(int channelId, EScopeType scopeType, string group, string groupNot)
-//        {
-//            var list = new List<int>();
-//            string sqlString = null;
-//            var groupWhereString = GetGroupWhereString(group, groupNot);
-//            if (scopeType == EScopeType.All)
-//            {
-//                sqlString = $@"SELECT Id
-//FROM siteserver_Channel 
-//WHERE ((Id = {channelId}) OR
-//      (ParentId = {channelId}) OR
-//      (ParentsPath = '{channelId}') OR
-//      (ParentsPath LIKE '{channelId},%') OR
-//      (ParentsPath LIKE '%,{channelId},%') OR
-//      (ParentsPath LIKE '%,{channelId}')) {groupWhereString}
-//ORDER BY Taxis";
-//            }
-//            else if (scopeType == EScopeType.Self)
-//            {
-//                list.Add(channelId);
-//                return list;
-//            }
-//            else if (scopeType == EScopeType.Children)
-//            {
-//                sqlString = $@"SELECT Id
-//FROM siteserver_Channel 
-//WHERE (ParentId = {channelId}) {groupWhereString}
-//ORDER BY Taxis";
-//            }
-//            else if (scopeType == EScopeType.Descendant)
-//            {
-//                sqlString = $@"SELECT Id
-//FROM siteserver_Channel 
-//WHERE ((ParentId = {channelId}) OR
-//      (ParentsPath = '{channelId}') OR
-//      (ParentsPath LIKE '{channelId},%') OR
-//      (ParentsPath LIKE '%,{channelId},%') OR
-//      (ParentsPath LIKE '%,{channelId}')) {groupWhereString}
-//ORDER BY Taxis";
-//            }
-//            else if (scopeType == EScopeType.SelfAndChildren)
-//            {
-//                sqlString = $@"SELECT Id
-//FROM siteserver_Channel 
-//WHERE ((Id = {channelId}) OR
-//      (ParentId = {channelId})) {groupWhereString}
-//ORDER BY Taxis";
-//            }
-
-//            using (var rdr = ExecuteReader(sqlString))
-//            {
-//                while (rdr.Read())
-//                {
-//                    list.Add(GetInt(rdr, 0));
-//                }
-//                rdr.Close();
-//            }
-
-//            return list;
-//        }
-
-//        public List<int> GetIdListByScopeType(ChannelInfo channelInfo, EScopeType scopeType, string group, string groupNot, string contentModelPluginId)
-//        {
-//            if (channelInfo == null || channelInfo.Id <= 0) return new List<int>();
-
-//            var list = new List<int>();
-
-//            if (scopeType == EScopeType.Self)
-//            {
-//                list.Add(channelInfo.Id);
-//                return list;
-//            }
-//            if (channelInfo.ChildrenCount == 0)
-//            {
-//                if (scopeType != EScopeType.Children && scopeType != EScopeType.Descendant)
-//                {
-//                    list.Add(channelInfo.Id);
-//                }
-
-//                return list;
-//            }
-
-//            string sqlString = null;
-//            var whereString = GetGroupWhereString(group, groupNot);
-//            if (!string.IsNullOrEmpty(contentModelPluginId))
-//            {
-//                whereString += $" AND ContentModelPluginId = '{contentModelPluginId}'";
-//            }
-
-//            if (scopeType == EScopeType.All)
-//            {
-//                sqlString = $@"SELECT Id
-//FROM siteserver_Channel 
-//WHERE ((Id = {channelInfo.Id}) OR
-//      (ParentId = {channelInfo.Id}) OR
-//      (ParentsPath = '{channelInfo.Id}') OR
-//      (ParentsPath LIKE '{channelInfo.Id},%') OR
-//      (ParentsPath LIKE '%,{channelInfo.Id},%') OR
-//      (ParentsPath LIKE '%,{channelInfo.Id}')) {whereString}
-//ORDER BY Taxis";
-//            }
-//            else if (scopeType == EScopeType.Children)
-//            {
-//                sqlString = $@"SELECT Id
-//FROM siteserver_Channel 
-//WHERE (ParentId = {channelInfo.Id}) {whereString}
-//ORDER BY Taxis";
-//            }
-//            else if (scopeType == EScopeType.Descendant)
-//            {
-//                sqlString = $@"SELECT Id
-//FROM siteserver_Channel 
-//WHERE ((ParentId = {channelInfo.Id}) OR
-//      (ParentsPath = '{channelInfo.Id}') OR
-//      (ParentsPath LIKE '{channelInfo.Id},%') OR
-//      (ParentsPath LIKE '%,{channelInfo.Id},%') OR
-//      (ParentsPath LIKE '%,{channelInfo.Id}')) {whereString}
-//ORDER BY Taxis";
-//            }
-//            else if (scopeType == EScopeType.SelfAndChildren)
-//            {
-//                sqlString = $@"SELECT Id
-//FROM siteserver_Channel 
-//WHERE ((Id = {channelInfo.Id}) OR
-//      (ParentId = {channelInfo.Id})) {whereString}
-//ORDER BY Taxis";
-//            }
-
-//            using (var rdr = ExecuteReader(sqlString))
-//            {
-//                while (rdr.Read())
-//                {
-//                    list.Add(GetInt(rdr, 0));
-//                }
-//                rdr.Close();
-//            }
-
-//            return list;
-//        }
-
-//        public List<int> GetIdListForDescendant(int parentId)
-//        {
-//            string sqlString = $@"SELECT Id
-//FROM siteserver_Channel
-//WHERE (ParentsPath LIKE '{parentId},%') OR
-//      (ParentsPath LIKE '%,{parentId},%') OR
-//      (ParentsPath LIKE '%,{parentId}') OR
-//      (ParentId = {parentId})
-//";
-//            var list = new List<int>();
-
-//            using (var rdr = ExecuteReader(sqlString))
-//            {
-//                while (rdr.Read())
-//                {
-//                    list.Add(GetInt(rdr, 0));
-//                }
-//                rdr.Close();
-//            }
-
-//            return list;
-//        }
-
-//        public List<int> GetIdListByParentId(int siteId, int parentId)
-//        {
-//            string sqlString;
-//            if (parentId == 0)
-//            {
-//                sqlString = $@"SELECT Id
-//FROM siteserver_Channel
-//WHERE (Id = {siteId} OR ParentId = {siteId})
-//ORDER BY Taxis";
-//            }
-//            else
-//            {
-//                sqlString = $@"SELECT Id
-//FROM siteserver_Channel
-//WHERE (ParentId = {parentId})
-//ORDER BY Taxis";
-//            }
-
-//            var list = new List<int>();
-
-//            using (var rdr = ExecuteReader(sqlString))
-//            {
-//                while (rdr.Read())
-//                {
-//                    list.Add(GetInt(rdr, 0));
-//                }
-//                rdr.Close();
-//            }
-
-//            return list;
-//        }
-
-//        public List<ChannelInfo> GetChannelInfoListByParentId(int siteId, int parentId)
-//        {
-//            var sqlString = $@"SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues FROM siteserver_Channel 
-//WHERE (SiteId={siteId} AND ParentId = {parentId})
-//ORDER BY Taxis";
-
-//            var list = new List<ChannelInfo>();
-//            using (var rdr = ExecuteReader(sqlString))
-//            {
-//                while (rdr.Read())
-//                {
-//                    var channelInfo = GetChannelInfo(rdr);
-//                    list.Add(channelInfo);
-//                }
-//                rdr.Close();
-//            }
-
-//            return list;
-//        }
-
-//        public List<int> GetIdListBySiteId(int siteId)
-//        {
-//            string sqlString = $@"SELECT Id
-//FROM siteserver_Channel
-//WHERE SiteId = {siteId} AND (Id = {siteId} OR ParentId > 0)
-//ORDER BY Taxis";
-//            var list = new List<int>();
-
-//            using (var rdr = ExecuteReader(sqlString))
-//            {
-//                while (rdr.Read())
-//                {
-//                    list.Add(GetInt(rdr, 0));
-//                }
-//                rdr.Close();
-//            }
-
-//            return list;
-//        }
-
         public Dictionary<int, ChannelInfo> GetChannelInfoDictionaryBySiteId(int siteId)
         {
             var dic = new Dictionary<int, ChannelInfo>();
             string sqlString =
-                $@"SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues
+                $@"SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues
 FROM siteserver_Channel 
 WHERE (SiteId = {siteId} AND (Id = {siteId} OR ParentId > 0))
 ORDER BY Taxis";
@@ -1743,28 +1200,12 @@ ORDER BY Taxis";
             return dic;
         }
 
-        public string SqlColumns => $"{ChannelAttribute.Id}, {ChannelAttribute.AddDate}, {ChannelAttribute.Taxis}";
-
-        public IDataReader GetStlDataSource(List<int> channelIdList, int startNum, int totalNum, string whereString, string orderByString)
-        {
-            if (channelIdList == null || channelIdList.Count == 0)
-            {
-                return null;
-            }
-
-            string sqlWhereString =
-                $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})";
-
-            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
-
-            return ExecuteReader(sqlSelect);
-        }
-
         public DataSet GetStlDataSourceBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
         {
-            string sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
+            var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
 
-            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
             return ExecuteDataset(sqlSelect);
         }
@@ -1776,101 +1217,26 @@ ORDER BY Taxis";
                 return null;
             }
 
-            string sqlWhereString =
-                $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})";
+            //var sqlWhereString =
+            //    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})";
 
-            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlWhereString =
+                $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString}";
+
+            //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
             return ExecuteDataset(sqlSelect);
         }
 
         public DataSet GetStlDataSetBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
         {
-            string sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
+            var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
 
-            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
             return ExecuteDataset(sqlSelect);
-        }
-
-//        public List<ChannelInfo> GetChannelInfoListBySiteId(int siteId, string whereString)
-//        {
-//            var list = new List<ChannelInfo>();
-//            string cmd =
-//                $@"SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues
-//FROM siteserver_Channel 
-//WHERE (SiteId = {siteId} AND (Id = {siteId} OR ParentId > 0))
-//{whereString}
-//ORDER BY Taxis";
-
-//            using (var rdr = ExecuteReader(cmd))
-//            {
-//                while (rdr.Read())
-//                {
-//                    var channelInfo = GetChannelInfo(rdr);
-//                    list.Add(channelInfo);
-//                }
-//                rdr.Close();
-//            }
-//            return list;
-//        }
-
-//        public List<ChannelInfo> GetChannelInfoList(ChannelInfo channelInfo, int totalNum, string whereString, EScopeType scopeType, string orderByString)
-//        {
-//            var idList = ChannelManager.GetChannelIdList(channelInfo, scopeType, string.Empty, string.Empty, string.Empty);
-//            if (idList == null || idList.Count == 0)
-//            {
-//                return null;
-//            }
-
-//            string sqlString;
-//            if (totalNum > 0)
-//            {
-//                //                sqlString =
-//                //                    $@"SELECT TOP {totalNum} Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues
-//                //FROM siteserver_Channel 
-//                //WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
-//                //";
-//                sqlString = SqlUtils.ToTopSqlString(TableName,
-//                    "Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues",
-//                    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)}) {whereString})",
-//                    orderByString,
-//                    totalNum);
-//            }
-//            else
-//            {
-//                sqlString =
-//                    $@"
-//SELECT Id, ChannelName, SiteId, ContentModelPluginId, ContentRelatedPluginIds, ParentId, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, IndexName, GroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateId, ContentTemplateId, Keywords, Description, ExtendValues
-//FROM siteserver_Channel 
-//WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)}) {whereString}) {orderByString}
-//";
-//            }
-
-//            var list = new List<ChannelInfo>();
-
-//            var parms = new IDataParameter[]
-//            {
-//                GetParameter(ParmId, DataType.Integer, channelInfo.Id)
-//            };
-
-//            using (var rdr = ExecuteReader(sqlString, parms))
-//            {
-//                while (rdr.Read())
-//                {
-//                    list.Add(GetChannelInfo(rdr));
-//                }
-//                rdr.Close();
-//            }
-//            return list;
-//        }
-
-        public int GetContentNumBySiteId(int siteId)
-        {
-            string sqlString =
-                $"SELECT SUM(ContentNum) FROM siteserver_Channel WHERE (SiteId = {siteId})";
-
-            return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         public List<string> GetContentModelPluginIdList()
@@ -1906,55 +1272,6 @@ ORDER BY Taxis";
                 rdr.Close();
             }
             return list;
-        }
-
-//        public List<int> GetIdListByChildId(int siteId, int childId, List<int> channelIdList)
-//        {
-//            var sqlString = $@"SELECT Id,ParentId FROM siteserver_Channel 
-//WHERE (SiteId={siteId} AND Id={childId})
-//ORDER BY Taxis";
-
-//            using (var rdr = ExecuteReader(sqlString))
-//            {
-//                while (rdr.Read())
-//                {
-//                    var channelId = GetInt(rdr, 0);
-//                    var parentId = GetInt(rdr, 1);
-//                    channelIdList.Add(channelId);
-//                    GetIdListByChildId(siteId, parentId, channelIdList);
-
-//                }
-//                rdr.Close();
-//            }
-//            return channelIdList;
-//        }
-
-        public int GetIdByChannelIdOrChannelIndexOrChannelName(int siteId, int channelId, string channelIndex, string channelName)
-        {
-            var retval = channelId;
-
-            if (!string.IsNullOrEmpty(channelIndex))
-            {
-                var theId = GetIdByIndexName(siteId, channelIndex);
-                if (theId != 0)
-                {
-                    retval = theId;
-                }
-            }
-            if (!string.IsNullOrEmpty(channelName))
-            {
-                var theId = GetIdByParentIdAndChannelName(siteId, retval, channelName, true);
-                if (theId == 0)
-                {
-                    theId = GetIdByParentIdAndChannelName(siteId, siteId, channelName, true);
-                }
-                if (theId != 0)
-                {
-                    retval = theId;
-                }
-            }
-
-            return retval;
         }
 
         public int GetTemplateUseCount(int siteId, int templateId, TemplateType templateType, bool isDefault)
@@ -2021,7 +1338,7 @@ ORDER BY Taxis";
             return new ChannelInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++),
                 GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
                 GetBool(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++),
-                GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
+                GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                 GetString(rdr, i++), GetString(rdr, i++), ELinkTypeUtils.GetEnumType(GetString(rdr, i++)),
                 GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
         }

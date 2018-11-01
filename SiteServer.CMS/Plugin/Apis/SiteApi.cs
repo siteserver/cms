@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Apis
@@ -35,11 +36,11 @@ namespace SiteServer.CMS.Plugin.Apis
             return SiteManager.GetSiteInfo(siteId);
         }
 
-        public List<int> GetSiteIdListByAdminName(string adminName)
-        {
-            var permissionManager = PermissionManager.GetInstance(adminName);
-            return SiteManager.GetWritingSiteIdList(permissionManager);
-        }
+        //public List<int> GetSiteIdListByAdminName(string adminName)
+        //{
+        //    var permissionManager = PermissionManager.GetInstance(adminName);
+        //    return SiteManager.GetWritingSiteIdList(permissionManager);
+        //}
 
         public string GetSitePath(int siteId, string virtualPath)
         {

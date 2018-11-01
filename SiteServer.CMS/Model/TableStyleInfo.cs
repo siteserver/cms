@@ -6,7 +6,7 @@ using SiteServer.Plugin;
 namespace SiteServer.CMS.Model
 {
     [Serializable]
-	public class TableStyleInfo: IComparable<TableStyleInfo>
+	public class TableStyleInfo
 	{
 	    public TableStyleInfo()
 		{
@@ -62,21 +62,21 @@ namespace SiteServer.CMS.Model
 
 	    public bool IsHorizontal { get; set; }
 
-	    public string ExtendValues { get; set; }
+	    private string _extendValues;
+
+	    public string ExtendValues
+	    {
+	        get => _extendValues;
+	        set
+	        {
+	            _additional = null;
+	            _extendValues = value;
+	        }
+	    }
 
 	    private TableStyleInfoExtend _additional;
         public TableStyleInfoExtend Additional => _additional ?? (_additional = new TableStyleInfoExtend(ExtendValues));
 
 	    public List<TableStyleItemInfo> StyleItems { get; set; }
-
-	    public int CompareTo(TableStyleInfo other)
-	    {
-            if (other == null) return 1;
-
-            var x = Taxis.CompareTo(other.Taxis);
-	        if (x != 0) return x;
-
-	        return string.Compare(AttributeName, other.AttributeName, StringComparison.Ordinal);
-	    }
 	}
 }

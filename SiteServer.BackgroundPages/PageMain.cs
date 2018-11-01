@@ -15,6 +15,8 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
+using System.Linq;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.BackgroundPages
 {
@@ -22,7 +24,6 @@ namespace SiteServer.BackgroundPages
     {
         public Literal LtlTopMenus;
         public PlaceHolder PhSite;
-        public Literal LtlCreateStatus;
         public NavigationTree NtLeftManagement;
         public NavigationTree NtLeftFunctions;
 
@@ -32,7 +33,7 @@ namespace SiteServer.BackgroundPages
 
         protected override bool IsSinglePage => true;
 
-        public string SignalrHubsUrl = ApiManager.SignalrHubsUrl;
+        public string InnerApiUrl => ApiManager.InnerApiUrl.TrimEnd('/');
 
         public string PackageIdSsCms = PackageUtils.PackageIdSsCms;
 
@@ -61,7 +62,9 @@ namespace SiteServer.BackgroundPages
 
         public string UpdateSystemUrl => PageUpdateSystem.GetRedirectUrl();
 
-        public bool IsConsoleAdministrator => AuthRequest.AdminPermissions.IsConsoleAdministrator;
+        public bool IsConsoleAdministrator => AuthRequest.AdminPermissionsImpl.IsConsoleAdministrator;
+
+        public string DefaultPageUrl => PluginMenuManager.GetSystemDefaultPageUrl(SiteId) ?? "dashboard.cshtml";
 
         public static string GetRedirectUrl()
         {
@@ -81,17 +84,17 @@ namespace SiteServer.BackgroundPages
             if (IsForbidden) return;
 
             var isLeft = false;
-
             var siteId = 0;
+            var adminInfo = AuthRequest.AdminInfo;
 
-            var siteIdList = AuthRequest.AdminPermissions.SiteIdList;
+            var siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdList();
             if (siteIdList.Contains(SiteId))
             {
                 siteId = SiteId;
             }
-            else if (siteIdList.Contains(AuthRequest.AdminInfo.SiteId))
+            else if (siteIdList.Contains(adminInfo.SiteId))
             {
-                siteId = AuthRequest.AdminInfo.SiteId;
+                siteId = adminInfo.SiteId;
             }
 
             //站点要判断是否存在，是否有权限
@@ -113,11 +116,11 @@ namespace SiteServer.BackgroundPages
                     return;
                 }
 
-                var permissionList = new List<string>(AuthRequest.AdminPermissions.PermissionList);
+                var permissionList = new List<string>(AuthRequest.AdminPermissionsImpl.PermissionList);
 
-                if (AuthRequest.AdminPermissions.HasSitePermissions(_siteInfo.Id))
+                if (AuthRequest.AdminPermissionsImpl.HasSitePermissions(_siteInfo.Id))
                 {
-                    var websitePermissionList = AuthRequest.AdminPermissions.GetSitePermissions(_siteInfo.Id);
+                    var websitePermissionList = AuthRequest.AdminPermissionsImpl.GetSitePermissions(_siteInfo.Id);
                     if (websitePermissionList != null)
                     {
                         isLeft = true;
@@ -125,7 +128,7 @@ namespace SiteServer.BackgroundPages
                     }
                 }
 
-                var channelPermissions = AuthRequest.AdminPermissions.GetChannelPermissions(_siteInfo.Id);
+                var channelPermissions = AuthRequest.AdminPermissionsImpl.GetChannelPermissions(_siteInfo.Id);
                 if (channelPermissions.Count > 0)
                 {
                     isLeft = true;
@@ -133,18 +136,6 @@ namespace SiteServer.BackgroundPages
                 }
 
                 PhSite.Visible = isLeft;
-
-                LtlCreateStatus.Text = $@"
-<script type=""text/javascript"">
-function {LayerUtils.OpenPageCreateStatusFuncName}() {{
-    {PageCreateStatus.GetOpenLayerString(_siteInfo.Id)}
-}}
-</script>
-<a href=""javascript:;"" onclick=""{LayerUtils.OpenPageCreateStatusFuncName}()"">
-    <i class=""ion-wand""></i>
-    <span id=""progress"" class=""badge badge-xs badge-pink"">0</span>
-</a>
-";
 
                 NtLeftManagement.TopId = ConfigManager.TopMenu.IdSite;
                 NtLeftManagement.SiteId = _siteInfo.Id;
@@ -165,9 +156,9 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
                 }
             }
 
-            if (_siteInfo != null && _siteInfo.Id > 0 && AuthRequest.AdminInfo.SiteId != _siteInfo.Id)
+            if (_siteInfo != null && _siteInfo.Id > 0 && adminInfo.SiteId != _siteInfo.Id)
             {
-                DataProvider.AdministratorDao.UpdateSiteId(AuthRequest.AdminName, _siteInfo.Id);
+                DataProvider.AdministratorDao.UpdateSiteId(adminInfo, _siteInfo.Id);
             }
 
             if (isLeft)
@@ -177,7 +168,7 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
     <i class=""ion-navicon"" style=""font-size: 28px;color: #fff;""></i>
 </a>
 <ul id=""topMenus"" class=""navigation-menu"">
-    {GetTopMenuSitesHtml() + GetTopMenuLinksHtml() + GetTopMenusHtml()}
+    {GetTopMenuSitesHtml(siteIdList) + GetTopMenuLinksHtml() + GetTopMenusHtml()}
 </ul>
 ";
             }
@@ -209,7 +200,10 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
 ");
 
                 level++;
-                foreach (var subSiteInfo in children)
+
+                var list = children.OrderByDescending(o => o.Taxis).ToList();
+
+                foreach (var subSiteInfo in list)
                 {
                     AddSite(builder, subSiteInfo, parentWithChildren, level);
                 }
@@ -227,10 +221,8 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             _addedSiteIdList.Add(siteInfo.Id);
         }
 
-        private string GetTopMenuSitesHtml()
+        private string GetTopMenuSitesHtml(List<int> siteIdList)
         {
-            var siteIdList = AuthRequest.AdminPermissions.SiteIdList;
-
             if (siteIdList.Count == 0)
             {
                 return string.Empty;
@@ -241,7 +233,7 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
 
             var parentWithChildren = new Dictionary<int, List<SiteInfo>>();
 
-            if (AuthRequest.AdminPermissions.IsSystemAdministrator)
+            if (AuthRequest.AdminPermissionsImpl.IsSystemAdministrator)
             {
                 foreach (var siteId in siteIdList)
                 {
@@ -250,11 +242,10 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             }
             else
             {
-                var permissionSiteIdList = AuthRequest.AdminPermissions.SiteIdList;
-                var permissionChannelIdList = AuthRequest.AdminPermissions.ChannelPermissionChannelIdList;
+                var permissionChannelIdList = AuthRequest.AdminPermissionsImpl.ChannelPermissionChannelIdList;
                 foreach (var siteId in siteIdList)
                 {
-                    var showSite = IsShowSite(siteId, permissionSiteIdList, permissionChannelIdList);
+                    var showSite = IsShowSite(siteId, permissionChannelIdList);
                     if (showSite)
                     {
                         AddToMySystemInfoList(mySystemInfoList, parentWithChildren, siteId);
@@ -274,7 +265,8 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
                 if (mySystemInfoList.Count > 0)
                 {
                     var count = 0;
-                    foreach (var siteInfo in mySystemInfoList)
+                    var list = mySystemInfoList.OrderByDescending(o => o.Taxis).ToList();
+                    foreach (var siteInfo in list)
                     {
                         if (siteInfo.IsRoot == false)
                         {
@@ -283,11 +275,11 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
                         }
                         if (count == 13)
                         {
-                            builder.Append(
-                                $@"<li><a href=""javascript:;"" onclick=""{ModalSiteSelect.GetOpenLayerString(SiteId)}"">列出全部站点...</a></li>");
                             break;
                         }
                     }
+                    builder.Append(
+                        $@"<li><a href=""javascript:;"" onclick=""{ModalSiteSelect.GetOpenLayerString(SiteId)}"">全部站点...</a></li>");
                 }
             }
 
@@ -343,16 +335,16 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             }
 
             var permissionList = new List<string>();
-            if (AuthRequest.AdminPermissions.HasSitePermissions(SiteId))
+            if (AuthRequest.AdminPermissionsImpl.HasSitePermissions(SiteId))
             {
-                var websitePermissionList = AuthRequest.AdminPermissions.GetSitePermissions(SiteId);
+                var websitePermissionList = AuthRequest.AdminPermissionsImpl.GetSitePermissions(SiteId);
                 if (websitePermissionList != null)
                 {
                     permissionList.AddRange(websitePermissionList);
                 }
             }
 
-            permissionList.AddRange(AuthRequest.AdminPermissions.PermissionList);
+            permissionList.AddRange(AuthRequest.AdminPermissionsImpl.PermissionList);
 
             var builder = new StringBuilder();
             foreach (var tab in topMenuTabs)
@@ -418,15 +410,8 @@ function {LayerUtils.OpenPageCreateStatusFuncName}() {{
             return builder.ToString();
         }
 
-        private static bool IsShowSite(int siteId, List<int> permissionSiteIdList, List<int> permissionChannelIdList)
+        private static bool IsShowSite(int siteId, List<int> permissionChannelIdList)
         {
-            foreach (var permissionSiteId in permissionSiteIdList)
-            {
-                if (permissionSiteId == siteId)
-                {
-                    return true;
-                }
-            }
             foreach (var permissionChannelId in permissionChannelIdList)
             {
                 if (ChannelManager.IsAncestorOrSelf(siteId, siteId, permissionChannelId))

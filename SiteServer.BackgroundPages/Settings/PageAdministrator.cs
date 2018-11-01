@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils.Enumerations;
 
@@ -45,7 +46,7 @@ namespace SiteServer.BackgroundPages.Settings
             var keyword = AuthRequest.GetQueryString("keyword");
             var roleName = AuthRequest.GetQueryString("roleName");
             var lastActivityDate = AuthRequest.GetQueryInt("lastActivityDate");
-            var isConsoleAdministrator = AuthRequest.AdminPermissions.IsConsoleAdministrator;
+            var isConsoleAdministrator = AuthRequest.AdminPermissionsImpl.IsConsoleAdministrator;
             var adminName = AuthRequest.AdminName;
             var order = AuthRequest.IsQueryExists("order") ? AuthRequest.GetQueryString("order") : nameof(AdministratorInfo.UserName);
             var departmentId = AuthRequest.GetQueryInt("departmentId");
@@ -59,7 +60,8 @@ namespace SiteServer.BackgroundPages.Settings
                     var userNameArrayList = TranslateUtils.StringCollectionToStringList(userNameCollection);
                     foreach (var userName in userNameArrayList)
                     {
-                        DataProvider.AdministratorDao.Delete(userName);
+                        var adminInfo = AdminManager.GetAdminInfoByUserName(userName);
+                        DataProvider.AdministratorDao.Delete(adminInfo);
                     }
 
                     AuthRequest.AddAdminLog("删除管理员", $"管理员:{userNameCollection}");
@@ -134,7 +136,7 @@ namespace SiteServer.BackgroundPages.Settings
             };
             DdlRoleName.Items.Add(theListItem);
 
-            var allRoles = AuthRequest.AdminPermissions.IsConsoleAdministrator ? DataProvider.RoleDao.GetRoleNameList() : DataProvider.RoleDao.GetRoleNameListByCreatorUserName(AuthRequest.AdminName);
+            var allRoles = AuthRequest.AdminPermissionsImpl.IsConsoleAdministrator ? DataProvider.RoleDao.GetRoleNameList() : DataProvider.RoleDao.GetRoleNameListByCreatorUserName(AuthRequest.AdminName);
 
             var allPredefinedRoles = EPredefinedRoleUtils.GetAllPredefinedRoleName();
             foreach (var theRoleName in allRoles)

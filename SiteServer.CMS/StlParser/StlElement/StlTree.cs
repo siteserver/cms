@@ -5,6 +5,7 @@ using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
@@ -387,10 +388,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                     htmlBuilder.Append(nodeName);
                 }
 
-                if (_isShowContentNum && _nodeInfo.ContentNum >= 0)
+                if (_isShowContentNum)
                 {
+                    var count = ContentManager.GetCount(_pageInfo.SiteInfo, _nodeInfo);
                     htmlBuilder.Append("&nbsp;");
-                    htmlBuilder.Append($"<span style=\"font-size:8pt;font-family:arial\">({_nodeInfo.ContentNum})</span>");
+                    htmlBuilder.Append($"<span style=\"font-size:8pt;font-family:arial\">({count})</span>");
                 }
 
                 return htmlBuilder.ToString();
@@ -640,6 +642,7 @@ var stltree_isNodeTree = {isNodeTree};
             private readonly string _iconMinusUrl;
             private readonly string _iconPlusUrl;
 
+            private readonly SiteInfo _siteInfo;
             private readonly ChannelInfo _nodeInfo;
             private readonly bool _hasChildren;
             private readonly string _linkUrl;
@@ -652,6 +655,7 @@ var stltree_isNodeTree = {isNodeTree};
 
             public StlTreeItemAjax(SiteInfo siteInfo, ChannelInfo nodeInfo, string target, bool isShowContentNum, string currentFormatString, int topChannelId, int topParentsCount, int currentChannelId, bool isLocal)
             {
+                _siteInfo = siteInfo;
                 _nodeInfo = nodeInfo;
                 _hasChildren = nodeInfo.ChildrenCount != 0;
                 _linkUrl = PageUtility.GetChannelUrl(siteInfo, nodeInfo, isLocal);
@@ -714,10 +718,11 @@ var stltree_isNodeTree = {isNodeTree};
                     htmlBuilder.Append(nodeName);
                 }
 
-                if (_isShowContentNum && _nodeInfo.ContentNum >= 0)
+                if (_isShowContentNum)
                 {
+                    var count = ContentManager.GetCount(_siteInfo, _nodeInfo);
                     htmlBuilder.Append("&nbsp;");
-                    htmlBuilder.Append($"<span style=\"font-size:8pt;font-family:arial\">({_nodeInfo.ContentNum})</span>");
+                    htmlBuilder.Append($"<span style=\"font-size:8pt;font-family:arial\">({count})</span>");
                 }
 
                 return htmlBuilder.ToString();

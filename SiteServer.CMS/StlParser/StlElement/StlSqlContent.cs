@@ -1,9 +1,11 @@
 ﻿using System.Web.UI;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.Utils;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -170,7 +172,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 		        }
 		        else if (!string.IsNullOrEmpty(queryString))
 		        {
-		            var dataTable = Database.GetDataTable(connectionString, queryString);
+		            var dataTable = StlDatabaseCache.GetDataTable(connectionString, queryString);
 		            var dictList = TranslateUtils.DataTableToDictionaryList(dataTable);
 		            if (dictList != null && dictList.Count >= 1)
 		            {
@@ -226,12 +228,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
 
                 //parsedContent = DataProvider.DatabaseDao.GetString(connectionString, queryString);
-                parsedContent = Database.GetString(connectionString, queryString);
+                parsedContent = StlDatabaseCache.GetString(connectionString, queryString);
             }
 
             if (!string.IsNullOrEmpty(parsedContent))
             {
-                parsedContent = StringUtils.ParseString(parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                parsedContent = InputTypeUtils.ParseString(InputType.Text, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
                 if (!string.IsNullOrEmpty(parsedContent))
                 {

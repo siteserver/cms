@@ -1,0 +1,154 @@
+﻿@{ Layout = "_LayoutLayer.cshtml"; }
+
+<template v-if="pageType === 'add'">
+
+  <div class="form-group">
+    <label class="col-form-label">
+      验证规则
+    </label>
+    <select v-model="ruleType" class="form-control">
+      <option v-for="rule in getAvaliableRules()" :value="rule.type">{{ rule.type + '：' + rule.text }}</option>
+    </select>
+  </div>
+  <div v-if="ruleType === 'between'" class="form-row">
+    <div class="form-group col-md-6">
+      <label class="col-form-label">
+        最小值（必填）
+        <small v-show="errors.has('betweenMin')" class="text-danger">{{ errors.first('betweenMin') }}</small>
+      </label>
+      <input v-model="betweenMin" name="betweenMin" data-vv-as="最小值" v-validate="'required|numeric'" :class="{'is-invalid':
+errors.has('betweenMin') }"
+        type="text" class="form-control">
+    </div>
+    <div class="form-group col-md-6">
+      <label class="col-form-label">
+        最大值（必填）
+        <small v-show="errors.has('betweenMax')" class="text-danger">{{ errors.first('betweenMax') }}</small>
+      </label>
+      <input v-model="betweenMax" name="betweenMax" data-vv-as="最大值" v-validate="'required|numeric'" :class="{'is-invalid':
+errors.has('betweenMax') }"
+        type="text" class="form-control">
+    </div>
+  </div>
+  <div v-else-if="ruleType === 'decimal'" class="form-group">
+    <label class="col-form-label">
+      最多允许的小数位数（可选）
+      <small v-show="errors.has('decimals')" class="text-danger">{{ errors.first('decimals') }}</small>
+    </label>
+    <input v-model="decimals" name="decimals" data-vv-as="最多允许的小数位数" v-validate="'numeric'" :class="{'is-invalid':
+errors.has('decimals') }"
+      type="text" class="form-control">
+  </div>
+  <div v-else-if="ruleType === 'digits'" class="form-group">
+    <label class="col-form-label">
+      整数位数（可选）
+      <small v-show="errors.has('digitsLength')" class="text-danger">{{ errors.first('digitsLength') }}</small>
+    </label>
+    <input v-model="digitsLength" name="digitsLength" data-vv-as="整数位数" v-validate="'numeric'" :class="{'is-invalid':
+errors.has('digitsLength') }"
+      type="text" class="form-control">
+  </div>
+  <div v-else-if="ruleType === 'included'" class="form-group">
+    <label class="col-form-label">
+      指定列表（必填，列表项使用英文","分隔）
+      <small v-show="errors.has('includedList')" class="text-danger">{{ errors.first('includedList') }}</small>
+    </label>
+    <input v-model="includedList" name="includedList" data-vv-as="指定列表" v-validate="'required'" :class="{'is-invalid':
+errors.has('includedList') }"
+      type="text" class="form-control">
+  </div>
+  <div v-else-if="ruleType === 'max'" class="form-group">
+    <label class="col-form-label">
+      最多允许的字符数（必填）
+      <small v-show="errors.has('maxLength')" class="text-danger">{{ errors.first('maxLength') }}</small>
+    </label>
+    <input v-model="maxLength" name="maxLength" data-vv-as="最多允许的字符数" v-validate="'required|numeric'" :class="{'is-invalid':
+errors.has('maxLength') }"
+      type="text" class="form-control">
+  </div>
+  <div v-else-if="ruleType === 'max_value'" class="form-group">
+    <label class="col-form-label">
+      允许的最大数值（必填）
+      <small v-show="errors.has('maxValue')" class="text-danger">{{ errors.first('maxValue') }}</small>
+    </label>
+    <input v-model="maxValue" name="maxValue" data-vv-as="允许的最大数值" v-validate="'required|numeric'" :class="{'is-invalid':
+errors.has('maxValue') }"
+      type="text" class="form-control">
+  </div>
+  <div v-else-if="ruleType === 'min'" class="form-group">
+    <label class="col-form-label">
+      最少允许的字符数（必填）
+      <small v-show="errors.has('minLength')" class="text-danger">{{ errors.first('minLength') }}</small>
+    </label>
+    <input v-model="minLength" name="minLength" data-vv-as="最少允许的字符数" v-validate="'required|numeric'" :class="{'is-invalid':
+errors.has('minLength') }"
+      type="text" class="form-control">
+  </div>
+  <div v-else-if="ruleType === 'min_value'" class="form-group">
+    <label class="col-form-label">
+      允许的最小数值（必填）
+      <small v-show="errors.has('minValue')" class="text-danger">{{ errors.first('minValue') }}</small>
+    </label>
+    <input v-model="minValue" name="minValue" data-vv-as="允许的最小数值" v-validate="'required|numeric'" :class="{'is-invalid':
+errors.has('minValue') }"
+      type="text" class="form-control">
+  </div>
+  <div v-else-if="ruleType === 'excluded'" class="form-group">
+    <label class="col-form-label">
+      指定列表（必填，列表项使用英文","分隔）
+      <small v-show="errors.has('excludedList')" class="text-danger">{{ errors.first('excludedList') }}</small>
+    </label>
+    <input v-model="excludedList" name="excludedList" data-vv-as="指定列表" v-validate="'required'" :class="{'is-invalid':
+errors.has('excludedList') }"
+      type="text" class="form-control">
+  </div>
+  <div v-else-if="ruleType === 'regex'" class="form-group">
+    <label class="col-form-label">
+      正则表达式（必填）
+      <small v-show="errors.has('regexValue')" class="text-danger">{{ errors.first('regexValue') }}</small>
+    </label>
+    <input v-model="regexValue" name="regexValue" data-vv-as="正则表达式" v-validate="'required'" :class="{'is-invalid':
+errors.has('regexValue') }"
+      type="text" class="form-control">
+  </div>
+
+  <hr />
+  <button type="button" class="btn btn-sm btn-primary m-l-5" v-on:click="btnSaveClick">确 定</button>
+  <button type="button" class="btn btn-sm btn-default m-l-5" v-on:click="btnCancelClick">取 消</button>
+
+</template>
+<template v-else>
+
+  <table id="contents" class="table tablesaw table-hover m-0">
+    <thead>
+      <tr class="thead">
+        <th>验证规则 </th>
+        <th>参数 </th>
+        <th>说明 </th>
+        <th width="160" class="text-center">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(rule, index) in validateRules">
+        <td>{{ rule.type }}</td>
+        <td>{{ rule.value }}</td>
+        <td>{{ getDescription(rule.type) }}</td>
+        <td class="text-center">
+          <a href="javascript:;" v-on:click="btnRemoveClick(index)" class="text-danger ml-2">删除</a></td>
+      </tr>
+    </tbody>
+  </table>
+  <hr />
+  <button type="button" class="btn btn-sm btn-primary m-l-5" v-on:click="btnAddClick">添加验证规则</button>
+
+</template>
+
+<hr />
+
+<div class="text-right mr-1">
+  <button type="button" class="btn btn-primary m-l-5" v-on:click="btnSubmitClick">确 定</button>
+  <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
+</div>
+
+@section Scripts{
+<script src="tableValidate.js" type="text/javascript"></script> }

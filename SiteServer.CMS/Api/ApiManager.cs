@@ -1,4 +1,5 @@
 ﻿using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Api
@@ -9,6 +10,8 @@ namespace SiteServer.CMS.Api
 
         public static string ApiUrl => ConfigManager.SystemConfigInfo.ApiUrl;
 
+        public static string RootUrl => PageUtils.ApplicationPath;
+
         private static string _innerApiUrl;
 
         public static string InnerApiUrl
@@ -17,7 +20,7 @@ namespace SiteServer.CMS.Api
             {
                 if (string.IsNullOrEmpty(_innerApiUrl))
                 {
-                    _innerApiUrl = PageUtils.ParseNavigationUrl("~/api");
+                    _innerApiUrl = PageUtils.ParseNavigationUrl($"~/{WebConfigUtils.ApiPrefix}");
                 }
                 return _innerApiUrl;
             }
@@ -32,7 +35,5 @@ namespace SiteServer.CMS.Api
         {
             return PageUtils.Combine(InnerApiUrl, route);
         }
-
-        public static string SignalrHubsUrl => PageUtils.ParseNavigationUrl("~/signalr/hubs");
     }
 }

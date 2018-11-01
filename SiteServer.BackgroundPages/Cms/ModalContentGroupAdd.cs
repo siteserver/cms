@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -35,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
 				if (AuthRequest.IsQueryExists("GroupName"))
 				{
                     var groupName = AuthRequest.GetQueryString("GroupName");
-                    var contentGroupInfo = DataProvider.ContentGroupDao.GetContentGroupInfo(groupName, SiteId);
+                    var contentGroupInfo = ContentGroupManager.GetContentGroupInfo(SiteId, groupName);
 					if (contentGroupInfo != null)
 					{
                         TbContentGroupName.Text = contentGroupInfo.GroupName;
@@ -73,8 +74,7 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 			else
 			{
-                var contentGroupNameList = DataProvider.ContentGroupDao.GetGroupNameList(SiteId);
-				if (contentGroupNameList.IndexOf(TbContentGroupName.Text) != -1)
+				if (ContentGroupManager.IsExists(SiteId, TbContentGroupName.Text))
 				{
                     FailMessage("内容组添加失败，内容组名称已存在！");
 				}

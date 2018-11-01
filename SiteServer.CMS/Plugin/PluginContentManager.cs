@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -15,9 +15,28 @@ namespace SiteServer.CMS.Plugin
 
             foreach (var service in PluginManager.Services)
             {
-                if (string.IsNullOrEmpty(service.ContentTableName) || service.ContentTableColumns == null || service.ContentTableColumns.Count == 0) continue;
+                if (PluginContentTableManager.IsContentTable(service))
+                {
+                    list.Add(service.Metadata);
+                }
+            }
 
-                list.Add(service.Metadata);
+            return list;
+        }
+
+        public static List<string> GetContentTableNameList()
+        {
+            var list = new List<string>();
+
+            foreach (var service in PluginManager.Services)
+            {
+                if (PluginContentTableManager.IsContentTable(service))
+                {
+                    if (!StringUtils.ContainsIgnoreCase(list, service.ContentTableName))
+                    {
+                        list.Add(service.ContentTableName);
+                    }
+                }
             }
 
             return list;
@@ -37,7 +56,7 @@ namespace SiteServer.CMS.Plugin
                 {
                     list.Add(service.Metadata);
                 }
-                else if (service.ContentMenus != null && service.ContentMenus.Count > 0)
+                else if (service.ContentMenuFuncs != null)
                 {
                     list.Add(service.Metadata);
                 }
@@ -71,7 +90,7 @@ namespace SiteServer.CMS.Plugin
             return list;
         }
 
-        public static Dictionary<string, List<Menu>> GetContentMenus(ChannelInfo channelInfo)
+        public static List<string> GetContentPluginIds(ChannelInfo channelInfo)
         {
             if (string.IsNullOrEmpty(channelInfo.ContentRelatedPluginIds) &&
                 string.IsNullOrEmpty(channelInfo.ContentModelPluginId))
@@ -79,37 +98,19 @@ namespace SiteServer.CMS.Plugin
                 return null;
             }
 
-            var dict = new Dictionary<string, List<Menu>>();
             var pluginIds = TranslateUtils.StringCollectionToStringList(channelInfo.ContentRelatedPluginIds);
             if (!string.IsNullOrEmpty(channelInfo.ContentModelPluginId))
             {
                 pluginIds.Add(channelInfo.ContentModelPluginId);
             }
 
-            foreach (var service in PluginManager.Services)
-            {
-                if (!pluginIds.Contains(service.PluginId) || service.ContentMenus == null || service.ContentMenus.Count == 0) continue;
-
-                dict[service.PluginId] = service.ContentMenus;
-            }
-
-            return dict;
+            return pluginIds;
         }
 
-        public static Dictionary<string, Dictionary<string, Func<IContentContext, string>>> GetContentColumns(ChannelInfo channelInfo)
+        public static Dictionary<string, Dictionary<string, Func<IContentContext, string>>> GetContentColumns(List<string> pluginIds)
         {
-            if (string.IsNullOrEmpty(channelInfo.ContentRelatedPluginIds) &&
-                string.IsNullOrEmpty(channelInfo.ContentModelPluginId))
-            {
-                return null;
-            }
-
             var dict = new Dictionary<string, Dictionary<string, Func<IContentContext, string>>>();
-            var pluginIds = TranslateUtils.StringCollectionToStringList(channelInfo.ContentRelatedPluginIds);
-            if (!string.IsNullOrEmpty(channelInfo.ContentModelPluginId))
-            {
-                pluginIds.Add(channelInfo.ContentModelPluginId);
-            }
+            if (pluginIds == null || pluginIds.Count == 0) return dict;
 
             foreach (var service in PluginManager.Services)
             {

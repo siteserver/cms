@@ -4,7 +4,9 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -16,7 +18,13 @@ namespace SiteServer.BackgroundPages.Settings
         public TextBox TbSiteDir;
         public PlaceHolder PhParentId;
         public DropDownList DdlParentId;
-		public DropDownList DdlTableName;
+
+        public RadioButtonList RblTableRule;
+        public PlaceHolder PhTableChoose;
+        public DropDownList DdlTableChoose;
+        public PlaceHolder PhTableHandWrite;
+        public TextBox TbTableHandWrite;
+
         public TextBox TbTaxis;
 		public RadioButtonList RblIsCheckContentUseLevel;
         public PlaceHolder PhCheckContentLevel;
@@ -82,13 +90,26 @@ namespace SiteServer.BackgroundPages.Settings
                 ControlUtils.SelectSingleItem(DdlParentId, SiteInfo.ParentId.ToString());
             }
 
-            var tableList = DataProvider.TableDao.GetTableCollectionInfoListCreatedInDb();
-            foreach (var tableInfo in tableList)
+            var tableNameList = SiteManager.GetSiteTableNames();
+            if (tableNameList.Count > 0)
             {
-                if (tableInfo.DisplayName.StartsWith("插件内容表：")) continue;
-                
-                var li = new ListItem($"{tableInfo.DisplayName}({tableInfo.TableName})", tableInfo.TableName);
-                DdlTableName.Items.Add(li);
+                RblTableRule.Items.Add(ETableRuleUtils.GetListItem(ETableRule.Choose, true));
+                RblTableRule.Items.Add(ETableRuleUtils.GetListItem(ETableRule.HandWrite, false));
+
+                PhTableChoose.Visible = true;
+                PhTableHandWrite.Visible = false;
+
+                foreach (var tableName in tableNameList)
+                {
+                    DdlTableChoose.Items.Add(new ListItem(tableName, tableName));
+                }
+            }
+            else
+            {
+                RblTableRule.Items.Add(ETableRuleUtils.GetListItem(ETableRule.HandWrite, false));
+
+                PhTableChoose.Visible = false;
+                PhTableHandWrite.Visible = false;
             }
 
             TbTaxis.Text = SiteInfo.Taxis.ToString();
@@ -120,12 +141,10 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 PhSiteDir.Visible = false;
             }
-            foreach (ListItem item in DdlTableName.Items)
-            {
-                item.Selected = item.Value.Equals(SiteInfo.TableName);
-            }
 
-            BtnSubmit.Attributes.Add("onclick", GetShowHintScript());
+            ControlUtils.SelectSingleItem(DdlTableChoose, SiteInfo.TableName);
+
+            BtnSubmit.Attributes.Add("onclick", PageLoading());
         }
 
         private static void AddSite(ListControl listControl, SiteInfo siteInfo, Hashtable parentWithChildren, int level)
@@ -162,7 +181,21 @@ namespace SiteServer.BackgroundPages.Settings
 		    PhCheckContentLevel.Visible = EBooleanUtils.Equals(RblIsCheckContentUseLevel.SelectedValue, EBoolean.True);
 		}
 
-		public override void Submit_OnClick(object sender, EventArgs e)
+        public void RblTableRule_OnSelectedIndexChanged(object sender, EventArgs e)
+        {
+            var tableRule = ETableRuleUtils.GetEnumType(RblTableRule.SelectedValue);
+            PhTableChoose.Visible = PhTableHandWrite.Visible = false;
+            if (tableRule == ETableRule.Choose)
+            {
+                PhTableChoose.Visible = true;
+            }
+            else if (tableRule == ETableRule.HandWrite)
+            {
+                PhTableHandWrite.Visible = true;
+            }
+        }
+
+        public override void Submit_OnClick(object sender, EventArgs e)
 		{
 		    if (!Page.IsPostBack || !Page.IsValid) return;
 
@@ -176,10 +209,29 @@ namespace SiteServer.BackgroundPages.Settings
 
 		    var isTableChanged = false;
 
-		    if (SiteInfo.TableName != DdlTableName.SelectedValue)
+		    var tableName = string.Empty;
+		    var tableRule = ETableRuleUtils.GetEnumType(RblTableRule.SelectedValue);
+		    if (tableRule == ETableRule.Choose)
+		    {
+		        tableName = DdlTableChoose.SelectedValue;
+		    }
+		    else if (tableRule == ETableRule.HandWrite)
+		    {
+		        tableName = TbTableHandWrite.Text;
+		        if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+		        {
+		            DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+		        }
+		        else
+		        {
+		            DataProvider.DatabaseDao.AlterSystemTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+		        }
+            }
+
+            if (StringUtils.EqualsIgnoreCase(SiteInfo.TableName, tableName))
 		    {
 		        isTableChanged = true;
-		        SiteInfo.TableName = DdlTableName.SelectedValue;
+		        SiteInfo.TableName = tableName;
 		    }
 
 		    if (SiteInfo.IsRoot == false)
@@ -222,7 +274,7 @@ namespace SiteServer.BackgroundPages.Settings
             DataProvider.SiteDao.Update(SiteInfo);
             if (isTableChanged)
             {
-                DataProvider.ChannelDao.UpdateContentNum(SiteInfo);
+                ContentManager.RemoveCountCache(tableName);
             }
 
             AuthRequest.AddAdminLog("修改站点属性", $"站点:{SiteInfo.SiteName}");

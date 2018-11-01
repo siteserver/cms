@@ -4,8 +4,9 @@ using System.Collections.Specialized;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using System.Text.RegularExpressions;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -321,11 +322,11 @@ namespace SiteServer.CMS.Core
             else
             {
                 var siteDir = GetCurrentSiteDir();
-                siteId = !string.IsNullOrEmpty(siteDir) ? Site.GetSiteIdBySiteDir(siteDir) : Site.GetSiteIdByIsRoot();
+                siteId = !string.IsNullOrEmpty(siteDir) ? StlSiteCache.GetSiteIdBySiteDir(siteDir) : StlSiteCache.GetSiteIdByIsRoot();
 
                 if (siteId == 0)
                 {
-                    siteId = Site.GetSiteIdByIsRoot();
+                    siteId = StlSiteCache.GetSiteIdByIsRoot();
                 }
             }
             return siteId;
@@ -547,9 +548,8 @@ namespace SiteServer.CMS.Core
                     {LowerChannelIndex, "栏目索引(小写)"}
                 };
 
-                var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(siteInfo.Id, channelId);
-
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName, relatedIdentities);
+                var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                var styleInfoList = TableStyleManager.GetChannelStyleInfoList(channelInfo);
                 foreach (var styleInfo in styleInfoList)
                 {
                     if (styleInfo.InputType == InputType.Text)
@@ -617,7 +617,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Sequence))
                     {
-                        value = Node.GetSequence(siteInfo.Id, channelId).ToString();
+                        value = StlChannelCache.GetSequence(siteInfo.Id, channelId).ToString();
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, ParentRule))
                     {
@@ -720,10 +720,8 @@ namespace SiteServer.CMS.Core
                     {LowerChannelIndex, "栏目索引(小写)"}
                 };
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-                var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(siteInfo.Id, channelId);
-
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
+                var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
                 foreach (var styleInfo in styleInfoList)
                 {
                     if (styleInfo.InputType == InputType.Text)
@@ -739,8 +737,7 @@ namespace SiteServer.CMS.Core
             public static string Parse(SiteInfo siteInfo, int channelId, int contentId)
             {
                 var contentFilePathRule = GetContentFilePathRule(siteInfo, channelId);
-                var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-                var contentInfo = Content.GetContentInfo(tableName, contentId);
+                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelId, contentId);
                 var filePath = ParseContentPath(siteInfo, channelId, contentInfo, contentFilePathRule);
                 return filePath;
             }
@@ -757,7 +754,7 @@ namespace SiteServer.CMS.Core
                 var filePath = contentFilePathRule.Trim();
                 var regex = "(?<element>{@[^}]+})";
                 var elements = RegexUtils.GetContents("element", regex, filePath);
-                var addDate = DateTime.MinValue;
+                var addDate = contentInfo.AddDate;
                 var contentId = contentInfo.Id;
                 foreach (var element in elements)
                 {
@@ -774,7 +771,7 @@ namespace SiteServer.CMS.Core
                     else if (StringUtils.EqualsIgnoreCase(element, Sequence))
                     {
                         var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-                        value = Content.GetSequence(tableName, channelId, contentId).ToString();
+                        value = StlContentCache.GetSequence(tableName, channelId, contentId).ToString();
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, ParentRule))//继承父级设置 20151113 sessionliang
                     {
@@ -820,12 +817,6 @@ namespace SiteServer.CMS.Core
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Year) || StringUtils.EqualsIgnoreCase(element, Month) || StringUtils.EqualsIgnoreCase(element, Day) || StringUtils.EqualsIgnoreCase(element, Hour) || StringUtils.EqualsIgnoreCase(element, Minute) || StringUtils.EqualsIgnoreCase(element, Second))
                     {
-                        if (addDate == DateTime.MinValue)
-                        {
-                            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-                            addDate = Content.GetAddDate(tableName, contentId);
-                        }
-
                         if (StringUtils.EqualsIgnoreCase(element, Year))
                         {
                             value = addDate.Year.ToString();
@@ -1001,8 +992,7 @@ namespace SiteServer.CMS.Core
 
         public static string GetContentPageFilePath(SiteInfo siteInfo, int channelId, int contentId, int currentPageIndex)
         {
-            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-            var contentInfo = Content.GetContentInfo(tableName, contentId);
+            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelId, contentId);
             return GetContentPageFilePath(siteInfo, channelId, contentInfo, currentPageIndex);
         }
 

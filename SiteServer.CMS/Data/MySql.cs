@@ -3,6 +3,7 @@ using System.Data;
 using System.IO;
 using System.Xml;
 using MySql.Data.MySqlClient;
+using SiteServer.CMS.Plugin.Apis;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Data

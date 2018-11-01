@@ -4,6 +4,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
 
@@ -71,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlHtml = e.Item.FindControl("ltlHtml") as Literal;
             if (ltlHtml != null)
             {
-                ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ConfigurationCreateDetails, null, AuthRequest.AdminPermissions);
+                ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ConfigurationCreateDetails, null, AuthRequest.AdminPermissionsImpl);
             }
         }
 	}

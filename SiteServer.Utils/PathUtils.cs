@@ -1,13 +1,11 @@
 ﻿using System.IO;
 using System.Web;
 using System.Text.RegularExpressions;
-using System;
 using System.Linq;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils
 {
-    public class PathUtils
+    public static class PathUtils
     {
         public const char SeparatorChar = '\\';
         public static readonly char[] InvalidPathChars = Path.GetInvalidPathChars();
@@ -27,15 +25,6 @@ namespace SiteServer.Utils
             return retval;
         }
 
-        public static string GetCurrentFileNameWithoutExtension()
-        {
-            if (HttpContext.Current != null)
-            {
-                return Path.GetFileNameWithoutExtension(HttpContext.Current.Request.PhysicalPath);
-            }
-            return string.Empty;
-        }
-
         /// <summary>
         /// 根据路径扩展名判断是否为文件夹路径
         /// </summary>
@@ -53,22 +42,6 @@ namespace SiteServer.Utils
                 }
             }
             return retval;
-        }
-
-        public static bool IsEquals(string path1, string path2)
-        {
-            if (string.IsNullOrEmpty(path1) || string.IsNullOrEmpty(path2)) return false;
-            return string.Equals(Path.GetFullPath(path1), Path.GetFullPath(path2), StringComparison.OrdinalIgnoreCase);
-        }
-
-        public static bool IsSystemPath(string path)
-        {
-            return DirectoryUtils.IsInDirectory(Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.AspnetClient.DirectoryName), path)
-                   || DirectoryUtils.IsInDirectory(Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.Bin.DirectoryName), path)
-                   || DirectoryUtils.IsInDirectory(Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName), path)
-                   || DirectoryUtils.IsInDirectory(Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory), path)
-                   || IsEquals(Combine(WebConfigUtils.PhysicalApplicationPath, "web.config"), path)
-                   || IsEquals(Combine(WebConfigUtils.PhysicalApplicationPath, "Global.asax"), path);
         }
 
         public static string GetExtension(string path)
@@ -138,17 +111,6 @@ namespace SiteServer.Utils
             return string.Empty;
         }
 
-        public static string GetDirectoryDifference(string rootDirectoryPath, string path)
-        {
-            var directoryPath = DirectoryUtils.GetDirectoryPath(path);
-            if (!string.IsNullOrEmpty(directoryPath) && StringUtils.StartsWithIgnoreCase(directoryPath, rootDirectoryPath))
-            {
-                var retval = directoryPath.Substring(rootDirectoryPath.Length, directoryPath.Length - rootDirectoryPath.Length);
-                return retval.Trim('/', '\\');
-            }
-            return string.Empty;
-        }
-
         public static string GetPathDifference(string rootPath, string path)
         {
             if (!string.IsNullOrEmpty(path) && StringUtils.StartsWithIgnoreCase(path, rootPath))
@@ -157,20 +119,6 @@ namespace SiteServer.Utils
                 return retval.Trim('/', '\\');
             }
             return string.Empty;
-        }
-
-        public static string AddVirtualToPath(string path)
-        {
-            var resolvedPath = path;
-            if (!string.IsNullOrEmpty(path))
-            {
-                path = path.Replace("../", string.Empty);
-                if (!path.StartsWith("~"))
-                {
-                    resolvedPath = "~" + path;
-                }
-            }
-            return resolvedPath;
         }
 
         public static string GetCurrentPagePath()
@@ -197,6 +145,12 @@ namespace SiteServer.Utils
         {
             relatedPath = RemoveParentPath(relatedPath);
             return Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory, relatedPath);
+        }
+
+        public static string GetHomeDirectoryPath(string relatedPath)
+        {
+            relatedPath = RemoveParentPath(relatedPath);
+            return Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.HomeDirectory, relatedPath);
         }
 
         public static string PluginsPath => GetSiteFilesPath(DirectoryUtils.SiteFiles.Plugins);
@@ -288,31 +242,6 @@ namespace SiteServer.Utils
             return aExt.Any(t => StringUtils.EqualsIgnoreCase(sExt, t));
         }
 
-        public static bool IsFileExtenstionNotAllowed(string sNotAllowedExt, string sExt)
-        {
-            if (sExt != null && sExt.StartsWith("."))
-            {
-                sExt = sExt.Substring(1, sExt.Length - 1);
-            }
-            sNotAllowedExt = sNotAllowedExt.Replace("|", ",");
-            var aExt = sNotAllowedExt.Split(',');
-            return aExt.All(t => !StringUtils.EqualsIgnoreCase(sExt, t));
-        }
-
-        public static string GetClientUserPath(string applicationName, string userName, string relatedPath)
-        {
-            string systemName;
-            if (!string.IsNullOrEmpty(applicationName) && applicationName.IndexOf("_", StringComparison.Ordinal) != -1)
-            {
-                systemName = applicationName.Split('_')[1];
-            }
-            else
-            {
-                systemName = applicationName;
-            }
-            return GetSiteFilesPath($"{DirectoryUtils.SiteFiles.UserFiles}/{userName}/{systemName}/{relatedPath}");
-        }
-
         public static string GetTemporaryFilesPath(string relatedPath)
         {
             return Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedPath);
@@ -321,40 +250,6 @@ namespace SiteServer.Utils
         public static string GetMenusPath(params string[] paths)
         {
             return Combine(SiteServerAssets.GetPath("menus"), Combine(paths));
-        }
-
-        public static string GetUserFilesPath(string userName, string relatedPath)
-        {
-            return Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.UserFiles, userName, relatedPath);
-        }
-
-        public static string GetUserUploadDirectoryPath(string userName)
-        {
-            string directoryPath;
-            var dateFormatType = EDateFormatType.Month;
-            var datetime = DateTime.Now;
-            var userFilesPath = GetUserFilesPath(userName, string.Empty);
-            if (dateFormatType == EDateFormatType.Year)
-            {
-                directoryPath = Combine(userFilesPath, datetime.Year.ToString());
-            }
-            else if (dateFormatType == EDateFormatType.Day)
-            {
-                directoryPath = Combine(userFilesPath, datetime.Year.ToString(), datetime.Month.ToString(), datetime.Day.ToString());
-            }
-            else
-            {
-                directoryPath = Combine(userFilesPath, datetime.Year.ToString(), datetime.Month.ToString());
-            }
-            DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
-            return directoryPath;
-        }
-
-        public static string GetUserUploadFileName(string filePath)
-        {
-            var dt = DateTime.Now;
-            string strDateTime = $"{dt.Day}{dt.Hour}{dt.Minute}{dt.Second}{dt.Millisecond}";
-            return $"{strDateTime}{GetExtension(filePath)}";
         }
 
         public static string PhysicalSiteServerPath => Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory);

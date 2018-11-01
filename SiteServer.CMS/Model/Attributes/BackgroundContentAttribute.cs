@@ -12,8 +12,6 @@ namespace SiteServer.CMS.Model.Attributes
         public const string Summary = nameof(Summary);
         public const string Content = nameof(Content);
         //not exists
-        public const string TitleFormatString = nameof(TitleFormatString);
-        public const string PageContent = nameof(PageContent);
-        public const string NavigationUrl = nameof(NavigationUrl);
+        
 	}
 }

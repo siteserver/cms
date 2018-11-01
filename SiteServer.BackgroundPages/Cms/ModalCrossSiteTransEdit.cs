@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
@@ -148,7 +149,7 @@ namespace SiteServer.BackgroundPages.Cms
             LbChannelId.Items.Clear();
             if (PhSite.Visible && DdlSiteId.Items.Count > 0)
             {
-                ChannelManager.AddListItemsForAddContent(LbChannelId.Items, SiteManager.GetSiteInfo(int.Parse(DdlSiteId.SelectedValue)), false, AuthRequest.AdminPermissions);
+                ChannelManager.AddListItemsForAddContent(LbChannelId.Items, SiteManager.GetSiteInfo(int.Parse(DdlSiteId.SelectedValue)), false, AuthRequest.AdminPermissionsImpl);
             }
         }
 

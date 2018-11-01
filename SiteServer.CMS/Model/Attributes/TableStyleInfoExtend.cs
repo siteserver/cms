@@ -1,9 +1,10 @@
-﻿using SiteServer.Plugin;
+﻿using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Model.Attributes
 {
-    public class TableStyleInfoExtend : ExtendedAttributes
+    public class TableStyleInfoExtend : AttributesImpl
     {
         public TableStyleInfoExtend(string settings) : base(settings)
         {
@@ -12,96 +13,102 @@ namespace SiteServer.CMS.Model.Attributes
 
         public int Height
         {
-            get => GetInt("Height");
-            set => Set("Height", value);
+            get => GetInt(nameof(Height));
+            set => Set(nameof(Height), value);
         }
 
         public string Width
         {
             get
             {
-                var width = GetString("Width");
+                var width = GetString(nameof(Width));
                 return width == "0" ? string.Empty : width;
             }
-            set => Set("Width", value);
+            set => Set(nameof(Width), value);
         }
 
         public int Columns
         {
-            get => GetInt("Columns");
-            set => Set("Columns", value);
+            get => GetInt(nameof(Columns));
+            set => Set(nameof(Columns), value);
         }
 
         public bool IsFormatString
         {
-            get => GetBool("IsFormatString");
-            set => Set("IsFormatString", value);
+            get => GetBool(nameof(IsFormatString));
+            set => Set(nameof(IsFormatString), value);
         }
 
         public int RelatedFieldId
         {
-            get => GetInt("RelatedFieldID");
-            set => Set("RelatedFieldID", value);
+            get => GetInt(nameof(RelatedFieldId));
+            set => Set(nameof(RelatedFieldId), value);
         }
 
         public string RelatedFieldStyle
         {
-            get => GetString("RelatedFieldStyle");
-            set => Set("RelatedFieldStyle", value);
+            get => GetString(nameof(RelatedFieldStyle));
+            set => Set(nameof(RelatedFieldStyle), value);
         }
 
         public string CustomizeLeft
         {
-            get => GetString("CustomizeLeft");
-            set => Set("CustomizeLeft", value);
+            get => GetString(nameof(CustomizeLeft));
+            set => Set(nameof(CustomizeLeft), value);
         }
 
         public string CustomizeRight
         {
-            get => GetString("CustomizeRight");
-            set => Set("CustomizeRight", value);
+            get => GetString(nameof(CustomizeRight));
+            set => Set(nameof(CustomizeRight), value);
         }
 
         public bool IsValidate
         {
-            get => GetBool("IsValidate");
-            set => Set("IsValidate", value);
+            get => GetBool(nameof(IsValidate));
+            set => Set(nameof(IsValidate), value);
         }
 
         public bool IsRequired
         {
-            get => GetBool("IsRequired");
-            set => Set("IsRequired", value);
+            get => GetBool(nameof(IsRequired));
+            set => Set(nameof(IsRequired), value);
         }
 
         public int MinNum
         {
-            get => GetInt("MinNum");
-            set => Set("MinNum", value);
+            get => GetInt(nameof(MinNum));
+            set => Set(nameof(MinNum), value);
         }
 
         public int MaxNum
         {
-            get => GetInt("MaxNum");
-            set => Set("MaxNum", value);
+            get => GetInt(nameof(MaxNum));
+            set => Set(nameof(MaxNum), value);
         }
 
         public ValidateType ValidateType
         {
-            get => ValidateTypeUtils.GetEnumType(GetString("ValidateType"));
-            set => Set("ValidateType", value != null ? value.Value : ValidateType.None.Value);
+            get => ValidateTypeUtils.GetEnumType(GetString(nameof(ValidateType)));
+            set => Set(nameof(ValidateType), value != null ? value.Value : ValidateType.None.Value);
         }
 
         public string RegExp
         {
-            get => GetString("RegExp");
-            set => Set("RegExp", value);
+            get => GetString(nameof(RegExp));
+            set => Set(nameof(RegExp), value);
         }
 
         public string ErrorMessage
         {
-            get => GetString("ErrorMessage");
-            set => Set("ErrorMessage", value);
+            get => GetString(nameof(ErrorMessage));
+            set => Set(nameof(ErrorMessage), value);
+        }
+
+        public string VeeValidate
+        {
+            get => GetString(nameof(VeeValidate));
+            set => Set(nameof(VeeValidate), value);
         }
     }
 }

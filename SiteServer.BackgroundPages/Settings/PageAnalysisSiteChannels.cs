@@ -7,6 +7,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
 
@@ -140,7 +141,7 @@ yArrayUpdate.push('{yValueUpdate}');";
 
             var ltlRow = (Literal)e.Item.FindControl("ltlRow");
 
-            ltlRow.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.SiteAnalysis, _additional, AuthRequest.AdminPermissions);
+            ltlRow.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.SiteAnalysis, _additional, AuthRequest.AdminPermissionsImpl);
         }
 
         public void Analysis_OnClick(object sender, EventArgs e)

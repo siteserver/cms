@@ -6,10 +6,8 @@ using System.Web.Caching;
 
 namespace SiteServer.Utils
 {
-    public class CacheUtils
+    public static class CacheUtils
     {
-        private CacheUtils() { }
-
         private static readonly Cache Cache;
 
         /// <summary>
@@ -47,7 +45,7 @@ namespace SiteServer.Utils
             }
         }
 
-        public static void RemoveByPattern(string pattern)
+        private static void RemoveByPattern(string pattern)
         {
             if (Cache == null) return;
 
@@ -76,16 +74,6 @@ namespace SiteServer.Utils
             InnerInsert(key, obj, null, Cache.NoSlidingExpiration);
         }
 
-        public static void InsertMinutes(string key, object obj, int minutes)
-        {
-            InnerInsert(key, obj, null, TimeSpan.FromMinutes(minutes));
-        }
-
-        public static void InsertHours(string key, object obj, int hours)
-        {
-            InnerInsert(key, obj, null, TimeSpan.FromHours(hours));
-        }
-
         public static void Insert(string key, object obj, string filePath)
         {
             InnerInsert(key, obj, filePath, Cache.NoSlidingExpiration);
@@ -94,6 +82,21 @@ namespace SiteServer.Utils
         public static void Insert(string key, object obj, TimeSpan timeSpan, string filePath)
         {
             InnerInsert(key, obj, filePath, timeSpan);
+        }
+
+        public static void InsertHours(string key, object obj, int hours)
+        {
+            InnerInsert(key, obj, null, TimeSpan.FromHours(hours));
+        }
+
+        public static void InsertMinutes(string key, object obj, int minutes)
+        {
+            InnerInsert(key, obj, null, TimeSpan.FromMinutes(minutes));
+        }
+
+        public static void InsertSeconds(string key, object obj, int seconds)
+        {
+            InnerInsert(key, obj, null, TimeSpan.FromSeconds(seconds));
         }
 
         private static void InnerInsert(string key, object obj, string filePath, TimeSpan timeSpan)
@@ -107,11 +110,6 @@ namespace SiteServer.Utils
             {
                 Cache.Insert(key, obj, string.IsNullOrEmpty(filePath) ? null : new CacheDependency(filePath), Cache.NoAbsoluteExpiration, timeSpan, CacheItemPriority.Normal, null);
             }
-        }
-
-        public static bool IsCache(string key)
-        {
-            return Cache?.Get(key) != null;
         }
 
         public static object Get(string key)
@@ -142,6 +140,18 @@ namespace SiteServer.Utils
         public static T Get<T>(string key) where T : class
         {
             return Cache?.Get(key) as T;
+        }
+
+        public static bool Exists(string key)
+        {
+            var val = Cache?.Get(key);
+            return val != null;
+        }
+
+        public static bool Exists<T>(string key) where T : class
+        {
+            var val = Cache?.Get(key) as T;
+            return val != null;
         }
 
         public static List<string> AllKeys

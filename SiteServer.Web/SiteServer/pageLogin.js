@@ -1,7 +1,7 @@
-var $api = new apiUtils.Api($apiConfig.apiUrl + '/v1/administrators/actions/login');
-var $innerApi = new apiUtils.Api($apiConfig.innerApiUrl + '/v1/administrators/actions/login');
-var $captchaGetUrl = $apiConfig.innerApiUrl + '/v1/captcha/LOGIN-CAPTCHA';
-var $captchaCheckApi = new apiUtils.Api($apiConfig.innerApiUrl + '/v1/captcha/LOGIN-CAPTCHA/actions/check');
+var $api = new apiUtils.Api(apiUrl + '/v1/administrators/actions/login');
+var $innerApi = new apiUtils.Api(innerApiUrl + '/v1/administrators/actions/login');
+var $captchaGetUrl = innerApiUrl + '/v1/captcha/LOGIN-CAPTCHA';
+var $captchaCheckApi = new apiUtils.Api(innerApiUrl + '/v1/captcha/LOGIN-CAPTCHA/actions/check');
 
 if (window.top != self) {
   window.top.location = self.location;
@@ -29,6 +29,8 @@ var $vue = new Vue({
   methods: {
     reload: function () {
       this.pageLoad = true;
+      this.captcha = '';
+      this.pageSubmit = false;
       this.captchaUrl = $captchaGetUrl + '?r=' + new Date().getTime();
     },
     checkCaptcha: function () {
@@ -39,6 +41,7 @@ var $vue = new Vue({
         captcha: $this.captcha
       }, function (err, res) {
         pageUtils.loading(false);
+        $this.reload();
         if (err) {
           $this.pageAlert = {
             type: 'danger',
@@ -68,7 +71,7 @@ var $vue = new Vue({
           return;
         }
 
-        if ($apiConfig.isSeparatedApi) {
+        if (isSeparatedApi) {
           $this.loginSeparatedApi();
         } else {
           $this.redirect();

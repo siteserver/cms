@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Web.UI;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages
 {
@@ -24,7 +26,7 @@ namespace SiteServer.BackgroundPages
 
         protected bool IsForbidden { get; private set; }
 
-        public AuthRequest AuthRequest { get; private set; }
+        public RequestImpl AuthRequest { get; private set; }
 
         private void SetMessage(MessageUtils.Message.EMessageType messageType, Exception ex, string message)
         {
@@ -36,13 +38,13 @@ namespace SiteServer.BackgroundPages
         {
             base.OnInit(e);
 
-            AuthRequest = new AuthRequest(Request);
+            AuthRequest = new RequestImpl(Request);
 
             if (!IsInstallerPage)
             {
                 if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
                 {
-                    PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl("Installer"));
+                    PageUtils.Redirect(PageUtils.GetAdminUrl("Installer"));
                     return;
                 }
 
@@ -204,12 +206,12 @@ setTimeout(function() {{
 
         public void VerifySystemPermissions(params string[] permissionArray)
         {
-            if (AuthRequest.AdminPermissions.HasSystemPermissions(permissionArray))
+            if (AuthRequest.AdminPermissionsImpl.HasSystemPermissions(permissionArray))
             {
                 return;
             }
             AuthRequest.AdminLogout();
-            PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
+            PageUtils.Redirect(PageUtils.GetAdminUrl(string.Empty));
         }
 
         public virtual void Submit_OnClick(object sender, EventArgs e)
@@ -217,19 +219,9 @@ setTimeout(function() {{
             LayerUtils.Close(Page);
         }
 
-        public static string GetShowHintScript()
+        public static string PageLoading()
         {
-            return GetShowHintScript("操作进行中");
-        }
-
-        public static string GetShowHintScript(string message)
-        {
-            return GetShowHintScript(message, 120);
-        }
-
-        public static string GetShowHintScript(string message, int top)
-        {
-            return $@"hideBoxAndShowHint(this, '{message}, 请稍候...', {top});";
+            return "pageUtils.loading(true);";
         }
 
         public void ClientScriptRegisterClientScriptBlock(string key, string script)

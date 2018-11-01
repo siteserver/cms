@@ -1,0 +1,82 @@
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
+
+<div class="card-box">
+  <div v-if="type === 'channels'" class="m-t-0 header-title">
+    生成栏目页
+  </div>
+  <div v-else-if="type === 'contents'" class="m-t-0 header-title">
+    生成内容页
+  </div>
+  <p class="text-muted font-13 m-b-25">
+    点击空白处可以选中栏目
+  </p>
+
+  <table id="channels" class="table table-sm table-hover m-b-0">
+    <tbody>
+      <tr v-for="channel in pageChannels" :class="{'table-warning': channel.isChecked}">
+        <td v-on:click="toggleChecked(channel)">
+          <div class="float-left mt-1 mr-2">
+            <a v-bind:style="{marginLeft: 10 + channel.parentsCount * 20 + 'px', visibility: (channel.childrenCount > 0 ? 'visible' : 'hidden')}"
+              href="javascript:;" v-on:click="displayChildren(channel, $event);" class="text-dark">
+              <i :class="{'ion-ios-arrow-down': channel.isOpen, 'ion-ios-arrow-right': !channel.isOpen}" style="font-size: 20px;"></i>
+            </a>
+          </div>
+
+          <div class="checkbox checkbox-primary float-left">
+            <input :id="'checkbox' + channel.id" v-model="channel.isChecked" type="checkbox">
+            <label :for="'checkbox' + channel.id"></label>
+          </div>
+
+          <div class="float-left mt-1">
+            <a class="text-dark" target="_blank" onclick="event.stopPropagation()" :href="'../pageRedirect.aspx?siteId=' + channel.siteId + '&channelId=' + channel.id">
+              <i v-if="channel.parentId === 0" class="ion-ios-home" style="font-size: 18px;"></i>
+              <i v-else-if="channel.linkUrl" class="ion-link" style="font-size: 18px;"></i>
+              <i v-else class="ion-folder" style="font-size: 18px;"></i>
+              {{ channel.channelName }}
+            </a>
+            <small>({{ channel.contentNum }})</small>
+            <img v-show="channel.isLoading" width="30" height="12" border="0" src="../assets/layer/skin/default/xubox_loading0.gif" />
+          </div>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr />
+
+  <div class="form-inline">
+
+    <div class="checkbox checkbox-primary mt-2">
+      <input class="ml-2" id="checkbox1" type="checkbox" v-on:click="selectAll()" v-model="isAllChecked">
+      <label for="checkbox1">
+        全选
+      </label>
+      <input class="ml-2" id="checkbox2" type="checkbox" v-model="isDescendent">
+      <label for="checkbox2">
+        同时生成下级
+      </label>
+      <input class="ml-2" id="checkbox3" type="checkbox" v-model="isChannelPage">
+      <label for="checkbox3">
+        生成栏目页
+      </label>
+      <input class="ml-2" id="checkbox4" type="checkbox" v-model="isContentPage">
+      <label for="checkbox4">
+        生成内容页
+      </label>
+    </div>
+
+    <select class="form-control form-control-sm ml-2" v-model="scope">
+      <option value="all">所有栏目</option>
+      <option value="1month">一个月内更新内容的栏目</option>
+      <option value="1day">一天内更新内容的栏目</option>
+      <option value="2hours">2小时内更新内容的栏目</option>
+    </select>
+
+    <button class="btn btn-primary float-left ml-2" v-on:click="create()">生 成</button>
+  </div>
+
+</div>
+
+@section Scripts{
+<script src="create.js" type="text/javascript"></script> }

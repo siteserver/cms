@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -29,7 +30,8 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
 
             var userName = AuthRequest.GetQueryString("UserName");
-            var adminInfo = DataProvider.AdministratorDao.GetByUserName(userName);
+            var adminInfo = AdminManager.GetAdminInfoByUserName(userName);
+
             LtlUserName.Text = adminInfo.UserName;
             LtlDisplayName.Text = adminInfo.DisplayName;
             LtlCreationDate.Text = DateUtils.GetDateAndTimeString(adminInfo.CreationDate);

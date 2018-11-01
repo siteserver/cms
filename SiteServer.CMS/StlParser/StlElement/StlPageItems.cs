@@ -1,4 +1,5 @@
 ﻿using System;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -50,7 +51,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
+                parsedContent =
+                    LogUtils.AddStlErrorLog(pageInfo, ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -86,7 +88,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
+                parsedContent = LogUtils.AddStlErrorLog(pageInfo, ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -119,7 +121,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
+                parsedContent = LogUtils.AddStlErrorLog(pageInfo, ElementName, stlElement, ex);
             }
 
             return parsedContent;

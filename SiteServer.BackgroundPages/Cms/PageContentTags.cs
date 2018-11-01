@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 
@@ -32,10 +33,13 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var contentTags = DataProvider.ContentDao.GetValue(SiteInfo.TableName, contentId, ContentAttribute.Tags);
-                            var contentTagArrayList = TranslateUtils.StringCollectionToStringList(contentTags);
-                            contentTagArrayList.Remove(tagName);
-                            DataProvider.ContentDao.SetValue(SiteInfo.TableName, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagArrayList));
+                            var tuple = DataProvider.ContentDao.GetValue(SiteInfo.TableName, contentId, ContentAttribute.Tags);
+                            if (tuple != null)
+                            {
+                                var contentTagList = TranslateUtils.StringCollectionToStringList(tuple.Item2);
+                                contentTagList.Remove(tagName);
+                                DataProvider.ContentDao.Update(SiteInfo.TableName, tuple.Item1, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
+                            }
                         }
                     }
                     DataProvider.TagDao.DeleteTag(tagName, SiteId);

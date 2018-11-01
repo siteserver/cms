@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Plugin;
 
@@ -184,7 +185,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             else if (pageInfo.Parameters != null && pageInfo.Parameters.ContainsKey(type))
             {
                 pageInfo.Parameters.TryGetValue(type, out parsedContent);
-                parsedContent = StringUtils.ParseString(InputType.Text, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                parsedContent = InputTypeUtils.ParseString(InputType.Text, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
             }
             else
             {
@@ -193,7 +194,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     parsedContent = pageInfo.SiteInfo.Additional.GetString(type);
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
-                        var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.SiteDao.TableName, type, RelatedIdentities.GetRelatedIdentities(pageInfo.SiteId, pageInfo.SiteId));
+                        var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.SiteDao.TableName, type, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
 
                         // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                         if (styleInfo.Id > 0)
@@ -205,7 +206,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             else
                             {
                                 parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
-                                parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                                parsedContent = InputTypeUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                             }
                         }
                         else

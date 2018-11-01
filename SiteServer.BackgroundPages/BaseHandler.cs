@@ -1,16 +1,17 @@
 ﻿using System.Web;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages
 {
     public abstract class BaseHandler : IHttpHandler
     {
-        protected AuthRequest AuthRequest { get; private set; }
+        protected RequestImpl AuthRequest { get; private set; }
 
         public void ProcessRequest(HttpContext context)
         {
-            AuthRequest = new AuthRequest(context.Request);
+            AuthRequest = new RequestImpl(context.Request);
 
             if (!AuthRequest.IsAdminLoggin) return;
 

@@ -3,6 +3,7 @@ using System.Data;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
@@ -67,7 +68,9 @@ namespace SiteServer.CMS.Provider
 			};
 
             ExecuteNonQuery(sqlString, insertParms);
-		}
+
+		    ChannelGroupManager.ClearCache();
+        }
 
 		public void Update(ChannelGroupInfo groupInfo) 
 		{
@@ -81,7 +84,9 @@ namespace SiteServer.CMS.Provider
 			};
 
             ExecuteNonQuery(sqlString, updateParms);
-		}
+
+		    ChannelGroupManager.ClearCache();
+        }
 
         public void Delete(int siteId, string groupName)
 		{
@@ -104,101 +109,103 @@ namespace SiteServer.CMS.Provider
                 channelInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(groupNameList);
                 DataProvider.ChannelDao.Update(channelInfo);
 		    }
-		}
 
-        public ChannelGroupInfo GetGroupInfo(int siteId, string groupName)
-		{
-			ChannelGroupInfo group = null;
+		    ChannelGroupManager.ClearCache();
+        }
 
-            const string sqlString = "SELECT GroupName, SiteId, Taxis, Description FROM siteserver_ChannelGroup WHERE GroupName = @GroupName AND SiteId = @SiteId";
+  //      public ChannelGroupInfo GetGroupInfo(int siteId, string groupName)
+		//{
+		//	ChannelGroupInfo group = null;
 
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
-				GetParameter(ParmSiteId, DataType.Integer, siteId)
-			};
+  //          const string sqlString = "SELECT GroupName, SiteId, Taxis, Description FROM siteserver_ChannelGroup WHERE GroupName = @GroupName AND SiteId = @SiteId";
+
+  //          var parms = new IDataParameter[]
+		//	{
+		//		GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
+		//		GetParameter(ParmSiteId, DataType.Integer, siteId)
+		//	};
 			
-			using (var rdr = ExecuteReader(sqlString, parms))
-			{
-				if (rdr.Read())
-				{
-				    var i = 0;
-                    group = new ChannelGroupInfo(GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i));
-				}
-				rdr.Close();
-			}
+		//	using (var rdr = ExecuteReader(sqlString, parms))
+		//	{
+		//		if (rdr.Read())
+		//		{
+		//		    var i = 0;
+  //                  group = new ChannelGroupInfo(GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i));
+		//		}
+		//		rdr.Close();
+		//	}
 
-			return group;
-		}
+		//	return group;
+		//}
 
-        public bool IsExists(int siteId, string groupName)
-		{
-			var exists = false;
+  //      public bool IsExists(int siteId, string groupName)
+		//{
+		//	var exists = false;
 
-            var sqlString = "SELECT GroupName FROM siteserver_ChannelGroup WHERE GroupName = @GroupName AND SiteId = @SiteId";
+  //          var sqlString = "SELECT GroupName FROM siteserver_ChannelGroup WHERE GroupName = @GroupName AND SiteId = @SiteId";
 
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
-				GetParameter(ParmSiteId, DataType.Integer, siteId)
-			};
+  //          var parms = new IDataParameter[]
+		//	{
+		//		GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
+		//		GetParameter(ParmSiteId, DataType.Integer, siteId)
+		//	};
 			
-			using (var rdr = ExecuteReader(sqlString, parms)) 
-			{
-				if (rdr.Read()) 
-				{					
-					exists = true;
-				}
-				rdr.Close();
-			}
+		//	using (var rdr = ExecuteReader(sqlString, parms)) 
+		//	{
+		//		if (rdr.Read()) 
+		//		{					
+		//			exists = true;
+		//		}
+		//		rdr.Close();
+		//	}
 
-			return exists;
-		}
+		//	return exists;
+		//}
 
-		public IDataReader GetDataSource(int siteId)
-		{
-            string sqlString =
-                $"SELECT GroupName, SiteId, Taxis, Description FROM siteserver_ChannelGroup WHERE SiteId = {siteId} ORDER BY Taxis DESC, GroupName";
-			var enumerable = ExecuteReader(sqlString);
-			return enumerable;
-		}
+		//public IDataReader GetDataSource(int siteId)
+		//{
+  //          string sqlString =
+  //              $"SELECT GroupName, SiteId, Taxis, Description FROM siteserver_ChannelGroup WHERE SiteId = {siteId} ORDER BY Taxis DESC, GroupName";
+		//	var enumerable = ExecuteReader(sqlString);
+		//	return enumerable;
+		//}
 
-		public List<ChannelGroupInfo> GetGroupInfoList(int siteId)
-		{
-			var list = new List<ChannelGroupInfo>();
-            string sqlString =
-                $"SELECT GroupName, SiteId, Taxis, Description FROM siteserver_ChannelGroup WHERE SiteId = {siteId} ORDER BY Taxis DESC, GroupName";
+		//public List<ChannelGroupInfo> GetGroupInfoList(int siteId)
+		//{
+		//	var list = new List<ChannelGroupInfo>();
+  //          string sqlString =
+  //              $"SELECT GroupName, SiteId, Taxis, Description FROM siteserver_ChannelGroup WHERE SiteId = {siteId} ORDER BY Taxis DESC, GroupName";
 
-			using (var rdr = ExecuteReader(sqlString)) 
-			{
-				while (rdr.Read())
-				{
-				    var i = 0;
-                    list.Add(new ChannelGroupInfo(GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i)));
-				}
-				rdr.Close();
-			}
+		//	using (var rdr = ExecuteReader(sqlString)) 
+		//	{
+		//		while (rdr.Read())
+		//		{
+		//		    var i = 0;
+  //                  list.Add(new ChannelGroupInfo(GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i)));
+		//		}
+		//		rdr.Close();
+		//	}
 
-			return list;
-		}
+		//	return list;
+		//}
 
-		public List<string> GetGroupNameList(int siteId)
-		{
-			var list = new List<string>();
-            string sqlString =
-                $"SELECT GroupName FROM siteserver_ChannelGroup WHERE SiteId = {siteId} ORDER BY Taxis DESC, GroupName";
+		//public List<string> GetGroupNameList(int siteId)
+		//{
+		//	var list = new List<string>();
+  //          var sqlString =
+  //              $"SELECT GroupName FROM siteserver_ChannelGroup WHERE SiteId = {siteId} ORDER BY Taxis DESC, GroupName";
 			
-			using (var rdr = ExecuteReader(sqlString)) 
-			{
-				while (rdr.Read()) 
-				{
-                    list.Add(GetString(rdr, 0));
-				}
-				rdr.Close();
-			}
+		//	using (var rdr = ExecuteReader(sqlString)) 
+		//	{
+		//		while (rdr.Read()) 
+		//		{
+  //                  list.Add(GetString(rdr, 0));
+		//		}
+		//		rdr.Close();
+		//	}
 
-			return list;
-		}
+		//	return list;
+		//}
 
         private int GetTaxis(int siteId, string groupName)
         {
@@ -225,8 +232,8 @@ namespace SiteServer.CMS.Provider
 
         private int GetMaxTaxis(int siteId)
         {
-            string sqlString =
-                $"SELECT MAX(Taxis) FROM siteserver_ChannelGroup WHERE (SiteId = {siteId})";
+            var sqlString =
+                $"SELECT MAX(Taxis) FROM {TableName} WHERE (SiteId = {siteId})";
             var maxTaxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
@@ -240,7 +247,7 @@ namespace SiteServer.CMS.Provider
             return maxTaxis;
         }
 
-        public bool UpdateTaxisToUp(int siteId, string groupName)
+        public void UpdateTaxisToUp(int siteId, string groupName)
         {
             //Get Higher Taxis and ID
             //var sqlString = "SELECT TOP 1 GroupName, Taxis FROM siteserver_ChannelGroup WHERE (Taxis > (SELECT Taxis FROM siteserver_ChannelGroup WHERE GroupName = @GroupName AND SiteId = @SiteId) AND SiteId = @SiteId) ORDER BY Taxis";
@@ -276,12 +283,12 @@ namespace SiteServer.CMS.Provider
                 SetTaxis(siteId, groupName, higherTaxis);
                 //Set The Higher Class Taxis To Lower Level
                 SetTaxis(siteId, higherGroupName, selectedTaxis);
-                return true;
             }
-            return false;
+
+            ChannelGroupManager.ClearCache();
         }
 
-        public bool UpdateTaxisToDown(int siteId, string groupName)
+        public void UpdateTaxisToDown(int siteId, string groupName)
         {
             //Get Lower Taxis and ID
             //var sqlString = "SELECT TOP 1 GroupName, Taxis FROM siteserver_ChannelGroup WHERE (Taxis < (SELECT Taxis FROM siteserver_ChannelGroup WHERE GroupName = @GroupName AND SiteId = @SiteId) AND SiteId = @SiteId) ORDER BY Taxis DESC";
@@ -315,9 +322,42 @@ namespace SiteServer.CMS.Provider
                 SetTaxis(siteId, groupName, lowerTaxis);
                 //Set The Lower Class Taxis To Higher Level
                 SetTaxis(siteId, lowerGroupName, selectedTaxis);
-                return true;
             }
-            return false;
+            
+            ChannelGroupManager.ClearCache();
         }
-	}
+
+	    public Dictionary<int, List<ChannelGroupInfo>> GetAllChannelGroups()
+	    {
+	        var allDict = new Dictionary<int, List<ChannelGroupInfo>>();
+
+	        var sqlString =
+	            $"SELECT GroupName, SiteId, Taxis, Description FROM {TableName} ORDER BY Taxis DESC, GroupName";
+
+	        using (var rdr = ExecuteReader(sqlString))
+	        {
+	            while (rdr.Read())
+	            {
+	                var i = 0;
+	                var group = new ChannelGroupInfo(GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
+	                    GetString(rdr, i));
+
+	                List<ChannelGroupInfo> list;
+	                allDict.TryGetValue(group.SiteId, out list);
+
+	                if (list == null)
+	                {
+	                    list = new List<ChannelGroupInfo>();
+	                }
+
+	                list.Add(group);
+
+	                allDict[group.SiteId] = list;
+	            }
+	            rdr.Close();
+	        }
+
+	        return allDict;
+	    }
+    }
 }

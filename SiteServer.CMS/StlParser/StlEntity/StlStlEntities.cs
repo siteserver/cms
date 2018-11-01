@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
@@ -129,7 +130,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                          
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.SiteDao.TableName, attributeName, RelatedIdentities.GetRelatedIdentities(pageInfo.SiteId, pageInfo.SiteId));
+                            var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.SiteDao.TableName, attributeName, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
                             
                             // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                             if (styleInfo.Id > 0)

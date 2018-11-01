@@ -1,8 +1,8 @@
 ﻿using System.Data;
 using System.Data.OleDb;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -40,9 +40,11 @@ namespace SiteServer.CMS.Core.Office
             return createBuilder.ToString();
         }
 
-        public ArrayList GetInsertSqlStringArrayList(string nodeName, int siteId, int channelId, string tableName, List<TableStyleInfo> styleInfoList, List<string> displayAttributes, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out bool isExport)
+        public List<string> GetInsertSqlStringList(string nodeName, int siteId, int channelId, string tableName, List<TableStyleInfo> styleInfoList, List<string> displayAttributes, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out bool isExport)
         {
-            var insertSqlArrayList = new ArrayList();
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var insertSqlList = new List<string>();
 
             var preInsertBuilder = new StringBuilder();
             preInsertBuilder.Append($"INSERT INTO {nodeName} (");
@@ -67,28 +69,27 @@ namespace SiteServer.CMS.Core.Office
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
-                if (contentInfo != null)
+                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                if (contentInfo == null) continue;
+
+                var insertBuilder = new StringBuilder();
+                insertBuilder.Append(preInsertBuilder);
+
+                foreach (var tableStyleInfo in styleInfoList)
                 {
-                    var insertBuilder = new StringBuilder();
-                    insertBuilder.Append(preInsertBuilder);
-
-                    foreach (var tableStyleInfo in styleInfoList)
+                    if (displayAttributes.Contains(tableStyleInfo.AttributeName))
                     {
-                        if (displayAttributes.Contains(tableStyleInfo.AttributeName))
-                        {
-                            var value = contentInfo.GetString(tableStyleInfo.AttributeName);
-                            insertBuilder.Append($"'{SqlUtils.ToSqlString(StringUtils.StripTags(value))}', ");
-                        }
+                        var value = contentInfo.GetString(tableStyleInfo.AttributeName);
+                        insertBuilder.Append($"'{SqlUtils.ToSqlString(StringUtils.StripTags(value))}', ");
                     }
-
-                    insertBuilder.Length = insertBuilder.Length - 2;
-                    insertBuilder.Append(") ");
-
-                    insertSqlArrayList.Add(insertBuilder.ToString());
                 }
+
+                insertBuilder.Length = insertBuilder.Length - 2;
+                insertBuilder.Append(") ");
+
+                insertSqlList.Add(insertBuilder.ToString());
             }
-            return insertSqlArrayList;
+            return insertSqlList;
         }
 
         public bool ExecuteSqlString(string sqlString)

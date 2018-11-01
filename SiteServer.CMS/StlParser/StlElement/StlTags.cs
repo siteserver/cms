@@ -2,10 +2,10 @@
 using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.CMS.StlParser.Cache;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -95,7 +95,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 contentId = contextInfo.ContentId;
             }
 
-            var tagInfoList = Tag.GetTagInfoList(pageInfo.SiteId, contentId, isOrderByCount, totalNum);
+            var tagInfoList = StlTagCache.GetTagInfoList(pageInfo.SiteId, contentId, isOrderByCount, totalNum);
             tagInfoList = TagUtils.GetTagInfoList(tagInfoList, totalNum, tagLevel);
             if (contextInfo.ContextType == EContextType.Content && contextInfo.ContentInfo != null)
             {

@@ -2,6 +2,7 @@
 using Atom.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.ImportExport.Components
@@ -105,17 +106,18 @@ namespace SiteServer.CMS.ImportExport.Components
 
         public static void SingleExportTableStyles(string tableName, int siteId, int relatedIdentity, string styleDirectoryPath)
         {
-            var relatedIdentities = RelatedIdentities.GetRelatedIdentities(siteId, relatedIdentity);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, relatedIdentity);
+            var relatedIdentities = TableStyleManager.GetRelatedIdentities(channelInfo);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
+            var styleInfoList = TableStyleManager.GetStyleInfoList(tableName, relatedIdentities);
             foreach (var tableStyleInfo in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
                 var feed = ExportTableStyleInfo(tableStyleInfo);
-                var styleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(tableStyleInfo.Id);
+                var styleItems = tableStyleInfo.StyleItems;
                 if (styleItems != null && styleItems.Count > 0)
                 {
                     foreach (var styleItemInfo in styleItems)
@@ -135,12 +137,12 @@ namespace SiteServer.CMS.ImportExport.Components
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
+            var styleInfoList = TableStyleManager.GetStyleInfoList(tableName, relatedIdentities);
             foreach (var tableStyleInfo in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
                 var feed = ExportTableStyleInfo(tableStyleInfo);
-                var styleItems = DataProvider.TableStyleItemDao.GetStyleItemInfoList(tableStyleInfo.Id);
+                var styleItems = tableStyleInfo.StyleItems;
                 if (styleItems != null && styleItems.Count > 0)
                 {
                     foreach (var styleItemInfo in styleItems)
@@ -192,9 +194,9 @@ namespace SiteServer.CMS.ImportExport.Components
 
                 if (TableStyleManager.IsExists(relatedIdentity, tableName, attributeName))
                 {
-                    TableStyleManager.Delete(relatedIdentity, tableName, attributeName);
+                    DataProvider.TableStyleDao.Delete(relatedIdentity, tableName, attributeName);
                 }
-                TableStyleManager.Insert(styleInfo);
+                DataProvider.TableStyleDao.Insert(styleInfo);
             }
         }
 
@@ -260,7 +262,7 @@ namespace SiteServer.CMS.ImportExport.Components
                             styleInfo.StyleItems = styleItems;
                         }
 
-                        TableStyleManager.Insert(styleInfo);
+                        DataProvider.TableStyleDao.Insert(styleInfo);
                     }
                 }
             }

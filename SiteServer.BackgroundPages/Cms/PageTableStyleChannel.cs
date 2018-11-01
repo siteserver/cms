@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -39,7 +40,7 @@ namespace SiteServer.BackgroundPages.Cms
             var channelId = AuthRequest.GetQueryInt("channelId", SiteId);
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             _redirectUrl = GetRedirectUrl(SiteId, channelId);
-            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, channelId);
+            _relatedIdentities = TableStyleManager.GetRelatedIdentities(_channelInfo);
 
             if (IsPostBack) return;
 
@@ -53,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     try
                     {
-                        TableStyleManager.Delete(_channelInfo.Id, _tableName, attributeName);
+                        DataProvider.TableStyleDao.Delete(_channelInfo.Id, _tableName, attributeName);
                         AuthRequest.AddSiteLog(SiteId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
                         SuccessDeleteMessage();
                     }
@@ -64,10 +65,10 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissions);
+            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissionsImpl);
             ControlUtils.SelectSingleItem(DdlChannelId, channelId.ToString());
 
-            RptContents.DataSource = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);
+            RptContents.DataSource = TableStyleManager.GetChannelStyleInfoList(_channelInfo);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 

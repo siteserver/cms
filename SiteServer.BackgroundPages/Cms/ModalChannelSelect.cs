@@ -4,6 +4,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
 
@@ -99,7 +100,7 @@ namespace SiteServer.BackgroundPages.Cms
                         {"itemIndex", _itemIndex.ToString()}
                     });
                     LtlSite.Text = $"<a href='{linkUrl}'>{nodeInfo.ChannelName}</a>";
-                    ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, string.Empty, ELoadingType.ChannelSelect, null));
+                    ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, string.Empty, ELoadingType.ChannelClickSelect, null));
                     BindGrid();
                 }
 			}
@@ -125,7 +126,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ChannelSelect, _additional, AuthRequest.AdminPermissions);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ChannelClickSelect, _additional, AuthRequest.AdminPermissionsImpl);
         }
 	}
 }

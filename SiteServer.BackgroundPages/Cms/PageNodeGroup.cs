@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -57,7 +58,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);    
 
-            RptContents.DataSource = DataProvider.ChannelGroupDao.GetGroupInfoList(SiteId);
+            RptContents.DataSource = ChannelGroupManager.GetChannelGroupInfoList(SiteId);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 

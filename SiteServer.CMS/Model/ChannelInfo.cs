@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin;
@@ -27,7 +32,6 @@ namespace SiteServer.CMS.Model
 			AddDate = DateTime.Now;
 			ImageUrl = string.Empty;
 			Content = string.Empty;
-			ContentNum = 0;
             FilePath = string.Empty;
             ChannelFilePathRule = string.Empty;
             ContentFilePathRule = string.Empty;
@@ -40,7 +44,7 @@ namespace SiteServer.CMS.Model
             _extendValues = string.Empty;
 		}
 
-        public ChannelInfo(int id, string channelName, int siteId, string contentModelPluginId, string contentRelatedPluginIds, int parentId, string parentsPath, int parentsCount, int childrenCount, bool isLastNode, string indexName, string groupNameCollection, int taxis, DateTime addDate, string imageUrl, string content, int contentNum, string filePath, string channelFilePathRule, string contentFilePathRule, string linkUrl, ELinkType linkType, int channelTemplateId, int contentTemplateId, string keywords, string description, string extendValues) 
+        public ChannelInfo(int id, string channelName, int siteId, string contentModelPluginId, string contentRelatedPluginIds, int parentId, string parentsPath, int parentsCount, int childrenCount, bool isLastNode, string indexName, string groupNameCollection, int taxis, DateTime addDate, string imageUrl, string content, string filePath, string channelFilePathRule, string contentFilePathRule, string linkUrl, ELinkType linkType, int channelTemplateId, int contentTemplateId, string keywords, string description, string extendValues) 
 		{
 			Id = id;
 			ChannelName = channelName;
@@ -58,7 +62,6 @@ namespace SiteServer.CMS.Model
 			AddDate = addDate;
 			ImageUrl = imageUrl;
 			Content = content;
-			ContentNum = contentNum;
             FilePath = filePath;
             ChannelFilePathRule = channelFilePathRule;
             ContentFilePathRule = contentFilePathRule;
@@ -89,7 +92,6 @@ namespace SiteServer.CMS.Model
             AddDate = channelInfo.AddDate;
             ImageUrl = channelInfo.ImageUrl;
             Content = channelInfo.Content;
-            ContentNum = channelInfo.ContentNum;
             FilePath = channelInfo.FilePath;
             ChannelFilePathRule = channelInfo.ChannelFilePathRule;
             ContentFilePathRule = channelInfo.ContentFilePathRule;
@@ -134,8 +136,6 @@ namespace SiteServer.CMS.Model
 
 	    public string Content { get; set; }
 
-	    public int ContentNum { get; set; }
-
         public string FilePath { get; set; }
 
 	    public string ChannelFilePathRule { get; set; }
@@ -160,8 +160,34 @@ namespace SiteServer.CMS.Model
         }
 
         private ChannelInfoExtend _additional;
+
+        [JsonIgnore]
         public ChannelInfoExtend Additional => _additional ?? (_additional = new ChannelInfoExtend(_extendValues));
 
+        [JsonIgnore]
         public IAttributes Attributes => Additional;
+
+        public Dictionary<string, object> ToDictionary()
+        {
+            var jObject = JObject.FromObject(this);
+
+            var styleInfoList = TableStyleManager.GetChannelStyleInfoList(this);
+
+            foreach (var styleInfo in styleInfoList)
+            {
+                jObject[styleInfo.AttributeName] = Attributes.GetString(styleInfo.AttributeName);
+            }
+
+            var siteInfo = SiteManager.GetSiteInfo(SiteId);
+
+            if (!string.IsNullOrEmpty(ImageUrl))
+            {
+                jObject[nameof(ImageUrl)] = PageUtility.ParseNavigationUrl(siteInfo, ImageUrl, false);
+            }
+
+            jObject["NavigationUrl"] = PageUtility.GetChannelUrl(siteInfo, this, false);
+
+            return jObject.ToObject<Dictionary<string, object>>();
+        }
     }
 }

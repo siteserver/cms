@@ -177,7 +177,7 @@ namespace SiteServer.CMS.Provider
 
         public void AddUserToRole(string userName, string roleName)
         {
-            if (!DataProvider.AdministratorDao.IsAdminNameExists(userName)) return;
+            if (!DataProvider.AdministratorDao.IsUserNameExists(userName)) return;
             if (!IsUserInRole(userName, roleName))
             {
                 var sqlString = "INSERT INTO siteserver_AdministratorsInRoles (UserName, RoleName) VALUES (@UserName, @RoleName)";

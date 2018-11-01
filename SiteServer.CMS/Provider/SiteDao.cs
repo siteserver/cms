@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -111,8 +112,8 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery($"DELETE FROM siteserver_Site WHERE Id  = {siteId}");
 
             SiteManager.ClearCache();
-            ChannelManager.RemoveCache(siteId);
-            PermissionManager.ClearAllCache();
+            ChannelManager.RemoveCacheBySiteId(siteId);
+            PermissionsImpl.ClearAllCache();
         }
 
         public void Update(SiteInfo info)
@@ -135,6 +136,20 @@ namespace SiteServer.CMS.Provider
             {
                 UpdateAllIsRoot();
             }
+
+            ExecuteNonQuery(sqlString, updateParms);
+            SiteManager.ClearCache();
+        }
+
+        public void UpdateTableName(int siteId, string tableName)
+        {
+            var sqlString = $"UPDATE {TableName} SET TableName = @TableName WHERE Id = @Id";
+
+            var updateParms = new IDataParameter[]
+            {
+                GetParameter(ParmTableName, DataType.VarChar, 50, tableName),
+                GetParameter(ParmId, DataType.Integer, siteId)
+            };
 
             ExecuteNonQuery(sqlString, updateParms);
             SiteManager.ClearCache();
@@ -170,28 +185,6 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public List<int> GetIdListByParent(int parentId)
-        {
-            var list = new List<int>();
-
-            var sqlString = $"SELECT Id FROM {TableName} WHERE ParentId = @ParentId";
-
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmParentId, DataType.Integer, parentId)
-			};
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetInt(rdr, 0));
-                }
-                rdr.Close();
-            }
-            return list;
-        }
-
         private void UpdateAllIsRoot()
         {
             var sqlString = $"UPDATE {TableName} SET IsRoot = @IsRoot";
@@ -219,24 +212,6 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        protected List<int> GetIdList(DateTime sinceDate)
-        {
-            var list = new List<int>();
-
-            string sqlString =
-                $"SELECT p.Id FROM {TableName} p INNER JOIN {DataProvider.ChannelDao.TableName} n ON (p.Id = n.{nameof(ChannelInfo.Id)} AND (n.AddDate BETWEEN {SqlUtils.GetComparableDate(sinceDate)} AND {SqlUtils.GetComparableNow()})) ORDER BY p.IsRoot DESC, p.ParentId, p.Taxis DESC, n.{nameof(ChannelInfo.Id)}";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetInt(rdr, 0));
-                }
-                rdr.Close();
-            }
-            return list;
-        }
-
         private List<SiteInfo> GetSiteInfoList()
         {
             var list = new List<SiteInfo>();
@@ -254,23 +229,6 @@ namespace SiteServer.CMS.Provider
                 rdr.Close();
             }
             return list;
-        }
-
-        public int GetSiteCount()
-        {
-            var count = 0;
-
-            var sqlString = $"SELECT Count(*) FROM {TableName}";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    count = GetInt(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return count;
         }
 
         public bool IsTableUsed(string tableName)
@@ -403,7 +361,8 @@ namespace SiteServer.CMS.Provider
             {
                 orderByString = "ORDER BY IsRoot DESC, ParentId, Taxis DESC, Id";
 
-                var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+                //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+                var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlUtils.Asterisk, sqlWhereString, orderByString, startNum - 1, totalNum);
 
                 ie = ExecuteReader(sqlSelect);
             }
@@ -411,103 +370,10 @@ namespace SiteServer.CMS.Provider
             return ie;
         }
 
-        public bool UpdateTaxisToDown(int siteId)
-        {
-            SetTaxisNotZero();
-            //var sbSql = new StringBuilder();
-            //sbSql.AppendFormat("SELECT TOP 1 Id, Taxis FROM siteserver_Site ");
-            //sbSql.AppendFormat(" WHERE Taxis > (SELECT Taxis FROM siteserver_Site WHERE Id = {0}) ", siteId);
-            //sbSql.AppendFormat(" ORDER BY Taxis ");
-
-            var sqlString = SqlUtils.ToTopSqlString("siteserver_Site", "Id, Taxis", $"WHERE Taxis > (SELECT Taxis FROM siteserver_Site WHERE Id = {siteId})", "ORDER BY Taxis", 1);
-
-            var lowerId = 0;
-            var lowerTaxis = 0;
-
-            using (var reader = ExecuteReader(sqlString))
-            {
-                if (reader.Read())
-                {
-                    lowerId = Convert.ToInt32(reader[0]);
-                    lowerTaxis = Convert.ToInt32(reader[1]);
-                }
-                reader.Close();
-            }
-
-            var selectedTaxis = GetTaxis(siteId);
-            if (lowerId == 0) return false;
-
-            SetTaxis(siteId, lowerTaxis);
-            SetTaxis(lowerId, selectedTaxis);
-
-            SiteManager.ClearCache();
-
-            return true;
-        }
-
-        public bool UpdateTaxisToUp(int siteId)
-        {
-            SetTaxisNotZero();
-            //var sbSql = new StringBuilder();
-            //sbSql.AppendFormat("SELECT TOP 1 Id, Taxis FROM siteserver_Site ");
-            //sbSql.AppendFormat(" WHERE Taxis < (SELECT Taxis FROM siteserver_Site WHERE Id = {0}) ", siteId);
-            //sbSql.AppendFormat(" ORDER BY Taxis DESC");
-
-            var sqlString = SqlUtils.ToTopSqlString("siteserver_Site", "Id, Taxis", $"WHERE Taxis < (SELECT Taxis FROM siteserver_Site WHERE Id = {siteId})", "ORDER BY Taxis DESC", 1);
-
-            var higherId = 0;
-            var higherTaxis = 0;
-
-            using (var reader = ExecuteReader(sqlString))
-            {
-                if (reader.Read())
-                {
-                    higherId = Convert.ToInt32(reader[0]);
-                    higherTaxis = Convert.ToInt32(reader[1]);
-                }
-                reader.Close();
-            }
-
-            var selectedTaxis = GetTaxis(siteId);
-            if (higherId == 0) return false;
-
-            SetTaxis(siteId, higherTaxis);
-            SetTaxis(higherId, selectedTaxis);
-
-            SiteManager.ClearCache();
-
-            return true;
-        }
-
-        private void SetTaxis(int siteId, int taxis)
-        {
-            ExecuteNonQuery($"UPDATE siteserver_Site SET Taxis = {taxis} WHERE Id = {siteId}");
-        }
-
-        private int GetTaxis(int siteId)
-        {
-            var taxis = 0;
-            using (var reader = ExecuteReader($"SELECT Taxis FROM siteserver_Site WHERE Id = {siteId}"))
-            {
-                if (reader.Read())
-                {
-                    taxis = Convert.ToInt32(reader[0]);
-                }
-                reader.Close();
-            }
-            return taxis;
-        }
-
         private static int GetMaxTaxis()
         {
             const string sqlString = "SELECT MAX(Taxis) FROM siteserver_Site";
             return DataProvider.DatabaseDao.GetIntResult(sqlString);
-        }
-
-        private void SetTaxisNotZero()
-        {
-            const string sqlString = @"UPDATE siteserver_Site SET Taxis = Id where Taxis = 0";
-            ExecuteNonQuery(sqlString);
         }
     }
 }

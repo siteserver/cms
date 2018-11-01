@@ -1,0 +1,84 @@
+﻿@{ Layout = "../Shared/_LayoutLayer.cshtml"; }
+
+<div class="form-group">
+  <label>导出类型</label>
+  <div class="mt-2 ml-2">
+    <div class="radio radio-primary form-check-inline">
+      <input v-model="exportType" type="radio" id="zip" value="zip">
+      <label for="zip"> 导出压缩包 </label>
+    </div>
+    <div class="radio radio-primary form-check-inline">
+      <input v-model="exportType" type="radio" id="excel" value="excel">
+      <label for="excel"> 导出Excel文件 </label>
+    </div>
+  </div>
+  <small class="help-block">导出压缩包能够将内容以及内容相关的图片、附件等文件一并导出，导出Excel则仅能导出数据。</small>
+</div>
+
+<div class="form-group">
+  <div class="clearfix">
+    <label class="float-left">
+      内容状态
+    </label>
+    <div class="checkbox checkbox-primary float-left ml-2">
+      <input v-model="isAllCheckedLevel" v-on:click.prevent="btnIsAllCheckedLevelClick" type="checkbox" id="isAllCheckedLevel">
+      <label for="isAllCheckedLevel"> 全选 </label>
+    </div>
+  </div>
+  <div class="mt-2 ml-2">
+    <div v-for="(checkedLevel, index) in checkedLevels" class="checkbox checkbox-primary form-check-inline">
+      <input :id="'checkedLevel_' + index" type="checkbox" :value="checkedLevel.key" v-model="checkedLevelKeys">
+      <label :for="'checkedLevel_' + index">{{ checkedLevel.value }}</label>
+    </div>
+  </div>
+</div>
+
+<div class="form-group">
+  <label>内容添加时间</label>
+  <div class="mt-2 ml-2">
+    <div class="radio radio-primary form-check-inline">
+      <input v-model="isAllDate" type="radio" id="true" :value="true">
+      <label for="true"> 全部时间段 </label>
+    </div>
+    <div class="radio radio-primary form-check-inline">
+      <input v-model="isAllDate" type="radio" id="false" :value="false">
+      <label for="false"> 自定义时间段 </label>
+    </div>
+  </div>
+  <div v-if="!isAllDate" class="form-group">
+    开始时间：<date-picker v-model="startDate" type="datetime" format="YYYY年MM月DD日 HH:mm" :minute-step="1" :clearable="false"
+      :editable="false"></date-picker>
+    结束时间：<date-picker v-model="endDate" type="datetime" format="YYYY年MM月DD日 HH:mm" :minute-step="1" :clearable="false"
+      :editable="false"></date-picker>
+  </div>
+</div>
+
+<div v-if="exportType === 'excel'" class="form-group">
+  <div class="clearfix">
+    <label class="float-left">
+      导出字段
+    </label>
+    <div class="checkbox checkbox-primary float-left ml-2">
+      <input v-model="isAllColumns" v-on:click.prevent="btnIsAllColumnsClick" type="checkbox" id="isAllColumns">
+      <label for="isAllColumns"> 全选 </label>
+    </div>
+  </div>
+  <div class="mt-2 ml-2">
+    <div v-for="(column, index) in columns" class="checkbox checkbox-primary form-check-inline">
+      <input :id="'column_' + index" type="checkbox" :disabled="column.attributeName === 'Title'" :value="column.attributeName"
+        :checked="column.isList" v-model="columnNames">
+      <label :for="'column_' + index">{{ column.displayName }}</label>
+    </div>
+  </div>
+</div>
+
+<hr />
+
+<div class="text-right mr-1">
+  <button v-on:click="btnSubmitClick" type="button" class="btn btn-primary m-l-5">确 定</button>
+  <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
+</div>
+
+@section Scripts{
+<script src="../assets/js/vue2-datepicker-2.4.3.min.js"></script>
+<script src="contentsLayerExport.js" type="text/javascript"></script> }

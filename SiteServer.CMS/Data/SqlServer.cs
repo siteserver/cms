@@ -28,6 +28,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Data.OleDb;
 using System.Xml;
+using SiteServer.CMS.Plugin.Apis;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Data

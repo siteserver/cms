@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 
@@ -89,7 +90,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!string.IsNullOrEmpty(_userName))
             {
-                var adminInfo = DataProvider.AdministratorDao.GetByUserName(_userName);
+                var adminInfo = AdminManager.GetAdminInfoByUserName(_userName);
                 if (adminInfo != null)
                 {
                     ControlUtils.SelectSingleItem(DdlDepartmentId, adminInfo.DepartmentId.ToString());
@@ -137,7 +138,7 @@ namespace SiteServer.BackgroundPages.Settings
                 }
 
                 string errorMessage;
-                if (!AdminManager.CreateAdministrator(adminInfo, out errorMessage))
+                if (!DataProvider.AdministratorDao.Insert(adminInfo, out errorMessage))
                 {
                     FailMessage($"管理员添加失败：{errorMessage}");
                     return;   
@@ -149,7 +150,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                var adminInfo = DataProvider.AdministratorDao.GetByUserName(_userName);
+                var adminInfo = AdminManager.GetAdminInfoByUserName(_userName);
 
                 if (adminInfo.Email != TbEmail.Text && !string.IsNullOrEmpty(DataProvider.AdministratorDao.GetUserNameByEmail(TbEmail.Text)))
                 {

@@ -7,8 +7,10 @@ using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -103,7 +105,9 @@ namespace SiteServer.BackgroundPages.Cms
 
                 ETaxisTypeUtils.AddListItemsForChannelEdit(DdlTaxisType);
 
-                CblNodeGroupNameCollection.DataSource = DataProvider.ChannelGroupDao.GetDataSource(SiteId);
+                ControlUtils.AddListControlItems(CblNodeGroupNameCollection, ChannelGroupManager.GetGroupNameList(SiteId));
+                //CblNodeGroupNameCollection.DataSource = DataProvider.ChannelGroupDao.GetDataSource(SiteId);
+
                 if (PhChannelTemplateId.Visible)
                 {
                     DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ChannelTemplate);
@@ -157,7 +161,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                CacAttributes.Attributes = new ExtendedAttributes(Request.Form);
+                CacAttributes.Attributes = new AttributesImpl(Request.Form);
             }
         }
 
@@ -206,14 +210,12 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                var extendedAttributes = new ExtendedAttributes();
-                var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName,
-                    relatedIdentities);
-                BackgroundInputTypeParser.SaveAttributes(extendedAttributes, SiteInfo, styleInfoList, Request.Form, null);
+                var styleInfoList = TableStyleManager.GetChannelStyleInfoList(nodeInfo);
+
+                var extendedAttributes = BackgroundInputTypeParser.SaveAttributes(SiteInfo, styleInfoList, Request.Form, null);
                 if (extendedAttributes.Count > 0)
                 {
-                    nodeInfo.Additional.Load(extendedAttributes.ToDictionary());
+                    nodeInfo.Additional.Load(extendedAttributes);
                 }
 
                 nodeInfo.ChannelName = TbNodeName.Text;

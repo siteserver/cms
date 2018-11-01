@@ -7,6 +7,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
@@ -45,11 +46,10 @@ namespace SiteServer.BackgroundPages.Cms
         private bool _isAdminOnly;
         private int _channelId;
         private ChannelInfo _channelInfo;
-        private List<int> _relatedIdentities;
         private List<TableStyleInfo> _styleInfoList;
         private StringCollection _attributesOfDisplay;
         private List<TableStyleInfo> _allStyleInfoList;
-        private Dictionary<string, List<Plugin.Menu>> _pluginMenus;
+        private List<string> _pluginIds;
         private Dictionary<string, Dictionary<string, Func<IContentContext, string>>> _pluginColumns;
         private bool _isEdit;
         private readonly Dictionary<string, string> _nameValueCacheDict = new Dictionary<string, string>();
@@ -76,13 +76,12 @@ namespace SiteServer.BackgroundPages.Cms
 
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
             var tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
-            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
-            _styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, _relatedIdentities);
+            _styleInfoList = TableStyleManager.GetContentStyleInfoList(SiteInfo, _channelInfo);
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplay(SiteId, _channelId));
             _allStyleInfoList = ContentUtility.GetAllTableStyleInfoList(_styleInfoList);
-            _pluginMenus = PluginContentManager.GetContentMenus(_channelInfo);
-            _pluginColumns = PluginContentManager.GetContentColumns(_channelInfo);
-            _isEdit = TextUtility.IsEdit(SiteInfo, _channelId, AuthRequest.AdminPermissions);
+            _pluginIds = PluginContentManager.GetContentPluginIds(_channelInfo);
+            _pluginColumns = PluginContentManager.GetContentColumns(_pluginIds);
+            _isEdit = TextUtility.IsEdit(SiteInfo, _channelId, AuthRequest.AdminPermissionsImpl);
 
             var state = AuthRequest.IsQueryExists("state") ? AuthRequest.GetQueryInt("state") : CheckManager.LevelInt.All;
             var searchType = AuthRequest.IsQueryExists("searchType") ? AuthRequest.GetQueryString("searchType") : ContentAttribute.Title;
@@ -92,10 +91,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             var checkedLevel = 5;
             var isChecked = true;
-            foreach (var owningChannelId in AuthRequest.AdminPermissions.OwningChannelIdList)
+            foreach (var owningChannelId in AuthRequest.AdminPermissionsImpl.ChannelIdList)
             {
                 int checkedLevelByChannelId;
-                var isCheckedByChannelId = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, owningChannelId, out checkedLevelByChannelId);
+                var isCheckedByChannelId = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, owningChannelId, out checkedLevelByChannelId);
                 if (checkedLevel > checkedLevelByChannelId)
                 {
                     checkedLevel = checkedLevelByChannelId;
@@ -108,12 +107,12 @@ namespace SiteServer.BackgroundPages.Cms
 
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
-            var allLowerAttributeNameList = TableMetadataManager.GetAllLowerAttributeNameListExcludeText(tableName);
+            var allAttributeNameList = TableColumnManager.GetTableColumnNameList(tableName, DataType.Text);
             var whereString = DataProvider.ContentDao.GetPagerWhereSqlString(SiteInfo, _channelInfo,
                 searchType, keyword,
                 dateFrom, dateTo, state, _isCheckOnly, false, _isTrashOnly, _isWritingOnly, _isAdminOnly,
-                AuthRequest.AdminPermissions,
-                allLowerAttributeNameList);
+                AuthRequest.AdminPermissionsImpl,
+                allAttributeNameList);
 
             PgContents.Param = new PagerParam
             {
@@ -122,7 +121,7 @@ namespace SiteServer.BackgroundPages.Cms
                 PageSize = SiteInfo.Additional.PageSize,
                 Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
                 OrderSqlString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc),
-                ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allLowerAttributeNameList),
+                ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allAttributeNameList),
                 WhereSqlString = whereString,
                 TotalCount = DataProvider.DatabaseDao.GetPageTotalCount(tableName, whereString)
             };
@@ -133,7 +132,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (AuthRequest.IsQueryExists("IsDeleteAll"))
                 {
-                    DataProvider.ContentDao.DeleteContentsByTrash(SiteId, tableName);
+                    DataProvider.ContentDao.DeleteContentsByTrash(SiteId, _channelId, tableName);
                     AuthRequest.AddSiteLog(SiteId, "清空回收站");
                     SuccessMessage("成功清空回收站!");
                 }
@@ -142,23 +141,31 @@ namespace SiteServer.BackgroundPages.Cms
                     var idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
                     foreach (var channelId in idsDictionary.Keys)
                     {
-                        var contentIdArrayList = idsDictionary[channelId];
-                        DataProvider.ContentDao.TrashContents(SiteId, ChannelManager.GetTableName(SiteInfo, channelId), contentIdArrayList);
+                        var contentIdList = idsDictionary[channelId];
+                        DataProvider.ContentDao.UpdateTrashContents(SiteId, channelId, ChannelManager.GetTableName(SiteInfo, channelId), contentIdList);
                     }
                     AuthRequest.AddSiteLog(SiteId, "从回收站还原内容");
                     SuccessMessage("成功还原内容!");
                 }
                 else if (AuthRequest.IsQueryExists("IsRestoreAll"))
                 {
-                    DataProvider.ContentDao.RestoreContentsByTrash(SiteId, tableName);
+                    DataProvider.ContentDao.UpdateRestoreContentsByTrash(SiteId, _channelId, tableName);
                     AuthRequest.AddSiteLog(SiteId, "从回收站还原所有内容");
                     SuccessMessage("成功还原所有内容!");
                 }
             }
 
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, true, true, AuthRequest.AdminPermissions);
+            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, true, true, AuthRequest.AdminPermissionsImpl);
 
-            CheckManager.LoadContentLevelToList(DdlState, SiteInfo, _isCheckOnly, isChecked, checkedLevel);
+            if (_isCheckOnly)
+            {
+                CheckManager.LoadContentLevelToCheck(DdlState, SiteInfo, isChecked, checkedLevel);
+            }
+            else
+            {
+                CheckManager.LoadContentLevelToList(DdlState, SiteInfo, _isCheckOnly, isChecked, checkedLevel);
+            }
+            
             ControlUtils.SelectSingleItem(DdlState, state.ToString());
 
             foreach (var styleInfo in _allStyleInfoList)
@@ -259,14 +266,23 @@ namespace SiteServer.BackgroundPages.Cms
 
             ltlTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
 
-            var specialHtml = _isTrashOnly
-                ? DateUtils.GetDateAndTimeString(contentInfo.LastEditDate)
-                : TextUtility.GetCommandsHtml(SiteInfo, _pluginMenus, contentInfo, PageUrl,
-                    AuthRequest.AdminName, _isEdit);
+            var specialHtml = string.Empty;
+            
+            if (_isTrashOnly)
+            {
+                specialHtml = DateUtils.GetDateAndTimeString(contentInfo.LastEditDate);
+            }
+            else
+            {
+                var pluginMenus = PluginMenuManager.GetContentMenus(_pluginIds, contentInfo);
+                specialHtml = TextUtility.GetCommandsHtml(SiteInfo, pluginMenus, contentInfo, PageUrl,
+                        AuthRequest.AdminName, _isEdit);
+            }
 
-            ltlColumns.Text = $@"<td class=""text-center text-nowrap"">
-{specialHtml}
+            ltlColumns.Text = $@"
 {TextUtility.GetColumnsHtml(_nameValueCacheDict, SiteInfo, contentInfo, _attributesOfDisplay, _allStyleInfoList, _pluginColumns)}
+<td class=""text-center text-nowrap"">
+{specialHtml}
 </td>";
 
             string nodeName;
@@ -277,12 +293,13 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             ltlChannel.Text = nodeName;
+            var checkState = CheckManager.GetCheckState(SiteInfo, contentInfo);
 
             ltlStatus.Text = _isTrashOnly
-                ? CheckManager.GetCheckState(SiteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)
+                ? checkState
                 : $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{
                         ModalCheckState.GetOpenWindowString(SiteId, contentInfo, PageUrl)
-                    }"">{CheckManager.GetCheckState(SiteInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
+                    }"">{checkState}</a>";
 
             ltlSelect.Text = $@"<input type=""checkbox"" name=""IDsCollection"" value=""{contentInfo.ChannelId}_{contentInfo.Id}"" />";
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Model;
@@ -11,8 +12,8 @@ namespace SiteServer.CMS.StlParser.Utility
 	public class RepeaterTemplate : ITemplate
 	{
         private readonly string _templateString;
-        private readonly LowerNameValueCollection _selectedItems;
-        private readonly LowerNameValueCollection _selectedValues;
+        private readonly NameValueCollection _selectedItems;
+        private readonly NameValueCollection _selectedValues;
         private readonly string _separatorRepeatTemplate;
         private readonly int _separatorRepeat;
         private readonly PageInfo _pageInfo;
@@ -20,7 +21,7 @@ namespace SiteServer.CMS.StlParser.Utility
         private readonly ContextInfo _contextInfo;
         private int _i;
 
-        public RepeaterTemplate(string templateString, LowerNameValueCollection selectedItems, LowerNameValueCollection selectedValues, string separatorRepeatTemplate, int separatorRepeat, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfo)
+        public RepeaterTemplate(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string separatorRepeatTemplate, int separatorRepeat, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfo)
 		{
 			_templateString = templateString;
             _selectedItems = selectedItems;

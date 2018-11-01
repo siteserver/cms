@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -49,6 +50,10 @@ namespace SiteServer.BackgroundPages.Settings
         {
             SiteInfo.Additional.IsSeparatedWeb = TranslateUtils.ToBool(RblIsSeparatedWeb.SelectedValue);
             SiteInfo.Additional.SeparatedWebUrl = TbSeparatedWebUrl.Text;
+            if (!string.IsNullOrEmpty(SiteInfo.Additional.SeparatedWebUrl) && !SiteInfo.Additional.SeparatedWebUrl.EndsWith("/"))
+            {
+                SiteInfo.Additional.SeparatedWebUrl = SiteInfo.Additional.SeparatedWebUrl + "/";
+            }
 
             DataProvider.SiteDao.Update(SiteInfo);
             AuthRequest.AddSiteLog(SiteId, "修改Web访问地址");

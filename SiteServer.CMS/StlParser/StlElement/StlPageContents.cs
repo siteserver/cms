@@ -4,9 +4,9 @@ using System.Web.UI.WebControls;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
@@ -76,7 +76,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             try
             {
                 //totalNum = DataProvider.DatabaseDao.GetPageTotalCount(SqlString);
-                totalNum = Database.GetPageTotalCount(SqlString);
+                totalNum = StlDatabaseCache.GetPageTotalCount(SqlString);
                 if (ListInfo.PageNum != 0 && ListInfo.PageNum < totalNum)//需要翻页
                 {
                     pageCount = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(totalNum) / Convert.ToDouble(ListInfo.PageNum)));//需要生成的总页数
@@ -117,7 +117,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (!string.IsNullOrEmpty(SqlString))
                 {
                     //var pageSqlString = DataProvider.DatabaseDao.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
-                    var pageSqlString = Database.GetStlPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
+                    var pageSqlString = StlDatabaseCache.GetStlPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
 
                     var datasource = DataProvider.DatabaseDao.GetDataSource(pageSqlString);
 
@@ -190,7 +190,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, _stlPageContentsElement, ex);
+                parsedContent = LogUtils.AddStlErrorLog(_pageInfo, ElementName, _stlPageContentsElement, ex);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex

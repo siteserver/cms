@@ -2,18 +2,13 @@
 using SiteServer.Utils;
 using Word.Plugin;
 using System.Collections.Specialized;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.CMS.Core.Office
 {
     public static class WordUtils
     {
-        public static string GetWordFilePath(string fileName)
-        {
-            return PathUtils.GetTemporaryFilesPath(fileName);
-        }
-
         public static string Parse(int siteId, string filePath, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages)
         {
             if (string.IsNullOrEmpty(filePath)) return string.Empty;
@@ -95,10 +90,10 @@ namespace SiteServer.CMS.Core.Office
             }
         }
 
-        public static NameValueCollection GetWordNameValueCollection(int siteId, bool isFirstLineTitle, bool isFirstLineRemove, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, int contentLevel, string fileName)
+        public static NameValueCollection GetWordNameValueCollection(int siteId, bool isFirstLineTitle, bool isFirstLineRemove, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string fileName)
         {
             var formCollection = new NameValueCollection();
-            var wordContent = Parse(siteId, GetWordFilePath(fileName), isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages);
+            var wordContent = Parse(siteId, PathUtils.GetTemporaryFilesPath(fileName), isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages);
             if (!string.IsNullOrEmpty(wordContent))
             {
                 var title = string.Empty;
@@ -121,9 +116,9 @@ namespace SiteServer.CMS.Core.Office
                 {
                     title = PathUtils.GetFileNameWithoutExtension(fileName);
                 }
-                if (!string.IsNullOrEmpty(title) && title.Length > 255)
+                if (!string.IsNullOrEmpty(title))
                 {
-                    title = title.Substring(0, 255);
+                    title = StringUtils.MaxLengthText(title, 200, string.Empty);
                 }
                 formCollection[ContentAttribute.Title] = title;
 

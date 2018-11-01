@@ -1,518 +1,334 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Data;
 using Dapper.Contrib.Extensions;
+using Newtonsoft.Json;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.Provider;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Model
 {
-    public class UserInfo : IUserInfo
+    [Table(UserDao.DatabaseTableName)]
+    [JsonConverter(typeof(UserConverter))]
+    public class UserInfo : AttributesImpl, IUserInfo
     {
         public UserInfo()
         {
-            Id = 0;
-            UserName = string.Empty;
-            Password = string.Empty;
-            PasswordFormat = string.Empty;
-            PasswordSalt = string.Empty;
-            CreateDate = DateUtils.SqlMinValue;
-            LastResetPasswordDate = DateUtils.SqlMinValue;
-            LastActivityDate = DateUtils.SqlMinValue;
-            CountOfLogin = 0;
-            CountOfFailedLogin = 0;
-            CountOfWriting = 0;
-            IsChecked = true;
-            IsLockedOut = false;
-            DisplayName = string.Empty;
-            Email = string.Empty;
-            Mobile = string.Empty;
-            AvatarUrl = string.Empty;
-            Organization = string.Empty;
-            Department = string.Empty;
-            Position = string.Empty;
-            Gender = string.Empty;
-            Birthday = string.Empty;
-            Education = string.Empty;
-            Graduation = string.Empty;
-            Address = string.Empty;
-            WeiXin = string.Empty;
-            Qq = string.Empty;
-            WeiBo = string.Empty;
-            Interests = string.Empty;
-            Signature = string.Empty;
+
         }
 
-        public UserInfo(object dataItem)
-        {
-            if (dataItem == null) return;
-            Id = SqlUtils.EvalInt(dataItem, nameof(Id));
-            UserName = SqlUtils.EvalString(dataItem, nameof(UserName));
-            Password = SqlUtils.EvalString(dataItem, nameof(Password));
-            PasswordFormat = SqlUtils.EvalString(dataItem, nameof(PasswordFormat));
-            PasswordSalt = SqlUtils.EvalString(dataItem, nameof(PasswordSalt));
-            CreateDate = SqlUtils.EvalDateTime(dataItem, nameof(CreateDate));
-            LastResetPasswordDate = SqlUtils.EvalDateTime(dataItem, nameof(LastResetPasswordDate));
-            LastActivityDate = SqlUtils.EvalDateTime(dataItem, nameof(LastActivityDate));
-            CountOfLogin = SqlUtils.EvalInt(dataItem, nameof(CountOfLogin));
-            CountOfFailedLogin = SqlUtils.EvalInt(dataItem, nameof(CountOfFailedLogin));
-            CountOfWriting = SqlUtils.EvalInt(dataItem, nameof(CountOfWriting));
-            IsChecked = SqlUtils.EvalBool(dataItem, nameof(IsChecked));
-            IsLockedOut = SqlUtils.EvalBool(dataItem, nameof(IsLockedOut));
-            DisplayName = SqlUtils.EvalString(dataItem, nameof(DisplayName));
-            Email = SqlUtils.EvalString(dataItem, nameof(Email));
-            Mobile = SqlUtils.EvalString(dataItem, nameof(Mobile));
-            AvatarUrl = SqlUtils.EvalString(dataItem, nameof(AvatarUrl));
-            Organization = SqlUtils.EvalString(dataItem, nameof(Organization));
-            Department = SqlUtils.EvalString(dataItem, nameof(Department));
-            Position = SqlUtils.EvalString(dataItem, nameof(Position));
-            Gender = SqlUtils.EvalString(dataItem, nameof(Gender));
-            Birthday = SqlUtils.EvalString(dataItem, nameof(Birthday));
-            Education = SqlUtils.EvalString(dataItem, nameof(Education));
-            Graduation = SqlUtils.EvalString(dataItem, nameof(Graduation));
-            Address = SqlUtils.EvalString(dataItem, nameof(Address));
-            WeiXin = SqlUtils.EvalString(dataItem, nameof(WeiXin));
-            Qq = SqlUtils.EvalString(dataItem, nameof(Qq));
-            WeiBo = SqlUtils.EvalString(dataItem, nameof(WeiBo));
-            Interests = SqlUtils.EvalString(dataItem, nameof(Interests));
-            Signature = SqlUtils.EvalString(dataItem, nameof(Signature));
-        }
-
-        public int Id { get; set; }
-
-        public string UserName { get; set; }
-
-        public string Password { get; set; }
-
-        public string PasswordFormat { get; set; }
-
-        public string PasswordSalt { get; set; }
-
-        public DateTime CreateDate { get; set; }
-
-        public DateTime LastResetPasswordDate { get; set; }
-
-        public DateTime LastActivityDate { get; set; }
-
-        public int CountOfLogin { get; set; }
-
-        public int CountOfFailedLogin { get; set; }
-
-        public int CountOfWriting { get; set; }
-
-        public bool IsChecked { get; set; }
-
-        public bool IsLockedOut { get; set; }
-
-        public string DisplayName { get; set; }
-
-        public string Email { get; set; }
-
-        public string Mobile { get; set; }
-
-        public string AvatarUrl { get; set; }
-
-        public string Organization { get; set; }
-
-        public string Department { get; set; }
-
-        public string Position { get; set; }
-
-        public string Gender { get; set; }
-
-        public string Birthday { get; set; }
-
-        public string Education { get; set; }
-
-        public string Graduation { get; set; }
-
-        public string Address { get; set; }
-
-        public string WeiXin { get; set; }
-
-        public string Qq { get; set; }
-
-        public string WeiBo { get; set; }
-
-        public string Interests { get; set; }
-
-        public string Signature { get; set; }
-    }
-
-    [Table(UserDao.DatabaseTableName)]
-    public class UserInfoDatabase
-    {
-        public UserInfoDatabase()
-        {
-            Id = 0;
-            UserName = string.Empty;
-            Password = string.Empty;
-            PasswordFormat = EPasswordFormatUtils.GetValue(EPasswordFormat.Encrypted);
-            PasswordSalt = string.Empty;
-            CreateDate = DateTime.Now;
-            LastResetPasswordDate = DateTime.Now;
-            LastActivityDate = DateTime.Now;
-            CountOfLogin = 0;
-            CountOfFailedLogin = 0;
-            CountOfWriting = 0;
-            IsChecked = true.ToString();
-            IsLockedOut = false.ToString();
-            DisplayName = string.Empty;
-            Email = string.Empty;
-            Mobile = string.Empty;
-            AvatarUrl = string.Empty;
-            Organization = string.Empty;
-            Department = string.Empty;
-            Position = string.Empty;
-            Gender = string.Empty;
-            Birthday = string.Empty;
-            Education = string.Empty;
-            Graduation = string.Empty;
-            Address = string.Empty;
-            WeiXin = string.Empty;
-            Qq = string.Empty;
-            WeiBo = string.Empty;
-            Interests = string.Empty;
-            Signature = string.Empty;
-        }
-
-        public UserInfoDatabase(UserInfo userInfo)
-        {
-            Id = userInfo.Id;
-            UserName = userInfo.UserName;
-            Password = userInfo.Password;
-            PasswordFormat = userInfo.PasswordFormat;
-            PasswordSalt = userInfo.PasswordSalt;
-            CreateDate = userInfo.CreateDate;
-            LastResetPasswordDate = userInfo.LastResetPasswordDate;
-            LastActivityDate = userInfo.LastActivityDate;
-            CountOfLogin = userInfo.CountOfLogin;
-            CountOfFailedLogin = userInfo.CountOfFailedLogin;
-            CountOfWriting = userInfo.CountOfWriting;
-            IsChecked = userInfo.IsChecked.ToString();
-            IsLockedOut = userInfo.IsLockedOut.ToString();
-            DisplayName = userInfo.DisplayName;
-            Email = userInfo.Email;
-            Mobile = userInfo.Mobile;
-            AvatarUrl = userInfo.AvatarUrl;
-            Organization = userInfo.Organization;
-            Department = userInfo.Department;
-            Position = userInfo.Position;
-            Gender = userInfo.Gender;
-            Birthday = userInfo.Birthday;
-            Education = userInfo.Education;
-            Graduation = userInfo.Graduation;
-            Address = userInfo.Address;
-            WeiXin = userInfo.WeiXin;
-            Qq = userInfo.Qq;
-            WeiBo = userInfo.WeiBo;
-            Interests = userInfo.Interests;
-            Signature = userInfo.Signature;
-        }
-
-        public UserInfo ToUserInfo()
-        {
-            var userInfo = new UserInfo
-            {
-                Id = Id,
-                UserName = UserName,
-                Password = Password,
-                PasswordFormat = PasswordFormat,
-                PasswordSalt = PasswordSalt,
-                CreateDate = CreateDate,
-                LastResetPasswordDate = LastResetPasswordDate,
-                LastActivityDate = LastActivityDate,
-                CountOfLogin = CountOfLogin,
-                CountOfFailedLogin = CountOfFailedLogin,
-                CountOfWriting = CountOfWriting,
-                IsChecked = TranslateUtils.ToBool(IsChecked),
-                IsLockedOut = TranslateUtils.ToBool(IsLockedOut),
-                DisplayName = DisplayName,
-                Email = Email,
-                Mobile = Mobile,
-                AvatarUrl = AvatarUrl,
-                Organization = Organization,
-                Department = Department,
-                Position = Position,
-                Gender = Gender,
-                Birthday = Birthday,
-                Education = Education,
-                Graduation = Graduation,
-                Address = Address,
-                WeiXin = WeiXin,
-                Qq = Qq,
-                WeiBo = WeiBo,
-                Interests = Interests,
-                Signature = Signature
-            };
-
-            return userInfo;
-        }
-
-        public int Id { get; set; }
-
-        public string UserName { get; set; }
-
-        public string Password { get; set; }
-
-        public string PasswordFormat { get; set; }
-
-        public string PasswordSalt { get; set; }
-
-        public DateTime CreateDate { get; set; }
-
-        public DateTime LastResetPasswordDate { get; set; }
-
-        public DateTime LastActivityDate { get; set; }
-
-        public int CountOfLogin { get; set; }
-
-        public int CountOfFailedLogin { get; set; }
-
-        public int CountOfWriting { get; set; }
-
-        public string IsChecked { get; set; }
-
-        public string IsLockedOut { get; set; }
-
-        public string DisplayName { get; set; }
-
-        public string Email { get; set; }
-
-        public string Mobile { get; set; }
-
-        public string AvatarUrl { get; set; }
-
-        public string Organization { get; set; }
-
-        public string Department { get; set; }
-
-        public string Position { get; set; }
-
-        public string Gender { get; set; }
-
-        public string Birthday { get; set; }
-
-        public string Education { get; set; }
-
-        public string Graduation { get; set; }
-
-        public string Address { get; set; }
-
-        public string WeiXin { get; set; }
-
-        public string Qq { get; set; }
-
-        public string WeiBo { get; set; }
-
-        public string Interests { get; set; }
-
-        public string Signature { get; set; }
-    }
-
-    public class UserInfoCreateUpdate
-    {
-        public UserInfoCreateUpdate()
+        public UserInfo(IDataReader rdr) : base(rdr)
         {
 
         }
 
-        public string UserName { get; set; }
-
-        public string Password { get; set; }
-
-        public string PasswordFormat { get; set; }
-
-        public DateTime? CreateDate { get; set; }
-
-        public DateTime? LastResetPasswordDate { get; set; }
-
-        public DateTime? LastActivityDate { get; set; }
-
-        public int? CountOfLogin { get; set; }
-
-        public int? CountOfFailedLogin { get; set; }
-
-        public int? CountOfWriting { get; set; }
-
-        public bool? IsChecked { get; set; }
-
-        public bool? IsLockedOut { get; set; }
-
-        public string DisplayName { get; set; }
-
-        public string Email { get; set; }
-
-        public string Mobile { get; set; }
-
-        public string AvatarUrl { get; set; }
-
-        public string Organization { get; set; }
-
-        public string Department { get; set; }
-
-        public string Position { get; set; }
-
-        public string Gender { get; set; }
-
-        public string Birthday { get; set; }
-
-        public string Education { get; set; }
-
-        public string Graduation { get; set; }
-
-        public string Address { get; set; }
-
-        public string WeiXin { get; set; }
-
-        public string Qq { get; set; }
-
-        public string WeiBo { get; set; }
-
-        public string Interests { get; set; }
-
-        public string Signature { get; set; }
-
-        public void Load(UserInfoDatabase dbUserInfo)
+        public UserInfo(IDataRecord record) : base(record)
         {
-            if (UserName != null)
+
+        }
+
+        public UserInfo(DataRowView view) : base(view)
+        {
+
+        }
+
+        public UserInfo(DataRow row) : base(row)
+        {
+
+        }
+
+        public UserInfo(Dictionary<string, object> dict) : base(dict)
+        {
+
+        }
+
+        public UserInfo(NameValueCollection nvc) : base(nvc)
+        {
+
+        }
+
+        public UserInfo(object anonymous) : base(anonymous)
+        {
+
+        }
+
+        /// <summary>
+        /// 用户Id。
+        /// </summary>
+        public int Id
+        {
+            get => GetInt(UserAttribute.Id);
+            set => Set(UserAttribute.Id, value);
+        }
+
+        /// <summary>
+        /// 用户名。
+        /// </summary>
+        public string UserName
+        {
+            get => GetString(UserAttribute.UserName);
+            set => Set(UserAttribute.UserName, value);
+        }
+
+        /// <summary>
+        /// 创建时间。
+        /// </summary>
+        public string Password
+        {
+            get => GetString(UserAttribute.Password);
+            set => Set(UserAttribute.Password, value);
+        }
+
+        /// <summary>
+        /// 创建时间。
+        /// </summary>
+        public string PasswordFormat
+        {
+            get => GetString(UserAttribute.PasswordFormat);
+            set => Set(UserAttribute.PasswordFormat, value);
+        }
+
+        /// <summary>
+        /// 创建时间。
+        /// </summary>
+        public string PasswordSalt
+        {
+            get => GetString(UserAttribute.PasswordSalt);
+            set => Set(UserAttribute.PasswordSalt, value);
+        }
+
+        /// <summary>
+        /// 创建时间。
+        /// </summary>
+        public DateTime CreateDate
+        {
+            get => GetDateTime(UserAttribute.CreateDate, DateUtils.SqlMinValue);
+            set => Set(UserAttribute.CreateDate, value);
+        }
+
+        /// <summary>
+        /// 最后一次重设密码时间。
+        /// </summary>
+        public DateTime LastResetPasswordDate
+        {
+            get => GetDateTime(UserAttribute.LastResetPasswordDate, DateUtils.SqlMinValue);
+            set => Set(UserAttribute.LastResetPasswordDate, value);
+        }
+
+        /// <summary>
+        /// 最后活动时间。
+        /// </summary>
+        public DateTime LastActivityDate
+        {
+            get => GetDateTime(UserAttribute.LastActivityDate, DateUtils.SqlMinValue);
+            set => Set(UserAttribute.LastActivityDate, value);
+        }
+
+        /// <summary>
+        /// 用户组Id。
+        /// </summary>
+        public int GroupId
+        {
+            get => GetInt(UserAttribute.GroupId);
+            set => Set(UserAttribute.GroupId, value);
+        }
+
+        /// <summary>
+        /// 登录次数。
+        /// </summary>
+        public int CountOfLogin
+        {
+            get => GetInt(UserAttribute.CountOfLogin);
+            set => Set(UserAttribute.CountOfLogin, value);
+        }
+
+        /// <summary>
+        /// 连续登录失败次数。
+        /// </summary>
+        public int CountOfFailedLogin
+        {
+            get => GetInt(UserAttribute.CountOfFailedLogin);
+            set => Set(UserAttribute.CountOfFailedLogin, value);
+        }
+
+        /// <summary>
+        /// 是否已审核用户。
+        /// </summary>
+        public bool IsChecked
+        {
+            get => GetBool(UserAttribute.IsChecked);
+            set => Set(UserAttribute.IsChecked, value);
+        }
+
+        /// <summary>
+        /// 是否被锁定。
+        /// </summary>
+        public bool IsLockedOut
+        {
+            get => GetBool(UserAttribute.IsLockedOut);
+            set => Set(UserAttribute.IsLockedOut, value);
+        }
+
+        /// <summary>
+        /// 姓名。
+        /// </summary>
+        public string DisplayName
+        {
+            get => GetString(UserAttribute.DisplayName);
+            set => Set(UserAttribute.DisplayName, value);
+        }
+
+        /// <summary>
+        /// 手机号。
+        /// </summary>
+        public string Mobile
+        {
+            get => GetString(UserAttribute.Mobile);
+            set => Set(UserAttribute.Mobile, value);
+        }
+
+        /// <summary>
+        /// 邮箱。
+        /// </summary>
+        public string Email
+        {
+            get => GetString(UserAttribute.Email);
+            set => Set(UserAttribute.Email, value);
+        }
+
+        /// <summary>
+        /// 头像图片路径。
+        /// </summary>
+        public string AvatarUrl
+        {
+            get => GetString(UserAttribute.AvatarUrl);
+            set => Set(UserAttribute.AvatarUrl, value);
+        }
+
+        /// <summary>
+        /// 性别。
+        /// </summary>
+        public string Gender
+        {
+            get => GetString(UserAttribute.Gender);
+            set => Set(UserAttribute.Gender, value);
+        }
+
+        /// <summary>
+        /// 出生日期。
+        /// </summary>
+        public string Birthday
+        {
+            get => GetString(UserAttribute.Birthday);
+            set => Set(UserAttribute.Birthday, value);
+        }
+
+        /// <summary>
+        /// 微信。
+        /// </summary>
+        public string WeiXin
+        {
+            get => GetString(UserAttribute.WeiXin);
+            set => Set(UserAttribute.WeiXin, value);
+        }
+
+        /// <summary>
+        /// QQ。
+        /// </summary>
+        public string Qq
+        {
+            get => GetString(UserAttribute.Qq);
+            set => Set(UserAttribute.Qq, value);
+        }
+
+        /// <summary>
+        /// 微博。
+        /// </summary>
+        public string WeiBo
+        {
+            get => GetString(UserAttribute.WeiBo);
+            set => Set(UserAttribute.WeiBo, value);
+        }
+
+        /// <summary>
+        /// 简介。
+        /// </summary>
+        public string Bio
+        {
+            get => GetString(UserAttribute.Bio);
+            set => Set(UserAttribute.Bio, value);
+        }
+
+        /// <summary>
+        /// 附加字段。
+        /// </summary>
+        public string SettingsXml
+        {
+            get => GetString(UserAttribute.SettingsXml);
+            set => Set(UserAttribute.SettingsXml, value);
+        }
+
+        public override Dictionary<string, object> ToDictionary()
+        {
+            var dict = base.ToDictionary();
+            
+            var styleInfoList = TableStyleManager.GetUserStyleInfoList();
+
+            foreach (var styleInfo in styleInfoList)
             {
-                dbUserInfo.UserName = UserName;
+                dict.Remove(styleInfo.AttributeName);
+                dict[styleInfo.AttributeName] = Get(styleInfo.AttributeName);
             }
 
-            if (Password != null)
+            foreach (var attributeName in UserAttribute.AllAttributes.Value)
             {
-                dbUserInfo.Password = Password;
+                if (StringUtils.StartsWith(attributeName, "Is"))
+                {
+                    dict.Remove(attributeName);
+                    dict[attributeName] = GetBool(attributeName);
+                }
+                else
+                {
+                    dict.Remove(attributeName);
+                    dict[attributeName] = Get(attributeName);
+                }
             }
 
-            if (PasswordFormat != null)
+            foreach (var attributeName in UserAttribute.ExcludedAttributes.Value)
             {
-                dbUserInfo.PasswordFormat = PasswordFormat;
+                dict.Remove(attributeName);
             }
 
-            if (CreateDate != null)
+            return dict;
+        }
+
+        private class UserConverter : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
             {
-                dbUserInfo.CreateDate = (DateTime)CreateDate;
+                return objectType == typeof(IAttributes);
             }
 
-            if (LastResetPasswordDate != null)
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
-                dbUserInfo.LastResetPasswordDate = (DateTime)LastResetPasswordDate;
+                var attributes = value as IAttributes;
+                serializer.Serialize(writer, attributes?.ToDictionary());
             }
 
-            if (LastActivityDate != null)
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+                JsonSerializer serializer)
             {
-                dbUserInfo.LastActivityDate = (DateTime)LastActivityDate;
-            }
+                var value = (string)reader.Value;
+                if (string.IsNullOrEmpty(value)) return null;
+                var dict = TranslateUtils.JsonDeserialize<Dictionary<string, object>>(value);
+                var content = new UserInfo(dict);
 
-            if (CountOfLogin != null)
-            {
-                dbUserInfo.CountOfLogin = (int)CountOfLogin;
-            }
-
-            if (CountOfFailedLogin != null)
-            {
-                dbUserInfo.CountOfFailedLogin = (int)CountOfFailedLogin;
-            }
-
-            if (CountOfWriting != null)
-            {
-                dbUserInfo.CountOfWriting = (int)CountOfWriting;
-            }
-
-            if (IsChecked != null)
-            {
-                dbUserInfo.IsChecked = IsChecked.ToString();
-            }
-
-            if (IsLockedOut != null)
-            {
-                dbUserInfo.IsLockedOut = IsLockedOut.ToString();
-            }
-
-            if (DisplayName != null)
-            {
-                dbUserInfo.DisplayName = DisplayName;
-            }
-
-            if (Email != null)
-            {
-                dbUserInfo.Email = Email;
-            }
-
-            if (Mobile != null)
-            {
-                dbUserInfo.Mobile = Mobile;
-            }
-
-            if (AvatarUrl != null)
-            {
-                dbUserInfo.AvatarUrl = AvatarUrl;
-            }
-
-            if (Organization != null)
-            {
-                dbUserInfo.Organization = Organization;
-            }
-
-            if (Department != null)
-            {
-                dbUserInfo.Department = Department;
-            }
-
-            if (Position != null)
-            {
-                dbUserInfo.Position = Position;
-            }
-
-            if (Gender != null)
-            {
-                dbUserInfo.Gender = Gender;
-            }
-
-            if (Birthday != null)
-            {
-                dbUserInfo.Birthday = Birthday;
-            }
-
-            if (Education != null)
-            {
-                dbUserInfo.Education = Education;
-            }
-
-            if (Graduation != null)
-            {
-                dbUserInfo.Graduation = Graduation;
-            }
-
-            if (Address != null)
-            {
-                dbUserInfo.Address = Address;
-            }
-
-            if (WeiXin != null)
-            {
-                dbUserInfo.WeiXin = WeiXin;
-            }
-
-            if (Qq != null)
-            {
-                dbUserInfo.Qq = Qq;
-            }
-
-            if (WeiBo != null)
-            {
-                dbUserInfo.WeiBo = WeiBo;
-            }
-
-            if (Interests != null)
-            {
-                dbUserInfo.Interests = Interests;
-            }
-
-            if (Signature != null)
-            {
-                dbUserInfo.Signature = Signature;
+                return content;
             }
         }
     }

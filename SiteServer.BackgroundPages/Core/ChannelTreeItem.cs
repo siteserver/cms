@@ -5,7 +5,9 @@ using System.Collections.Specialized;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -19,19 +21,19 @@ namespace SiteServer.BackgroundPages.Core
         private readonly SiteInfo _siteInfo;
         private readonly ChannelInfo _channelInfo;
         private readonly bool _enabled;
-        private readonly PermissionManager _permissionManager;
+        private readonly PermissionsImpl _permissionsImpl;
 
-        public static ChannelTreeItem CreateInstance(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, PermissionManager permissionManager)
+        public static ChannelTreeItem CreateInstance(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, PermissionsImpl permissionsImpl)
         {
-            return new ChannelTreeItem(siteInfo, channelInfo, enabled, permissionManager);
+            return new ChannelTreeItem(siteInfo, channelInfo, enabled, permissionsImpl);
         }
 
-        private ChannelTreeItem(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, PermissionManager permissionManager)
+        private ChannelTreeItem(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, PermissionsImpl permissionsImpl)
         {
             _siteInfo = siteInfo;
             _channelInfo = channelInfo;
             _enabled = enabled;
-            _permissionManager = permissionManager;
+            _permissionsImpl = permissionsImpl;
 
             var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
             
@@ -82,7 +84,7 @@ namespace SiteServer.BackgroundPages.Core
             {
                 if (loadingType == ELoadingType.ContentTree)
                 {
-                    var linkUrl = PageContent.GetRedirectUrl(_channelInfo.SiteId, _channelInfo.Id);
+                    var linkUrl = CmsPages.GetContentsUrl(_channelInfo.SiteId, _channelInfo.Id);
                     if (!string.IsNullOrEmpty(additional?["linkUrl"]))
                     {
                         linkUrl = PageUtils.AddQueryStringIfNotExists(additional["linkUrl"], new NameValueCollection
@@ -91,12 +93,12 @@ namespace SiteServer.BackgroundPages.Core
                         });
                     }
 
-                    linkUrl = PageUtils.GetLoadingUrl(linkUrl);
+                    //linkUrl = PageUtils.GetLoadingUrl(linkUrl);
 
                     htmlBuilder.Append(
                         $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_channelInfo.ChannelName}</a>");
                 }
-                else if (loadingType == ELoadingType.ChannelSelect)
+                else if (loadingType == ELoadingType.ChannelClickSelect)
                 {
                     var linkUrl = ModalChannelSelect.GetRedirectUrl(_channelInfo.SiteId, _channelInfo.Id);
                     if (additional != null)
@@ -117,7 +119,7 @@ namespace SiteServer.BackgroundPages.Core
                 }
                 else
                 {
-                    if (_permissionManager.HasChannelPermissions(_channelInfo.SiteId, _channelInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit))
+                    if (_permissionsImpl.HasChannelPermissions(_channelInfo.SiteId, _channelInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit))
                     {
                         var onClickUrl = ModalChannelEdit.GetOpenWindowString(_channelInfo.SiteId, _channelInfo.Id, returnUrl);
                         htmlBuilder.Append(
@@ -141,10 +143,10 @@ namespace SiteServer.BackgroundPages.Core
 
                 htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(_siteInfo, _channelInfo));
 
-                if (_channelInfo.ContentNum < 0) return htmlBuilder.ToString();
+                var count = ContentManager.GetCount(_siteInfo, _channelInfo);
 
                 htmlBuilder.Append(
-                    $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({_channelInfo.ContentNum})</span>");
+                    $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({count})</span>");
             }
 
             return htmlBuilder.ToString();

@@ -252,6 +252,45 @@ namespace SiteServer.Utils.Enumerations
             return retval;
         }
 
+        public static string GetContentOrderAttributeName(ETaxisType taxisType)
+        {
+            var retval = nameof(IContentInfo.Taxis);
+
+            switch (taxisType)
+            {
+                case ETaxisType.OrderById:
+                case ETaxisType.OrderByIdDesc:
+                    retval = nameof(IContentInfo.Id);
+                    break;
+                case ETaxisType.OrderByChannelId:
+                case ETaxisType.OrderByChannelIdDesc:
+                    retval = nameof(IContentInfo.ChannelId);
+                    break;
+                case ETaxisType.OrderByAddDate:
+                case ETaxisType.OrderByAddDateDesc:
+                    retval = nameof(IContentInfo.AddDate);
+                    break;
+                case ETaxisType.OrderByLastEditDate:
+                case ETaxisType.OrderByLastEditDateDesc:
+                    retval = nameof(IContentInfo.LastEditDate);
+                    break;
+                case ETaxisType.OrderByHits:
+                    retval = nameof(IContentInfo.Hits);
+                    break;
+                case ETaxisType.OrderByHitsByDay:
+                    retval = nameof(IContentInfo.HitsByDay);
+                    break;
+                case ETaxisType.OrderByHitsByWeek:
+                    retval = nameof(IContentInfo.HitsByWeek);
+                    break;
+                case ETaxisType.OrderByHitsByMonth:
+                    retval = nameof(IContentInfo.HitsByMonth);
+                    break;
+            }
+
+            return retval;
+        }
+
         public static string GetText(ETaxisType type)
 		{
 		    if (type == ETaxisType.OrderById)

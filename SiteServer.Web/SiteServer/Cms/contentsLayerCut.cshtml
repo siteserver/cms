@@ -1,0 +1,57 @@
+﻿@{ Layout = "../Shared/_LayoutLayer.cshtml"; }
+
+<div class="form-group">
+  <label>转移到站点</label>
+  <multiselect v-on:select="onSiteSelect" v-model="site" placeholder="选择或者输入文字搜索站点..." :options="sites" :searchable="true"
+    :show-labels="false" label="siteName" track-by="siteName">
+    <template slot="singleLabel" slot-scope="props">{{ props.option.siteName }}</template>
+    <template slot="option" slot-scope="props">
+      {{ props.option.siteName }}
+    </template>
+  </multiselect>
+</div>
+
+<div class="form-group">
+  <label>
+    转移到栏目
+    <small v-show="isSubmit && !channel" class="text-danger">请选择需要将内容转移到的栏目</small>
+  </label>
+  <multiselect v-on:select="onChannelSelect" v-model="channel" placeholder="选择或者输入文字搜索栏目..." :options="channels"
+    :searchable="true" :show-labels="false" label="channelName" track-by="channelName">
+    <template slot="singleLabel" slot-scope="props">{{ props.option.channelName }}</template>
+    <template slot="option" slot-scope="props">
+      {{ props.option.channelName }}
+    </template>
+  </multiselect>
+</div>
+
+<table class="bg-white table tablesaw table-bordered table-hover">
+  <thead>
+    <tr>
+      <th class="text-center text-nowrap">内容Id </th>
+      <th>内容标题(点击查看) </th>
+      <th class="text-center text-nowrap">添加时间</th>
+      <th class="text-center text-nowrap">状态</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="content in contents">
+      <td class="text-center">{{ content.id }}</td>
+      <td v-html="content.title"></td>
+      <td class="text-center text-nowrap">{{ content.addDate }}</td>
+      <td class="text-center text-nowrap" v-html="content.checkState"></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<div class="text-right mr-1">
+  <button v-on:click="btnSubmitClick" type="button" class="btn btn-danger m-l-5">转 移</button>
+  <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
+</div>
+
+@section Scripts{
+<script src="../assets/lib/vue-multiselect-2.1.0/script.min.js"></script>
+<link href="../assets/lib/vue-multiselect-2.1.0/style.min.css" rel="stylesheet" type="text/css" />
+<script src="contentsLayerCut.js" type="text/javascript"></script> }

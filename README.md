@@ -4,17 +4,22 @@ SiteServer CMS 基于.NET平台，能够以最低的成本、最少的人力投�
 
 ![SiteServer CMS](https://www.siteserver.cn/assets/github-banner.png)
 
-
 ## 版本
 
 项目发布的正式版本存放在 `master` 分支，当前的开发版本存放在 `dev` 分支
 
-版本  | 编译状态 | 版本号 | 发布日期
-------  | ------ | ------ | ------
-正式版 | [![Build status](https://ci.appveyor.com/api/projects/status/plx37i94y9gsqkru/branch/master?svg=true)](https://ci.appveyor.com/project/starlying/cms/branch/master) | ![Nuget version](https://img.shields.io/nuget/v/SS.CMS.svg) | ![master last commit](https://img.shields.io/github/last-commit/siteserver/cms/master.svg)
-开发版 | [![Build status](https://ci.appveyor.com/api/projects/status/plx37i94y9gsqkru/branch/dev?svg=true)](https://ci.appveyor.com/project/starlying/cms/branch/dev) | ![Myget version](https://img.shields.io/myget/siteserver/v/SS.CMS.svg) | ![dev last commit](https://img.shields.io/github/last-commit/siteserver/cms/dev.svg)
+| 版本   | 编译状态                                                                                                                                                            | 版本号                                                                 | 发布日期                                                                                   |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 正式版 | [![Build status](https://ci.appveyor.com/api/projects/status/plx37i94y9gsqkru/branch/master?svg=true)](https://ci.appveyor.com/project/starlying/cms/branch/master) | ![Nuget version](https://img.shields.io/nuget/v/SS.CMS.svg)            | ![master last commit](https://img.shields.io/github/last-commit/siteserver/cms/master.svg) |
+| 开发版 | [![Build status](https://ci.appveyor.com/api/projects/status/plx37i94y9gsqkru/branch/dev?svg=true)](https://ci.appveyor.com/project/starlying/cms/branch/dev)       | ![Myget version](https://img.shields.io/myget/siteserver/v/SS.CMS.svg) | ![dev last commit](https://img.shields.io/github/last-commit/siteserver/cms/dev.svg)       |
 
 ## 迭代计划
+
+[2018年11月/12月迭代计划](https://github.com/siteserver/cms/issues/1521)
+
+[2018年9月/10月迭代计划](https://github.com/siteserver/cms/issues/1280)
+
+[2018年8月迭代计划](https://github.com/siteserver/cms/issues/1138)
 
 [2018年7月迭代计划](https://github.com/siteserver/cms/issues/956)
 
@@ -32,15 +37,15 @@ SiteServer CMS 基于.NET平台，能够以最低的成本、最少的人力投�
 
 ## 开发文档
 
-[《插件开发参考手册》](https://docs.siteserver.cn/plugins)
+[《STL 语言参考手册》](https://docs.siteserver.cn/stl/)
 
-[《STL 语言参考手册》](https://stl.siteserver.cn)
+[《插件开发参考手册》](https://docs.siteserver.cn/plugins/)
 
-[《CLI 命令行参考手册》](https://docs.siteserver.cn/cli)
+[《CLI 命令行参考手册》](https://docs.siteserver.cn/cli/)
 
-[《REST API 参考手册》](https://docs.siteserver.cn/api)
+[《REST API 参考手册》](https://docs.siteserver.cn/api/)
 
-[《数据结构参考手册》](https://docs.siteserver.cn/model)
+[《数据结构参考手册》](https://docs.siteserver.cn/model/)
 
 系统使用文档请点击 [SiteServer CMS 文档中心](https://docs.siteserver.cn)
 
@@ -53,7 +58,7 @@ SiteServer CMS 基于.NET平台，能够以最低的成本、最少的人力投�
 ├─SiteServer.Cli                  命令行工具
 ├─SiteServer.CMS                  CMS 源文件
 ├─SiteServer.Utils                基础类库
-└─SiteServer.Web                  API 源文件及aspx页面
+└─SiteServer.API                  API 源文件及页面
 ```
 
 ## 生成安装包
@@ -93,7 +98,7 @@ SiteServer CMS 产品将在每个月底发布新的正式版本，我们将在�
 
 ## 问题与建议
 
-我们的目标是系统零BUG，如果发现任何BUG请提交至[Github Issues](https://github.com/siteserver/cms/issues)。
+如果发现任何BUG以及对产品使用的问题与建议，请提交至 [Github Issues](https://github.com/siteserver/cms/issues)。
 
 ## 关注最新动态
 

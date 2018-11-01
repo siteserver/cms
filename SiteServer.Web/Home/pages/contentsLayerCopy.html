@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html class="bg-white">
+
+<head>
+  <meta charset="utf-8" />
+  <title>SiteServer CMS - 用户中心</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta content="SiteServer CMS 用户中心" name="description" />
+  <meta content="SiteServer CMS" name="author" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <link rel="shortcut icon" href="../assets/images/favicon.ico">
+  <link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/lib/vue-multiselect-2.1.0/style.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/font-awesome-4.7.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/ionicons-2.0.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/siteserver.min.css" rel="stylesheet" type="text/css" />
+  <script src="../assets/lib/modernizr.min.js"></script>
+  <script type="text/javascript" src="../assets/lib/iframe-resizer-3.6.2/iframeResizer.contentWindow.min.js"></script>
+</head>
+
+<body style="padding-bottom: 0;" class="bg-white">
+  <div id="main" class="m-t-15 m-b-15 m-l-15 m-r-15">
+
+    <template v-if="pageLoad">
+
+      <div class="form-group">
+        <label>复制到站点</label>
+        <multiselect v-on:select="onSiteSelect" v-model="site" placeholder="选择或者输入文字搜索站点..." :options="sites"
+          :searchable="true" :show-labels="false" label="siteName" track-by="siteName">
+          <template slot="singleLabel" slot-scope="props">{{ props.option.siteName }}</template>
+          <template slot="option" slot-scope="props">
+            {{ props.option.siteName }}
+          </template>
+        </multiselect>
+      </div>
+
+      <div class="form-group">
+        <label>
+          复制到栏目
+          <small v-show="isSubmit && !channel" class="text-danger">请选择需要将内容复制到的栏目</small>
+        </label>
+        <multiselect v-on:select="onChannelSelect" v-model="channel" placeholder="选择或者输入文字搜索栏目..." :options="channels"
+          :searchable="true" :show-labels="false" label="channelName" track-by="channelName">
+          <template slot="singleLabel" slot-scope="props">{{ props.option.channelName }}</template>
+          <template slot="option" slot-scope="props">
+            {{ props.option.channelName }}
+          </template>
+        </multiselect>
+      </div>
+
+      <div class="form-group">
+        <label>复制选项</label>
+        <div class="mt-2 ml-2">
+          <div class="radio radio-primary form-check-inline">
+            <input v-model="copyType" type="radio" id="Copy" value="Copy">
+            <label for="Copy"> 完全复制 </label>
+          </div>
+          <div class="radio radio-primary form-check-inline">
+            <input v-model="copyType" type="radio" id="Reference" value="Reference">
+            <label for="Reference"> 引用地址</label>
+          </div>
+          <div class="radio radio-primary form-check-inline">
+            <input v-model="copyType" type="radio" id="ReferenceContent" value="ReferenceContent">
+            <label for="ReferenceContent"> 引用内容
+            </label>
+          </div>
+        </div>
+        <small v-if="copyType === 'Copy'" class="text-warning">
+          “完全复制”将创建内容的副本，并拷贝到指定栏目下，副本和原始内容之间不存在关系。
+        </small>
+        <small v-if="copyType === 'Reference'" class="text-warning">
+          “引用地址”将创建内容的副本，并拷贝到指定栏目下，内容副本仅是原内容的引用，内容副本链接将和原内容链接一致。
+        </small>
+        <small v-if="copyType === 'ReferenceContent'" class="text-warning">
+          “引用内容”将创建内容的副本，并拷贝到指定栏目下，同时内容副本的数据与原内容保持同步，内容副本的链接指向副本内容。
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label>选中的内容</label>
+        <table class="bg-white table tablesaw table-bordered table-hover">
+          <thead>
+            <tr>
+              <th class="text-center text-nowrap">内容Id </th>
+              <th>内容标题(点击查看) </th>
+              <th class="text-center text-nowrap">添加时间</th>
+              <th class="text-center text-nowrap">状态</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="content in contents">
+              <td class="text-center">{{ content.id }}</td>
+              <td v-html="content.title"></td>
+              <td class="text-center text-nowrap">{{ content.addDate }}</td>
+              <td class="text-center text-nowrap" v-html="content.checkState"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+
+
+      <hr />
+
+      <div class="text-right mr-1">
+        <button v-on:click="btnSubmitClick" type="button" class="btn btn-primary m-l-5">复 制</button>
+        <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
+      </div>
+
+    </template>
+    <template v-else>
+      <div class="text-center" style="margin-top: 100px">
+        <img class="mt-3" src="../assets/images/loading.gif" />
+        <p class="lead mt-3 text-nowrap">载入中，请稍后...</p>
+      </div>
+    </template>
+
+  </div>
+</body>
+
+</html>
+
+<script src="../assets/lib/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="../assets/lib/popper.min.js"></script>
+<script src="../assets/lib/bootstrap.min.js"></script>
+<script src="../assets/lib/lodash-4.17.10.min.js" type="text/javascript"></script>
+<script src="../assets/lib/layer-3.1.1/layer.js" type="text/javascript"></script>
+<script src="../assets/lib/sweetalert2-7.28.4.all.min.js" type="text/javascript"></script>
+<script src="../assets/lib/vue-2.5.16.min.js" type="text/javascript"></script>
+<script src="../assets/lib/vee-validate-2.1.0.js"></script>
+<script src="../assets/lib/vee-validate-locale-zh_CN-2.1.0.js"></script>
+<script src="../assets/lib/js.cookie-2.2.0.js"></script>
+<script src="../assets/js/utils.js" type="text/javascript"></script>
+<script src="../config.js" type="text/javascript"></script>
+
+<script src="../assets/lib/vue-multiselect-2.1.0/script.min.js"></script>
+<script src="contentsLayerCopy.js" type="text/javascript"></script>

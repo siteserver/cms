@@ -18,6 +18,7 @@ namespace SiteServer.Utils.Enumerations
 		Js,
 		Ascx,
 		Css,
+        Csv,
 		Jpg,
 		Jpeg,
 		Gif,
@@ -113,7 +114,11 @@ namespace SiteServer.Utils.Enumerations
 		    {
 		        return ".css";
 		    }
-		    if (type == EFileSystemType.Jpg)
+		    if (type == EFileSystemType.Csv)
+		    {
+		        return ".csv";
+		    }
+            if (type == EFileSystemType.Jpg)
 		    {
 		        return ".jpg";
 		    }
@@ -318,7 +323,11 @@ namespace SiteServer.Utils.Enumerations
 		    {
 		        return "Cascading Style Sheet Document";
 		    }
-		    if (type == EFileSystemType.Jpg)
+		    if (type == EFileSystemType.Csv)
+		    {
+		        return "Excel 工作表";
+		    }
+            if (type == EFileSystemType.Jpg)
 		    {
 		        return "JPEG 图像";
 		    }
@@ -513,7 +522,11 @@ namespace SiteServer.Utils.Enumerations
 			{
 				retval = EFileSystemType.Css;
 			}
-			else if (Equals(EFileSystemType.Jpg, typeStr))
+			else if (Equals(EFileSystemType.Csv, typeStr))
+			{
+			    retval = EFileSystemType.Csv;
+			}
+            else if (Equals(EFileSystemType.Jpg, typeStr))
 			{
 				retval = EFileSystemType.Jpg;
 			}
@@ -736,6 +749,10 @@ namespace SiteServer.Utils.Enumerations
             if (type == EFileSystemType.Css)
             {
                 return "text/css";
+            }
+            if (type == EFileSystemType.Csv)
+            {
+                return "application/vnd.ms-excel";
             }
             if (type == EFileSystemType.Jpg)
             {

@@ -3,7 +3,7 @@ using System.Data;
 using SiteServer.CMS.Data;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider

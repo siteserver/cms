@@ -5,7 +5,9 @@ using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -78,7 +80,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
 
             _theRoleName = AuthRequest.GetQueryString("RoleName");
-            _generalPermissionList = AuthRequest.AdminPermissions.PermissionList;
+            _generalPermissionList = AuthRequest.AdminPermissionsImpl.PermissionList;
 
             if (IsPostBack) return;
 
@@ -132,12 +134,12 @@ namespace SiteServer.BackgroundPages.Settings
             if (psPermissionsInRolesInfoList != null)
             {
                 var allSiteIdList = new List<int>();
-                foreach (var permissionSiteId in AuthRequest.AdminPermissions.SiteIdList)
+                foreach (var permissionSiteId in AuthRequest.AdminPermissionsImpl.GetSiteIdList())
                 {
-                    if (AuthRequest.AdminPermissions.HasChannelPermissions(permissionSiteId, permissionSiteId) && AuthRequest.AdminPermissions.HasSitePermissions(permissionSiteId))
+                    if (AuthRequest.AdminPermissionsImpl.HasChannelPermissions(permissionSiteId, permissionSiteId) && AuthRequest.AdminPermissionsImpl.HasSitePermissions(permissionSiteId))
                     {
-                        var listOne = AuthRequest.AdminPermissions.GetChannelPermissions(permissionSiteId, permissionSiteId);
-                        var listTwo = AuthRequest.AdminPermissions.GetSitePermissions(permissionSiteId);
+                        var listOne = AuthRequest.AdminPermissionsImpl.GetChannelPermissions(permissionSiteId, permissionSiteId);
+                        var listTwo = AuthRequest.AdminPermissionsImpl.GetSitePermissions(permissionSiteId);
                         if (listOne != null && listOne.Count > 0 || listTwo != null && listTwo.Count > 0)
                         {
                             PhSitePermissions.Visible = true;
@@ -196,7 +198,7 @@ if (ss_role) {
 
                     DataProvider.SitePermissionsDao.UpdateSitePermissions(_theRoleName, sitePermissionsInRolesInfoList);
 
-                    PermissionManager.ClearAllCache();
+                    PermissionsImpl.ClearAllCache();
 
                     AuthRequest.AddAdminLog("修改管理员角色", $"角色名称:{_theRoleName}");
                     SuccessMessage("角色修改成功！");
@@ -226,7 +228,7 @@ if (ss_role) {
                     {
                         DataProvider.SitePermissionsDao.InsertRoleAndPermissions(TbRoleName.Text, AuthRequest.AdminName, TbDescription.Text, generalPermissionList, sitePermissionsInRolesInfoList);
 
-                        PermissionManager.ClearAllCache();
+                        PermissionsImpl.ClearAllCache();
 
                         AuthRequest.AddAdminLog("新增管理员角色",
                             $"角色名称:{TbRoleName.Text}");
