@@ -1951,22 +1951,35 @@ SET IDENTITY_INSERT {tableName} OFF
                 orderSqlString = "ORDER BY Id DESC";
             }
 
+            if (offset == 0 && limit == 0)
+            {
+                return $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString}";
+            }
+
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
+                retval = limit == 0
+                    ? $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset}"
+                    : $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer && IsSqlServer2012)
             {
-                if (IsSqlServer2012)
-                {
-                    retval = $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
-                }
-                else if (offset == 0)
+                retval = limit == 0
+                    ? $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS"
+                    : $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer && !IsSqlServer2012)
+            {
+                if (offset == 0)
                 {
                     retval = $"SELECT TOP {limit} {columnNames} FROM {tableName} {whereSqlString} {orderSqlString}";
                 }
                 else
                 {
+                    if (limit == 0)
+                    {
+                        limit = DataProvider.DatabaseDao.GetIntResult($"SELECT COUNT(*) FROM {tableName} {whereSqlString}");
+                    }
                     orderSqlString = orderSqlString.ToUpper();
                     var orderSqlStringReverse = orderSqlString.Replace(" DESC", " DESC2");
                     orderSqlStringReverse = orderSqlStringReverse.Replace(" ASC", " DESC");
@@ -1982,11 +1995,15 @@ SELECT * FROM (
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
+                retval = limit == 0
+                    ? $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset}"
+                    : $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
+                retval = limit == 0
+                    ? $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS"
+                    : $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
             }
 
             return retval;
