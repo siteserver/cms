@@ -1,6 +1,6 @@
 ﻿var $ssApi = new apiUtils.Api();
 
-var $api = new apiUtils.Api(innerApiUrl + '/pages/plugins/install');
+var $api = new apiUtils.Api(apiUrl + '/pages/plugins/install');
 var $packageIds = pageUtils.getQueryStringByName('packageIds').split(',');
 var $pageType = pageUtils.getQueryStringByName('isUpdate') === 'true' ? '升级' : '安装';
 

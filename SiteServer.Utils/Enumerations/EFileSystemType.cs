@@ -987,7 +987,7 @@ namespace SiteServer.Utils.Enumerations
                 {
                     fileExtName = "." + fileExtName;
                 }
-                if (fileExtName == ".bmp" || fileExtName == ".gif" || fileExtName == ".jpg" || fileExtName == ".jpeg" || fileExtName == ".png" || fileExtName == ".pneg")
+                if (fileExtName == ".bmp" || fileExtName == ".gif" || fileExtName == ".jpg" || fileExtName == ".jpeg" || fileExtName == ".png" || fileExtName == ".pneg" || fileExtName == ".webp")
                 {
                     retval = true;
                 }
@@ -1046,7 +1046,7 @@ namespace SiteServer.Utils.Enumerations
                 {
                     fileExtName = "." + fileExtName;
                 }
-                if (fileExtName == ".bmp" || fileExtName == ".gif" || fileExtName == ".jpeg" || fileExtName == ".jpg" || fileExtName == ".png" || fileExtName == ".pneg" || fileExtName == ".swf")
+                if (fileExtName == ".bmp" || fileExtName == ".gif" || fileExtName == ".jpeg" || fileExtName == ".jpg" || fileExtName == ".png" || fileExtName == ".pneg" || fileExtName == ".webp" || fileExtName == ".swf")
                 {
                     retval = true;
                 }

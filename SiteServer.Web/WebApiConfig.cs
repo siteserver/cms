@@ -29,17 +29,18 @@ namespace SiteServer.API
             RouteTable.Routes.Ignore(""); //Allow index.html to load
 
             var jsonFormatter = config.Formatters.JsonFormatter;
-            var settings = new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
+            //var settings = new JsonSerializerSettings
+            //{
+            //    ContractResolver = new CamelCasePropertyNamesContractResolver()
+            //};
 
-            var timeFormat = new IsoDateTimeConverter
-            {
-                DateTimeFormat = "yyyy-MM-dd HH:mm:ss"
-            };
-            settings.Converters.Add(timeFormat);
-            jsonFormatter.SerializerSettings = settings;
+            //var timeFormat = new IsoDateTimeConverter
+            //{
+            //    DateTimeFormat = "yyyy-MM-dd HH:mm:ss"
+            //};
+            //settings.Converters.Add(timeFormat);
+            //jsonFormatter.SerializerSettings = settings;
+            jsonFormatter.SerializerSettings = TranslateUtils.JsonSettings;
             jsonFormatter.Indent = true;
 
             var formatters = config.Formatters.Where(formatter =>

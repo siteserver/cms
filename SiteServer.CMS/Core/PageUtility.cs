@@ -440,7 +440,11 @@ namespace SiteServer.CMS.Core
 
             channelUrl = StringUtils.ReplaceStartsWith(channelUrl, siteInfo.Additional.WebUrl, string.Empty);
             channelUrl = channelUrl.Trim('/');
-            channelUrl = "/" + channelUrl;
+            if (channelUrl != PageUtils.UnclickedUrl)
+            {
+                channelUrl = "/" + channelUrl;
+            }
+            
             return channelUrl;
         }
 

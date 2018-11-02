@@ -1,11 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Web;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -175,17 +172,28 @@ namespace SiteServer.CMS.Plugin.Impl
             }
         }
 
-        private JObject _postData;
+        private Dictionary<string, object> _postData;
 
-        private JObject PostData
+        public Dictionary<string, object> PostData
         {
             get
             {
                 if (_postData != null) return _postData;
+
                 var bodyStream = new StreamReader(HttpRequest.InputStream);
                 bodyStream.BaseStream.Seek(0, SeekOrigin.Begin);
-                var raw = bodyStream.ReadToEnd();
-                _postData = !string.IsNullOrEmpty(raw) ? JObject.Parse(raw) : new JObject();
+                var json = bodyStream.ReadToEnd();
+
+                _postData = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+                if (string.IsNullOrEmpty(json)) return _postData;
+
+                var dict = TranslateUtils.JsonDeserialize<Dictionary<string, object>>(json);
+                foreach (var key in dict.Keys)
+                {
+                    _postData[key] = dict[key];
+                }
+
                 return _postData;
             }
         }
@@ -235,7 +243,7 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public bool IsPostExists(string name)
         {
-            return PostData.TryGetValue(name, out _);
+            return PostData.ContainsKey(name);
         }
 
         public T GetPostObject<T>(string name = "")
@@ -252,52 +260,54 @@ namespace SiteServer.CMS.Plugin.Impl
                 json = GetPostString(name);
             }
 
-            var settings = new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
-            var timeFormat = new IsoDateTimeConverter
-            {
-                DateTimeFormat = "yyyy-MM-dd HH:mm:ss"
-            };
-            settings.Converters.Add(timeFormat);
-            return JsonConvert.DeserializeObject<T>(json, settings);
+            return TranslateUtils.JsonDeserialize<T>(json);
+        }
+
+        private object GetPostObject(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return null;
+
+            return PostData.TryGetValue(name, out var value) ? value : null;
         }
 
         public string GetPostString(string name)
         {
-            return PostData[name]?.ToString();
+            var value = GetPostObject(name);
+            if (value == null) return null;
+            if (value is string) return (string)value;
+            return value.ToString();
         }
 
         public int GetPostInt(string name, int defaultValue = 0)
         {
-            return TranslateUtils.ToIntWithNagetive(PostData[name]?.ToString(), defaultValue);
+            var value = GetPostObject(name);
+            if (value == null) return defaultValue;
+            if (value is int) return (int)value;
+            return TranslateUtils.ToIntWithNagetive(value.ToString(), defaultValue);
         }
 
         public decimal GetPostDecimal(string name, decimal defaultValue = 0)
         {
-            return TranslateUtils.ToDecimalWithNagetive(PostData[name]?.ToString(), defaultValue);
+            var value = GetPostObject(name);
+            if (value == null) return defaultValue;
+            if (value is decimal) return (decimal)value;
+            return TranslateUtils.ToDecimalWithNagetive(value.ToString(), defaultValue);
         }
 
         public bool GetPostBool(string name, bool defaultValue = false)
         {
-            return TranslateUtils.ToBool(PostData[name]?.ToString(), defaultValue);
+            var value = GetPostObject(name);
+            if (value == null) return defaultValue;
+            if (value is bool) return (bool)value;
+            return TranslateUtils.ToBool(value.ToString(), defaultValue);
         }
 
-        public DateTime GetPostDateTime(string name)
+        public DateTime GetPostDateTime(string name, DateTime defaultValue)
         {
-            return Convert.ToDateTime(PostData[name]);
-        }
-
-        public NameValueCollection GetPostCollection()
-        {
-            var formCollection = new NameValueCollection();
-            foreach (var item in PostData)
-            {
-                formCollection[item.Key] = item.Value.ToString();
-            }
-
-            return formCollection;
+            var value = GetPostObject(name);
+            if (value == null) return defaultValue;
+            if (value is DateTime) return (DateTime)value;
+            return TranslateUtils.ToDateTime(value.ToString(), defaultValue);
         }
 
         #region Log

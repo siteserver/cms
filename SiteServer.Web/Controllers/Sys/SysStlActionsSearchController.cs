@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Text;
 using System.Web.Http;
 using SiteServer.CMS.Api.Sys.Stl;
@@ -20,6 +21,17 @@ namespace SiteServer.API.Controllers.Sys
 {
     public class SysStlActionsSearchController : ApiController
     {
+        public NameValueCollection GetPostCollection(RequestImpl request)
+        {
+            var formCollection = new NameValueCollection();
+            foreach (var item in request.PostData)
+            {
+                formCollection[item.Key] = item.Value.ToString();
+            }
+
+            return formCollection;
+        }
+
         [HttpPost, Route(ApiRouteActionsSearch.Route)]
         public IHttpActionResult Main()
         {
@@ -28,7 +40,7 @@ namespace SiteServer.API.Controllers.Sys
             try
             {
                 var request = new RequestImpl();
-                var form = request.GetPostCollection();
+                var form = GetPostCollection(request);
 
                 var isAllSites = request.GetPostBool(StlSearch.IsAllSites.ToLower());
                 var siteName = AttackUtils.FilterSqlAndXss(request.GetPostString(StlSearch.SiteName.ToLower()));

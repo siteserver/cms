@@ -1,5 +1,4 @@
 using System.Web.UI.WebControls;
-using SiteServer.CMS.DataCache;
 
 namespace SiteServer.CMS.Model.Enumerations
 {
@@ -218,55 +217,5 @@ namespace SiteServer.CMS.Model.Enumerations
 		    listControl.Items.Add(GetListItem(ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel, false));
 		    listControl.Items.Add(GetListItem(ELinkType.NoLink, false));
 		}
-
-        public static bool IsCreatable(SiteInfo siteInfo, ChannelInfo channelInfo)
-        {
-            var isCreatable = false;
-
-            var linkType = GetEnumType(channelInfo.LinkType);
-
-            if (linkType == ELinkType.None)
-            {
-                isCreatable = true;
-            }
-            else if (linkType == ELinkType.NoLinkIfContentNotExists)
-            {
-                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
-                isCreatable = count != 0;
-            }
-            else if (linkType == ELinkType.LinkToOnlyOneContent)
-            {
-                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
-                isCreatable = count != 1;
-            }
-            else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
-            {
-                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
-                if (count != 0 && count != 1)
-                {
-                    isCreatable = true;
-                }
-            }
-            else if (linkType == ELinkType.LinkToFirstContent)
-            {
-                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
-                isCreatable = count < 1;
-            }
-            else if (linkType == ELinkType.NoLinkIfChannelNotExists)
-            {
-                isCreatable = channelInfo.ChildrenCount != 0;
-            }
-            else if (linkType == ELinkType.LinkToLastAddChannel)
-            {
-                isCreatable = channelInfo.ChildrenCount <= 0;
-            }
-            else if (linkType == ELinkType.LinkToFirstChannel)
-            {
-                isCreatable = channelInfo.ChildrenCount <= 0;
-            }
-
-            return isCreatable;
-        }
-
 	}
 }

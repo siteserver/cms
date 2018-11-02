@@ -89,7 +89,7 @@ namespace SiteServer.BackgroundPages.Cms
 var rootUrl = '{PageUtils.GetRootUrl(string.Empty)}';
 var siteUrl = '{PageUtils.ParseNavigationUrl($"~/{siteInfo.SiteDir}")}';
 var imageUrl = window.parent.document.getElementById('{textBoxClientId}').value;
-if(imageUrl && imageUrl.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png$/i) != -1){{
+if(imageUrl && imageUrl.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png|\.webp$/i) != -1){{
 	if (imageUrl.charAt(0) == '~'){{
 		imageUrl = imageUrl.replace('~', rootUrl);
 	}}else if (imageUrl.charAt(0) == '@'){{

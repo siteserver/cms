@@ -74,8 +74,8 @@ namespace SiteServer.API.Controllers.Home
                 var isAllCheckedLevel = request.GetPostBool("isAllCheckedLevel");
                 var checkedLevelKeys = request.GetPostObject<List<int>>("checkedLevelKeys");
                 var isAllDate = request.GetPostBool("isAllDate");
-                var startDate = request.GetPostDateTime("startDate");
-                var endDate = request.GetPostDateTime("endDate");
+                var startDate = request.GetPostDateTime("startDate", DateTime.Now);
+                var endDate = request.GetPostDateTime("endDate", DateTime.Now);
                 var columnNames = request.GetPostObject<List<string>>("columnNames");
 
                 if (!request.IsUserLoggin ||

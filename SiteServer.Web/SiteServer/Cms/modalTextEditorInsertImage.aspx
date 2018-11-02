@@ -123,7 +123,7 @@
 	var uploader = new Uploader({
 		url: '<%=UploadUrl%>',
 		target: document.getElementById("drop-area"),
-		allows: ".png,.jpg,.jpeg,.gif,.pneg,.bmp",
+		allows: ".png,.jpg,.jpeg,.gif,.pneg,.bmp,.webp",
 		on: {
 			add: function (task) {
 				if (task.disabled) {
