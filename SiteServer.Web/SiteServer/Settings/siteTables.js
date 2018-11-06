@@ -1,5 +1,4 @@
-﻿var $apiUrl = $apiConfig.apiUrl;
-var $api = new apiUtils.Api($apiUrl + '/pages/settings/siteTables');
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/siteTables');
 
 var data = {
   pageLoad: false,

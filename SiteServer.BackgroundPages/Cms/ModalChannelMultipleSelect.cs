@@ -67,7 +67,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             PhSiteId.Visible = _isSiteSelect;
 
-            var siteIdList = AuthRequest.AdminPermissions.SiteIdList;
+            var siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdList();
 
             var mySystemInfoArrayList = new ArrayList();
             var parentWithChildren = new Hashtable();
@@ -149,7 +149,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ["linkUrl"] = GetRedirectUrl(_targetSiteId, string.Empty)
             };
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ChannelClickSelect, additional, AuthRequest.AdminPermissions);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ChannelClickSelect, additional, AuthRequest.AdminPermissionsImpl);
         }
 
         public void DdlSiteId_OnSelectedIndexChanged(object sender, EventArgs e)

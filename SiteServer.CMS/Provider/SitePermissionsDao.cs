@@ -5,6 +5,7 @@ using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
@@ -181,24 +182,15 @@ namespace SiteServer.CMS.Provider
                 var systemPermissionsInfoList = GetSystemPermissionsInfoList(roleName);
                 foreach (var systemPermissionsInfo in systemPermissionsInfoList)
                 {
-                    var channelIdStrList = TranslateUtils.StringCollectionToStringList(systemPermissionsInfo.ChannelIdCollection);
-                    foreach (var channelIdStr in channelIdStrList)
+                    var channelIdList = TranslateUtils.StringCollectionToIntList(systemPermissionsInfo.ChannelIdCollection);
+                    foreach (var channelId in channelIdList)
                     {
-                        var channelId = TranslateUtils.ToInt(channelIdStr);
-                        List<string> list = null;
+                        var key = PermissionsImpl.GetChannelPermissionDictKey(systemPermissionsInfo.SiteId, channelId);
 
-                        foreach (var dictKey in dict.Keys)
-                        {
-                            if (dictKey == PermissionManager.GetChannelPermissionDictKey(systemPermissionsInfo.SiteId, channelId))
-                            {
-                                list = dict[dictKey];
-                                break;
-                            }
-                        }
-                        if (list == null)
+                        if (!dict.TryGetValue(key, out var list))
                         {
                             list = new List<string>();
-                            dict.Add(PermissionManager.GetChannelPermissionDictKey(systemPermissionsInfo.SiteId, channelId), list);
+                            dict[key] = list;
                         }
 
                         var channelPermissionList = TranslateUtils.StringCollectionToStringList(systemPermissionsInfo.ChannelPermissions);

@@ -7,6 +7,7 @@ using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -402,9 +403,9 @@ namespace SiteServer.CMS.StlParser.Model
 
         public string AlternatingItemTemplate { get; private set; } = string.Empty;
 
-        public LowerNameValueCollection SelectedItems { get; } = new LowerNameValueCollection();
+        public NameValueCollection SelectedItems { get; } = TranslateUtils.NewIgnoreCaseNameValueCollection();
 
-        public LowerNameValueCollection SelectedValues { get; } = new LowerNameValueCollection();
+        public NameValueCollection SelectedValues { get; } = TranslateUtils.NewIgnoreCaseNameValueCollection();
 
         public string SeparatorRepeatTemplate { get; private set; } = string.Empty;
 
@@ -604,6 +605,6 @@ namespace SiteServer.CMS.StlParser.Model
 
         public string Where { get; set; } = string.Empty;
 
-        public LowerNameValueCollection Others { get; set; } = new LowerNameValueCollection();
+        public NameValueCollection Others { get; } = TranslateUtils.NewIgnoreCaseNameValueCollection();
     }
 }

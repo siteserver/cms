@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -846,14 +845,24 @@ namespace SiteServer.Utils
             Download(response, filePath, fileName);
         }
 
-        public static string GetAdminDirectoryUrl(string relatedUrl)
+        public static string GetAdminUrl(string relatedUrl)
         {
             return Combine(ApplicationPath, WebConfigUtils.AdminDirectory, relatedUrl);
+        }
+
+        public static string GetHomeUrl(string relatedUrl)
+        {
+            return Combine(ApplicationPath, WebConfigUtils.HomeDirectory, relatedUrl);
         }
 
         public static string GetSiteFilesUrl(string relatedUrl)
         {
             return Combine(ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, relatedUrl);
+        }
+
+        public static string GetTemporaryFilesUrl(string relatedUrl)
+        {
+            return Combine(ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedUrl);
         }
 
         public static string GetSiteTemplatesUrl(string relatedUrl)
@@ -879,7 +888,7 @@ namespace SiteServer.Utils
 
             if (StringUtils.StartsWith(url, "@/"))
             {
-                return GetAdminDirectoryUrl(url.Substring(1));
+                return GetAdminUrl(url.Substring(1));
             }
 
             return GetSiteFilesUrl(Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, url));
@@ -887,37 +896,37 @@ namespace SiteServer.Utils
 
         public static string GetSiteServerUrl(string className)
         {
-            return GetAdminDirectoryUrl(className.ToCamelCase() + ".cshtml");
+            return GetAdminUrl(className.ToCamelCase() + ".cshtml");
         }
 
         public static string GetSiteServerUrl(string className, NameValueCollection queryString)
         {
-            return AddQueryString(GetAdminDirectoryUrl(className.ToLower() + ".aspx"), queryString);
+            return AddQueryString(GetAdminUrl(className.ToLower() + ".aspx"), queryString);
         }
 
         public static string GetPluginsUrl(string className)
         {
-            return GetAdminDirectoryUrl(Combine("plugins", className.ToCamelCase() + ".cshtml"));
+            return GetAdminUrl(Combine("plugins", className.ToCamelCase() + ".cshtml"));
         }
 
         public static string GetPluginsUrl(string className, NameValueCollection queryString)
         {
-            return AddQueryString(GetAdminDirectoryUrl(Combine("plugins", className.ToLower() + ".aspx")), queryString);
+            return AddQueryString(GetAdminUrl(Combine("plugins", className.ToLower() + ".aspx")), queryString);
         }
 
         public static string GetSettingsUrl(string className)
         {
-            return GetAdminDirectoryUrl(Combine("settings", className.ToCamelCase() + ".cshtml"));
+            return GetAdminUrl(Combine("settings", className.ToCamelCase() + ".cshtml"));
         }
 
         public static string GetSettingsUrl(string className, NameValueCollection queryString)
         {
-            return AddQueryString(GetAdminDirectoryUrl(Combine("settings", className.ToLower() + ".aspx")), queryString);
+            return AddQueryString(GetAdminUrl(Combine("settings", className.ToLower() + ".aspx")), queryString);
         }
 
         public static string GetCmsUrl(string pageName, int siteId, object param = null)
         {
-            var url = GetAdminDirectoryUrl(Combine("cms", $"{pageName.ToCamelCase()}.cshtml?siteId={siteId}"));
+            var url = GetAdminUrl(Combine("cms", $"{pageName.ToCamelCase()}.cshtml?siteId={siteId}"));
             return param == null ? url : param.GetType().GetProperties().Aggregate(url, (current, p) => current + $"&{p.Name.ToCamelCase()}={p.GetValue(param)}");
         }
 
@@ -925,28 +934,19 @@ namespace SiteServer.Utils
         {
             queryString = queryString ?? new NameValueCollection();
             queryString.Remove("siteId");
-            return AddQueryString(GetAdminDirectoryUrl($"cms/{className.ToLower()}.aspx?siteId={siteId}"), queryString);
+            return AddQueryString(GetAdminUrl($"cms/{className.ToLower()}.aspx?siteId={siteId}"), queryString);
         }
 
         public static string GetCmsWebHandlerUrl(int siteId, string className, NameValueCollection queryString)
         {
             queryString = queryString ?? new NameValueCollection();
             queryString.Remove("siteId");
-            return AddQueryString(GetAdminDirectoryUrl($"cms/{className.ToLower()}.ashx?siteId={siteId}"), queryString);
+            return AddQueryString(GetAdminUrl($"cms/{className.ToLower()}.ashx?siteId={siteId}"), queryString);
         }
 
         public static string GetAjaxUrl(string className, NameValueCollection queryString)
         {
-            return AddQueryString(GetAdminDirectoryUrl(Combine("ajax", className.ToLower() + ".aspx")), queryString);
-        }
-
-        public static string GetUserFilesUrl(string userName, string relatedUrl)
-        {
-            if (IsVirtualUrl(relatedUrl))
-            {
-                return ParseNavigationUrl(relatedUrl);
-            }
-            return Combine(ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.UserFiles, userName, relatedUrl);
+            return AddQueryString(GetAdminUrl(Combine("ajax", className.ToLower() + ".aspx")), queryString);
         }
 
         public static void RedirectToErrorPage(int logId)
@@ -961,12 +961,12 @@ namespace SiteServer.Utils
 
         public static string GetErrorPageUrl(int logId)
         {
-            return GetAdminDirectoryUrl($"pageError.html?logId={logId}");
+            return GetAdminUrl($"pageError.html?logId={logId}");
         }
 
         public static string GetErrorPageUrl(string message)
         {
-            return GetAdminDirectoryUrl($"pageError.html?message={HttpUtility.UrlPathEncode(message)}");
+            return GetAdminUrl($"pageError.html?message={HttpUtility.UrlPathEncode(message)}");
         }
 
         public static void CheckRequestParameter(params string[] parameters)
@@ -983,7 +983,7 @@ namespace SiteServer.Utils
 
         public static string GetLoginUrl()
         {
-            return GetAdminDirectoryUrl("pageLogin.cshtml");
+            return GetAdminUrl("pageLogin.cshtml");
         }
 
         public static void RedirectToLoginPage()
@@ -1017,7 +1017,7 @@ namespace SiteServer.Utils
 
         public static string GetLoadingUrl(string url)
         {
-            return GetAdminDirectoryUrl($"loading.aspx?redirectUrl={TranslateUtils.EncryptStringBySecretKey(url)}");
+            return GetAdminUrl($"loading.aspx?redirectUrl={TranslateUtils.EncryptStringBySecretKey(url)}");
         }
 
         public static string GetRedirectStringWithCheckBoxValue(string redirectUrl, string checkBoxServerId, string checkBoxClientId, string emptyAlertText)

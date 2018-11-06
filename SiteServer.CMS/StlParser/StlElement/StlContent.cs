@@ -8,6 +8,7 @@ using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -243,13 +244,13 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (ContentAttribute.Title.ToLower().Equals(type))
                 {
-                    var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, contentInfo.ChannelId);
                     var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contentInfo.ChannelId);
+                    var relatedIdentities = TableStyleManager.GetRelatedIdentities(nodeInfo);
                     var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, nodeInfo);
 
                     var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, type, relatedIdentities);
                     parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo.Title, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
-                    parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                    parsedContent = InputTypeUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
                     if (!isClearTags && !string.IsNullOrEmpty(contentInfo.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title))))
                     {
@@ -263,7 +264,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (BackgroundContentAttribute.Summary.ToLower().Equals(type))
                 {
-                    parsedContent = StringUtils.ParseString(contentInfo.GetString(BackgroundContentAttribute.Summary), replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                    parsedContent = InputTypeUtils.ParseString(InputType.TextArea,  contentInfo.GetString(BackgroundContentAttribute.Summary), replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                 }
                 else if (BackgroundContentAttribute.Content.ToLower().Equals(type))
                 {
@@ -551,9 +552,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (!string.IsNullOrEmpty(contentInfo.AddUserName))
                     {
-                        //var displayName = DataProvider.AdministratorDao.GetDisplayName(contentInfo.AddUserName);
-                        var displayName = StlAdministratorCache.GetDisplayName(contentInfo.AddUserName);
-                        parsedContent = string.IsNullOrEmpty(displayName) ? contentInfo.AddUserName : displayName;
+                        parsedContent = contentInfo.AddUserName;
                     }
                 }
                 else
@@ -562,21 +561,21 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     if (contentInfo.ContainsKey(type))
                     {
-                        if (!StringUtils.ContainsIgnoreCase(ContentAttribute.AllAttributes, type))
+                        if (!StringUtils.ContainsIgnoreCase(ContentAttribute.AllAttributes.Value, type))
                         {
-                            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, contentInfo.ChannelId);
+                            var relatedIdentities = TableStyleManager.GetRelatedIdentities(nodeInfo);
                             var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, nodeInfo);
                             var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, type, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
                             var num = TranslateUtils.ToInt(no);
                             parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo, separator, pageInfo.SiteInfo, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerHtml, false);
-                            parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                            parsedContent = InputTypeUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                         else
                         {
                             parsedContent = contentInfo.GetString(type);
-                            parsedContent = StringUtils.ParseString(parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                            parsedContent = InputTypeUtils.ParseString(InputType.Text, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                     }
                 }

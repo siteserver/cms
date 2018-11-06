@@ -70,56 +70,38 @@ namespace SiteServer.CMS.Provider
                 ExecuteNonQuery(trans, sqlString, insertItemParms);
             }
 
-            TableStyleManager.IsChanged = true;
+            TableStyleManager.ClearCache();
         }
 
-        public void DeleteAndInsertStyleItems(int tableStyleId, List<TableStyleItemInfo> styleItems)
+        public void DeleteAndInsertStyleItems(IDbTransaction trans, int tableStyleId, List<TableStyleItemInfo> styleItems)
         {
-            if (styleItems == null || styleItems.Count == 0) return;
-
             var parms = new IDataParameter[]
             {
                 GetParameter(ParmTableStyleId, DataType.Integer, tableStyleId)
             };
             var sqlString = $"DELETE FROM {TableName} WHERE {nameof(TableStyleItemInfo.TableStyleId)} = @{nameof(TableStyleItemInfo.TableStyleId)}";
 
-            ExecuteNonQuery(sqlString, parms);
+            ExecuteNonQuery(trans, sqlString, parms);
+
+            if (styleItems == null || styleItems.Count == 0) return;
 
             sqlString =
                 $"INSERT INTO {TableName} ({nameof(TableStyleItemInfo.TableStyleId)}, {nameof(TableStyleItemInfo.ItemTitle)}, {nameof(TableStyleItemInfo.ItemValue)}, {nameof(TableStyleItemInfo.IsSelected)}) VALUES (@{nameof(TableStyleItemInfo.TableStyleId)}, @{nameof(TableStyleItemInfo.ItemTitle)}, @{nameof(TableStyleItemInfo.ItemValue)}, @{nameof(TableStyleItemInfo.IsSelected)})";
 
-            using (var conn = GetConnection())
+            foreach (var itemInfo in styleItems)
             {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
+                var insertItemParms = new IDataParameter[]
                 {
-                    try
-                    {
-                        foreach (var itemInfo in styleItems)
-                        {
-                            var insertItemParms = new IDataParameter[]
-                            {
-                                GetParameter(ParmTableStyleId, DataType.Integer, itemInfo.TableStyleId),
-                                GetParameter(ParmItemTitle, DataType.VarChar, 255, itemInfo.ItemTitle),
-                                GetParameter(ParmItemValue, DataType.VarChar, 255, itemInfo.ItemValue),
-                                GetParameter(ParmIsSelected, DataType.VarChar, 18, itemInfo.IsSelected.ToString())
-                            };
+                    GetParameter(ParmTableStyleId, DataType.Integer, itemInfo.TableStyleId),
+                    GetParameter(ParmItemTitle, DataType.VarChar, 255, itemInfo.ItemTitle),
+                    GetParameter(ParmItemValue, DataType.VarChar, 255, itemInfo.ItemValue),
+                    GetParameter(ParmIsSelected, DataType.VarChar, 18, itemInfo.IsSelected.ToString())
+                };
 
-                            ExecuteNonQuery(trans, sqlString, insertItemParms);
-
-                        }
-
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
+                ExecuteNonQuery(trans, sqlString, insertItemParms);
             }
 
-            TableStyleManager.IsChanged = true;
+            TableStyleManager.ClearCache();
         }
 
         public Dictionary<int, List<TableStyleItemInfo>> GetAllTableStyleItems()
@@ -133,8 +115,7 @@ namespace SiteServer.CMS.Provider
                     var i = 0;
                     var item = new TableStyleItemInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetBool(rdr, i));
 
-                    List<TableStyleItemInfo> list;
-                    allDict.TryGetValue(item.TableStyleId, out list);
+                    allDict.TryGetValue(item.TableStyleId, out var list);
 
                     if (list == null)
                     {

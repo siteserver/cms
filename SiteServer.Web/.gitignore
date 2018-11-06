@@ -1,6 +1,5 @@
 bin/
 obj/
-home/
 /channels/
 /contents/
 SiteFiles/BackupFiles/
@@ -8,10 +7,11 @@ SiteFiles/Plugins/
 SiteFiles/packages/
 SiteFiles/SiteTemplates/
 SiteFiles/TemporaryFiles/
-SiteFiles/UserFiles/test/
+SiteFiles/UserFiles/
 Template
 /sapprft/
 
+test/
 ## sqlserver
 test1/
 test2/
@@ -58,5 +58,8 @@ test36/
 test37/
 test38/
 test39/
+
 upload
 T_*.html
+index.html
+index.shtml

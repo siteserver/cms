@@ -10,6 +10,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -74,7 +75,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retval = new NameValueCollection();
-            var request = new AuthRequest();
+            var request = new RequestImpl();
 
             if (type == TypeBackup)
             {
@@ -104,7 +105,7 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;
-            var request = new AuthRequest(Request);
+            var request = new RequestImpl(Request);
 
             try
             {
@@ -146,7 +147,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
-        public NameValueCollection Recovery(int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix, AuthRequest request)
+        public NameValueCollection Recovery(int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix, RequestImpl request)
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;

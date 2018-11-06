@@ -213,7 +213,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 parsedContent = pageInfo.SiteInfo.Additional.GetString(type);
                 if (!string.IsNullOrEmpty(parsedContent))
                 {
-                    var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.SiteDao.TableName, type, RelatedIdentities.GetRelatedIdentities(pageInfo.SiteId, pageInfo.SiteId));
+                    var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.SiteDao.TableName, type, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
 
                     // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                     if (styleInfo.Id > 0)
@@ -240,7 +240,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (string.IsNullOrEmpty(parsedContent)) return string.Empty;
 
-            return StringUtils.ParseString(inputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+            return InputTypeUtils.ParseString(inputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
         }
 	}
 }

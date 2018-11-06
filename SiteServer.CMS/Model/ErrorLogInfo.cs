@@ -2,11 +2,13 @@ using System;
 
 namespace SiteServer.CMS.Model
 {
-	public class ErrorLogInfo
-	{
-        public ErrorLogInfo(int id, string pluginId, string message, string stacktrace, string summary, DateTime addDate) 
-		{
+    public class ErrorLogInfo
+    {
+        public ErrorLogInfo(int id, string category, string pluginId, string message, string stacktrace, string summary,
+            DateTime addDate)
+        {
             Id = id;
+            Category = category;
             PluginId = pluginId;
             Message = message;
             Stacktrace = stacktrace;
@@ -14,16 +16,18 @@ namespace SiteServer.CMS.Model
             AddDate = addDate;
         }
 
-        public int Id { get; set; }
+        public int Id { get; }
 
-        public string PluginId { get; set; }
+        public string Category { get; }
 
-	    public string Message { get; set; }
+        public string PluginId { get; }
 
-	    public string Stacktrace { get; set; }
+        public string Message { get; }
 
-	    public string Summary { get; set; }
+        public string Stacktrace { get; }
 
-        public DateTime AddDate { get; set; }
+        public string Summary { get; }
+
+        public DateTime AddDate { get; }
     }
 }

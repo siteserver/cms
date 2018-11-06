@@ -14,7 +14,7 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             _tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
             ContentInfo contentInfo = null;
-            _styleInfoList = TableStyleManager.GetTableStyleInfoList(SiteInfo, _channelInfo);
+            _styleInfoList = TableStyleManager.GetContentStyleInfoList(SiteInfo, _channelInfo);
 
             if (!IsPermissions(contentId)) return;
 
@@ -142,7 +142,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     PhStatus.Visible = true;
                     int checkedLevel;
-                    var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, _channelInfo.Id, out checkedLevel);
+                    var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, _channelInfo.Id, out checkedLevel);
                     if (AuthRequest.IsQueryExists("contentLevel"))
                     {
                         checkedLevel = TranslateUtils.ToIntWithNagetive(AuthRequest.GetQueryString("contentLevel"));
@@ -179,7 +179,7 @@ namespace SiteServer.BackgroundPages.Cms
                         var contentLevel = AuthRequest.GetQueryInt("contentLevel");
                         var fileName = AuthRequest.GetQueryString("fileName");
 
-                        var formCollection = WordUtils.GetWordNameValueCollection(SiteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, contentLevel, fileName);
+                        var formCollection = WordUtils.GetWordNameValueCollection(SiteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
                         attributes.Load(formCollection);
 
                         TbTitle.Text = formCollection[ContentAttribute.Title];
@@ -237,7 +237,7 @@ namespace SiteServer.BackgroundPages.Cms
                 try
                 {
                     var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
-                    var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, _styleInfoList, Request.Form, ContentAttribute.AllAttributes);
+                    var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, _styleInfoList, Request.Form, ContentAttribute.AllAttributes.Value);
 
                     var contentInfo = new ContentInfo(dict)
                     {
@@ -291,7 +291,7 @@ namespace SiteServer.BackgroundPages.Cms
                     
                     //判断是不是有审核权限
                     int checkedLevelOfUser;
-                    var isCheckedOfUser = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, contentInfo.ChannelId, out checkedLevelOfUser);
+                    var isCheckedOfUser = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, contentInfo.ChannelId, out checkedLevelOfUser);
                     if (CheckManager.IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                     {
                         if (contentInfo.IsChecked)
@@ -335,7 +335,7 @@ namespace SiteServer.BackgroundPages.Cms
                     contentInfo.LastEditUserName = AuthRequest.AdminName;
                     contentInfo.LastEditDate = DateTime.Now;
 
-                    var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, _styleInfoList, Request.Form, ContentAttribute.AllAttributes);
+                    var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, _styleInfoList, Request.Form, ContentAttribute.AllAttributes.Value);
                     contentInfo.Load(dict);
 
                     contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);

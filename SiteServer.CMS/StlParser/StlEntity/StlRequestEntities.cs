@@ -30,7 +30,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 var attributeName = entityName.Substring(9, entityName.Length - 10);
 
                 var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
-                string functionName = $"stlRequest_{ajaxDivId}";
+                var functionName = $"stlRequest_{ajaxDivId}";
                 parsedContent = $@"<span id=""{ajaxDivId}""></span>";
 
                 var builder = new StringBuilder();
@@ -77,7 +77,7 @@ $(function(){{
             {
                 foreach (string key in queryString.Keys)
                 {
-                    templateContent = StringUtils.ReplaceIgnoreCase(templateContent, $"{{Request.{key}}}", queryString[key]);
+                    templateContent = StringUtils.ReplaceIgnoreCase(templateContent, $"{{Request.{key}}}", AttackUtils.FilterSqlAndXss(queryString[key]));
                 }
             }
             return RegexUtils.Replace("{Request.[^}]+}", templateContent, string.Empty);

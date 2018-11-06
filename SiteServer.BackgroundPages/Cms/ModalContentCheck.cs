@@ -95,7 +95,7 @@ namespace SiteServer.BackgroundPages.Cms
             foreach (var channelId in _idsDictionary.Keys)
             {
                 int checkedLevelByChannelId;
-                var isCheckedByChannelId = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, channelId, out checkedLevelByChannelId);
+                var isCheckedByChannelId = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, channelId, out checkedLevelByChannelId);
                 if (checkedLevel > checkedLevelByChannelId)
                 {
                     checkedLevel = checkedLevelByChannelId;
@@ -111,7 +111,7 @@ namespace SiteServer.BackgroundPages.Cms
             var listItem = new ListItem("<保持原栏目不变>", "0");
             DdlTranslateChannelId.Items.Add(listItem);
 
-            ChannelManager.AddListItemsForAddContent(DdlTranslateChannelId.Items, SiteInfo, true, AuthRequest.AdminPermissions);
+            ChannelManager.AddListItemsForAddContent(DdlTranslateChannelId.Items, SiteInfo, true, AuthRequest.AdminPermissionsImpl);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -129,7 +129,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentIdListToCheck = new List<int>();
 
                 int checkedLevelOfUser;
-                var isCheckedOfUser = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, channelId, out checkedLevelOfUser);
+                var isCheckedOfUser = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, channelId, out checkedLevelOfUser);
 
                 foreach (var contentId in contentIdList)
                 {

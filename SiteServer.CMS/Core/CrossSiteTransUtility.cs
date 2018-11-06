@@ -6,6 +6,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.CMS.Core
 {
@@ -140,7 +141,7 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void LoadChannelIdListBox(ListBox channelIdListBox, SiteInfo siteInfo, int psId, ChannelInfo channelInfo, PermissionManager permissionManager)
+        public static void LoadChannelIdListBox(ListBox channelIdListBox, SiteInfo siteInfo, int psId, ChannelInfo channelInfo, PermissionsImpl permissionsImpl)
         {
             channelIdListBox.Items.Clear();
 
@@ -181,7 +182,7 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    ChannelManager.AddListItemsForAddContent(channelIdListBox.Items, SiteManager.GetSiteInfo(psId), false, permissionManager);
+                    ChannelManager.AddListItemsForAddContent(channelIdListBox.Items, SiteManager.GetSiteInfo(psId), false, permissionsImpl);
                 }
             }
         }

@@ -1,5 +1,4 @@
-﻿var $apiUrl = $apiConfig.apiUrl;
-var $api = new apiUtils.Api($apiUrl + '/pages/settings/adminAccessTokensViewLayer');
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/adminAccessTokensViewLayer');
 var $id = pageUtils.getQueryStringByName('id');
 
 var $vue = new Vue({

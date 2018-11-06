@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            _siteIdList = AuthRequest.AdminPermissions.SiteIdList;
+            _siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdList();
             RptContents.DataSource = SiteManager.GetSiteIdListOrderByLevel();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();

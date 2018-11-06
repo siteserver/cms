@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -15,55 +15,50 @@ namespace SiteServer.CMS.Model
     [JsonConverter(typeof(ContentConverter))]
     public class ContentInfo : AttributesImpl, IContentInfo
 	{
-	    public ContentInfo(IDataReader rdr) : base(rdr)
+        public ContentInfo()
         {
-            PostProcessing();
+
         }
 
-	    public ContentInfo(IDataRecord record) : base(record)
-	    {
-	        PostProcessing();
+        public ContentInfo(IDataReader rdr) : base(rdr)
+        {
+
+        }
+
+        public ContentInfo(IDataRecord record) : base(record)
+        {
+
         }
 
         public ContentInfo(DataRowView view) : base(view)
-	    {
-	        PostProcessing();
+        {
+
         }
 
-	    public ContentInfo(DataRow row) : base(row)
-	    {
-	        PostProcessing();
+        public ContentInfo(DataRow row) : base(row)
+        {
+
         }
 
 	    public ContentInfo(Dictionary<string, object> dict) : base(dict)
 	    {
-	        PostProcessing();
+
 	    }
 
 	    public ContentInfo(NameValueCollection nvc) : base(nvc)
+        {
+
+        }
+
+	    public ContentInfo(object anonymous) : base(anonymous)
 	    {
-	        PostProcessing();
+
 	    }
 
-	    public void AddParameters(object param)
+	    public ContentInfo(ContentInfo contentInfo)
 	    {
-	        if (param != null)
-	        {
-	            foreach (var p in param.GetType().GetProperties())
-	            {
-	                Set(p.Name.ToCamelCase(), p.GetValue(param));
-	            }
-            }
-	    }
-
-        private void PostProcessing()
-	    {
-	        if (ContainsKey(nameof(SettingsXml)))
-	        {
-	            Load(SettingsXml);
-	            Remove(nameof(SettingsXml));
-            }
-	    }
+	        Load(contentInfo);
+        }
 
         public int Id
 		{
@@ -95,17 +90,23 @@ namespace SiteServer.CMS.Model
             set => Set(ContentAttribute.LastEditUserName, value);
         }
 
-        public string WritingUserName
-        {
-            get => GetString(ContentAttribute.WritingUserName);
-            set => Set(ContentAttribute.WritingUserName, value);
-        }
-
         public DateTime LastEditDate
 		{
             get => GetDateTime(ContentAttribute.LastEditDate, DateTime.Now);
             set => Set(ContentAttribute.LastEditDate, value);
         }
+
+	    public int AdminId
+	    {
+	        get => GetInt(ContentAttribute.AdminId);
+	        set => Set(ContentAttribute.AdminId, value);
+	    }
+
+	    public int UserId
+	    {
+	        get => GetInt(ContentAttribute.UserId);
+	        set => Set(ContentAttribute.UserId, value);
+	    }
 
         public int Taxis
         {
@@ -275,15 +276,15 @@ namespace SiteServer.CMS.Model
             set => Set(ContentAttribute.SettingsXml, value);
         }
 
-	    public override Dictionary<string, object> ToDictionary()
+        public override Dictionary<string, object> ToDictionary()
 	    {
-	        //var dict = base.ToDictionary();
+	        var dict = base.ToDictionary();
+	        //dict.Remove(nameof(SettingsXml));
 
-	        var siteInfo = SiteManager.GetSiteInfo(SiteId);
+            var siteInfo = SiteManager.GetSiteInfo(SiteId);
 	        var channelInfo = ChannelManager.GetChannelInfo(SiteId, ChannelId);
-	        var styleInfoList = TableStyleManager.GetTableStyleInfoList(siteInfo, channelInfo);
+	        var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
 
-            var dict = new Dictionary<string, object>();
 	        foreach (var styleInfo in styleInfoList)
 	        {
 	            if (styleInfo.InputType == InputType.Image || styleInfo.InputType == InputType.File || styleInfo.InputType == InputType.Video)
@@ -294,7 +295,8 @@ namespace SiteServer.CMS.Model
 	                    value = PageUtility.ParseNavigationUrl(siteInfo, value, false);
 	                }
 
-	                dict[styleInfo.AttributeName] = value;
+	                dict.Remove(styleInfo.AttributeName);
+                    dict[styleInfo.AttributeName] = value;
                 }
                 else if (styleInfo.InputType == InputType.TextEditor)
 	            {
@@ -303,20 +305,22 @@ namespace SiteServer.CMS.Model
 	                {
 	                    value = ContentUtility.TextEditorContentDecode(siteInfo, value, false);
 	                }
-
-	                dict[styleInfo.AttributeName] = value;
+	                dict.Remove(styleInfo.AttributeName);
+                    dict[styleInfo.AttributeName] = value;
 	            }
 	            else
 	            {
-	                dict[styleInfo.AttributeName] = Get(styleInfo.AttributeName);
+	                dict.Remove(styleInfo.AttributeName);
+                    dict[styleInfo.AttributeName] = Get(styleInfo.AttributeName);
                 }
 	        }
 
-	        foreach (var attributeName in ContentAttribute.AllAttributes)
+	        foreach (var attributeName in ContentAttribute.AllAttributes.Value)
 	        {
 	            if (StringUtils.StartsWith(attributeName, "Is"))
 	            {
-	                dict[attributeName] = GetBool(attributeName);
+	                dict.Remove(attributeName);
+                    dict[attributeName] = GetBool(attributeName);
                 }
 	            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Title))
 	            {
@@ -325,18 +329,44 @@ namespace SiteServer.CMS.Model
 	                {
 	                    value = value.Replace("  ", "<br />");
 	                }
-	                dict[attributeName] = value;
+	                dict.Remove(attributeName);
+                    dict[attributeName] = value;
                 }
                 else
 	            {
-	                dict[attributeName] = Get(attributeName);
+	                dict.Remove(attributeName);
+                    dict[attributeName] = Get(attributeName);
                 }
             }
 
-            return dict;
+	        foreach (var attributeName in ContentAttribute.IncludedAttributes.Value)
+	        {
+	            if (attributeName == ContentAttribute.NavigationUrl)
+	            {
+	                dict.Remove(attributeName);
+                    dict[attributeName] = PageUtility.GetContentUrl(siteInfo, this, false);
+	            }
+	            else if (attributeName == ContentAttribute.CheckState)
+	            {
+	                dict.Remove(attributeName);
+                    dict[attributeName] = CheckManager.GetCheckState(siteInfo, this);
+	            }
+	            else
+	            {
+	                dict.Remove(attributeName);
+                    dict[attributeName] = Get(attributeName);
+	            }
+	        }
+
+	        foreach (var attributeName in ContentAttribute.ExcludedAttributes.Value)
+	        {
+	            dict.Remove(attributeName);
+            }
+
+	        return dict;
 	    }
 
-	    public class ContentConverter : JsonConverter
+	    private class ContentConverter : JsonConverter
 	    {
 	        public override bool CanConvert(Type objectType)
 	        {

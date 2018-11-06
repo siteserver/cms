@@ -5,7 +5,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>SiteServer 管理后台</title>
+  <title>SiteServer CMS - 管理后台</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -13,7 +13,6 @@
   <link href="assets/css/pages.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/ionicons.min.css" rel="stylesheet" type="text/css" />
-  <link href="assets/icons/favicon.png" rel="icon" type="image/png">
   <script type="text/javascript" src="assets/jquery/jquery-1.9.1.min.js"></script>
   <script type="text/javascript">
     if (window.top != self) {
@@ -24,7 +23,7 @@
       $('#right').src = url;
     }
 
-    var isDesktop = $(window).width() > 1010;
+    var isDesktop = $(window).width() > 992;
     var contentMargin = isDesktop ? 200 : 0;
     var isMenuWin = false;
 
@@ -137,7 +136,7 @@
     </div>
 
     <div class="content-page" id="content">
-      <iframe id="frmMain" frameborder="0" id="right" name="right" src="dashboard.cshtml" style="width:100%; height: 100%"></iframe>
+      <iframe id="frmMain" frameborder="0" id="right" name="right" src="<%=DefaultPageUrl%>" style="width:100%; height: 100%"></iframe>
     </div>
   </div>
 </body>
@@ -153,7 +152,8 @@
 
 <script type="text/javascript">
   window.onresize = function (event) {
-    isDesktop = $(window).width() > 1010;
+    isDesktop = $(window).width() > 992;
+    contentMargin = isDesktop ? 200 : 0;
     if (!isDesktop) {
       $('#topMenus').hide();
       $('#leftMenu').width('100%').hide();
@@ -166,7 +166,7 @@
     $('#content').css({
       marginLeft: contentMargin + "px"
     });
-    if (contentMargin === 200) {
+    if (isDesktop) {
       $('#btnLeftMenu').hide();
       $("#leftMenu").show();
     } else {
@@ -249,7 +249,7 @@
     });
   }
 
-  var $api = new apiUtils.Api('<%=ApiUrl%>/pages/main');
+  var $api = new apiUtils.Api('<%=InnerApiUrl%>/pages/main');
   var $siteId = parseInt(pageUtils.getQueryStringByName('siteId'));
   var lastExecuteTime = new Date();
   var timeoutId = null;
@@ -294,6 +294,10 @@
     return false;
   }
 
+  function reloadPage() {
+    document.getElementById('frmMain').contentWindow.location.reload(true);
+  }
+
   $(document).ready(function () {
     onresize();
     loadProgress();
@@ -321,7 +325,8 @@
       wheelStep: 5
     });
 
-    if ('<%=IsConsoleAdministrator%>' === 'False' || '<%=CurrentVersion%>' === '0.0.0-dev') return;
+    // if ('<%=IsConsoleAdministrator%>' === 'False' || '<%=CurrentVersion%>' === '0.0.0-dev') return;
+    if ('<%=IsConsoleAdministrator%>' === 'False') return;
 
     packageUpdates();
   });

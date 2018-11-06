@@ -5,28 +5,28 @@ namespace SiteServer.Utils
 {
     public static class CookieUtils
     {
-        public static void SetCookie(string name, string value, DateTime expires)
+        public static void SetCookie(string name, string value, DateTime expires, bool isEncrypt = true)
         {
             SetCookie(new HttpCookie(name)
             {
                 Value = value,
                 Expires = expires,
                 Domain = PageUtils.HttpContextRootDomain
-            });
+            }, isEncrypt);
         }
 
-        public static void SetCookie(string name, string value)
+        public static void SetCookie(string name, string value, bool isEncrypt = true)
         {
             SetCookie(new HttpCookie(name)
             {
                 Value = value,
                 Domain = PageUtils.HttpContextRootDomain
-            });
+            }, isEncrypt);
         }
 
-        private static void SetCookie(HttpCookie cookie)
+        private static void SetCookie(HttpCookie cookie, bool isEncrypt)
         {
-            cookie.Value = TranslateUtils.EncryptStringBySecretKey(cookie.Value);
+            cookie.Value = isEncrypt ? TranslateUtils.EncryptStringBySecretKey(cookie.Value) : cookie.Value;
             cookie.HttpOnly = false;
 
             if (HttpContext.Current.Request.Url.Scheme.Equals("https"))

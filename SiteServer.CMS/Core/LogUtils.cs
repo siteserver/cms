@@ -1,13 +1,32 @@
 ﻿using System;
-using System.Web;
+using System.Collections.Generic;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.StlParser.Model;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
 {
     public static class LogUtils
     {
+        private const string CategoryStl = "stl";
+        private const string CategoryAdmin = "admin";
+        private const string CategoryHome = "home";
+        private const string CategoryApi = "api";
+
+        public static readonly Lazy<List<KeyValuePair<string, string>>> AllCategoryList = new Lazy<List<KeyValuePair<string, string>>>(
+            () =>
+            {
+                var list = new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>(CategoryStl, "STL 解析错误"),
+                    new KeyValuePair<string, string>(CategoryAdmin, "后台错误"),
+                    new KeyValuePair<string, string>(CategoryHome, "用户中心错误"),
+                    new KeyValuePair<string, string>(CategoryApi, "API错误")
+                };
+                return list;
+            });
+
         private static int AddErrorLog(ErrorLogInfo logInfo)
         {
             try
@@ -43,12 +62,33 @@ namespace SiteServer.CMS.Core
 
         public static int AddErrorLog(Exception ex, string summary = "")
         {
-            return AddErrorLog(new ErrorLogInfo(0, string.Empty, ex.Message, ex.StackTrace, summary, DateTime.Now));
+            return AddErrorLog(new ErrorLogInfo(0, CategoryAdmin, string.Empty, ex.Message, ex.StackTrace, summary, DateTime.Now));
         }
-
         public static int AddErrorLog(string pluginId, Exception ex, string summary = "")
         {
-            return AddErrorLog(new ErrorLogInfo(0, pluginId, ex.Message, ex.StackTrace, summary, DateTime.Now));
+            return AddErrorLog(new ErrorLogInfo(0, CategoryAdmin, pluginId, ex.Message, ex.StackTrace, summary, DateTime.Now));
+        }
+
+        public static string AddStlErrorLog(PageInfo pageInfo, string elementName, string stlContent, Exception ex)
+        {
+            var summary = string.Empty;
+            if (pageInfo != null)
+            {
+                summary = $@"站点名称：{pageInfo.SiteInfo.SiteName}，
+模板类型：{TemplateTypeUtils.GetText(pageInfo.TemplateInfo.TemplateType)}，
+模板名称：{pageInfo.TemplateInfo.TemplateName}
+<br />";
+            }
+
+            summary += $@"STL标签：{StringUtils.HtmlEncode(stlContent)}";
+            AddErrorLog(new ErrorLogInfo(0, CategoryStl, string.Empty, ex.Message, ex.StackTrace, summary, DateTime.Now));
+
+            return $@"
+<!--
+{elementName}
+error: {ex.Message}
+stl: {stlContent}
+-->";
         }
 
         public static void AddSiteLog(int siteId, int channelId, int contentId, string adminName, string action, string summary)

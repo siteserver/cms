@@ -1,0 +1,120 @@
+﻿<!DOCTYPE html>
+<html class="bg-white">
+
+<head>
+  <meta charset="utf-8" />
+  <title>SiteServer CMS - 用户中心</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta content="SiteServer CMS 用户中心" name="description" />
+  <meta content="SiteServer CMS" name="author" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <link rel="shortcut icon" href="../assets/images/favicon.ico">
+  <link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/lib/vue-multiselect-2.1.0/style.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/font-awesome-4.7.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/ionicons-2.0.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/siteserver.min.css" rel="stylesheet" type="text/css" />
+  <script src="../assets/lib/modernizr.min.js"></script>
+  <script type="text/javascript" src="../assets/lib/iframe-resizer-3.6.2/iframeResizer.contentWindow.min.js"></script>
+</head>
+
+<body style="padding-bottom: 0;" class="bg-white">
+  <div id="main" class="m-t-15 m-b-15 m-l-15 m-r-15">
+
+    <template v-if="pageLoad">
+
+      <div v-if="pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
+        <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
+        <span v-html="pageAlert.html"></span>
+      </div>
+
+      <div id="drop-area" style="height: 200px; line-height: 200px; text-align: center; font-size: 18px; color: #777; border: 2px dashed #0000004d; background: #eee;	border-radius: 6px; cursor: pointer; margin-bottom: 20px">
+        点击批量上传Word文件或者将Word文件拖拽到此区域
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4 col-lg-3 col-xs-12" v-for="(file, index) in files">
+          <div class="card m-b-20">
+            <div class="card-body">
+              <p class="card-text">
+                {{ file.fileName }}
+                <br /> 大小：{{ Math.round(file.length/1024) + ' KB' }}
+              </p>
+              <a v-on:click="del(file)" href="javascript:;" class="card-link text-danger">删 除</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group form-row">
+        <label class="col-1 text-right col-form-label col-form-label-sm">设置</label>
+        <div class="col-10">
+          <div class="checkbox checkbox-primary">
+            <input id="isNotFirstLineTitle" type="checkbox" v-model="isFirstLineTitle" true-value="false" false-value="true" />
+            <label for="isNotFirstLineTitle" class="mr-2">将文件名称作为标题</label>
+            <input id="isFirstLineTitle" type="checkbox" v-model="isFirstLineTitle" true-value="true" false-value="false" />
+            <label for="isFirstLineTitle" class="mr-2">将Word第一行作为标题</label>
+            <input id="isFirstLineRemove" type="checkbox" v-model="isFirstLineRemove" />
+            <label for="isFirstLineRemove" class="mr-2">内容正文删除标题</label>
+            <br />
+            <input id="isClearFormat" type="checkbox" v-model="isClearFormat" />
+            <label for="isClearFormat" class="mr-2">清除格式</label>
+            <input id="isFirstLineIndent" type="checkbox" v-model="isFirstLineIndent" />
+            <label for="isFirstLineIndent" class="mr-2">首行缩进</label>
+            <input id="isClearFontSize" type="checkbox" v-model="isClearFontSize" />
+            <label for="isClearFontSize" class="mr-2">清除字号</label>
+            <input id="isClearFontFamily" type="checkbox" v-model="isClearFontFamily" />
+            <label for="isClearFontFamily" class="mr-2">清除字体</label>
+            <input id="isClearImages" type="checkbox" v-model="isClearImages" />
+            <label for="isClearImages" class="mr-2">清除图片</label>
+          </div>
+        </div>
+        <div class="col-1 help-block"></div>
+      </div>
+
+      <div class="form-group form-row">
+        <label class="col-1 text-right col-form-label col-form-label-sm">状态</label>
+        <div class="col-10">
+          <select v-model="checkedLevel" class="form-control form-control-sm">
+            <option v-for="level in checkedLevels" :value="level.key">{{ level.value }}</option>
+          </select>
+        </div>
+        <div class="col-1 help-block"></div>
+      </div>
+
+      <hr />
+
+      <div class="text-right mr-1">
+        <button v-on:click="btnSubmitClick" type="button" class="btn btn-primary m-l-5">确 定</button>
+        <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
+      </div>
+
+    </template>
+    <template v-else>
+      <div class="text-center" style="margin-top: 100px">
+        <img class="mt-3" src="../assets/images/loading.gif" />
+        <p class="lead mt-3 text-nowrap">载入中，请稍后...</p>
+      </div>
+    </template>
+
+  </div>
+</body>
+
+</html>
+
+<script src="../assets/lib/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="../assets/lib/popper.min.js"></script>
+<script src="../assets/lib/bootstrap.min.js"></script>
+<script src="../assets/lib/lodash-4.17.10.min.js" type="text/javascript"></script>
+<script src="../assets/lib/layer-3.1.1/layer.js" type="text/javascript"></script>
+<script src="../assets/lib/sweetalert2-7.28.4.all.min.js" type="text/javascript"></script>
+<script src="../assets/lib/vue-2.5.16.min.js" type="text/javascript"></script>
+<script src="../assets/lib/vee-validate-2.1.0.js"></script>
+<script src="../assets/lib/vee-validate-locale-zh_CN-2.1.0.js"></script>
+<script src="../assets/lib/js.cookie-2.2.0.js"></script>
+<script src="../assets/js/utils.js" type="text/javascript"></script>
+<script src="../config.js" type="text/javascript"></script>
+
+<script type="text/javascript" src="../assets/lib/web-uploader/js/Q.js"></script>
+<script type="text/javascript" src="../assets/lib/web-uploader/js/Q.Uploader.js"></script>
+<script src="contentsLayerWord.js" type="text/javascript"></script>

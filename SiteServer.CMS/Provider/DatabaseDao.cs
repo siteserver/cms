@@ -824,16 +824,28 @@ SELECT * FROM (
             }
         }
 
-        public void AlterSystemTable(string tableName, List<TableColumn> tableColumns)
+        public void AlterSystemTable(string tableName, List<TableColumn> tableColumns, List<string> dropColumnNames = null)
         {
             var list = new List<string>();
 
             var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
             foreach (var tableColumn in tableColumns)
             {
-                if (StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName)) continue;
+                if (!StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName))
+                {
+                    list.Add(SqlUtils.GetAddColumnsSqlString(tableName, SqlUtils.GetColumnSqlString(tableColumn)));
+                }
+            }
 
-                list.Add(SqlUtils.GetAddColumnsSqlString(tableName, SqlUtils.GetColumnSqlString(tableColumn)));
+            if (dropColumnNames != null)
+            {
+                foreach (var columnName in columnNameList)
+                {
+                    if (StringUtils.ContainsIgnoreCase(dropColumnNames, columnName))
+                    {
+                        list.Add(SqlUtils.GetDropColumnsSqlString(tableName, columnName));
+                    }
+                }
             }
 
             if (list.Count > 0)
@@ -1070,7 +1082,7 @@ SELECT * FROM (
 
         private List<TableColumn> GetOracleColumns(string connectionString, string tableName)
         {
-            var owner = SqlUtils.GetConnectionStringUserId(connectionString).ToUpper();
+            var owner = WebConfigUtils.GetConnectionStringUserId(connectionString).ToUpper();
             tableName = tableName.ToUpper();
 
             var list = new List<TableColumn>();
@@ -1355,91 +1367,91 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
             return SqlUtils.ToTopSqlString(tableName, columns, whereString, orderByString, totalNum);
         }
 
-        public string GetSelectSqlString(string tableName, int startNum, int totalNum, string columns, string whereString, string orderByString)
-        {
-            return GetSelectSqlString(ConnectionString, tableName, startNum, totalNum, columns, whereString, orderByString);
-        }
+//        public string GetSelectSqlString(string tableName, int startNum, int totalNum, string columns, string whereString, string orderByString)
+//        {
+//            return GetSelectSqlString(ConnectionString, tableName, startNum, totalNum, columns, whereString, orderByString);
+//        }
 
-        public string GetSelectSqlString(string connectionString, string tableName, int startNum, int totalNum, string columns, string whereString, string orderByString)
-        {
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                connectionString = ConnectionString;
-            }
+//        public string GetSelectSqlString(string connectionString, string tableName, int startNum, int totalNum, string columns, string whereString, string orderByString)
+//        {
+//            if (string.IsNullOrEmpty(connectionString))
+//            {
+//                connectionString = ConnectionString;
+//            }
 
-            if (startNum <= 1)
-            {
-                return GetSelectSqlString(connectionString, tableName, totalNum, columns, whereString, orderByString);
-            }
+//            if (startNum <= 1)
+//            {
+//                return GetSelectSqlString(connectionString, tableName, totalNum, columns, whereString, orderByString);
+//            }
 
-            string countSqlString = $"SELECT Count(*) FROM {tableName} {whereString}";
-            var allCount = DataProvider.DatabaseDao.GetIntResult(connectionString, countSqlString);
-            if (totalNum == 0)
-            {
-                totalNum = allCount;
-            }
+//            string countSqlString = $"SELECT Count(*) FROM {tableName} {whereString}";
+//            var allCount = DataProvider.DatabaseDao.GetIntResult(connectionString, countSqlString);
+//            if (totalNum == 0)
+//            {
+//                totalNum = allCount;
+//            }
 
-            if (startNum > allCount) return string.Empty;
+//            if (startNum > allCount) return string.Empty;
 
-            var topNum = startNum + totalNum - 1;
+//            var topNum = startNum + totalNum - 1;
 
-            if (allCount < topNum)
-            {
-                totalNum = allCount - startNum + 1;
-                if (totalNum < 1)
-                {
-                    return GetSelectSqlString(connectionString, tableName, totalNum, columns, whereString, orderByString);
-                }
-            }
+//            if (allCount < topNum)
+//            {
+//                totalNum = allCount - startNum + 1;
+//                if (totalNum < 1)
+//                {
+//                    return GetSelectSqlString(connectionString, tableName, totalNum, columns, whereString, orderByString);
+//                }
+//            }
 
-            var orderByStringOpposite = GetOrderByStringOpposite(orderByString);
+//            var orderByStringOpposite = GetOrderByStringOpposite(orderByString);
 
-            var retval = string.Empty;
+//            var retval = string.Empty;
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-            {
-                retval = $@"
-SELECT {columns} FROM (
-    SELECT {columns} FROM (
-        SELECT {columns} FROM {tableName} {whereString} {orderByString} LIMIT {topNum}
-    ) AS tmp {orderByStringOpposite} LIMIT {totalNum}
-) AS tmp {orderByString}
-";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-            {
-                retval = $@"
-SELECT {columns}
-FROM (SELECT TOP {totalNum} {columns}
-        FROM (SELECT TOP {topNum} {columns}
-                FROM {tableName} {whereString} {orderByString}) tmp
-        {orderByStringOpposite}) tmp
-{orderByString}
-";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            {
-                retval = $@"
-SELECT {columns} FROM (
-    SELECT {columns} FROM (
-        SELECT {columns} FROM {tableName} {whereString} {orderByString} LIMIT {topNum}
-    ) AS tmp {orderByStringOpposite} LIMIT {totalNum}
-) AS tmp {orderByString}
-";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-            {
-                retval = $@"
-SELECT {columns} FROM (
-    SELECT {columns} FROM (
-        SELECT {columns} FROM {tableName} {whereString} {orderByString} LIMIT {topNum}
-    ) AS tmp {orderByStringOpposite} LIMIT {totalNum}
-) AS tmp {orderByString}
-";
-            }
+//            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+//            {
+//                retval = $@"
+//SELECT {columns} FROM (
+//    SELECT {columns} FROM (
+//        SELECT {columns} FROM {tableName} {whereString} {orderByString} LIMIT {topNum}
+//    ) AS tmp {orderByStringOpposite} LIMIT {totalNum}
+//) AS tmp {orderByString}
+//";
+//            }
+//            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+//            {
+//                retval = $@"
+//SELECT {columns}
+//FROM (SELECT TOP {totalNum} {columns}
+//        FROM (SELECT TOP {topNum} {columns}
+//                FROM {tableName} {whereString} {orderByString}) tmp
+//        {orderByStringOpposite}) tmp
+//{orderByString}
+//";
+//            }
+//            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+//            {
+//                retval = $@"
+//SELECT {columns} FROM (
+//    SELECT {columns} FROM (
+//        SELECT {columns} FROM {tableName} {whereString} {orderByString} LIMIT {topNum}
+//    ) AS tmp {orderByStringOpposite} LIMIT {totalNum}
+//) AS tmp {orderByString}
+//";
+//            }
+//            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+//            {
+//                retval = $@"
+//SELECT {columns} FROM (
+//    SELECT {columns} FROM (
+//        SELECT {columns} FROM {tableName} {whereString} {orderByString} LIMIT {topNum}
+//    ) AS tmp {orderByStringOpposite} LIMIT {totalNum}
+//) AS tmp {orderByString}
+//";
+//            }
 
-            return retval;
-        }
+//            return retval;
+//        }
 
         public string GetSelectSqlStringByQueryString(string connectionString, string queryString, int totalNum, string orderByString)
         {
@@ -1939,22 +1951,35 @@ SET IDENTITY_INSERT {tableName} OFF
                 orderSqlString = "ORDER BY Id DESC";
             }
 
+            if (offset == 0 && limit == 0)
+            {
+                return $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString}";
+            }
+
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
+                retval = limit == 0
+                    ? $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset}"
+                    : $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer && IsSqlServer2012)
             {
-                if (IsSqlServer2012)
-                {
-                    retval = $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
-                }
-                else if (offset == 0)
+                retval = limit == 0
+                    ? $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS"
+                    : $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer && !IsSqlServer2012)
+            {
+                if (offset == 0)
                 {
                     retval = $"SELECT TOP {limit} {columnNames} FROM {tableName} {whereSqlString} {orderSqlString}";
                 }
                 else
                 {
+                    if (limit == 0)
+                    {
+                        limit = DataProvider.DatabaseDao.GetIntResult($"SELECT COUNT(*) FROM {tableName} {whereSqlString}");
+                    }
                     orderSqlString = orderSqlString.ToUpper();
                     var orderSqlStringReverse = orderSqlString.Replace(" DESC", " DESC2");
                     orderSqlStringReverse = orderSqlStringReverse.Replace(" ASC", " DESC");
@@ -1970,11 +1995,15 @@ SELECT * FROM (
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
+                retval = limit == 0
+                    ? $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset}"
+                    : $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
+                retval = limit == 0
+                    ? $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS"
+                    : $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
             }
 
             return retval;

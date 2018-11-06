@@ -1,5 +1,4 @@
-﻿var $apiUrl = $apiConfig.apiUrl;
-var $api = new apiUtils.Api($apiUrl + '/pages/cms/contentsLayerView');
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerView');
 
 Object.defineProperty(Object.prototype, "getProp", {
   value: function (prop) {

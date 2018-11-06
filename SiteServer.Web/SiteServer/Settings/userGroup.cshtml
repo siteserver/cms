@@ -1,0 +1,101 @@
+﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
+<li class="nav-item">
+  <a class="nav-link" href="pageUser.aspx">用户管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link active" href="userGroup.cshtml">用户组管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="userStyle.cshtml">用户字段</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="userConfig.cshtml">用户设置</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="userHome.cshtml">用户中心设置</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="userMenu.cshtml">用户中心菜单</a>
+</li>
+}
+
+<template v-if="pageType === 'add'">
+  <div class="header-title">
+    {{ item.id !== -1 ? '修改用户组' : '添加用户组' }}
+  </div>
+
+  <div class="form-group">
+    <label class="col-form-label">
+      名称
+      <small v-show="errors.has('groupName')" class="text-danger">{{
+        errors.first('groupName') }}</small>
+    </label>
+    <input v-model="item.groupName" :disabled="item.id === 0" type="text" class="form-control" name="groupName"
+      data-vv-as="名称" v-validate="'required'" :class="{'is-invalid': errors.has('groupName') }" />
+  </div>
+
+  <div class="form-group">
+    <label class="col-form-label">
+      关联管理员
+    </label>
+    <select v-model="item.adminName" class="form-control">
+      <option v-for="adminName in adminNames" selected="adminName === item.adminName" v-bind:value="adminName">
+        {{ (adminName ? adminName : '<不设置>') }}
+      </option>
+    </select>
+    <small class="form-text text-muted">
+      关联管理员定义用户组的投稿权限，用户组的投稿权限将被限制在此管理员的权限范围内
+    </small>
+  </div>
+
+  <hr />
+
+  <button class="btn btn-primary m-r-5" v-on:click="btnSubmitClick">确 定</button>
+  <button class="btn" v-on:click="btnCancelClick">返 回</button>
+
+</template>
+<template v-else>
+
+  <p class="text-muted font-13 m-b-25">
+    用户组的投稿范围为关联管理员拥有权限的站点及栏目，如果不设置关联管理员则用户组将被禁止投稿。
+  </p>
+
+  <div class="table-responsive">
+    <table class="table tablesaw table-hover m-0">
+      <thead>
+        <tr>
+          <th>用户组</th>
+          <th>关联管理员 </th>
+          <th class="text-center">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr v-for="item in items">
+          <td>
+            {{ item.groupName }}
+          </td>
+          <td>
+            {{ item.adminName }}
+          </td>
+          <td class="text-center">
+            <a href="javascript:;" v-on:click="btnEditClick(item)">编辑</a>
+            <a v-if="item.id > 0" class="text-danger ml-2" href="javascript:;" v-on:click="btnDeleteClick(item)">删除</a>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <hr />
+
+  <a href="javascript:;" v-on:click="btnAddClick" class="btn btn-sm btn-outline-primary pl-3 pr-3">
+    <i class="ion-plus"></i>
+    新增用户组
+  </a>
+
+</template>
+
+@section Scripts{
+<script src="userGroup.js" type="text/javascript"></script> }

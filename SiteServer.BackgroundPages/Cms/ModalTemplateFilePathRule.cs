@@ -11,18 +11,24 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalTemplateFilePathRule : BasePageCms
     {
-        public PlaceHolder PhFilePath;
+        public PlaceHolder PhChannel;
+        public TextBox TbLinkUrl;
+        public DropDownList DdlLinkType;
         public TextBox TbFilePath;
+        
         public TextBox TbChannelFilePathRule;
         public TextBox TbContentFilePathRule;
         public Button BtnCreateChannelRule;
         public Button BtnCreateContentRule;
 
-		private int _channelId;
+        public RadioButtonList RblIsChannelCreatable;
+        public RadioButtonList RblIsContentCreatable;
+
+        private int _channelId;
 
         public static string GetOpenWindowString(int siteId, int channelId)
         {
-            return LayerUtils.GetOpenScript("页面命名规则",
+            return LayerUtils.GetOpenScript("页面生成规则",
                 PageUtils.GetCmsUrl(siteId, nameof(ModalTemplateFilePathRule), new NameValueCollection
                 {
                     {"channelId", channelId.ToString()}
@@ -39,23 +45,28 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
-            var linkType = ELinkTypeUtils.GetEnumType(channelInfo.LinkType);
-            if (channelInfo.ParentId == 0 || linkType == ELinkType.LinkToFirstChannel || linkType == ELinkType.LinkToFirstContent || linkType == ELinkType.LinkToLastAddChannel || linkType == ELinkType.NoLink)
+            if (SiteId == _channelId)
             {
-                PhFilePath.Visible = false;
+                PhChannel.Visible = false;
+            }
+            else
+            {
+                TbLinkUrl.Text = channelInfo.LinkUrl;
+
+                ELinkTypeUtils.AddListItems(DdlLinkType);
+                ControlUtils.SelectSingleItem(DdlLinkType, channelInfo.LinkType);
+
+                TbFilePath.Text = string.IsNullOrEmpty(channelInfo.FilePath) ? PageUtility.GetInputChannelUrl(SiteInfo, channelInfo, false) : channelInfo.FilePath;
             }
 
-            var showPopWinString = ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, true, TbChannelFilePathRule.ClientID);
-            BtnCreateChannelRule.Attributes.Add("onclick", showPopWinString);
-
-            showPopWinString = ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, false, TbContentFilePathRule.ClientID);
-            BtnCreateContentRule.Attributes.Add("onclick", showPopWinString);
-
-            TbFilePath.Text = string.IsNullOrEmpty(channelInfo.FilePath) ? PageUtility.GetInputChannelUrl(SiteInfo, channelInfo, false) : channelInfo.FilePath;
-
             TbChannelFilePathRule.Text = string.IsNullOrEmpty(channelInfo.ChannelFilePathRule) ? PathUtility.GetChannelFilePathRule(SiteInfo, _channelId) : channelInfo.ChannelFilePathRule;
+            BtnCreateChannelRule.Attributes.Add("onclick", ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, true, TbChannelFilePathRule.ClientID));
 
             TbContentFilePathRule.Text = string.IsNullOrEmpty(channelInfo.ContentFilePathRule) ? PathUtility.GetContentFilePathRule(SiteInfo, _channelId) : channelInfo.ContentFilePathRule;
+            BtnCreateContentRule.Attributes.Add("onclick", ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, false, TbContentFilePathRule.ClientID));
+
+            ControlUtils.SelectSingleItem(RblIsChannelCreatable, channelInfo.Additional.IsChannelCreatable.ToString());
+            ControlUtils.SelectSingleItem(RblIsContentCreatable, channelInfo.Additional.IsContentCreatable.ToString());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -66,10 +77,12 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
 
-                var filePath = channelInfo.FilePath;
-
-                if (PhFilePath.Visible)
+                if (PhChannel.Visible)
                 {
+                    channelInfo.LinkUrl = TbLinkUrl.Text;
+                    channelInfo.LinkType = DdlLinkType.SelectedValue;
+
+                    var filePath = channelInfo.FilePath;
                     TbFilePath.Text = TbFilePath.Text.Trim();
                     if (!string.IsNullOrEmpty(TbFilePath.Text) && !StringUtils.EqualsIgnoreCase(filePath, TbFilePath.Text))
                     {
@@ -91,6 +104,11 @@ namespace SiteServer.BackgroundPages.Cms
                             FailMessage("栏目修改失败，栏目页面路径已存在！");
                             return;
                         }
+                    }
+
+                    if (TbFilePath.Text != PageUtility.GetInputChannelUrl(SiteInfo, channelInfo, false))
+                    {
+                        channelInfo.FilePath = TbFilePath.Text;
                     }
                 }
 
@@ -123,11 +141,7 @@ namespace SiteServer.BackgroundPages.Cms
                         return;
                     }
                 }
-
-                if (TbFilePath.Text != PageUtility.GetInputChannelUrl(SiteInfo, channelInfo, false))
-                {
-                    channelInfo.FilePath = TbFilePath.Text;
-                }
+                
                 if (TbChannelFilePathRule.Text != PathUtility.GetChannelFilePathRule(SiteInfo, _channelId))
                 {
                     channelInfo.ChannelFilePathRule = TbChannelFilePathRule.Text;
@@ -137,11 +151,14 @@ namespace SiteServer.BackgroundPages.Cms
                     channelInfo.ContentFilePathRule = TbContentFilePathRule.Text;
                 }
 
+                channelInfo.Additional.IsChannelCreatable = TranslateUtils.ToBool(RblIsChannelCreatable.SelectedValue);
+                channelInfo.Additional.IsContentCreatable = TranslateUtils.ToBool(RblIsContentCreatable.SelectedValue);
+
                 DataProvider.ChannelDao.Update(channelInfo);
 
                 CreateManager.CreateChannel(SiteId, _channelId);
 
-                AuthRequest.AddSiteLog(SiteId, _channelId, 0, "设置页面命名规则", $"栏目:{channelInfo.ChannelName}");
+                AuthRequest.AddSiteLog(SiteId, _channelId, 0, "设置页面生成规则", $"栏目:{channelInfo.ChannelName}");
 
                 isSuccess = true;
             }

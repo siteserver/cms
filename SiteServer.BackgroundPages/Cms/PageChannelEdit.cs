@@ -12,7 +12,7 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -258,8 +258,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName, relatedIdentities);
+                var styleInfoList = TableStyleManager.GetChannelStyleInfoList(nodeInfo);
                 var extendedAttributes = BackgroundInputTypeParser.SaveAttributes(SiteInfo, styleInfoList, Request.Form, null);
                 nodeInfo.Additional.Load(extendedAttributes);
 

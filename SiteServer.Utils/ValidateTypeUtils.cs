@@ -4,7 +4,7 @@ using SiteServer.Plugin;
 
 namespace SiteServer.Utils
 {
-	public class ValidateTypeUtils
+	public static class ValidateTypeUtils
 	{
         public static string GetText(ValidateType type)
         {

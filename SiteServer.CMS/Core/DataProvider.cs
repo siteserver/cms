@@ -66,6 +66,9 @@ namespace SiteServer.CMS.Core
         private static ContentGroupDao _contentGroupDao;
         public static ContentGroupDao ContentGroupDao => _contentGroupDao ?? (_contentGroupDao = new ContentGroupDao());
 
+        private static ContentTagDao _contentTagDao;
+        public static ContentTagDao ContentTagDao => _contentTagDao ?? (_contentTagDao = new ContentTagDao());
+
         private static DatabaseDao _databaseDao;
         public static DatabaseDao DatabaseDao => _databaseDao ?? (_databaseDao = new DatabaseDao());
 
@@ -138,8 +141,14 @@ namespace SiteServer.CMS.Core
         private static UserDao _userDao;
         public static UserDao UserDao => _userDao ?? (_userDao = new UserDao());
 
+        private static UserGroupDao _userGroupDao;
+        public static UserGroupDao UserGroupDao => _userGroupDao ?? (_userGroupDao = new UserGroupDao());
+
         private static UserLogDao _userLogDao;
         public static UserLogDao UserLogDao => _userLogDao ?? (_userLogDao = new UserLogDao());
+
+        private static UserMenuDao _userMenuDao;
+        public static UserMenuDao UserMenuDao => _userMenuDao ?? (_userMenuDao = new UserMenuDao());
 
         public static void Reset()
         {
@@ -155,6 +164,7 @@ namespace SiteServer.CMS.Core
             _contentCheckDao = null;
             _contentDao = null;
             _contentGroupDao = null;
+            _contentTagDao = null;
             _databaseDao = null;
             _dbCacheDao = null;
             _departmentDao = null;
@@ -179,7 +189,9 @@ namespace SiteServer.CMS.Core
             _templateLogDao = null;
             _templateMatchDao = null;
             _userDao = null;
+            _userGroupDao = null;
             _userLogDao = null;
+            _userMenuDao = null;
         }
 
         public static List<DataProviderBase> AllProviders => new List<DataProviderBase>
@@ -194,6 +206,7 @@ namespace SiteServer.CMS.Core
             ContentCheckDao,
             ContentDao,
             ContentGroupDao,
+            ContentTagDao,
             DatabaseDao,
             DbCacheDao,
             DepartmentDao,
@@ -218,7 +231,9 @@ namespace SiteServer.CMS.Core
             TemplateLogDao,
             TemplateMatchDao,
             UserDao,
-            UserLogDao
+            UserGroupDao,
+            UserLogDao,
+            UserMenuDao
         };
     }
 }

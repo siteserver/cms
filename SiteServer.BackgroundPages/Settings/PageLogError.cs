@@ -13,7 +13,8 @@ namespace SiteServer.BackgroundPages.Settings
 {
 	public class PageLogError : BasePage
 	{
-	    public DropDownList DdlPluginId;
+	    public DropDownList DdlCategory;
+        public DropDownList DdlPluginId;
         public DateTimeTextBox TbDateFrom;
         public DateTimeTextBox TbDateTo;
         public TextBox TbKeyword;
@@ -63,8 +64,8 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
-            SpContents.SelectCommand = DataProvider.ErrorLogDao.GetSelectCommend(AuthRequest.GetQueryString("PluginId"), AuthRequest.GetQueryString("Keyword"),
-                    AuthRequest.GetQueryString("DateFrom"), AuthRequest.GetQueryString("DateTo"));
+            SpContents.SelectCommand = DataProvider.ErrorLogDao.GetSelectCommend(AuthRequest.GetQueryString("category"), AuthRequest.GetQueryString("pluginId"), AuthRequest.GetQueryString("keyword"),
+                    AuthRequest.GetQueryString("dateFrom"), AuthRequest.GetQueryString("dateTo"));
 
             SpContents.SortField = nameof(ErrorLogInfo.Id);
             SpContents.SortMode = SortMode.DESC;
@@ -72,7 +73,13 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            DdlPluginId.Items.Add(new ListItem("全部错误", string.Empty));
+            DdlCategory.Items.Add(new ListItem("全部", string.Empty));
+            foreach (var category in LogUtils.AllCategoryList.Value)
+            {
+                DdlCategory.Items.Add(new ListItem(category.Value, category.Key));
+            }
+
+            DdlPluginId.Items.Add(new ListItem("全部", string.Empty));
             foreach (var pluginInfo in PluginManager.AllPluginInfoList)
             {
                 DdlPluginId.Items.Add(new ListItem(pluginInfo.Id, pluginInfo.Id));
@@ -80,12 +87,13 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Log);
 
-            if (AuthRequest.IsQueryExists("Keyword"))
+            if (AuthRequest.IsQueryExists("keyword"))
             {
-                ControlUtils.SelectSingleItem(DdlPluginId, AuthRequest.GetQueryString("PluginId"));
-                TbKeyword.Text = AuthRequest.GetQueryString("Keyword");
-                TbDateFrom.Text = AuthRequest.GetQueryString("DateFrom");
-                TbDateTo.Text = AuthRequest.GetQueryString("DateTo");
+                ControlUtils.SelectSingleItem(DdlCategory, AuthRequest.GetQueryString("category"));
+                ControlUtils.SelectSingleItem(DdlPluginId, AuthRequest.GetQueryString("pluginId"));
+                TbKeyword.Text = AuthRequest.GetQueryString("keyword");
+                TbDateFrom.Text = AuthRequest.GetQueryString("dateFrom");
+                TbDateTo.Text = AuthRequest.GetQueryString("dateTo");
             }
 
             BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
@@ -153,10 +161,11 @@ namespace SiteServer.BackgroundPages.Settings
 	    {
 	        PageUtils.Redirect(PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
 	        {
-	            {"PluginId", DdlPluginId.SelectedValue},
-	            {"Keyword", TbKeyword.Text},
-	            {"DateFrom", TbDateFrom.Text},
-	            {"DateTo", TbDateTo.Text}
+	            {"category", DdlCategory.SelectedValue},
+	            {"pluginId", DdlPluginId.SelectedValue},
+	            {"keyword", TbKeyword.Text},
+	            {"dateFrom", TbDateFrom.Text},
+	            {"dateTo", TbDateTo.Text}
 	        }));
 	    }
 	}

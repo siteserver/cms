@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.BackgroundPages.Account
 {
@@ -27,11 +28,13 @@ namespace SiteServer.BackgroundPages.Account
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            AuthRequest.AdminInfo.DisplayName = TbDisplayName.Text;
-            AuthRequest.AdminInfo.Email = TbEmail.Text;
-            AuthRequest.AdminInfo.Mobile = TbMobile.Text;
+            var adminInfo = AdminManager.GetAdminInfoByUserId(AuthRequest.AdminId);
 
-            DataProvider.AdministratorDao.Update(AuthRequest.AdminInfo);
+            adminInfo.DisplayName = TbDisplayName.Text;
+            adminInfo.Email = TbEmail.Text;
+            adminInfo.Mobile = TbMobile.Text;
+
+            DataProvider.AdministratorDao.Update(adminInfo);
 
             SuccessMessage("资料更改成功");
         }

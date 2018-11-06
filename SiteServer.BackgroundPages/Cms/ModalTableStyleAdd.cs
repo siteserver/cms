@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int tableStyleId, List<int> relatedIdentities, string tableName, string attributeName, string redirectUrl)
         {
-            return LayerUtils.GetOpenScript("修改显示样式", PageUtils.GetCmsUrl(siteId, nameof(ModalTableStyleAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript(string.IsNullOrEmpty(attributeName) ? "新增字段" : "修改字段", PageUtils.GetCmsUrl(siteId, nameof(ModalTableStyleAdd), new NameValueCollection
             {
                 {"TableStyleID", tableStyleId.ToString()},
                 {"RelatedIdentities", TranslateUtils.ObjectCollectionToString(relatedIdentities)},
@@ -311,11 +311,11 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfo.Additional.CustomizeLeft = TbCustomizeLeft.Text;
             _styleInfo.Additional.CustomizeRight = TbCustomizeRight.Text;
 
-            List<TableStyleItemInfo> styleItems = null;
+            _styleInfo.StyleItems = new List<TableStyleItemInfo>();
 
             if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
-                styleItems = new List<TableStyleItemInfo>();
+                
 
                 var isRapid = TranslateUtils.ToBool(DdlIsRapid.SelectedValue);
                 if (isRapid)
@@ -324,7 +324,7 @@ namespace SiteServer.BackgroundPages.Cms
                     foreach (var rapidValue in rapidValues)
                     {
                         var itemInfo = new TableStyleItemInfo(0, _styleInfo.Id, rapidValue, rapidValue, false);
-                        styleItems.Add(itemInfo);
+                        _styleInfo.StyleItems.Add(itemInfo);
                     }
                 }
                 else
@@ -344,7 +344,7 @@ namespace SiteServer.BackgroundPages.Cms
                         if (cbIsSelected.Checked) isHasSelected = true;
 
                         var itemInfo = new TableStyleItemInfo(0, _styleInfo.Id, tbTitle.Text, tbValue.Text, cbIsSelected.Checked);
-                        styleItems.Add(itemInfo);
+                        _styleInfo.StyleItems.Add(itemInfo);
                     }
                 }
             }
@@ -352,7 +352,6 @@ namespace SiteServer.BackgroundPages.Cms
             try
             {
                 DataProvider.TableStyleDao.Update(_styleInfo);
-                DataProvider.TableStyleItemDao.DeleteAndInsertStyleItems(_styleInfo.Id, styleItems);
 
                 if (SiteId > 0)
                 {

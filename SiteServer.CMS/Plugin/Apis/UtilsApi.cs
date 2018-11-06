@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SiteServer.CMS.Api;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Plugin;
@@ -69,14 +70,24 @@ namespace SiteServer.CMS.Plugin.Apis
             return PathUtils.GetTemporaryFilesPath(relatedPath);
         }
 
-        public string GetRootUrl(string relatedUrl)
+        public string GetRootUrl(string relatedUrl = "")
         {
             return PageUtils.GetRootUrl(relatedUrl);
         }
 
-        public string GetAdminDirectoryUrl(string relatedUrl)
+        public string GetAdminUrl(string relatedUrl = "")
         {
-            return PageUtils.GetAdminDirectoryUrl(relatedUrl);
+            return PageUtils.GetAdminUrl(relatedUrl);
+        }
+
+        public string GetHomeUrl(string relatedUrl = "")
+        {
+            return PageUtils.GetHomeUrl(relatedUrl);
+        }
+
+        public string GetApiUrl(string relatedUrl = "")
+        {
+            return ApiManager.GetApiUrl(relatedUrl);
         }
 
         public void CreateZip(string zipFilePath, string directoryPath)

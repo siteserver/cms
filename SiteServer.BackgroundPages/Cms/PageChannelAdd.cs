@@ -12,7 +12,7 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -86,7 +86,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                ChannelManager.AddListItems(DdlParentChannelId.Items, SiteInfo, true, true, AuthRequest.AdminPermissions);
+                ChannelManager.AddListItems(DdlParentChannelId.Items, SiteInfo, true, true, AuthRequest.AdminPermissionsImpl);
                 ControlUtils.SelectSingleItem(DdlParentChannelId, _channelId.ToString());
 
                 DdlContentModelPluginId.Items.Add(new ListItem("<默认>", string.Empty));
@@ -259,9 +259,9 @@ namespace SiteServer.BackgroundPages.Cms
                         return;
                     }
                 }
-                
-                var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.ChannelDao.TableName, relatedIdentities);
+
+                var parentNodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+                var styleInfoList = TableStyleManager.GetChannelStyleInfoList(parentNodeInfo);
                 var extendedAttributes = BackgroundInputTypeParser.SaveAttributes(SiteInfo, styleInfoList, Request.Form, null);
                 nodeInfo.Additional.Load(extendedAttributes);
                 //foreach (string key in attributes)

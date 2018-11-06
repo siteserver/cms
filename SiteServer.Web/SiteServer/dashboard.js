@@ -1,5 +1,4 @@
-var $apiUrl = $apiConfig.apiUrl;
-var $api = new apiUtils.Api($apiUrl + "/pages/dashboard");
+var $api = new apiUtils.Api(apiUrl + "/pages/dashboard");
 var $routeUnCheckedList = "unCheckedList";
 
 new Vue({
@@ -13,10 +12,10 @@ new Vue({
     unCheckedList: null,
     unCheckedListTotalCount: 0
   },
-  created: function() {
+  created: function () {
     var $this = this;
 
-    $api.get(null, function(err, res) {
+    $api.get(null, function (err, res) {
       this.pageLoad = true;
       if (err || !res || !res.value) return;
 
@@ -28,12 +27,12 @@ new Vue({
     });
   },
   methods: {
-    getUnCheckedList: function() {
+    getUnCheckedList: function () {
       var $this = this;
       this.pageLoad = true;
       $api.get(
         null,
-        function(err, res) {
+        function (err, res) {
           if (err || !res || !res.value) return;
 
           $this.unCheckedList = res.value;

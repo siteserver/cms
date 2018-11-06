@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Account
@@ -25,12 +26,12 @@ namespace SiteServer.BackgroundPages.Account
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var adminInfo = DataProvider.AdministratorDao.GetByUserName(AuthRequest.AdminName);
+            var adminInfo = AdminManager.GetAdminInfoByUserId(AuthRequest.AdminId);
 
             if (DataProvider.AdministratorDao.CheckPassword(TbCurrentPassword.Text, false, adminInfo.Password, EPasswordFormatUtils.GetEnumType(adminInfo.PasswordFormat), adminInfo.PasswordSalt))
             {
                 string errorMessage;
-                if (DataProvider.AdministratorDao.ChangePassword(AuthRequest.AdminName, TbNewPassword.Text, out errorMessage))
+                if (DataProvider.AdministratorDao.ChangePassword(adminInfo, TbNewPassword.Text, out errorMessage))
                 {
                     SuccessMessage("密码更改成功");
                 }

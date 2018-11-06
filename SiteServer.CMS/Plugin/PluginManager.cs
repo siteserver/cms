@@ -9,7 +9,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin.Apis;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin
@@ -26,7 +26,6 @@ namespace SiteServer.CMS.Plugin
 
             private static SortedList<string, PluginInstance> Load()
             {
-                Environment = new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath);
                 var dict = new SortedList<string, PluginInstance>();
 
                 Thread.Sleep(2000);
@@ -96,7 +95,9 @@ namespace SiteServer.CMS.Plugin
                     //var assembly = Assembly.Load(File.ReadAllBytes(PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "Bin", PathUtils.GetFileName(metadata.ExecuteFilePath))));
                     var assembly = Assembly.Load(metadata.Id);  // load the dll from bin directory
 
-                    var type = assembly.GetTypes().First(o => o.IsClass && !o.IsAbstract && o.IsSubclassOf(typeof(PluginBase)));
+                    var type = assembly.GetExportedTypes().FirstOrDefault(exportedType => typeof(PluginBase).IsAssignableFrom(exportedType));
+
+                    //var type = assembly.GetTypes().First(o => o.IsClass && !o.IsAbstract && o.IsSubclassOf(typeof(PluginBase)));
 
                     return ActiveAndAdd(metadata, type);
                 }
@@ -136,24 +137,14 @@ namespace SiteServer.CMS.Plugin
             {
                 if (metadata == null || type == null) return null;
 
+                if (StringUtils.EqualsIgnoreCase(metadata.Id, "SS.Home")) return null;
+
                 var s = Stopwatch.StartNew();
 
                 //var plugin = (IPlugin)Activator.CreateInstance(type);
 
                 var plugin = (PluginBase)Activator.CreateInstance(type);
-                plugin.Initialize(metadata, Environment, new ApiCollectionImpl
-                {
-                    AdminApi = AdminApi.Instance,
-                    ConfigApi = new ConfigApi(metadata),
-                    ContentApi = ContentApi.Instance,
-                    DatabaseApi = DataProvider.DatabaseApi,
-                    ChannelApi = ChannelApi.Instance,
-                    ParseApi = ParseApi.Instance,
-                    PluginApi = new PluginApi(metadata),
-                    SiteApi = SiteApi.Instance,
-                    UserApi = UserApi.Instance,
-                    UtilsApi = UtilsApi.Instance
-                });
+                plugin.Initialize(metadata);
 
                 var service = new ServiceImpl(metadata);
 
@@ -189,14 +180,26 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        public static EnvironmentImpl Environment { get; private set; }
-
         private static List<PluginInstance> _pluginInfoListRunnable;
 
         public static void LoadPlugins(string applicationPhysicalPath)
         {
             WebConfigUtils.Load(applicationPhysicalPath);
             _pluginInfoListRunnable = PluginInfoListRunnable;
+
+            Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath), new ApiCollectionImpl
+            {
+                AdminApi = AdminApi.Instance,
+                ConfigApi = ConfigApi.Instance,
+                ContentApi = ContentApi.Instance,
+                DatabaseApi = DataProvider.DatabaseApi,
+                ChannelApi = ChannelApi.Instance,
+                ParseApi = ParseApi.Instance,
+                PluginApi = PluginApi.Instance,
+                SiteApi = SiteApi.Instance,
+                UserApi = UserApi.Instance,
+                UtilsApi = UtilsApi.Instance
+            });
         }
 
         public static void ClearCache()
@@ -273,12 +276,13 @@ namespace SiteServer.CMS.Plugin
 
             var dict = PluginManagerCache.GetPluginSortedList();
 
-            PluginInstance pluginInfo;
-            if (dict.TryGetValue(pluginId, out pluginInfo))
-            {
-                return pluginInfo;
-            }
-            return null;
+            return dict.TryGetValue(pluginId, out var pluginInfo) ? pluginInfo : null;
+        }
+
+        public static PluginInstance GetPluginInfo<T>() where T : PluginBase
+        {
+            var dict = PluginManagerCache.GetPluginSortedList();
+            return dict.Values.Where(instance => instance.Plugin is T).FirstOrDefault(instance => instance.IsRunnable && !instance.IsDisabled);
         }
 
         public static Dictionary<string, string> GetPluginIdAndVersionDict()

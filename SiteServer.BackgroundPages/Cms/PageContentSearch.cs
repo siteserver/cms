@@ -46,11 +46,10 @@ namespace SiteServer.BackgroundPages.Cms
         private bool _isAdminOnly;
         private int _channelId;
         private ChannelInfo _channelInfo;
-        private List<int> _relatedIdentities;
         private List<TableStyleInfo> _styleInfoList;
         private StringCollection _attributesOfDisplay;
         private List<TableStyleInfo> _allStyleInfoList;
-        private Dictionary<string, List<Plugin.Menu>> _pluginMenus;
+        private List<string> _pluginIds;
         private Dictionary<string, Dictionary<string, Func<IContentContext, string>>> _pluginColumns;
         private bool _isEdit;
         private readonly Dictionary<string, string> _nameValueCacheDict = new Dictionary<string, string>();
@@ -77,13 +76,12 @@ namespace SiteServer.BackgroundPages.Cms
 
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
             var tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
-            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
-            _styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, _relatedIdentities);
+            _styleInfoList = TableStyleManager.GetContentStyleInfoList(SiteInfo, _channelInfo);
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplay(SiteId, _channelId));
             _allStyleInfoList = ContentUtility.GetAllTableStyleInfoList(_styleInfoList);
-            _pluginMenus = PluginContentManager.GetContentMenus(_channelInfo);
-            _pluginColumns = PluginContentManager.GetContentColumns(_channelInfo);
-            _isEdit = TextUtility.IsEdit(SiteInfo, _channelId, AuthRequest.AdminPermissions);
+            _pluginIds = PluginContentManager.GetContentPluginIds(_channelInfo);
+            _pluginColumns = PluginContentManager.GetContentColumns(_pluginIds);
+            _isEdit = TextUtility.IsEdit(SiteInfo, _channelId, AuthRequest.AdminPermissionsImpl);
 
             var state = AuthRequest.IsQueryExists("state") ? AuthRequest.GetQueryInt("state") : CheckManager.LevelInt.All;
             var searchType = AuthRequest.IsQueryExists("searchType") ? AuthRequest.GetQueryString("searchType") : ContentAttribute.Title;
@@ -93,10 +91,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             var checkedLevel = 5;
             var isChecked = true;
-            foreach (var owningChannelId in AuthRequest.AdminPermissions.OwningChannelIdList)
+            foreach (var owningChannelId in AuthRequest.AdminPermissionsImpl.ChannelIdList)
             {
                 int checkedLevelByChannelId;
-                var isCheckedByChannelId = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissions, SiteInfo, owningChannelId, out checkedLevelByChannelId);
+                var isCheckedByChannelId = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, owningChannelId, out checkedLevelByChannelId);
                 if (checkedLevel > checkedLevelByChannelId)
                 {
                     checkedLevel = checkedLevelByChannelId;
@@ -113,7 +111,7 @@ namespace SiteServer.BackgroundPages.Cms
             var whereString = DataProvider.ContentDao.GetPagerWhereSqlString(SiteInfo, _channelInfo,
                 searchType, keyword,
                 dateFrom, dateTo, state, _isCheckOnly, false, _isTrashOnly, _isWritingOnly, _isAdminOnly,
-                AuthRequest.AdminPermissions,
+                AuthRequest.AdminPermissionsImpl,
                 allAttributeNameList);
 
             PgContents.Param = new PagerParam
@@ -157,7 +155,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, true, true, AuthRequest.AdminPermissions);
+            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, true, true, AuthRequest.AdminPermissionsImpl);
 
             if (_isCheckOnly)
             {
@@ -268,10 +266,18 @@ namespace SiteServer.BackgroundPages.Cms
 
             ltlTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
 
-            var specialHtml = _isTrashOnly
-                ? DateUtils.GetDateAndTimeString(contentInfo.LastEditDate)
-                : TextUtility.GetCommandsHtml(SiteInfo, _pluginMenus, contentInfo, PageUrl,
-                    AuthRequest.AdminName, _isEdit);
+            var specialHtml = string.Empty;
+            
+            if (_isTrashOnly)
+            {
+                specialHtml = DateUtils.GetDateAndTimeString(contentInfo.LastEditDate);
+            }
+            else
+            {
+                var pluginMenus = PluginMenuManager.GetContentMenus(_pluginIds, contentInfo);
+                specialHtml = TextUtility.GetCommandsHtml(SiteInfo, pluginMenus, contentInfo, PageUrl,
+                        AuthRequest.AdminName, _isEdit);
+            }
 
             ltlColumns.Text = $@"
 {TextUtility.GetColumnsHtml(_nameValueCacheDict, SiteInfo, contentInfo, _attributesOfDisplay, _allStyleInfoList, _pluginColumns)}

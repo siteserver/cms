@@ -30,24 +30,23 @@ namespace SiteServer.BackgroundPages.Cms
 
         private ChannelInfo _channelInfo;
         private string _tableName;
-        private List<int> _relatedIdentities;
         private List<TableStyleInfo> _styleInfoList;
         private StringCollection _attributesOfDisplay;
         private List<TableStyleInfo> _allStyleInfoList;
-        private Dictionary<string, List<Plugin.Menu>> _pluginMenus;
+        private List<string> _pluginIds;
         private Dictionary<string, Dictionary<string, Func<IContentContext, string>>> _pluginColumns;
         private bool _isEdit;
         private readonly Dictionary<string, string> _nameValueCacheDict = new Dictionary<string, string>();
 
         protected override bool IsSinglePage => true;
 
-        //public static string GetRedirectUrl(int siteId, int channelId)
-        //{
-        //    return PageUtils.GetCmsUrl(siteId, nameof(PageContent), new NameValueCollection
-        //    {
-        //        {"channelId", channelId.ToString()}
-        //    });
-        //}
+        public static string GetRedirectUrl(int siteId, int channelId)
+        {
+            return PageUtils.GetCmsUrl(siteId, nameof(PageContent), new NameValueCollection
+            {
+                {"channelId", channelId.ToString()}
+            });
+        }
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -55,16 +54,15 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "channelId");
             var channelId = AuthRequest.GetQueryInt("channelId");
-            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, channelId);
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             _tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
-            _styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);
+            _styleInfoList = TableStyleManager.GetContentStyleInfoList(SiteInfo, _channelInfo);
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplay(SiteId, channelId));
             _allStyleInfoList = ContentUtility.GetAllTableStyleInfoList(_styleInfoList);
 
-            _pluginMenus = PluginContentManager.GetContentMenus(_channelInfo);
-            _pluginColumns = PluginContentManager.GetContentColumns(_channelInfo);
-            _isEdit = TextUtility.IsEdit(SiteInfo, channelId, AuthRequest.AdminPermissions);
+            _pluginIds = PluginContentManager.GetContentPluginIds(_channelInfo);
+            _pluginColumns = PluginContentManager.GetContentColumns(_pluginIds);
+            _isEdit = TextUtility.IsEdit(SiteInfo, channelId, AuthRequest.AdminPermissionsImpl);
 
             if (_channelInfo.Additional.IsPreviewContentsExists)
             {
@@ -94,16 +92,16 @@ namespace SiteServer.BackgroundPages.Cms
                 TableName = _tableName,
                 PageSize = SiteInfo.Additional.PageSize,
                 Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
-                OrderSqlString = DataProvider.ContentDao.GetCacheOrderString(_channelInfo),
+                OrderSqlString = DataProvider.ContentDao.GetOrderString(_channelInfo, string.Empty),
                 ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allAttributeNameList)
             };
 
-            var administratorName = AuthRequest.AdminPermissions.IsViewContentOnlySelf(SiteId, channelId) ? AuthRequest.AdminName : string.Empty;
+            var administratorName = AuthRequest.AdminPermissionsImpl.IsViewContentOnlySelf(SiteId, channelId) ? AuthRequest.AdminName : string.Empty;
 
             if (AuthRequest.IsQueryExists("searchType"))
             {
                 pagerParam.WhereSqlString = DataProvider.ContentDao.GetPagerWhereSqlString(SiteInfo, _channelInfo, AuthRequest.GetQueryString("searchType"), AuthRequest.GetQueryString("keyword"),
-                    AuthRequest.GetQueryString("dateFrom"), string.Empty, CheckManager.LevelInt.All, false, true, false, false, false, AuthRequest.AdminPermissions, allAttributeNameList);
+                    AuthRequest.GetQueryString("dateFrom"), string.Empty, CheckManager.LevelInt.All, false, true, false, false, false, AuthRequest.AdminPermissionsImpl, allAttributeNameList);
                 pagerParam.TotalCount =
                     DataProvider.DatabaseDao.GetPageTotalCount(_tableName, pagerParam.WhereSqlString);
             }
@@ -120,9 +118,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             PgContents.DataBind();
 
-            var btnHtmls = WebUtils.GetContentCommands(AuthRequest.AdminPermissions, SiteInfo, _channelInfo, PageUrl);
+            var btnHtmls = WebUtils.GetContentCommands(AuthRequest.AdminPermissionsImpl, SiteInfo, _channelInfo, PageUrl);
             var btnDropDownsHtml =
-                WebUtils.GetContentMoreCommands(AuthRequest.AdminPermissions, SiteInfo, _channelInfo, PageUrl);
+                WebUtils.GetContentMoreCommands(AuthRequest.AdminPermissionsImpl, SiteInfo, _channelInfo, PageUrl);
             LtlButtonsHead.Text = GetButtonsHtml(true, btnHtmls, btnDropDownsHtml);
             if (pagerParam.TotalCount > 10)
             {
@@ -198,7 +196,8 @@ $(document).ready(function() {
             ltlStatus.Text =
                 $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{ModalCheckState.GetOpenWindowString(SiteId, contentInfo, PageUrl)}"">{CheckManager.GetCheckState(SiteInfo, contentInfo)}</a>";
 
-            ltlCommands.Text = TextUtility.GetCommandsHtml(SiteInfo, _pluginMenus, contentInfo, PageUrl, AuthRequest.AdminName, _isEdit);
+            var pluginMenus = PluginMenuManager.GetContentMenus(_pluginIds, contentInfo);
+            ltlCommands.Text = TextUtility.GetCommandsHtml(SiteInfo, pluginMenus, contentInfo, PageUrl, AuthRequest.AdminName, _isEdit);
 
             ltlSelect.Text = $@"<input type=""checkbox"" name=""contentIdCollection"" value=""{contentInfo.Id}"" />";
         }

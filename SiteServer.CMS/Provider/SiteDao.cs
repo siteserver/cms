@@ -6,6 +6,7 @@ using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -111,8 +112,8 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery($"DELETE FROM siteserver_Site WHERE Id  = {siteId}");
 
             SiteManager.ClearCache();
-            ChannelManager.RemoveCache(siteId);
-            PermissionManager.ClearAllCache();
+            ChannelManager.RemoveCacheBySiteId(siteId);
+            PermissionsImpl.ClearAllCache();
         }
 
         public void Update(SiteInfo info)
@@ -360,7 +361,8 @@ namespace SiteServer.CMS.Provider
             {
                 orderByString = "ORDER BY IsRoot DESC, ParentId, Taxis DESC, Id";
 
-                var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+                //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+                var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlUtils.Asterisk, sqlWhereString, orderByString, startNum - 1, totalNum);
 
                 ie = ExecuteReader(sqlSelect);
             }

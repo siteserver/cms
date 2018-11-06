@@ -10,7 +10,7 @@ namespace SiteServer.Utils.Enumerations
         LetterAndDigitAndSymbol
     }
 
-    public class EUserPasswordRestrictionUtils
+    public static class EUserPasswordRestrictionUtils
     {
         public static string GetValue(EUserPasswordRestriction type)
         {

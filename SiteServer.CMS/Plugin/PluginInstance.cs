@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin

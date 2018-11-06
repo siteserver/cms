@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.CMS.Plugin
 {

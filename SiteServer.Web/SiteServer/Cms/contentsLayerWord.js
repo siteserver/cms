@@ -1,6 +1,5 @@
-﻿var $apiUrl = $apiConfig.apiUrl;
-var $api = new apiUtils.Api($apiUrl + '/pages/cms/contentsLayerWord');
-var $uploadUrl = $apiUrl + '/pages/cms/contentsLayerWord';
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerWord');
+var $uploadUrl = apiUrl + '/pages/cms/contentsLayerWord';
 
 var data = {
   siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
@@ -52,20 +51,20 @@ var methods = {
       on: {
         add: function (task) {
           if (task.disabled) {
-            return swal({
+            return alert({
               title: "允许上传的文件格式为：" + this.ops.allows,
-              icon: 'warning',
-              button: '关 闭'
+              type: 'warning',
+              confirmButtonText: '关 闭'
             });
           }
         },
         complete: function (task) {
           var json = task.json;
           if (!json || json.ret != 1) {
-            return swal({
+            return alert({
               title: "上传失败！",
-              icon: 'warning',
-              button: '关 闭'
+              type: 'warning',
+              confirmButtonText: '关 闭'
             });
           }
 
@@ -110,10 +109,10 @@ var methods = {
     var $this = this;
     var fileNames = this.getFileNames().join(',');
     if (!fileNames) {
-      return swal({
+      return alert({
         title: "请选择需要导入的Word文件！",
-        icon: 'warning',
-        button: '关 闭'
+        type: 'warning',
+        showConfirmButton: '关 闭'
       });
     }
 

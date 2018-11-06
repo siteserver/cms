@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -47,7 +49,7 @@ namespace SiteServer.CMS.Core
                     Password = adminPassword
                 };
 
-                AdminManager.CreateAdministrator(administratorInfo, out _);
+                DataProvider.AdministratorDao.Insert(administratorInfo, out _);
                 DataProvider.AdministratorsInRolesDao.AddUserToRole(adminName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
             }
         }
@@ -80,7 +82,7 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    DataProvider.DatabaseDao.AlterSystemTable(tableName, DataProvider.ContentDao.TableColumns);
+                    DataProvider.DatabaseDao.AlterSystemTable(tableName, DataProvider.ContentDao.TableColumns, ContentAttribute.DropAttributes.Value);
                 }
             }
         }

@@ -1,9 +1,11 @@
 ﻿using System.Web.UI;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -231,7 +233,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (!string.IsNullOrEmpty(parsedContent))
             {
-                parsedContent = StringUtils.ParseString(parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                parsedContent = InputTypeUtils.ParseString(InputType.Text, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
                 if (!string.IsNullOrEmpty(parsedContent))
                 {

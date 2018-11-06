@@ -1,6 +1,7 @@
-﻿var $apiUrl = $apiConfig.apiUrl;
-var $api = new apiUtils.Api($apiUrl + '/pages/cms/createStatus');
-var $siteId = parseInt(pageUtils.getQueryStringByName('siteId'));
+﻿var $siteId = parseInt(pageUtils.getQueryStringByName('siteId'));
+
+var $api = new apiUtils.Api(apiUrl + '/pages/cms/createStatus');
+var $apiCancel = new apiUtils.Api(apiUrl + '/pages/cms/createStatus/actions/cancel');
 
 var data = {
   pageLoad: false,
@@ -12,6 +13,7 @@ var data = {
   contentsCount: null,
   filesCount: null,
   specialsCount: null,
+  timeoutId: null
 };
 
 var methods = {
@@ -22,7 +24,7 @@ var methods = {
         siteId: $this.siteId
       },
       function (err, res) {
-        setTimeout(function () {
+        $this.timeoutId = setTimeout(function () {
           $this.load();
         }, 3000);
         if (err || !res || !res.value) return;
@@ -35,6 +37,7 @@ var methods = {
         $this.pageLoad = true;
       });
   },
+
   getRedirectUrl: function (task) {
     var url = '../pageRedirect.aspx?siteId=' + task.siteId;
     if (task.channelId) {
@@ -50,6 +53,19 @@ var methods = {
       url += '&specialId=' + task.specialId;
     }
     return url;
+  },
+
+  btnCancelClick: function () {
+    var $this = this;
+    clearTimeout(this.timeoutId);
+
+    $this.pageLoad = false;
+    $apiCancel.post({
+        siteId: $this.siteId
+      },
+      function (err, res) {
+        $this.load();
+      });
   }
 };
 

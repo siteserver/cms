@@ -1,7 +1,6 @@
-var $api = new apiUtils.Api($apiConfig.apiUrl + '/v1/administrators/actions/login');
-var $innerApi = new apiUtils.Api($apiConfig.innerApiUrl + '/v1/administrators/actions/login');
-var $captchaGetUrl = $apiConfig.innerApiUrl + '/v1/captcha/LOGIN-CAPTCHA';
-var $captchaCheckApi = new apiUtils.Api($apiConfig.innerApiUrl + '/v1/captcha/LOGIN-CAPTCHA/actions/check');
+var $api = new apiUtils.Api(apiUrl + '/v1/administrators/actions/login');
+var $captchaGetUrl = apiUrl + '/v1/captcha/LOGIN-CAPTCHA';
+var $captchaCheckApi = new apiUtils.Api(apiUrl + '/v1/captcha/LOGIN-CAPTCHA/actions/check');
 
 if (window.top != self) {
   window.top.location = self.location;
@@ -33,6 +32,7 @@ var $vue = new Vue({
       this.pageSubmit = false;
       this.captchaUrl = $captchaGetUrl + '?r=' + new Date().getTime();
     },
+    
     checkCaptcha: function () {
       var $this = this;
 
@@ -53,11 +53,12 @@ var $vue = new Vue({
         $this.login();
       });
     },
+
     login: function () {
       var $this = this;
 
       pageUtils.loading(true);
-      $innerApi.post({
+      $api.post({
         account: $this.account,
         password: md5($this.password),
         isAutoLogin: $this.isAutoLogin
@@ -71,38 +72,14 @@ var $vue = new Vue({
           return;
         }
 
-        if ($apiConfig.isSeparatedApi) {
-          $this.loginSeparatedApi();
-        } else {
-          $this.redirect();
-        }
-      });
-    },
-    loginSeparatedApi: function () {
-      var $this = this;
-
-      pageUtils.loading(true);
-      $api.post({
-        account: $this.account,
-        password: md5($this.password),
-        isAutoLogin: $this.isAutoLogin
-      }, function (err, res) {
-        pageUtils.loading(false);
-
-        if (err) {
-          $this.pageAlert = {
-            type: 'danger',
-            html: '系统检测到API部署方式为独立部署且独立API不能正常工作，请联系系统维护人员修复此问题 <a href="pageInitialization.aspx">进入后台</a>'
-          };
-          return;
-        }
-
         $this.redirect();
       });
     },
+
     redirect: function () {
       location.href = 'pageInitialization.aspx';
     },
+
     btnLoginClick: function (e) {
       e.preventDefault();
 

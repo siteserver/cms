@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
                     ? ETranslateTypeUtils.GetValue(ETranslateType.All)
                     : ETranslateTypeUtils.GetValue(ETranslateType.Content));
 
-            var siteIdList = AuthRequest.AdminPermissions.SiteIdList;
+            var siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdList();
             foreach (var psId in siteIdList)
             {
                 var psInfo = SiteManager.GetSiteInfo(psId);

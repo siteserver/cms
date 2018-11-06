@@ -6,12 +6,11 @@ using System.Data;
 using System.Web.UI.WebControls;
 using System.Drawing;
 using System.Collections.Generic;
-using System.Linq;
-using SiteServer.Utils.Auth;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using SiteServer.Utils.Auth;
 
 namespace SiteServer.Utils
 {
@@ -37,35 +36,14 @@ namespace SiteServer.Utils
             return retval;
         }
 
-        public static string EnumToString(Enum enumType)
-        {
-            return enumType.ToString();
-        }
-
-        public static SqlDbType ToSqlDbType(string typeStr)
-        {
-            return (SqlDbType)ToEnum(typeof(SqlDbType), typeStr, SqlDbType.VarChar);
-        }
-
-        public static System.Data.OleDb.OleDbType ToOleDbType(string typeStr)
-        {
-            return (System.Data.OleDb.OleDbType)ToEnum(typeof(System.Data.OleDb.OleDbType), typeStr, System.Data.OleDb.OleDbType.VarChar);
-        }
-
         public static List<int> ToIntList(int intValue)
         {
             return new List<int> {intValue};
         }
 
-        public static int ToInt(string intStr)
+        public static int ToInt(string intStr, int defaultValue = 0)
         {
-            return ToInt(intStr, 0);
-        }
-
-        public static int ToInt(string intStr, int defaultValue)
-        {
-            int i;
-            if (!int.TryParse(intStr?.Trim().TrimStart('0'), out i))
+            if (!int.TryParse(intStr?.Trim().TrimStart('0'), out var i))
             {
                 i = defaultValue;
             }
@@ -76,30 +54,18 @@ namespace SiteServer.Utils
             return i;
         }
 
-        public static int ToIntWithNagetive(string intStr)
+        public static int ToIntWithNagetive(string intStr, int defaultValue = 0)
         {
-            return ToIntWithNagetive(intStr, 0);
-        }
-
-        public static int ToIntWithNagetive(string intStr, int defaultValue)
-        {
-            int i;
-            if (!int.TryParse(intStr?.Trim(), out i))
+            if (!int.TryParse(intStr?.Trim(), out var i))
             {
                 i = defaultValue;
             }
             return i;
         }
 
-        public static decimal ToDecimal(string intStr)
+        public static decimal ToDecimal(string intStr, decimal defaultValue = 0)
         {
-            return ToDecimal(intStr, 0);
-        }
-
-        public static decimal ToDecimal(string intStr, decimal defaultValue)
-        {
-            decimal i;
-            if (!decimal.TryParse(intStr?.Trim(), out i))
+            if (!decimal.TryParse(intStr?.Trim(), out var i))
             {
                 i = defaultValue;
             }
@@ -110,49 +76,18 @@ namespace SiteServer.Utils
             return i;
         }
 
-        public static decimal ToDecimalWithNagetive(string intStr)
+        public static decimal ToDecimalWithNagetive(string intStr, decimal defaultValue = 0)
         {
-            return ToDecimalWithNagetive(intStr, 0);
-        }
-
-        public static decimal ToDecimalWithNagetive(string intStr, decimal defaultValue)
-        {
-            decimal i;
-            if (!decimal.TryParse(intStr?.Trim(), out i))
+            if (!decimal.TryParse(intStr?.Trim(), out var i))
             {
                 i = defaultValue;
             }
             return i;
         }
 
-        public static double ToDouble(string intStr)
+        public static long ToLong(string intStr, long defaultValue = 0)
         {
-            return ToDouble(intStr, 0);
-        }
-
-        public static double ToDouble(string intStr, double defaultValue)
-        {
-            double i;
-            if (!double.TryParse(intStr?.Trim(), out i))
-            {
-                i = defaultValue;
-            }
-            if (i < 0)
-            {
-                i = defaultValue;
-            }
-            return i;
-        }
-
-        public static long ToLong(string intStr)
-        {
-            return ToLong(intStr, 0);
-        }
-
-        public static long ToLong(string intStr, long defaultValue)
-        {
-            long l;
-            if (!long.TryParse(intStr?.Trim(), out l))
+            if (!long.TryParse(intStr?.Trim(), out var l))
             {
                 l = defaultValue;
             }
@@ -165,8 +100,7 @@ namespace SiteServer.Utils
 
         public static bool ToBool(string boolStr)
         {
-            bool boolean;
-            if (!bool.TryParse(boolStr?.Trim(), out boolean))
+            if (!bool.TryParse(boolStr?.Trim(), out var boolean))
             {
                 boolean = false;
             }
@@ -175,8 +109,7 @@ namespace SiteServer.Utils
 
         public static bool ToBool(string boolStr, bool defaultValue)
         {
-            bool boolean;
-            if (!bool.TryParse(boolStr?.Trim(), out boolean))
+            if (!bool.TryParse(boolStr?.Trim(), out var boolean))
             {
                 boolean = defaultValue;
             }
@@ -228,20 +161,6 @@ namespace SiteServer.Utils
             return color;
         }
 
-        public static string ToCurrency(decimal i)
-        {
-            return i.ToString("c");
-        }
-
-        public static string ToWidth(string width)
-        {
-            if (!string.IsNullOrEmpty(width) && !width.EndsWith("%") && !width.EndsWith("px"))
-            {
-                return width + "px";
-            }
-            return width;
-        }
-
         public static Unit ToUnit(string unitStr)
         {
             var type = Unit.Empty;
@@ -256,20 +175,9 @@ namespace SiteServer.Utils
             return type;
         }
 
-
         public static string ToTwoCharString(int i)
         {
             return i >= 0 && i <= 9 ? $"0{i}" : i.ToString();
-        }
-
-        public static string Censor(string censorRegex, string inputContent)
-        {
-            return RegexUtils.Replace(censorRegex, inputContent, "***");
-        }
-
-        public static StringCollection StringCollectionToStringCollection(string collection)
-        {
-            return StringCollectionToStringCollection(collection, ',');
         }
 
         public static List<int> StringCollectionToIntList(string collection)
@@ -280,36 +188,14 @@ namespace SiteServer.Utils
                 var array = collection.Split(',');
                 foreach (var s in array)
                 {
-                    int i;
-                    int.TryParse(s.Trim(), out i);
+                    int.TryParse(s.Trim(), out var i);
                     list.Add(i);
                 }
             }
             return list;
         }
 
-        public static List<decimal> StringCollectionToDecimalList(string collection)
-        {
-            var list = new List<decimal>();
-            if (!string.IsNullOrEmpty(collection))
-            {
-                var array = collection.Split(',');
-                foreach (var s in array)
-                {
-                    decimal i;
-                    decimal.TryParse(s.Trim(), out i);
-                    list.Add(i);
-                }
-            }
-            return list;
-        }
-
-        public static List<string> StringCollectionToStringList(string collection)
-        {
-            return StringCollectionToStringList(collection, ',');
-        }
-
-        public static List<string> StringCollectionToStringList(string collection, char split)
+        public static List<string> StringCollectionToStringList(string collection, char split = ',')
         {
             var list = new List<string>();
             if (!string.IsNullOrEmpty(collection))
@@ -323,59 +209,7 @@ namespace SiteServer.Utils
             return list;
         }
 
-        public static string IntDictionaryToStringCollection(Dictionary<int, int> dictionary)
-        {
-            return IntDictionaryToStringCollection(dictionary, ',', '_');
-        }
-
-        public static string IntDictionaryToStringCollection(Dictionary<int, int> dictionary, char split1, char split2)
-        {
-            var builder = new StringBuilder();
-
-            if (dictionary != null && dictionary.Count > 0)
-            {
-                foreach (var item in dictionary)
-                {
-                    builder.Append($"{item.Key}{split2}{item.Value}{split1}");
-                }
-            }
-
-            if (builder.Length > 0) builder.Length--;
-            return builder.ToString();
-        }
-
-        public static Dictionary<int, int> StringCollectionToIntDictionary(string collection)
-        {
-            return StringCollectionToIntDictionary(collection, ',', '_');
-        }
-
-        public static Dictionary<int, int> StringCollectionToIntDictionary(string collection, char split1, char split2)
-        {
-            var dictionary = new Dictionary<int, int>();
-            if (!string.IsNullOrEmpty(collection))
-            {
-                var array1 = collection.Split(split1);
-                foreach (var string1 in array1)
-                {
-                    if (!string.IsNullOrEmpty(string1))
-                    {
-                        var array2 = string1.Split(split2);
-                        if (array2.Length == 2)
-                        {
-                            var key = ToInt(array2[0]);
-                            var value = ToInt(array2[1]);
-                            if (key > 0)
-                            {
-                                dictionary[key] = value;
-                            }
-                        }
-                    }
-                }
-            }
-            return dictionary;
-        }
-
-        public static StringCollection StringCollectionToStringCollection(string collection, char separator)
+        public static StringCollection StringCollectionToStringCollection(string collection, char separator = ',')
         {
             var arraylist = new StringCollection();
             if (!string.IsNullOrEmpty(collection))
@@ -387,32 +221,6 @@ namespace SiteServer.Utils
                 }
             }
             return arraylist;
-        }
-
-        public static ArrayList ObjectCollectionToArrayList(ICollection collection)
-        {
-            var arraylist = new ArrayList();
-            if (collection != null)
-            {
-                foreach (var obj in collection)
-                {
-                    arraylist.Add(obj);
-                }
-            }
-            return arraylist;
-        }
-
-        public static List<string> ObjectCollectionToStringList(ICollection collection)
-        {
-            var list = new List<string>();
-            if (collection != null)
-            {
-                foreach (var obj in collection)
-                {
-                    list.Add(obj.ToString());
-                }
-            }
-            return list;
         }
 
         public static string ObjectCollectionToString(ICollection collection)
@@ -437,34 +245,6 @@ namespace SiteServer.Utils
                 foreach (var obj in collection)
                 {
                     builder.Append(obj.ToString().Trim()).Append(separatorStr);
-                }
-                if (builder.Length != 0) builder.Remove(builder.Length - separatorStr.Length, separatorStr.Length);
-            }
-            return builder.ToString();
-        }
-
-        public static string ObjectCollectionToString(ICollection collection, string separatorStr, string prefixStr)
-        {
-            var builder = new StringBuilder();
-            if (collection != null)
-            {
-                foreach (var obj in collection)
-                {
-                    builder.Append(prefixStr + obj.ToString().Trim()).Append(separatorStr);
-                }
-                if (builder.Length != 0) builder.Remove(builder.Length - separatorStr.Length, separatorStr.Length);
-            }
-            return builder.ToString();
-        }
-
-        public static string ObjectCollectionToString(ICollection collection, string separatorStr, string prefixStr, string appendixStr)
-        {
-            var builder = new StringBuilder();
-            if (collection != null)
-            {
-                foreach (var obj in collection)
-                {
-                    builder.Append(prefixStr + obj.ToString().Trim() + appendixStr).Append(separatorStr);
                 }
                 if (builder.Length != 0) builder.Remove(builder.Length - separatorStr.Length, separatorStr.Length);
             }
@@ -508,49 +288,7 @@ namespace SiteServer.Utils
             }
             return builder.Length == 0 ? "null" : builder.ToString();
         }
-
-        public static DataView ObjectCollectionToDataView(string columnName, ICollection collection)
-        {
-            var myTable = new DataTable("myTable");
-            var column = new DataColumn(columnName);
-            myTable.Columns.Add(column);
-            foreach (var value in collection)
-            {
-                var row = myTable.NewRow();
-                row[columnName] = value;
-                myTable.Rows.Add(row);
-            }
-            var myDataView = new DataView(myTable);
-            return myDataView;
-        }
-
-
-        public static string[] ArrayListToStringArray(ArrayList arraylist)
-        {
-            return (string[])arraylist.ToArray(typeof(string));
-        }
-
-        public static ArrayList StringArrayToArrayList(string[] array)
-        {
-            return new ArrayList(array);
-        }
-
-        public static List<string> StringArrayToStringList(string[] array)
-        {
-            return new List<string>(array);
-        }
-
-        //将IDictionary转换为NameValueCollection
-        public static NameValueCollection ToNameValueCollection(IDictionary dictionary)
-        {
-            var nameValueMap = new NameValueCollection();
-            foreach (var key in dictionary.Keys)
-            {
-                var value = dictionary[key];
-                nameValueMap.Add(key.ToString(), value.ToString());
-            }
-            return nameValueMap;
-        }
+        
 
         public static NameValueCollection ToNameValueCollection(string separateString)
         {
@@ -580,62 +318,7 @@ namespace SiteServer.Utils
             return attributes;
         }
 
-        public static Dictionary<string, object> ObjectToDictionary(object source)
-        {
-            return source.GetType().GetProperties().ToDictionary
-            (
-                propInfo => propInfo.Name,
-                propInfo => propInfo.GetValue(source, null)
-            );
-        }
-
-        public static Dictionary<string, string> ToDictionary(NameValueCollection attributes)
-        {
-            var dic = new Dictionary<string, string>();
-            if (attributes != null && attributes.Count > 0)
-            {
-                foreach (string key in attributes.Keys)
-                {
-                    dic[key] = attributes[key];
-                }
-            }
-            return dic;
-        }
-
-        public static Dictionary<string, string> ToDictionary(string separateString)
-        {
-            if (!string.IsNullOrEmpty(separateString))
-            {
-                separateString = separateString.Replace("/u0026", "&");
-            }
-            return ToDictionary(separateString, '&');
-        }
-
-        public static Dictionary<string, string> ToDictionary(string separateString, char seperator)
-        {
-            var attributes = new Dictionary<string, string>();
-            if (!string.IsNullOrEmpty(separateString))
-            {
-                var pairs = separateString.Split(seperator);
-                foreach (var pair in pairs)
-                {
-                    if (pair.IndexOf("=", StringComparison.Ordinal) != -1)
-                    {
-                        var name = StringUtils.ValueFromUrl(pair.Split('=')[0]);
-                        var value = StringUtils.ValueFromUrl(pair.Split('=')[1]);
-                        attributes.Add(name, value);
-                    }
-                }
-            }
-            return attributes;
-        }
-
-        public static string NameValueCollectionToString(NameValueCollection attributes)
-        {
-            return NameValueCollectionToString(attributes, '&');
-        }
-
-        public static string NameValueCollectionToString(NameValueCollection attributes, char seperator)
+        public static string NameValueCollectionToString(NameValueCollection attributes, char seperator = '&')
         {
             if (attributes == null || attributes.Count <= 0) return string.Empty;
 
@@ -646,45 +329,6 @@ namespace SiteServer.Utils
                     $@"{StringUtils.ValueToUrl(key)}={StringUtils.ValueToUrl(attributes[key])}{seperator}");
             }
             builder.Length--;
-            return builder.ToString();
-        }
-
-        public static string NameValueCollectionToString(LowerNameValueCollection attributes)
-        {
-            return NameValueCollectionToString(attributes, '&');
-        }
-
-        public static string NameValueCollectionToString(LowerNameValueCollection attributes, char seperator)
-        {
-            if (attributes == null || attributes.Count <= 0) return string.Empty;
-
-            var builder = new StringBuilder();
-            foreach (var key in attributes.Keys)
-            {
-                builder.Append(
-                    $@"{StringUtils.ValueToUrl(key)}={StringUtils.ValueToUrl(attributes.Get(key))}{seperator}");
-            }
-            builder.Length--;
-            return builder.ToString();
-        }
-
-        public static string DictionaryToString(Dictionary<string, string> attributes)
-        {
-            return DictionaryToString(attributes, '&');
-        }
-
-        public static string DictionaryToString(Dictionary<string, string> attributes, char seperator)
-        {
-            var builder = new StringBuilder();
-            if (attributes != null && attributes.Count > 0)
-            {
-                foreach (var key in attributes.Keys)
-                {
-                    builder.Append(
-                        $@"{StringUtils.ValueToUrl(key)}={StringUtils.ValueToUrl(attributes[key])}{seperator}");
-                }
-                builder.Length--;
-            }
             return builder.ToString();
         }
 
@@ -707,8 +351,7 @@ namespace SiteServer.Utils
 
         public static bool DictGetValue(Dictionary<int, bool> dict, int key)
         {
-            bool retval;
-            if (dict.TryGetValue(key, out retval))
+            if (dict.TryGetValue(key, out var retval))
             {
                 return retval;
             }
@@ -716,45 +359,7 @@ namespace SiteServer.Utils
             return false;
         }
 
-        public static string ToAttributesString(LowerNameValueCollection attributes)
-        {
-            var builder = new StringBuilder();
-            if (attributes != null && attributes.Count > 0)
-            {
-                foreach (var key in attributes.Keys)
-                {
-                    var value = attributes.Get(key);
-                    if (!string.IsNullOrEmpty(value))
-                    {
-                        value = value.Replace("\"", "'");
-                    }
-                    builder.Append($@"{key}=""{value}"" ");
-                }
-                builder.Length--;
-            }
-            return builder.ToString();
-        }
-
         public static string ToAttributesString(NameValueCollection attributes)
-        {
-            var builder = new StringBuilder();
-            if (attributes != null && attributes.Count > 0)
-            {
-                foreach (string key in attributes.Keys)
-                {
-                    var value = attributes[key];
-                    if (!string.IsNullOrEmpty(value))
-                    {
-                        value = value.Replace("\"", "'");
-                    }
-                    builder.Append($@"{key}=""{value}"" ");
-                }
-                builder.Length--;
-            }
-            return builder.ToString();
-        }
-
-        public static string ToAttributesString(StringDictionary attributes)
         {
             var builder = new StringBuilder();
             if (attributes != null && attributes.Count > 0)
@@ -788,59 +393,7 @@ namespace SiteServer.Utils
             }
             return builder.ToString();
         }
-
-        public static NameValueCollection ParseJsonStringToNameValueCollection(string jsonString)
-        {
-            var nameValueCollection = new NameValueCollection();
-            if (!string.IsNullOrEmpty(jsonString))
-            {
-                jsonString = jsonString.Trim().TrimStart('{').TrimEnd('}');
-                var array1 = jsonString.Split(',');
-                foreach (var s1 in array1)
-                {
-                    if (s1.IndexOf(':') != -1)
-                    {
-                        var name = s1.Substring(0, s1.IndexOf(':'));
-                        var value = s1.Substring(s1.IndexOf(':') + 1);
-
-                        nameValueCollection.Set(name.Trim().Trim('"', '\''), value.Trim().Trim('"', '\''));
-                    }
-                }
-            }
-            return nameValueCollection;
-        }
-
-        public static NameValueCollection ParseJsonStringToNameValueCollection(string jsonString, bool isRecursive)
-        {
-            if (!isRecursive)
-                return ParseJsonStringToNameValueCollection(jsonString);
-
-            var nameValueCollection = new NameValueCollection();
-            if (!string.IsNullOrEmpty(jsonString))
-            {
-                jsonString = jsonString.Trim().TrimStart('{').TrimEnd('}');
-                var array1 = jsonString.Split(',');
-                foreach (var s1 in array1)
-                {
-                    if (s1.IndexOf(':') != -1)
-                    {
-                        var name = s1.Substring(0, s1.IndexOf(':'));
-                        var value = s1.Substring(s1.IndexOf(':') + 1);
-                        if (value.IndexOf("{", StringComparison.Ordinal) != -1)
-                        {
-                            nameValueCollection.Add(ParseJsonStringToNameValueCollection(value, true));
-                        }
-                        else
-                        {
-                            nameValueCollection.Set(name.Trim().Trim('"', '\''), value.Trim().Trim('"', '\''));
-                        }
-                    }
-                }
-            }
-            return nameValueCollection;
-        }
-
-
+        
         public static string NameValueCollectionToJsonString(NameValueCollection attributes)
         {
             var jsonString = new StringBuilder("{");
@@ -858,52 +411,6 @@ namespace SiteServer.Utils
             return jsonString.ToString();
         }
 
-        public static string NameValueCollectionToXmlString(NameValueCollection attributes)
-        {
-            var xmlString = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
-            if (attributes != null && attributes.Count > 0)
-            {
-                foreach (string key in attributes.Keys)
-                {
-                    var value = attributes[key];
-                    value = value?.Replace("\\", "\\\\").Replace("\"", "\\\\\\\"").Replace("\r\n", string.Empty);
-                    xmlString.AppendFormat("<{0}>{1}</{0}>\r\n", key, value);
-                }
-            }
-            return xmlString.ToString();
-        }
-
-        public static void SetOrRemoveAttributeLowerCase(NameValueCollection attributes, string key, string value)
-        {
-            if (attributes == null || string.IsNullOrEmpty(key)) return;
-
-            SetOrRemoveAttribute(attributes, key.ToLower(), value);
-        }
-
-        public static void SetOrRemoveAttribute(NameValueCollection attributes, string key, string value)
-        {
-            if (attributes == null || string.IsNullOrEmpty(key)) return;
-
-            if (!string.IsNullOrEmpty(value))
-            {
-                attributes[key] = value;
-            }
-            else
-            {
-                attributes.Remove(key);
-            }
-        }
-
-        public static int GetMbSize(int kbSize)
-        {
-            var retval = 0;
-            if (kbSize >= 1024 && kbSize % 1024 == 0)
-            {
-                retval = kbSize / 1024;
-            }
-            return retval;
-        }
-
         public static long GetKbSize(long byteSize)
         {
             long fileKbSize = Convert.ToUInt32(Math.Ceiling((double)byteSize / 1024));
@@ -912,50 +419,6 @@ namespace SiteServer.Utils
                 fileKbSize = 1;
             }
             return fileKbSize;
-        }
-
-        public static int GetIntFromQueryString(NameValueCollection queryString, string key)
-        {
-            var queryStringValue = queryString[key];
-
-            if (string.IsNullOrEmpty(queryStringValue)) return 0;
-
-            if (queryStringValue.IndexOf("#", StringComparison.Ordinal) > 0)
-            {
-                queryStringValue = queryStringValue.Substring(0, queryStringValue.IndexOf("#", StringComparison.Ordinal));
-            }
-
-            return ToInt(queryStringValue);
-        }
-
-        public static IList GetList(IList list, int startNum, int totalNum)
-        {
-            if (list == null) return null;
-            IList retval = new List<object>();
-            for (var i = 0; i < list.Count; i++)
-            {
-                if (i + 1 >= startNum)
-                {
-                    retval.Add(list[i]);
-                }
-                if (totalNum > 0 && retval.Count >= totalNum) break;
-            }
-            return retval;
-        }
-
-        public static string EscapeHtml(string content)
-        {
-            if (string.IsNullOrEmpty(content)) return string.Empty;
-
-            var sb = new StringBuilder();
-            var ba = Encoding.Unicode.GetBytes(content);
-            for (var i = 0; i < ba.Length; i += 2)
-            {
-                sb.Append("%u");
-                sb.Append(ba[i + 1].ToString("X2"));
-                sb.Append(ba[i].ToString("X2"));
-            }
-            return sb.ToString();
         }
 
         #region 汉字转拼音
@@ -1092,18 +555,27 @@ namespace SiteServer.Utils
 
         #endregion
 
+        public static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            Converters = new List<JsonConverter>
+            {
+                new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm"}
+            }
+        };
+
         public static string JsonSerialize(object obj)
         {
             try
             {
-                var settings = new JsonSerializerSettings
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                };
-                var timeFormat = new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm:ss"};
-                settings.Converters.Add(timeFormat);
+                //var settings = new JsonSerializerSettings
+                //{
+                //    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                //};
+                //var timeFormat = new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm:ss"};
+                //settings.Converters.Add(timeFormat);
 
-                return JsonConvert.SerializeObject(obj, settings);
+                return JsonConvert.SerializeObject(obj, JsonSettings);
             }
             catch
             {
@@ -1115,11 +587,11 @@ namespace SiteServer.Utils
         {
             try
             {
-                var settings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
-                var timeFormat = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" };
-                settings.Converters.Add(timeFormat);
+                //var settings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
+                //var timeFormat = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" };
+                //settings.Converters.Add(timeFormat);
 
-                return JsonConvert.DeserializeObject<T>(json, settings);
+                return JsonConvert.DeserializeObject<T>(json, JsonSettings);
             }
             catch
             {
@@ -1131,6 +603,8 @@ namespace SiteServer.Utils
         {
             return new Dictionary<string, object>(json.ToObject<IDictionary<string, object>>(), StringComparer.CurrentCultureIgnoreCase);
         }
+
+        public const string EncryptStingIndicator = "0secret0";
 
         public static string EncryptStringBySecretKey(string inputString)
         {
@@ -1151,7 +625,7 @@ namespace SiteServer.Utils
             var retval = encryptor.OutString;
             retval = retval.Replace("+", "0add0").Replace("=", "0equals0").Replace("&", "0and0").Replace("?", "0question0").Replace("'", "0quote0").Replace("/", "0slash0");
 
-            return retval;
+            return retval + EncryptStingIndicator;
         }
 
         public static string DecryptStringBySecretKey(string inputString)
@@ -1159,11 +633,11 @@ namespace SiteServer.Utils
             return DecryptStringBySecretKey(inputString, WebConfigUtils.SecretKey);
         }
 
-        public static string DecryptStringBySecretKey(string inputString, string secretKey)
+        private static string DecryptStringBySecretKey(string inputString, string secretKey)
         {
             if (string.IsNullOrEmpty(inputString)) return string.Empty;
 
-            inputString = inputString.Replace("0add0", "+").Replace("0equals0", "=").Replace("0and0", "&").Replace("0question0", "?").Replace("0quote0", "'").Replace("0slash0", "/");
+            inputString = inputString.Replace(EncryptStingIndicator, string.Empty).Replace("0add0", "+").Replace("0equals0", "=").Replace("0and0", "&").Replace("0question0", "?").Replace("0quote0", "'").Replace("0slash0", "/");
 
             var encryptor = new DesEncryptor
             {

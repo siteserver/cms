@@ -20,10 +20,8 @@ namespace SiteServer.CMS.Core.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var relatedidentityes =
-                RelatedIdentities.GetChannelRelatedIdentities(siteInfo.Id, channelInfo.Id);
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetTableStyleInfoList(tableName, relatedidentityes));
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo));
 
             foreach (var styleInfo in styleInfoList)
             {
@@ -62,6 +60,44 @@ namespace SiteServer.CMS.Core.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
+        public static void CreateExcelFileForContents(string filePath, SiteInfo siteInfo,
+            ChannelInfo channelInfo, List<ContentInfo> contentInfoList, List<string> columnNames)
+        {
+            DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
+            FileUtils.DeleteFileIfExists(filePath);
+
+            var head = new List<string>();
+            var rows = new List<List<string>>();
+
+            var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, true);
+
+            foreach (var column in columns)
+            {
+                if (StringUtils.ContainsIgnoreCase(columnNames, column.AttributeName))
+                {
+                    head.Add(column.DisplayName);
+                }
+            }
+
+            foreach (var contentInfo in contentInfoList)
+            {
+                var row = new List<string>();
+
+                foreach (var column in columns)
+                {
+                    if (StringUtils.ContainsIgnoreCase(columnNames, column.AttributeName))
+                    {
+                        var value = contentInfo.GetString(column.AttributeName);
+                        row.Add(StringUtils.StripTags(value));
+                    }
+                }
+
+                rows.Add(row);
+            }
+
+            CsvUtils.Export(filePath, head, rows);
+        }
+
         public static void CreateExcelFileForUsers(string filePath, ETriState checkedState)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
@@ -86,7 +122,7 @@ namespace SiteServer.CMS.Core.Office
 
             foreach (var userId in userIdList)
             {
-                var userInfo = DataProvider.UserDao.GetUserInfo(userId);
+                var userInfo = UserManager.GetUserInfoByUserId(userId);
 
                 rows.Add(new List<string>
                 {
@@ -111,13 +147,7 @@ namespace SiteServer.CMS.Core.Office
 
             if (rows.Count <= 0) return contentInfoList;
 
-            var relatedidentityes =
-                RelatedIdentities.GetChannelRelatedIdentities(
-                    siteInfo.Id, nodeInfo.Id);
-            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
-            // ArrayList tableStyleInfoArrayList = TableStyleManager.GetTableStyleInfoArrayList(ETableStyle.BackgroundContent, siteInfo.AuxiliaryTableForContent, relatedidentityes);
-
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetTableStyleInfoList(tableName, relatedidentityes));
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(siteInfo, nodeInfo));
             var nameValueCollection = new NameValueCollection();
             foreach (var styleInfo in styleInfoList)
             {

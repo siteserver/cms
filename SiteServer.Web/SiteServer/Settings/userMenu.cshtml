@@ -1,0 +1,209 @@
+﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
+<li class="nav-item">
+  <a class="nav-link" href="pageUser.aspx">用户管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="userGroup.cshtml">用户组管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="userStyle.cshtml">用户字段</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="userConfig.cshtml">用户设置</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="userHome.cshtml">用户中心设置</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link active" href="userMenu.cshtml">用户中心菜单</a>
+</li>
+}
+
+<template v-if="pageType === 'add'">
+  <div class="header-title">
+    {{ item.id !== 0 ? '修改用户菜单' : '添加用户菜单' }}
+  </div>
+
+  <div class="form-group">
+    <label class="col-form-label">
+      菜单
+      <small v-show="errors.has('text')" class="text-danger">{{
+        errors.first('text') }}</small>
+    </label>
+    <input v-model="item.text" type="text" class="form-control" name="text" data-vv-as="标题" v-validate="'required'"
+      :class="{'is-invalid': errors.has('text') }" />
+  </div>
+
+  <div class="form-group">
+    <label class="col-form-label">
+      链接
+      <small v-show="errors.has('href')" class="text-danger">{{
+        errors.first('href') }}</small>
+    </label>
+    <input v-model="item.href" type="text" class="form-control" name="href" data-vv-as="链接" v-validate="'required'"
+      :class="{'is-invalid': errors.has('href') }" />
+  </div>
+
+  <div class="form-group">
+    <label class="col-form-label">
+      图标Css类
+    </label>
+    <input v-model="item.iconClass" type="text" class="form-control" />
+  </div>
+
+  <div class="form-group">
+    <label class="col-form-label">
+      目标窗口
+    </label>
+    <select v-model="item.target" class="form-control">
+      <option value="_top">载入整个窗口</option>
+      <option value="_self">载入框架窗口</option>
+      <option value="_blank">弹出新窗口</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label class="col-form-label">
+      显示菜单的用户组
+    </label>
+    <select v-model="item.isGroup" class="form-control">
+      <option v-bind:value="false">所有用户组</option>
+      <option v-bind:value="true">指定用户组</option>
+    </select>
+    <div v-if="item.isGroup" class="m-2">
+      <div v-for="group in groups" class="checkbox checkbox-primary form-check-inline">
+        <input type="checkbox" v-model="item.groupIds" :value="group.id" :id="group.id">
+        <label :for="group.id"> {{ group.groupName }} </label>
+      </div>
+    </div>
+    <small v-if="item.isGroup" class="form-text text-muted">
+      指定用户组后，菜单将只在对应的用户组用户登录后才显示。
+    </small>
+  </div>
+
+  <div class="form-group">
+    <label class="col-form-label">
+      排序
+      <small v-show="errors.has('taxis')" class="text-danger">{{
+        errors.first('taxis') }}</small>
+    </label>
+    <input v-model="item.taxis" type="text" class="form-control" name="taxis" data-vv-as="链接" v-validate="'required|numeric'"
+      :class="{'is-invalid': errors.has('taxis') }" />
+  </div>
+
+  <div class="form-group">
+    <label class="col-form-label">
+      状态
+    </label>
+    <select v-model="item.isDisabled" class="form-control">
+      <option v-bind:value="false">启用</option>
+      <option v-bind:value="true">禁用</option>
+    </select>
+  </div>
+
+  <hr />
+
+  <button class="btn btn-primary m-r-5" v-on:click="btnSubmitClick">确 定</button>
+  <button class="btn" v-on:click="btnCancelClick">返 回</button>
+
+</template>
+<template v-else>
+
+  <div class="table-responsive">
+    <table class="table tablesaw table-hover m-0">
+      <thead>
+        <tr>
+          <th class="text-center">排序</th>
+          <th>标题 </th>
+          <th>链接 </th>
+          <th class="text-center text-nowrap">用户组 </th>
+          <th class="text-center text-nowrap">状态 </th>
+          <th class="text-center">操作</th>
+        </tr>
+      </thead>
+      <tbody v-for="item in items">
+
+        <tr>
+          <td class="text-center">
+            {{ item.taxis }}
+          </td>
+          <td>
+            {{ item.text }}
+          </td>
+          <td>
+            {{ item.href }}
+          </td>
+          <td>
+            {{ getUserGroups(item) }}
+          </td>
+          <td class="text-center">
+            {{ (item.isDisabled ? '禁用' : '启用') }}
+          </td>
+          <td class="text-center">
+            <a href="javascript:;" v-on:click="btnAddClick(item.id)">新增下级菜单</a>
+            <a href="javascript:;" v-on:click="btnEditClick(item)">编辑</a>
+            <a v-if="!item.systemId" class="text-danger ml-2" href="javascript:;" v-on:click="btnDeleteClick(item)">删除</a>
+          </td>
+        </tr>
+
+        <tr v-if="item.children.length > 0">
+          <td></td>
+          <td colspan="6">
+            <table class="table tablesaw">
+              <thead>
+                <tr>
+                  <th class="text-center">排序</th>
+                  <th>标题 </th>
+                  <th>链接 </th>
+                  <th class="text-center text-nowrap">用户组 </th>
+                  <th class="text-center text-nowrap">状态 </th>
+                  <th class="text-center">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <tr v-for="child in item.children">
+                  <td class="text-center">
+                    {{ child.taxis }}
+                  </td>
+                  <td>
+                    {{ child.text }}
+                  </td>
+                  <td>
+                    {{ child.href }}
+                  </td>
+                  <td>
+                    {{ getUserGroups(child) }}
+                  </td>
+                  <td class="text-center">
+                    {{ (child.isDisabled ? '禁用' : '启用') }}
+                  </td>
+                  <td class="text-center">
+                    <a href="javascript:;" v-on:click="btnEditClick(child)">编辑</a>
+                    <a v-if="!child.systemId" class="text-danger ml-2" href="javascript:;" v-on:click="btnDeleteClick(child)">删除</a>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <hr />
+
+  <a href="javascript:;" v-on:click="btnAddClick(0)" class="btn btn-sm btn-outline-primary pl-3 pr-3">
+    <i class="ion-plus"></i>
+    新增菜单
+  </a>
+  <a href="javascript:;" v-on:click="btnResetClick()" class="btn btn-sm btn-outline-danger pl-3 pr-3">
+    重置菜单
+  </a>
+
+</template>
+
+@section Scripts{
+<script src="userMenu.js" type="text/javascript"></script> }

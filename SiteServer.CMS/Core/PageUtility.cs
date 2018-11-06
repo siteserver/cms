@@ -440,7 +440,11 @@ namespace SiteServer.CMS.Core
 
             channelUrl = StringUtils.ReplaceStartsWith(channelUrl, siteInfo.Additional.WebUrl, string.Empty);
             channelUrl = channelUrl.Trim('/');
-            channelUrl = "/" + channelUrl;
+            if (channelUrl != PageUtils.UnclickedUrl)
+            {
+                channelUrl = "/" + channelUrl;
+            }
+            
             return channelUrl;
         }
 
@@ -510,23 +514,6 @@ namespace SiteServer.CMS.Core
                 apiUrl = "/";
             }
             return PageUtils.Combine(apiUrl, DirectoryUtils.SiteFiles.DirectoryName, relatedUrl);
-        }
-
-        private static string GetUserFilesUrl(string apiUrl, string relatedUrl)
-        {
-            return GetSiteFilesUrl(apiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.UserFiles, relatedUrl));
-        }
-
-        public static string GetUserAvatarUrl(string apiUrl, IUserInfo userInfo)
-        {
-            var imageUrl = userInfo?.AvatarUrl;
-
-            if (!string.IsNullOrEmpty(imageUrl))
-            {
-                return PageUtils.IsProtocolUrl(imageUrl) ? imageUrl : GetUserFilesUrl(apiUrl, PageUtils.Combine(userInfo.UserName, imageUrl));
-            }
-
-            return SiteFilesAssets.GetUrl(apiUrl, "default_avatar.png");
         }
     }
 }

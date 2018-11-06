@@ -1,5 +1,5 @@
 ﻿using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.CMS.Plugin
 {

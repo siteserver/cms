@@ -2,7 +2,8 @@
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Model;
+using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 using TableColumn = SiteServer.Plugin.TableColumn;
@@ -46,7 +47,7 @@ namespace SiteServer.CMS.Plugin
             }
             else
             {
-                DataProvider.DatabaseDao.AlterSystemTable(tableName, tableColumns);
+                DataProvider.DatabaseDao.AlterSystemTable(tableName, tableColumns, ContentAttribute.DropAttributes.Value);
             }
 
             ContentTableCreateOrUpdateStyles(tableName, service.ContentTableColumns);
@@ -206,7 +207,6 @@ namespace SiteServer.CMS.Plugin
                 else
                 {
                     DataProvider.TableStyleDao.Update(styleInfo);
-                    DataProvider.TableStyleItemDao.DeleteAndInsertStyleItems(styleInfo.Id, styleInfo.StyleItems);
                 }
             }
         }

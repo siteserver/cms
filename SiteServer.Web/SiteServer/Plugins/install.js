@@ -1,7 +1,6 @@
 ﻿var $ssApi = new apiUtils.Api();
 
-var $apiUrl = $apiConfig.innerApiUrl;
-var $api = new apiUtils.Api($apiUrl + '/pages/plugins/install');
+var $api = new apiUtils.Api(apiUrl + '/pages/plugins/install');
 var $packageIds = pageUtils.getQueryStringByName('packageIds').split(',');
 var $pageType = pageUtils.getQueryStringByName('isUpdate') === 'true' ? '升级' : '安装';
 
@@ -95,7 +94,7 @@ var methods = {
         referencePackageIds.push(packageReference.id);
       }
     }
-    
+
     if (referencePackageIds.length === 0) {
       $this.download();
       return;
@@ -124,7 +123,7 @@ var methods = {
   },
   download: function () {
     var $this = this;
-    
+
     for (var i = 0; i < $this.currentPackages.length; i++) {
       var package = $this.currentPackages[i];
       if ($this.currentDownloadIds.indexOf(package.id) == -1) {
@@ -190,7 +189,7 @@ var methods = {
       }
     });
   },
-  updateSuccess: function() {
+  updateSuccess: function () {
     var $this = this;
 
     $this.listIndex++;

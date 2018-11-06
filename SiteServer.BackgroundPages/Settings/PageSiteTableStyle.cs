@@ -58,7 +58,7 @@ namespace SiteServer.BackgroundPages.Settings
                 }
             }
 
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, new List<int> {0});
+            var styleInfoList = TableStyleManager.GetStyleInfoList(_tableName, TableStyleManager.EmptyRelatedIdentities);
 
             RptContents.DataSource = styleInfoList;
             RptContents.ItemDataBound += RptContents_ItemDataBound;

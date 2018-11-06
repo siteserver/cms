@@ -3,21 +3,21 @@
     only:
       - master
 
-  version: 6.6.{build}
+  version: 6.7.{build}
   image: Visual Studio 2017
 
   assembly_info:
     patch: true
     file: '**\AssemblyInfo.cs'
-    assembly_version: "{version}"
-    assembly_file_version: "{version}"
-    assembly_informational_version: "{version}"
+    assembly_version: '{version}'
+    assembly_file_version: '{version}'
+    assembly_informational_version: '{version}'
 
   configuration:
     - Release
 
   environment:
-    nodejs_version: "6"
+    nodejs_version: '6'
     TreatWarningsAsErrors: false
 
   install:
@@ -50,20 +50,17 @@
     - path: siteserver.exe
       name: siteserver.exe
 
-    - path: "*.nupkg"
+    - path: '*.nupkg'
 
   deploy:
     - provider: GitHub
       release: siteserver-v$(appveyor_build_version)
-      description: "SiteServer CMS"
+      description: 'SiteServer CMS'
       auth_token:
         secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
       artifact: /.*\.[zip|exe]/
       draft: false
       prerelease: false
-      on:
-        branch: master
-        appveyor_repo_tag: false
 
     - provider: NuGet
       server: # remove to push to NuGet.org
@@ -83,21 +80,21 @@
     only:
       - staging
 
-  version: 6.6.{build}-beta
+  version: 6.7.{build}-beta
   image: Visual Studio 2017
 
   assembly_info:
     patch: true
     file: '**\AssemblyInfo.cs'
-    assembly_version: "{version}"
-    assembly_file_version: "{version}"
-    assembly_informational_version: "{version}"
+    assembly_version: '{version}'
+    assembly_file_version: '{version}'
+    assembly_informational_version: '{version}'
 
   configuration:
     - Release
 
   environment:
-    nodejs_version: "6"
+    nodejs_version: '6'
     TreatWarningsAsErrors: false
     DOCKER_USER:
       secure: plV6NmiOZal0f3H/xNFuoA==
@@ -138,25 +135,22 @@
     - path: siteserver.exe
       name: siteserver.exe
 
-    - path: "*.nupkg"
+    - path: '*.nupkg'
 
   deploy:
     - provider: GitHub
       release: siteserver-v$(appveyor_build_version)
-      description: "SiteServer CMS"
+      description: 'SiteServer CMS'
       auth_token:
         secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
       artifact: /.*\.[zip|exe]/
       draft: false
-      prerelease: false
-      on:
-        branch: staging
-        appveyor_repo_tag: false
+      prerelease: true
 
     - provider: NuGet
-      server: https://www.myget.org/F/siteserver/api/v2/package # remove to push to NuGet.org
+      server: # remove to push to NuGet.org
       api_key:
-        secure: i9vISdFyCeWbRUQw+jhcF748i4oWdeatGBrx+dJ07SDTpt7Hsk9YCRp/ha3ZXfZF
+        secure: B9umZPwBVx2TMfYt7G1Eppy7XX0FkqWioXxwR+lKv5XVRc6ezjOXP8D9iuisOWBF
       skip_symbols: false
       symbol_server: # remove to push symbols to SymbolSource.org
       artifact: /.*\.nupkg/

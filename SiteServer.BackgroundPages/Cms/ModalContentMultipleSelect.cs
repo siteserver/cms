@@ -28,8 +28,6 @@ namespace SiteServer.BackgroundPages.Cms
         public SqlPager SpContents;
 
         private ChannelInfo _channelInfo;
-        private string _tableName;
-        private List<int> _relatedIdentities;
         private List<TableStyleInfo> _tableStyleInfoList;
         private string _jsMethod;
         private readonly Hashtable _valueHashtable = new Hashtable();
@@ -55,19 +53,18 @@ namespace SiteServer.BackgroundPages.Cms
                 channelId = SiteId;
             }
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-            _tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
-            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelInfo.Id);
-            _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);
+            var tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
+            _tableStyleInfoList = TableStyleManager.GetContentStyleInfoList(SiteInfo, _channelInfo);
 
             SpContents.ControlToPaginate = RptContents;
             SpContents.SelectCommand = string.IsNullOrEmpty(AuthRequest.GetQueryString("channelId"))
-                ? DataProvider.ContentDao.GetSqlString(_tableName, SiteId,
-                    _channelInfo.Id, AuthRequest.AdminPermissions.IsSystemAdministrator,
-                    AuthRequest.AdminPermissions.OwningChannelIdList, DdlSearchType.SelectedValue, TbKeyword.Text,
+                ? DataProvider.ContentDao.GetSqlString(tableName, SiteId,
+                    _channelInfo.Id, AuthRequest.AdminPermissionsImpl.IsSystemAdministrator,
+                    AuthRequest.AdminPermissionsImpl.ChannelIdList, DdlSearchType.SelectedValue, TbKeyword.Text,
                     TbDateFrom.Text, TbDateTo.Text, true, ETriState.True, false)
-                : DataProvider.ContentDao.GetSqlString(_tableName, SiteId,
-                    _channelInfo.Id, AuthRequest.AdminPermissions.IsSystemAdministrator,
-                    AuthRequest.AdminPermissions.OwningChannelIdList, AuthRequest.GetQueryString("SearchType"),
+                : DataProvider.ContentDao.GetSqlString(tableName, SiteId,
+                    _channelInfo.Id, AuthRequest.AdminPermissionsImpl.IsSystemAdministrator,
+                    AuthRequest.AdminPermissionsImpl.ChannelIdList, AuthRequest.GetQueryString("SearchType"),
                     AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"), AuthRequest.GetQueryString("DateTo"), true,
                     ETriState.True, true);
             SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
@@ -78,7 +75,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissions);
+            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissionsImpl);
 
             if (_tableStyleInfoList != null)
             {

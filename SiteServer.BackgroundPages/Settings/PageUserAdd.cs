@@ -13,6 +13,7 @@ namespace SiteServer.BackgroundPages.Settings
     {
         public Literal LtlPageTitle;
         public TextBox TbUserName;
+        public DropDownList DdlGroupId;
         public TextBox TbDisplayName;
         public PlaceHolder PhPassword;
         public TextBox TbPassword;
@@ -54,12 +55,18 @@ namespace SiteServer.BackgroundPages.Settings
 
             LtlPageTitle.Text = _userId == 0 ? "添加用户" : "编辑用户";
 
+            foreach (var groupInfo in UserGroupManager.GetUserGroupInfoList())
+            {
+                DdlGroupId.Items.Add(new ListItem(groupInfo.GroupName, groupInfo.Id.ToString()));
+            }
+
             if (_userId > 0)
             {
-                var userInfo = DataProvider.UserDao.GetUserInfo(_userId);
+                var userInfo = UserManager.GetUserInfoByUserId(_userId);
                 if (userInfo != null)
                 {
                     TbUserName.Text = userInfo.UserName;
+                    ControlUtils.SelectSingleItem(DdlGroupId, userInfo.GroupId.ToString());
                     TbUserName.Enabled = false;
                     TbDisplayName.Text = userInfo.DisplayName;
                     PhPassword.Visible = false;
@@ -99,13 +106,14 @@ namespace SiteServer.BackgroundPages.Settings
                     IsLockedOut = false,
                     DisplayName = TbDisplayName.Text,
                     Email = TbEmail.Text,
-                    Mobile = TbMobile.Text
+                    Mobile = TbMobile.Text,
+                    GroupId = TranslateUtils.ToInt(DdlGroupId.SelectedValue)
                 };
 
                 string errorMessage;
-                var isCreated = DataProvider.UserDao.Insert(userInfo, userInfo.Password, string.Empty, out errorMessage);
+                var userId = DataProvider.UserDao.Insert(userInfo, userInfo.Password, string.Empty, out errorMessage);
 
-                if (isCreated)
+                if (userId > 0)
                 {
                     AuthRequest.AddAdminLog("添加用户",
                         $"用户:{TbUserName.Text}");
@@ -120,8 +128,9 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                var userInfo = DataProvider.UserDao.GetUserInfo(_userId);
+                var userInfo = UserManager.GetUserInfoByUserId(_userId);
 
+                userInfo.GroupId = TranslateUtils.ToInt(DdlGroupId.SelectedValue);
                 userInfo.DisplayName = TbDisplayName.Text;
                 userInfo.Email = TbEmail.Text;
                 userInfo.Mobile = TbMobile.Text;

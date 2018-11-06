@@ -67,7 +67,8 @@ namespace SiteServer.BackgroundPages.Cms
                         var extendName = fileName.Substring(fileName.LastIndexOf(".", StringComparison.Ordinal)).ToLower();
                         if (extendName == ".doc" || extendName == ".docx")
                         {
-                            var filePath = WordUtils.GetWordFilePath(fileName);
+                            var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+                            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                             postedFile.SaveAs(filePath);
 
                             success = true;
@@ -109,7 +110,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 foreach (var fileName in fileNames.Split('|'))
                 {
-                    var filePath = WordUtils.GetWordFilePath(fileName);
+                    var filePath = PathUtils.GetTemporaryFilesPath(fileName);
                     var wordContent = WordUtils.Parse(SiteId, filePath, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked);
                     wordContent = ContentUtility.TextEditorContentDecode(SiteInfo, wordContent, true);
                     builder.Append(wordContent);

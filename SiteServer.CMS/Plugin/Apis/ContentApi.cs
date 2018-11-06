@@ -67,10 +67,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
-            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(siteId, channelId);
-
-            var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
+            var tableStyleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, nodeInfo);
             var tableColumnList = new List<TableColumn>
             {
                 new TableColumn

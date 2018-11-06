@@ -23,10 +23,10 @@ namespace SiteServer.BackgroundPages
 
             var redirectUrl = PageMain.GetRedirectUrl(); // 如果检测登录帐号一切正常，则准备转到框架主页 pagemain.aspx
 
-            var siteIdList = AuthRequest.AdminPermissions.SiteIdList; // 获取当前站点ID
+            var siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdList(); // 获取当前站点ID
             if (siteIdList == null || siteIdList.Count == 0) // 如果目前还没有创建站点
             {
-                if (AuthRequest.AdminPermissions.IsSystemAdministrator)  // 如果目前还没有创建站点并且当前登录管理员是系统管理员
+                if (AuthRequest.AdminPermissionsImpl.IsSystemAdministrator)  // 如果目前还没有创建站点并且当前登录管理员是系统管理员
                 {
                     redirectUrl = PageSiteAdd.GetRedirectUrl(); // 则直接跳到站点创建页面
                 }

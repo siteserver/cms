@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>SiteServer CMS - 用户中心</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta content="SiteServer CMS 用户中心" name="description" />
+  <meta content="SiteServer CMS" name="author" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <link rel="shortcut icon" href="../assets/images/favicon.ico">
+  <link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/lib/vue-multiselect-2.1.0/style.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/font-awesome-4.7.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/ionicons-2.0.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/siteserver.min.css" rel="stylesheet" type="text/css" />
+  <script src="../assets/lib/modernizr.min.js"></script>
+  <script type="text/javascript" src="../assets/lib/iframe-resizer-3.6.2/iframeResizer.contentWindow.min.js"></script>
+</head>
+
+<body class="p-0">
+
+  <div id="main" class="container-fluid">
+
+    <template v-if="pageType === 'Unauthorized'">
+      <div class="card m-3 card-body">
+        <h4 class="card-title text-danger">错误！</h4>
+        <p>您的投稿权限尚未开通，请联系管理员解决。</p>
+      </div>
+    </template>
+    <template v-else-if="pageConfig && pageLoad">
+
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="page-title-box">
+            <div class="btn-group pull-right">
+              <ol class="breadcrumb hide-phone p-0 m-0">
+                <li class="breadcrumb-item"><a :href="site.siteUrl">{{ site.siteName }}</a></li>
+                <li class="breadcrumb-item active">{{ channel.channelName }}</li>
+              </ol>
+            </div>
+            <h4 class="page-title">稿件管理</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-box">
+
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="inputEmail4" class="col-form-label">站点</label>
+            <multiselect v-on:select="onSiteSelect" v-model="site" placeholder="选择或者输入文字搜索站点..." :options="sites"
+              :searchable="true" :show-labels="false" label="siteName" track-by="siteName">
+              <template slot="singleLabel" slot-scope="props">{{ props.option.siteName }}</template>
+              <template slot="option" slot-scope="props">
+                {{ props.option.siteName }}
+              </template>
+            </multiselect>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="inputPassword4" class="col-form-label">栏目</label>
+            <multiselect v-on:select="onChannelSelect" v-model="channel" placeholder="选择或者输入文字搜索栏目..." :options="channels"
+              :searchable="true" :show-labels="false" label="channelName" track-by="channelName">
+              <template slot="singleLabel" slot-scope="props">{{ props.option.channelName }}</template>
+              <template slot="option" slot-scope="props">
+                {{ props.option.channelName }}
+              </template>
+            </multiselect>
+          </div>
+        </div>
+
+        <div class="btn-toolbar btn-group mb-2">
+          <button v-if="permissions.isAdd" v-on:click="btnAddClick" class="btn btn-outline-primary btn-sm">
+            <i class="ion-plus"></i>
+            添加
+          </button>
+          <button v-if="permissions.isAdd" v-on:click="btnLayerClick({title: '批量导入Word', name: 'Word', full: true})"
+            class="btn btn-outline-primary btn-sm">
+            <i class="fa fa-wikipedia-w"></i>
+            Word
+          </button>
+          <button v-if="count > 0 && permissions.isChannelEdit" v-on:click="btnLayerClick({title: '设置显示列', name: 'Columns', full: true})"
+            class="btn btn-outline-primary btn-sm">
+            <i class="fa fa-columns"></i>
+            显示列
+          </button>
+          <button v-if="count > 0" v-on:click="btnLayerClick({title: '批量导出', name: 'Export', full: true})" class="btn btn-outline-primary btn-sm">
+            <i class="fa fa-download"></i>
+            导出
+          </button>
+          <button v-if="permissions.isAdd" v-on:click="btnLayerClick({title: '批量导入', name: 'Import', full: true})"
+            class="btn btn-outline-primary btn-sm">
+            <i class="fa fa-upload"></i>
+            导入
+          </button>
+          <button v-if="count > 0 && permissions.isEdit" v-on:click="btnLayerClick({title: '批量整理', name: 'Arrange', width: 550, height: 350})"
+            class="btn btn-outline-primary btn-sm">
+            <i class="fa fa-list-ol"></i>
+            整理
+          </button>
+          <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+            v-on:click="btnLayerClick({title: '批量设置属性', name: 'Attributes', width: 450, height: 320, withContents: true})"
+            class="btn btn-sm">
+            <i class="fa fa-flag"></i>
+            属性
+          </button>
+          <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+            v-on:click="btnLayerClick({title: '批量设置组别', name: 'Group', withContents: true})" class="btn btn-sm">
+            <i class="fa fa-check-square"></i>
+            内容组
+          </button>
+          <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+            v-on:click="btnLayerClick({title: '批量排序', name: 'Taxis', width: 450, height: 280, withContents: true})"
+            class="btn btn-sm">
+            <i class="fa fa-sort"></i>
+            排序
+          </button>
+          <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+            v-on:click="btnLayerClick({title: '批量转移', name: 'Cut', full: true, withContents: true})" class="btn btn-sm">
+            <i class="fa fa-cut"></i>
+            转移
+          </button>
+          <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+            v-on:click="btnLayerClick({title: '批量复制', name: 'Copy', full: true, withContents: true})" class="btn btn-sm">
+            <i class="fa fa-copy"></i>
+            复制
+          </button>
+          <button v-if="count > 0 && permissions.isDelete" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+            v-on:click="btnLayerClick({title: '批量删除', name: 'Delete', full: true, withContents: true})" class="btn btn-sm">
+            <i class="fa fa-trash"></i>
+            删除
+          </button>
+          <button v-if="count > 0 && permissions.isCheck" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+            v-on:click="btnLayerClick({title: '批量审核', name: 'Check', full: true, withContents: true})" class="btn btn-sm">
+            <i class="fa fa-shield"></i>
+            审核
+          </button>
+        </div>
+
+        <div v-if="pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
+          <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
+          <span v-html="pageAlert.html"></span>
+        </div>
+
+        <table class=" table table-sm tablesaw table-bordered table-hover bg-white mt-1">
+          <thead>
+            <tr>
+              <th class="text-nowrap" v-for="column in columns" v-html="column.displayName"></th>
+
+              <th class="text-center text-nowrap">操作</th>
+              <th class="text-center text-nowrap">状态</th>
+              <th class="text-nowrap checkbox checkbox-primary" style="width: 34px">
+                <input id="all" v-on:click="selectAll()" v-model="isAllChecked" type="checkbox">
+                <label for="all" style="margin-left: 5px;"></label>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="content in pageContents" v-on:click="toggleChecked(content)" :class="{'table-warning': content.isSelected}">
+              <td v-for="column in columns">
+
+                <template v-if="column.attributeName === 'Title' && content.isChecked">
+                  <a :href="content.navigationUrl" v-html="content.title" target="_blank" onclick="event.stopPropagation()"></a>
+                  <i v-if="content.isTop" class="text-primary fa fa-arrow-up" title="置顶"></i>
+                  <i v-if="content.isRecommend" class="text-primary fa fa-star" title="推荐"></i>
+                  <i v-if="content.isHot" class="text-primary fa fa-fire" title="热点"></i>
+                  <i v-if="content.isColor" class="text-primary fa fa-eye" title="醒目"></i>
+                  <a v-if="content.imageUrl" :href="content.imageUrl" target="_blank" onclick="event.stopPropagation()"><i
+                      class="text-primary fa fa-file-photo-o"></i></a>
+                  <a v-if="content.videoUrl" :href="content.videoUrl" target="_blank" onclick="event.stopPropagation()"><i
+                      class="text-primary fa fa-file-video-o"></i></a>
+                  <a v-if="content.fileUrl" :href="content.fileUrl" target="_blank" onclick="event.stopPropagation()"><i
+                      class="text-primary fa fa-file-archive-o"></i></a>
+                  <a v-if="content.linkUrl" :href="content.linkUrl" target="_blank" onclick="event.stopPropagation()"><i
+                      class="text-primary fa fa-external-link"></i></a>
+                </template>
+                <template v-else-if="column.attributeName === 'Title' && !content.isChecked">
+                  <a href="javascript:;" v-html="content.title" v-on:click="btnLayerClick({title: '查看内容', name: 'View', contentId: content.id, full: true})"></a>
+                  <i v-if="content.isTop" class="text-primary fa fa-arrow-up" title="置顶"></i>
+                  <i v-if="content.isRecommend" class="text-primary fa fa-star" title="推荐"></i>
+                  <i v-if="content.isHot" class="text-primary fa fa-fire" title="热点"></i>
+                  <i v-if="content.isColor" class="text-primary fa fa-eye" title="醒目"></i>
+                  <a v-if="content.imageUrl" :href="content.imageUrl" target="_blank" onclick="event.stopPropagation()"><i
+                      class="text-primary fa fa-file-photo-o"></i></a>
+                  <a v-if="content.videoUrl" :href="content.videoUrl" target="_blank" onclick="event.stopPropagation()"><i
+                      class="text-primary fa fa-file-video-o"></i></a>
+                  <a v-if="content.fileUrl" :href="content.fileUrl" target="_blank" onclick="event.stopPropagation()"><i
+                      class="text-primary fa fa-file-archive-o"></i></a>
+                  <a v-if="content.linkUrl" :href="content.linkUrl" target="_blank" onclick="event.stopPropagation()"><i
+                      class="text-primary fa fa-external-link"></i></a>
+                </template>
+                <template v-else-if="column.inputType === 'Image'">
+                  <a v-if="content.getProp(column.attributeName)" :href="content.getProp(column.attributeName)" target="_blank"
+                    onclick="event.stopPropagation()">
+                    <img :src="content.getProp(column.attributeName)" style="height: 36px;width: 36px;" class="rounded-circle">
+                  </a>
+                </template>
+                <template v-else>
+                  <span v-html="content.getProp(column.attributeName)"></span>
+                </template>
+
+              </td>
+
+              <td class="text-center text-nowrap" style="width: 80px">
+                <a v-on:click="btnEditClick(content.id)" href="javascript:;" onclick="event.stopPropagation()">编辑</a>
+              </td>
+              <td class="text-center text-nowrap" style="width: 80px">
+                <a v-on:click="btnLayerClick({title: '查看审核状态', name: 'State', contentId: content.id, full: true})" href="javascript:;"
+                  :class="{'text-danger' : !content.isChecked}">
+                  {{content.checkState }}
+                </a>
+              </td>
+              <td class="text-nowrap checkbox checkbox-primary">
+                <input :id="'checkbox' + content.id" v-model="content.isSelected" type="checkbox">
+                <label :for="'checkbox' + content.id" style="padding: 0;margin-bottom: 13px;"></label>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div v-if="pageContents.length > 10" class="btn-toolbar btn-group mb-2">
+          <button v-if="permissions.isAdd" v-on:click="btnAddClick" class="btn btn-outline-primary btn-sm">
+            <i class="ion-plus"></i>
+            添加
+          </button>
+          <button v-if="permissions.isAdd" v-on:click="btnLayerClick({title: '批量导入Word', name: 'Word', full: true})"
+            class="btn btn-outline-primary btn-sm">
+            <i class="fa fa-wikipedia-w"></i>
+            Word
+          </button>
+          <button v-if="count > 0 && permissions.isChannelEdit" v-on:click="btnLayerClick({title: '设置显示列', name: 'Columns', full: true})"
+            class="btn btn-outline-primary btn-sm">
+            <i class="fa fa-columns"></i>
+            显示列
+          </button>
+          <button v-if="count > 0" v-on:click="btnLayerClick({title: '批量导出', name: 'Export', full: true})" class="btn btn-outline-primary btn-sm">
+            <i class="fa fa-download"></i>
+            导出
+          </button>
+          <button v-if="permissions.isAdd" v-on:click="btnLayerClick({title: '批量导入', name: 'Import', full: true})"
+            class="btn btn-outline-primary btn-sm">
+            <i class="fa fa-upload"></i>
+            导入
+          </button>
+          <button v-if="count > 0 && permissions.isEdit" v-on:click="btnLayerClick({title: '批量整理', name: 'Arrange', width: 550, height: 350})"
+            class="btn btn-outline-primary btn-sm">
+            <i class="fa fa-list-ol"></i>
+            整理
+          </button>
+          <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+            v-on:click="btnLayerClick({title: '批量设置属性', name: 'Attributes', width: 450, height: 320, withContents: true})"
+            class="btn btn-sm">
+            <i class="fa fa-flag"></i>
+            属性
+          </button>
+          <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+            v-on:click="btnLayerClick({title: '批量设置组别', name: 'Group', withContents: true})" class="btn btn-sm">
+            <i class="fa fa-check-square"></i>
+            内容组
+          </button>
+          <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+            v-on:click="btnLayerClick({title: '批量排序', name: 'Taxis', width: 450, height: 280, withContents: true})"
+            class="btn btn-sm">
+            <i class="fa fa-sort"></i>
+            排序
+          </button>
+          <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+            v-on:click="btnLayerClick({title: '批量转移', name: 'Cut', full: true, withContents: true})" class="btn btn-sm">
+            <i class="fa fa-cut"></i>
+            转移
+          </button>
+          <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+            v-on:click="btnLayerClick({title: '批量复制', name: 'Copy', full: true, withContents: true})" class="btn btn-sm">
+            <i class="fa fa-copy"></i>
+            复制
+          </button>
+          <button v-if="count > 0 && permissions.isDelete" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+            v-on:click="btnLayerClick({title: '批量删除', name: 'Delete', full: true, withContents: true})" class="btn btn-sm">
+            <i class="fa fa-trash"></i>
+            删除
+          </button>
+          <button v-if="count > 0 && permissions.isCheck" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+            v-on:click="btnLayerClick({title: '批量审核', name: 'Check', full: true, withContents: true})" class="btn btn-sm">
+            <i class="fa fa-shield"></i>
+            审核
+          </button>
+        </div>
+
+        <hr />
+
+        <div class="row">
+          <div class="col-9">
+            <ul class="pagination pagination-sm float-left">
+              <li class="page-item" :class="{disabled : page === 1}">
+                <a class="page-link" v-on:click="loadFirstPage" :class="{'bg-light' : page === 1}" href="javascript:;">首
+                  页</a>
+              </li>
+              <li class="page-item" :class="{disabled : page === 1}">
+                <a class="page-link" v-on:click="loadPrevPage" :class="{'bg-light' : page === 1}" href="javascript:;">上一页</a>
+              </li>
+              <li class="page-item" :class="{disabled : page === pages}">
+                <a class="page-link" v-on:click="loadNextPage" :class="{'bg-light' : page === pages}" href="javascript:;">下一页</a>
+              </li>
+              <li class="page-item" :class="{disabled : page === pages}">
+                <a class="page-link" v-on:click="loadLastPage" :class="{'bg-light' : page === pages}" href="javascript:;">末
+                  页</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-3">
+            <multiselect v-on:select="onPageSelect" v-model="page" placeholder="Select one" :options="pageOptions"
+              :searchable="false" :show-labels="false">
+              <template slot="singleLabel" slot-scope="{ option }">第 {{ option }} 页（共 {{ pages }} 页）</template>
+              <template slot="option" slot-scope="props">
+                第 {{ props.option }} 页
+              </template>
+            </multiselect>
+          </div>
+        </div>
+      </div>
+
+    </template>
+    <template v-else>
+      <div class="text-center" style="margin-top: 100px">
+        <img class="mt-3" src="../assets/images/loading.gif" />
+        <p class="lead mt-3 text-nowrap">载入中，请稍后...</p>
+      </div>
+    </template>
+
+  </div>
+
+</body>
+
+</html>
+
+<script src="../assets/lib/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="../assets/lib/popper.min.js"></script>
+<script src="../assets/lib/bootstrap.min.js"></script>
+<script src="../assets/lib/lodash-4.17.10.min.js" type="text/javascript"></script>
+<script src="../assets/lib/layer-3.1.1/layer.js" type="text/javascript"></script>
+<script src="../assets/lib/sweetalert2-7.28.4.all.min.js" type="text/javascript"></script>
+<script src="../assets/lib/vue-2.5.16.min.js" type="text/javascript"></script>
+<script src="../assets/lib/vee-validate-2.1.0.js"></script>
+<script src="../assets/lib/vee-validate-locale-zh_CN-2.1.0.js"></script>
+<script src="../assets/lib/js.cookie-2.2.0.js"></script>
+<script src="../assets/js/utils.js" type="text/javascript"></script>
+<script src="../config.js" type="text/javascript"></script>
+
+<script src="../assets/lib/vue-multiselect-2.1.0/script.min.js"></script>
+<script src="contents.js" type="text/javascript"></script>

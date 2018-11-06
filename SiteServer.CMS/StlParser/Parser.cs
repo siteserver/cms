@@ -36,7 +36,7 @@ namespace SiteServer.CMS.StlParser
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnBeforeStlParse));
+                    LogUtils.AddStlErrorLog(pageInfo, service.PluginId, nameof(service.OnBeforeStlParse), ex);
                 }
             }
 
@@ -53,7 +53,7 @@ namespace SiteServer.CMS.StlParser
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnAfterStlParse));
+                    LogUtils.AddStlErrorLog(pageInfo, service.PluginId, nameof(service.OnAfterStlParse), ex);
                 }
             }
 

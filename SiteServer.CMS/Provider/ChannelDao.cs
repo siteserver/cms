@@ -9,6 +9,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -308,8 +309,8 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(trans, sqlUpdateIsLastNode);
 
             //OwningIdCache.IsChanged = true;
-            ChannelManager.RemoveCache(channelInfo.SiteId);
-            PermissionManager.ClearAllCache();
+            ChannelManager.RemoveCacheBySiteId(channelInfo.SiteId);
+            PermissionsImpl.ClearAllCache();
         }
 
         /// <summary>
@@ -390,7 +391,7 @@ namespace SiteServer.CMS.Provider
         {
             var channelInfo = ChannelManager.GetChannelInfo(siteId, selectedId);
             if (channelInfo == null || channelInfo.ParentId == 0 || channelInfo.SiteId == 0) return;
-            UpdateWholeTaxisBySiteId(channelInfo.SiteId);
+            //UpdateWholeTaxisBySiteId(channelInfo.SiteId);
             //Get Lower Taxis and Id
             int lowerId;
             int lowerChildrenCount;
@@ -440,7 +441,7 @@ namespace SiteServer.CMS.Provider
         {
             var channelInfo = ChannelManager.GetChannelInfo(siteId, selectedId);
             if (channelInfo == null || channelInfo.ParentId == 0 || channelInfo.SiteId == 0) return;
-            UpdateWholeTaxisBySiteId(channelInfo.SiteId);
+            //UpdateWholeTaxisBySiteId(channelInfo.SiteId);
             //Get Higher Taxis and Id
             int higherId;
             int higherChildrenCount;
@@ -679,7 +680,8 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            DataProvider.AdministratorDao.UpdateSiteId(administratorName, channelInfo.Id);
+            var adminInfo = AdminManager.GetAdminInfoByUserName(administratorName);
+            DataProvider.AdministratorDao.UpdateSiteId(adminInfo, channelInfo.Id);
 
             var sqlString =
                 $"UPDATE siteserver_Channel SET SiteId = {channelInfo.Id} WHERE Id = {channelInfo.Id}";
@@ -689,7 +691,7 @@ namespace SiteServer.CMS.Provider
             return channelInfo.Id;
         }
 
-        public void Update(IChannelInfo channelInfo)
+        public void Update(ChannelInfo channelInfo)
         {
             var updateParms = new IDataParameter[]
             {
@@ -719,9 +721,29 @@ namespace SiteServer.CMS.Provider
 
             ExecuteNonQuery(SqlUpdate, updateParms);
 
-            ChannelManager.RemoveCache(channelInfo.ParentId == 0
-                ? channelInfo.Id
-                : channelInfo.SiteId);
+            ChannelManager.UpdateCache(channelInfo.SiteId, channelInfo);
+
+            //ChannelManager.RemoveCache(channelInfo.ParentId == 0
+            //    ? channelInfo.Id
+            //    : channelInfo.SiteId);
+        }
+
+        public void UpdateChannelTemplateId(ChannelInfo channelInfo)
+        {
+            string sqlString =
+                $"UPDATE siteserver_Channel SET ChannelTemplateId = {channelInfo.ChannelTemplateId} WHERE Id = {channelInfo.Id}";
+            ExecuteNonQuery(sqlString);
+
+            ChannelManager.UpdateCache(channelInfo.SiteId, channelInfo);
+        }
+
+        public void UpdateContentTemplateId(ChannelInfo channelInfo)
+        {
+            string sqlString =
+                $"UPDATE siteserver_Channel SET ContentTemplateId = {channelInfo.ContentTemplateId} WHERE Id = {channelInfo.Id}";
+            ExecuteNonQuery(sqlString);
+
+            ChannelManager.UpdateCache(channelInfo.SiteId, channelInfo);
         }
 
         public void UpdateAdditional(ChannelInfo channelInfo)
@@ -734,9 +756,11 @@ namespace SiteServer.CMS.Provider
 
             ExecuteNonQuery(SqlUpdateExtendValues, updateParms);
 
-            ChannelManager.RemoveCache(channelInfo.ParentId == 0
-                ? channelInfo.Id
-                : channelInfo.SiteId);
+            ChannelManager.UpdateCache(channelInfo.SiteId, channelInfo);
+
+            //ChannelManager.RemoveCache(channelInfo.ParentId == 0
+            //    ? channelInfo.Id
+            //    : channelInfo.SiteId);
         }
 
         /// <summary>
@@ -752,19 +776,7 @@ namespace SiteServer.CMS.Provider
             {
                 TaxisAdd(siteId, selectedId);
             }
-            ChannelManager.RemoveCache(siteId);
-        }
-
-        private void UpdateGroupNameCollection(int siteId, int channelId, string groupNameCollection)
-        {
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmGroupNameCollection, DataType.VarChar, 255, groupNameCollection),
-                GetParameter(ParmId, DataType.Integer, channelId)
-            };
-
-            ExecuteNonQuery(SqlUpdateGroupNameCollection, parms);
-            ChannelManager.RemoveCache(siteId);
+            ChannelManager.RemoveCacheBySiteId(siteId);
         }
 
         public void AddGroupNameList(int siteId, int channelId, List<string> groupList)
@@ -777,7 +789,18 @@ namespace SiteServer.CMS.Provider
             {
                 if (!list.Contains(groupName)) list.Add(groupName);
             }
-            UpdateGroupNameCollection(siteId, channelId, TranslateUtils.ObjectCollectionToString(list));
+
+            channelInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
+
+            var parms = new IDataParameter[]
+            {
+                GetParameter(ParmGroupNameCollection, DataType.VarChar, 255, channelInfo.GroupNameCollection),
+                GetParameter(ParmId, DataType.Integer, channelId)
+            };
+
+            ExecuteNonQuery(SqlUpdateGroupNameCollection, parms);
+
+            ChannelManager.UpdateCache(siteId, channelInfo);
         }
 
         public void Delete(int siteId, int channelId)
@@ -792,7 +815,7 @@ namespace SiteServer.CMS.Provider
             }
             idList.Add(channelId);
 
-            string deleteCmd =
+            var deleteCmd =
                 $"DELETE FROM siteserver_Channel WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
 
             int deletedNum;
@@ -835,7 +858,7 @@ namespace SiteServer.CMS.Provider
             }
             else
             {
-                ChannelManager.RemoveCache(channelInfo.SiteId);
+                ChannelManager.RemoveCacheBySiteId(channelInfo.SiteId);
             }
         }
 
@@ -1107,24 +1130,6 @@ namespace SiteServer.CMS.Provider
             return DataProvider.DatabaseDao.GetIntResult(sqlString) + 1;
         }
 
-        public void UpdateChannelTemplateId(int channelId, int channelTemplateId)
-        {
-            string sqlString =
-                $"UPDATE siteserver_Channel SET ChannelTemplateId = {channelTemplateId} WHERE Id = {channelId}";
-            ExecuteNonQuery(sqlString);
-
-            ChannelManager.RemoveCache(channelId);
-        }
-
-        public void UpdateContentTemplateId(int channelId, int contentTemplateId)
-        {
-            string sqlString =
-                $"UPDATE siteserver_Channel SET ContentTemplateId = {contentTemplateId} WHERE Id = {channelId}";
-            ExecuteNonQuery(sqlString);
-
-            ChannelManager.RemoveCache(channelId);
-        }
-
         public List<int> GetIdListByTotalNum(List<int> channelIdList, int totalNum, string orderByString, string whereString)
         {
             if (channelIdList == null || channelIdList.Count == 0)
@@ -1135,20 +1140,28 @@ namespace SiteServer.CMS.Provider
             string sqlString;
             if (totalNum > 0)
             {
-//                sqlString = $@"SELECT TOP {totalNum} Id
-//FROM siteserver_Channel 
-//WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
-//";
+                //                sqlString = $@"SELECT TOP {totalNum} Id
+                //FROM siteserver_Channel 
+                //WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
+                //";
+                //var where =
+                //    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})";
+                var where =
+                    $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString})";
                 sqlString = SqlUtils.ToTopSqlString(TableName, "Id",
-                    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})",
+                    where,
                     orderByString,
                     totalNum);
             }
             else
             {
+                //                sqlString = $@"SELECT Id
+                //FROM siteserver_Channel 
+                //WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
+                //";
                 sqlString = $@"SELECT Id
 FROM siteserver_Channel 
-WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
+WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByString}
 ";
             }
 
@@ -1189,9 +1202,10 @@ ORDER BY Taxis";
 
         public DataSet GetStlDataSourceBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
         {
-            string sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
+            var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
 
-            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
             return ExecuteDataset(sqlSelect);
         }
@@ -1203,19 +1217,24 @@ ORDER BY Taxis";
                 return null;
             }
 
-            string sqlWhereString =
-                $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})";
+            //var sqlWhereString =
+            //    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})";
 
-            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlWhereString =
+                $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString}";
+
+            //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
             return ExecuteDataset(sqlSelect);
         }
 
         public DataSet GetStlDataSetBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
         {
-            string sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
+            var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
 
-            var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
             return ExecuteDataset(sqlSelect);
         }

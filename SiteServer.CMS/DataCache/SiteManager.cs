@@ -7,6 +7,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.DataCache
@@ -436,40 +437,40 @@ namespace SiteServer.CMS.DataCache
             return PathUtils.GetDirectoryName(siteInfo.SiteDir, false);
         }
 
-        public static List<int> GetWritingSiteIdList(PermissionManager permissionManager)
-        {
-            var siteIdList = new List<int>();
+        //public static List<int> GetWritingSiteIdList(PermissionsImpl permissionsImpl)
+        //{
+        //    var siteIdList = new List<int>();
 
-            if (!string.IsNullOrEmpty(permissionManager.UserName))
-            {
-                if (permissionManager.IsConsoleAdministrator || permissionManager.IsSystemAdministrator)//如果是超级管理员或站点管理员
-                {
-                    foreach (var siteId in permissionManager.SiteIdList)
-                    {
-                        if (!siteIdList.Contains(siteId))
-                        {
-                            siteIdList.Add(siteId);
-                        }
-                    }
-                }
-                else
-                {
-                    foreach (var siteId in permissionManager.SiteIdList)
-                    {
-                        if (!siteIdList.Contains(siteId))
-                        {
-                            var channelIdCollection = DataProvider.SitePermissionsDao.GetAllPermissionList(permissionManager.Roles, siteId, true);
-                            if (channelIdCollection.Count > 0)
-                            {
-                                siteIdList.Add(siteId);
-                            }
-                        }
-                    }
-                }
-            }
+        //    if (!string.IsNullOrEmpty(permissionsImpl.UserName))
+        //    {
+        //        if (permissionsImpl.IsConsoleAdministrator || permissionsImpl.IsSystemAdministrator)//如果是超级管理员或站点管理员
+        //        {
+        //            foreach (var siteId in permissionsImpl.SiteIdList)
+        //            {
+        //                if (!siteIdList.Contains(siteId))
+        //                {
+        //                    siteIdList.Add(siteId);
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            foreach (var siteId in permissionsImpl.SiteIdList)
+        //            {
+        //                if (!siteIdList.Contains(siteId))
+        //                {
+        //                    var channelIdCollection = DataProvider.SitePermissionsDao.GetAllPermissionList(permissionsImpl.Roles, siteId, true);
+        //                    if (channelIdCollection.Count > 0)
+        //                    {
+        //                        siteIdList.Add(siteId);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
 
-            return siteIdList;
-        }
+        //    return siteIdList;
+        //}
 
         public static string GetSiteName(SiteInfo siteInfo)
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
@@ -16,101 +17,6 @@ namespace SiteServer.Utils
     {
         public const string Asterisk = "*";
         public const string OracleEmptyValue = "_EMPTY_";
-
-        public static string GetConnectionString(DatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string database)
-        {
-            var connectionString = string.Empty;
-
-            if (databaseType == DatabaseType.MySql)
-            {
-                connectionString = $"Server={server};";
-                if (!isDefaultPort && port > 0)
-                {
-                    connectionString += $"Port={port};";
-                }
-                connectionString += $"Uid={userName};Pwd={password};";
-                if (!string.IsNullOrEmpty(database))
-                {
-                    connectionString += $"Database={database};";
-                }
-                connectionString += "SslMode=none;CharSet=utf8;";
-            }
-            else if (databaseType == DatabaseType.SqlServer)
-            {
-                connectionString = $"Server={server};";
-                if (!isDefaultPort && port > 0)
-                {
-                    connectionString += $"Port={port};";
-                }
-                connectionString += $"Uid={userName};Pwd={password};";
-                if (!string.IsNullOrEmpty(database))
-                {
-                    connectionString += $"Database={database};";
-                }
-            }
-            else if (databaseType == DatabaseType.PostgreSql)
-            {
-                connectionString = $"Host={server};";
-                if (!isDefaultPort && port > 0)
-                {
-                    connectionString += $"Port={port};";
-                }
-                connectionString += $"Username={userName};Password={password};";
-                if (!string.IsNullOrEmpty(database))
-                {
-                    connectionString += $"Database={database};";
-                }
-            }
-            else if (databaseType == DatabaseType.Oracle)
-            {
-                port = !isDefaultPort && port > 0 ? port : 1521;
-                database = string.IsNullOrEmpty(database)
-                    ? string.Empty
-                    : $"(CONNECT_DATA=(SERVICE_NAME={database}))";
-                connectionString = $"Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={server})(PORT={port})){database});User ID={userName};Password={password};";
-            }
-
-            return connectionString;
-        }
-
-        public static string GetConnectionString(DatabaseType databaseType, string connectionString)
-        {
-            if (databaseType == DatabaseType.MySql)
-            {
-                if (!StringUtils.ContainsIgnoreCase(connectionString, "SslMode="))
-                {
-                    connectionString += ";SslMode=none;";
-                }
-                if (!StringUtils.ContainsIgnoreCase(connectionString, "CharSet="))
-                {
-                    connectionString += ";CharSet=utf8;";
-                }
-            }
-
-            return connectionString;
-        }
-
-        public static string GetConnectionStringUserId(string connectionString)
-        {
-            var userId = string.Empty;
-
-            foreach (var pair in TranslateUtils.StringCollectionToStringList(connectionString, ';'))
-            {
-                if (!string.IsNullOrEmpty(pair) && pair.IndexOf("=", StringComparison.Ordinal) != -1)
-                {
-                    var key = pair.Substring(0, pair.IndexOf("=", StringComparison.Ordinal));
-                    var value = pair.Substring(pair.IndexOf("=", StringComparison.Ordinal) + 1);
-                    if (StringUtils.EqualsIgnoreCase(key, "Uid") ||
-                        StringUtils.EqualsIgnoreCase(key, "Username") ||
-                        StringUtils.EqualsIgnoreCase(key, "User ID"))
-                    {
-                        return value;
-                    }
-                }
-            }
-
-            return userId;
-        }
 
         public static IDbConnection GetIDbConnection(DatabaseType databaseType, string connectionString)
         {
@@ -272,6 +178,32 @@ namespace SiteServer.Utils
             }
 
             return parameter;
+        }
+
+        public static string GetSqlColumnInList(string columnName, List<int> idList)
+        {
+            if (idList == null || idList.Count == 0) return string.Empty;
+
+            if (idList.Count < 1000)
+            {
+                return $"{columnName} IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
+            }
+
+            var sql = new StringBuilder();
+            sql.Append(" ").Append(columnName).Append(" IN ( ");
+            for (var i = 0; i < idList.Count; i++)
+            {
+                sql.Append(idList[i] + ",");
+                if ((i + 1) % 1000 == 0 && i + 1 < idList.Count)
+                {
+                    sql.Length -= 1;
+                    sql.Append(" ) OR ").Append(columnName).Append(" IN (");
+                }
+            }
+            sql.Length -= 1;
+            sql.Append(" )");
+
+            return $"({sql})";
         }
 
         public static string GetInStr(string columnName, string inStr)
@@ -584,6 +516,30 @@ SELECT * FROM (
             return retval;
         }
 
+        public static string GetDropColumnsSqlString(string tableName, string columnName)
+        {
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                retval = $"ALTER TABLE `{tableName}` DROP COLUMN `{columnName}`";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"ALTER TABLE [{tableName}] DROP COLUMN [{columnName}]";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"ALTER TABLE {tableName} DROP COLUMN {columnName}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"ALTER TABLE {tableName} DROP COLUMN {columnName}";
+            }
+
+            return retval;
+        }
+
         public static string GetAutoIncrementDataType(bool alterTable = false)
         {
             var retval = string.Empty;
@@ -807,7 +763,7 @@ SELECT * FROM (
             }
             if (type == DataType.DateTime)
             {
-                return NpgsqlDbType.TimestampTZ;
+                return NpgsqlDbType.TimestampTz;
             }
             if (type == DataType.Decimal)
             {

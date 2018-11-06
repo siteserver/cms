@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
@@ -28,8 +27,6 @@ namespace SiteServer.BackgroundPages.Cms
         public PlaceHolder PhContentGroup;
 
         private int _channelId;
-        private string _tableName;
-        private List<int> _relatedIdentities;
         private int _contentId;
         private string _returnUrl;
         private ContentInfo _contentInfo;
@@ -54,17 +51,14 @@ namespace SiteServer.BackgroundPages.Cms
             if (_channelId < 0) _channelId = -_channelId;
 
             var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
-            _tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
             _contentId = AuthRequest.GetQueryInt("id");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
-
-            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(SiteId, _channelId);
 
             _contentInfo = ContentManager.GetContentInfo(SiteInfo, channelInfo, _contentId);
 
             if (IsPostBack) return;
 
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);
+            var styleInfoList = TableStyleManager.GetContentStyleInfoList(SiteInfo, channelInfo);
 
             RptContents.DataSource = styleInfoList;
             RptContents.ItemDataBound += RptContents_ItemDataBound;

@@ -9,7 +9,7 @@ var apiUtils = {
     };
 
     this.apiUrl = apiUrl || 'https://api.siteserver.cn/v1.1';
-    // this.apiUrl = 'http://localhost:90/v1.1';
+    // this.apiUrl = apiUrl || 'http://api.siteserver-cms.com/v1.1';
 
     this._getURL = function (url, data, method) {
       url += ((/\?/).test(url) ? '&' : '?');
