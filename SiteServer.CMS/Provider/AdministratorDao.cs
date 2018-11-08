@@ -357,12 +357,12 @@ namespace SiteServer.CMS.Provider
 
         private AdministratorInfo GetByAccount(string account)
         {
-            if (StringUtils.IsMobile(account))
-            {
-                return GetByMobile(account);
-            }
+            var administratorInfo = GetByUserName(account);
+            if (administratorInfo != null) return administratorInfo;
+            if (StringUtils.IsMobile(account)) return GetByMobile(account);
+            if (StringUtils.IsEmail(account)) return GetByEmail(account);
 
-            return StringUtils.IsEmail(account) ? GetByEmail(account) : GetByUserName(account);
+            return null;
         }
 
         public AdministratorInfo GetByUserId(int userId)
@@ -580,7 +580,8 @@ namespace SiteServer.CMS.Provider
         {
             if (string.IsNullOrEmpty(email)) return false;
 
-            var exists = false;
+            var exists = IsUserNameExists(email);
+            if (exists) return true;
 
             var sqlSelect = $"SELECT {nameof(AdministratorInfoDatabase.Email)} FROM {TableName} WHERE {nameof(AdministratorInfoDatabase.Email)} = @{nameof(AdministratorInfoDatabase.Email)}";
 
@@ -605,7 +606,9 @@ namespace SiteServer.CMS.Provider
         {
             if (string.IsNullOrEmpty(mobile)) return false;
 
-            var exists = false;
+            var exists = IsUserNameExists(mobile);
+            if (exists) return true;
+
             var sqlString = $"SELECT {nameof(AdministratorInfoDatabase.Mobile)} FROM {TableName} WHERE {nameof(AdministratorInfoDatabase.Mobile)} = @{nameof(AdministratorInfoDatabase.Mobile)}";
 
             var parms = new IDataParameter[]

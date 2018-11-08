@@ -430,6 +430,7 @@
     <Compile Include="StlParser\StlElement\StlSites.cs" />
     <Compile Include="StlParser\StlElement\StlSqlContent.cs" />
     <Compile Include="StlParser\StlElement\StlSqlContents.cs" />
+    <Compile Include="StlParser\StlElement\StlTabs.cs" />
     <Compile Include="StlParser\StlElement\StlTags.cs" />
     <Compile Include="StlParser\StlElement\StlTree.cs" />
     <Compile Include="StlParser\StlElement\StlValue.cs" />

@@ -62,15 +62,28 @@ namespace SiteServer.BackgroundPages.Controls
                                 href = PageUtils.AddQueryString(href,
                                     new NameValueCollection { { "siteId", SiteId.ToString() } });
                             }
-                            href = childTab.HasHref ? PageUtils.GetLoadingUrl(href) : "javascript:;";
 
-                            childBuilder.Append($@"
+                            if (childTab.HasHref)
+                            {
+                                childBuilder.Append($@"
 <li>
-    <a href=""{href}"" onclick=""closeMenu()"" target=""{(string.IsNullOrEmpty(childTab.Target) ? "right" : childTab.Target)}"">
+    <a href=""{PageUtils.GetLoadingUrl(href)}"" onclick=""closeMenu()"" target=""{(string.IsNullOrEmpty(childTab.Target) ? "right" : childTab.Target)}"">
         <i class=""{childTab.IconClass}""></i>
         {childTab.Text}
     </a>
 </li>");
+                            }
+                            else
+                            {
+                                childBuilder.Append($@"
+<li>
+    <a href=""javascript:;"">
+        <i class=""{childTab.IconClass}""></i>
+        {childTab.Text}
+    </a>
+</li>");
+                            }
+                            
                         }
                     }
                 }
@@ -79,7 +92,7 @@ namespace SiteServer.BackgroundPages.Controls
                 {
                     builder.Append($@"
 <li class=""has_sub"">
-    <a href=""javascript:;"" onclick=""closeMenu()"" class=""waves-effect waves-primary {(parent.Selected ? "subdrop" : "")}"" target=""{(string.IsNullOrEmpty(parent.Target) ? "right" : parent.Target)}"">
+    <a href=""javascript:;"" class=""waves-effect waves-primary {(parent.Selected ? "subdrop" : "")}"" target=""{(string.IsNullOrEmpty(parent.Target) ? "right" : parent.Target)}"">
         <i class=""{parent.IconClass ?? "ion-star"}""></i>
         <span> {parent.Text} </span>
         <span class=""menu-arrow""></span>
@@ -98,14 +111,28 @@ namespace SiteServer.BackgroundPages.Controls
                         href = PageUtils.AddQueryString(href,
                             new NameValueCollection {{"siteId", SiteId.ToString()}});
                     }
-                    href = parent.HasHref ? PageUtils.GetLoadingUrl(href) : "javascript:;";
-                    builder.Append($@"
+
+                    if (parent.HasHref)
+                    {
+                        builder.Append($@"
 <li class=""has_sub"">
-    <a href=""{href}"" onclick=""closeMenu()"" class=""waves-effect waves-primary {(parent.Selected ? "subdrop" : "")}"" target=""{(string.IsNullOrEmpty(parent.Target) ? "right" : parent.Target)}"">
+    <a href=""{PageUtils.GetLoadingUrl(href)}"" onclick=""closeMenu()"" class=""waves-effect waves-primary {(parent.Selected ? "subdrop" : "")}"" target=""{(string.IsNullOrEmpty(parent.Target) ? "right" : parent.Target)}"">
         <i class=""{parent.IconClass ?? "ion-star"}""></i>
         <span> {parent.Text} </span>
     </a>
 </li>");
+                    }
+                    else
+                    {
+                        builder.Append($@"
+<li class=""has_sub"">
+    <a href=""javascript:;"" class=""waves-effect waves-primary {(parent.Selected ? "subdrop" : "")}"">
+        <i class=""{parent.IconClass ?? "ion-star"}""></i>
+        <span> {parent.Text} </span>
+    </a>
+</li>");
+                    }
+                    
                 }
             }
 

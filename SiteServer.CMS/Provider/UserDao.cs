@@ -471,7 +471,7 @@ namespace SiteServer.CMS.Provider
             UserManager.UpdateCache(userInfo);
         }
 
-        public void UpdateLastActivityDateAndCountOfFailedLogin(UserInfo userInfo)
+        private void UpdateLastActivityDateAndCountOfFailedLogin(UserInfo userInfo)
         {
             if (userInfo == null) return;
 
@@ -661,12 +661,12 @@ namespace SiteServer.CMS.Provider
 
         private UserInfo GetByAccount(string account)
         {
-            if (StringUtils.IsMobile(account))
-            {
-                return GetByMobile(account);
-            }
+            var userInfo = GetByUserName(account);
+            if (userInfo != null) return userInfo;
+            if (StringUtils.IsMobile(account)) return GetByMobile(account);
+            if (StringUtils.IsEmail(account)) return GetByEmail(account);
 
-            return StringUtils.IsEmail(account) ? GetByEmail(account) : GetByUserName(account);
+            return null;
         }
 
         public UserInfo GetByUserName(string userName)
@@ -811,7 +811,8 @@ namespace SiteServer.CMS.Provider
         {
             if (string.IsNullOrEmpty(email)) return false;
 
-            var exists = false;
+            var exists = IsUserNameExists(email);
+            if (exists) return true;
 
             var sqlSelect = $"SELECT Email FROM {TableName} WHERE Email = @Email";
 
@@ -836,7 +837,9 @@ namespace SiteServer.CMS.Provider
         {
             if (string.IsNullOrEmpty(mobile)) return false;
 
-            var exists = false;
+            var exists = IsUserNameExists(mobile);
+            if (exists) return true;
+
             var sqlString = $"SELECT Mobile FROM {TableName} WHERE Mobile = @Mobile";
 
             var parms = new IDataParameter[]
@@ -901,14 +904,7 @@ namespace SiteServer.CMS.Provider
             if (groupId > -1)
             {
                 if (whereBuilder.Length > 0) whereBuilder.Append(" AND ");
-                if (groupId == 0)
-                {
-                    whereBuilder.Append("(GroupId = 0 OR GroupId IS NULL)");
-                }
-                else
-                {
-                    whereBuilder.Append($"GroupId = {groupId}");
-                }
+                whereBuilder.Append(groupId == 0 ? "(GroupId = 0 OR GroupId IS NULL)" : $"GroupId = {groupId}");
             }
 
             searchWord = AttackUtils.FilterSql(searchWord);

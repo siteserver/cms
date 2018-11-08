@@ -10,6 +10,7 @@ SiteFiles/TemporaryFiles/
 SiteFiles/UserFiles/
 Template
 /sapprft/
+Web.config
 
 test/
 ## sqlserver

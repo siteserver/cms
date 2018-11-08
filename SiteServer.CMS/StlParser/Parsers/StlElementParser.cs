@@ -70,6 +70,7 @@ namespace SiteServer.CMS.StlParser.Parsers
             {StlSites.ElementName.ToLower(), StlSites.Parse},
             {StlSqlContent.ElementName.ToLower(), StlSqlContent.Parse},
             {StlSqlContents.ElementName.ToLower(), StlSqlContents.Parse},
+            {StlTabs.ElementName.ToLower(), StlTabs.Parse},
             {StlTags.ElementName.ToLower(), StlTags.Parse},
             {StlTree.ElementName.ToLower(), StlTree.Parse},
             {StlValue.ElementName.ToLower(), StlValue.Parse},

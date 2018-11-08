@@ -249,7 +249,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             if (openWin)
             {
                 scriptHtml = $@"
-<script language=""JavaScript"" type=""text/JavaScript"">
+<script language=""javascript"" type=""text/javascript"">
 <!--
 function {uniqueId}_jumpMenu(targ,selObj)
 {"{"} //v3.0
@@ -308,7 +308,7 @@ selObj.selectedIndex=0;
                         if (contentInfo != null)
                         {
                             var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
-                            var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, pageInfo.IsLocal);
+                            var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, false);
                             if (!string.IsNullOrEmpty(queryString))
                             {
                                 url = PageUtils.AddQueryString(url, queryString);

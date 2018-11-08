@@ -81,6 +81,8 @@
                 "imageright",
                 "imagecenter",
                 "|",
+                "simpleupload",
+                "insertimage",
                 "emotion",
                 "scrawl",
                 "attachment",
