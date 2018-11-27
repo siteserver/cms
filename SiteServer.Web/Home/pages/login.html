@@ -108,7 +108,7 @@
             <a href="recoverpw.html" class="text-muted"><i class="fa fa-lock m-r-5"></i> 忘记密码？</a>
           </div> -->
           <div class="col-12 text-right" v-if="pageConfig.isUserRegistrationAllowed">
-            <a href="register.html" class="text-danger">新用户注册</a>
+            <a @click="btnRegisterClick" href="javascript:;" class="text-danger">新用户注册</a>
           </div>
         </div>
 

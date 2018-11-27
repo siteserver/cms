@@ -1,0 +1,125 @@
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
+@section Navs{
+<li class="nav-item">
+  <a class="nav-link active" href="add.cshtml">添加插件</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="manage.cshtml">管理插件</a>
+</li>
+}
+
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="form-inline">
+      <div class="form-group">
+        <label class="col-form-label m-r-10">关键字</label>
+        <input v-model="word" type="text" placeholder="请输入关键字..." class="form-control" style="width: 400px">
+      </div>
+
+      <button v-on:click="search()" class="btn btn-success m-l-10 btn-md">搜索插件</button>
+    </div>
+  </div>
+</div>
+
+<template v-if="searchPackages">
+  <div class="page-title-box">
+    <h4 class="page-title">搜索结果</h4>
+  </div>
+
+  <p class="lead m-t-0" v-bind:style="{ display: searchPackages && searchPackages.length === 0 ? '' : 'none' }">
+    0 个插件，建议更换搜索词
+  </p>
+
+  <div class="card-box row" v-for="package in searchPackages">
+    <div class="col-sm-1 hidden-xs hidden-sm">
+      <img :src="getIconUrl(package.pluginInfo.iconUrl)" class="img-responsive" style="max-width: 100%;">
+    </div>
+    <div class="col-sm-11">
+      <div>
+        <a :href="'view.cshtml?pluginId=' + package.pluginInfo.pluginId + '&returnUrl=' + encodeURIComponent(location.href)" class="text-primary font-16">
+          {{ package.pluginInfo.pluginId }} - {{ package.pluginInfo.title }}</a>
+        <span v-if="packageIds.indexOf(package.pluginInfo.pluginId) !== -1" class="text-danger">（已安装）</span>
+        <span class="ml-3">
+          开发者：
+          <a :href="'https://www.siteserver.cn/users/user.html?userName=' + package.userInfo.userName" target="_blank" class="text-primary"> {{ package.userInfo.displayName }} </a>
+        </span>
+      </div>
+      <div class="mt-2 mb-2">
+        <span class="text-dark">
+          价格：
+          <span class="text-primary">免 费</span>
+        </span>
+        <span>
+          <span class="ml-2 mr-2 text-dark">|</span>
+          <span class="text-dark">
+            <i class="fa fa-flag"></i>
+            最新版本:
+            <span class="text-primary"> {{ package.releaseInfo.version }} </span>
+          </span>
+          <span class="ml-2 mr-2 text-dark">|</span>
+          <span class="text-dark">
+            <i class="fa fa-calendar"></i>
+            更新时间：
+            <span class="text-primary"> {{ package.releaseInfo.published }} </span>
+          </span>
+        </span>
+      </div>
+      <div style="max-height: 65px; overflow: hidden;">
+        {{ package.pluginInfo.summary }}
+      </div>
+    </div>
+  </div>
+
+</template>
+<template v-else>
+  <div class="page-title-box">
+    <h4 class="page-title">精选</h4>
+  </div>
+
+  <div class="card-box row" v-for="package in featuredPackages">
+    <div class="col-sm-1 hidden-xs hidden-sm">
+      <img :src="getIconUrl(package.pluginInfo.iconUrl)" class="img-responsive" style="max-width: 100%;">
+    </div>
+    <div class="col-sm-11">
+      <div>
+        <a :href="'view.cshtml?pluginId=' + package.pluginInfo.pluginId + '&returnUrl=' + encodeURIComponent(location.href)" class="text-primary font-16">
+          {{ package.pluginInfo.pluginId }} - {{ package.pluginInfo.title }}</a>
+        <span v-if="packageIds.indexOf(package.pluginInfo.pluginId) !== -1" class="text-danger">（已安装）</span>
+        <span class="ml-3">
+          开发者：
+          <a :href="'https://www.siteserver.cn/users/user.html?userName=' + package.userInfo.userName" target="_blank" class="text-primary"> {{ package.userInfo.displayName }} </a>
+        </span>
+      </div>
+      <div class="mt-2 mb-2">
+        <span class="text-dark">
+          价格：
+          <span class="text-primary">免 费</span>
+        </span>
+        <span>
+          <span class="ml-2 mr-2 text-dark">|</span>
+          <span class="text-dark">
+            <i class="fa fa-flag"></i>
+            最新版本:
+            <span class="text-primary"> {{ package.releaseInfo.version }} </span>
+          </span>
+          <span class="ml-2 mr-2 text-dark">|</span>
+          <span class="text-dark">
+            <i class="fa fa-calendar"></i>
+            更新时间：
+            <span class="text-primary"> {{ package.releaseInfo.published }} </span>
+          </span>
+        </span>
+      </div>
+      <div style="max-height: 65px; overflow: hidden;">
+        {{ package.pluginInfo.summary }}
+      </div>
+    </div>
+  </div>
+
+  <a href="https://www.siteserver.cn/plugins/" target="_blank" class="btn btn-primary btn-block">更多</a>
+
+</template>
+
+@section Scripts{
+<script src="add.js" type="text/javascript"></script>
+}

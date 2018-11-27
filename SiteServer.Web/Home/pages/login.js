@@ -22,11 +22,13 @@ var methods = {
     this.pageConfig = pageConfig;
     this.reload();
   },
+
   reload: function () {
     this.captcha = '';
     this.pageSubmit = false;
     this.captchaUrl = $captchaGetUrl + '?r=' + new Date().getTime();
   },
+
   checkCaptcha: function () {
     var $this = this;
 
@@ -47,6 +49,7 @@ var methods = {
       $this.login();
     });
   },
+
   login: function () {
     var $this = this;
 
@@ -70,6 +73,7 @@ var methods = {
       location.href = utils.getQueryString('returnUrl') || '../index.html';
     });
   },
+
   btnLoginClick: function (e) {
     e.preventDefault();
 
@@ -77,6 +81,10 @@ var methods = {
     this.pageAlert = null;
     if (!this.account || !this.password || !this.captcha) return;
     this.checkCaptcha();
+  },
+
+  btnRegisterClick: function () {
+    location.href = 'register.html?returnUrl=' + (utils.getQueryString('returnUrl') || 'login.html');
   }
 };
 

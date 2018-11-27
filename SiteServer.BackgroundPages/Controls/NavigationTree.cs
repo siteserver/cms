@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
-using SiteServer.BackgroundPages.Plugins;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -29,7 +28,7 @@ namespace SiteServer.BackgroundPages.Controls
                 var linkHtml = string.Empty;
                 if (string.IsNullOrEmpty(TopId) && PermissionList.Contains(ConfigManager.PluginsPermissions.Management))
                 {
-                    linkHtml = $@"<a id=""updatePackagesLink"" href=""{PageUtils.GetLoadingUrl(PageManagement.GetRedirectUrl(4))}"" onclick=""closeMenu()"" class=""badge badge-warning"" style=""display: none"" target=""right""></a>";
+                    linkHtml = $@"<a id=""updatePackagesLink"" href=""{PageUtils.GetAdminUrl(PageUtils.Combine("plugins/manage.cshtml?pageType=4"))}"" onclick=""closeMenu()"" class=""badge badge-warning"" style=""display: none"" target=""right""></a>";
                 }
                 builder.Append($@"<li class=""text-muted menu-title"">{Title}{linkHtml}</li>{treeContent}");
             }

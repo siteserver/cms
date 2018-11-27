@@ -163,6 +163,9 @@
     <Compile Include="Controllers\Pages\Cms\PagesCreateController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesCreateStatusController.cs" />
     <Compile Include="Controllers\Pages\PagesMainController.cs" />
+    <Compile Include="Controllers\Pages\Plugins\PagesManageController.cs" />
+    <Compile Include="Controllers\Pages\Plugins\PagesViewController.cs" />
+    <Compile Include="Controllers\Pages\Plugins\PagesAddController.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesInstallController.cs" />
     <Compile Include="Controllers\Pages\Settings\PagesUserMenuController.cs" />
     <Compile Include="Controllers\Pages\Settings\PagesUserGroupController.cs" />
