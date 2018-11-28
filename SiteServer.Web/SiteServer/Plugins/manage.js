@@ -19,7 +19,7 @@ var data = {
 
 var methods = {
   getIconUrl: function (url) {
-    return 'http://plugins.siteserver.cn/' + url;
+    return 'https://plugins.siteserver.cn/' + url;
   },
 
   load: function () {
@@ -34,15 +34,15 @@ var methods = {
       $this.packageIds = res.packageIds;
 
       for (var i = 0; i < $this.allPackages.length; i++) {
-        var package = $this.allPackages[i];
-        if (package.isRunnable && package.metadata) {
-          if (package.isDisabled) {
-            $this.disabledPackages.push(package);
+        var pkg = $this.allPackages[i];
+        if (pkg.isRunnable && pkg.metadata) {
+          if (pkg.isDisabled) {
+            $this.disabledPackages.push(pkg);
           } else {
-            $this.enabledPackages.push(package);
+            $this.enabledPackages.push(pkg);
           }
         } else {
-          $this.errorPackages.push(package);
+          $this.errorPackages.push(pkg);
         }
       }
 
@@ -54,17 +54,17 @@ var methods = {
         var res = response.data;
 
         for (var i = 0; i < res.value.length; i++) {
-          var package = res.value[i];
+          var pkg = res.value[i];
 
           var installedPackages = $.grep($this.allPackages, function (e) {
-            return e.id == package.pluginInfo.pluginId;
+            return e.id == pkg.pluginInfo.pluginId;
           });
           if (installedPackages.length == 1) {
             var installedPackage = installedPackages[0];
-            installedPackage.updatePackage = package;
+            installedPackage.updatePackage = pkg;
 
             if (installedPackage.metadata && installedPackage.metadata.version) {
-              if (compareversion(installedPackage.metadata.version, package.releaseInfo.version) == -1) {
+              if (compareversion(installedPackage.metadata.version, pkg.releaseInfo.version) == -1) {
                 $this.updatePackages.push(installedPackage);
                 $this.updatePackageIds.push(installedPackage.id);
               }
@@ -86,23 +86,23 @@ var methods = {
     });
   },
 
-  enablePackage: function (package) {
-    var text = package.isDisabled ? '启用' : '禁用';
-    var isReference = this.referencePackageIds.indexOf(package.id) !== -1;
+  enablePackage: function (pkg) {
+    var text = pkg.isDisabled ? '启用' : '禁用';
+    var isReference = this.referencePackageIds.indexOf(pkg.id) !== -1;
     if (isReference) {
       return swal("无法" + text, "存在其他插件依赖此插件，需要删除依赖插件后才能进行" + text + "操作", "error");
     }
     swal({
       title: text + '插件',
-      text: '此操作将会禁用“' + package.id + '”，确认吗？',
+      text: '此操作将会禁用“' + pkg.id + '”，确认吗？',
       type: 'question',
       showCancelButton: true,
       cancelButtonText: '取 消',
-      confirmButtonText: package.isDisabled ? '启 用' : '禁 用'
+      confirmButtonText: pkg.isDisabled ? '启 用' : '禁 用'
     }).then(function (result) {
       if (result.value) {
         utils.loading(true);
-        $api.post($url + '/' + package.id + '/actions/enable').then(function () {
+        $api.post($url + '/' + pkg.id + '/actions/enable').then(function () {
           utils.loading(false);
           swal({
             type: 'success',
@@ -117,14 +117,14 @@ var methods = {
     });
   },
 
-  deletePackage: function (package) {
-    var isReference = this.referencePackageIds.indexOf(package.id) !== -1;
+  deletePackage: function (pkg) {
+    var isReference = this.referencePackageIds.indexOf(pkg.id) !== -1;
     if (isReference) {
       return swal("无法删除", "存在其他插件依赖此插件，需要删除依赖插件后才能进行删除操作", "error");
     }
     swal({
         title: '删除插件',
-        text: '此操作将会删除“' + package.id + '”，确认吗？',
+        text: '此操作将会删除“' + pkg.id + '”，确认吗？',
         type: 'question',
         showCancelButton: true,
         cancelButtonText: '取 消',
@@ -133,7 +133,7 @@ var methods = {
       .then(function (result) {
         if (result.value) {
           utils.loading(true);
-          $api.delete($url + '/' + package.id).then(function () {
+          $api.delete($url + '/' + pkg.id).then(function () {
             utils.loading(false);
             swal({
                 type: 'success',
