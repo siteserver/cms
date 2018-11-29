@@ -406,6 +406,7 @@
     <Compile Include="StlParser\StlElement\StlEach.cs" />
     <Compile Include="StlParser\StlElement\StlFile.cs" />
     <Compile Include="StlParser\StlElement\StlFlash.cs" />
+    <Compile Include="StlParser\StlElement\StlFocusViewer.cs" />
     <Compile Include="StlParser\StlElement\StlIf.cs" />
     <Compile Include="StlParser\StlElement\StlImage.cs" />
     <Compile Include="StlParser\StlElement\StlInclude.cs" />

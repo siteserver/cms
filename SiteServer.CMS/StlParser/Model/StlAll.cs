@@ -61,6 +61,10 @@ namespace SiteServer.CMS.StlParser.Model
                 typeof(StlFlash)
             },
             {
+                StlFocusViewer.ElementName,
+                typeof(StlFocusViewer)
+            },
+            {
                 StlIf.ElementName,
                 typeof(StlIf)
             },
