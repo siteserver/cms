@@ -1,21 +1,17 @@
-﻿var $ssApi = new apiUtils.Api();
+﻿var $url = '/pages/plugins/install';
 
-var $api = new apiUtils.Api(apiUrl + '/pages/plugins/install');
-var $packageIds = pageUtils.getQueryStringByName('packageIds').split(',');
+var $pluginIds = pageUtils.getQueryStringByName('pluginIds').split(',');
 var $pageType = pageUtils.getQueryStringByName('isUpdate') === 'true' ? '升级' : '安装';
 
 var data = {
-  packageIds: $packageIds,
+  pluginIds: $pluginIds,
   pageLoad: false,
   pageAlert: null,
   pageType: $pageType,
   pageStep: 1,
   isNightly: false,
-  version: null,
+  pluginVersion: null,
   downloadPlugins: null,
-  downloadApi: null,
-  updateApi: null,
-  clearCacheApi: null,
 
   listPackages: [],
   listIndex: 0,
@@ -32,37 +28,66 @@ var methods = {
   getConfig: function () {
     var $this = this;
 
-    $api.get(null, function (err, res) {
-      if (err || !res) return;
+    $api.get($url + '/config').then(function (response) {
+      var res = response.data;
 
       $this.isNightly = res.isNightly;
-      $this.version = res.version;
+      $this.pluginVersion = res.pluginVersion;
       $this.downloadPlugins = res.downloadPlugins;
-      $this.downloadApi = new apiUtils.Api(res.downloadApiUrl);
-      $this.updateApi = new apiUtils.Api(res.updateApiUrl);
-      $this.clearCacheApi = new apiUtils.Api(res.clearCacheApiUrl);
 
-      $this.getListPackages();
-    }, 'config');
+      $this.getPlugins();
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    });
   },
-  getListPackages: function () {
+
+  getPlugins: function () {
     var $this = this;
 
-    $ssApi.get({
-      isNightly: $this.isNightly,
-      version: $this.version,
-      $filter: "id in '" + $this.packageIds.join(",") + "'"
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
+    $apiCloud.get('plugins', {
+      params: {
+        isNightly: $this.isNightly,
+        pluginVersion: $this.pluginVersion,
+        pluginIds: $this.pluginIds.join(",")
+      }
+    }).then(function (response) {
+      var res = response.data;
 
       for (var i = 0; i < res.value.length; i++) {
-        var package = res.value[i];
-        $this.listPackages.push(package);
+        var releaseInfo = res.value[i].releaseInfo;
+
+        for (var i = 0; i < releaseInfo.pluginReferences.length; i++) {
+          var reference = releaseInfo.pluginReferences[i];
+          $this.listPackages.push({
+            id: reference.id,
+            version: reference.version,
+            packageType: 'Plugin'
+          });
+        }
+
+        for (var j = 0; j < releaseInfo.libraryReferences.length; j++) {
+          var reference = releaseInfo.libraryReferences[j];
+          $this.listPackages.push({
+            id: reference.id,
+            version: reference.version,
+            packageType: 'Library'
+          });
+        }
+
+        $this.listPackages.push({
+          id: releaseInfo.pluginId,
+          version: releaseInfo.version,
+          packageType: 'Plugin'
+        });
       }
-      $this.pageLoad = true;
       $this.installListPackage();
-    }, 'packages');
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      $this.pageLoad = true;
+    });
   },
+
   installListPackage: function () {
     var $this = this;
 
@@ -74,53 +99,9 @@ var methods = {
     $this.package = $this.listPackages[$this.listIndex];
     $this.currentPackages.push($this.package);
 
-    var referencePackageIds = [];
-
-    for (var i = 0; i < $this.package.pluginReferences.length; i++) {
-      var pluginReference = $this.package.pluginReferences[i];
-      var installedPluginReference = $.grep($this.currentPackages, function (e) {
-        return e.id == pluginReference.id;
-      });
-      if (installedPluginReference.length === 0) {
-        referencePackageIds.push(pluginReference.id);
-      }
-    }
-    for (var j = 0; j < $this.package.packageReferences.length; j++) {
-      var packageReference = $this.package.packageReferences[j];
-      var installedPackageReference = $.grep($this.currentPackages, function (e) {
-        return e.id == packageReference.id;
-      });
-      if (installedPackageReference.length === 0) {
-        referencePackageIds.push(packageReference.id);
-      }
-    }
-
-    if (referencePackageIds.length === 0) {
-      $this.download();
-      return;
-    }
-
-    $ssApi.get({
-      isNightly: $this.isNightly,
-      version: $this.version,
-      $filter: "id in '" + referencePackageIds.join(",") + "'"
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
-
-      for (var i = 0; i < res.value.length; i++) {
-        var package = res.value[i];
-        for (var j = 0; j < $this.downloadPlugins.length; j++) {
-          var installedPackage = $this.downloadPlugins[j];
-          if (installedPackage === (package.id + '.' + package.version)) {
-            $this.currentDownloadIds.push(package.id);
-            break;
-          }
-        }
-        $this.currentPackages.push(package);
-      }
-      $this.download();
-    }, 'packages');
+    $this.download();
   },
+
   download: function () {
     var $this = this;
 
@@ -135,25 +116,24 @@ var methods = {
 
     $this.update();
   },
-  downloadPackage: function (packageId, packageVersion) {
+
+  downloadPackage: function (packageId, version) {
     var $this = this;
 
-    $this.downloadApi.post({
+    $api.post($url + '/download', {
       packageId: packageId,
-      version: packageVersion
-    }, function (err, res) {
-      if (err) {
-        $this.pageAlert = {
-          type: 'error',
-          html: err.message
-        };
-      } else if (res) {
-        $this.currentDownloadingId = 0;
-        $this.currentDownloadIds.push(packageId);
-        $this.download();
-      }
+      version: version
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.currentDownloadingId = 0;
+      $this.currentDownloadIds.push(packageId);
+      $this.download();
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
     });
   },
+
   update: function () {
     var $this = this;
     $this.pageStep = 2;
@@ -169,26 +149,25 @@ var methods = {
 
     $this.updateSuccess();
   },
-  updatePackage: function (packageId, packageVersion, packageType) {
+
+  updatePackage: function (packageId, version, packageType) {
     var $this = this;
 
-    $this.updateApi.post({
+    $api.post($url + '/update', {
       packageId: packageId,
-      version: packageVersion,
+      version: version,
       packageType: packageType
-    }, function (err, res) {
-      if (err) {
-        $this.pageAlert = {
-          type: 'error',
-          html: err.message
-        };
-      } else if (res) {
-        $this.currentUpdatingId = 0;
-        $this.currentUpdatedIds.push(packageId);
-        $this.update();
-      }
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.currentUpdatingId = 0;
+      $this.currentUpdatedIds.push(packageId);
+      $this.update();
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
     });
   },
+
   updateSuccess: function () {
     var $this = this;
 
@@ -204,21 +183,20 @@ var methods = {
 
     $this.installListPackage();
   },
+
   clearCache: function () {
     var $this = this;
 
     $this.pageStep = 0;
-    $this.clearCacheApi.post(null, function (err, res) {
-      if (err) {
-        $this.pageAlert = {
-          type: 'error',
-          html: err.message
-        };
-      } else {
-        setTimeout(function () {
-          window.top.location.reload(true);
-        }, 3000);
-      }
+
+    $api.post($url + '/cache').then(function (response) {
+      var res = response.data;
+
+      setTimeout(function () {
+        window.top.location.reload(true);
+      }, 3000);
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
     });
   }
 };
@@ -226,7 +204,8 @@ var methods = {
 var $vue = new Vue({
   el: '#main',
   data: data,
-  methods: methods
+  methods: methods,
+  created: function () {
+    this.getConfig();
+  }
 });
-
-$vue.getConfig();

@@ -47,9 +47,11 @@ var methods = {
       }
 
       $apiCloud.get('plugins', {
-        isNightly: $this.isNightly,
-        pluginVersion: $this.pluginVersion,
-        pluginIds: $this.packageIds
+        params: {
+          isNightly: $this.isNightly,
+          pluginVersion: $this.pluginVersion,
+          pluginIds: $this.packageIds
+        }
       }).then(function (response) {
         var res = response.data;
 

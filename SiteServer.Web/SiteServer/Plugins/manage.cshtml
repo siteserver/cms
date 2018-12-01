@@ -226,7 +226,7 @@
                   {{ package.updatePackage.releaseInfo.published }}
                 </td>
                 <td class="text-center text-nowrap">
-                  <a :href="'install.cshtml?isUpdate=true&packageIds=' + package.id" class="btn btn-warning btn-md">插件升级</a>
+                  <a :href="'install.cshtml?isUpdate=true&pluginIds=' + package.id" class="btn btn-warning btn-md">插件升级</a>
                 </td>
               </tr>
             </tbody>
@@ -237,7 +237,7 @@
 
     <hr />
 
-    <a :href="'install.cshtml?isUpdate=true&packageIds=' + updatePackageIds.join(',')" class="btn btn-warning btn-md">一键升级所有插件</a>
+    <a :href="'install.cshtml?isUpdate=true&pluginIds=' + updatePackageIds.join(',')" class="btn btn-warning btn-md">一键升级所有插件</a>
 
   </div>
 

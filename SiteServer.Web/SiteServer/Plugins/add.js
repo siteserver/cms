@@ -52,10 +52,11 @@ var methods = {
     if (this.word) {
 
       utils.loading(true);
-      $apiCloud.get('plugins?keyword=' + encodeURIComponent(this.word), {
+      $apiCloud.get('plugins', {
         params: {
           isNightly: $this.isNightly,
-          pluginVersion: $this.pluginVersion
+          pluginVersion: $this.pluginVersion,
+          keyword: encodeURIComponent(this.word)
         }
       }).then(function (response) {
         var res = response.data;
