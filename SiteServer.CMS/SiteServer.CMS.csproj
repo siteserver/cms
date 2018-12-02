@@ -372,6 +372,7 @@
     <Compile Include="DataCache\Stl\StlSqlContentsCache.cs" />
     <Compile Include="DataCache\Stl\StlTagCache.cs" />
     <Compile Include="StlParser\FileSystemObjectAsync.cs" />
+    <Compile Include="StlParser\Model\ChannelIdContentId.cs" />
     <Compile Include="StlParser\Model\ChannelItemInfo.cs" />
     <Compile Include="StlParser\Model\ContentItemInfo.cs" />
     <Compile Include="StlParser\Model\ContextInfo.cs" />

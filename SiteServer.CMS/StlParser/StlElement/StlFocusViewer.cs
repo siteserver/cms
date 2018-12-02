@@ -3,12 +3,12 @@ using System.Text;
 using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -213,9 +213,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, contextInfo.ChannelId, channelIndex, channelName);
 
-            var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
+            var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
 
-            if (dataSource != null)
+            if (minContentInfoList != null)
             {
                 if (StringUtils.EqualsIgnoreCase(theme, ThemeStyle2))
                 {
@@ -225,9 +225,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var navigationUrls = new StringCollection();
                     var titleCollection = new StringCollection();
 
-                    foreach (var dataItem in dataSource.Tables[0].Rows)
+                    foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = new ContentInfo(dataItem);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -312,9 +312,9 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     var navigationUrls = new StringCollection();
                     var titleCollection = new StringCollection();
 
-                    foreach (var dataItem in dataSource.Tables[0].Rows)
+                    foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = new ContentInfo(dataItem);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
                         var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -373,9 +373,9 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     var imageUrls = new StringCollection();
                     var navigationUrls = new StringCollection();
 
-                    foreach (var dataItem in dataSource.Tables[0].Rows)
+                    foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = new ContentInfo(dataItem);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
                         var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -492,9 +492,9 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     var navigationUrls = new StringCollection();
                     var titleCollection = new StringCollection();
 
-                    foreach (var dataItem in dataSource.Tables[0].Rows)
+                    foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = new ContentInfo(dataItem);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))

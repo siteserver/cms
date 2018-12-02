@@ -205,25 +205,25 @@
             <tbody>
               <tr v-for="package in updatePackages">
                 <td class="text-center text-nowrap">
-                  <img :src="getIconUrl(package.updatePackage.pluginInfo.iconUrl)" width="48" height="48">
+                  <img :src="package.metadata.iconUrl || '../assets/icons/favicon.png'" width="48" height="48">
                 </td>
                 <td class="text-nowrap">
-                  <a :href="'view.cshtml?pluginId=' + package.updatePackage.pluginInfo.pluginId + '&returnUrl=' + encodeURIComponent(location.href)">{{ package.updatePackage.pluginInfo.pluginId }}</a>
+                  <a :href="'view.cshtml?pluginId=' + package.updatePackage.pluginId + '&returnUrl=' + encodeURIComponent(location.href)">{{ package.updatePackage.pluginId }}</a>
                 </td>
                 <td class="text-nowrap">
-                  {{ package.updatePackage.pluginInfo.title }}
+                  {{ package.metadata.title }}
                 </td>
                 <td class="text-nowrap">
                   {{ package.metadata ? package.metadata.version : '' }}
                 </td>
                 <td class="text-nowrap">
-                  {{ package.updatePackage.releaseInfo.version }}
+                  {{ package.updatePackage.version }}
                 </td>
                 <td>
-                  {{ package.updatePackage.releaseInfo.releaseNotes }}
+                  {{ package.updatePackage.releaseNotes }}
                 </td>
                 <td class="text-center text-nowrap">
-                  {{ package.updatePackage.releaseInfo.published }}
+                  {{ package.updatePackage.published }}
                 </td>
                 <td class="text-center text-nowrap">
                   <a :href="'install.cshtml?isUpdate=true&pluginIds=' + package.id" class="btn btn-warning btn-md">插件升级</a>

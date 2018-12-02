@@ -147,8 +147,11 @@
 <script type="text/javascript" src="assets/js/layer-3.1.1/layer.js"></script>
 <script type="text/javascript" src="inc/script.js"></script>
 <script type="text/javascript" src="assets/jQuery-slimScroll/jquery.slimscroll.min.js"></script>
+<script type="text/javascript" src="assets/js/es6-promise.auto.min.js"></script>
+<script type="text/javascript" src="assets/js/axios-0.17.1.min.js"></script>
 <script type="text/javascript" src="assets/js/apiUtils.js"></script>
 <script type="text/javascript" src="assets/js/pageUtils.js"></script>
+<script type="text/javascript" src="assets/js/utils.js"></script>
 <script type="text/javascript" src="assets/js/compareversion.js"></script>
 
 <script type="text/javascript">
@@ -176,7 +179,6 @@
     }
   };
 
-  var ssApi = new apiUtils.Api();
   var downloadApi = new apiUtils.Api('<%=DownloadApiUrl%>');
   var isNightly = <%=IsNightly%>;
   var version = '<%=Version%>';
@@ -190,27 +192,31 @@
   var updatePackages = 0;
 
   function packageUpdates() {
-    ssApi.get({
-      isNightly: isNightly,
-      version: version,
-      $filter: "id in '" + packageIds.join(',') + "'"
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
+    var $this = this;
+
+    $apiCloud.get('updates', {
+      params: {
+        isNightly: isNightly,
+        pluginVersion: version,
+        packageIds: packageIds.join(',')
+      }
+    }).then(function (response) {
+      var res = response.data;
 
       for (var i = 0; i < res.value.length; i++) {
-        var package = res.value[i];
-        if (!package || !package.version) continue;
+        var releaseInfo = res.value[i];
+        if (!releaseInfo || !releaseInfo.version) continue;
 
-        if (package.id == packageIdSsCms) {
-          packageDownload(package);
+        if (releaseInfo.pluginId == packageIdSsCms) {
+          packageDownload(releaseInfo);
         } else {
           var installedPackages = $.grep(packageList, function (e) {
-            return e.id == package.id;
+            return e.id == releaseInfo.pluginId;
           });
           if (installedPackages.length == 1) {
             var installedPackage = installedPackages[0];
             if (installedPackage.version) {
-              if (compareversion(installedPackage.version, package.version) == -1) {
+              if (compareversion(installedPackage.version, releaseInfo.version) == -1) {
                 updatePackages++;
               }
             } else {
@@ -224,7 +230,48 @@
         $('#updatePackagesLink').html(updatePackages);
         $('#updatePackagesLink').show();
       }
-    }, 'packages');
+
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      $this.pageLoad = true;
+    });
+
+    // ssApi.get({
+    //   isNightly: isNightly,
+    //   version: version,
+    //   $filter: "id in '" + packageIds.join(',') + "'"
+    // }, function (err, res) {
+    //   if (err || !res || !res.value) return;
+
+    //   for (var i = 0; i < res.value.length; i++) {
+    //     var package = res.value[i];
+    //     if (!package || !package.version) continue;
+
+    //     if (package.id == packageIdSsCms) {
+    //       packageDownload(package);
+    //     } else {
+    //       var installedPackages = $.grep(packageList, function (e) {
+    //         return e.id == package.id;
+    //       });
+    //       if (installedPackages.length == 1) {
+    //         var installedPackage = installedPackages[0];
+    //         if (installedPackage.version) {
+    //           if (compareversion(installedPackage.version, package.version) == -1) {
+    //             updatePackages++;
+    //           }
+    //         } else {
+    //           updatePackages++;
+    //         }
+    //       }
+    //     }
+    //   }
+
+    //   if (updatePackages > 0) {
+    //     $('#updatePackagesLink').html(updatePackages);
+    //     $('#updatePackagesLink').show();
+    //   }
+    // }, 'packages');
   }
 
   function packageDownload(package) {

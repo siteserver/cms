@@ -46,27 +46,27 @@ var methods = {
         }
       }
 
-      $apiCloud.get('plugins', {
+      $apiCloud.get('updates', {
         params: {
           isNightly: $this.isNightly,
           pluginVersion: $this.pluginVersion,
-          pluginIds: $this.packageIds
+          packageIds: $this.packageIds
         }
       }).then(function (response) {
         var res = response.data;
 
         for (var i = 0; i < res.value.length; i++) {
-          var pkg = res.value[i];
+          var releaseInfo = res.value[i];
 
           var installedPackages = $.grep($this.allPackages, function (e) {
-            return e.id == pkg.pluginInfo.pluginId;
+            return e.id == releaseInfo.pluginId;
           });
           if (installedPackages.length == 1) {
             var installedPackage = installedPackages[0];
-            installedPackage.updatePackage = pkg;
+            installedPackage.updatePackage = releaseInfo;
 
             if (installedPackage.metadata && installedPackage.metadata.version) {
-              if (compareversion(installedPackage.metadata.version, pkg.releaseInfo.version) == -1) {
+              if (compareversion(installedPackage.metadata.version, releaseInfo.version) == -1) {
                 $this.updatePackages.push(installedPackage);
                 $this.updatePackageIds.push(installedPackage.id);
               }

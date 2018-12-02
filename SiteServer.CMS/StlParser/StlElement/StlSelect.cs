@@ -1,10 +1,8 @@
-﻿using System.Data;
-using System.Web.UI.HtmlControls;
+﻿using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -298,24 +296,20 @@ selObj.selectedIndex=0;
             }
             else
             {
-                var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.SiteInfo, channelId, contextInfo.ContentId, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, 1, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
+                var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.SiteInfo, channelId, contextInfo.ContentId, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, 1, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
 
-                if (dataSource != null)
+                if (minContentInfoList != null)
                 {
-                    foreach (DataRow dataItem in dataSource.Tables[0].Rows)
+                    foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = new ContentInfo(dataItem);
-                        if (contentInfo != null)
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                        var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
+                        var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, false);
+                        if (!string.IsNullOrEmpty(queryString))
                         {
-                            var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
-                            var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, false);
-                            if (!string.IsNullOrEmpty(queryString))
-                            {
-                                url = PageUtils.AddQueryString(url, queryString);
-                            }
-                            var listitem = new ListItem(title, url);
-                            selectControl.Items.Add(listitem);
+                            url = PageUtils.AddQueryString(url, queryString);
                         }
+                        selectControl.Items.Add(new ListItem(title, url));
                     }
                     //foreach (var dataItem in dataSource)
                     //{

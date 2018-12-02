@@ -44,17 +44,17 @@ var methods = {
   getPlugins: function () {
     var $this = this;
 
-    $apiCloud.get('plugins', {
+    $apiCloud.get('updates', {
       params: {
         isNightly: $this.isNightly,
         pluginVersion: $this.pluginVersion,
-        pluginIds: $this.pluginIds.join(",")
+        packageIds: $this.pluginIds.join(",")
       }
     }).then(function (response) {
       var res = response.data;
 
       for (var i = 0; i < res.value.length; i++) {
-        var releaseInfo = res.value[i].releaseInfo;
+        var releaseInfo = res.value[i];
 
         for (var i = 0; i < releaseInfo.pluginReferences.length; i++) {
           var reference = releaseInfo.pluginReferences[i];

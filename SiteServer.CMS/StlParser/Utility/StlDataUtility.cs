@@ -377,6 +377,28 @@ namespace SiteServer.CMS.StlParser.Utility
             return StlContentCache.GetStlDataSourceChecked(channelIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, others);
         }
 
+        public static List<MinContentInfo> GetMinContentInfoList(SiteInfo siteInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
+        {
+            var dataSource = GetContentsDataSource(siteInfo, channelId, contentId, groupContent, groupContentNot, tags,
+                isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isRelatedContents, startNum,
+                totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot,
+                isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, others);
+
+            var list = new List<MinContentInfo>();
+
+            foreach (DataRow dataItem in dataSource.Tables[0].Rows)
+            {
+                var minContentInfo = new MinContentInfo
+                {
+                    Id = (int) dataItem[ContentAttribute.Id],
+                    ChannelId = (int) dataItem[ContentAttribute.ChannelId]
+                };
+                list.Add(minContentInfo);
+            }
+
+            return list;
+        }
+
         public static DataSet GetChannelsDataSource(int siteId, int channelId, string group, string groupNot, bool isImageExists, bool isImage, int startNum, int totalNum, string orderByString, EScopeType scopeType, bool isTotal, string where)
         {
             DataSet ie;
