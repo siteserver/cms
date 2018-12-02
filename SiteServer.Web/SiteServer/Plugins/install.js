@@ -14,6 +14,7 @@ var data = {
   downloadPlugins: null,
 
   listPackages: [],
+  listPackageIds: [],
   listIndex: 0,
 
   currentPackage: {},
@@ -35,13 +36,13 @@ var methods = {
       $this.pluginVersion = res.pluginVersion;
       $this.downloadPlugins = res.downloadPlugins;
 
-      $this.getPlugins();
+      $this.getPackages();
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);
     });
   },
 
-  getPlugins: function () {
+  getPackages: function () {
     var $this = this;
 
     $apiCloud.get('updates', {
@@ -56,29 +57,39 @@ var methods = {
       for (var i = 0; i < res.value.length; i++) {
         var releaseInfo = res.value[i];
 
-        for (var i = 0; i < releaseInfo.pluginReferences.length; i++) {
-          var reference = releaseInfo.pluginReferences[i];
+        for (var j = 0; j < releaseInfo.pluginReferences.length; j++) {
+          var reference = releaseInfo.pluginReferences[j];
+
+          if ($this.listPackageIds.indexOf(reference.id) === -1) {
+            $this.listPackageIds.push(reference.id);
+            $this.listPackages.push({
+              id: reference.id,
+              version: reference.version,
+              packageType: 'Plugin'
+            });
+          }
+        }
+
+        for (var k = 0; k < releaseInfo.libraryReferences.length; k++) {
+          var reference = releaseInfo.libraryReferences[k];
+          if ($this.listPackageIds.indexOf(reference.id) === -1) {
+            $this.listPackageIds.push(reference.id);
+            $this.listPackages.push({
+              id: reference.id,
+              version: reference.version,
+              packageType: 'Library'
+            });
+          }
+        }
+
+        if ($this.listPackageIds.indexOf(releaseInfo.pluginId) === -1) {
+          $this.listPackageIds.push(reference.id);
           $this.listPackages.push({
-            id: reference.id,
-            version: reference.version,
+            id: releaseInfo.pluginId,
+            version: releaseInfo.version,
             packageType: 'Plugin'
           });
         }
-
-        for (var j = 0; j < releaseInfo.libraryReferences.length; j++) {
-          var reference = releaseInfo.libraryReferences[j];
-          $this.listPackages.push({
-            id: reference.id,
-            version: reference.version,
-            packageType: 'Library'
-          });
-        }
-
-        $this.listPackages.push({
-          id: releaseInfo.pluginId,
-          version: releaseInfo.version,
-          packageType: 'Plugin'
-        });
       }
       $this.installListPackage();
     }).catch(function (error) {
