@@ -4,8 +4,8 @@ var $api = axios.create({
 });
 
 var $apiCloud = axios.create({
-  // baseURL: 'https://api.siteserver.cn/v1.2',
-  baseURL: 'http://api.siteserver-cms.com/v1.2',
+  baseURL: 'https://api.siteserver.cn/v1.2',
+  // baseURL: 'http://api.siteserver-cms.com/v1.2',
   withCredentials: true
 });
 

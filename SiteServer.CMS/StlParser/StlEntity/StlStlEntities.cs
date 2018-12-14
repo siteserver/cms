@@ -26,8 +26,12 @@ namespace SiteServer.CMS.StlParser.StlEntity
         public static string ApiUrl = "ApiUrl";
         public static string CurrentUrl = "CurrentUrl";
         public static string ChannelUrl = "ChannelUrl";
+	    public static string HomeUrl = "HomeUrl";
+        public static string LoginUrl = "LoginUrl";
+	    public static string RegisterUrl = "RegisterUrl";
+	    public static string LogoutUrl = "LogoutUrl";
 
-	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
 	    {
 	        {PoweredBy, "PoweredBy 链接"},
 	        {SiteName, "站点名称"},
@@ -37,8 +41,12 @@ namespace SiteServer.CMS.StlParser.StlEntity
 	        {RootUrl, "系统根目录地址"},
             {ApiUrl, "Api地址"},
             {CurrentUrl, "当前页地址"},
-	        {ChannelUrl, "栏目页地址"}
-	    };
+	        {ChannelUrl, "栏目页地址"},
+	        {HomeUrl, "用户中心地址"},
+            {LoginUrl, "用户中心登录页地址"},
+	        {RegisterUrl, "用户中心注册页地址"},
+	        {LogoutUrl, "退出登录页地址"}
+        };
 
         internal static string Parse(string stlEntity, PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -88,25 +96,25 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 {
                     parsedContent = PageUtility.GetChannelUrl(pageInfo.SiteInfo, ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId), pageInfo.IsLocal);
                 }
-                //else if (StringUtils.EqualsIgnoreCase(HomeUrl, attributeName))//用户中心地址
-                //{
-                //    parsedContent = pageInfo.HomeUrl.TrimEnd('/');
-                //}
-                //else if (StringUtils.EqualsIgnoreCase(attributeName, LoginUrl))
-                //{
-                //    var returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
-                //    parsedContent = HomeUtils.GetLoginUrl(pageInfo.HomeUrl, returnUrl);
-                //}
-                //else if (StringUtils.EqualsIgnoreCase(attributeName, LogoutUrl))
-                //{
-                //    var returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
-                //    parsedContent = HomeUtils.GetLogoutUrl(pageInfo.HomeUrl, returnUrl);
-                //}
-                //else if (StringUtils.EqualsIgnoreCase(attributeName, RegisterUrl))
-                //{
-                //    var returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
-                //    parsedContent = HomeUtils.GetRegisterUrl(pageInfo.HomeUrl, returnUrl);
-                //}
+                else if (StringUtils.EqualsIgnoreCase(HomeUrl, attributeName))//用户中心地址
+                {
+                    parsedContent = PageUtils.GetHomeUrl(string.Empty).TrimEnd('/');
+                }
+                else if (StringUtils.EqualsIgnoreCase(LoginUrl, attributeName))
+                {
+                    var returnUrl = StlParserUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
+                    parsedContent = PageUtils.GetHomeUrl($"pages/login.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+                }
+                else if (StringUtils.EqualsIgnoreCase(LogoutUrl, attributeName))
+                {
+                    var returnUrl = StlParserUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
+                    parsedContent = PageUtils.GetHomeUrl($"pages/logout.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+                }
+                else if (StringUtils.EqualsIgnoreCase(RegisterUrl, attributeName))
+                {
+                    var returnUrl = StlParserUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
+                    parsedContent = PageUtils.GetHomeUrl($"pages/register.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+                }
                 else if (StringUtils.StartsWithIgnoreCase(attributeName, "TableFor"))//
                 {
                     if (StringUtils.EqualsIgnoreCase(attributeName, "TableForContent"))

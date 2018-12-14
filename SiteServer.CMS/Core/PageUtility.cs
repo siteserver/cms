@@ -36,9 +36,9 @@ namespace SiteServer.CMS.Core
             }
             if (string.IsNullOrEmpty(physicalPath)) return siteInfo.Additional.WebUrl;
 
-            var publishmentSystemPath = PathUtility.GetSitePath(siteInfo);
-            var requestPath = StringUtils.StartsWithIgnoreCase(physicalPath, publishmentSystemPath)
-                ? StringUtils.ReplaceStartsWithIgnoreCase(physicalPath, publishmentSystemPath, string.Empty)
+            var sitePath = PathUtility.GetSitePath(siteInfo);
+            var requestPath = StringUtils.StartsWithIgnoreCase(physicalPath, sitePath)
+                ? StringUtils.ReplaceStartsWithIgnoreCase(physicalPath, sitePath, string.Empty)
                 : string.Empty;
 
             return GetSiteUrl(siteInfo, requestPath, isLocal);

@@ -560,7 +560,7 @@ namespace SiteServer.Utils
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             Converters = new List<JsonConverter>
             {
-                new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm"}
+                new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm:ss"}
             }
         };
 

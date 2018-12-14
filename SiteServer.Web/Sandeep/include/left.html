@@ -1,0 +1,25 @@
+<div class="col-md-3">
+  <div class="sidbar">
+    <div class="sidbarnav">
+      <div class="tzggtit"> <span> {Channel.top1.Title} </span> </div>
+      <ul class="ymtitle">
+      <stl:channels topLevel="1">
+      <stl:if testType="UpChannelOrSelf">
+      <stl:yes>
+        <li class="cat-item current-cat"><stl:a>{Channel.Title}</stl:a> </li>
+      </stl:yes>
+      <stl:no>
+        <li class="cat-item"><stl:a>{Channel.Title}</stl:a> </li>
+      </stl:no>
+      </stl:if>
+      </stl:channels>
+      </ul>
+    </div>
+    <div class="sidbarcontact">
+      <div class="tzggtit"> <span> 联系我们 </span> </div>
+      <p> 公司地址：北京市海淀区四季青路七号院一号楼</br>
+        联系电话：010-1234567</br>
+        邮箱：admin@siteserver.cn</br>
+      </div>
+  </div>
+</div>

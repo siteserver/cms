@@ -65,6 +65,15 @@ namespace SiteServer.CMS.Plugin.Apis
             return PathUtils.Combine(localDirectoryPath, localFileName);
         }
 
+        public string GetUploadFileUrl(int siteId, string fileName)
+        {
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, PathUtils.GetExtension(fileName));
+            var localFileName = PathUtility.GetUploadFileName(siteInfo, fileName);
+            var path = PathUtils.Combine(localDirectoryPath, localFileName);
+            return PageUtility.GetSiteUrlByPhysicalPath(siteInfo, path, false);
+        }
+
         public string GetTemporaryFilesPath(string relatedPath)
         {
             return PathUtils.GetTemporaryFilesPath(relatedPath);
