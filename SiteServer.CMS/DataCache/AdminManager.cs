@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
@@ -307,13 +306,13 @@ namespace SiteServer.CMS.DataCache
         {
             var isConsoleAdministrator = false;
             var isSystemAdministrator = false;
-            var arraylist = new ArrayList();
+            var roleNameList = new List<string>();
             var roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(userName);
             foreach (var role in roles)
             {
                 if (!EPredefinedRoleUtils.IsPredefinedRole(role))
                 {
-                    arraylist.Add(role);
+                    roleNameList.Add(role);
                 }
                 else
                 {
@@ -330,21 +329,21 @@ namespace SiteServer.CMS.DataCache
                 }
             }
 
-            var retval = string.Empty;
+            var roleNames = string.Empty;
 
             if (isConsoleAdministrator)
             {
-                retval += EPredefinedRoleUtils.GetText(EPredefinedRole.ConsoleAdministrator);
+                roleNames += EPredefinedRoleUtils.GetText(EPredefinedRole.ConsoleAdministrator);
             }
             else if (isSystemAdministrator)
             {
-                retval += EPredefinedRoleUtils.GetText(EPredefinedRole.SystemAdministrator);
+                roleNames += EPredefinedRoleUtils.GetText(EPredefinedRole.SystemAdministrator);
             }
             else
             {
-                retval += TranslateUtils.ObjectCollectionToString(arraylist);
+                roleNames += TranslateUtils.ObjectCollectionToString(roleNameList);
             }
-            return retval;
+            return roleNames;
         }
     }
 }

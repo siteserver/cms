@@ -44,6 +44,16 @@ namespace SiteServer.CMS.Plugin.Impl
             }
         }
 
+	    public bool IsSuperAdmin()
+	    {
+	        return IsConsoleAdministrator;
+	    }
+
+	    public bool IsSiteAdmin(int siteId)
+	    {
+	        return IsSystemAdministrator && GetSiteIdList().Contains(siteId);
+	    }
+
 	    public List<int> GetSiteIdList()
 	    {
 	        var siteIdList = new List<int>();
@@ -183,6 +193,18 @@ namespace SiteServer.CMS.Plugin.Impl
         public bool IsConsoleAdministrator => EPredefinedRoleUtils.IsConsoleAdministrator(Roles);
 
         public bool IsSystemAdministrator => EPredefinedRoleUtils.IsSystemAdministrator(Roles);
+
+	    public bool IsSuperAdmin(string userName)
+	    {
+	        var adminPermissionsImpl = new PermissionsImpl(userName);
+	        return adminPermissionsImpl.IsConsoleAdministrator;
+	    }
+
+	    public bool IsSiteAdmin(string userName, int siteId)
+	    {
+	        var adminPermissionsImpl = new PermissionsImpl(userName);
+	        return adminPermissionsImpl.IsSystemAdministrator && adminPermissionsImpl.HasSitePermissions(siteId);
+	    }
 
         public List<string> PermissionList
         {

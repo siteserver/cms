@@ -42,11 +42,13 @@ var methods = {
       });
 
     }).catch(function (error) {
-      this.pageAlert = utils.getPageAlert(error);
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      $this.pageLoad = true;
     });
   },
 
-  search: function () {
+  btnSearchClick: function () {
     var $this = this;
 
     if (this.word) {
@@ -63,7 +65,7 @@ var methods = {
 
         $this.searchPackages = res.value;
       }).catch(function (error) {
-        this.pageAlert = utils.getPageAlert(error);
+        $this.pageAlert = utils.getPageAlert(error);
       }).then(function () {
         utils.loading(false);
       });
@@ -71,6 +73,14 @@ var methods = {
     } else {
       $this.searchPackages = null;
     }
+  },
+
+  btnUploadClick: function () {
+    pageUtils.openLayer({
+      title: '离线安装插件',
+      url: 'addLayerUpload.cshtml',
+      full: true
+    });
   }
 };
 

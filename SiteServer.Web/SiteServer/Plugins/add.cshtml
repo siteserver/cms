@@ -9,15 +9,18 @@
 }
 
 <div class="row mt-4">
-  <div class="col-12">
+  <div class="col-8">
     <div class="form-inline">
       <div class="form-group">
         <label class="col-form-label m-r-10">关键字</label>
         <input v-model="word" type="text" placeholder="请输入关键字..." class="form-control" style="width: 400px">
       </div>
 
-      <button v-on:click="search()" class="btn btn-success m-l-10 btn-md">搜索插件</button>
+      <button v-on:click="btnSearchClick()" class="btn btn-success m-l-10 btn-md">搜索插件</button>
     </div>
+  </div>
+  <div class="col-4">
+    <button v-on:click="btnUploadClick()" class="btn btn-default m-l-10 btn-md float-right">离线安装</button>
   </div>
 </div>
 
