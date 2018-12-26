@@ -1,8 +1,8 @@
 # SiteServer CMS
 
-SiteServer CMS 基于.NET平台，能够以最低的成本、最少的人力投入在最短的时间内架设一个功能齐全、性能优异、规模庞大并易于维护的网站平台。
+SiteServer CMS 基于.NET 平台，能够以最低的成本、最少的人力投入在最短的时间内架设一个功能齐全、性能优异、规模庞大并易于维护的网站平台。
 
-![SiteServer CMS](https://www.siteserver.cn/assets/github-banner.png)
+![SiteServer CMS](https://www.siteserver.cn/assets/images/github-banner.png)
 
 ## 版本
 
@@ -15,23 +15,23 @@ SiteServer CMS 基于.NET平台，能够以最低的成本、最少的人力投�
 
 ## 迭代计划
 
-[2018年11月/12月迭代计划](https://github.com/siteserver/cms/issues/1521)
+[2018 年 11 月/12 月迭代计划](https://github.com/siteserver/cms/issues/1521)
 
-[2018年9月/10月迭代计划](https://github.com/siteserver/cms/issues/1280)
+[2018 年 9 月/10 月迭代计划](https://github.com/siteserver/cms/issues/1280)
 
-[2018年8月迭代计划](https://github.com/siteserver/cms/issues/1138)
+[2018 年 8 月迭代计划](https://github.com/siteserver/cms/issues/1138)
 
-[2018年7月迭代计划](https://github.com/siteserver/cms/issues/956)
+[2018 年 7 月迭代计划](https://github.com/siteserver/cms/issues/956)
 
-[2018年6月迭代计划](https://github.com/siteserver/cms/issues/719)
+[2018 年 6 月迭代计划](https://github.com/siteserver/cms/issues/719)
 
-[2018年5月迭代计划](https://github.com/siteserver/cms/issues/518)
+[2018 年 5 月迭代计划](https://github.com/siteserver/cms/issues/518)
 
-[2018年4月迭代计划](https://github.com/siteserver/cms/issues/412)
+[2018 年 4 月迭代计划](https://github.com/siteserver/cms/issues/412)
 
-[2018年3月迭代计划](https://github.com/siteserver/cms/issues/300)
+[2018 年 3 月迭代计划](https://github.com/siteserver/cms/issues/300)
 
-[2018年2月迭代计划](https://github.com/siteserver/cms/issues/239)
+[2018 年 2 月迭代计划](https://github.com/siteserver/cms/issues/239)
 
 [SiteServer CMS 路线图 2018](https://github.com/siteserver/cms/issues/718)
 
@@ -47,7 +47,7 @@ SiteServer CMS 基于.NET平台，能够以最低的成本、最少的人力投�
 
 [《数据结构参考手册》](https://docs.siteserver.cn/model/)
 
-系统使用文档请点击 [SiteServer CMS 文档中心](https://docs.siteserver.cn)
+系统使用文档请点击 [SiteServer CMS 文档中心](https://www.siteserver.cn/docs/)
 
 ## SiteServer CMS 源码结构
 
@@ -72,7 +72,7 @@ SiteServer CMS 基于.NET平台，能够以最低的成本、最少的人力投�
 六、命令行，运行 gulp zip
 ```
 
-结束后会在根目录看到siteserver_install.zip，这就是安装包了。
+结束后会在根目录看到 siteserver_install.zip，这就是安装包了。
 以上步骤是第一次生成安装包所需要执行的操作，如果已经生成过安装包：
 
 ```code
@@ -98,11 +98,11 @@ SiteServer CMS 产品将在每个月底发布新的正式版本，我们将在�
 
 ## 问题与建议
 
-如果发现任何BUG以及对产品使用的问题与建议，请提交至 [Github Issues](https://github.com/siteserver/cms/issues)。
+如果发现任何 BUG 以及对产品使用的问题与建议，请提交至 [Github Issues](https://github.com/siteserver/cms/issues)。
 
 ## 关注最新动态
 
-[![qrcode](https://www.siteserver.cn/images/qrcode_for_wx.jpg)](https://www.siteserver.cn/)
+[![qrcode](https://www.siteserver.cn/assets/images/qrcode_for_wx.jpg)](https://www.siteserver.cn/)
 
 ## License
 

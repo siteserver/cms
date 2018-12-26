@@ -39,7 +39,7 @@ namespace SiteServer.CMS.Plugin
 
             foreach (var service in PluginManager.Services)
             {
-                if (service.SystemDefaultPageUrl == null) continue;
+                if (service.HomeDefaultPageUrl == null) continue;
 
                 try
                 {

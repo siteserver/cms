@@ -10,7 +10,6 @@
 
 <body>
   <form class="m-l-15 m-r-15" runat="server">
-
     <div class="card-box" style="padding: 10px; margin-bottom: 10px;">
       <ul class="nav nav-pills nav-justified">
         <li class="nav-item">
@@ -35,13 +34,11 @@
           <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="pageSiteTemplateOnline.aspx">在线站点模板</a>
+          <a class="nav-link" href="siteTemplateOnline.cshtml">在线站点模板</a>
         </li>
       </ul>
     </div>
-
     <ctrl:alerts runat="server" />
-
     <div class="card-box">
       <div class="panel panel-default">
         <div class="panel-body p-0">
@@ -91,9 +88,7 @@
           </div>
         </div>
       </div>
-
       <hr />
-
       <div class="panel panel-default">
         <div class="panel-body p-0">
           <div class="table-responsive">
@@ -130,13 +125,9 @@
           </div>
         </div>
       </div>
-
       <hr />
-
       <asp:Button class="btn btn-primary" id="BtnImport" Text="导入站点模板" runat="server" />
-
     </div>
-
   </form>
 </body>
 

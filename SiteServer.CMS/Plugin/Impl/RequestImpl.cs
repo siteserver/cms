@@ -392,9 +392,9 @@ namespace SiteServer.CMS.Plugin.Impl
                     }
                 }
 
+                _userPermissionsImpl = new PermissionsImpl(adminName);
                 if (!string.IsNullOrEmpty(adminName))
                 {
-                    _userPermissionsImpl = new PermissionsImpl(adminName);
                     AdminInfo = AdminManager.GetAdminInfoByUserName(adminName);
                 }
 
