@@ -108,7 +108,7 @@ var methods = {
         var releaseInfo = res.value[i];
         if (!releaseInfo || !releaseInfo.version) continue;
         if (releaseInfo.pluginId == $packageIdSsCms) {
-          $this.download(releaseInfo);
+          $this.downloadSsCms(releaseInfo);
         } else {
           var installedPackages = $.grep($this.packageList, function (e) {
             return e.id == releaseInfo.pluginId;
@@ -132,24 +132,24 @@ var methods = {
     });
   },
 
-  download: function (package) {
+  downloadSsCms: function (releaseInfo) {
     var $this = this;
-    if (compareversion($this.currentVersion, package.version) != -1) return;
-    var major = package.version.split('.')[0];
-    var minor = package.version.split('.')[1];
+    if (compareversion($this.currentVersion, releaseInfo.version) != -1) return;
+    var major = releaseInfo.version.split('.')[0];
+    var minor = releaseInfo.version.split('.')[1];
 
     $api.post($urlDownload, {
       packageId: $packageIdSsCms,
-      version: package.version
+      version: releaseInfo.version
     }).then(function (response) {
       var res = response.data;
 
       if (res.value) {
         $this.newVersion = {
           updatesUrl: 'http://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html',
-          version: package.version,
-          published: package.published,
-          releaseNotes: package.releaseNotes
+          version: releaseInfo.version,
+          published: releaseInfo.published,
+          releaseNotes: releaseInfo.releaseNotes
         };
       }
     });

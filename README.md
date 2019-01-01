@@ -8,10 +8,10 @@ SiteServer CMS 基于.NET 平台，能够以最低的成本、最少的人力投
 
 项目发布的正式版本存放在 `master` 分支，当前的开发版本存放在 `dev` 分支
 
-| 版本   | 编译状态                                                                                                                                                            | 版本号                                                                 | 发布日期                                                                                   |
-| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| 正式版 | [![Build status](https://ci.appveyor.com/api/projects/status/plx37i94y9gsqkru/branch/master?svg=true)](https://ci.appveyor.com/project/starlying/cms/branch/master) | ![Nuget version](https://img.shields.io/nuget/v/SS.CMS.svg)            | ![master last commit](https://img.shields.io/github/last-commit/siteserver/cms/master.svg) |
-| 开发版 | [![Build status](https://ci.appveyor.com/api/projects/status/plx37i94y9gsqkru/branch/dev?svg=true)](https://ci.appveyor.com/project/starlying/cms/branch/dev)       | ![Myget version](https://img.shields.io/myget/siteserver/v/SS.CMS.svg) | ![dev last commit](https://img.shields.io/github/last-commit/siteserver/cms/dev.svg)       |
+| 版本   | 编译状态                                                                                                                                                              | 版本号                                                         | 发布日期                                                                                     |
+| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| 正式版 | [![Build status](https://ci.appveyor.com/api/projects/status/plx37i94y9gsqkru/branch/master?svg=true)](https://ci.appveyor.com/project/starlying/cms/branch/master)   | ![Nuget version](https://img.shields.io/nuget/v/SS.CMS.svg)    | ![master last commit](https://img.shields.io/github/last-commit/siteserver/cms/master.svg)   |
+| 开发版 | [![Build status](https://ci.appveyor.com/api/projects/status/plx37i94y9gsqkru/branch/staging?svg=true)](https://ci.appveyor.com/project/starlying/cms/branch/staging) | ![Nuget version](https://img.shields.io/nuget/vpre/SS.CMS.svg) | ![staging last commit](https://img.shields.io/github/last-commit/siteserver/cms/staging.svg) |
 
 ## 迭代计划
 
@@ -108,4 +108,4 @@ SiteServer CMS 产品将在每个月底发布新的正式版本，我们将在�
 
 [GNU GENERAL PUBLIC LICENSE 3.0](LICENSE)
 
-Copyright (C) 2003-2018 SiteServer CMS
+Copyright (C) 2003-2019 SiteServer CMS
