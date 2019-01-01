@@ -17,6 +17,11 @@ namespace SiteServer.BackgroundPages.Cms
             return $@"pageUtils.openLayer({{title: '全部站点',url: '{PageUtils.GetCmsUrl(siteId, nameof(ModalSiteSelect), null)}',full: false,width: 0,height: 0}});return false;";
         }
 
+        public static string GetRedirectUrl(int siteId)
+        {
+            return PageUtils.GetCmsUrl(siteId, nameof(ModalSiteSelect), null);
+        }
+
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
@@ -45,7 +50,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlDir = (Literal)e.Item.FindControl("ltlDir");
             var ltlWebUrl = (Literal)e.Item.FindControl("ltlWebUrl");
 
-            ltlName.Text = $@"<a href=""{PageUtils.GetLoadingUrl(PageMain.GetRedirectUrl(siteInfo.Id))}"" target=""_top"">{SiteManager.GetSiteName(siteInfo)}</a>";
+            ltlName.Text = $@"<a href=""{PageUtils.GetLoadingUrl(PageUtils.GetMainUrl(siteInfo.Id))}"" target=""_top"">{SiteManager.GetSiteName(siteInfo)}</a>";
             ltlDir.Text = siteInfo.SiteDir;
 
             ltlWebUrl.Text = $@"<a href=""{siteInfo.Additional.WebUrl}"" target=""_blank"">{siteInfo.Additional.WebUrl}</a>";

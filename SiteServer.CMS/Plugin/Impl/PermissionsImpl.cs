@@ -54,15 +54,25 @@ namespace SiteServer.CMS.Plugin.Impl
 	        return IsSystemAdministrator && GetSiteIdList().Contains(siteId);
 	    }
 
+	    public string GetAdminLevel()
+	    {
+	        if (IsConsoleAdministrator)
+	        {
+	            return "超级管理员";
+	        }
+
+	        return IsSystemAdministrator ? "站点总管理员" : "普通管理员";
+	    }
+
 	    public List<int> GetSiteIdList()
 	    {
 	        var siteIdList = new List<int>();
 
-            if (EPredefinedRoleUtils.IsConsoleAdministrator(Roles))
+            if (IsConsoleAdministrator)
 	        {
 	            siteIdList = SiteManager.GetSiteIdList();
 	        }
-	        else if (EPredefinedRoleUtils.IsSystemAdministrator(Roles))
+	        else if (IsSystemAdministrator)
 	        {
                 var adminInfo = AdminManager.GetAdminInfoByUserName(UserName);
 	            if (adminInfo != null)
@@ -194,17 +204,17 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public bool IsSystemAdministrator => EPredefinedRoleUtils.IsSystemAdministrator(Roles);
 
-	    public bool IsSuperAdmin(string userName)
-	    {
-	        var adminPermissionsImpl = new PermissionsImpl(userName);
-	        return adminPermissionsImpl.IsConsoleAdministrator;
-	    }
+	    //public bool IsSuperAdmin(string userName)
+	    //{
+	    //    var adminPermissionsImpl = new PermissionsImpl(userName);
+	    //    return adminPermissionsImpl.IsConsoleAdministrator;
+	    //}
 
-	    public bool IsSiteAdmin(string userName, int siteId)
-	    {
-	        var adminPermissionsImpl = new PermissionsImpl(userName);
-	        return adminPermissionsImpl.IsSystemAdministrator && adminPermissionsImpl.HasSitePermissions(siteId);
-	    }
+	    //public bool IsSiteAdmin(string userName, int siteId)
+	    //{
+	    //    var adminPermissionsImpl = new PermissionsImpl(userName);
+	    //    return adminPermissionsImpl.IsSystemAdministrator && adminPermissionsImpl.HasSitePermissions(siteId);
+	    //}
 
         public List<string> PermissionList
         {

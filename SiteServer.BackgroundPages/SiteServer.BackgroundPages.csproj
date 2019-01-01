@@ -418,7 +418,7 @@
     <Compile Include="Controls\Flash.cs" />
     <Compile Include="Controls\Help.cs" />
     <Compile Include="Controls\Message.cs" />
-    <Compile Include="Controls\NavigationTree.cs" />
+    <Compile Include="Core\NavigationTree.cs" />
     <Compile Include="Controls\ChannelTree.cs" />
     <Compile Include="Controls\NoTagText.cs" />
     <Compile Include="Controls\Script.cs" />
@@ -453,9 +453,6 @@
     <Compile Include="PageDefault.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="PageInitialization.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="PageInstaller.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -463,9 +460,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageLogout.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PageMain.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageRedirect.cs">
@@ -482,13 +476,7 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings\ModalAdminPassword.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\ModalAdminSelect.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\ModalAdminView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\ModalAreaAdd.cs">

@@ -1,49 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using System.Web.UI;
-using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.Utils;
 
-namespace SiteServer.BackgroundPages.Controls
+namespace SiteServer.BackgroundPages.Core
 {
-    public class NavigationTree : Control
+    public static class NavigationTree
     {
-        public int SiteId { get; set; }
-
-        public string TopId { get; set; }
-
-        public string Title { get; set; }
-
-        public List<string> PermissionList { get; set; }
-
-        protected override void Render(HtmlTextWriter writer)
+        public static string BuildNavigationTree(int siteId, string topId, List<string> permissionList)
         {
-            var builder = new StringBuilder();
-            var tabList = TabManager.GetTabList(TopId, SiteId);
-            var treeContent = BuildNavigationTree(tabList);
-            if (!string.IsNullOrEmpty(treeContent))
-            {
-                var linkHtml = string.Empty;
-                if (string.IsNullOrEmpty(TopId) && PermissionList.Contains(ConfigManager.PluginsPermissions.Management))
-                {
-                    linkHtml = $@"<a id=""updatePackagesLink"" href=""{PageUtils.GetAdminUrl(PageUtils.Combine("plugins/manage.cshtml?pageType=4"))}"" onclick=""closeMenu()"" class=""badge badge-warning"" style=""display: none"" target=""right""></a>";
-                }
-                builder.Append($@"<li class=""text-muted menu-title"">{Title}{linkHtml}</li>{treeContent}");
-            }
-            writer.Write(builder);
-        }
-
-        private string BuildNavigationTree(List<Tab> tabs)
-        {
+            var tabs = TabManager.GetTabList(topId, siteId);
             if (tabs == null || tabs.Count == 0) return string.Empty;
 
             var builder = new StringBuilder();
 
             foreach (var parent in tabs)
             {
-                if (!TabManager.IsValid(parent, PermissionList)) continue;
+                if (!TabManager.IsValid(parent, permissionList)) continue;
 
                 var childBuilder = new StringBuilder();
                 if (parent.Children != null && parent.Children.Length > 0)
@@ -53,13 +27,13 @@ namespace SiteServer.BackgroundPages.Controls
                     {
                         foreach (var childTab in tabCollection.Tabs)
                         {
-                            if (!TabManager.IsValid(childTab, PermissionList)) continue;
+                            if (!TabManager.IsValid(childTab, permissionList)) continue;
 
                             var href = childTab.Href;
                             if (!PageUtils.IsAbsoluteUrl(href))
                             {
                                 href = PageUtils.AddQueryString(href,
-                                    new NameValueCollection { { "siteId", SiteId.ToString() } });
+                                    new NameValueCollection { { "siteId", siteId.ToString() } });
                             }
 
                             if (childTab.HasHref)
@@ -108,7 +82,7 @@ namespace SiteServer.BackgroundPages.Controls
                     if (!PageUtils.IsAbsoluteUrl(href))
                     {
                         href = PageUtils.AddQueryString(href,
-                            new NameValueCollection {{"siteId", SiteId.ToString()}});
+                            new NameValueCollection {{"siteId", siteId.ToString()}});
                     }
 
                     if (parent.HasHref)

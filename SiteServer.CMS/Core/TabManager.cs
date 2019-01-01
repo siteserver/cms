@@ -23,9 +23,9 @@ namespace SiteServer.CMS.Core
 	        return tc;
 	    }
 
-        public static List<Utils.Tab> GetTopMenuTabs()
+        public static List<Tab> GetTopMenuTabs()
         {
-            var list = new List<Utils.Tab>();
+            var list = new List<Tab>();
 
             var menuPath = PathUtils.GetMenusPath("Top.config");
             if (!FileUtils.IsFileExists(menuPath)) return list;
@@ -39,7 +39,27 @@ namespace SiteServer.CMS.Core
             return list;
         }
 
-        public static bool IsValid(Utils.Tab tab, IList permissionList)
+	    public static List<Tab> GetTopMenuTabsWithChildren()
+	    {
+	        var list = new List<Tab>();
+
+	        var menuPath = PathUtils.GetMenusPath("Top.config");
+	        if (!FileUtils.IsFileExists(menuPath)) return list;
+
+	        var tabs = GetTabs(menuPath);
+	        foreach (var parent in tabs.Tabs)
+	        {
+	            if (parent.HasChildren)
+	            {
+
+	            }
+	            list.Add(parent);
+	        }
+
+	        return list;
+	    }
+
+        public static bool IsValid(Tab tab, IList permissionList)
         {
             if (tab.HasPermissions)
             {
@@ -61,9 +81,9 @@ namespace SiteServer.CMS.Core
             return true;
         }
 
-        private static Utils.Tab GetPluginTab(SiteServer.Plugin.Menu menu, string permission)
+        private static Tab GetPluginTab(SiteServer.Plugin.Menu menu, string permission)
         {
-            var tab = new Utils.Tab
+            var tab = new Tab
             {
                 Id = menu.Id,
                 Text = menu.Text,
@@ -75,7 +95,7 @@ namespace SiteServer.CMS.Core
             };
             if (menu.Menus != null && menu.Menus.Count > 0)
             {
-                tab.Children = new Utils.Tab[menu.Menus.Count];
+                tab.Children = new Tab[menu.Menus.Count];
                 for (var i = 0; i < menu.Menus.Count; i++)
                 {
                     tab.Children[i] = GetPluginTab(menu.Menus[i], permission);
@@ -84,9 +104,9 @@ namespace SiteServer.CMS.Core
             return tab;
         }
 
-        public static List<Utils.Tab> GetTabList(string topId, int siteId)
+        public static List<Tab> GetTabList(string topId, int siteId)
         {
-            var tabs = new List<Utils.Tab>();
+            var tabs = new List<Tab>();
 
             if (!string.IsNullOrEmpty(topId))
             {

@@ -117,29 +117,35 @@ namespace SiteServer.CMS.Provider
             },
             new TableColumn
             {
+                AttributeName = nameof(AdministratorInfoDatabase.Mobile),
+                DataType = DataType.VarChar,
+                DataLength = 20
+            },
+            new TableColumn
+            {
                 AttributeName = nameof(AdministratorInfoDatabase.Email),
                 DataType = DataType.VarChar,
                 DataLength = 50
             },
             new TableColumn
             {
-                AttributeName = nameof(AdministratorInfoDatabase.Mobile),
+                AttributeName = nameof(AdministratorInfoDatabase.AvatarUrl),
                 DataType = DataType.VarChar,
-                DataLength = 20
+                DataLength = 200
             }
         };
 
         private const string SqlSelectUserByUserName =
-            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator WHERE UserName = @UserName";
+            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE UserName = @UserName";
 
         private const string SqlSelectUserByUserId =
-            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator WHERE Id = @Id";
+            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE Id = @Id";
 
         private const string SqlSelectUserByEmail =
-            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator WHERE Email = @Email";
+            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE Email = @Email";
 
         private const string SqlSelectUserByMobile =
-            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile FROM siteserver_Administrator WHERE Mobile = @Mobile";
+            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE Mobile = @Mobile";
 
         private const string SqlSelectUsername = "SELECT UserName FROM siteserver_Administrator WHERE UserName = @UserName";
 
@@ -149,17 +155,11 @@ namespace SiteServer.CMS.Provider
         private const string SqlSelectUsernameByMobile =
             "SELECT UserName FROM siteserver_Administrator WHERE Mobile = @Mobile";
 
-        //private const string SqlSelectDisplayName =
-        //    "SELECT DisplayName FROM siteserver_Administrator WHERE UserName = @UserName";
-
-        //private const string SqlSelectSiteIdCollection =
-        //    "SELECT SiteIdCollection FROM siteserver_Administrator WHERE UserName = @UserName";
-
         private const string SqlInsertUser =
-            "INSERT INTO siteserver_Administrator (UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Email, Mobile) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreationDate, @LastActivityDate, @CountOfLogin, @CountOfFailedLogin, @CreatorUserName, @IsLockedOut, @SiteIdCollection, @SiteId, @DepartmentId, @AreaId, @DisplayName, @Email, @Mobile)";
+            "INSERT INTO siteserver_Administrator (UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreationDate, @LastActivityDate, @CountOfLogin, @CountOfFailedLogin, @CreatorUserName, @IsLockedOut, @SiteIdCollection, @SiteId, @DepartmentId, @AreaId, @DisplayName, @Mobile, @Email, @AvatarUrl)";
 
         private const string SqlUpdateUser =
-            "UPDATE siteserver_Administrator SET LastActivityDate = @LastActivityDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin, IsLockedOut = @IsLockedOut, SiteIdCollection = @SiteIdCollection, SiteId = @SiteId, DepartmentId = @DepartmentId, AreaId = @AreaId, DisplayName = @DisplayName, Email = @Email, Mobile = @Mobile WHERE UserName = @UserName";
+            "UPDATE siteserver_Administrator SET LastActivityDate = @LastActivityDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin, IsLockedOut = @IsLockedOut, SiteIdCollection = @SiteIdCollection, SiteId = @SiteId, DepartmentId = @DepartmentId, AreaId = @AreaId, DisplayName = @DisplayName, Mobile = @Mobile, Email = @Email, AvatarUrl = @AvatarUrl WHERE UserName = @UserName";
 
         private const string ParmId = "@Id";
         private const string ParmUsername = "@UserName";
@@ -177,16 +177,17 @@ namespace SiteServer.CMS.Provider
         private const string ParmDepartmentId = "@DepartmentId";
         private const string ParmAreaId = "@AreaId";
         private const string ParmDisplayname = "@DisplayName";
-        private const string ParmEmail = "@Email";
         private const string ParmMobile = "@Mobile";
+        private const string ParmEmail = "@Email";
+        private const string ParmAvatarUrl = "@AvatarUrl";
 
         public void Update(AdministratorInfo info)
         {
             info.DisplayName = AttackUtils.FilterXss(info.DisplayName);
-            info.Email = AttackUtils.FilterXss(info.Email);
             info.Mobile = AttackUtils.FilterXss(info.Mobile);
+            info.Email = AttackUtils.FilterXss(info.Email);
 
-            IDataParameter[] parms =
+            IDataParameter[] parameters =
             {
                 GetParameter(ParmLastActivityDate, DataType.DateTime, info.LastActivityDate),
                 GetParameter(ParmCountOfLogin, DataType.Integer, info.CountOfLogin),
@@ -197,12 +198,13 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmDepartmentId, DataType.Integer, info.DepartmentId),
                 GetParameter(ParmAreaId, DataType.Integer, info.AreaId),
                 GetParameter(ParmDisplayname, DataType.VarChar, 255, info.DisplayName),
-                GetParameter(ParmEmail, DataType.VarChar, 255, info.Email),
                 GetParameter(ParmMobile, DataType.VarChar, 20, info.Mobile),
+                GetParameter(ParmEmail, DataType.VarChar, 255, info.Email),
+                GetParameter(ParmAvatarUrl, DataType.VarChar, 200, info.AvatarUrl),
                 GetParameter(ParmUsername, DataType.VarChar, 255, info.UserName)
             };
 
-            ExecuteNonQuery(SqlUpdateUser, parms);
+            ExecuteNonQuery(SqlUpdateUser, parameters);
 
             DataProvider.DepartmentDao.UpdateCountOfAdmin();
             DataProvider.AreaDao.UpdateCountOfAdmin();
@@ -219,14 +221,14 @@ namespace SiteServer.CMS.Provider
 
             var sqlString = $"UPDATE {TableName} SET LastActivityDate = @LastActivityDate, CountOfFailedLogin = @CountOfFailedLogin WHERE Id = @Id";
 
-            IDataParameter[] updateParms =
+            IDataParameter[] parameters =
             {
                 GetParameter(ParmLastActivityDate, DataType.DateTime, adminInfo.LastActivityDate),
                 GetParameter(ParmCountOfFailedLogin, DataType.Integer, adminInfo.CountOfFailedLogin),
                 GetParameter(ParmId, DataType.Integer, adminInfo.Id)
             };
 
-            ExecuteNonQuery(sqlString, updateParms);
+            ExecuteNonQuery(sqlString, parameters);
 
             AdminManager.UpdateCache(adminInfo);
         }
@@ -242,7 +244,7 @@ namespace SiteServer.CMS.Provider
             var sqlString =
                 $"UPDATE {TableName} SET LastActivityDate = @LastActivityDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin WHERE Id = @Id";
 
-            IDataParameter[] updateParms =
+            IDataParameter[] parameters =
             {
                 GetParameter(ParmLastActivityDate, DataType.DateTime, adminInfo.LastActivityDate),
                 GetParameter(ParmCountOfLogin, DataType.Integer, adminInfo.CountOfLogin),
@@ -250,7 +252,7 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmId, DataType.Integer, adminInfo.Id)
             };
 
-            ExecuteNonQuery(sqlString, updateParms);
+            ExecuteNonQuery(sqlString, parameters);
 
             AdminManager.UpdateCache(adminInfo);
         }
@@ -263,34 +265,46 @@ namespace SiteServer.CMS.Provider
 
             var sqlString = $"UPDATE {TableName} SET SiteIdCollection = @SiteIdCollection WHERE Id = @Id";
 
-            IDataParameter[] updateParms =
+            IDataParameter[] parameters =
             {
                 GetParameter(ParmSiteIdCollection, DataType.VarChar, 50, adminInfo.SiteIdCollection),
                 GetParameter(ParmId, DataType.Integer, adminInfo.Id)
             };
 
-            ExecuteNonQuery(sqlString, updateParms);
+            ExecuteNonQuery(sqlString, parameters);
 
             AdminManager.UpdateCache(adminInfo);
         }
 
-        public void UpdateSiteId(AdministratorInfo adminInfo, int siteId)
+        public List<int> UpdateSiteId(AdministratorInfo adminInfo, int siteId)
         {
-            if (adminInfo == null) return;
+            if (adminInfo == null) return null;
 
-            adminInfo.SiteId = siteId;
-
-            var sqlString = $"UPDATE {TableName} SET SiteId = @SiteId WHERE Id = @Id";
-
-            IDataParameter[] updateParms =
+            var siteIdListLatestAccessed = TranslateUtils.StringCollectionToIntList(adminInfo.SiteIdCollection);
+            if (adminInfo.SiteId != siteId || siteIdListLatestAccessed.FirstOrDefault() != siteId)
             {
-                GetParameter(ParmSiteId, DataType.Integer, adminInfo.SiteId),
-                GetParameter(ParmId, DataType.Integer, adminInfo.Id)
-            };
+                siteIdListLatestAccessed.Remove(siteId);
+                siteIdListLatestAccessed.Insert(0, siteId);
 
-            ExecuteNonQuery(sqlString, updateParms);
+                adminInfo.SiteIdCollection = TranslateUtils.ObjectCollectionToString(siteIdListLatestAccessed);
+                adminInfo.SiteId = siteId;
 
-            AdminManager.UpdateCache(adminInfo);
+                var sqlString =
+                    $"UPDATE {TableName} SET SiteIdCollection = @SiteIdCollection, SiteId = @SiteId WHERE Id = @Id";
+
+                IDataParameter[] parameters =
+                {
+                    GetParameter(ParmSiteIdCollection, DataType.VarChar, 50, adminInfo.SiteIdCollection),
+                    GetParameter(ParmSiteId, DataType.Integer, adminInfo.SiteId),
+                    GetParameter(ParmId, DataType.Integer, adminInfo.Id)
+                };
+
+                ExecuteNonQuery(sqlString, parameters);
+
+                AdminManager.UpdateCache(adminInfo);
+            }
+
+            return siteIdListLatestAccessed;
         }
 
         private void ChangePassword(AdministratorInfo adminInfo, EPasswordFormat passwordFormat, string passwordSalt,
@@ -303,7 +317,7 @@ namespace SiteServer.CMS.Provider
             var sqlString =
                 $"UPDATE {TableName} SET Password = @Password, PasswordFormat = @PasswordFormat, PasswordSalt = @PasswordSalt WHERE Id = @Id";
 
-            IDataParameter[] updateParms =
+            IDataParameter[] parameters =
             {
                 GetParameter(ParmPassword, DataType.VarChar, 255, adminInfo.Password),
                 GetParameter(ParmPasswordFormat, DataType.VarChar, 50, adminInfo.PasswordFormat),
@@ -311,7 +325,7 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmId, DataType.Integer, adminInfo.Id)
             };
 
-            ExecuteNonQuery(sqlString, updateParms);
+            ExecuteNonQuery(sqlString, parameters);
 
             AdminManager.RemoveCache(adminInfo);
         }
@@ -322,12 +336,12 @@ namespace SiteServer.CMS.Provider
 
             var sqlString = $"DELETE FROM {TableName} WHERE Id = @Id";
 
-            IDataParameter[] deleteParms =
+            IDataParameter[] parameters =
             {
                 GetParameter(ParmId, DataType.Integer, adminInfo.Id)
             };
 
-            ExecuteNonQuery(sqlString, deleteParms);
+            ExecuteNonQuery(sqlString, parameters);
 
             AdminManager.RemoveCache(adminInfo);
 
@@ -337,8 +351,8 @@ namespace SiteServer.CMS.Provider
 
         public void Lock(List<string> userNameList)
         {
-            string sqlString =
-                $"UPDATE siteserver_Administrator SET IsLockedOut = '{true}' WHERE UserName IN ({TranslateUtils.ToSqlInStringWithQuote(userNameList)})";
+            var sqlString =
+                $"UPDATE {TableName} SET IsLockedOut = '{true}' WHERE UserName IN ({TranslateUtils.ToSqlInStringWithQuote(userNameList)})";
 
             ExecuteNonQuery(sqlString);
 
@@ -347,8 +361,8 @@ namespace SiteServer.CMS.Provider
 
         public void UnLock(List<string> userNameList)
         {
-            string sqlString =
-                $"UPDATE siteserver_Administrator SET IsLockedOut = '{false}', CountOfFailedLogin = 0 WHERE UserName IN ({TranslateUtils.ToSqlInStringWithQuote(userNameList)})";
+            var sqlString =
+                $"UPDATE {TableName} SET IsLockedOut = '{false}', CountOfFailedLogin = 0 WHERE UserName IN ({TranslateUtils.ToSqlInStringWithQuote(userNameList)})";
 
             ExecuteNonQuery(sqlString);
 
@@ -371,12 +385,12 @@ namespace SiteServer.CMS.Provider
 
             AdministratorInfo info = null;
 
-            IDataParameter[] parms =
+            IDataParameter[] parameters =
             {
                 GetParameter(ParmId, DataType.Integer, userId)
             };
 
-            using (var rdr = ExecuteReader(SqlSelectUserByUserId, parms))
+            using (var rdr = ExecuteReader(SqlSelectUserByUserId, parameters))
             {
                 if (rdr.Read())
                 {
@@ -384,7 +398,7 @@ namespace SiteServer.CMS.Provider
                     info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
                         GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
-                        GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
+                        GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i));
                 }
                 rdr.Close();
@@ -399,12 +413,12 @@ namespace SiteServer.CMS.Provider
 
             AdministratorInfo info = null;
 
-            IDataParameter[] parms =
+            IDataParameter[] parameters =
             {
                 GetParameter(ParmUsername, DataType.VarChar, 255, userName)
             };
 
-            using (var rdr = ExecuteReader(SqlSelectUserByUserName, parms))
+            using (var rdr = ExecuteReader(SqlSelectUserByUserName, parameters))
             {
                 if (rdr.Read())
                 {
@@ -412,7 +426,7 @@ namespace SiteServer.CMS.Provider
                     info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
                         GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
-                        GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
+                        GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i));
                 }
                 rdr.Close();
@@ -427,12 +441,12 @@ namespace SiteServer.CMS.Provider
 
             AdministratorInfo info = null;
 
-            IDataParameter[] parms =
+            IDataParameter[] parameters =
             {
                 GetParameter(ParmMobile, DataType.VarChar, 50, mobile)
             };
 
-            using (var rdr = ExecuteReader(SqlSelectUserByMobile, parms))
+            using (var rdr = ExecuteReader(SqlSelectUserByMobile, parameters))
             {
                 if (rdr.Read())
                 {
@@ -440,7 +454,7 @@ namespace SiteServer.CMS.Provider
                     info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
                         GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
-                        GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
+                        GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i));
                 }
                 rdr.Close();
@@ -455,12 +469,12 @@ namespace SiteServer.CMS.Provider
 
             AdministratorInfo info = null;
 
-            IDataParameter[] parms =
+            IDataParameter[] parameters =
             {
                 GetParameter(ParmEmail, DataType.VarChar, 50, email)
             };
 
-            using (var rdr = ExecuteReader(SqlSelectUserByEmail, parms))
+            using (var rdr = ExecuteReader(SqlSelectUserByEmail, parameters))
             {
                 if (rdr.Read())
                 {
@@ -468,7 +482,7 @@ namespace SiteServer.CMS.Provider
                     info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
                         GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
-                        GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
+                        GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i));
                 }
                 rdr.Close();
@@ -560,12 +574,12 @@ namespace SiteServer.CMS.Provider
 
             var exists = false;
 
-            IDataParameter[] parms =
+            IDataParameter[] parameters =
             {
                 GetParameter(ParmUsername, DataType.VarChar, 255, adminName)
             };
 
-            using (var rdr = ExecuteReader(SqlSelectUsername, parms))
+            using (var rdr = ExecuteReader(SqlSelectUsername, parameters))
             {
                 if (rdr.Read() && !rdr.IsDBNull(0))
                 {
@@ -585,12 +599,12 @@ namespace SiteServer.CMS.Provider
 
             var sqlSelect = $"SELECT {nameof(AdministratorInfoDatabase.Email)} FROM {TableName} WHERE {nameof(AdministratorInfoDatabase.Email)} = @{nameof(AdministratorInfoDatabase.Email)}";
 
-            var parms = new IDataParameter[]
+            var parameters = new IDataParameter[]
             {
                 GetParameter(ParmEmail, DataType.VarChar, 200, email)
             };
 
-            using (var rdr = ExecuteReader(sqlSelect, parms))
+            using (var rdr = ExecuteReader(sqlSelect, parameters))
             {
                 if (rdr.Read())
                 {
@@ -611,12 +625,12 @@ namespace SiteServer.CMS.Provider
 
             var sqlString = $"SELECT {nameof(AdministratorInfoDatabase.Mobile)} FROM {TableName} WHERE {nameof(AdministratorInfoDatabase.Mobile)} = @{nameof(AdministratorInfoDatabase.Mobile)}";
 
-            var parms = new IDataParameter[]
+            var parameters = new IDataParameter[]
             {
                 GetParameter(ParmMobile, DataType.VarChar, 20, mobile)
             };
 
-            using (var rdr = ExecuteReader(sqlString, parms))
+            using (var rdr = ExecuteReader(sqlString, parameters))
             {
                 if (rdr.Read())
                 {
@@ -637,12 +651,12 @@ namespace SiteServer.CMS.Provider
 
             var userName = string.Empty;
 
-            IDataParameter[] parms =
+            IDataParameter[] parameters =
             {
                 GetParameter(ParmEmail, DataType.VarChar, 50, email)
             };
 
-            using (var rdr = ExecuteReader(SqlSelectUsernameByEmail, parms))
+            using (var rdr = ExecuteReader(SqlSelectUsernameByEmail, parameters))
             {
                 if (rdr.Read())
                 {
@@ -659,12 +673,12 @@ namespace SiteServer.CMS.Provider
 
             var userName = string.Empty;
 
-            IDataParameter[] parms =
+            IDataParameter[] parameters =
             {
                 GetParameter(ParmMobile, DataType.VarChar, 50, mobile)
             };
 
-            using (var rdr = ExecuteReader(SqlSelectUsernameByMobile, parms))
+            using (var rdr = ExecuteReader(SqlSelectUsernameByMobile, parameters))
             {
                 if (rdr.Read())
                 {
@@ -674,51 +688,6 @@ namespace SiteServer.CMS.Provider
             }
             return userName;
         }
-
-        //public string GetDisplayName(string userName)
-        //{
-        //    var displayName = string.Empty;
-
-        //    IDataParameter[] parms =
-        //    {
-        //        GetParameter(ParmUsername, DataType.VarChar, 255, userName)
-        //    };
-
-        //    using (var rdr = ExecuteReader(SqlSelectDisplayName, parms))
-        //    {
-        //        if (rdr.Read())
-        //        {
-        //            displayName = GetString(rdr, 0);
-        //        }
-        //        rdr.Close();
-        //    }
-
-        //    return (!string.IsNullOrEmpty(displayName)) ? displayName : userName;
-        //}
-
-        //public List<int> GetSiteIdList(string userName)
-        //{
-        //    var siteIdList = new List<int>();
-
-        //    IDataParameter[] parms =
-        //    {
-        //        GetParameter(ParmUsername, DataType.VarChar, 255, userName)
-        //    };
-
-        //    using (var rdr = ExecuteReader(SqlSelectSiteIdCollection, parms))
-        //    {
-        //        if (rdr.Read())
-        //        {
-        //            var collection = GetString(rdr, 0);
-        //            if (!string.IsNullOrEmpty(collection))
-        //            {
-        //                siteIdList = TranslateUtils.StringCollectionToIntList(collection);
-        //            }
-        //        }
-        //        rdr.Close();
-        //    }
-        //    return siteIdList;
-        //}
 
         public int GetCountByAreaId(int areaId)
         {
@@ -737,7 +706,7 @@ namespace SiteServer.CMS.Provider
         public List<string> GetUserNameList()
         {
             var list = new List<string>();
-            const string sqlSelect = "SELECT UserName FROM siteserver_Administrator";
+            var sqlSelect = $"SELECT UserName FROM {TableName}";
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -753,13 +722,13 @@ namespace SiteServer.CMS.Provider
         public List<string> GetUserNameList(int departmentId, bool isAll)
         {
             var list = new List<string>();
-            string sqlSelect = $"SELECT UserName FROM siteserver_Administrator WHERE DepartmentId = {departmentId}";
+            var sqlSelect = $"SELECT UserName FROM {TableName} WHERE DepartmentId = {departmentId}";
             if (isAll)
             {
                 var departmentIdList = DataProvider.DepartmentDao.GetIdListForDescendant(departmentId);
                 departmentIdList.Add(departmentId);
                 sqlSelect =
-                    $"SELECT UserName FROM siteserver_Administrator WHERE DepartmentId IN ({TranslateUtils.ObjectCollectionToString(departmentIdList)})";
+                    $"SELECT UserName FROM {TableName} WHERE DepartmentId IN ({TranslateUtils.ObjectCollectionToString(departmentIdList)})";
             }
 
             using (var rdr = ExecuteReader(sqlSelect))
@@ -843,20 +812,20 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            if (adminInfoToUpdate.Email != null && adminInfoToUpdate.Email != email)
-            {
-                if (!string.IsNullOrEmpty(adminInfoToUpdate.Email) && IsEmailExists(adminInfoToUpdate.Email))
-                {
-                    errorMessage = "电子邮件地址已被注册，请更换邮箱";
-                    return false;
-                }
-            }
-
             if (adminInfoToUpdate.Mobile != null && adminInfoToUpdate.Mobile != mobile)
             {
                 if (!string.IsNullOrEmpty(adminInfoToUpdate.Mobile) && IsMobileExists(adminInfoToUpdate.Mobile))
                 {
                     errorMessage = "手机号码已被注册，请更换手机号码";
+                    return false;
+                }
+            }
+
+            if (adminInfoToUpdate.Email != null && adminInfoToUpdate.Email != email)
+            {
+                if (!string.IsNullOrEmpty(adminInfoToUpdate.Email) && IsEmailExists(adminInfoToUpdate.Email))
+                {
+                    errorMessage = "电子邮件地址已被注册，请更换邮箱";
                     return false;
                 }
             }
@@ -902,14 +871,14 @@ namespace SiteServer.CMS.Provider
                 return false;
             }
 
-            if (!string.IsNullOrEmpty(email) && IsEmailExists(email))
-            {
-                errorMessage = "电子邮件地址已被注册，请更换邮箱";
-                return false;
-            }
             if (!string.IsNullOrEmpty(mobile) && IsMobileExists(mobile))
             {
                 errorMessage = "手机号码已被注册，请更换手机号码";
+                return false;
+            }
+            if (!string.IsNullOrEmpty(email) && IsEmailExists(email))
+            {
+                errorMessage = "电子邮件地址已被注册，请更换邮箱";
                 return false;
             }
 
@@ -932,7 +901,7 @@ namespace SiteServer.CMS.Provider
                 adminInfo.Email = AttackUtils.FilterXss(adminInfo.Email);
                 adminInfo.Mobile = AttackUtils.FilterXss(adminInfo.Mobile);
 
-                IDataParameter[] insertParms =
+                IDataParameter[] parameters =
                 {
                     GetParameter(ParmUsername, DataType.VarChar, 255, adminInfo.UserName),
                     GetParameter(ParmPassword, DataType.VarChar, 255, adminInfo.Password),
@@ -949,11 +918,12 @@ namespace SiteServer.CMS.Provider
                     GetParameter(ParmDepartmentId, DataType.Integer, adminInfo.DepartmentId),
                     GetParameter(ParmAreaId, DataType.Integer, adminInfo.AreaId),
                     GetParameter(ParmDisplayname, DataType.VarChar, 255, adminInfo.DisplayName),
+                    GetParameter(ParmMobile, DataType.VarChar, 20, adminInfo.Mobile),
                     GetParameter(ParmEmail, DataType.VarChar, 255, adminInfo.Email),
-                    GetParameter(ParmMobile, DataType.VarChar, 20, adminInfo.Mobile)
+                    GetParameter(ParmAvatarUrl, DataType.VarChar, 200, adminInfo.AvatarUrl)
                 };
 
-                ExecuteNonQuery(SqlInsertUser, insertParms);
+                ExecuteNonQuery(SqlInsertUser, parameters);
 
                 DataProvider.DepartmentDao.UpdateCountOfAdmin();
                 DataProvider.AreaDao.UpdateCountOfAdmin();

@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Settings
             else
             {
                 AddScript(
-                    $@"setTimeout(""window.top.location.href='{PageMain.GetRedirectUrl()}'"", 1500);");
+                    $@"setTimeout(""window.top.location.href='{PageUtils.GetMainUrl(0)}'"", 1500);");
             }
 
             AuthRequest.AddAdminLog("删除站点", $"站点:{SiteInfo.SiteName}");

@@ -10,7 +10,6 @@
 
 <body>
   <form class="m-l-15 m-r-15" runat="server">
-
     <div class="card-box" style="padding: 10px; margin-bottom: 10px;">
       <ul class="nav nav-pills nav-justified">
         <li class="nav-item active">
@@ -33,9 +32,7 @@
         </li>
       </ul>
     </div>
-
     <ctrl:alerts runat="server" />
-
     <div class="card-box">
       <div class="m-t-10">
         <div class="form-inline">
@@ -44,7 +41,6 @@
             <asp:DropDownList ID="DdlRoleName" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="Search_OnClick"
               runat="server"></asp:DropDownList>
           </div>
-
           <div class="form-group m-l-10">
             <label class="col-form-label m-r-10">每页显示条数</label>
             <asp:DropDownList ID="DdlPageNum" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="Search_OnClick"
@@ -56,7 +52,6 @@
               <asp:ListItem Text="300" Value="300"></asp:ListItem>
             </asp:DropDownList>
           </div>
-
           <div class="form-group m-l-10">
             <label class="col-form-label m-r-10">排序</label>
             <asp:DropDownList ID="DdlOrder" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="Search_OnClick"
@@ -67,7 +62,6 @@
               <asp:ListItem Text="登录次数" Value="CountOfLogin"></asp:ListItem>
             </asp:DropDownList>
           </div>
-
           <div class="form-group m-l-10">
             <label class="col-form-label m-r-10">最后登录日期</label>
             <asp:DropDownList ID="DdlLastActivityDate" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="Search_OnClick"
@@ -84,44 +78,40 @@
             </asp:DropDownList>
           </div>
         </div>
-
         <div class="form-inline m-t-10">
           <div class="form-group">
             <label class="col-form-label m-r-10">所属部门</label>
             <asp:DropDownList ID="DdlDepartmentId" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="Search_OnClick"
               runat="server"></asp:DropDownList>
           </div>
-
           <div class="form-group m-l-10">
             <label class="col-form-label m-r-10">所在区域</label>
             <asp:DropDownList ID="DdlAreaId" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="Search_OnClick"
               runat="server"></asp:DropDownList>
           </div>
-
           <div class="form-group m-l-10">
             <label class="col-form-label m-r-10">关键字</label>
             <asp:TextBox id="TbKeyword" class="form-control" runat="server" />
           </div>
-
           <asp:Button class="btn btn-success m-l-10 btn-md" OnClick="Search_OnClick" ID="Search" Text="搜 索" runat="server" />
         </div>
       </div>
-
       <div class="panel panel-default m-t-20">
         <div class="panel-body p-0">
           <div class="table-responsive">
             <table id="contents" class="table tablesaw table-hover m-0">
               <thead>
                 <tr class="thead">
-                  <th width="100">账号</th>
-                  <th width="100">姓名</th>
-                  <th width="100">手机</th>
-                  <th width="120">部门</th>
-                  <th width="120">区域</th>
-                  <th width="100">最后登录</th>
-                  <th width="100">登录次数</th>
+                  <th>头像</th>
+                  <th>账号</th>
+                  <th>姓名</th>
+                  <th>手机</th>
+                  <th>部门</th>
+                  <th>区域</th>
+                  <th>最后登录</th>
+                  <th>登录次数</th>
                   <th>角色</th>
-                  <th width="280">操作</th>
+                  <th>操作</th>
                   <th width="20">
                     <input onclick="_checkFormAll(this.checked)" type="checkbox" />
                   </th>
@@ -131,6 +121,9 @@
                 <asp:Repeater ID="RptContents" runat="server">
                   <itemtemplate>
                     <tr>
+                      <td>
+                        <asp:Literal ID="ltlAvatar" runat="server"></asp:Literal>
+                      </td>
                       <td>
                         <asp:Literal ID="ltlUserName" runat="server"></asp:Literal>
                       </td>
@@ -155,7 +148,7 @@
                       <td>
                         <asp:Literal ID="ltlRoles" runat="server"></asp:Literal>
                       </td>
-                      <td class="text-center">
+                      <td class="text-center text-nowrap">
                         <asp:Literal ID="ltlActions" runat="server"></asp:Literal>
                       </td>
                       <td class="text-center">
@@ -166,22 +159,16 @@
                 </asp:Repeater>
               </tbody>
             </table>
-
           </div>
         </div>
       </div>
-
       <ctrl:pager id="PgContents" runat="server" />
-
       <hr />
-
-      <asp:Button class="btn btn-primary m-r-5" id="BtnAdd" Text="新 增" runat="server" />
+      <a href="adminProfile.cshtml" class="btn btn-primary m-r-5">新 增</a>
       <asp:Button class="btn m-r-5" id="BtnLock" Text="锁 定" runat="server" />
       <asp:Button class="btn m-r-5" id="BtnUnLock" Text="解除锁定" runat="server" />
       <asp:Button class="btn m-r-5" id="BtnDelete" Text="删 除" runat="server" />
-
     </div>
-
   </form>
 </body>
 

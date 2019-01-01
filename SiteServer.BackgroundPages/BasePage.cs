@@ -85,8 +85,8 @@ namespace SiteServer.BackgroundPages
             if (!IsAccessable && !IsSinglePage) // 页面不能直接访问且不是单页，需要加一段框架检测代码，检测页面是否运行在框架内
             {
                 writer.Write($@"<script type=""text/javascript"">
-if (window.top.location.href.toLowerCase().indexOf(""main.aspx"") == -1){{
-	window.top.location.href = ""{PageInitialization.GetRedirectUrl()}"";
+if (window.top.location.href.toLowerCase().indexOf(""main.cshtml"") == -1){{
+	window.top.location.href = ""{PageUtils.GetMainUrl(0)}"";
 }}
 </script>");
             }

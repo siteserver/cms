@@ -22,6 +22,14 @@ var methods = {
     return 'http://plugins.siteserver.cn/' + url;
   },
 
+  getTagNames: function (pluginInfo) {
+    var tagNames = [];
+    if (pluginInfo.tags) {
+      tagNames = pluginInfo.tags.split(',');
+    }
+    return tagNames;
+  },
+
   load: function () {
     var $this = this;
 

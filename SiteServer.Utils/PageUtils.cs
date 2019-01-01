@@ -845,6 +845,11 @@ namespace SiteServer.Utils
             Download(response, filePath, fileName);
         }
 
+        public static string GetMainUrl(int siteId)
+        {
+            return GetAdminUrl($"main.cshtml?siteId={siteId}");
+        }
+
         public static string GetAdminUrl(string relatedUrl)
         {
             return Combine(ApplicationPath, WebConfigUtils.AdminDirectory, relatedUrl);
@@ -901,7 +906,7 @@ namespace SiteServer.Utils
 
         public static string GetSiteServerUrl(string className, NameValueCollection queryString)
         {
-            return AddQueryString(GetAdminUrl(className.ToLower() + ".aspx"), queryString);
+            return AddQueryString(GetAdminUrl(className.ToCamelCase() + ".aspx"), queryString);
         }
 
         public static string GetPluginsUrl(string className)
@@ -911,7 +916,7 @@ namespace SiteServer.Utils
 
         public static string GetPluginsUrl(string className, NameValueCollection queryString)
         {
-            return AddQueryString(GetAdminUrl(Combine("plugins", className.ToLower() + ".aspx")), queryString);
+            return AddQueryString(GetAdminUrl(Combine("plugins", className.ToCamelCase() + ".aspx")), queryString);
         }
 
         public static string GetSettingsUrl(string className)
@@ -921,7 +926,7 @@ namespace SiteServer.Utils
 
         public static string GetSettingsUrl(string className, NameValueCollection queryString)
         {
-            return AddQueryString(GetAdminUrl(Combine("settings", className.ToLower() + ".aspx")), queryString);
+            return AddQueryString(GetAdminUrl(Combine("settings", className.ToCamelCase() + ".aspx")), queryString);
         }
 
         public static string GetCmsUrl(string pageName, int siteId, object param = null)
@@ -934,14 +939,14 @@ namespace SiteServer.Utils
         {
             queryString = queryString ?? new NameValueCollection();
             queryString.Remove("siteId");
-            return AddQueryString(GetAdminUrl($"cms/{className.ToLower()}.aspx?siteId={siteId}"), queryString);
+            return AddQueryString(GetAdminUrl($"cms/{className.ToCamelCase()}.aspx?siteId={siteId}"), queryString);
         }
 
         public static string GetCmsWebHandlerUrl(int siteId, string className, NameValueCollection queryString)
         {
             queryString = queryString ?? new NameValueCollection();
             queryString.Remove("siteId");
-            return AddQueryString(GetAdminUrl($"cms/{className.ToLower()}.ashx?siteId={siteId}"), queryString);
+            return AddQueryString(GetAdminUrl($"cms/{className.ToCamelCase()}.ashx?siteId={siteId}"), queryString);
         }
 
         public static string GetAjaxUrl(string className, NameValueCollection queryString)

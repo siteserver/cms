@@ -130,7 +130,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(
                         $"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
-                        $"top.location.href='{PageInitialization.GetRedirectUrl()}';");
+                        $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
             }
             catch (Exception ex)
             {
@@ -188,7 +188,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 retval = AjaxManager.GetWaitingTaskNameValueCollection($"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
-                        $"top.location.href='{PageInitialization.GetRedirectUrl()}';");
+                        $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
             }
             catch (Exception ex)
             {
@@ -227,7 +227,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(
                         $"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
-                        $"top.location.href='{PageInitialization.GetRedirectUrl()}';");
+                        $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
             }
             catch (Exception ex)
             {

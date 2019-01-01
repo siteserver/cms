@@ -6,14 +6,22 @@ var data = {
   isNightly: null,
   pluginVersion: null,
   packageIds: null,
-  word: null,
-  featuredPackages: null,
-  searchPackages: null
+  q: utils.getQueryString('q'),
+  keyword: utils.getQueryString('q') || '',
+  packages: null
 };
 
 var methods = {
   getIconUrl: function (url) {
     return 'http://plugins.siteserver.cn/' + url;
+  },
+
+  getTagNames: function (pluginInfo) {
+    var tagNames = [];
+    if (pluginInfo.tags) {
+      tagNames = pluginInfo.tags.split(',');
+    }
+    return tagNames;
   },
 
   load: function () {
@@ -29,12 +37,13 @@ var methods = {
       $apiCloud.get('plugins', {
         params: {
           isNightly: $this.isNightly,
-          pluginVersion: $this.pluginVersion
+          pluginVersion: $this.pluginVersion,
+          keyword: $this.keyword
         }
       }).then(function (response) {
         var res = response.data;
 
-        $this.featuredPackages = res.value;
+        $this.packages = res.value;
       }).catch(function (error) {
         this.pageAlert = utils.getPageAlert(error);
       }).then(function () {
@@ -49,30 +58,7 @@ var methods = {
   },
 
   btnSearchClick: function () {
-    var $this = this;
-
-    if (this.word) {
-
-      utils.loading(true);
-      $apiCloud.get('plugins', {
-        params: {
-          isNightly: $this.isNightly,
-          pluginVersion: $this.pluginVersion,
-          keyword: encodeURIComponent(this.word)
-        }
-      }).then(function (response) {
-        var res = response.data;
-
-        $this.searchPackages = res.value;
-      }).catch(function (error) {
-        $this.pageAlert = utils.getPageAlert(error);
-      }).then(function () {
-        utils.loading(false);
-      });
-
-    } else {
-      $this.searchPackages = null;
-    }
+    location.href = '?q=' + this.keyword;
   },
 
   btnUploadClick: function () {
