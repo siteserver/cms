@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiteServer.CMS.Core;
@@ -58,10 +58,10 @@ namespace SiteServer.CMS.Plugin.Impl
 	    {
 	        if (IsConsoleAdministrator)
 	        {
-	            return "³¬¼¶¹ÜÀíÔ±";
+	            return "è¶…çº§ç®¡ç†å‘˜";
 	        }
 
-	        return IsSystemAdministrator ? "Õ¾µã×Ü¹ÜÀíÔ±" : "ÆÕÍ¨¹ÜÀíÔ±";
+	        return IsSystemAdministrator ? "ç«™ç‚¹æ€»ç®¡ç†å‘˜" : "æ™®é€šç®¡ç†å‘˜";
 	    }
 
 	    public List<int> GetSiteIdList()
