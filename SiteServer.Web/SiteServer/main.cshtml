@@ -30,13 +30,13 @@
           </a>
           <ul v-if="isDesktop" id="topMenus" class="navigation-menu">
             <li v-for="topMenu in topMenus" class="has-submenu">
-              <a :href="getHref(topMenu)" v-on:click="btnTopMenuClick(topMenu)" :target="getTarget(topMenu)">{{topMenu.text}}</a>
+              <a :href="getHref(topMenu)" v-on:click="btnTopMenuClick(topMenu)" :target="getTarget(topMenu)" v-html="topMenu.text"></a>
               <ul v-if="topMenu.hasChildren" class="submenu">
                 <li v-for="parentMenu in topMenu.children" :class="{'has-submenu': parentMenu.children}">
-                  <a :href="getHref(parentMenu)" v-on:click="btnTopMenuClick(parentMenu)" :target="getTarget(parentMenu)">{{parentMenu.text}}</a>
+                  <a :href="getHref(parentMenu)" v-on:click="btnTopMenuClick(parentMenu)" :target="getTarget(parentMenu)" v-html="parentMenu.text"></a>
                   <ul v-if="parentMenu.hasChildren" class="submenu">
                     <li v-for="childMenu in parentMenu.children">
-                      <a :href="getHref(childMenu)" v-on:click="btnTopMenuClick(childMenu)" :target="getTarget(childMenu)">{{childMenu.text}}</a>
+                      <a :href="getHref(childMenu)" v-on:click="btnTopMenuClick(childMenu)" :target="getTarget(childMenu)" v-html="childMenu.text"></a>
                     </li>
                   </ul>
                 </li>
@@ -125,13 +125,13 @@
               <li v-for="siteMenu in siteMenus" class="has_sub">
                 <a :href="getHref(siteMenu)" v-on:click="btnLeftMenuClick(siteMenu)" :target="getTarget(siteMenu)" :class="{'subdrop': siteMenu === activeParentMenu}">
                   <i :class="(siteMenu.iconClass ? siteMenu.iconClass : 'ion-star')"></i>
-                  <span> {{siteMenu.text}} </span>
+                  <span v-html="siteMenu.text"></span>
                   <span v-if="siteMenu.hasChildren" class="menu-arrow"></span>
                 </a>
                 <ul v-if="siteMenu.hasChildren" class="list-unstyled" v-show="siteMenu === activeParentMenu">
                   <li v-for="childMenu in siteMenu.children" :class="{'active': childMenu === activeChildMenu}">
                     <a :href="getHref(childMenu)" :target="getTarget(childMenu)" v-on:click="btnLeftMenuClick(childMenu)">
-                      <i :class="childMenu.iconClass"></i> {{childMenu.text}} </a>
+                      <i :class="childMenu.iconClass"></i> <span v-html="childMenu.text"></span> </a>
                   </li>
                 </ul>
               </li>
@@ -141,29 +141,29 @@
                 <a :href="getHref(pluginMenu)" v-on:click="btnLeftMenuClick(pluginMenu)" :target="getTarget(pluginMenu)"
                   :class="{'subdrop': pluginMenu === activeParentMenu}">
                   <i :class="(pluginMenu.iconClass ? pluginMenu.iconClass : 'ion-star')"></i>
-                  <span> {{pluginMenu.text}} </span>
+                  <span v-html="pluginMenu.text"></span>
                   <span v-if="pluginMenu.hasChildren" class="menu-arrow"></span>
                 </a>
                 <ul v-if="pluginMenu.hasChildren" class="list-unstyled" v-show="pluginMenu === activeParentMenu">
                   <li v-for="childMenu in pluginMenu.children" :class="{'active': childMenu === activeChildMenu}">
                     <a :href="getHref(childMenu)" :target="getTarget(childMenu)" v-on:click="btnLeftMenuClick(childMenu)">
-                      <i :class="childMenu.iconClass"></i> {{childMenu.text}} </a>
+                      <i :class="childMenu.iconClass"></i> <span v-html="childMenu.text"></span> </a>
                   </li>
                 </ul>
               </li>
               <template v-if="!isDesktop && isMobileMenu" v-for="topMenu in topMenus">
-                <li class="text-muted menu-title">{{topMenu.text}}</li>
+                <li class="text-muted menu-title" v-html="topMenu.text"></li>
                 <li v-for="parentMenu in topMenu.children" class="has_sub">
                   <a :href="getHref(parentMenu)" v-on:click="btnLeftMenuClick(parentMenu)" :target="getTarget(parentMenu)"
                     :class="{'subdrop': parentMenu === activeParentMenu}">
                     <i :class="(parentMenu.iconClass ? parentMenu.iconClass : 'ion-star')"></i>
-                    <span> {{parentMenu.text}} </span>
+                    <span v-html="parentMenu.text"></span>
                     <span v-if="parentMenu.hasChildren" class="menu-arrow"></span>
                   </a>
                   <ul v-if="parentMenu.hasChildren" class="list-unstyled" v-show="parentMenu === activeParentMenu">
                     <li v-for="childMenu in parentMenu.children" :class="{'active': childMenu === activeChildMenu}">
                       <a :href="getHref(childMenu)" :target="getTarget(childMenu)" v-on:click="btnLeftMenuClick(childMenu)">
-                        <i :class="childMenu.iconClass"></i> {{childMenu.text}} </a>
+                        <i :class="childMenu.iconClass"></i> <span v-html="childMenu.text"></span> </a>
                     </li>
                   </ul>
                 </li>
