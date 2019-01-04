@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.Cms
     var siteUrl = '{PageUtils.ParseNavigationUrl($"~/{SiteInfo.SiteDir}")}';
     var virtualUrl = {virtualUrl};
     var imageUrl = virtualUrl;
-    if(imageUrl && imageUrl.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png$/i) != -1){{
+    if(imageUrl && imageUrl.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png|\.webp$/i) != -1){{
 	    if (imageUrl.charAt(0) == '~'){{
 		    imageUrl = imageUrl.replace('~', rootUrl);
 	    }}else if (imageUrl.charAt(0) == '@'){{

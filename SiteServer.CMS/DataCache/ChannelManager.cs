@@ -7,6 +7,7 @@ using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
@@ -189,6 +190,22 @@ namespace SiteServer.CMS.DataCache
         {
             var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
             return dic.Values.OrderBy(c => c.Taxis).Select(channelInfo => channelInfo.Id).ToList();
+        }
+
+        public static List<int> GetChannelIdList(int siteId, string channelGroup)
+        {
+            var channelInfoList = new List<ChannelInfo>();
+            var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
+            foreach (var channelInfo in dic.Values)
+            {
+                if (string.IsNullOrEmpty(channelInfo.GroupNameCollection)) continue;
+
+                if (StringUtils.Contains(channelInfo.GroupNameCollection, channelGroup))
+                {
+                    channelInfoList.Add(channelInfo);
+                }
+            }
+            return channelInfoList.OrderBy(c => c.Taxis).Select(channelInfo => channelInfo.Id).ToList();
         }
 
         public static List<int> GetChannelIdList(ChannelInfo channelInfo, EScopeType scopeType)
@@ -741,6 +758,59 @@ namespace SiteServer.CMS.DataCache
             }
 
             return options;
+        }
+
+        public static bool IsCreatable(SiteInfo siteInfo, ChannelInfo channelInfo)
+        {
+            if (siteInfo == null || channelInfo == null) return false;
+
+            if (!channelInfo.Additional.IsChannelCreatable || !string.IsNullOrEmpty(channelInfo.LinkUrl)) return false;
+
+            var isCreatable = false;
+
+            var linkType = ELinkTypeUtils.GetEnumType(channelInfo.LinkType);
+
+            if (linkType == ELinkType.None)
+            {
+                isCreatable = true;
+            }
+            else if (linkType == ELinkType.NoLinkIfContentNotExists)
+            {
+                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                isCreatable = count != 0;
+            }
+            else if (linkType == ELinkType.LinkToOnlyOneContent)
+            {
+                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                isCreatable = count != 1;
+            }
+            else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
+            {
+                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                if (count != 0 && count != 1)
+                {
+                    isCreatable = true;
+                }
+            }
+            else if (linkType == ELinkType.LinkToFirstContent)
+            {
+                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                isCreatable = count < 1;
+            }
+            else if (linkType == ELinkType.NoLinkIfChannelNotExists)
+            {
+                isCreatable = channelInfo.ChildrenCount != 0;
+            }
+            else if (linkType == ELinkType.LinkToLastAddChannel)
+            {
+                isCreatable = channelInfo.ChildrenCount <= 0;
+            }
+            else if (linkType == ELinkType.LinkToFirstChannel)
+            {
+                isCreatable = channelInfo.ChildrenCount <= 0;
+            }
+
+            return isCreatable;
         }
     }
 

@@ -29,13 +29,13 @@ var data = {
 };
 
 var methods = {
-  btnAddClick: function () {
-    event.stopPropagation();
+  btnAddClick: function (e) {
+    e.stopPropagation();
     location.href = 'pageContentAdd.aspx?siteId=' + this.siteId + '&channelId=' + this.channelId;
   },
 
-  btnCreateClick: function () {
-    event.stopPropagation();
+  btnCreateClick: function (e) {
+    e.stopPropagation();
 
     var $this = this;
     $this.pageAlert = null;
@@ -56,8 +56,8 @@ var methods = {
     });
   },
 
-  btnLayerClick: function (options) {
-    event.stopPropagation();
+  btnLayerClick: function (options, e) {
+    e.stopPropagation();
 
     this.pageAlert = null;
     var url = "contentsLayer" +
@@ -83,8 +83,8 @@ var methods = {
     });
   },
 
-  btnContentViewClick: function (contentId) {
-    event.stopPropagation();
+  btnContentViewClick: function (contentId, e) {
+    e.stopPropagation();
 
     pageUtils.openLayer({
       title: "查看内容",
@@ -98,8 +98,8 @@ var methods = {
     });
   },
 
-  btnContentStateClick: function (contentId) {
-    event.stopPropagation();
+  btnContentStateClick: function (contentId, e) {
+    e.stopPropagation();
 
     pageUtils.openLayer({
       title: "查看审核状态",
@@ -159,8 +159,8 @@ var methods = {
     return pluginMenu.href + '&returnUrl=' + encodeURIComponent(location.href);
   },
 
-  btnPluginMenuClick: function (pluginMenu) {
-    event.stopPropagation();
+  btnPluginMenuClick: function (pluginMenu, e) {
+    e.stopPropagation();
 
     if (pluginMenu.target === '_layer') {
       pageUtils.openLayer({

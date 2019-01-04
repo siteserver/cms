@@ -74,7 +74,7 @@ new Vue({
       if (res.value) {
         $this.load(res.value, res.config, res.menus, res.defaultPageUrl);
       } else {
-        location.href = 'pages/login.html';
+        location.href = 'pages/login.html?returnUrl=' + encodeURIComponent(location.href);
       }
     }, true);
   }

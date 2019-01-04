@@ -225,20 +225,20 @@ namespace SiteServer.CMS.DataCache
 
             private static Dictionary<string, UserInfo> GetDict()
             {
-                var retval = DataCacheManager.Get<Dictionary<string, UserInfo>>(CacheKey);
-                if (retval != null) return retval;
+                var dict = DataCacheManager.Get<Dictionary<string, UserInfo>>(CacheKey);
+                if (dict != null) return dict;
 
                 lock (LockObject)
                 {
-                    retval = DataCacheManager.Get<Dictionary<string, UserInfo>>(CacheKey);
-                    if (retval == null)
+                    dict = DataCacheManager.Get<Dictionary<string, UserInfo>>(CacheKey);
+                    if (dict == null)
                     {
-                        retval = new Dictionary<string, UserInfo>();
-                        DataCacheManager.Insert(CacheKey, retval);
+                        dict = new Dictionary<string, UserInfo>();
+                        DataCacheManager.Insert(CacheKey, dict);
                     }
                 }
 
-                return retval;
+                return dict;
             }
         }
 
@@ -313,8 +313,8 @@ namespace SiteServer.CMS.DataCache
 
         public static string GetHomeUploadPath(params string[] paths)
         {
-            var path = PathUtils.GetSiteFilesPath("Home", PathUtils.Combine(paths));
-            //var path = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.HomeDirectory, PathUtils.Combine(paths));
+            
+            var path = PathUtils.GetSiteFilesPath(DirectoryUtils.SiteFiles.Home, PathUtils.Combine(paths));
             DirectoryUtils.CreateDirectoryIfNotExists(path);
             return path;
         }
@@ -327,14 +327,12 @@ namespace SiteServer.CMS.DataCache
         public static string GetUserUploadFileName(string filePath)
         {
             var dt = DateTime.Now;
-            string strDateTime = $"{dt.Day}{dt.Hour}{dt.Minute}{dt.Second}{dt.Millisecond}";
-            return $"{strDateTime}{PathUtils.GetExtension(filePath)}";
+            return $"{dt.Day}{dt.Hour}{dt.Minute}{dt.Second}{dt.Millisecond}{PathUtils.GetExtension(filePath)}";
         }
 
         public static string GetHomeUploadUrl(params string[] paths)
         {
-            return PageUtils.GetSiteFilesUrl(PageUtils.Combine("Home", PageUtils.Combine(paths)));
-            //return PageUtils.Combine(PageUtils.ApplicationPath, WebConfigUtils.HomeDirectory, PageUtils.Combine(paths));
+            return PageUtils.GetSiteFilesUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.Home, PageUtils.Combine(paths)));
         }
 
         public static string DefaultAvatarUrl => GetHomeUploadUrl("default_avatar.png");

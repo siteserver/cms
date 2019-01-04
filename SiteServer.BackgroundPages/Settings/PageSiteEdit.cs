@@ -228,7 +228,7 @@ namespace SiteServer.BackgroundPages.Settings
 		        }
             }
 
-            if (StringUtils.EqualsIgnoreCase(SiteInfo.TableName, tableName))
+            if (!StringUtils.EqualsIgnoreCase(SiteInfo.TableName, tableName))
 		    {
 		        isTableChanged = true;
 		        SiteInfo.TableName = tableName;

@@ -12,6 +12,7 @@ using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 using Dapper;
+using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
 
@@ -1627,27 +1628,46 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             }
         }
 
-        public List<Tuple<int, int>> ApiGetContentIdListBySiteId(string tableName, int siteId, int top, int skip, string like, string orderby, NameValueCollection queryString, out int totalCount)
+        public List<Tuple<int, int>> ApiGetContentIdListBySiteId(string tableName, int siteId, ApiContentsParameters parameters, out int totalCount)
         {
             totalCount = 0;
             var list = new List<ContentInfo>();
 
             var whereString = $"WHERE {ContentAttribute.SiteId} = {siteId} AND {ContentAttribute.ChannelId} > 0 AND {ContentAttribute.IsChecked} = '{true}'";
+            if (parameters.ChannelIds.Count > 0)
+            {
+                whereString += $" AND {ContentAttribute.ChannelId} IN ({TranslateUtils.ObjectCollectionToString(parameters.ChannelIds)})";
+            }
+            if (!string.IsNullOrEmpty(parameters.ChannelGroup))
+            {
+                var channelIdList = ChannelManager.GetChannelIdList(siteId, parameters.ChannelGroup);
+                if (channelIdList.Count > 0)
+                {
+                    whereString += $" AND {ContentAttribute.ChannelId} IN ({TranslateUtils.ObjectCollectionToString(channelIdList)})";
+                }
+            }
+            if (!string.IsNullOrEmpty(parameters.ContentGroup))
+            {
+                whereString += $" AND ({ContentAttribute.GroupNameCollection} = '{parameters.ContentGroup}' OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, parameters.ContentGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + parameters.ContentGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + parameters.ContentGroup)})";
+            }
+            if (!string.IsNullOrEmpty(parameters.Tag))
+            {
+                whereString += $" AND ({ContentAttribute.Tags} = '{parameters.Tag}' OR {SqlUtils.GetInStr(ContentAttribute.Tags, parameters.Tag + ",")} OR {SqlUtils.GetInStr(ContentAttribute.Tags, "," + parameters.Tag + ",")} OR {SqlUtils.GetInStr(ContentAttribute.Tags, "," + parameters.Tag)})";
+            }
 
-            var likeList = TranslateUtils.StringCollectionToStringList(StringUtils.TrimAndToLower(like));
             var channelInfo = ChannelManager.GetChannelInfo(siteId, siteId);
-            var orderString = GetOrderString(channelInfo, AttackUtils.FilterSql(orderby));
+            var orderString = GetOrderString(channelInfo, AttackUtils.FilterSql(parameters.OrderBy));
             var dbArgs = new Dictionary<string, object>();
 
-            if (queryString != null && queryString.Count > 0)
+            if (parameters.QueryString != null && parameters.QueryString.Count > 0)
             {
                 var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
 
-                foreach (string attributeName in queryString)
+                foreach (string attributeName in parameters.QueryString)
                 {
                     if (!StringUtils.ContainsIgnoreCase(columnNameList, attributeName)) continue;
 
-                    var value = queryString[attributeName];
+                    var value = parameters.QueryString[attributeName];
 
                     if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsChecked) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsRecommend) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsTop))
                     {
@@ -1657,7 +1677,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
                     {
                         whereString += $" AND {attributeName} = {TranslateUtils.ToInt(value)}";
                     }
-                    else if (likeList.Contains(attributeName))
+                    else if (parameters.Likes.Contains(attributeName))
                     {
                         whereString += $" AND {attributeName} LIKE '%{AttackUtils.FilterSql(value)}%'";
                     }
@@ -1670,9 +1690,9 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             }
 
             totalCount = DataProvider.DatabaseDao.GetPageTotalCount(tableName, whereString, dbArgs);
-            if (totalCount > 0 && skip < totalCount)
+            if (totalCount > 0 && parameters.Skip < totalCount)
             {
-                var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, MinListColumns, whereString, orderString, skip, top);
+                var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, MinListColumns, whereString, orderString, parameters.Skip, parameters.Top);
 
                 using (var connection = GetConnection())
                 {
@@ -1680,13 +1700,13 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
                 }
             }
 
-            var retval = new List<Tuple<int, int>>();
+            var tupleList = new List<Tuple<int, int>>();
             foreach (var contentInfo in list)
             {
-                retval.Add(new Tuple<int, int>(contentInfo.ChannelId, contentInfo.Id));
+                tupleList.Add(new Tuple<int, int>(contentInfo.ChannelId, contentInfo.Id));
             }
 
-            return retval;
+            return tupleList;
         }
 
         public List<int> ApiGetContentIdListByChannelId(string tableName, int siteId, int channelId, int top, int skip, string like, string orderby, NameValueCollection queryString, out int totalCount)

@@ -26,6 +26,20 @@ namespace SiteServer.CMS.Model.Attributes
             set => Set(nameof(IsContentAddable), value);
         }
 
+        //是否可以生成栏目
+        public bool IsChannelCreatable
+        {
+            get => GetBool(nameof(IsChannelCreatable), true);
+            set => Set(nameof(IsChannelCreatable), value);
+        }
+
+        //是否可以生成内容
+        public bool IsContentCreatable
+        {
+            get => GetBool(nameof(IsContentCreatable), true);
+            set => Set(nameof(IsContentCreatable), value);
+        }
+
         public bool IsCreateChannelIfContentChanged
         {
             get => GetBool(nameof(IsCreateChannelIfContentChanged), true);

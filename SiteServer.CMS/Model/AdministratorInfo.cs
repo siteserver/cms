@@ -29,14 +29,15 @@ namespace SiteServer.CMS.Model
             DepartmentId = 0;
             AreaId = 0;
             _displayName = string.Empty;
-            Email = string.Empty;
             Mobile = string.Empty;
+            Email = string.Empty;
+            AvatarUrl = string.Empty;
         }
 
         public AdministratorInfo(int id, string userName, string password, string passwordFormat,
             string passwordSalt, DateTime creationDate, DateTime lastActivityDate, int countOfLogin,
             int countOfFailedLogin, string creatorUserName, bool isLockedOut, string siteIdCollection, int siteId,
-            int departmentId, int areaId, string displayName, string email, string mobile)
+            int departmentId, int areaId, string displayName, string mobile, string email, string avatarUrl)
         {
             Id = id;
             UserName = userName;
@@ -54,8 +55,9 @@ namespace SiteServer.CMS.Model
             DepartmentId = departmentId;
             AreaId = areaId;
             _displayName = displayName;
-            Email = email;
             Mobile = mobile;
+            Email = email;
+            AvatarUrl = avatarUrl;
         }
 
         public int Id { get; set; }
@@ -102,9 +104,11 @@ namespace SiteServer.CMS.Model
             set { _displayName = value; }
         }
 
+        public string Mobile { get; set; }
+
         public string Email { get; set; }
 
-        public string Mobile { get; set; }
+        public string AvatarUrl { get; set; }
     }
 
     [Table(AdministratorDao.DatabaseTableName)]
@@ -128,8 +132,9 @@ namespace SiteServer.CMS.Model
             DepartmentId = 0;
             AreaId = 0;
             DisplayName = string.Empty;
-            Email = string.Empty;
             Mobile = string.Empty;
+            Email = string.Empty;
+            AvatarUrl = string.Empty;
         }
 
         public AdministratorInfoDatabase(AdministratorInfo adminInfo)
@@ -150,8 +155,9 @@ namespace SiteServer.CMS.Model
             DepartmentId = adminInfo.DepartmentId;
             AreaId = adminInfo.AreaId;
             DisplayName = adminInfo.DisplayName;
-            Email = adminInfo.Email;
             Mobile = adminInfo.Mobile;
+            Email = adminInfo.Email;
+            AvatarUrl = adminInfo.AvatarUrl;
         }
 
         public AdministratorInfo ToAdministratorInfo()
@@ -174,8 +180,9 @@ namespace SiteServer.CMS.Model
                 DepartmentId = DepartmentId,
                 AreaId = AreaId,
                 DisplayName = DisplayName,
-                Email = Email,
                 Mobile = Mobile,
+                Email = Email,
+                AvatarUrl = AvatarUrl
             };
 
             return adminInfo;
@@ -213,9 +220,11 @@ namespace SiteServer.CMS.Model
 
         public string DisplayName { get; set; }
 
+        public string Mobile { get; set; }
+
         public string Email { get; set; }
 
-        public string Mobile { get; set; }
+        public string AvatarUrl { get; set; }
     }
 
     public class AdministratorInfoCreateUpdate
@@ -248,9 +257,11 @@ namespace SiteServer.CMS.Model
 
         public string DisplayName { get; set; }
 
+        public string Mobile { get; set; }
+
         public string Email { get; set; }
 
-        public string Mobile { get; set; }
+        public string AvatarUrl { get; set; }
 
         public void Load(AdministratorInfoDatabase dbInfo)
         {
@@ -324,14 +335,20 @@ namespace SiteServer.CMS.Model
                 dbInfo.DisplayName = DisplayName;
             }
 
+
+            if (Mobile != null)
+            {
+                dbInfo.Mobile = Mobile;
+            }
+
             if (Email != null)
             {
                 dbInfo.Email = Email;
             }
 
-            if (Mobile != null)
+            if (AvatarUrl != null)
             {
-                dbInfo.Mobile = Mobile;
+                dbInfo.AvatarUrl = AvatarUrl;
             }
         }
     }

@@ -2,7 +2,6 @@
 using System.IO;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using SiteServer.BackgroundPages.Plugins;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -64,7 +63,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 	        AuthRequest.AddAdminLog($"手动升级 SiteServer CMS 版本：{TbVersion.Text}");
 
-	        LayerUtils.CloseAndRedirect(Page, PageManagement.GetRedirectUrl());
+	        LayerUtils.CloseAndRedirect(Page, PageUtils.GetAdminUrl(PageUtils.Combine("plugins/manage.cshtml")));
 	    }
 
 	    private void UpdateByUpload()
@@ -93,7 +92,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 	        AuthRequest.AddAdminLog("手动升级 SiteServer CMS 版本：" + idAndVersion);
 
-	        LayerUtils.CloseAndRedirect(Page, PageManagement.GetRedirectUrl());
+	        LayerUtils.CloseAndRedirect(Page, PageUtils.GetAdminUrl(PageUtils.Combine("plugins/manage.cshtml")));
 	    }
 	}
 }

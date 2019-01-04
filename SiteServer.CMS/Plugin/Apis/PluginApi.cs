@@ -14,8 +14,6 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string GetPluginUrl(string pluginId, string relatedUrl = "")
         {
-            if (string.IsNullOrEmpty(relatedUrl)) return string.Empty;
-
             if (PageUtils.IsProtocolUrl(relatedUrl)) return relatedUrl;
 
             if (StringUtils.StartsWith(relatedUrl, "~/"))

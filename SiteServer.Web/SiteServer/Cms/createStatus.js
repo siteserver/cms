@@ -1,7 +1,7 @@
 ﻿var $siteId = parseInt(pageUtils.getQueryStringByName('siteId'));
 
-var $api = new apiUtils.Api(innerApiUrl + '/pages/cms/createStatus');
-var $apiCancel = new apiUtils.Api(innerApiUrl + '/pages/cms/createStatus/actions/cancel');
+var $api = new apiUtils.Api(apiUrl + '/pages/cms/createStatus');
+var $apiCancel = new apiUtils.Api(apiUrl + '/pages/cms/createStatus/actions/cancel');
 
 var data = {
   pageLoad: false,

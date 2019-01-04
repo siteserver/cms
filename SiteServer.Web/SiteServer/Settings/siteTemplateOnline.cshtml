@@ -1,0 +1,121 @@
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
+@section Navs{
+  <li class="nav-item">
+  <a class="nav-link" href="pageSite.aspx">系统站点管理</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="pageSiteUrlWeb.aspx">Web地址</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="pageSiteUrlAssets.aspx">文件地址</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="pageSiteUrlApi.aspx">API地址</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="siteTables.cshtml">内容表管理</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="pageSiteKeyword.aspx">敏感词管理</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active" href="siteTemplateOnline.cshtml">在线站点模板</a>
+  </li>
+}
+
+<div class="row">
+  <div class="col-8">
+    <div class="form-inline">
+      <input v-model="word" type="text" style="width: 80%" class="form-control" placeholder="请输入关键字...">
+      <a :href="getUrl(page, word, tag, price, order)" class="btn btn-primary ml-1">搜索</a>
+    </div>
+  </div>
+  <div class="col-4 text-right">
+    <a class="text-primary mr-2" target="_blank" href="https://www.siteserver.cn/templates/">官网模板中心</a>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-6">
+
+    <div class="portfolioFilter">
+      <a :href="getTagUrl('')" :class="{'current' : !tag}">全部</a>
+      <a v-for="tagName in allTagNames" :href="getTagUrl(tagName)" :class="{'current' : tag == tagName}">{{
+        tagName }}</a>
+    </div>
+
+  </div>
+  <div class="col-6">
+    <form class="form-inline float-right">
+      <div class="form-group ml-3">
+        价格：
+        <select v-on:change="priceChanged" v-model="price" class="form-control form-control-sm">
+          <option value="">全部</option>
+          <option value="false">免费模板</option>
+          <option value="true">收费模板</option>
+        </select>
+      </div>
+      <div class="form-group ml-3">
+        排序：
+        <select v-on:change="orderChanged" v-model="order" class="form-control form-control-sm">
+          <option value="">默认</option>
+          <option value="UpdatedDate">更新时间</option>
+          <option value="AddDate">上传时间</option>
+          <option value="Price">价格</option>
+        </select>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<div class="row mt-4"></div>
+
+<div class="port mb-4">
+  <div class="portfolioContainer row">
+
+    <div v-for="templateInfo in templateInfoList" class="col-sm-6 col-lg-3 col-md-4">
+      <div class="gal-detail thumb">
+        <a :href="getDisplayUrl(templateInfo.templateId)" class="image-popup" target="_blank">
+          <img :src="getTemplateUrl(templateInfo.imageUrl)" class="thumb-img" style="max-height: 400px;">
+        </a>
+        <h4 class="text-center">{{ templateInfo.templateId }}</h4>
+        <div class="ga-border"></div>
+        <p class="text-muted text-center" style="max-height: 45px;overflow: hidden;">
+          <small>{{ templateInfo.description }}</small>
+        </p>
+        <div class="text-center">
+          <a :href="getPreviewUrl(templateInfo.templateId)" target="_blank" class="btn btn-info mr-2">预览站点</a>
+          <a :href="'siteAdd.cshtml?type=create&createType=cloud&createTemplateId=' + templateInfo.templateId" class="btn btn-primary">创建站点</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr />
+
+<nav v-if="pages > 1">
+  <ul class="pagination justify-content-center">
+    <li class="page-item">
+      <a :href="getPageUrl(page - 1)" class="page-link">
+        <span aria-hidden="true">上一页</span>
+      </a>
+    </li>
+    <li v-for="i of pages" :class="{'active': i === page}" class="page-item">
+      <a :href="getPageUrl(i)" class="page-link" v-html="i"></a>
+    </li>
+    <li class="page-item">
+      <a :href="getPageUrl(page + 1)" class="page-link">
+        <span aria-hidden="true">下一页</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+@section Scripts{
+<script src="siteTemplateOnline.js" type="text/javascript"></script> }

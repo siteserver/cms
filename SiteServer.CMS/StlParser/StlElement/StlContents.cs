@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Enumerations;
@@ -31,7 +29,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             return ParseElement(pageInfo, contextInfo, listInfo, dataSource);
         }
 
-        public static DataSet GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
+        private static DataSet GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
         {
             var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
 

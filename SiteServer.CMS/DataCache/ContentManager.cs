@@ -6,6 +6,7 @@ using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
@@ -439,6 +440,32 @@ namespace SiteServer.CMS.DataCache
                 {
                     retval.Set(ContentAttribute.SourceId, SourceManager.GetSourceName(contentInfo.SourceId));
                 }
+                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.AddUserName))
+                {
+                    var value = string.Empty;
+                    if (!string.IsNullOrEmpty(contentInfo.AddUserName))
+                    {
+                        var adminInfo = AdminManager.GetAdminInfoByUserName(contentInfo.AddUserName);
+                        if (adminInfo != null)
+                        {
+                            value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
+                        }
+                    }
+                    retval.Set(ContentAttribute.AddUserName, value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.LastEditUserName))
+                {
+                    var value = string.Empty;
+                    if (!string.IsNullOrEmpty(contentInfo.LastEditUserName))
+                    {
+                        var adminInfo = AdminManager.GetAdminInfoByUserName(contentInfo.LastEditUserName);
+                        if (adminInfo != null)
+                        {
+                            value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
+                        }
+                    }
+                    retval.Set(ContentAttribute.LastEditUserName, value);
+                }
             }
 
             if (pluginColumns != null)
@@ -474,6 +501,21 @@ namespace SiteServer.CMS.DataCache
             }
 
             return retval;
+        }
+
+        public static bool IsCreatable(ChannelInfo channelInfo, IContentInfo contentInfo)
+        {
+            if (channelInfo == null || contentInfo == null) return false;
+
+            //引用链接，不需要生成内容页；引用内容，需要生成内容页；
+            if (contentInfo.ReferenceId > 0 &&
+                ETranslateContentTypeUtils.GetEnumType(contentInfo.GetString(ContentAttribute.TranslateContentType)) !=
+                ETranslateContentType.ReferenceContent)
+            {
+                return false;
+            }
+
+            return channelInfo.Additional.IsContentCreatable && string.IsNullOrEmpty(contentInfo.LinkUrl) && contentInfo.IsChecked && contentInfo.SourceId != SourceManager.Preview && contentInfo.ChannelId > 0;
         }
     }
 }

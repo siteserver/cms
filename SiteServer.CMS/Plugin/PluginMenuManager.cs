@@ -39,7 +39,7 @@ namespace SiteServer.CMS.Plugin
 
             foreach (var service in PluginManager.Services)
             {
-                if (service.SystemDefaultPageUrl == null) continue;
+                if (service.HomeDefaultPageUrl == null) continue;
 
                 try
                 {
@@ -168,7 +168,7 @@ namespace SiteServer.CMS.Plugin
             return menus;
         }
 
-        public static string GetMenuHref(string pluginId, string href, int siteId, int channelId, int contentId)
+        private static string GetMenuHref(string pluginId, string href, int siteId, int channelId, int contentId)
         {
             if (PageUtils.IsAbsoluteUrl(href))
             {
@@ -178,7 +178,7 @@ namespace SiteServer.CMS.Plugin
             var url = PageUtils.AddQueryStringIfNotExists(PageUtils.ParsePluginUrl(pluginId, href), new NameValueCollection
             {
                 {"v", StringUtils.GetRandomInt(1, 1000).ToString()},
-                {"apiUrl", ApiManager.ApiUrl}
+                {"apiUrl", ApiManager.InnerApiUrl}
             });
             if (siteId > 0)
             {

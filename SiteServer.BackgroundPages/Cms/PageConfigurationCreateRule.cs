@@ -65,11 +65,11 @@ namespace SiteServer.BackgroundPages.Cms
                 if (!IsDescendantOwningChannelId(channelId)) e.Item.Visible = false;
             }
 
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+            var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.TemplateFilePathRule, _additional, AuthRequest.AdminPermissionsImpl);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, channelInfo, enabled, ELoadingType.TemplateFilePathRule, _additional, AuthRequest.AdminPermissionsImpl);
         }
 	}
 }

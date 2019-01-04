@@ -199,58 +199,22 @@ namespace SiteServer.CMS.Core
 
         public static string GetUploadFileName(SiteInfo siteInfo, string filePath, bool isUploadChangeFileName)
         {
-            string retval;
+            var retVal = isUploadChangeFileName
+                ? $"{StringUtils.GetShortGuid(false)}{PathUtils.GetExtension(filePath)}"
+                : PathUtils.GetFileName(filePath);
 
-            if (isUploadChangeFileName)
-            {
-                var strDateTime = StringUtils.GetShortGuid(false);
-                retval = $"{strDateTime}{PathUtils.GetExtension(filePath)}";
-            }
-            else
-            {
-                retval = PathUtils.GetFileName(filePath);
-            }
-
-            retval = StringUtils.ReplaceIgnoreCase(retval, ";", string.Empty);
-            return retval;
+            retVal = StringUtils.ReplaceIgnoreCase(retVal, "as", string.Empty);
+            retVal = StringUtils.ReplaceIgnoreCase(retVal, ";", string.Empty);
+            return retVal;
         }
 
         public static string GetUploadSpecialName(SiteInfo siteInfo, string filePath, bool isUploadChangeFileName)
         {
-            string retval;
+            var retVal = isUploadChangeFileName ? $"{StringUtils.GetShortGuid(false)}{PathUtils.GetExtension(filePath)}" : PathUtils.GetFileName(filePath);
 
-            if (isUploadChangeFileName)
-            {
-                string strDateTime = StringUtils.GetShortGuid(false);
-                retval = $"{strDateTime}{PathUtils.GetExtension(filePath)}";
-            }
-            else
-            {
-                retval = PathUtils.GetFileName(filePath);
-            }
-
-            retval = StringUtils.ReplaceIgnoreCase(retval, "as", string.Empty);
-            retval = StringUtils.ReplaceIgnoreCase(retval, ";", string.Empty);
-            return retval;
-        }
-
-        public static string GetUploadAdvImageName(SiteInfo siteInfo, string filePath, bool isUploadChangeFileName)
-        {
-            string retval;
-
-            if (isUploadChangeFileName)
-            {
-                string strDateTime = StringUtils.GetShortGuid(false);
-                retval = $"{strDateTime}{PathUtils.GetExtension(filePath)}";
-            }
-            else
-            {
-                retval = PathUtils.GetFileName(filePath);
-            }
-
-            retval = StringUtils.ReplaceIgnoreCase(retval, "as", string.Empty);
-            retval = StringUtils.ReplaceIgnoreCase(retval, ";", string.Empty);
-            return retval;
+            retVal = StringUtils.ReplaceIgnoreCase(retVal, "as", string.Empty);
+            retVal = StringUtils.ReplaceIgnoreCase(retVal, ";", string.Empty);
+            return retVal;
         }
 
         public static SiteInfo GetSiteInfo(string path)

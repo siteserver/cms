@@ -1,0 +1,249 @@
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
+@section Navs{
+<li class="nav-item">
+  <a class="nav-link" href="add.cshtml">添加插件</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link active" href="manage.cshtml">管理插件</a>
+</li>
+}
+
+<div class="row mt-4 mb-4">
+  <div class="col-8">
+    <ul class="nav nav-pills">
+      <li class="nav-item" :class="{ active: pageType == 1 }">
+        <a class="nav-link" :class="{'text-white': pageType == 1 }" href="javascript:;" v-on:click="pageType = 1">
+          已启用
+          <span class="badge badge-secondary" :class="{ 'badge-light': pageType == 1 }">{{ enabledPackages.length }}</span>
+        </a>
+      </li>
+      <li class="nav-item" :class="{ active: pageType == 2 }">
+        <a class="nav-link" :class="{'text-white': pageType == 2 }" href="javascript:;" v-on:click="pageType = 2">
+          已禁用
+          <span class="badge badge-secondary" :class="{ 'badge-light': pageType == 2 }">{{ disabledPackages.length }}</span>
+        </a>
+      </li>
+      <li class="nav-item" :class="{ active: pageType == 3 }" :style="{ display: errorPackages.length > 0 ? '' : 'none' }"
+        style="display: none">
+        <a class="nav-link" :class="{'text-white': pageType == 3 }" href="javascript:;" v-on:click="pageType = 3">
+          运行错误
+          <span class="badge badge-danger" :style="{ color: (pageType == 3 ? '#fff' : '') }">{{ errorPackages.length }}</span>
+        </a>
+      </li>
+      <li class="nav-item" :class="{ active: pageType == 4 }" :style="{ display: updatePackages.length > 0 ? '' : 'none' }"
+        style="display: none">
+        <a class="nav-link" :class="{'text-white': pageType == 4 }" href="javascript:;" v-on:click="pageType = 4">
+          发现新版本
+          <span class="badge badge-warning" :style="{ color: (pageType == 4 ? '#fff' : '') }">{{ updatePackages.length }}</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="col-4">
+    <a v-on:click="btnReload" href="javascript:;" class="btn btn-primary float-right btn-md">重新加载所有插件</a>
+  </div>
+</div>
+
+<div class="mt-4 mb-4">
+
+  <div class="panel panel-default" :style="{ display: pageType == 1 ? '' : 'none' }">
+    <div class="panel-body p-0">
+      <div class="table-responsive">
+        <table class="table tablesaw table-hover m-0">
+          <thead>
+            <tr class="thead">
+              <th class="text-nowrap">LOGO</th>
+              <th class="text-nowrap">插件Id</th>
+              <th class="text-nowrap">插件名称</th>
+              <th class="text-nowrap">版本号</th>
+              <th class="text-nowrap">作者</th>
+              <th>插件介绍</th>
+              <th class="text-center text-nowrap">载入时间</th>
+              <th class="text-nowrap"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="package in enabledPackages">
+              <td class="text-center text-nowrap">
+                <img :src="package.metadata.iconUrl || '../assets/icons/favicon.png'" width="48" height="48">
+              </td>
+              <td class="text-nowrap">
+                <a :href="'view.cshtml?pluginId=' + package.id + '&returnUrl=' + encodeURIComponent(location.href)">{{ package.id }}</a>
+              </td>
+              <td class="text-nowrap">
+                {{ package.metadata.title }}
+              </td>
+              <td class="text-nowrap">
+                {{ package.metadata.version }}
+              </td>
+              <td class="text-nowrap">
+                {{ package.metadata.owners }}
+              </td>
+              <td>
+                {{ package.metadata.description }}
+              </td>
+              <td class="text-center text-nowrap">
+                {{ package.initTime }}毫秒
+              </td>
+              <td class="text-center text-nowrap">
+                <a href="javascript:;" v-on:click="enablePackage(package)">{{ package.isDisabled ? '启用' : '禁用' }}</a>
+                &nbsp;&nbsp;
+                <a href="javascript:;" v-on:click="deletePackage(package)">删除插件</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default" :style="{ display: pageType == 2 ? '' : 'none' }">
+    <div class="panel-body p-0">
+      <div class="table-responsive">
+        <table class="table tablesaw table-hover m-0">
+          <thead>
+            <tr class="thead">
+              <th class="text-nowrap">LOGO</th>
+              <th class="text-nowrap">插件Id</th>
+              <th class="text-nowrap">插件名称</th>
+              <th class="text-nowrap">版本号</th>
+              <th class="text-nowrap">作者</th>
+              <th>插件介绍</th>
+              <th class="text-center text-nowrap">载入时间</th>
+              <th class="text-nowrap"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="package in disabledPackages">
+              <td class="text-center text-nowrap">
+                <img :src="package.metadata.iconUrl || '../assets/icons/favicon.png'" width="48" height="48">
+              </td>
+              <td class="text-nowrap">
+                <a :href="'view.cshtml?pluginId=' + package.id + '&returnUrl=' + encodeURIComponent(location.href)">{{ package.id }}</a>
+              </td>
+              <td class="text-nowrap">
+                {{ package.metadata.title }}
+              </td>
+              <td class="text-nowrap">
+                {{ package.metadata.version }}
+              </td>
+              <td class="text-nowrap">
+                {{ package.metadata.owners }}
+              </td>
+              <td>
+                {{ package.metadata.description }}
+              </td>
+              <td class="text-center text-nowrap">
+                {{ package.initTime }}毫秒
+              </td>
+              <td class="text-center text-nowrap">
+                <a href="javascript:;" v-on:click="enablePackage(package)">{{ package.isDisabled ? '启用' : '禁用' }}</a>
+                &nbsp;&nbsp;
+                <a href="javascript:;" v-on:click="deletePackage(package)">删除插件</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default" :style="{ display: pageType == 3 ? '' : 'none' }">
+    <div class="panel-body p-0">
+      <div class="table-responsive">
+        <table class="table tablesaw table-hover m-0">
+          <thead>
+            <tr class="thead">
+              <th>插件Id</th>
+              <th>错误详情</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="package in errorPackages">
+              <td class="text-nowrap">
+                <a :href="'view.cshtml?pluginId=' + package.id + '&returnUrl=' + encodeURIComponent(location.href)">{{ package.id }}</a>
+              </td>
+              <td class="text-nowrap">
+                {{ package.errorMessage }}
+              </td>
+              <td class="text-center text-nowrap">
+                <a href="javascript:;" v-on:click="deletePackage(package)">删除插件</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+
+  <div :style="{ display: pageType == 4 ? '' : 'none' }">
+
+    <div class="alert alert-success">
+      发现以下插件发布了新版本，请点击升级插件按钮开始升级
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-body p-0">
+        <div class="table-responsive">
+          <table class="table tablesaw table-hover m-0">
+            <thead>
+              <tr class="thead">
+                <th class="text-nowrap">LOGO</th>
+                <th class="text-nowrap">插件Id</th>
+                <th class="text-nowrap">插件名称</th>
+                <th class="text-nowrap">已安装版本</th>
+                <th class="text-nowrap">新版本</th>
+                <th>更新说明</th>
+                <th class="text-center text-nowrap">发布时间</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="package in updatePackages">
+                <td class="text-center text-nowrap">
+                  <img :src="package.metadata.iconUrl || '../assets/icons/favicon.png'" width="48" height="48">
+                </td>
+                <td class="text-nowrap">
+                  <a :href="'view.cshtml?pluginId=' + package.updatePackage.pluginId + '&returnUrl=' + encodeURIComponent(location.href)">{{ package.updatePackage.pluginId }}</a>
+                </td>
+                <td class="text-nowrap">
+                  {{ package.metadata.title }}
+                </td>
+                <td class="text-nowrap">
+                  {{ package.metadata ? package.metadata.version : '' }}
+                </td>
+                <td class="text-nowrap">
+                  {{ package.updatePackage.version }}
+                </td>
+                <td>
+                  {{ package.updatePackage.releaseNotes }}
+                </td>
+                <td class="text-center text-nowrap">
+                  {{ package.updatePackage.published }}
+                </td>
+                <td class="text-center text-nowrap">
+                  <a :href="'install.cshtml?isUpdate=true&pluginIds=' + package.id" class="btn btn-warning btn-md">插件升级</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <hr />
+
+    <a :href="'install.cshtml?isUpdate=true&pluginIds=' + updatePackageIds.join(',')" class="btn btn-warning btn-md">一键升级所有插件</a>
+
+  </div>
+
+</div>
+
+@section Scripts{
+<script src="../assets/js/compareversion.js"></script>
+<script src="manage.js" type="text/javascript"></script>
+}

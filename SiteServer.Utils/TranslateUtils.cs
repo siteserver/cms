@@ -555,18 +555,27 @@ namespace SiteServer.Utils
 
         #endregion
 
+        public static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            Converters = new List<JsonConverter>
+            {
+                new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm:ss"}
+            }
+        };
+
         public static string JsonSerialize(object obj)
         {
             try
             {
-                var settings = new JsonSerializerSettings
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                };
-                var timeFormat = new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm:ss"};
-                settings.Converters.Add(timeFormat);
+                //var settings = new JsonSerializerSettings
+                //{
+                //    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                //};
+                //var timeFormat = new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm:ss"};
+                //settings.Converters.Add(timeFormat);
 
-                return JsonConvert.SerializeObject(obj, settings);
+                return JsonConvert.SerializeObject(obj, JsonSettings);
             }
             catch
             {
@@ -578,11 +587,11 @@ namespace SiteServer.Utils
         {
             try
             {
-                var settings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
-                var timeFormat = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" };
-                settings.Converters.Add(timeFormat);
+                //var settings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
+                //var timeFormat = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" };
+                //settings.Converters.Add(timeFormat);
 
-                return JsonConvert.DeserializeObject<T>(json, settings);
+                return JsonConvert.DeserializeObject<T>(json, JsonSettings);
             }
             catch
             {

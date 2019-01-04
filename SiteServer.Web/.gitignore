@@ -8,8 +8,11 @@ SiteFiles/packages/
 SiteFiles/SiteTemplates/
 SiteFiles/TemporaryFiles/
 SiteFiles/UserFiles/
+SiteFiles/Administrators/
 Template
 /sapprft/
+/Mullen/
+Web.config
 
 test/
 ## sqlserver

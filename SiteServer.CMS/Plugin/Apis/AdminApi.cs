@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
@@ -36,6 +37,16 @@ namespace SiteServer.CMS.Plugin.Apis
         public IAdministratorInfo GetAdminInfoByAccount(string account)
         {
             return AdminManager.GetAdminInfoByAccount(account);
+        }
+
+        public List<string> GetUserNameList()
+        {
+            return DataProvider.AdministratorDao.GetUserNameList();
+        }
+
+        public IPermissions GetPermissions(string userName)
+        {
+            return new PermissionsImpl(userName);
         }
 
         public bool IsUserNameExists(string userName)

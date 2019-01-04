@@ -8,6 +8,9 @@
         [StlAttribute(Title = "栏目名称")]
         public const string ChannelName = nameof(ChannelName);
 
+        [StlAttribute(Title = "上级栏目")]
+        public const string Parent = nameof(Parent);
+
         [StlAttribute(Title = "上级栏目的级别")]
         public const string UpLevel = nameof(UpLevel);
 

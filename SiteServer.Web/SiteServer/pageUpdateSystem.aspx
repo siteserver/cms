@@ -172,11 +172,13 @@
 
 </html>
 <!--#include file="./inc/foot.html"-->
-<script src="assets/vue/vue.min.js"></script>
-<script src="assets/js/apiUtils.js"></script>
-<script src="assets/js/compareversion.js"></script>
+<script type="text/javascript" src="assets/vue/vue.min.js"></script>
+<script type="text/javascript" src="assets/js/apiUtils.js"></script>
+<script type="text/javascript" src="assets/js/es6-promise.auto.min.js"></script>
+<script type="text/javascript" src="assets/js/axios-0.17.1.min.js"></script>
+<script type="text/javascript" src="assets/js/utils.js"></script>
+<script type="text/javascript" src="assets/js/compareversion.js"></script>
 <script type="text/javascript">
-  var ssApi = new apiUtils.Api();
   var updateSsCmsApi = new apiUtils.Api('<%=UpdateSsCmsApiUrl%>');
   var isNightly = <%=IsNightly%>;
   var version = '<%=Version%>';
@@ -199,18 +201,39 @@
       version: function () {
         var $this = this;
 
-        ssApi.get({
-          isNightly: isNightly,
-          version: version
-        }, function (err, res) {
-          if (err || !res || !res.value) return;
+        $apiCloud.get('updates', {
+          params: {
+            isNightly: isNightly,
+            pluginVersion: version,
+            packageIds: packageId
+          }
+        }).then(function (response) {
+          var res = response.data;
 
-          $this.package = res.value;
+          $this.package = res.value[0];
           $this.isShouldUpdate = compareversion($this.installedVersion, $this.package.version) == -1;
           var major = $this.package.version.split('.')[0];
           var minor = $this.package.version.split('.')[1];
           $this.updatesUrl = 'http://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
-        }, 'packages', packageId);
+
+        }).catch(function (error) {
+          $this.pageAlert = utils.getPageAlert(error);
+        }).then(function () {
+          $this.pageLoad = true;
+        });
+
+        // ssApi.get({
+        //   isNightly: isNightly,
+        //   version: version
+        // }, function (err, res) {
+        //   if (err || !res || !res.value) return;
+
+        //   $this.package = res.value;
+        //   $this.isShouldUpdate = compareversion($this.installedVersion, $this.package.version) == -1;
+        //   var major = $this.package.version.split('.')[0];
+        //   var minor = $this.package.version.split('.')[1];
+        //   $this.updatesUrl = 'http://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
+        // }, 'packages', packageId);
       },
       check: function () {
         this.isCheck = !this.isCheck;

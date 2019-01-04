@@ -205,7 +205,7 @@ namespace SiteServer.CMS.DataCache
                 return GetDefaultContentTableStyleInfo(tableName, attributeName);
             }
 
-            return null;
+            return new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, false, InputType.Text, string.Empty, true, string.Empty);
         }
 
         public static TableStyleInfo GetTableStyleInfo(int id)

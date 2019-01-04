@@ -195,6 +195,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var channelId = AuthRequest.GetQueryInt("ChannelId");
                 var nodeInfo = new ChannelInfo
                 {
+                    SiteId = SiteId,
                     ParentId = channelId,
                     ContentModelPluginId = DdlContentModelPluginId.SelectedValue,
                     ContentRelatedPluginIds =

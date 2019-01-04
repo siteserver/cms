@@ -285,7 +285,19 @@ namespace SiteServer.CMS.Core
                 new TableStyleInfo
                 {
                     AttributeName = ContentAttribute.LastEditDate,
-                    DisplayName = "修改时间",
+                    DisplayName = "最后修改时间",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.AddUserName,
+                    DisplayName = "添加人",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.LastEditUserName,
+                    DisplayName = "最后修改人",
                     Taxis = taxis++
                 },
                 new TableStyleInfo
@@ -573,7 +585,10 @@ namespace SiteServer.CMS.Core
                 contentInfo.ReferenceId = contentId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
-                DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
+                int theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
+
+                CreateManager.CreateContent(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
+                CreateManager.TriggerContentChangedEvent(targetSiteInfo.Id, contentInfo.ChannelId);
             }
             else if (translateType == ETranslateContentType.ReferenceContent)
             {

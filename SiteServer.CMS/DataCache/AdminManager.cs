@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
@@ -225,20 +225,20 @@ namespace SiteServer.CMS.DataCache
 
             private static Dictionary<string, AdministratorInfo> GetDict()
             {
-                var retval = DataCacheManager.Get<Dictionary<string, AdministratorInfo>>(CacheKey);
-                if (retval != null) return retval;
+                var dict = DataCacheManager.Get<Dictionary<string, AdministratorInfo>>(CacheKey);
+                if (dict != null) return dict;
 
                 lock (LockObject)
                 {
-                    retval = DataCacheManager.Get<Dictionary<string, AdministratorInfo>>(CacheKey);
-                    if (retval == null)
+                    dict = DataCacheManager.Get<Dictionary<string, AdministratorInfo>>(CacheKey);
+                    if (dict == null)
                     {
-                        retval = new Dictionary<string, AdministratorInfo>();
-                        DataCacheManager.Insert(CacheKey, retval);
+                        dict = new Dictionary<string, AdministratorInfo>();
+                        DataCacheManager.Insert(CacheKey, dict);
                     }
                 }
 
-                return retval;
+                return dict;
             }
         }
 
@@ -293,6 +293,35 @@ namespace SiteServer.CMS.DataCache
             return GetAdminInfoByUserName(account);
         }
 
+        public static List<int> GetLatestTop10SiteIdList(List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions)
+        {
+            var siteIdList = new List<int>();
+
+            foreach (var siteId in siteIdListLatestAccessed)
+            {
+                if (siteIdList.Count >= 10) break;
+                if (!siteIdList.Contains(siteId) && siteIdListWithPermissions.Contains(siteId))
+                {
+                    siteIdList.Add(siteId);
+                }
+            }
+
+            if (siteIdList.Count < 10)
+            {
+                var siteIdListOrderByLevel = SiteManager.GetSiteIdListOrderByLevel();
+                foreach (var siteId in siteIdListOrderByLevel)
+                {
+                    if (siteIdList.Count >= 5) break;
+                    if (!siteIdList.Contains(siteId) && siteIdListWithPermissions.Contains(siteId))
+                    {
+                        siteIdList.Add(siteId);
+                    }
+                }
+            }
+
+            return siteIdList;
+        }
+
         public static string GetDisplayName(string userName, bool isDepartment)
         {
             var adminInfo = GetAdminInfoByUserName(userName);
@@ -307,13 +336,13 @@ namespace SiteServer.CMS.DataCache
         {
             var isConsoleAdministrator = false;
             var isSystemAdministrator = false;
-            var arraylist = new ArrayList();
+            var roleNameList = new List<string>();
             var roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(userName);
             foreach (var role in roles)
             {
                 if (!EPredefinedRoleUtils.IsPredefinedRole(role))
                 {
-                    arraylist.Add(role);
+                    roleNameList.Add(role);
                 }
                 else
                 {
@@ -330,21 +359,49 @@ namespace SiteServer.CMS.DataCache
                 }
             }
 
-            var retval = string.Empty;
+            var roleNames = string.Empty;
 
             if (isConsoleAdministrator)
             {
-                retval += EPredefinedRoleUtils.GetText(EPredefinedRole.ConsoleAdministrator);
+                roleNames += EPredefinedRoleUtils.GetText(EPredefinedRole.ConsoleAdministrator);
             }
             else if (isSystemAdministrator)
             {
-                retval += EPredefinedRoleUtils.GetText(EPredefinedRole.SystemAdministrator);
+                roleNames += EPredefinedRoleUtils.GetText(EPredefinedRole.SystemAdministrator);
             }
             else
             {
-                retval += TranslateUtils.ObjectCollectionToString(arraylist);
+                roleNames += TranslateUtils.ObjectCollectionToString(roleNameList);
             }
-            return retval;
+            return roleNames;
+        }
+
+        public static string GetUploadPath(params string[] paths)
+        {
+            var path = PathUtils.GetSiteFilesPath(DirectoryUtils.SiteFiles.Administrators, PathUtils.Combine(paths));
+            DirectoryUtils.CreateDirectoryIfNotExists(path);
+            return path;
+        }
+
+        public static string GetUserUploadPath(int userId, string relatedPath)
+        {
+            return GetUploadPath(userId.ToString(), relatedPath);
+        }
+
+        public static string GetUserUploadFileName(string filePath)
+        {
+            var dt = DateTime.Now;
+            return $"{dt.Day}{dt.Hour}{dt.Minute}{dt.Second}{dt.Millisecond}{PathUtils.GetExtension(filePath)}";
+        }
+
+        public static string GetUploadUrl(params string[] paths)
+        {
+            return PageUtils.GetSiteFilesUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.Administrators, PageUtils.Combine(paths)));
+        }
+
+        public static string GetUserUploadUrl(int userId, string relatedUrl)
+        {
+            return GetUploadUrl(userId.ToString(), relatedUrl);
         }
     }
 }
