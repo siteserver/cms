@@ -32,7 +32,28 @@ namespace SiteServer.API.Controllers.Pages
             try
             {
                 var request = new RequestImpl();
-                if (!request.IsAdminLoggin)
+
+                if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
+                {
+                    return Ok(new
+                    {
+                        Value = false,
+                        RedirectUrl = "Installer/"
+                    });
+                }
+
+#if !DEBUG
+                if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.Version)
+                {
+                    return Ok(new
+                    {
+                        Value = false,
+                        RedirectUrl = PageSyncDatabase.GetRedirectUrl()
+                    });
+                }
+#endif
+
+                if (!request.IsAdminLoggin || request.AdminInfo == null || request.AdminInfo.IsLockedOut)
                 {
                     return Ok(new
                     {
