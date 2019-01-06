@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Api.Preview;
@@ -42,7 +43,6 @@ namespace SiteServer.API.Controllers.Pages
                     });
                 }
 
-#if !DEBUG
                 if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.Version)
                 {
                     return Ok(new
@@ -51,7 +51,6 @@ namespace SiteServer.API.Controllers.Pages
                         RedirectUrl = PageSyncDatabase.GetRedirectUrl()
                     });
                 }
-#endif
 
                 if (!request.IsAdminLoggin || request.AdminInfo == null || request.AdminInfo.IsLockedOut)
                 {
