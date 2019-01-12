@@ -10,11 +10,10 @@ namespace SiteServer.API.Controllers.Pages.Settings
     [RoutePrefix("pages/settings/adminAccessTokensViewLayer")]
     public class PagesAdminAccessTokensViewLayerController : ApiController
     {
-        private const string RouteAccessTokens = "accessTokens/{id:int}";
-        private const string RouteRegenerate = "regenerate/{id:int}";
+        private const string Route = "";
 
-        [HttpGet, Route(RouteAccessTokens)]
-        public IHttpActionResult GetAccessToken(int id)
+        [HttpGet, Route(Route)]
+        public IHttpActionResult Get()
         {
             try
             {
@@ -24,6 +23,8 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 {
                     return Unauthorized();
                 }
+
+                var id = request.GetQueryInt("id");
 
                 var tokenInfo = DataProvider.AccessTokenDao.GetAccessTokenInfo(id);
                 var accessToken = TranslateUtils.DecryptStringBySecretKey(tokenInfo.Token);
@@ -40,8 +41,8 @@ namespace SiteServer.API.Controllers.Pages.Settings
             }
         }
 
-        [HttpPost, Route(RouteRegenerate)]
-        public IHttpActionResult Regenerate(int id)
+        [HttpPost, Route(Route)]
+        public IHttpActionResult Regenerate()
         {
             try
             {
@@ -51,6 +52,8 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 {
                     return Unauthorized();
                 }
+
+                var id = request.GetPostInt("id");
 
                 var accessToken = TranslateUtils.DecryptStringBySecretKey(DataProvider.AccessTokenDao.Regenerate(id));
 

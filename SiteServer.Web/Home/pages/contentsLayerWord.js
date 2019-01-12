@@ -52,7 +52,7 @@ var methods = {
       on: {
         add: function (task) {
           if (task.disabled) {
-            return alert({
+            return swal2({
               title: '文件错误！',
               text: '允许上传的文件格式为：' + this.ops.allows,
               type: 'error',
@@ -63,7 +63,7 @@ var methods = {
         complete: function (task) {
           var json = task.json;
           if (!json || json.ret != 1) {
-            return alert({
+            return swal2({
               title: "Word 文件上传失败！",
               type: 'error',
               showConfirmButton: false
@@ -111,7 +111,7 @@ var methods = {
     var $this = this;
     var fileNames = this.getFileNames().join(',');
     if (!fileNames) {
-      return alert({
+      return swal2({
         title: "请选择需要导入的Word文件！",
         type: 'warning',
         showConfirmButton: false

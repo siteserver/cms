@@ -1,9 +1,13 @@
-﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{ <li class="nav-item">
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
+@section Navs{
+<li class="nav-item">
   <a class="nav-link active" href="add.cshtml">添加插件</a>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="manage.cshtml">管理插件</a>
-</li> } <div class="row mt-4">
+</li>
+}
+<div class="row mt-4">
   <div class="col-10">
     <div class="form-inline">
       <div class="form-group">
@@ -64,4 +68,8 @@
   </div>
 </div>
 <a v-if="!q" href="https://www.siteserver.cn/plugins/" target="_blank" class="btn btn-primary btn-block">更多</a>
-@section Scripts{ <script src="add.js" type="text/javascript"></script> }
+
+@section Scripts{
+<script src="../assets/js/ss.js" type="text/javascript"></script>
+<script src="add.js" type="text/javascript"></script>
+}

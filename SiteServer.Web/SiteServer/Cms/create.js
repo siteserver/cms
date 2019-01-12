@@ -1,9 +1,9 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/create');
-var $apiAll = new apiUtils.Api(apiUrl + '/pages/cms/create/all');
-var $siteId = parseInt(pageUtils.getQueryStringByName('siteId'));
-var $type = pageUtils.getQueryStringByName('type');
+﻿var $url = '/pages/cms/create';
+var $urlAll = '/pages/cms/create/all';
+var $siteId = parseInt(utils.getQueryString('siteId'));
+var $type = utils.getQueryString('type');
 
-var data = {
+var $data = {
   pageLoad: false,
   pageAlert: null,
   pageType: null,
@@ -18,17 +18,19 @@ var data = {
   scope: 'all'
 };
 
-var methods = {
+var $methods = {
   displayChildren: function (channel, event) {
     channel.isOpen ? this.hideChildren(channel) : this.showChildren(channel);
     event.stopPropagation();
   },
+
   toggleChecked: function (channel) {
     channel.isChecked = !channel.isChecked;
     if (!channel.isChecked) {
       this.isAllChecked = false;
     }
   },
+
   selectAll: function () {
     this.isAllChecked = !this.isAllChecked;
     for (var i = 0; i < this.pageChannels.length; i++) {
@@ -36,10 +38,9 @@ var methods = {
     }
     this.reload();
   },
+
   create: function () {
     var $this = this;
-
-    $this.pageLoad = false;
 
     var channelIdList = [];
     for (var i = 0; i < this.pageChannels.length; i++) {
@@ -51,7 +52,8 @@ var methods = {
     if (!$this.isAllChecked && channelIdList.length === 0) return;
     if (!$this.isChannelPage && !this.isContentPage) return;
 
-    $api.post({
+    utils.loading(true);
+    $api.post($url, {
       siteId: $this.siteId,
       channelIdList: $this.isAllChecked ? [] : channelIdList,
       isAllChecked: $this.isAllChecked,
@@ -59,41 +61,66 @@ var methods = {
       isChannelPage: $this.isChannelPage,
       isContentPage: $this.isContentPage,
       scope: $this.scope
-    }, function () {
+    }).then(function (response) {
+      var res = response.data;
+
       location.href = 'createStatus.cshtml?siteId=' + $this.siteId;
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   },
+
   createIndex: function () {
     var $this = this;
 
-    $api.post({
+    utils.loading(true);
+    $api.post($url, {
       siteId: $this.siteId,
       channelIdList: [$this.siteId],
       isAllChecked: false,
       isDescendent: false,
       isChannelPage: true,
-      isContentPage: false,
-    }, function () {
+      isContentPage: false
+    }).then(function (response) {
+      var res = response.data;
+
       location.href = 'createStatus.cshtml?siteId=' + $this.siteId;
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   },
+
   createAll: function () {
     var $this = this;
 
-    $apiAll.post({
+    utils.loading(true);
+    $api.post($urlAll, {
       siteId: $this.siteId
-    }, function () {
+    }).then(function (response) {
+      var res = response.data;
+
       location.href = 'createStatus.cshtml?siteId=' + $this.siteId;
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   },
+
   loadChannels: function () {
     var $this = this;
 
-    $api.get({
-      siteId: $siteId,
-      parentId: $siteId
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
+    $api.get($url, {
+      params: {
+        siteId: $siteId,
+        parentId: $siteId
+      }
+    }).then(function (response) {
+      var res = response.data;
 
       $this.root = _.assign({}, res.parent, {
         contentNum: res.countDict[res.parent.id],
@@ -115,14 +142,18 @@ var methods = {
       }
 
       $this.reload();
-
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
       $this.pageLoad = true;
     });
   },
+
   reload: function () {
     this.pageChannels = [];
     this.addPageChannels(this.root);
   },
+
   addPageChannels: function (channel) {
     this.pageChannels.push(channel);
     if (channel.isOpen) {
@@ -132,6 +163,7 @@ var methods = {
       }
     }
   },
+
   showChildren: function (channel) {
     var $this = this;
 
@@ -139,11 +171,14 @@ var methods = {
     if (channel.childrenCount > 0 && channel.children.length === 0) {
       channel.children = [];
       channel.isLoading = true;
-      $api.get({
-        siteId: $siteId,
-        parentId: channel.id
-      }, function (err, res) {
-        if (err || !res || !res.value) return;
+
+      $api.get($url, {
+        params: {
+          siteId: $siteId,
+          parentId: channel.id
+        }
+      }).then(function (response) {
+        var res = response.data;
 
         for (var i = 0; i < res.value.length; i++) {
           var child = _.assign({}, res.value[i], {
@@ -156,15 +191,18 @@ var methods = {
 
           channel.children.push(child);
         }
-
+      }).catch(function (error) {
+        $this.pageAlert = utils.getPageAlert(error);
+      }).then(function () {
         channel.isLoading = false;
 
         $this.reload();
       });
     } else {
-      this.reload();
+      $this.reload();
     }
   },
+
   hideChildren: function (channel) {
     channel.isOpen = false;
     this.reload();
@@ -173,8 +211,8 @@ var methods = {
 
 var $vue = new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     if (this.type === 'index') {
       this.createIndex();

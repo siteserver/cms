@@ -19,7 +19,7 @@ var data = {
 var methods = {
   getIconUrl: function (url) {
     if (url && url.indexOf('://') !== -1) return url;
-    return 'http://plugins.siteserver.cn/' + url;
+    return ssUtils.getPluginsUrl(url);
   },
 
   getTagNames: function (pluginInfo) {
@@ -42,7 +42,7 @@ var methods = {
       $this.installedVersion = res.installedVersion;
       $this.package = res.package || {};
 
-      $apiCloud.get('plugins/' + pluginId, {
+      $ssApi.get($ssUrlPlugins + '/' + pluginId, {
         params: {
           isNightly: $this.isNightly,
           pluginVersion: $this.pluginVersion

@@ -12,11 +12,6 @@ namespace SiteServer.BackgroundPages.Cms
 
         private List<int> _siteIdList;
 
-        public static string GetOpenLayerString(int siteId)
-        {
-            return $@"pageUtils.openLayer({{title: '全部站点',url: '{PageUtils.GetCmsUrl(siteId, nameof(ModalSiteSelect), null)}',full: false,width: 0,height: 0}});return false;";
-        }
-
         public static string GetRedirectUrl(int siteId)
         {
             return PageUtils.GetCmsUrl(siteId, nameof(ModalSiteSelect), null);

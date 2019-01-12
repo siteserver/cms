@@ -19,7 +19,7 @@ var data = {
 
 var methods = {
   getIconUrl: function (url) {
-    return 'https://plugins.siteserver.cn/' + url;
+    return ssUtils.getPluginsUrl(url);
   },
 
   load: function () {
@@ -46,7 +46,7 @@ var methods = {
         }
       }
 
-      $apiCloud.get('updates', {
+      $ssApi.get($ssUrlUpdates, {
         params: {
           isNightly: $this.isNightly,
           pluginVersion: $this.pluginVersion,

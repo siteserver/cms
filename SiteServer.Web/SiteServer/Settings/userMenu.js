@@ -1,7 +1,7 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/userMenu');
-var $apiReset = new apiUtils.Api(apiUrl + '/pages/settings/userMenu/actions/reset');
+﻿var $url = '/pages/settings/userMenu';
+var $urlReset = '/pages/settings/userMenu/actions/reset';
 
-var data = {
+var $data = {
   pageLoad: false,
   pageAlert: null,
   pageType: 'list',
@@ -10,7 +10,7 @@ var data = {
   item: null
 };
 
-var methods = {
+var $methods = {
   getItems: function (menus) {
     var items = [];
     for (var i = 0; i < menus.length; i++) {
@@ -40,18 +40,22 @@ var methods = {
 
     return items;
   },
+
   getList: function () {
     var $this = this;
 
-    $api.get(null, function (err, res) {
-      if (err || !res || !res.value) return;
+    $api.get($url).then(function (response) {
+      var res = response.data;
 
       $this.items = $this.getItems(res.value);
       $this.groups = res.groups;
-
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
       $this.pageLoad = true;
     });
   },
+
   getUserGroups: function (item) {
     if (item.isGroup) {
       var str = '';
@@ -64,43 +68,47 @@ var methods = {
     }
     return '所有用户组';
   },
+
   delete: function (id) {
     var $this = this;
 
-    pageUtils.loading(true);
-    $api.delete({
-      id: id
-    }, function (err, res) {
-      pageUtils.loading(false);
-      if (err || !res || !res.value) return;
+    utils.loading(true);
+    $api.delete($url, {
+      params: {
+        id: id
+      }
+    }).then(function (response) {
+      var res = response.data;
 
       $this.items = $this.getItems(res.value);
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   },
+
   reset: function () {
     var $this = this;
 
-    pageUtils.loading(true);
-    $apiReset.post(null, function (err, res) {
-      pageUtils.loading(false);
-      if (err || !res || !res.value) return;
+    utils.loading(true);
+    $api.post($urlReset).then(function (response) {
+      var res = response.data;
 
       $this.items = $this.getItems(res.value);
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   },
+
   submit: function (item) {
     var $this = this;
     item.groupIdCollection = item.isGroup ? item.groupIds.join(',') : '';
-    pageUtils.loading(true);
-    $api.post(item, function (err, res) {
-      pageUtils.loading(false);
-      if (err) {
-        $this.pageAlert = {
-          type: 'danger',
-          html: err.message
-        };
-        return;
-      }
+    utils.loading(true);
+    $api.post($url, item).then(function (response) {
+      var res = response.data;
 
       $this.pageAlert = {
         type: 'success',
@@ -109,6 +117,10 @@ var methods = {
       $this.item = null;
       $this.items = $this.getItems(res.value);
       $this.pageType = 'list';
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   },
 
@@ -154,7 +166,7 @@ var methods = {
   btnResetClick: function () {
     var $this = this;
 
-    pageUtils.alertDelete({
+    utils.alertDelete({
       title: '重置用户菜单',
       text: '此操作将把用户菜单恢复为系统默认值，确定吗？',
       button: '确认重置',
@@ -172,14 +184,22 @@ var methods = {
   btnDeleteClick: function (item) {
     var $this = this;
 
-    pageUtils.alertDelete({
-      title: '删除用户菜单',
-      text: '此操作将删除用户菜单 ' + item.text + '，确定吗？',
-      callback: function () {
-        $this.delete(item.id);
-      }
-    });
+    swal2({
+        title: '删除用户菜单',
+        text: '此操作将删除用户菜单 ' + item.text + '，确定吗？',
+        type: 'question',
+        confirmButtonText: '删 除',
+        confirmButtonClass: 'btn btn-danger',
+        showCancelButton: true,
+        cancelButtonText: '取 消'
+      })
+      .then(function (result) {
+        if (result.value) {
+          $this.delete(item.id);
+        }
+      });
   },
+
   btnSubmitClick: function () {
     var $this = this;
     this.$validator.validate().then(function (result) {
@@ -188,6 +208,7 @@ var methods = {
       }
     });
   },
+
   btnCancelClick: function () {
     this.pageType = 'list';
   }
@@ -195,8 +216,8 @@ var methods = {
 
 new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.getList();
   }

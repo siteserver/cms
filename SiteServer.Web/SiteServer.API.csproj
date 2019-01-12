@@ -145,6 +145,9 @@
     <Compile Include="Controllers\Home\HomeContentsLayerTaxisController.cs" />
     <Compile Include="Controllers\Home\HomeContentsLayerViewController.cs" />
     <Compile Include="Controllers\Home\HomeContentsLayerWordController.cs" />
+    <Compile Include="Controllers\Pages\Cloud\PagesDashboardController.cs" />
+    <Compile Include="Controllers\Pages\Cloud\PagesLogoutController.cs" />
+    <Compile Include="Controllers\Pages\Cloud\PagesLayerLoginController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesContentsLayerCopyController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesContentsLayerCutController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesContentsLayerArrangeController.cs" />
@@ -162,6 +165,8 @@
     <Compile Include="Controllers\Pages\Cms\PagesContentsController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesCreateController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesCreateStatusController.cs" />
+    <Compile Include="Controllers\Pages\PagesUpgradeController.cs" />
+    <Compile Include="Controllers\Pages\PagesErrorController.cs" />
     <Compile Include="Controllers\Pages\PagesMainController.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesAddLayerUploadController.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesManageController.cs" />
@@ -187,7 +192,6 @@
     <Compile Include="Controllers\V1\V1ContentsController.cs" />
     <Compile Include="Controllers\V1\V1CaptchaController.cs" />
     <Compile Include="Controllers\Pages\Settings\PagesAdminAccessTokensController.cs" />
-    <Compile Include="Controllers\Sys\SysErrorController.cs" />
     <Compile Include="Controllers\Sys\SysPackagingClearCacheController.cs" />
     <Compile Include="Controllers\Sys\SysPackagingUpdateSsCmsController.cs" />
     <Compile Include="Controllers\Sys\SysPackagingUpdateController.cs" />

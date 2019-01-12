@@ -143,8 +143,6 @@ namespace SiteServer.BackgroundPages.Settings
             }
 
             ControlUtils.SelectSingleItem(DdlTableChoose, SiteInfo.TableName);
-
-            BtnSubmit.Attributes.Add("onclick", PageLoading());
         }
 
         private static void AddSite(ListControl listControl, SiteInfo siteInfo, Hashtable parentWithChildren, int level)

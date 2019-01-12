@@ -1,6 +1,6 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/userGroup');
+﻿var $url = '/pages/settings/userGroup';
 
-var data = {
+var $data = {
   pageLoad: false,
   pageAlert: null,
   pageType: 'list',
@@ -8,45 +8,47 @@ var data = {
   adminNames: null,
 };
 
-var methods = {
+var $methods = {
   getList: function () {
     var $this = this;
 
-    $api.get(null, function (err, res) {
-      if (err || !res || !res.value) return;
+    $api.get($url).then(function (response) {
+      var res = response.data;
 
       $this.items = res.value;
       $this.adminNames = res.adminNames;
-
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
       $this.pageLoad = true;
     });
   },
+
   delete: function (id) {
     var $this = this;
 
-    pageUtils.loading(true);
-    $api.delete({
-      id: id
-    }, function (err, res) {
-      pageUtils.loading(false);
-      if (err || !res || !res.value) return;
+    utils.loading(true);
+    $api.delete($url, {
+      params: {
+        id: id
+      }
+    }).then(function (response) {
+      var res = response.data;
 
       $this.items = res.value;
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   },
+
   submit: function (item) {
     var $this = this;
 
-    pageUtils.loading(true);
-    $api.post(item, function (err, res) {
-      pageUtils.loading(false);
-      if (err) {
-        $this.pageAlert = {
-          type: 'danger',
-          html: err.message
-        };
-        return;
-      }
+    utils.loading(true);
+    $api.post($url, item).then(function (response) {
+      var res = response.data;
 
       $this.pageAlert = {
         type: 'success',
@@ -55,13 +57,21 @@ var methods = {
       $this.item = null;
       $this.items = res.value;
       $this.pageType = 'list';
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   },
+
   btnEditClick: function (item) {
+    this.pageAlert = null;
     this.pageType = 'add';
     this.item = item;
   },
+
   btnAddClick: function () {
+    this.pageAlert = null;
     this.pageType = 'add';
     this.item = {
       id: -1,
@@ -69,17 +79,26 @@ var methods = {
       adminName: ''
     };
   },
+
   btnDeleteClick: function (item) {
     var $this = this;
 
-    pageUtils.alertDelete({
-      title: '删除用户组',
-      text: '此操作将删除用户组 ' + item.groupName + '，确定吗？',
-      callback: function () {
-        $this.delete(item.id);
-      }
-    });
+    swal2({
+        title: '删除用户组',
+        text: '此操作将删除用户组 ' + item.groupName + '，确定吗？',
+        type: 'question',
+        confirmButtonText: '删 除',
+        confirmButtonClass: 'btn btn-danger',
+        showCancelButton: true,
+        cancelButtonText: '取 消'
+      })
+      .then(function (result) {
+        if (result.value) {
+          $this.delete(item.id);
+        }
+      });
   },
+
   btnSubmitClick: function () {
     var $this = this;
     this.$validator.validate().then(function (result) {
@@ -88,15 +107,17 @@ var methods = {
       }
     });
   },
+
   btnCancelClick: function () {
+    this.pageAlert = null;
     this.pageType = 'list';
   }
 };
 
 new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.getList();
   }

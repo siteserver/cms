@@ -12,6 +12,8 @@ namespace SiteServer.CMS.Api
 
         public static string RootUrl => PageUtils.ApplicationPath;
 
+        public static string ApiPrefix => WebConfigUtils.ApiPrefix;
+
         private static string _innerApiUrl;
 
         public static string InnerApiUrl

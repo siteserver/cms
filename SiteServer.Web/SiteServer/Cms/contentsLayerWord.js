@@ -1,9 +1,9 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerWord');
-var $uploadUrl = apiUrl + '/pages/cms/contentsLayerWord';
+﻿var $url = '/pages/cms/contentsLayerWord';
+var $uploadUrl = $apiUrl + '/pages/cms/contentsLayerWord';
 
-var data = {
-  siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
-  channelId: parseInt(pageUtils.getQueryStringByName('channelId')),
+var $data = {
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
   pageLoad: false,
   pageAlert: null,
   file: null,
@@ -19,23 +19,28 @@ var data = {
   checkedLevel: null
 };
 
-var methods = {
+var $methods = {
   loadConfig: function () {
     var $this = this;
-    $this.pageLoad = true;
 
-    $api.get({
-      siteId: $this.siteId,
-      channelId: $this.channelId
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
+    $api.get($url, {
+      params: {
+        siteId: $this.siteId,
+        channelId: $this.channelId
+      }
+    }).then(function (response) {
+      var res = response.data;
 
       $this.checkedLevels = res.value;
       $this.checkedLevel = res.checkedLevel;
-
-      $this.loadUploader();
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      $this.pageLoad = true;
+      setTimeout($this.loadUploader, 100);
     });
   },
+
   loadUploader: function () {
     var $this = this;
 
@@ -51,7 +56,7 @@ var methods = {
       on: {
         add: function (task) {
           if (task.disabled) {
-            return alert({
+            return swal2({
               title: "允许上传的文件格式为：" + this.ops.allows,
               type: 'warning',
               confirmButtonText: '关 闭'
@@ -61,7 +66,7 @@ var methods = {
         complete: function (task) {
           var json = task.json;
           if (!json || json.ret != 1) {
-            return alert({
+            return swal2({
               title: "上传失败！",
               type: 'warning',
               confirmButtonText: '关 闭'
@@ -95,9 +100,11 @@ var methods = {
       uploader.addList(files);
     });
   },
+
   del: function (file) {
     this.files.splice(this.files.indexOf(file), 1);
   },
+
   getFileNames: function () {
     var arr = [];
     for (var i = 0; i < this.files.length; i++) {
@@ -105,19 +112,20 @@ var methods = {
     }
     return arr;
   },
+
   btnSubmitClick: function () {
     var $this = this;
     var fileNames = this.getFileNames().join(',');
     if (!fileNames) {
-      return alert({
+      return swal2({
         title: "请选择需要导入的Word文件！",
         type: 'warning',
         showConfirmButton: '关 闭'
       });
     }
 
-    pageUtils.loading(true);
-    $api.post({
+    utils.loading(true);
+    $api.post($url, {
       siteId: $this.siteId,
       channelId: $this.channelId,
       isFirstLineTitle: $this.isFirstLineTitle,
@@ -129,8 +137,8 @@ var methods = {
       isClearImages: $this.isClearImages,
       checkedLevel: $this.checkedLevel,
       fileNames: fileNames
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
+    }).then(function (response) {
+      var res = response.data;
 
       var contentIdList = res.value;
       if (contentIdList.length === 1) {
@@ -138,14 +146,18 @@ var methods = {
       } else {
         parent.location.reload(true);
       }
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   }
 };
 
 new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.loadConfig();
   }

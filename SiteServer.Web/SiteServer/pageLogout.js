@@ -1,23 +1,31 @@
-var $api = new apiUtils.Api(apiUrl + '/v1/administrators/actions/logout');
+var $url = '/v1/administrators/actions/logout';
 
-var $vue = new Vue({
-  el: '#main',
-  data: {
-    pageLoad: false
-  },
-  methods: {
-    logout: function () {
-      var $this = this;
+var $data = {
+  pageLoad: false,
+  pageAlert: null
+};
 
-      $api.post(null, function (err, res) {
-        $this.redirect();
-      });
-    },
+var $methods = {
+  logout: function () {
+    var $this = this;
 
-    redirect: function () {
+    $api.post($url).then(function (response) {
+      var res = response.data;
+
       window.top.location.href = 'pageLogin.cshtml';
-    }
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
+    });
+  }
+};
+
+new Vue({
+  el: '#main',
+  data: $data,
+  methods: $methods,
+  created: function () {
+    this.logout();
   }
 });
-
-$vue.logout();

@@ -1,6 +1,6 @@
 ﻿var $url = '/pages/plugins/add';
 
-var data = {
+var $data = {
   pageLoad: false,
   pageAlert: null,
   isNightly: null,
@@ -11,9 +11,9 @@ var data = {
   packages: null
 };
 
-var methods = {
+var $methods = {
   getIconUrl: function (url) {
-    return 'http://plugins.siteserver.cn/' + url;
+    return ssUtils.getPluginsUrl(url);
   },
 
   getTagNames: function (pluginInfo) {
@@ -34,7 +34,7 @@ var methods = {
       $this.pluginVersion = res.pluginVersion;
       $this.packageIds = res.packageIds;
 
-      $apiCloud.get('plugins', {
+      $ssApi.get($ssUrlPlugins, {
         params: {
           isNightly: $this.isNightly,
           pluginVersion: $this.pluginVersion,
@@ -62,7 +62,7 @@ var methods = {
   },
 
   btnUploadClick: function () {
-    pageUtils.openLayer({
+    utils.openLayer({
       title: '离线安装插件',
       url: 'addLayerUpload.cshtml',
       full: true
@@ -72,8 +72,8 @@ var methods = {
 
 var $vue = new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.load();
   }

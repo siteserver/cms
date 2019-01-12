@@ -55,15 +55,15 @@ var methods = {
   },
 
   getDisplayUrl: function (templateId) {
-    return 'https://www.siteserver.cn/templates/template.html?id=' + templateId;
+    return ssUtils.getTemplatePageUrl(templateId);
   },
 
   getTemplateUrl: function (relatedUrl) {
-    return 'https://templates.siteserver.cn/' + relatedUrl;
+    return ssUtils.getTemplatesUrl(relatedUrl);
   },
 
   getPreviewUrl: function (templateId) {
-    return 'https://demo.siteserver.cn/' + templateId;
+    return ssUtils.getDemoUrl(templateId);
   },
 
   getPageUrl: function (page) {
@@ -114,7 +114,7 @@ var methods = {
     if (this.pageLoad) {
       utils.loading(true);
     }
-    $apiCloud.get('templates', {
+    $ssApi.get(ssUrlTemplates, {
         params: {
           page: this.page,
           word: this.word,

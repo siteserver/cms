@@ -1,10 +1,10 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerCopy');
-var $apiChannels = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerCopy/actions/getChannels');
+﻿var $url = '/pages/cms/contentsLayerCopy';
+var $urlGetChannels = '/pages/cms/contentsLayerCopy/actions/getChannels';
 
-var data = {
-  siteId: parseInt(pageUtils.getQueryString('siteId')),
-  channelId: parseInt(pageUtils.getQueryString('channelId')),
-  contentIds: pageUtils.getQueryString('contentIds'),
+var $data = {
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
+  contentIds: utils.getQueryString('contentIds'),
   pageLoad: false,
   pageAlert: null,
   contents: null,
@@ -16,45 +16,51 @@ var data = {
   isSubmit: false
 };
 
-var methods = {
+var $methods = {
   loadConfig: function () {
     var $this = this;
 
-    $api.get({
+    $api.get($url, {
+      params: {
         siteId: $this.siteId,
         channelId: $this.channelId,
         contentIds: $this.contentIds
-      },
-      function (err, res) {
-        if (err || !res || !res.value) return;
-
-        $this.contents = res.value;
-        $this.sites = res.sites;
-        $this.channels = res.channels;
-        $this.site = res.site;
-
-        $this.pageLoad = true;
       }
-    );
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.contents = res.value;
+      $this.sites = res.sites;
+      $this.channels = res.channels;
+      $this.site = res.site;
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      $this.pageLoad = true;
+    });
   },
 
   onSiteSelect(site) {
-    if (site.id === this.site.id) return;
-    this.site = site;
     var $this = this;
 
-    parent.pageUtils.loading(true);
-    $apiChannels.get({
-        siteId: this.site.id
-      },
-      function (err, res) {
-        parent.pageUtils.loading(false);
-        if (err || !res || !res.value) return;
+    if (site.id === $this.site.id) return;
+    $this.site = site;
 
-        $this.channels = res.value;
-        $this.channel = null;
+    utils.loading(true);
+    $api.get($urlGetChannels, {
+      params: {
+        siteId: $this.site.id
       }
-    );
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.channels = res.value;
+      $this.channel = null;
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
+    });
   },
 
   onChannelSelect(channel) {
@@ -63,23 +69,25 @@ var methods = {
 
   btnSubmitClick: function () {
     var $this = this;
-    this.isSubmit = true;
-    if (!this.channel) return;
+    $this.isSubmit = true;
+    if (!$this.channel) return;
 
-    parent.pageUtils.loading(true);
-    $api.post({
-        siteId: $this.siteId,
-        channelId: $this.channelId,
-        contentIds: $this.contentIds,
-        targetSiteId: $this.site.id,
-        targetChannelId: $this.channel.id
-      },
-      function (err, res) {
-        if (err || !res || !res.value) return;
+    utils.loading(true);
+    $api.post($url, {
+      siteId: $this.siteId,
+      channelId: $this.channelId,
+      contentIds: $this.contentIds,
+      targetSiteId: $this.site.id,
+      targetChannelId: $this.channel.id
+    }).then(function (response) {
+      var res = response.data;
 
-        parent.location.reload(true);
-      }
-    );
+      parent.location.reload(true);
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
+    });
   }
 };
 
@@ -87,8 +95,8 @@ Vue.component("multiselect", window.VueMultiselect.default);
 
 new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.loadConfig();
   }

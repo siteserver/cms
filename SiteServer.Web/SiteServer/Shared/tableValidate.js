@@ -1,6 +1,6 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/shared/tableValidate');
+﻿var $url = '/pages/shared/tableValidate';
 
-var data = {
+var $data = {
   allRules: [{
     type: "required",
     text: "字段为必填项"
@@ -65,9 +65,9 @@ var data = {
     type: "regex",
     text: "字段必须匹配指定的正则表达式"
   }],
-  tableName: pageUtils.getQueryStringByName('tableName'),
-  attributeName: pageUtils.getQueryStringByName('attributeName'),
-  relatedIdentities: pageUtils.getQueryStringByName('relatedIdentities'),
+  tableName: utils.getQueryString('tableName'),
+  attributeName: utils.getQueryString('attributeName'),
+  relatedIdentities: utils.getQueryString('relatedIdentities'),
   pageLoad: false,
   pageAlert: null,
   pageType: 'list',
@@ -87,23 +87,25 @@ var data = {
   regexValue: null
 };
 
-var methods = {
+var $methods = {
   getValue() {
     if (this.validateRules.length === 0) return '';
     return _.map(this.validateRules, function (rule) {
       return rule.value ? rule.type + ':' + rule.value : rule.type;
     }).join('|');
   },
+
   load: function () {
     var $this = this;
 
-    $api.get({
-      tableName: this.tableName,
-      attributeName: this.attributeName,
-      relatedIdentities: this.relatedIdentities
-    }, function (err, res) {
-      $this.pageLoad = true;
-      if (err || !res) return;
+    $api.get($url, {
+      params: {
+        tableName: $this.tableName,
+        attributeName: $this.attributeName,
+        relatedIdentities: $this.relatedIdentities
+      }
+    }).then(function (response) {
+      var res = response.data;
 
       var val = '';
       try {
@@ -125,41 +127,46 @@ var methods = {
           }
         }
       } catch (e) {}
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      $this.pageLoad = true;
     });
   },
+
   btnSubmitClick: function () {
     var $this = this;
     this.$validator.validate().then(function (result) {
       if (result) {
-        pageUtils.loading(true);
-        $api.post({
+        utils.loading(true);
+        $api.post($url, {
           tableName: $this.tableName,
           attributeName: $this.attributeName,
           relatedIdentities: $this.relatedIdentities,
           value: $this.getValue()
-        }, function (err, res) {
-          pageUtils.loading(false);
-          if (err || !res) {
-            $this.pageAlert = {
-              type: 'danger',
-              html: err.message
-            }
-            return;
-          }
+        }).then(function (response) {
+          var res = response.data;
 
-          parent.reloadPage();
-          pageUtils.closeLayer();
+          parent.location.reload();
+          utils.closeLayer();
+        }).catch(function (error) {
+          $this.pageAlert = utils.getPageAlert(error);
+        }).then(function () {
+          utils.loading(false);
         });
       }
     });
   },
+
   btnRemoveClick: function (index) {
     this.validateRules.splice(index, 1);
   },
+
   btnAddClick: function () {
     this.ruleType = null;
     this.pageType = 'add';
   },
+
   btnSaveClick: function () {
     var $this = this;
     this.$validator.validate().then(function (result) {
@@ -172,15 +179,18 @@ var methods = {
       }
     });
   },
+
   btnCancelClick: function () {
     this.pageType = 'list';
   },
+
   getDescription(type) {
     var index = _.findIndex(this.allRules, function (o) {
       return o.type == type;
     });
     return index !== -1 ? this.allRules[index].text : '';
   },
+
   getRuleValue() {
     if (this.ruleType === 'between') {
       return this.betweenMin + ',' + this.betweenMax;
@@ -206,6 +216,7 @@ var methods = {
 
     return '';
   },
+
   getAvaliableRules() {
     var rules = [];
     for (var i = 0; i < this.allRules.length; i++) {
@@ -223,8 +234,8 @@ var methods = {
 
 new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.load();
   }

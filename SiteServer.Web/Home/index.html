@@ -9,7 +9,7 @@
   <meta content="SiteServer CMS" name="author" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <link rel="shortcut icon" href="assets/images/favicon.ico">
-  <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/bootstrap-4.1.0.min.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/font-awesome-4.7.0.min.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/ionicons-2.0.0.min.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/siteserver.min.css" rel="stylesheet" type="text/css" />
@@ -17,15 +17,11 @@
 </head>
 
 <body class="p-0">
-
   <div id="main">
-
     <template v-if="pageConfig">
-
       <header id="topnav" style="position: absolute;">
         <div class="topbar-main">
           <div class="container-fluid">
-
             <div class="logo">
               <a v-if="pageConfig.isHomeLogo" href="index.html" class="logo">
                 <img :src="pageConfig.homeLogoUrl" style="max-height: 50px;">
@@ -35,7 +31,6 @@
                 <span class="logo-large">{{ pageConfig.homeTitle }}</span>
               </a>
             </div>
-
             <div class="menu-extras topbar-custom">
               <ul class="list-inline float-right mb-0">
                 <li class="menu-item list-inline-item">
@@ -47,7 +42,6 @@
                     </div>
                   </a>
                 </li>
-
                 <!-- <li class="list-inline-item dropdown notification-list">
                   <a class="nav-link dropdown-toggle arrow-none" data-toggle="dropdown" href="#" role="button"
                     aria-haspopup="false" aria-expanded="false">
@@ -79,7 +73,6 @@
                     </a>
                   </div>
                 </li> -->
-
                 <li class="list-inline-item dropdown notification-list">
                   <a class="nav-link dropdown-toggle nav-user" data-toggle="dropdown" href="#" role="button"
                     aria-haspopup="false" aria-expanded="false">
@@ -107,36 +100,28 @@
             <div class="clearfix"></div>
           </div>
         </div>
-
         <div class="navbar-custom" v-if="pageMenus && pageMenus.length > 0">
           <div class="container-fluid">
             <div id="navigation">
               <ul class="navigation-menu">
-
                 <li v-for="menu in pageMenus" class="has-submenu">
                   <a :href="(menu.menus && menu.menus.length > 0 ? 'javascript:;' : ((!menu.target || menu.target === '_self') ? '#' + menu.href : menu.href))"
                     :target="(menu.menus && menu.menus.length > 0 ? '' : menu.target)">
-                    <i v-if="menu.iconClass" :class="menu.iconClass"></i>
-                    {{ menu.text }}
-                  </a>
+                    <i v-if="menu.iconClass" :class="menu.iconClass"></i> {{ menu.text }} </a>
                   <ul v-if="menu.menus && menu.menus.length > 0" class="submenu">
                     <li v-for="child in menu.menus">
                       <a :href="(!child.target || child.target === '_self') ? '#' + child.href : child.href" :target="child.target">
                         <i v-if="child.iconClass" :class="child.iconClass" style="color: rgba(42,49,66,.7);margin-right:5px"></i>
-                        {{ child.text }}
-                      </a>
+                        {{ child.text }} </a>
                     </li>
                   </ul>
                 </li>
-
               </ul>
             </div>
           </div>
         </div>
       </header>
-
       <iframe id="frmMain" name="frmMain" frameborder="0" :src="pageUrl" style="width: 100%; position: absolute;display: none"></iframe>
-
     </template>
     <template v-else>
       <div class="text-center" style="margin-top: 100px">
@@ -144,13 +129,10 @@
         <p class="lead mt-3 text-nowrap">载入中，请稍后...</p>
       </div>
     </template>
-
   </div>
-
 </body>
 
 </html>
-
 <script src="assets/lib/jquery-1.9.1.min.js" type="text/javascript"></script>
 <script src="assets/lib/iframe-resizer-3.6.2/iframeResizer.min.js" type="text/javascript"></script>
 <script src="assets/lib/popper.min.js"></script>
@@ -164,5 +146,4 @@
 <script src="assets/lib/js.cookie-2.2.0.js"></script>
 <script src="assets/js/utils.js" type="text/javascript"></script>
 <script src="config.js" type="text/javascript"></script>
-
 <script src="assets/js/index.js" type="text/javascript"></script>

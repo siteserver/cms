@@ -966,12 +966,12 @@ namespace SiteServer.Utils
 
         public static string GetErrorPageUrl(int logId)
         {
-            return GetAdminUrl($"pageError.html?logId={logId}");
+            return GetAdminUrl($"error.cshtml?logId={logId}");
         }
 
         public static string GetErrorPageUrl(string message)
         {
-            return GetAdminUrl($"pageError.html?message={HttpUtility.UrlPathEncode(message)}");
+            return GetAdminUrl($"error.cshtml?message={HttpUtility.UrlPathEncode(message)}");
         }
 
         public static void CheckRequestParameter(params string[] parameters)

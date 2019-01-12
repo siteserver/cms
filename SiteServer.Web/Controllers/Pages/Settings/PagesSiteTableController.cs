@@ -12,8 +12,8 @@ namespace SiteServer.API.Controllers.Pages.Settings
     public class PagesSiteTablesController : ApiController
     {
         private const string Route = "";
-        private const string RouteTable = "{tableName}";
-        private const string RouteTableActionsRemoveCache = "{tableName}/actions/removeCache";
+        private const string RouteActionsGetColumns = "actions/getColumns";
+        private const string RouteActionsRemoveCache = "actions/removeCache";
 
         [HttpGet, Route(Route)]
         public IHttpActionResult GetTables()
@@ -54,8 +54,8 @@ namespace SiteServer.API.Controllers.Pages.Settings
             }
         }
 
-        [HttpGet, Route(RouteTable)]
-        public IHttpActionResult GetColumns(string tableName)
+        [HttpPost, Route(RouteActionsGetColumns)]
+        public IHttpActionResult GetColumns()
         {
             try
             {
@@ -65,6 +65,8 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 {
                     return Unauthorized();
                 }
+
+                var tableName = request.GetPostString("tableName");
 
                 var columns = TableColumnManager.GetTableColumnInfoList(tableName, ContentAttribute.MetadataAttributes.Value);
 
@@ -80,8 +82,8 @@ namespace SiteServer.API.Controllers.Pages.Settings
             }
         }
 
-        [HttpPost, Route(RouteTableActionsRemoveCache)]
-        public IHttpActionResult RemoveCache(string tableName)
+        [HttpPost, Route(RouteActionsRemoveCache)]
+        public IHttpActionResult RemoveCache()
         {
             try
             {
@@ -91,6 +93,8 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 {
                     return Unauthorized();
                 }
+
+                var tableName = request.GetPostString("tableName");
 
                 TableColumnManager.ClearCache();
 

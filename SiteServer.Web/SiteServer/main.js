@@ -24,6 +24,7 @@ var data = {
   activeChildMenu: null,
   pluginMenus: null,
   local: null,
+  cloud: null,
 
   newVersion: null,
   updatePackages: 0,
@@ -55,13 +56,13 @@ var methods = {
         $this.siteMenus = res.siteMenus;
         $this.pluginMenus = res.pluginMenus;
         $this.local = res.local;
+        $this.cloud = res.cloud;
         $this.activeParentMenu = $this.siteMenus[0];
+        $this.pageLoad = true;
+        setTimeout($this.ready, 100);
       } else {
         location.href = res.redirectUrl;
       }
-    }).then(function () {
-      $this.pageLoad = true;
-      setTimeout($this.ready, 100);
     });
   },
 
@@ -96,7 +97,7 @@ var methods = {
 
   getUpdates: function () {
     var $this = this;
-    $apiCloud.get('updates', {
+    $ssApi.get($ssUrlUpdates, {
       params: {
         isNightly: $this.isNightly,
         pluginVersion: $this.version,
@@ -146,7 +147,7 @@ var methods = {
 
       if (res.value) {
         $this.newVersion = {
-          updatesUrl: 'http://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html',
+          updatesUrl: ssUtils.getVersionPageUrl(major, minor),
           version: releaseInfo.version,
           published: releaseInfo.published,
           releaseNotes: releaseInfo.releaseNotes
@@ -168,7 +169,7 @@ var methods = {
         $this.timeoutId = setTimeout($this.create, 100);
       }
     }).catch(function (error) {
-      if (error.response.status === 401) {
+      if (error.response && error.response.status === 401) {
         location.href = 'pageLogin.cshtml';
       }
       $this.timeoutId = setTimeout($this.create, 1000);
@@ -189,6 +190,15 @@ var methods = {
 
   getTarget: function (menu) {
     return menu.target ? menu.target : "right";
+  },
+
+  btnCloudLoginClick: function () {
+    utils.openLayer({
+      title: '云服务登录',
+      url: "cloud/layerLogin.cshtml",
+      width: 550,
+      height: 560
+    });
   },
 
   btnTopMenuClick: function (menu) {

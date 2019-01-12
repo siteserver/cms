@@ -66,7 +66,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
-                var attributeName = request.GetPostString("attributeName");
+                var attributeName = request.GetQueryString("attributeName");
 
                 DataProvider.TableStyleDao.Delete(0, DataProvider.UserDao.TableName, attributeName);
 

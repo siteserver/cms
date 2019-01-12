@@ -219,11 +219,6 @@ setTimeout(function() {{
             LayerUtils.Close(Page);
         }
 
-        public static string PageLoading()
-        {
-            return "pageUtils.loading(true);";
-        }
-
         public void ClientScriptRegisterClientScriptBlock(string key, string script)
         {
             if (!ClientScript.IsStartupScriptRegistered(key))

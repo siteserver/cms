@@ -100,7 +100,7 @@ namespace SiteServer.API.Controllers.Pages
                     return Ok(new
                     {
                         Value = false,
-                        RedirectUrl = $"pageError.html?message={HttpUtility.UrlEncode("您没有可以管理的站点，请联系超级管理员协助解决")}"
+                        RedirectUrl = $"error.cshtml?message={HttpUtility.UrlEncode("您没有可以管理的站点，请联系超级管理员协助解决")}"
                     });
                 }
 
@@ -143,6 +143,24 @@ namespace SiteServer.API.Controllers.Pages
                     GetLeftMenus(siteInfo, ConfigManager.TopMenu.IdSite, isSuperAdmin, permissionList);
                 var pluginMenus = GetLeftMenus(siteInfo, string.Empty, isSuperAdmin, permissionList);
 
+                var local = new
+                {
+                    UserId = adminInfo.Id,
+                    adminInfo.UserName,
+                    adminInfo.AvatarUrl,
+                    Level = permissions.GetAdminLevel()
+                };
+                object cloud = null;
+                if (permissions.IsConsoleAdministrator && ConfigManager.SystemConfigInfo.IsCloudLoggin &&
+                    ConfigManager.SystemConfigInfo.CloudExpiresAt >= DateTime.Now)
+                {
+                    cloud = new
+                    {
+                        UserName = ConfigManager.SystemConfigInfo.CloudUserName,
+                        AccessToken = ConfigManager.SystemConfigInfo.CloudAccessToken
+                    };
+                }
+
                 return Ok(new
                 {
                     Value = true,
@@ -156,13 +174,8 @@ namespace SiteServer.API.Controllers.Pages
                     TopMenus = topMenus,
                     SiteMenus = siteMenus,
                     PluginMenus = pluginMenus,
-                    Local = new
-                    {
-                        UserId = adminInfo.Id,
-                        adminInfo.UserName,
-                        adminInfo.AvatarUrl,
-                        Level = permissions.GetAdminLevel()
-                    }
+                    Local = local,
+                    Cloud = cloud
                 });
             }
             catch (Exception ex)

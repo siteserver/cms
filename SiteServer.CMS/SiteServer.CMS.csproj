@@ -120,7 +120,6 @@
     <Compile Include="Api\V1\StlRequest.cs" />
     <Compile Include="Api\ApiRoutePlugin.cs" />
     <Compile Include="Api\Preview\ApiRoutePreview.cs" />
-    <Compile Include="Api\Sys\Errors\ApiRouteError.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteClearCache.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteUpdateSsCms.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteUpdate.cs" />
@@ -180,6 +179,7 @@
     <Compile Include="Core\RoleManager.cs" />
     <Compile Include="DataCache\PermissionConfigManager.cs" />
     <Compile Include="Model\ContentTagInfo.cs" />
+    <Compile Include="Pages\Env.cs" />
     <Compile Include="Plugin\Impl\PermissionsImpl.cs" />
     <Compile Include="DataCache\SiteManager.cs" />
     <Compile Include="Core\SiteTemplateManager.cs" />

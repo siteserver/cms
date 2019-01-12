@@ -73,7 +73,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
-                var id = request.GetPostInt("id");
+                var id = request.GetQueryInt("id");
 
                 DataProvider.AccessTokenDao.Delete(id);
 

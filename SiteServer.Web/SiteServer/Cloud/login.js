@@ -1,5 +1,8 @@
+var $url = '/pages/cloud/login';
+
 var data = {
   pageLoad: false,
+  pageConfig: null,
   pageSubmit: false,
   pageAlert: null,
   account: null,
@@ -10,54 +13,77 @@ var data = {
 };
 
 var methods = {
+  load: function () {
+    var $this = this;
+    $ssApi.get($ssUrlHome + '?pageName=login').then(function (response) {
+      var res = response.data;
+
+      $this.pageConfig = res.config;
+      if ($this.pageConfig.isHomeBackground && $this.pageConfig.homeBackgroundUrl) {
+        $('body').css({
+          'background-image': 'url(' + $this.pageConfig.homeBackgroundUrl + ')',
+          'background-size': 'cover'
+        });
+      }
+      $this.reload();
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      $this.pageLoad = true;
+    });
+  },
+
   reload: function () {
     this.captcha = '';
     this.pageSubmit = false;
-    this.captchaUrl = $urlCloud + $urlCaptchaGet + '?r=' + new Date().getTime();
-    this.pageLoad = true;
+    this.captchaUrl = $ssHost + '/' + $ssUrlCaptchaGet + '?r=' + new Date().getTime();
   },
 
   checkCaptcha: function () {
     var $this = this;
 
     utils.loading(true);
-    $ssApi.post($urlCaptchaCheck, {
-        captcha: $this.captcha
-      })
-      .then(function (response) {
-        $this.login();
-      })
-      .catch(function (error) {
-        $this.pageAlert = utils.getPageAlert(error);
-      })
-      .then(function () {
-        utils.loading(false);
-        $this.reload();
-      });
+    $ssApi.post($ssUrlCaptchaCheck, {
+      captcha: $this.captcha
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.login();
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
+      $this.reload();
+    });
   },
 
   login: function () {
     var $this = this;
 
     utils.loading(true);
-    $ssApi.post($urlLogin, {
-        account: $this.account,
-        password: md5($this.password),
-        isAutoLogin: $this.isAutoLogin
-      })
-      .then(function (response) {
+    $ssApi.post($ssUrlLogin, {
+      account: $this.account,
+      password: md5($this.password),
+      isAutoLogin: $this.isAutoLogin
+    }).then(function (response) {
+      var res = response.data;
+
+      $api.post($url, {
+        userName: res.value.userName,
+        accessToken: res.accessToken,
+        expiresAt: res.expiresAt
+      }).then(function (response) {
         var res = response.data;
 
-        ssUtils.setToken(res.accessToken, res.expiresAt);
-        location.href = utils.getQueryString('returnUrl') || 'settings.html';
-      })
-      .catch(function (error) {
-        $this.pageAlert = utils.getPageAlert(error);
-      })
-      .then(function () {
+        location.href = utils.getQueryString('returnUrl') || 'dashboard.cshtml';
+      }).catch(function (error) {
         utils.loading(false);
-        $this.reload();
+        $this.pageAlert = utils.getPageAlert(error);
       });
+    }).catch(function (error) {
+      utils.loading(false);
+      $this.pageAlert = utils.getPageAlert(error);
+    });
   },
 
   btnLoginClick: function (e) {
@@ -67,6 +93,10 @@ var methods = {
     this.pageAlert = null;
     if (!this.account || !this.password || !this.captcha) return;
     this.checkCaptcha();
+  },
+
+  btnRegisterClick: function () {
+    location.href = 'register.cshtml?returnUrl=' + (utils.getQueryString('returnUrl') || 'login.cshtml');
   }
 };
 
@@ -82,6 +112,6 @@ new Vue({
   },
   methods: methods,
   created: function () {
-    this.reload();
+    this.load();
   }
 });

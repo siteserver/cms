@@ -1,5 +1,5 @@
-﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
-
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
+@section Navs{
 <li class="nav-item">
   <a class="nav-link" href="pageUser.aspx">用户管理</a>
 </li>
@@ -51,6 +51,17 @@
             <span v-show="!config.isHomeLogo" class="editable">使用文字作为Logo</span>
             <span v-show="config.isHomeLogo">
               <img style="max-height: 50px;" :src="config.homeLogoUrl" class="img-responsive" />
+            </span>
+          </a>
+        </td>
+      </tr>
+      <tr v-show="!config.isHomeClosed">
+        <td>用户中心背景图片</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'homeBackground'">
+            <span v-show="!config.isHomeBackground" class="editable">不显示背景图片</span>
+            <span v-show="config.isHomeBackground">
+              <img style="max-height: 50px;" :src="config.homeBackgroundUrl" class="img-responsive" />
             </span>
           </a>
         </td>
@@ -121,7 +132,6 @@
 
   </template>
   <template v-else-if="pageType === 'homeLogo'">
-
     <div class="form-group">
       <label>用户中心Logo</label>
       <select v-model="isHomeLogo" class="form-control">
@@ -137,6 +147,28 @@
         <file-upload class="btn btn-success btn-sm m-t-10" :post-action="uploadUrl" extensions="gif,jpg,jpeg,png,webp"
           accept="image/png,image/gif,image/jpeg,image/webp" :multiple="false" v-model="files" v-on:input-file="inputLogo"
           ref="logo">
+          上 传
+        </file-upload>
+      </div>
+    </div>
+  </template>
+  <template v-else-if="pageType === 'homeBackground'">
+    <div class="form-group">
+      <label>用户中心背景图片</label>
+      <select v-model="isHomeBackground" class="form-control">
+        <option v-bind:value="false">不显示背景图片</option>
+        <option v-bind:value="true">显示背景图片</option>
+      </select>
+      <small class="form-text text-muted">背景图片将显示在登录/注册页面中</small>
+    </div>
+
+    <div v-show="isHomeBackground" class="form-group">
+      <label>用户中心背景图片</label>
+      <div>
+        <img style="max-height: 150px;" v-show="homeBackgroundUrl" :src="homeBackgroundUrl" class="img-responsive" />
+        <file-upload class="btn btn-success btn-sm m-t-10" :post-action="uploadUrl" extensions="gif,jpg,jpeg,png,webp"
+          accept="image/png,image/gif,image/jpeg,image/webp" :multiple="false" v-model="files" v-on:input-file="inputBackground"
+          ref="background">
           上 传
         </file-upload>
       </div>
@@ -231,4 +263,5 @@
 
 @section Scripts{
 <script src="../assets/js/vue-upload-component-2.8.14.js" type="text/javascript"></script>
-<script src="userHome.js" type="text/javascript"></script> }
+<script src="userHome.js" type="text/javascript"></script>
+}

@@ -2,7 +2,7 @@
 var $pageTypeAdmin = 'admin';
 var $pageTypeUser = 'user';
 
-var data = {
+var $data = {
   pageLoad: false,
   pageAlert: null,
   pageType: utils.getQueryString('pageType'),
@@ -12,7 +12,7 @@ var data = {
   confirmPassword: null
 };
 
-var methods = {
+var $methods = {
   getConfig: function () {
     var $this = this;
 
@@ -30,7 +30,7 @@ var methods = {
   submit: function () {
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.post($url + '?userId=' + $this.userId, {
       password: $this.password
     }).then(function (response) {
@@ -52,7 +52,7 @@ var methods = {
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
-      pageUtils.loading(false);
+      utils.loading(false);
     });
   },
 
@@ -77,8 +77,8 @@ var methods = {
 
 new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.getConfig();
   }

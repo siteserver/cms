@@ -1,22 +1,24 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerColumns');
+﻿var $url = '/pages/cms/contentsLayerColumns';
 
-var data = {
-  siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
-  channelId: parseInt(pageUtils.getQueryStringByName('channelId')),
+var $data = {
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
   pageLoad: false,
   pageAlert: null,
   attributes: null,
   attributeNames: []
 };
 
-var methods = {
+var $methods = {
   loadConfig: function () {
     var $this = this;
-    $api.get({
-      siteId: $this.siteId,
-      channelId: $this.channelId
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
+    $api.get($url, {
+      params: {
+        siteId: $this.siteId,
+        channelId: $this.channelId
+      }
+    }).then(function (response) {
+      var res = response.data;
 
       $this.attributes = res.value;
       $this.attributeNames = [];
@@ -26,29 +28,37 @@ var methods = {
           $this.attributeNames.push(attribute.value);
         }
       }
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
       $this.pageLoad = true;
     });
   },
+
   btnSubmitClick: function () {
     var $this = this;
 
-    pageUtils.loading(true);
-    $api.post({
+    utils.loading(true);
+    $api.post($url, {
       siteId: $this.siteId,
       channelId: $this.channelId,
       attributeNames: $this.attributeNames.join(',')
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
+    }).then(function (response) {
+      var res = response.data;
 
       parent.location.reload(true);
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   }
 };
 
 new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.loadConfig();
   }

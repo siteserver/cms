@@ -1,5 +1,4 @@
-﻿@using SiteServer.CMS.Pages
-@{ Layout = "../Shared/_Layout.cshtml"; }
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
 
 <div class="card-box">
 
@@ -34,7 +33,7 @@
           </span>
         </div>
         <div v-if="channelsCount > 0 || contentsCount > 0 || filesCount > 0 || specialsCount > 0">
-          <button type="button" v-on:click="btnCancelClick" class="btn btn-danger m-l-5">取消生成任务</button>
+          <button type="button" v-on:click="btnCancelClick" class="btn btn-sm btn-danger m-l-5">取消生成任务</button>
         </div>
       </div>
     </div>
