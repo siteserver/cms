@@ -3,21 +3,21 @@
     only:
       - master
 
-  version: 6.7.{build}
+  version: 6.8.{build}
   image: Visual Studio 2017
 
   assembly_info:
     patch: true
     file: '**\AssemblyInfo.cs'
-    assembly_version: '{version}'
-    assembly_file_version: '{version}'
-    assembly_informational_version: '{version}'
+    assembly_version: "{version}"
+    assembly_file_version: "{version}"
+    assembly_informational_version: "{version}"
 
   configuration:
     - Release
 
   environment:
-    nodejs_version: '6'
+    nodejs_version: "6"
     TreatWarningsAsErrors: false
 
   install:
@@ -50,12 +50,12 @@
     - path: siteserver.exe
       name: siteserver.exe
 
-    - path: '*.nupkg'
+    - path: "*.nupkg"
 
   deploy:
     - provider: GitHub
       release: siteserver-v$(appveyor_build_version)
-      description: 'SiteServer CMS'
+      description: "SiteServer CMS"
       auth_token:
         secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
       artifact: /.*\.[zip|exe]/
@@ -80,21 +80,21 @@
     only:
       - staging
 
-  version: 6.7.{build}-beta
+  version: 6.8.{build}-beta
   image: Visual Studio 2017
 
   assembly_info:
     patch: true
     file: '**\AssemblyInfo.cs'
-    assembly_version: '{version}'
-    assembly_file_version: '{version}'
-    assembly_informational_version: '{version}'
+    assembly_version: "{version}"
+    assembly_file_version: "{version}"
+    assembly_informational_version: "{version}"
 
   configuration:
     - Release
 
   environment:
-    nodejs_version: '6'
+    nodejs_version: "6"
     TreatWarningsAsErrors: false
     DOCKER_USER:
       secure: plV6NmiOZal0f3H/xNFuoA==
@@ -135,12 +135,12 @@
     - path: siteserver.exe
       name: siteserver.exe
 
-    - path: '*.nupkg'
+    - path: "*.nupkg"
 
   deploy:
     - provider: GitHub
       release: siteserver-v$(appveyor_build_version)
-      description: 'SiteServer CMS'
+      description: "SiteServer CMS"
       auth_token:
         secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
       artifact: /.*\.[zip|exe]/

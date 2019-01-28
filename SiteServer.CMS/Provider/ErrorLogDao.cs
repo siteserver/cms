@@ -111,6 +111,7 @@ namespace SiteServer.CMS.Provider
 
         public ErrorLogInfo GetErrorLogInfo(int logId)
         {
+            if (logId <= 0) return null;
             ErrorLogInfo logInfo = null;
 
             var sqlString = $"SELECT Id, Category, PluginId, Message, Stacktrace, Summary, AddDate FROM {TableName} WHERE Id = @Id";

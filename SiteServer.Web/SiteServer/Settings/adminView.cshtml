@@ -1,0 +1,92 @@
+﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{ <template v-if="pageType == $pageTypeAdmin">
+  <li class="nav-item">
+    <a class="nav-link active" href="pageAdministrator.aspx">管理员管理</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="pageAdminRole.aspx">角色管理</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="pageAdminConfiguration.aspx">管理员设置</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="pageAdminDepartment.aspx">所属部门管理</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="pageAdminArea.aspx">所在区域管理</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="adminAccessTokens.cshtml">API密钥管理</a>
+  </li>
+</template>
+<template v-else-if="pageType == $pageTypeUser">
+  <li class="nav-item">
+    <a class="nav-link active" :href="'adminView.cshtml?pageType=' + $pageTypeUser + '&userId=' + userId">查看资料</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" :href="'adminProfile.cshtml?pageType=' + $pageTypeUser + '&userId=' + userId">修改资料</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" :href="'adminPassword.cshtml?pageType=' + $pageTypeUser + '&userId=' + userId">更改密码</a>
+  </li>
+</template> } <template v-if="pageType == $pageTypeAdmin">
+  <div class="header-title">查看资料</div>
+  <p class="text-muted font-13 m-b-25"></p>
+</template>
+<table class="table table-bordered table-striped">
+  <tbody>
+    <tr>
+      <td width="35%"> 管理员Id </td>
+      <td width="65%">{{ adminInfo.id }}</td>
+    </tr>
+    <tr>
+      <td> 账号 </td>
+      <td>{{ adminInfo.userName }}</td>
+    </tr>
+    <tr>
+      <td> 姓名 </td>
+      <td>{{ adminInfo.displayName }}</td>
+    </tr>
+    <tr>
+      <td> 级别 </td>
+      <td>{{ level }}</td>
+    </tr>
+    <tr v-if="isOrdinaryAdmin">
+      <td> 角色 </td>
+      <td v-html="roleNames"></td>
+    </tr>
+    <tr v-if="!isSuperAdmin">
+      <td> 可管理站点 </td>
+      <td v-html="siteNames"></td>
+    </tr>
+    <tr>
+      <td> 创建时间 </td>
+      <td>{{ adminInfo.creationDate }}</td>
+    </tr>
+    <tr>
+      <td> 最后登录时间 </td>
+      <td>{{ adminInfo.lastActivityDate }}</td>
+    </tr>
+    <tr>
+      <td> 手机号码 </td>
+      <td>{{ adminInfo.mobile }}</td>
+    </tr>
+    <tr>
+      <td> 电子邮箱 </td>
+      <td>{{ adminInfo.email }}</td>
+    </tr>
+    <tr>
+      <td> 所属部门 </td>
+      <td>{{ departmentName }}</td>
+    </tr>
+    <tr>
+      <td> 所在区域 </td>
+      <td>{{ areaName }}</td>
+    </tr>
+  </tbody>
+</table>
+<template v-if="pageType == $pageTypeAdmin">
+  <hr />
+  <div class="text-center">
+    <button class="btn ml-1" v-on:click="btnReturnClick">返 回</button>
+  </div>
+</template> @section Scripts{ <script src="adminView.js" type="text/javascript"></script> }

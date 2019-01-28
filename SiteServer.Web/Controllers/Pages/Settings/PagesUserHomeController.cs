@@ -53,24 +53,19 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
-                ConfigManager.SystemConfigInfo.IsHomeClosed = request.GetPostBool("isHomeClosed");
-                ConfigManager.SystemConfigInfo.HomeTitle = request.GetPostString("homeTitle");
-                ConfigManager.SystemConfigInfo.IsHomeLogo = request.GetPostBool("isHomeLogo");
-                ConfigManager.SystemConfigInfo.HomeLogoUrl = request.GetPostString("homeLogoUrl");
-                ConfigManager.SystemConfigInfo.HomeDefaultAvatarUrl = request.GetPostString("homeDefaultAvatarUrl");
-                ConfigManager.SystemConfigInfo.UserRegistrationAttributes = request.GetPostString("userRegistrationAttributes");
-                ConfigManager.SystemConfigInfo.IsUserRegistrationGroup = request.GetPostBool("isUserRegistrationGroup");
-                ConfigManager.SystemConfigInfo.IsHomeAgreement = request.GetPostBool("isHomeAgreement");
-                ConfigManager.SystemConfigInfo.HomeAgreementHtml = request.GetPostString("homeAgreementHtml");
+                ConfigManager.SystemConfigInfo.IsHomeClosed = request.GetPostBool(nameof(ConfigManager.SystemConfigInfo.IsHomeClosed).ToCamelCase());
+                ConfigManager.SystemConfigInfo.HomeTitle = request.GetPostString(nameof(ConfigManager.SystemConfigInfo.HomeTitle).ToCamelCase());
+                ConfigManager.SystemConfigInfo.IsHomeLogo = request.GetPostBool(nameof(ConfigManager.SystemConfigInfo.IsHomeLogo).ToCamelCase());
+                ConfigManager.SystemConfigInfo.HomeLogoUrl = request.GetPostString(nameof(ConfigManager.SystemConfigInfo.HomeLogoUrl).ToCamelCase());
+                ConfigManager.SystemConfigInfo.IsHomeBackground = request.GetPostBool(nameof(ConfigManager.SystemConfigInfo.IsHomeBackground).ToCamelCase());
+                ConfigManager.SystemConfigInfo.HomeBackgroundUrl = request.GetPostString(nameof(ConfigManager.SystemConfigInfo.HomeBackgroundUrl).ToCamelCase());
+                ConfigManager.SystemConfigInfo.HomeDefaultAvatarUrl = request.GetPostString(nameof(ConfigManager.SystemConfigInfo.HomeDefaultAvatarUrl).ToCamelCase());
+                ConfigManager.SystemConfigInfo.UserRegistrationAttributes = request.GetPostString(nameof(ConfigManager.SystemConfigInfo.UserRegistrationAttributes).ToCamelCase());
+                ConfigManager.SystemConfigInfo.IsUserRegistrationGroup = request.GetPostBool(nameof(ConfigManager.SystemConfigInfo.IsUserRegistrationGroup).ToCamelCase());
+                ConfigManager.SystemConfigInfo.IsHomeAgreement = request.GetPostBool(nameof(ConfigManager.SystemConfigInfo.IsHomeAgreement).ToCamelCase());
+                ConfigManager.SystemConfigInfo.HomeAgreementHtml = request.GetPostString(nameof(ConfigManager.SystemConfigInfo.HomeAgreementHtml).ToCamelCase());
 
                 DataProvider.ConfigDao.Update(ConfigManager.Instance);
-
-//                var config = $@"var $apiConfig = {{
-//    isSeparatedApi: {ApiManager.IsSeparatedApi.ToString().ToLower()},
-//    apiUrl: '{ApiManager.ApiUrl}',
-//    innerApiUrl: '{ApiManager.InnerApiUrl}'
-//}};
-//";
 
                 request.AddAdminLog("修改用户中心设置");
 

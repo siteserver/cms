@@ -32,56 +32,63 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public RequestImpl(HttpRequest request)
         {
-            HttpRequest = request;
-
-            var apiToken = ApiToken;
-            if (!string.IsNullOrEmpty(apiToken))
+            try
             {
-                var tokenInfo = AccessTokenManager.GetAccessTokenInfo(apiToken);
-                if (tokenInfo != null)
+                HttpRequest = request;
+
+                var apiToken = ApiToken;
+                if (!string.IsNullOrEmpty(apiToken))
                 {
-                    if (!string.IsNullOrEmpty(tokenInfo.AdminName))
+                    var tokenInfo = AccessTokenManager.GetAccessTokenInfo(apiToken);
+                    if (tokenInfo != null)
                     {
-                        var adminInfo = AdminManager.GetAdminInfoByUserName(tokenInfo.AdminName);
-                        if (adminInfo != null && !adminInfo.IsLockedOut)
+                        if (!string.IsNullOrEmpty(tokenInfo.AdminName))
+                        {
+                            var adminInfo = AdminManager.GetAdminInfoByUserName(tokenInfo.AdminName);
+                            if (adminInfo != null && !adminInfo.IsLockedOut)
+                            {
+                                AdminInfo = adminInfo;
+                                IsAdminLoggin = true;
+                            }
+                        }
+
+                        IsApiAuthenticated = true;
+                    }
+                }
+
+                var userToken = UserToken;
+                if (!string.IsNullOrEmpty(userToken))
+                {
+                    var tokenImpl = ParseAccessToken(userToken);
+                    if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
+                    {
+                        var userInfo = UserManager.GetUserInfoByUserId(tokenImpl.UserId);
+                        if (userInfo != null && !userInfo.IsLockedOut && userInfo.IsChecked && userInfo.UserName == tokenImpl.UserName)
+                        {
+                            UserInfo = userInfo;
+                            IsUserLoggin = true;
+                        }
+                    }
+                }
+
+                var adminToken = AdminToken;
+                if (!string.IsNullOrEmpty(adminToken))
+                {
+                    var tokenImpl = ParseAccessToken(adminToken);
+                    if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
+                    {
+                        var adminInfo = AdminManager.GetAdminInfoByUserId(tokenImpl.UserId);
+                        if (adminInfo != null && !adminInfo.IsLockedOut && adminInfo.UserName == tokenImpl.UserName)
                         {
                             AdminInfo = adminInfo;
                             IsAdminLoggin = true;
                         }
                     }
-
-                    IsApiAuthenticated = true;
                 }
             }
-
-            var userToken = UserToken;
-            if (!string.IsNullOrEmpty(userToken))
+            catch (Exception ex)
             {
-                var tokenImpl = ParseAccessToken(userToken);
-                if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
-                {
-                    var userInfo = UserManager.GetUserInfoByUserId(tokenImpl.UserId);
-                    if (userInfo != null && !userInfo.IsLockedOut && userInfo.IsChecked && userInfo.UserName == tokenImpl.UserName)
-                    {
-                        UserInfo = userInfo;
-                        IsUserLoggin = true;
-                    }
-                }
-            }
-
-            var adminToken = AdminToken;
-            if (!string.IsNullOrEmpty(adminToken))
-            {
-                var tokenImpl = ParseAccessToken(adminToken);
-                if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
-                {
-                    var adminInfo = AdminManager.GetAdminInfoByUserId(tokenImpl.UserId);
-                    if (adminInfo != null && !adminInfo.IsLockedOut && adminInfo.UserName == tokenImpl.UserName)
-                    {
-                        AdminInfo = adminInfo;
-                        IsAdminLoggin = true;
-                    }
-                }
+                LogUtils.AddErrorLog(ex);
             }
         }
 
@@ -237,8 +244,7 @@ namespace SiteServer.CMS.Plugin.Impl
         public bool GetQueryBool(string name, bool defaultValue = false)
         {
             var str = HttpRequest.QueryString[name];
-            var retval = !string.IsNullOrEmpty(str) ? TranslateUtils.ToBool(str) : defaultValue;
-            return retval;
+            return !string.IsNullOrEmpty(str) ? TranslateUtils.ToBool(str) : defaultValue;
         }
 
         public bool IsPostExists(string name)
@@ -386,9 +392,9 @@ namespace SiteServer.CMS.Plugin.Impl
                     }
                 }
 
+                _userPermissionsImpl = new PermissionsImpl(adminName);
                 if (!string.IsNullOrEmpty(adminName))
                 {
-                    _userPermissionsImpl = new PermissionsImpl(adminName);
                     AdminInfo = AdminManager.GetAdminInfoByUserName(adminName);
                 }
 

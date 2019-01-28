@@ -1,4 +1,4 @@
-﻿@{ Layout = "../Shared/_LayoutLayer.cshtml"; }
+﻿@{ Layout = "../Shared/_LayoutWhite.cshtml"; }
 
 <div class="form-group form-row">
   <label class="col-1 text-right col-form-label"></label>
@@ -7,7 +7,7 @@
     <div class="row checkbox checkbox-primary">
       <div class="col-4" v-for="(attribute, index) in attributes">
         <input :id="'attr_' + index" type="checkbox" :value="attribute.value" :checked="attribute.selected" v-model="attributeNames">
-        <label :for="'attr_' + index">{{ attribute.text }}</label>
+        <label :for="'attr_' + index">{{ attribute.text }}({{ attribute.value }})</label>
       </div>
     </div>
 

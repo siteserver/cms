@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -198,6 +199,8 @@ namespace SiteServer.BackgroundPages.Settings
                     EPredefinedRoleUtils.Equals(EPredefinedRole.SystemAdministrator, DdlPredefinedRole.SelectedValue)
                         ? ControlUtils.SelectedItemsValueToStringCollection(CblSiteId.Items)
                         : string.Empty);
+
+                PermissionsImpl.ClearAllCache();
 
                 AuthRequest.AddAdminLog("设置管理员权限", $"管理员:{_userName}");
 

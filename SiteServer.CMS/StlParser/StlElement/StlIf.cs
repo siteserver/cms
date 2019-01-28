@@ -94,7 +94,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         internal static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
             var testTypeStr = string.Empty;
-            var testOperate = OperateEquals;
+            var testOperate = string.Empty;
             var testValue = string.Empty;
 
             foreach (var name in contextInfo.Attributes.AllKeys)
@@ -112,11 +112,20 @@ namespace SiteServer.CMS.StlParser.StlElement
                 else if (StringUtils.EqualsIgnoreCase(name, Value) || StringUtils.EqualsIgnoreCase(name, "testValue"))
                 {
                     testValue = value;
+                    if (string.IsNullOrEmpty(testOperate))
+                    {
+                        testOperate = OperateEquals;
+                    }
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Context))
                 {
                     contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
                 }
+            }
+
+            if (string.IsNullOrEmpty(testOperate))
+            {
+                testOperate = OperateNotEmpty;
             }
 
             return ParseImpl(pageInfo, contextInfo, testTypeStr, testOperate, testValue);

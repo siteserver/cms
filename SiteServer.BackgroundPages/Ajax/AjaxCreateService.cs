@@ -130,7 +130,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(
                         $"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
-                        $"top.location.href='{PageInitialization.GetRedirectUrl()}';");
+                        $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
             }
             catch (Exception ex)
             {
@@ -178,7 +178,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 ZipUtils.ExtractZip(filePath, directoryPath);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "3");//存储当前的页面总数
-                CacheUtils.Insert(cacheMessageKey, "站点模板下载成功，正在导入数据...");//存储消息
+                CacheUtils.Insert(cacheMessageKey, "模板压缩包解压成功，正在导入数据...");//存储消息
 
                 SiteTemplateManager.Instance.ImportSiteTemplateToEmptySite(siteId, siteTemplateDir, isImportContents, isImportTableStyles, administratorName);
                 CreateManager.CreateByAll(siteId);
@@ -188,7 +188,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 retval = AjaxManager.GetWaitingTaskNameValueCollection($"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
-                        $"top.location.href='{PageInitialization.GetRedirectUrl()}';");
+                        $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
             }
             catch (Exception ex)
             {
@@ -227,7 +227,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(
                         $"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
-                        $"top.location.href='{PageInitialization.GetRedirectUrl()}';");
+                        $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
             }
             catch (Exception ex)
             {

@@ -1,11 +1,10 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/userConfig');
+﻿var $url = '/pages/settings/userConfig';
 
-var data = {
+var $data = {
   pageLoad: false,
   pageAlert: null,
   pageType: null,
   config: null,
-
   isUserRegistrationAllowed: null,
   isUserRegistrationChecked: null,
   isUserUnRegistrationAllowed: null,
@@ -16,15 +15,15 @@ var data = {
   userLockLoginCount: null,
   userLockLoginType: null,
   userLockLoginHours: null,
-  userFindPasswordSmsTplId: null,
+  userFindPasswordSmsTplId: null
 };
 
-var methods = {
+var $methods = {
   getConfig: function () {
     var $this = this;
 
-    $api.get(null, function (err, res) {
-      if (err || !res || !res.value) return;
+    $api.get($url).then(function (response) {
+      var res = response.data;
 
       $this.config = _.clone(res.value);
 
@@ -41,14 +40,18 @@ var methods = {
       $this.userFindPasswordSmsTplId = res.value.userFindPasswordSmsTplId;
 
       $this.pageType = 'list';
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
       $this.pageLoad = true;
     });
   },
+
   submit: function (item) {
     var $this = this;
 
-    pageUtils.loading(true);
-    $api.post({
+    utils.loading(true);
+    $api.post($url, {
       isUserRegistrationAllowed: $this.isUserRegistrationAllowed,
       isUserRegistrationChecked: $this.isUserRegistrationChecked,
       isUserUnRegistrationAllowed: $this.isUserUnRegistrationAllowed,
@@ -59,16 +62,9 @@ var methods = {
       userLockLoginCount: $this.userLockLoginCount,
       userLockLoginType: $this.userLockLoginType,
       userLockLoginHours: $this.userLockLoginHours,
-      userFindPasswordSmsTplId: $this.userFindPasswordSmsTplId,
-    }, function (err, res) {
-      pageUtils.loading(false);
-      if (err) {
-        $this.pageAlert = {
-          type: 'danger',
-          html: err.message
-        };
-        return;
-      }
+      userFindPasswordSmsTplId: $this.userFindPasswordSmsTplId
+    }).then(function (response) {
+      var res = response.data;
 
       $this.pageAlert = {
         type: 'success',
@@ -76,13 +72,19 @@ var methods = {
       };
       $this.config = _.clone(res.value);
       $this.pageType = 'list';
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   },
+
   getPasswordRestrictionText: function (val) {
     if (val === 'LetterAndDigit') return '字母和数字组合';
     else if (val === 'LetterAndDigitAndSymbol') return '字母、数字以及符号组合';
     else return '不限制';
   },
+
   btnSubmitClick: function () {
     var $this = this;
     this.$validator.validate().then(function (result) {
@@ -95,8 +97,8 @@ var methods = {
 
 new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.getConfig();
   }

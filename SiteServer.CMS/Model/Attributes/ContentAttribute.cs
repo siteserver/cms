@@ -141,7 +141,9 @@ namespace SiteServer.CMS.Model.Attributes
             Sequence,
             AdminId,
             UserId,
-            SourceId
+            SourceId,
+            AddUserName,
+            LastEditUserName
         });
 
         public static readonly Lazy<List<string>> DropAttributes = new Lazy<List<string>>(() => new List<string>

@@ -143,8 +143,6 @@ namespace SiteServer.BackgroundPages.Settings
             }
 
             ControlUtils.SelectSingleItem(DdlTableChoose, SiteInfo.TableName);
-
-            BtnSubmit.Attributes.Add("onclick", PageLoading());
         }
 
         private static void AddSite(ListControl listControl, SiteInfo siteInfo, Hashtable parentWithChildren, int level)
@@ -228,7 +226,7 @@ namespace SiteServer.BackgroundPages.Settings
 		        }
             }
 
-            if (StringUtils.EqualsIgnoreCase(SiteInfo.TableName, tableName))
+            if (!StringUtils.EqualsIgnoreCase(SiteInfo.TableName, tableName))
 		    {
 		        isTableChanged = true;
 		        SiteInfo.TableName = tableName;

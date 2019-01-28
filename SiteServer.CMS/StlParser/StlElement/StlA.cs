@@ -32,13 +32,13 @@ namespace SiteServer.CMS.StlParser.StlElement
         [StlAttribute(Title = "所处上下文")]
         private const string Context = nameof(Context);
 
-        [StlAttribute( Title = "链接地址")]
+        [StlAttribute(Title = "链接地址")]
         private const string Href = nameof(Href);
 
-        [StlAttribute( Title = "链接域名")]
+        [StlAttribute(Title = "链接域名")]
         private const string Host = nameof(Host);
 
-        [StlAttribute( Title = "链接参数")]
+        [StlAttribute(Title = "链接参数")]
         private const string QueryString = nameof(QueryString);
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)

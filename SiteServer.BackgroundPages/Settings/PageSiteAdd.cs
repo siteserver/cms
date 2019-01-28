@@ -180,9 +180,6 @@ namespace SiteServer.BackgroundPages.Settings
                 ControlUtils.SelectSingleItem(RblSource, ETriStateUtils.GetValue(ETriState.All));
                 BtnNext_Click(null, EventArgs.Empty);
             }
-
-            BtnSubmit.Attributes.Add("onclick", PageLoading());
-            BtnSubmit.Attributes.Add("onclick", PageLoading());
         }
 
         private bool IsSiteTemplate => ETriStateUtils.GetEnumType(RblSource.SelectedValue) == ETriState.False;

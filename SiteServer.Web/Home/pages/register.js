@@ -22,6 +22,12 @@ var data = {
 var methods = {
   load: function (pageConfig, styles, groups) {
     this.pageConfig = pageConfig;
+    if (this.pageConfig.isHomeBackground && this.pageConfig.homeBackgroundUrl) {
+      $('body').css({
+        'background-image': 'url(' + this.pageConfig.homeBackgroundUrl + ')',
+        'background-size': 'cover'
+      });
+    }
 
     if (this.pageConfig.userRegistrationAttributes) {
       var userRegistrationAttributes = this.pageConfig.userRegistrationAttributes.split(',');
@@ -88,21 +94,21 @@ var methods = {
         return;
       }
 
-      if (res.isChecked) {
-        alert({
+      if (res.value.isChecked) {
+        swal2({
           title: "恭喜，账号注册成功",
           type: "success",
           confirmButtonText: "进入登录页"
         }).then(function () {
-          location.href = 'login.html';
+          location.href = 'login.html?returnUrl=' + (utils.getQueryString('returnUrl') || '../index.html');
         });
       } else {
-        alert({
+        swal2({
           title: "账号注册成功，请等待管理员审核",
           type: "success",
           confirmButtonText: "进入登录页"
         }).then(function () {
-          location.href = 'login.html';
+          location.href = 'login.html?returnUrl=' + (utils.getQueryString('returnUrl') || '../index.html');
         });
       }
     });

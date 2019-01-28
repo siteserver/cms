@@ -39,7 +39,7 @@ namespace SiteServer.CMS.Plugin
 
             foreach (var service in PluginManager.Services)
             {
-                if (service.SystemDefaultPageUrl == null) continue;
+                if (service.HomeDefaultPageUrl == null) continue;
 
                 try
                 {
@@ -54,6 +54,11 @@ namespace SiteServer.CMS.Plugin
             return pageUrl;
         }
 
+        private static string GetMenuId(string serviceId, int i)
+        {
+            return $"{serviceId}_{i}";
+        }
+
         public static Dictionary<string, Menu> GetTopMenus()
         {
             var menus = new Dictionary<string, Menu>();
@@ -62,9 +67,10 @@ namespace SiteServer.CMS.Plugin
             {
                 if (service.SystemMenuFuncs == null) continue;
 
-                var metadataMenus = new List<Menu>();
                 try
                 {
+                    var metadataMenus = new List<Menu>();
+
                     foreach (var menuFunc in service.SystemMenuFuncs)
                     {
                         var metadataMenu = menuFunc.Invoke();
@@ -73,18 +79,19 @@ namespace SiteServer.CMS.Plugin
                             metadataMenus.Add(metadataMenu);
                         }
                     }
+
+                    if (metadataMenus.Count == 0) continue;
+
+                    var i = 0;
+                    foreach (var metadataMenu in metadataMenus)
+                    {
+                        var pluginMenu = GetMenu(service.PluginId, 0, 0, 0, metadataMenu, 0);
+                        menus[GetMenuId(service.PluginId, ++i)] = pluginMenu;
+                    }
                 }
                 catch (Exception ex)
                 {
                     LogUtils.AddErrorLog(service.PluginId, ex);
-                }
-
-                if (metadataMenus.Count == 0) continue;
-
-                foreach (var metadataMenu in metadataMenus)
-                {
-                    var pluginMenu = GetMenu(service.PluginId, 0, 0, 0, metadataMenu, 0);
-                    menus.Add(service.PluginId, pluginMenu);
                 }
             }
 
@@ -99,9 +106,10 @@ namespace SiteServer.CMS.Plugin
             {
                 if (service.SiteMenuFuncs == null) continue;
 
-                var metadataMenus = new List<Menu>();
                 try
                 {
+                    var metadataMenus = new List<Menu>();
+
                     foreach (var menuFunc in service.SiteMenuFuncs)
                     {
                         var metadataMenu = menuFunc.Invoke(siteId);
@@ -110,18 +118,19 @@ namespace SiteServer.CMS.Plugin
                             metadataMenus.Add(metadataMenu);
                         }
                     }
+
+                    if (metadataMenus.Count == 0) continue;
+
+                    var i = 0;
+                    foreach (var metadataMenu in metadataMenus)
+                    {
+                        var pluginMenu = GetMenu(service.PluginId, siteId, 0, 0, metadataMenu, 0);
+                        menus[GetMenuId(service.PluginId, ++i)] = pluginMenu;
+                    }
                 }
                 catch (Exception ex)
                 {
                     LogUtils.AddErrorLog(service.PluginId, ex);
-                }
-
-                if (metadataMenus.Count == 0) continue;
-
-                foreach (var metadataMenu in metadataMenus)
-                {
-                    var pluginMenu = GetMenu(service.PluginId, siteId, 0, 0, metadataMenu, 0);
-                    menus.Add(service.PluginId, pluginMenu);
                 }
             }
 
@@ -139,9 +148,10 @@ namespace SiteServer.CMS.Plugin
 
                 if (service.ContentMenuFuncs == null) continue;
 
-                var metadataMenus = new List<Menu>();
                 try
                 {
+                    var metadataMenus = new List<Menu>();
+
                     foreach (var menuFunc in service.ContentMenuFuncs)
                     {
                         var metadataMenu = menuFunc.Invoke(contentInfo);
@@ -150,18 +160,18 @@ namespace SiteServer.CMS.Plugin
                             metadataMenus.Add(metadataMenu);
                         }
                     }
+
+                    if (metadataMenus.Count == 0) continue;
+                    
+                    foreach (var metadataMenu in metadataMenus)
+                    {
+                        var pluginMenu = GetMenu(service.PluginId, contentInfo.SiteId, contentInfo.ChannelId, contentInfo.Id, metadataMenu, 0);
+                        menus.Add(pluginMenu);
+                    }
                 }
                 catch (Exception ex)
                 {
                     LogUtils.AddErrorLog(service.PluginId, ex);
-                }
-
-                if (metadataMenus.Count == 0) continue;
-
-                foreach (var metadataMenu in metadataMenus)
-                {
-                    var pluginMenu = GetMenu(service.PluginId, contentInfo.SiteId, contentInfo.ChannelId, contentInfo.Id, metadataMenu, 0);
-                    menus.Add(pluginMenu);
                 }
             }
 

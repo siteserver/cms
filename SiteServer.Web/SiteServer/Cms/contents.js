@@ -1,9 +1,10 @@
-﻿var $api = new apiUtils.Api(apiUrl + "/pages/cms/contents");
-var $createApi = new apiUtils.Api(apiUrl + "/pages/cms/contents/actions/create");
+﻿var $url = "/pages/cms/contents";
+var $urlCreate = "/pages/cms/contents/actions/create";
 
 Object.defineProperty(Object.prototype, "getProp", {
   value: function (prop) {
-    var key, self = this;
+    var key,
+      self = this;
     for (key in self) {
       if (key.toLowerCase() == prop.toLowerCase()) {
         return self[key];
@@ -13,8 +14,8 @@ Object.defineProperty(Object.prototype, "getProp", {
 });
 
 var data = {
-  siteId: parseInt(pageUtils.getQueryStringByName("siteId")),
-  channelId: parseInt(pageUtils.getQueryStringByName("channelId")),
+  siteId: parseInt(utils.getQueryString("siteId")),
+  channelId: parseInt(utils.getQueryString("channelId")),
   pageLoad: false,
   pageAlert: null,
   pageType: null,
@@ -29,38 +30,51 @@ var data = {
 };
 
 var methods = {
-  btnAddClick: function () {
-    event.stopPropagation();
-    location.href = 'pageContentAdd.aspx?siteId=' + this.siteId + '&channelId=' + this.channelId;
+  btnAddClick: function (e) {
+    e.stopPropagation();
+    location.href =
+      "pageContentAdd.aspx?siteId=" +
+      this.siteId +
+      "&channelId=" +
+      this.channelId;
   },
 
-  btnCreateClick: function () {
-    event.stopPropagation();
+  btnCreateClick: function (e) {
+    e.stopPropagation();
 
     var $this = this;
     $this.pageAlert = null;
     if ($this.selectedContentIds.length === 0) return;
 
-    pageUtils.loading(true);
-    $createApi.post({
-      siteId: $this.siteId,
-      channelId: $this.channelId,
-      contentIds: $this.selectedContentIds.join(',')
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
-      pageUtils.loading(false);
-      $this.pageAlert = {
-        type: "success",
-        html: "内容已添加至生成列队！<a href='createStatus.cshtml?siteId=" + $this.siteId + "'>生成进度查看</a>"
-      };
-    });
+    utils.loading(true);
+    $api
+      .post($urlCreate, {
+        siteId: $this.siteId,
+        channelId: $this.channelId,
+        contentIds: $this.selectedContentIds.join(",")
+      })
+      .then(function (response) {
+        var res = response.data;
+
+        $this.pageAlert = {
+          type: "success",
+          html: '内容已添加至生成列队！<a href="javascript:;" onclick="top.openPageCreateStatus()">生成进度查看</a>'
+        };
+      })
+      .catch(function (error) {
+        $this.pageAlert = utils.getPageAlert(error);
+      })
+      .then(function () {
+        utils.loading(false);
+      });
   },
 
-  btnLayerClick: function (options) {
-    event.stopPropagation();
+  btnLayerClick: function (options, e) {
+    e.stopPropagation();
 
     this.pageAlert = null;
-    var url = "contentsLayer" +
+    var url =
+      "contentsLayer" +
       options.name +
       ".cshtml?siteId=" +
       this.siteId +
@@ -68,13 +82,13 @@ var methods = {
       this.channelId;
     if (options.withContents) {
       if (this.selectedContentIds.length === 0) return;
-      url += "&contentIds=" + this.selectedContentIds.join(",")
+      url += "&contentIds=" + this.selectedContentIds.join(",");
     } else if (options.contentId) {
-      url += "&contentId=" + options.contentId
+      url += "&contentId=" + options.contentId;
     }
-    url += '&returnUrl=' + encodeURIComponent(location.href);
+    url += "&returnUrl=" + encodeURIComponent(location.href);
 
-    pageUtils.openLayer({
+    utils.openLayer({
       title: options.title,
       url: url,
       full: options.full,
@@ -83,10 +97,10 @@ var methods = {
     });
   },
 
-  btnContentViewClick: function (contentId) {
-    event.stopPropagation();
+  btnContentViewClick: function (contentId, e) {
+    e.stopPropagation();
 
-    pageUtils.openLayer({
+    utils.openLayer({
       title: "查看内容",
       url: "contentsLayerView.cshtml?siteId=" +
         this.siteId +
@@ -98,10 +112,10 @@ var methods = {
     });
   },
 
-  btnContentStateClick: function (contentId) {
-    event.stopPropagation();
+  btnContentStateClick: function (contentId, e) {
+    e.stopPropagation();
 
-    pageUtils.openLayer({
+    utils.openLayer({
       title: "查看审核状态",
       url: "contentsLayerState.cshtml?siteId=" +
         this.siteId +
@@ -156,14 +170,14 @@ var methods = {
   },
 
   getPluginMenuUrl: function (pluginMenu) {
-    return pluginMenu.href + '&returnUrl=' + encodeURIComponent(location.href);
+    return pluginMenu.href + "&returnUrl=" + encodeURIComponent(location.href);
   },
 
-  btnPluginMenuClick: function (pluginMenu) {
-    event.stopPropagation();
+  btnPluginMenuClick: function (pluginMenu, e) {
+    e.stopPropagation();
 
-    if (pluginMenu.target === '_layer') {
-      pageUtils.openLayer({
+    if (pluginMenu.target === "_layer") {
+      utils.openLayer({
         title: pluginMenu.text,
         url: this.getPluginMenuUrl(pluginMenu),
         full: true
@@ -175,20 +189,22 @@ var methods = {
     var $this = this;
 
     if ($this.pageLoad) {
-      pageUtils.loading(true);
+      utils.loading(true);
     }
 
-    $api.get({
-        siteId: $this.siteId,
-        channelId: $this.channelId,
-        page: page
-      },
-      function (err, res) {
-        if (err || !res || !res.value) return;
+    $api
+      .get($url, {
+        params: {
+          siteId: $this.siteId,
+          channelId: $this.channelId,
+          page: page
+        }
+      })
+      .then(function (response) {
+        var res = response.data;
 
         var pageContents = [];
         for (var i = 0; i < res.value.length; i++) {
-
           var content = _.assign({}, res.value[i], {
             isSelected: false
           });
@@ -204,15 +220,18 @@ var methods = {
         for (var i = 1; i <= $this.pages; i++) {
           $this.pageOptions.push(i);
         }
-
+      })
+      .catch(function (error) {
+        $this.pageAlert = utils.getPageAlert(error);
+      })
+      .then(function () {
         if ($this.pageLoad) {
-          pageUtils.loading(false);
+          utils.loading(false);
           $this.scrollToTop();
         } else {
           $this.pageLoad = true;
         }
-      }
-    );
+      });
   }
 };
 

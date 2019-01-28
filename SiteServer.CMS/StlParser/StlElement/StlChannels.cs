@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Attributes;

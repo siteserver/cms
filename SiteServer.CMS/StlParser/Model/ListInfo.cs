@@ -167,6 +167,10 @@ namespace SiteServer.CMS.StlParser.Model
                 {
                     listInfo.ChannelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
+                else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Parent))
+                {
+                    listInfo.UpLevel = 1;
+                }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.UpLevel))
                 {
                     listInfo.UpLevel = TranslateUtils.ToInt(value);

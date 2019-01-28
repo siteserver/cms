@@ -61,6 +61,10 @@ namespace SiteServer.CMS.StlParser.Model
                 typeof(StlFlash)
             },
             {
+                StlFocusViewer.ElementName,
+                typeof(StlFocusViewer)
+            },
+            {
                 StlIf.ElementName,
                 typeof(StlIf)
             },
@@ -155,6 +159,10 @@ namespace SiteServer.CMS.StlParser.Model
             {
                 StlSqlContents.ElementName,
                 typeof(StlSqlContents)
+            },
+            {
+                StlTabs.ElementName,
+                typeof(StlTabs)
             },
             {
                 StlTags.ElementName,

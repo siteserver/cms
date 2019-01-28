@@ -1,9 +1,9 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerAttributes');
+﻿var $url = '/pages/cms/contentsLayerAttributes';
 
-var data = {
-  siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
-  channelId: parseInt(pageUtils.getQueryStringByName('channelId')),
-  contentIds: pageUtils.getQueryStringByName('contentIds'),
+var $data = {
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
+  contentIds: utils.getQueryString('contentIds'),
   pageLoad: false,
   pageAlert: null,
   pageType: 'setAttributes',
@@ -14,15 +14,12 @@ var data = {
   hits: 0
 };
 
-var methods = {
-  loadConfig: function () {
-    this.pageLoad = true;
-  },
+var $methods = {
   btnSubmitClick: function () {
     var $this = this;
 
-    pageUtils.loading(true);
-    $api.post({
+    utils.loading(true);
+    $api.post($url, {
       siteId: $this.siteId,
       channelId: $this.channelId,
       contentIds: $this.contentIds,
@@ -32,19 +29,23 @@ var methods = {
       isColor: $this.isColor,
       isTop: $this.isTop,
       hits: $this.hits
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
+    }).then(function (response) {
+      var res = response.data;
 
       parent.location.reload(true);
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   }
 };
 
 new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
-    this.loadConfig();
+    this.pageLoad = true;
   }
 });

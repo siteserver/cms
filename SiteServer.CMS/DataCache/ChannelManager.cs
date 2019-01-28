@@ -192,6 +192,22 @@ namespace SiteServer.CMS.DataCache
             return dic.Values.OrderBy(c => c.Taxis).Select(channelInfo => channelInfo.Id).ToList();
         }
 
+        public static List<int> GetChannelIdList(int siteId, string channelGroup)
+        {
+            var channelInfoList = new List<ChannelInfo>();
+            var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
+            foreach (var channelInfo in dic.Values)
+            {
+                if (string.IsNullOrEmpty(channelInfo.GroupNameCollection)) continue;
+
+                if (StringUtils.Contains(channelInfo.GroupNameCollection, channelGroup))
+                {
+                    channelInfoList.Add(channelInfo);
+                }
+            }
+            return channelInfoList.OrderBy(c => c.Taxis).Select(channelInfo => channelInfo.Id).ToList();
+        }
+
         public static List<int> GetChannelIdList(ChannelInfo channelInfo, EScopeType scopeType)
         {
             return GetChannelIdList(channelInfo, scopeType, string.Empty, string.Empty, string.Empty);

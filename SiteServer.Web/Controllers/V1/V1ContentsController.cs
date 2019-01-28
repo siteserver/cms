@@ -360,14 +360,11 @@ namespace SiteServer.API.Controllers.V1
 
                 var tableName = siteInfo.TableName;
 
-                var top = request.GetQueryInt("top", 20);
-                var skip = request.GetQueryInt("skip");
-                var like = request.GetQueryString("like");
-                var orderBy = request.GetQueryString("orderBy");
+                var parameters = new ApiContentsParameters(request);
 
-                var contentIdList = DataProvider.ContentDao.ApiGetContentIdListBySiteId(tableName, siteId, top, skip, like, orderBy, request.QueryString, out var count);
+                var tupleList = DataProvider.ContentDao.ApiGetContentIdListBySiteId(tableName, siteId, parameters, out var count);
                 var value = new List<Dictionary<string, object>>();
-                foreach (var tuple in contentIdList)
+                foreach (var tuple in tupleList)
                 {
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, tuple.Item1, tuple.Item2);
                     if (contentInfo != null)
@@ -376,7 +373,7 @@ namespace SiteServer.API.Controllers.V1
                     }
                 }
 
-                return Ok(new PageResponse(value, top, skip, request.HttpRequest.Url.AbsoluteUri) {Count = count});
+                return Ok(new PageResponse(value, parameters.Top, parameters.Skip, request.HttpRequest.Url.AbsoluteUri) {Count = count});
             }
             catch (Exception ex)
             {

@@ -440,6 +440,32 @@ namespace SiteServer.CMS.DataCache
                 {
                     retval.Set(ContentAttribute.SourceId, SourceManager.GetSourceName(contentInfo.SourceId));
                 }
+                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.AddUserName))
+                {
+                    var value = string.Empty;
+                    if (!string.IsNullOrEmpty(contentInfo.AddUserName))
+                    {
+                        var adminInfo = AdminManager.GetAdminInfoByUserName(contentInfo.AddUserName);
+                        if (adminInfo != null)
+                        {
+                            value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
+                        }
+                    }
+                    retval.Set(ContentAttribute.AddUserName, value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.LastEditUserName))
+                {
+                    var value = string.Empty;
+                    if (!string.IsNullOrEmpty(contentInfo.LastEditUserName))
+                    {
+                        var adminInfo = AdminManager.GetAdminInfoByUserName(contentInfo.LastEditUserName);
+                        if (adminInfo != null)
+                        {
+                            value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
+                        }
+                    }
+                    retval.Set(ContentAttribute.LastEditUserName, value);
+                }
             }
 
             if (pluginColumns != null)

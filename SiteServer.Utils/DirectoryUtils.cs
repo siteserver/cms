@@ -44,6 +44,8 @@ namespace SiteServer.Utils
             public const string TemporaryFiles = "TemporaryFiles";
             public const string Plugins = "Plugins";
             public const string Packages = "packages";
+            public const string Home = "Home";
+            public const string Administrators = "Administrators";
         }
 
         public static class SiteTemplates

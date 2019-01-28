@@ -1,9 +1,9 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerCheck');
+﻿var $url = '/pages/cms/contentsLayerCheck';
 
-var data = {
-  siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
-  channelId: parseInt(pageUtils.getQueryStringByName('channelId')),
-  contentIds: pageUtils.getQueryStringByName('contentIds'),
+var $data = {
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
+  contentIds: utils.getQueryString('contentIds'),
   pageLoad: false,
   pageAlert: null,
   contents: null,
@@ -18,16 +18,18 @@ var data = {
   reasons: null
 };
 
-var methods = {
+var $methods = {
   loadConfig: function () {
     var $this = this;
 
-    $api.get({
-      siteId: $this.siteId,
-      channelId: $this.channelId,
-      contentIds: $this.contentIds
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
+    $api.get($url, {
+      params: {
+        siteId: $this.siteId,
+        channelId: $this.channelId,
+        contentIds: $this.contentIds
+      }
+    }).then(function (response) {
+      var res = response.data;
 
       $this.contents = res.value;
       $this.checkedLevels = res.checkedLevels;
@@ -37,9 +39,13 @@ var methods = {
         type: 'warning',
         html: '此操作将审核以下 <strong>' + $this.contents.length + '</strong> 篇内容，确定吗？'
       };
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
       $this.pageLoad = true;
     });
   },
+
   asyncFind: function (query) {
     this.isChannelLoading = true;
     this.channels = [];
@@ -51,22 +57,27 @@ var methods = {
     }
     this.isChannelLoading = false;
   },
+
   btnSubmitClick: function () {
     var $this = this;
 
-    pageUtils.loading(true);
-    $api.post({
+    utils.loading(true);
+    $api.post($url, {
       siteId: $this.siteId,
       channelId: $this.channelId,
       contentIds: $this.contentIds,
       checkedLevel: $this.checkedLevel,
       isTranslate: $this.isTranslate,
       translateChannelId: $this.translateChannel ? $this.translateChannel.key : 0,
-      reasons: $this.reasons,
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
+      reasons: $this.reasons
+    }).then(function (response) {
+      var res = response.data;
 
       parent.location.reload(true);
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   }
 };
@@ -75,8 +86,8 @@ Vue.component("multiselect", window.VueMultiselect.default);
 
 new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.loadConfig();
   }

@@ -39,30 +39,28 @@ namespace SiteServer.CMS.DataCache
 
         public static string GetAreaName(int areaId)
         {
-            if (areaId > 0)
+            if (areaId <= 0) return string.Empty;
+
+            var areaNameList = new List<string>();
+
+            var parentsPath = GetParentsPath(areaId);
+            var areaIdList = new List<int>();
+            if (!string.IsNullOrEmpty(parentsPath))
             {
-                var areaNameList = new List<string>();
-
-                var parentsPath = GetParentsPath(areaId);
-                var areaIdList = new List<int>();
-                if (!string.IsNullOrEmpty(parentsPath))
-                {
-                    areaIdList = TranslateUtils.StringCollectionToIntList(parentsPath);
-                }
-                areaIdList.Add(areaId);
-
-                foreach (var theAreaId in areaIdList)
-                {
-                    var areaInfo = GetAreaInfo(theAreaId);
-                    if (areaInfo != null)
-                    {
-                        areaNameList.Add(areaInfo.AreaName);
-                    }
-                }
-
-                return TranslateUtils.ObjectCollectionToString(areaNameList, " > ");
+                areaIdList = TranslateUtils.StringCollectionToIntList(parentsPath);
             }
-            return string.Empty;
+            areaIdList.Add(areaId);
+
+            foreach (var theAreaId in areaIdList)
+            {
+                var areaInfo = GetAreaInfo(theAreaId);
+                if (areaInfo != null)
+                {
+                    areaNameList.Add(areaInfo.AreaName);
+                }
+            }
+
+            return TranslateUtils.ObjectCollectionToString(areaNameList, " > ");
         }
 
         public static string GetParentsPath(int areaId)

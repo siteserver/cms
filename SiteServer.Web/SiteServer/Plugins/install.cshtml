@@ -10,7 +10,7 @@
   </p>
 
   <div v-if="listPackages.length > 1" v-for="(listPackage, index) in listPackages" class="alert" v-bind:class="{ 'alert-success': listIndex > index, 'alert-warning': listIndex === index, 'alert-secondary': listIndex < index }">
-    {{ listPackage.title }}({{ listPackage.id }}) {{ listPackage.version }} —
+    {{ listPackage.id }}({{ listPackage.packageType == 'Plugin' ? '插件' : '类库' }}) {{ listPackage.version }} —
     <span v-if="listIndex > index">
       {{ pageType }}成功!
     </span>
@@ -152,5 +152,6 @@
 </div>
 
 @section Scripts{
-<script src="../assets/js/compareversion.js"></script>
+<script src="../assets/js/compareversion.js" type="text/javascript"></script>
+<script src="../assets/js/ss.js" type="text/javascript"></script>
 <script src="install.js" type="text/javascript"></script> }
