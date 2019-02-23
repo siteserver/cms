@@ -19,7 +19,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string Action = nameof(LogInfo.Action);
         }
 
-        public new void Insert(LogInfo log)
+        public void Insert(LogInfo log)
         {
             //const string sqlString = "INSERT INTO siteserver_Log(UserName, IPAddress, AddDate, Action, Summary) VALUES (@UserName, @IPAddress, @AddDate, @Action, @Summary)";
 
@@ -34,7 +34,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            base.InsertObject(log);
+            InsertObject(log);
         }
 
         public void Delete(List<int> idList)

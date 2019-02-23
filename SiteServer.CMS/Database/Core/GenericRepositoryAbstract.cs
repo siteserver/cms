@@ -70,7 +70,12 @@ namespace SiteServer.CMS.Database.Core
             return SqlDifferences.GetIDbConnection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
         }
 
-        protected Query Q => new Query();
+        protected Query Q => NewQuery();
+
+        public Query NewQuery()
+        {
+            return new Query();
+        }
 
         protected int InsertObject<T>(T dataInfo) where T : class, IDataInfo
         {

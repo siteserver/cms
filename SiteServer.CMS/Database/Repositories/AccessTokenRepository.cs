@@ -14,26 +14,25 @@ namespace SiteServer.CMS.Database.Repositories
             public const string Title = nameof(AccessTokenInfo.Title);
         }
 
-        public new int Insert(AccessTokenInfo accessTokenInfo)
+        public void Insert(AccessTokenInfo accessTokenInfo)
         {
             accessTokenInfo.Token = TranslateUtils.EncryptStringBySecretKey(StringUtils.GetGuid());
             accessTokenInfo.AddDate = DateTime.Now;
 
-            var identity = base.InsertObject(accessTokenInfo);
+            InsertObject(accessTokenInfo);
             AccessTokenManager.ClearCache();
-            return identity;
         }
 
-        public new bool Update(AccessTokenInfo accessTokenInfo)
+        public bool Update(AccessTokenInfo accessTokenInfo)
         {
-            var updated = base.UpdateObject(accessTokenInfo);
+            var updated = UpdateObject(accessTokenInfo);
             AccessTokenManager.ClearCache();
             return updated;
         }
 
-        public new bool Delete(int id)
+        public bool Delete(int id)
         {
-            var deleted = base.DeleteById(id);
+            var deleted = DeleteById(id);
             AccessTokenManager.ClearCache();
             return deleted;
         }
@@ -52,14 +51,9 @@ namespace SiteServer.CMS.Database.Repositories
             return GetObjectById(id);
         }
 
-        public AccessTokenInfo Get()
-        {
-            return GetObject();
-        }
-
         public IList<AccessTokenInfo> GetAll()
         {
-            return base.GetObjectList();
+            return GetObjectList();
         }
 
         public bool IsTitleExists(string title)

@@ -210,32 +210,19 @@ namespace SiteServer.CMS.Database.Repositories
         private static class Attr
         {
             public const string Id = nameof(ChannelInfo.Id);
-            public const string Guid = nameof(ChannelInfo.Guid);
-            public const string LastModifiedDate = nameof(ChannelInfo.LastModifiedDate);
-            public const string ChannelName = nameof(ChannelInfo.ChannelName);
             public const string SiteId = nameof(ChannelInfo.SiteId);
             public const string ContentModelPluginId = nameof(ChannelInfo.ContentModelPluginId);
-            public const string ContentRelatedPluginIds = nameof(ChannelInfo.ContentRelatedPluginIds);
             public const string ParentId = nameof(ChannelInfo.ParentId);
             public const string ParentsPath = nameof(ChannelInfo.ParentsPath);
-            public const string ParentsCount = nameof(ChannelInfo.ParentsCount);
             public const string ChildrenCount = nameof(ChannelInfo.ChildrenCount);
             public const string IsLastNode = "IsLastNode";
             public const string IndexName = nameof(ChannelInfo.IndexName);
             public const string GroupNameCollection = nameof(ChannelInfo.GroupNameCollection);
             public const string Taxis = nameof(ChannelInfo.Taxis);
             public const string AddDate = nameof(ChannelInfo.AddDate);
-            public const string ImageUrl = nameof(ChannelInfo.ImageUrl);
-            public const string Content = nameof(ChannelInfo.Content);
             public const string FilePath = nameof(ChannelInfo.FilePath);
-            public const string ChannelFilePathRule = nameof(ChannelInfo.ChannelFilePathRule);
-            public const string ContentFilePathRule = nameof(ChannelInfo.ContentFilePathRule);
-            public const string LinkUrl = nameof(ChannelInfo.LinkUrl);
-            public const string LinkType = nameof(ChannelInfo.LinkType);
             public const string ChannelTemplateId = nameof(ChannelInfo.ChannelTemplateId);
             public const string ContentTemplateId = nameof(ChannelInfo.ContentTemplateId);
-            public const string Keywords = nameof(ChannelInfo.Keywords);
-            public const string Description = nameof(ChannelInfo.Description);
             public const string ExtendValues = "ExtendValues";
         }
 
@@ -311,7 +298,7 @@ namespace SiteServer.CMS.Database.Repositories
                     .Where(Attr.SiteId, channelInfo.SiteId));
             }
             //channelInfo.Id = DatabaseApi.ExecuteNonQueryAndReturnId(TableName, nameof(ChannelInfo.Id), trans, sqlInsertNode, insertParams);
-            base.InsertObject(channelInfo);
+            InsertObject(channelInfo);
 
             if (!string.IsNullOrEmpty(channelInfo.ParentsPath))
             {
@@ -505,7 +492,7 @@ namespace SiteServer.CMS.Database.Repositories
             IncrementAll(Attr.Taxis, Q
                 .Where(Attr.Id, channelId)
                 .OrWhere(Attr.ParentsPath, parentsPath)
-                .OrWhereStarts(Attr.ParentsPath, $"{parentsPath},"));
+                .OrWhereStarts(Attr.ParentsPath, $"{parentsPath},"), addNum);
         }
 
         private void SetTaxisSubtract(int channelId, string parentsPath, int subtractNum)
@@ -660,7 +647,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         }
 
-        public new int Insert(ChannelInfo channelInfo)
+        public int Insert(ChannelInfo channelInfo)
         {
             if (channelInfo.SiteId > 0 && channelInfo.ParentId == 0) return 0;
 
@@ -697,7 +684,7 @@ namespace SiteServer.CMS.Database.Repositories
             return channelInfo.Id;
         }
 
-        public new void Update(ChannelInfo channelInfo)
+        public void Update(ChannelInfo channelInfo)
         {
             //IDataParameter[] parameters =
             //{
@@ -726,7 +713,7 @@ namespace SiteServer.CMS.Database.Repositories
             //};
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdate, parameters);
-            base.UpdateObject(channelInfo);
+            UpdateObject(channelInfo);
 
             ChannelManager.UpdateCache(channelInfo.SiteId, channelInfo);
 
@@ -835,8 +822,6 @@ namespace SiteServer.CMS.Database.Repositories
             }
             idList.Add(channelId);
 
-            int deletedNum;
-
             var siteInfo = SiteManager.GetSiteInfo(siteId);
 
             DataProvider.ContentRepository.DeleteContentsByDeletedChannelIdList(siteInfo, idList);
@@ -844,7 +829,7 @@ namespace SiteServer.CMS.Database.Repositories
             //var deleteCmd =
             //    $"DELETE FROM siteserver_Channel WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
             //deletedNum = DatabaseApi.ExecuteNonQuery(trans, deleteCmd);
-            deletedNum = DeleteAll(Q
+            var deletedNum = DeleteAll(Q
                 .WhereIn(Attr.Id, idList));
 
             if (channelInfo.ParentId != 0)

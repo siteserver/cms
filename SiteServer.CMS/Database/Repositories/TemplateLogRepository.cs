@@ -18,7 +18,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string TemplateContent = nameof(TemplateLogInfo.TemplateContent);
         }
 
-        public new void Insert(TemplateLogInfo logInfo)
+        public void Insert(TemplateLogInfo logInfo)
         {
             //var sqlString = "INSERT INTO siteserver_TemplateLog(TemplateId, SiteId, AddDate, AddUserName, ContentLength, TemplateContent) VALUES (@TemplateId, @SiteId, @AddDate, @AddUserName, @ContentLength, @TemplateContent)";
 
@@ -34,7 +34,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            base.InsertObject(logInfo);
+            InsertObject(logInfo);
         }
 
         public string GetSelectCommend(int siteId, int templateId)

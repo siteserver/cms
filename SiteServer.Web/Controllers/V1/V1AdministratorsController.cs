@@ -219,7 +219,7 @@ namespace SiteServer.API.Controllers.V1
                 var top = rest.GetQueryInt("top", 20);
                 var skip = rest.GetQueryInt("skip");
 
-                var query = DataProvider.Administrator.GetQuery().Limit(top).Offset(skip);
+                var query = DataProvider.Administrator.NewQuery().Limit(top).Offset(skip);
                 var administrators = DataProvider.Administrator.GetAll(query);
                 var count = DataProvider.Administrator.GetCount();
 

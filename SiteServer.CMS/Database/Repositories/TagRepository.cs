@@ -17,7 +17,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string UseNum = nameof(TagInfo.UseNum);
         }
 
-        public new void Insert(TagInfo tagInfo)
+        public void Insert(TagInfo tagInfo)
         {
             //const string sqlString = "INSERT INTO siteserver_Tag (SiteId, ContentIdCollection, Tag, UseNum) VALUES (@SiteId, @ContentIdCollection, @Tag, @UseNum)";
 
@@ -31,10 +31,10 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(TagInfo.Id), sqlString, parameters);
 
-            base.InsertObject(tagInfo);
+            InsertObject(tagInfo);
         }
 
-        public new void Update(TagInfo tagInfo)
+        public void Update(TagInfo tagInfo)
         {
             //const string sqlString = "UPDATE siteserver_Tag SET ContentIdCollection = @ContentIdCollection, UseNum = @UseNum WHERE Id = @Id";
 
@@ -47,7 +47,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            base.UpdateObject(tagInfo);
+            UpdateObject(tagInfo);
         }
 
         public TagInfo GetTagInfo(int siteId, string tag)

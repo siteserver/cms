@@ -11,7 +11,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string RoleName = nameof(PermissionsInRolesInfo.RoleName);
         }
 
-        public new void Insert(PermissionsInRolesInfo info)
+        public void Insert(PermissionsInRolesInfo info)
         {
             //IDataParameter[] parameters =
             //{
@@ -21,10 +21,10 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlInsert = "INSERT INTO siteserver_PermissionsInRoles (RoleName, GeneralPermissions) VALUES (@RoleName, @GeneralPermissions)";
             //DatabaseApi.ExecuteNonQuery(trans, SqlInsert, parameters);
 
-            base.InsertObject(info);
+            InsertObject(info);
         }
 
-        public new void Delete(string roleName)
+        public void Delete(string roleName)
         {
             //IDataParameter[] parameters =
             //{

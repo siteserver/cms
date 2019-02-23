@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string Taxis = nameof(ContentGroupInfo.Taxis);
         }
 
-        public new void Insert(ContentGroupInfo groupInfo)
+        public void Insert(ContentGroupInfo groupInfo)
         {
             var maxTaxis = GetMaxTaxis(groupInfo.SiteId);
             groupInfo.Taxis = maxTaxis + 1;
@@ -29,12 +29,12 @@ namespace SiteServer.CMS.Database.Repositories
             //"INSERT INTO siteserver_ContentGroup (GroupName, SiteId, Taxis, Description) VALUES (@GroupName, @SiteId, @Taxis, @Description)"
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlInsert, parameters);
 
-            base.InsertObject(groupInfo);
+            InsertObject(groupInfo);
 
             ContentGroupManager.ClearCache();
         }
 
-        public new void Update(ContentGroupInfo groupInfo)
+        public void Update(ContentGroupInfo groupInfo)
         {
             //IDataParameter[] parameters =
             //{
@@ -45,7 +45,7 @@ namespace SiteServer.CMS.Database.Repositories
             //"UPDATE siteserver_ContentGroup SET Description = @Description WHERE GroupName = @GroupName AND SiteId = @SiteId"
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdate, parameters);
 
-            base.UpdateObject(groupInfo);
+            UpdateObject(groupInfo);
 
             ContentGroupManager.ClearCache();
         }

@@ -12,7 +12,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string Id = nameof(UserGroupInfo.Id);
         }
 
-        public new void Insert(UserGroupInfo groupInfo)
+        public void Insert(UserGroupInfo groupInfo)
         {
 //            var sqlString =
 //                $@"
@@ -32,12 +32,12 @@ namespace SiteServer.CMS.Database.Repositories
 
 //            var groupId = DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(UserGroupInfo.Id), sqlString, parameters);
 
-            base.InsertObject(groupInfo);
+            InsertObject(groupInfo);
 
             UserGroupManager.ClearCache();
         }
 
-        public new void Update(UserGroupInfo groupInfo)
+        public void Update(UserGroupInfo groupInfo)
         {
             //var sqlString = $@"UPDATE {TableName} SET
             //    {nameof(UserGroupInfo.GroupName)} = @{nameof(UserGroupInfo.GroupName)},  
@@ -53,12 +53,12 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            base.UpdateObject(groupInfo);
+            UpdateObject(groupInfo);
 
             UserGroupManager.ClearCache();
         }
 
-        public new void Delete(int groupId)
+        public void Delete(int groupId)
         {
             //var sqlString = $"DELETE FROM {TableName} WHERE Id = @Id";
 
@@ -69,7 +69,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            base.DeleteById(groupId);
+            DeleteById(groupId);
 
             UserGroupManager.ClearCache();
         }

@@ -20,7 +20,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string Action = nameof(UserLogInfo.Action);
         }
 
-        public new void Insert(UserLogInfo logInfo)
+        public void Insert(UserLogInfo logInfo)
         {
             //const string sqlString = "INSERT INTO siteserver_UserLog(UserName, IPAddress, AddDate, Action, Summary) VALUES (@UserName, @IPAddress, @AddDate, @Action, @Summary)";
 
@@ -35,7 +35,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            base.InsertObject(logInfo);
+            InsertObject(logInfo);
         }
 
         public UserLogInfo Insert(string userName, UserLogInfo logInfo)
@@ -53,7 +53,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    }
             //}
 
-            base.InsertObject(logInfo);
+            InsertObject(logInfo);
 
             return logInfo;
         }

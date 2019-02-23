@@ -41,7 +41,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 var departmentId = rest.GetQueryInt("departmentId");
                 var areaId = rest.GetQueryInt("areaId");
 
-                var query = DataProvider.Administrator.GetQuery();
+                var query = DataProvider.Administrator.NewQuery();
 
                 if (!string.IsNullOrEmpty(keyword))
                 {

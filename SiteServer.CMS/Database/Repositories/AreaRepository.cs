@@ -60,7 +60,7 @@ namespace SiteServer.CMS.Database.Repositories
             //};
 
             //areaInfo.Id = _db.ExecuteNonQueryAndReturnId(TableName, nameof(AreaInfo.Id), trans, "INSERT INTO siteserver_Area (AreaName, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, CountOfAdmin) VALUES (@AreaName, @ParentID, @ParentsPath, @ParentsCount, @ChildrenCount, @IsLastNode, @Taxis, @CountOfAdmin)", parameters);
-            base.InsertObject(areaInfo);
+            InsertObject(areaInfo);
 
             if (!string.IsNullOrEmpty(areaInfo.ParentsPath) && areaInfo.ParentsPath != "0")
             {
@@ -320,7 +320,7 @@ namespace SiteServer.CMS.Database.Repositories
             //return maxTaxis;
         }
 
-        public new void Insert(AreaInfo areaInfo)
+        public void Insert(AreaInfo areaInfo)
         {
             //using (var conn = GetConnection())
             //{
@@ -353,7 +353,7 @@ namespace SiteServer.CMS.Database.Repositories
             AreaManager.ClearCache();
         }
 
-        public new void Update(AreaInfo areaInfo)
+        public void Update(AreaInfo areaInfo)
         {
    //         IDataParameter[] updateParams = {
    //             _db.GetParameter(ParamName, areaInfo.AreaName),
@@ -367,7 +367,7 @@ namespace SiteServer.CMS.Database.Repositories
 
    //         var i = _db.ExecuteNonQuery(_connectionString, SqlUpdate, updateParams);
    
-            if (base.UpdateObject(areaInfo))
+            if (UpdateObject(areaInfo))
             {
                 AreaManager.ClearCache();
             }

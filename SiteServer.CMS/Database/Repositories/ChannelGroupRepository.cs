@@ -9,44 +9,6 @@ namespace SiteServer.CMS.Database.Repositories
 {
     public class ChannelGroupRepository : GenericRepository<ChannelGroupInfo>
     {
-        //public override string TableName => "siteserver_ChannelGroup";
-
-        //public override List<TableColumn> TableColumns => new List<TableColumn>
-        //{
-        //    new TableColumn
-        //    {
-        //        AttributeName = nameof(ChannelGroupInfo.Id),
-        //        DataType = DataType.Integer,
-        //        IsIdentity = true,
-        //        IsPrimaryKey = true
-        //    },
-        //    new TableColumn
-        //    {
-        //        AttributeName = nameof(ChannelGroupInfo.GroupName),
-        //        DataType = DataType.VarChar
-        //    },
-        //    new TableColumn
-        //    {
-        //        AttributeName = nameof(ChannelGroupInfo.SiteId),
-        //        DataType = DataType.Integer
-        //    },
-        //    new TableColumn
-        //    {
-        //        AttributeName = nameof(ChannelGroupInfo.Taxis),
-        //        DataType = DataType.Integer
-        //    },
-        //    new TableColumn
-        //    {
-        //        AttributeName = nameof(ChannelGroupInfo.Description),
-        //        DataType = DataType.Text
-        //    }
-        //};
-
-        //private const string ParamGroupName = "@GroupName";
-        //private const string ParamSiteId = "@SiteId";
-        //      private const string ParamTaxis = "@Taxis";
-        //private const string ParamDescription = "@Description";
-
         private static class Attr
         {
             public const string GroupName = nameof(ChannelGroupInfo.GroupName);
@@ -54,7 +16,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string Taxis = nameof(ChannelGroupInfo.Taxis);
         }
 
-        public new void Insert(ChannelGroupInfo groupInfo)
+        public void Insert(ChannelGroupInfo groupInfo)
         {
             var maxTaxis = GetMaxTaxis(groupInfo.SiteId);
             groupInfo.Taxis = maxTaxis + 1;
@@ -71,12 +33,12 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            base.InsertObject(groupInfo);
+            InsertObject(groupInfo);
 
             ChannelGroupManager.ClearCache();
         }
 
-        public new void Update(ChannelGroupInfo groupInfo)
+        public void Update(ChannelGroupInfo groupInfo)
         {
             //var sqlString = $"UPDATE {TableName} SET Description = @Description WHERE GroupName = @GroupName AND SiteId = @SiteId";
 
@@ -88,7 +50,7 @@ namespace SiteServer.CMS.Database.Repositories
             //};
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-            base.UpdateObject(groupInfo);
+            UpdateObject(groupInfo);
 
             ChannelGroupManager.ClearCache();
         }

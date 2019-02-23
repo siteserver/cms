@@ -57,8 +57,6 @@ namespace SiteServer.BackgroundPages
 
 	    protected override bool IsAccessable => true;
 
-	    protected override bool IsInstallerPage => true;
-
 	    public static string GetRedirectUrl()
 	    {
 	        return PageUtils.GetSiteServerUrl("installer/default", null);

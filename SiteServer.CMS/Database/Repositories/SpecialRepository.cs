@@ -16,7 +16,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string Url = nameof(SpecialInfo.Url);
         }
 
-        public new void Insert(SpecialInfo specialInfo)
+        public void Insert(SpecialInfo specialInfo)
         {
      //       var sqlString = $@"INSERT INTO {TableName}
      //      ({nameof(SpecialInfo.SiteId)}, 
@@ -39,12 +39,12 @@ namespace SiteServer.CMS.Database.Repositories
 
      //       DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            base.InsertObject(specialInfo);
+            InsertObject(specialInfo);
 
             SpecialManager.RemoveCache(specialInfo.SiteId);
         }
 
-        public new void Update(SpecialInfo specialInfo)
+        public void Update(SpecialInfo specialInfo)
         {
             //var sqlString = $@"UPDATE {TableName} SET
             //    {nameof(SpecialInfo.SiteId)} = @{nameof(SpecialInfo.SiteId)},  
@@ -64,7 +64,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            base.UpdateObject(specialInfo);
+            UpdateObject(specialInfo);
 
             SpecialManager.RemoveCache(specialInfo.SiteId);
         }
@@ -76,7 +76,7 @@ namespace SiteServer.CMS.Database.Repositories
             //var sqlString = $"DELETE FROM {TableName} WHERE {nameof(SpecialInfo.Id)} = {specialId}";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            base.DeleteById(specialId);
+            DeleteById(specialId);
 
             SpecialManager.RemoveCache(siteId);
         }

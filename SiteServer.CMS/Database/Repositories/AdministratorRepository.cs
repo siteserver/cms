@@ -30,11 +30,6 @@ namespace SiteServer.CMS.Database.Repositories
             public const string IsLockedOut = "IsLockedOut";
         }
 
-        public Query GetQuery()
-        {
-            return Q;
-        }
-
         public int GetCount(Query query)
         {
             return Count(query);
@@ -45,9 +40,9 @@ namespace SiteServer.CMS.Database.Repositories
             return Count();
         }
 
-        public new IList<AdministratorInfo> GetAll(Query query)
+        public IList<AdministratorInfo> GetAll(Query query)
         {
-            return base.GetObjectList(query);
+            return GetObjectList(query);
         }
 
         public int Insert(AdministratorInfo adminInfo, out string errorMessage)
@@ -61,7 +56,7 @@ namespace SiteServer.CMS.Database.Repositories
                 adminInfo.Password = EncodePassword(adminInfo.Password, EPasswordFormatUtils.GetEnumType(adminInfo.PasswordFormat), out var passwordSalt);
                 adminInfo.PasswordSalt = passwordSalt;
 
-                var identity = base.InsertObject(adminInfo);
+                var identity = InsertObject(adminInfo);
 
                 //IDataParameter[] parameters =
                 //{
@@ -116,7 +111,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             if (!UpdateValidate(administratorInfo, adminInfo.UserName, adminInfo.Email, adminInfo.Mobile, out errorMessage)) return false;
 
-            var updated = base.UpdateObject(administratorInfo);
+            var updated = UpdateObject(administratorInfo);
 
             //IDataParameter[] parameters =
             //{

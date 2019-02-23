@@ -16,7 +16,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string AddDate = nameof(SiteLogInfo.AddDate);
         }
 
-        public new void Insert(SiteLogInfo logInfo)
+        public void Insert(SiteLogInfo logInfo)
         {
             //const string sqlString = "INSERT INTO siteserver_SiteLog(SiteId, ChannelId, ContentId, UserName, IpAddress, AddDate, Action, Summary) VALUES (@SiteId, @ChannelId, @ContentId, @UserName, @IpAddress, @AddDate, @Action, @Summary)";
 
@@ -34,7 +34,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            base.InsertObject(logInfo);
+            InsertObject(logInfo);
         }
 
         public void DeleteIfThreshold()
@@ -46,7 +46,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, $@"DELETE FROM siteserver_SiteLog WHERE AddDate < {SqlUtils.GetComparableDateTime(DateTime.Now.AddDays(-days))}");
 
-            base.DeleteAll(Q.Where(Attr.AddDate, "<", DateTime.Now.AddDays(-days)));
+            DeleteAll(Q.Where(Attr.AddDate, "<", DateTime.Now.AddDays(-days)));
         }
 
         public void Delete(List<int> idList)
@@ -58,7 +58,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            base.DeleteAll(Q.WhereIn(Attr.Id, idList));
+            DeleteAll(Q.WhereIn(Attr.Id, idList));
         }
 
         public void DeleteAll()

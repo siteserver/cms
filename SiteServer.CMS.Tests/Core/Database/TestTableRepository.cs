@@ -67,9 +67,9 @@ namespace SiteServer.CMS.Tests.Core.Database
     {
         public new Query Q => base.Q;
 
-        public new int Insert(TestTableInfo dataInfo)
+        public int Insert(TestTableInfo dataInfo)
         {
-            return base.InsertObject(dataInfo);
+            return InsertObject(dataInfo);
         }
 
         public new bool Exists(int id)
@@ -107,33 +107,33 @@ namespace SiteServer.CMS.Tests.Core.Database
             return base.GetValueList<TValue>(query);
         }
 
-        public new TestTableInfo First(int id)
+        public TestTableInfo First(int id)
         {
-            return base.GetObjectById(id);
+            return GetObjectById(id);
         }
 
-        public new TestTableInfo First(string guid)
+        public TestTableInfo First(string guid)
         {
-            return base.GetObjectByGuid(guid);
-        }
-
-
-        public new TestTableInfo First(Query query = null)
-        {
-            return base.GetObject(query);
+            return GetObjectByGuid(guid);
         }
 
 
-
-        public new IList<TestTableInfo> GetAll(Query query = null)
+        public TestTableInfo First(Query query = null)
         {
-            return base.GetObjectList(query);
+            return GetObject(query);
         }
 
 
-        public new bool Update(TestTableInfo dataInfo)
+
+        public IList<TestTableInfo> GetAll(Query query = null)
         {
-            return base.UpdateObject(dataInfo);
+            return GetObjectList(query);
+        }
+
+
+        public bool Update(TestTableInfo dataInfo)
+        {
+            return UpdateObject(dataInfo);
         }
 
 
@@ -143,14 +143,14 @@ namespace SiteServer.CMS.Tests.Core.Database
         }
 
 
-        public new bool Delete(int id)
+        public bool Delete(int id)
         {
-            return base.DeleteById(id);
+            return DeleteById(id);
         }
 
-        public new bool Delete(string guid)
+        public bool Delete(string guid)
         {
-            return base.DeleteByGuid(guid);
+            return DeleteByGuid(guid);
         }
 
         public new int DeleteAll(Query query = null)

@@ -16,7 +16,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string AddDate = nameof(ErrorLogInfo.AddDate);
         }
 
-        public new int Insert(ErrorLogInfo logInfo)
+        public int Insert(ErrorLogInfo logInfo)
         {
             //var sqlString = $"INSERT INTO {TableName} (Category, PluginId, Message, Stacktrace, Summary, AddDate) VALUES (@Category, @PluginId, @Message, @Stacktrace, @Summary, @AddDate)";
 
@@ -32,7 +32,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(ErrorLogInfo.Id), sqlString, parameters);
 
-            return base.InsertObject(logInfo);
+            return InsertObject(logInfo);
         }
 
         public void Delete(List<int> idList)

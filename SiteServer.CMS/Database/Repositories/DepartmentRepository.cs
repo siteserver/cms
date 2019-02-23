@@ -70,7 +70,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //departmentInfo.Id = DatabaseApi.Instance.ExecuteNonQueryAndReturnId(TableName, nameof(DepartmentInfo.Id), trans, sqlInsert, parameters);
 
-            departmentInfo.Id = base.InsertObject(departmentInfo);
+            departmentInfo.Id = InsertObject(departmentInfo);
 
             if (!string.IsNullOrEmpty(departmentInfo.ParentsPath))
             {
@@ -348,7 +348,7 @@ namespace SiteServer.CMS.Database.Repositories
                 .OrWhereStarts(Attr.ParentsPath, $"{parentPath},"));
         }
 
-        public new void Insert(DepartmentInfo departmentInfo)
+        public void Insert(DepartmentInfo departmentInfo)
         {
             var parentDepartmentInfo = GetDepartmentInfo(departmentInfo.ParentId);
 
@@ -357,7 +357,7 @@ namespace SiteServer.CMS.Database.Repositories
             DepartmentManager.ClearCache();
         }
 
-        public new void Update(DepartmentInfo departmentInfo)
+        public void Update(DepartmentInfo departmentInfo)
         {
             //IDataParameter[] parameters =
             //{
@@ -375,7 +375,7 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlUpdate = "UPDATE siteserver_Department SET DepartmentName = @DepartmentName, Code = @Code, ParentsPath = @ParentsPath, ParentsCount = @ParentsCount, ChildrenCount = @ChildrenCount, IsLastNode = @IsLastNode, Summary = @Summary, CountOfAdmin = @CountOfAdmin WHERE Id = @Id";
             //DatabaseApi.Instance.ExecuteNonQuery(ConnectionString, SqlUpdate, parameters);
 
-            base.UpdateObject(departmentInfo);
+            UpdateObject(departmentInfo);
 
             DepartmentManager.ClearCache();
         }
@@ -409,7 +409,7 @@ namespace SiteServer.CMS.Database.Repositories
             DepartmentManager.ClearCache();
         }
 
-        public new void Delete(int id)
+        public void Delete(int id)
         {
             var departmentInfo = GetDepartmentInfo(id);
             if (departmentInfo != null)

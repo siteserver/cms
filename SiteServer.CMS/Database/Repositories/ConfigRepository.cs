@@ -11,10 +11,9 @@ namespace SiteServer.CMS.Database.Repositories
         {
             public const string Id = nameof(ConfigInfo.Id);
             public const string IsInitialized = "IsInitialized";
-            public const string DatabaseVersion = nameof(ConfigInfo.DatabaseVersion);
         }
 
-        public new void Insert(ConfigInfo configInfo)
+        public void Insert(ConfigInfo configInfo)
         {
             //var sqlString =
             //    $"INSERT INTO {TableName} ({nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}) VALUES (@{nameof(ConfigInfo.IsInitialized)}, @{nameof(ConfigInfo.DatabaseVersion)}, @{nameof(ConfigInfo.UpdateDate)}, @{nameof(ConfigInfo.SystemConfig)})";
@@ -28,12 +27,12 @@ namespace SiteServer.CMS.Database.Repositories
             //};
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-            base.InsertObject(configInfo);
+            InsertObject(configInfo);
 
             ConfigManager.IsChanged = true;
         }
 
-        public new void Update(ConfigInfo configInfo)
+        public void Update(ConfigInfo configInfo)
         {
             //var sqlString =
             //    $"UPDATE {TableName} SET {nameof(ConfigInfo.IsInitialized)} = @{nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}= @{nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}= @{nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}= @{nameof(ConfigInfo.SystemConfig)} WHERE {nameof(ConfigInfo.Id)} = @{nameof(ConfigInfo.Id)}";
@@ -48,7 +47,7 @@ namespace SiteServer.CMS.Database.Repositories
             //};
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-            base.UpdateObject(configInfo);
+            UpdateObject(configInfo);
 
             ConfigManager.IsChanged = true;
         }
@@ -80,29 +79,29 @@ namespace SiteServer.CMS.Database.Repositories
             return false;
         }
 
-        public string GetDatabaseVersion()
-        {
-            try
-            {
-                //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, $"SELECT {nameof(ConfigInfo.DatabaseVersion)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}"))
-                //{
-                //    if (rdr.Read())
-                //    {
-                //        databaseVersion = DatabaseApi.GetString(rdr, 0);
-                //    }
-                //    rdr.Close();
-                //}
-                return GetValue<string>(Q
-                    .Select(Attr.DatabaseVersion)
-                    .OrderBy(Attr.Id));
-            }
-            catch
-            {
-                // ignored
-            }
+        //public string GetDatabaseVersion()
+        //{
+        //    try
+        //    {
+        //        //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, $"SELECT {nameof(ConfigInfo.DatabaseVersion)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}"))
+        //        //{
+        //        //    if (rdr.Read())
+        //        //    {
+        //        //        databaseVersion = DatabaseApi.GetString(rdr, 0);
+        //        //    }
+        //        //    rdr.Close();
+        //        //}
+        //        return GetValue<string>(Q
+        //            .Select(Attr.DatabaseVersion)
+        //            .OrderBy(Attr.Id));
+        //    }
+        //    catch
+        //    {
+        //        // ignored
+        //    }
 
-            return string.Empty;
-        }
+        //    return string.Empty;
+        //}
 
         public ConfigInfo GetConfigInfo()
         {

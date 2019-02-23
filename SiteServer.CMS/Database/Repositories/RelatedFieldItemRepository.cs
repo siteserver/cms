@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string Taxis = nameof(RelatedFieldItemInfo.Taxis);
         }
 
-        public new int Insert(RelatedFieldItemInfo info)
+        public int Insert(RelatedFieldItemInfo info)
         {
             info.Taxis = GetMaxTaxis(info.ParentId) + 1;
 
@@ -31,12 +31,12 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(RelatedFieldItemInfo.Id), sqlString, parameters);
 
-            return base.InsertObject(info);
+            return InsertObject(info);
 
             //RelatedFieldManager.ClearCache();
         }
 
-        public new void Update(RelatedFieldItemInfo info)
+        public void Update(RelatedFieldItemInfo info)
         {
             //IDataParameter[] parameters =
             //{
@@ -47,12 +47,12 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlUpdate = "UPDATE siteserver_RelatedFieldItem SET ItemName = @ItemName, ItemValue = @ItemValue WHERE ID = @ID";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdate, parameters);
 
-            base.UpdateObject(info);
+            UpdateObject(info);
 
             //RelatedFieldManager.ClearCache();
         }
 
-        public new void Delete(int id)
+        public void Delete(int id)
         {
             //if (id > 0)
             //{
@@ -60,7 +60,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
             //}
 
-            base.DeleteById(id);
+            DeleteById(id);
 
             //RelatedFieldManager.ClearCache();
         }

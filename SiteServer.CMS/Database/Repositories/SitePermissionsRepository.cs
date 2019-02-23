@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string SiteId = nameof(SitePermissionsInfo.SiteId);
         }
 
-        private new void Insert(SitePermissionsInfo permissionsInfo)
+        private void Insert(SitePermissionsInfo permissionsInfo)
         {
             if (IsExists(permissionsInfo.RoleName, permissionsInfo.SiteId))
             {
@@ -32,11 +32,11 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlInsert = "INSERT INTO siteserver_SitePermissions (RoleName, SiteId, ChannelIdCollection, ChannelPermissions, WebsitePermissions) VALUES (@RoleName, @SiteId, @ChannelIdCollection, @ChannelPermissions, @WebsitePermissions)";
             //DatabaseApi.ExecuteNonQuery(WebConfigUtils.ConnectionString, SqlInsert, parameters);
 
-            base.InsertObject(permissionsInfo);
+            InsertObject(permissionsInfo);
         }
 
 
-        private new void Delete(string roleName)
+        private void Delete(string roleName)
         {
             //IDataParameter[] parameters =
             //{

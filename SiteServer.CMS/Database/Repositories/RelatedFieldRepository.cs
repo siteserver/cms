@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string SiteId = nameof(RelatedFieldInfo.SiteId);
         }
 
-        public new int Insert(RelatedFieldInfo relatedFieldInfo)
+        public int Insert(RelatedFieldInfo relatedFieldInfo)
         {
             //const string sqlString = "INSERT INTO siteserver_RelatedField (Title, SiteId, TotalLevel, Prefixes, Suffixes) VALUES (@Title, @SiteId, @TotalLevel, @Prefixes, @Suffixes)";
 
@@ -29,10 +29,10 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(RelatedFieldInfo.Id), sqlString, parameters);
 
-            return base.InsertObject(relatedFieldInfo);
+            return InsertObject(relatedFieldInfo);
         }
 
-        public new void Update(RelatedFieldInfo relatedFieldInfo)
+        public void Update(RelatedFieldInfo relatedFieldInfo)
         {
             //IDataParameter[] parameters =
             //{
@@ -45,10 +45,10 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlUpdate = "UPDATE siteserver_RelatedField SET Title = @Title, TotalLevel = @TotalLevel, Prefixes = @Prefixes, Suffixes = @Suffixes WHERE Id = @Id";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdate, parameters);
 
-            base.UpdateObject(relatedFieldInfo);
+            UpdateObject(relatedFieldInfo);
         }
         
-        public new void Delete(int id)
+        public void Delete(int id)
         {
             //IDataParameter[] parameters =
             //{
@@ -57,7 +57,7 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlDelete = "DELETE FROM siteserver_RelatedField WHERE Id = @Id";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlDelete, parameters);
 
-            base.DeleteById(id);
+            DeleteById(id);
         }
 
         public RelatedFieldInfo Get(int id)

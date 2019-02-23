@@ -17,7 +17,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string Taxis = nameof(TableStyleInfo.Taxis);
         }
 
-        public new int Insert(TableStyleInfo styleInfo)
+        public int Insert(TableStyleInfo styleInfo)
         {
             //int id;
 
@@ -58,7 +58,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    }
             //}
 
-            var id = base.InsertObject(styleInfo);
+            var id = InsertObject(styleInfo);
             DataProvider.TableStyleItem.Insert(id, styleInfo.StyleItems);
 
             TableStyleManager.ClearCache();
@@ -107,7 +107,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    }
             //}
 
-            base.UpdateObject(info);
+            UpdateObject(info);
             if (deleteAndInsertStyleItems)
             {
                 DataProvider.TableStyleItem.DeleteAndInsertStyleItems(info.Id, info.StyleItems);

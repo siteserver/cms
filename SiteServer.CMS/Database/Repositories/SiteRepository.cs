@@ -24,7 +24,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string Taxis = nameof(SiteInfo.Taxis);
         }
 
-        public new void Insert(SiteInfo siteInfo)
+        public void Insert(SiteInfo siteInfo)
         {
             //var sqlString = $"INSERT INTO {TableName} (Id, SiteName, SiteDir, TableName, IsRoot, ParentId, Taxis, SettingsXML) VALUES (@Id, @SiteName, @SiteDir, @TableName, @IsRoot, @ParentId, @Taxis, @SettingsXML)";
 
@@ -45,11 +45,12 @@ namespace SiteServer.CMS.Database.Repositories
             //DatabaseApi.ExecuteNonQuery(WebConfigUtils.ConnectionString, sqlString, parameters);
 
             siteInfo.Taxis = GetMaxTaxis() + 1;
+            InsertObject(siteInfo);
 
             SiteManager.ClearCache();
         }
 
-        public new void Delete(int siteId)
+        public void Delete(int siteId)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var list = ChannelManager.GetChannelIdList(siteId);
@@ -63,14 +64,14 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, $"DELETE FROM siteserver_Site WHERE Id  = {siteId}");
 
-            base.DeleteById(siteId);
+            DeleteById(siteId);
 
             SiteManager.ClearCache();
             ChannelManager.RemoveCacheBySiteId(siteId);
             PermissionsImpl.ClearAllCache();
         }
 
-        public new void Update(SiteInfo siteInfo)
+        public void Update(SiteInfo siteInfo)
         {
             //var sqlString = $"UPDATE {TableName} SET SiteName = @SiteName, SiteDir = @SiteDir, TableName = @TableName, IsRoot = @IsRoot, ParentId = @ParentId, Taxis = @Taxis, SettingsXML = @SettingsXML WHERE  Id = @Id";
 
@@ -93,7 +94,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            base.UpdateObject(siteInfo);
+            UpdateObject(siteInfo);
 
             SiteManager.ClearCache();
         }

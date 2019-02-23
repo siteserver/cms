@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string UseNum = nameof(ContentTagInfo.UseNum);
         }
 
-        public new void Insert(ContentTagInfo tagInfo)
+        public void Insert(ContentTagInfo tagInfo)
         {
             //IDataParameter[] parameters =
             //{
@@ -26,12 +26,12 @@ namespace SiteServer.CMS.Database.Repositories
             //    "INSERT INTO siteserver_ContentTag (TagName, SiteId, UseNum) VALUES (@TagName, @SiteId, @UseNum)";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlInsert, parameters);
 
-            base.InsertObject(tagInfo);
+            InsertObject(tagInfo);
 
             ContentTagManager.ClearCache();
         }
 
-        public new void Update(ContentTagInfo tagInfo)
+        public void Update(ContentTagInfo tagInfo)
         {
             //IDataParameter[] parameters =
             //{
@@ -42,7 +42,7 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlUpdate = "UPDATE siteserver_ContentTag SET UseNum = @UseNum WHERE TagName = @TagName AND SiteId = @SiteId";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdate, parameters);
 
-            base.UpdateObject(tagInfo);
+            UpdateObject(tagInfo);
 
             ContentTagManager.ClearCache();
         }

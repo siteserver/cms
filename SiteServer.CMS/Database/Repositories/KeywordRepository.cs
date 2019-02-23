@@ -8,11 +8,10 @@ namespace SiteServer.CMS.Database.Repositories
     {
         private static class Attr
         {
-            public const string Id = nameof(KeywordInfo.Id);
             public const string Keyword = nameof(KeywordInfo.Keyword);
         }
 
-        public new void Insert(KeywordInfo keywordInfo)
+        public void Insert(KeywordInfo keywordInfo)
         {
             //const string sqlString = "INSERT INTO siteserver_Keyword(Keyword, Alternative, Grade) VALUES(@Keyword, @Alternative, @Grade)";
 
@@ -25,7 +24,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            base.InsertObject(keywordInfo);
+            InsertObject(keywordInfo);
         }
 
         public int GetCount()
@@ -36,7 +35,7 @@ namespace SiteServer.CMS.Database.Repositories
             return Count();
         }
 
-        public new void Update(KeywordInfo keywordInfo)
+        public void Update(KeywordInfo keywordInfo)
         {
             //IDataParameter[] parameters =
             //{
@@ -48,7 +47,7 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlUpdate = "UPDATE siteserver_Keyword SET Keyword = @Keyword, Alternative = @Alternative, Grade = @Grade WHERE Id=@Id";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdate, parameters);
 
-            base.UpdateObject(keywordInfo);
+            UpdateObject(keywordInfo);
         }
 
         public KeywordInfo Get(int id)
@@ -74,7 +73,7 @@ namespace SiteServer.CMS.Database.Repositories
             return GetObjectById(id);
         }
 
-        public new void Delete(int id)
+        public void Delete(int id)
         {
             //IDataParameter[] parameters =
             //{
@@ -83,7 +82,7 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlDelete = "DELETE FROM siteserver_Keyword WHERE Id = @Id";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlDelete, parameters);
 
-            base.DeleteById(id);
+            DeleteById(id);
         }
 
         public string GetSelectCommand()

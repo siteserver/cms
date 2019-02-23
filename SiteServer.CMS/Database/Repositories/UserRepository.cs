@@ -260,7 +260,7 @@ namespace SiteServer.CMS.Database.Repositories
             return userInfo;
         }
 
-        public new void Update(UserInfo userInfo)
+        public void Update(UserInfo userInfo)
         {
             //if (userInfo == null) return;
 
@@ -304,7 +304,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            base.UpdateObject(userInfo);
+            UpdateObject(userInfo);
 
             UserManager.UpdateCache(userInfo);
         }

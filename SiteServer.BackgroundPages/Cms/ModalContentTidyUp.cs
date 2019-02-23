@@ -14,7 +14,6 @@ namespace SiteServer.BackgroundPages.Cms
         public DropDownList DdlAttributeName;
         public DropDownList DdlIsDesc;
         
-        private string _tableName;
         private string _returnUrl;
 
         public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)

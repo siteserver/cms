@@ -13,7 +13,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string ConfigValue = nameof(PluginConfigInfo.ConfigValue);
         }
 
-        public new void Insert(PluginConfigInfo configInfo)
+        public void Insert(PluginConfigInfo configInfo)
         {
             //const string sqlString = "INSERT INTO siteserver_PluginConfig(PluginId, SiteId, ConfigName, ConfigValue) VALUES (@PluginId, @SiteId, @ConfigName, @ConfigValue)";
 
@@ -27,7 +27,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            base.InsertObject(configInfo);
+            InsertObject(configInfo);
         }
 
         public void Delete(string pluginId, int siteId, string configName)
@@ -49,7 +49,7 @@ namespace SiteServer.CMS.Database.Repositories
                 .Where(Attr.ConfigName, configName));
         }
 
-        public new void Update(PluginConfigInfo configInfo)
+        public void Update(PluginConfigInfo configInfo)
         {
             //const string sqlString = "UPDATE siteserver_PluginConfig SET ConfigValue = @ConfigValue WHERE PluginId = @PluginId AND SiteId = @SiteId AND ConfigName = @ConfigName";
 
@@ -62,7 +62,7 @@ namespace SiteServer.CMS.Database.Repositories
             //};
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            base.UpdateObject(configInfo);
+            UpdateObject(configInfo);
         }
 
         public string GetValue(string pluginId, int siteId, string configName)

@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string ParentId = nameof(UserMenuInfo.ParentId);
         }
 
-        public new int Insert(UserMenuInfo menuInfo)
+        public int Insert(UserMenuInfo menuInfo)
         {
 //            var sqlString =
 //                $@"
@@ -55,14 +55,14 @@ namespace SiteServer.CMS.Database.Repositories
 
 //            var menuId = DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(UserMenuInfo.Id), sqlString, parameters);
 
-            var menuId = base.InsertObject(menuInfo);
+            var menuId = InsertObject(menuInfo);
 
             UserMenuManager.ClearCache();
 
             return menuId;
         }
 
-        public new void Update(UserMenuInfo menuInfo)
+        public void Update(UserMenuInfo menuInfo)
         {
             //var sqlString = $@"UPDATE {TableName} SET
             //    {nameof(UserMenuInfo.SystemId)} = @{nameof(UserMenuInfo.SystemId)}, 
@@ -92,12 +92,12 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            base.UpdateObject(menuInfo);
+            UpdateObject(menuInfo);
 
             UserMenuManager.ClearCache();
         }
 
-        public new void Delete(int menuId)
+        public void Delete(int menuId)
         {
             //var sqlString = $"DELETE FROM {TableName} WHERE {nameof(UserMenuInfo.Id)} = @{nameof(UserMenuInfo.Id)} OR {nameof(UserMenuInfo.ParentId)} = @{nameof(UserMenuInfo.ParentId)}";
 

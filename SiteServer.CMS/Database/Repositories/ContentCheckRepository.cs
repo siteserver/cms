@@ -13,7 +13,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string ChannelId = nameof(ContentCheckInfo.ChannelId);
         }
 
-        public new void Insert(ContentCheckInfo checkInfo)
+        public void Insert(ContentCheckInfo checkInfo)
         {
             //const string sqlString = "INSERT INTO siteserver_ContentCheck (TableName, SiteId, ChannelId, ContentId, UserName, IsChecked, CheckedLevel, CheckDate, Reasons) VALUES (@TableName, @SiteId, @ChannelId, @ContentId, @UserName, @IsChecked, @CheckedLevel, @CheckDate, @Reasons)";
 
@@ -31,19 +31,19 @@ namespace SiteServer.CMS.Database.Repositories
             //};
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-            base.InsertObject(checkInfo);
+            InsertObject(checkInfo);
         }
 
-        public new void Delete(int checkId)
-        {
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamId, checkId)
-            //};
-            //"DELETE FROM siteserver_ContentCheck WHERE Id = @Id"
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlDelete, parameters);
-            base.DeleteById(checkId);
-        }
+        //public void Delete(int checkId)
+        //{
+        //    //IDataParameter[] parameters =
+        //    //{
+        //    //    GetParameter(ParamId, checkId)
+        //    //};
+        //    //"DELETE FROM siteserver_ContentCheck WHERE Id = @Id"
+        //    //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlDelete, parameters);
+        //    DeleteById(checkId);
+        //}
 
         public IList<ContentCheckInfo> GetCheckInfoList(string tableName, int contentId)
         {
