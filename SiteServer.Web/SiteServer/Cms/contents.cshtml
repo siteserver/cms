@@ -200,8 +200,10 @@ min-height: 34px;
   <div class="col-3">
     <multiselect v-on:select="onPageSelect" v-model="page" placeholder="Select one" :options="pageOptions" :searchable="false"
       :show-labels="false">
-      <template slot="singleLabel" slot-scope="{ option }">第 {{ option }} 页（共 {{ pages }} 页）</template>
-      <template slot="option" slot-scope="props"> 第 {{ props.option }} 页 </template>
+      <template slot="singleLabel" slot-scope="props">第 {{ props.option }} 页（共 {{ pages }} 页）</template>
+      <template slot="option" slot-scope="props">
+        第 {{ props.option }} 页
+      </template>
     </multiselect>
   </div>
 </div> @section Scripts{ <script src="../assets/lib/vue-multiselect-2.1.0/script.min.js"></script>
