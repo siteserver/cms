@@ -17,9 +17,11 @@ namespace SiteServer.API.Tests.Pages.Settings
             _output = output;
         }
 
-        [Fact]
+        [SkippableFact]
         public void GetList_ShouldReturnOkResult()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var adminInfo = AdminUtils.CreateSuperAdminIfNotExists();
             var accessToken = AdminUtils.GetAccessToken(adminInfo);
             var controller = ControllerUtils.NewAdminController<PagesAdministratorsController>(accessToken);

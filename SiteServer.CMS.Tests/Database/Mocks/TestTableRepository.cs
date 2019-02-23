@@ -1,68 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using Dapper.Contrib.Extensions;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using SiteServer.CMS.Database.Core;
-using SiteServer.Utils;
 using SqlKata;
 
-namespace SiteServer.CMS.Tests.Core.Database
+namespace SiteServer.CMS.Tests.Database.Mocks
 {
-    [Table("TestTable")]
-    public class TestTableInfo : IDataInfo
-    {
-        public int Id { get; set; }
-
-        public string Guid { get; set; }
-
-        public DateTime? LastModifiedDate { get; set; }
-
-        [VarChar(100)]
-        public string VarChar100 { get; set; }
-
-        public string VarCharDefault { get; set; }
-
-        [Text]
-        public string Content { get; set; }
-
-        public int Num { get; set; }
-
-        public decimal Currency { get; set; }
-
-        public DateTime? Date { get; set; }
-
-        private string IsLockedOut { get; set; }
-
-        [Computed]
-        public bool Locked
-        {
-            get => TranslateUtils.ToBool(IsLockedOut);
-            set => IsLockedOut = value.ToString();
-        }
-    }
-
-    public class Attr
-    {
-        public const string Id = nameof(TestTableInfo.Id);
-
-        public const string Guid = nameof(TestTableInfo.Guid);
-
-        public const string LastModifiedDate = nameof(TestTableInfo.LastModifiedDate);
-
-        public const string VarChar100 = nameof(TestTableInfo.VarChar100);
-
-        public const string VarCharDefault = nameof(TestTableInfo.VarCharDefault);
-
-        public const string Content = nameof(TestTableInfo.Content);
-
-        public const string Num = nameof(TestTableInfo.Num);
-
-        public const string Currency = nameof(TestTableInfo.Currency);
-
-        public const string Date = nameof(TestTableInfo.Date);
-
-        public const string IsLockedOut = "IsLockedOut";
-    }
-
     public class TestTableRepository : GenericRepository<TestTableInfo>
     {
         public new Query Q => base.Q;
@@ -86,7 +31,7 @@ namespace SiteServer.CMS.Tests.Core.Database
         {
             return base.Exists(query);
         }
-        
+
         public new int Count(Query query = null)
         {
             return base.Count(query);

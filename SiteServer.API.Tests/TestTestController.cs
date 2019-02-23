@@ -18,9 +18,11 @@ namespace SiteServer.API.Tests
             _output = output;
         }
 
-        [Fact]
+        [SkippableFact]
         public void GetAdminOnly_ShouldReturnUnauthorizedResult()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var controller = ControllerUtils.NewAnonymousController<TestController>();
             var actionResult = controller.GetAdminOnly();
 
@@ -34,9 +36,11 @@ namespace SiteServer.API.Tests
             Assert.IsType<UnauthorizedResult>(actionResult);
         }
 
-        [Fact]
+        [SkippableFact]
         public void GetAdminOnly_ShouldReturnOkResult()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var adminInfo = AdminUtils.CreateSuperAdminIfNotExists();
             var accessToken = AdminUtils.GetAccessToken(adminInfo);
             var controller = ControllerUtils.NewAdminController<TestController>(accessToken);

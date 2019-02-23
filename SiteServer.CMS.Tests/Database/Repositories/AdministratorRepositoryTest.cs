@@ -1,10 +1,12 @@
 ﻿using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Tests.Database.Mocks;
+using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace SiteServer.CMS.Tests.Repositories
+namespace SiteServer.CMS.Tests.Database.Repositories
 {
     [TestCaseOrderer("SiteServer.CMS.Tests.PriorityOrderer", "SiteServer.CMS.Tests")]
     public class AdministratorRepositoryTest : IClassFixture<EnvironmentFixture>
@@ -20,9 +22,11 @@ namespace SiteServer.CMS.Tests.Repositories
 
         public const string TestUserName = "Tests_UserName";
 
-        [Fact, TestPriority(0)]
+        [SkippableFact, TestPriority(0)]
         public void TestInsert()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var adminInfo = new AdministratorInfo();
 
             var id = DataProvider.Administrator.Insert(adminInfo, out _);
@@ -55,9 +59,11 @@ namespace SiteServer.CMS.Tests.Repositories
             Assert.True(!string.IsNullOrWhiteSpace(adminInfo.PasswordSalt));
         }
 
-        [Fact, TestPriority(1)]
+        [SkippableFact, TestPriority(1)]
         public void TestUpdate()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var adminInfo = DataProvider.Administrator.GetByUserName(TestUserName);
 
             var password = adminInfo.Password;
@@ -73,9 +79,11 @@ namespace SiteServer.CMS.Tests.Repositories
             Assert.True(adminInfo.PasswordSalt == passwordSalt);
         }
 
-        [Fact, TestPriority(1)]
+        [SkippableFact, TestPriority(1)]
         public void TestUpdateLastActivityDateAndCountOfFailedLogin()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var adminInfo = DataProvider.Administrator.GetByUserName(TestUserName);
             Assert.NotNull(adminInfo);
             Assert.Equal(TestUserName, adminInfo.UserName);
@@ -87,9 +95,11 @@ namespace SiteServer.CMS.Tests.Repositories
             Assert.Equal(countOfFailedLogin, adminInfo.CountOfFailedLogin - 1);
         }
 
-        [Fact, TestPriority(2)]
+        [SkippableFact, TestPriority(2)]
         public void TestDelete()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var adminInfo = DataProvider.Administrator.GetByUserName(TestUserName);
             Assert.NotNull(adminInfo);
             Assert.Equal(TestUserName, adminInfo.UserName);

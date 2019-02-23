@@ -21,9 +21,11 @@ namespace SiteServer.API.Tests.V1
             _output = output;
         }
 
-        [Fact]
+        [SkippableFact]
         public void List_ShouldReturnUnauthorizedResult()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var controller = new V1AdministratorsController
             {
                 Request = new HttpRequestMessage(),
@@ -34,9 +36,11 @@ namespace SiteServer.API.Tests.V1
             Assert.IsType<UnauthorizedResult>(actionResult);
         }
 
-        [Fact]
+        [SkippableFact]
         public void Me_ShouldReturnUnauthorizedResult()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var controller = new V1AdministratorsController
             {
                 Request = new HttpRequestMessage(),
@@ -47,9 +51,11 @@ namespace SiteServer.API.Tests.V1
             Assert.IsType<UnauthorizedResult>(actionResult);
         }
 
-        [Fact]
+        [SkippableFact]
         public void Me_ShouldReturnOkResult()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var adminInfo = AdminUtils.CreateAdminIfNotExists();
             var accessToken = AdminUtils.GetAccessToken(adminInfo);
 

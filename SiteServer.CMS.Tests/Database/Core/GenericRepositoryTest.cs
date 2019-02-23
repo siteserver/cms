@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Xunit;
-using Xunit.Abstractions;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Tests.Database.Mocks;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using System.Collections.Generic;
+using Xunit;
+using Xunit.Abstractions;
 
-namespace SiteServer.CMS.Tests.Core.Database
+namespace SiteServer.CMS.Tests.Database.Core
 {
     [TestCaseOrderer("SiteServer.CMS.Tests.PriorityOrderer", "SiteServer.CMS.Tests")]
     public class GenericRepositoryTest : IClassFixture<EnvironmentFixture>
@@ -24,9 +25,11 @@ namespace SiteServer.CMS.Tests.Core.Database
             _repository = new TestTableRepository();
         }
 
-        [Fact, TestPriority(0)]
+        [SkippableFact, TestPriority(0)]
         public void Start()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var tableName = _repository.TableName;
             var tableColumns = _repository.TableColumns;
 
@@ -65,9 +68,11 @@ namespace SiteServer.CMS.Tests.Core.Database
             Assert.True(created);
         }
 
-        [Fact, TestPriority(1)]
+        [SkippableFact, TestPriority(1)]
         public void TestInsert()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var id = _repository.Insert(null);
             Assert.Equal(0, id);
 
@@ -106,9 +111,11 @@ namespace SiteServer.CMS.Tests.Core.Database
             Assert.True(dataInfo.Date.HasValue);
         }
 
-        [Fact, TestPriority(2)]
+        [SkippableFact, TestPriority(2)]
         public void TestGet()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var dataInfo = _repository.First(1);
             Assert.NotNull(dataInfo);
             Assert.Equal(1, dataInfo.Id);
@@ -138,9 +145,11 @@ namespace SiteServer.CMS.Tests.Core.Database
             Assert.True(dataInfo.Date.HasValue);
         }
 
-        [Fact, TestPriority(2)]
+        [SkippableFact, TestPriority(2)]
         public void TestGetWithParameters()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var dataInfo = _repository.First(_repository.Q.Where(Attr.VarChar100, "string"));
             Assert.NotNull(dataInfo);
             Assert.Equal(2, dataInfo.Id);
@@ -184,9 +193,11 @@ namespace SiteServer.CMS.Tests.Core.Database
             Assert.NotNull(dataInfo);
         }
 
-        [Fact, TestPriority(2)]
+        [SkippableFact, TestPriority(2)]
         public void TestExists()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var exists = _repository.Exists(_repository.Q
                 .Where("VarChar100", "string"));
             Assert.True(exists);
@@ -198,9 +209,11 @@ namespace SiteServer.CMS.Tests.Core.Database
             Assert.True(exists);
         }
 
-        [Fact, TestPriority(2)]
+        [SkippableFact, TestPriority(2)]
         public void TestCount()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var count = _repository.Count();
             Assert.Equal(2, count);
 
@@ -208,9 +221,11 @@ namespace SiteServer.CMS.Tests.Core.Database
             Assert.Equal(1, count);
         }
 
-        [Fact, TestPriority(2)]
+        [SkippableFact, TestPriority(2)]
         public void TestGetValue()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var guid = _repository.GetValue<string>(_repository.Q
                 .Select(nameof(IDataInfo.Guid)).Where("Id", 1));
             Assert.True(StringUtils.IsGuid(guid));
@@ -226,9 +241,11 @@ namespace SiteServer.CMS.Tests.Core.Database
             _output.WriteLine(DateUtils.GetDateAndTimeString(lastModifiedDate.Value));
         }
 
-        [Fact, TestPriority(2)]
+        [SkippableFact, TestPriority(2)]
         public void TestGetValues()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var guidList = _repository.GetValueList<string>(_repository.Q
                 .Select(nameof(TestTableInfo.Guid))
                 .Where("Id", 1)).ToList();
@@ -247,9 +264,11 @@ namespace SiteServer.CMS.Tests.Core.Database
             Assert.True(lastModifiedDateList.First().HasValue);
         }
 
-        [Fact, TestPriority(2)]
+        [SkippableFact, TestPriority(2)]
         public void TestGetAll()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var allList = _repository.GetAll().ToList();
             Assert.Equal(2, allList.Count);
 
@@ -259,9 +278,11 @@ namespace SiteServer.CMS.Tests.Core.Database
             Assert.Single(list);
         }
 
-        [Fact, TestPriority(3)]
+        [SkippableFact, TestPriority(3)]
         public void TestUpdate()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var dataInfo = _repository.First(1);
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             var lastModified = dataInfo.LastModifiedDate.Value.Ticks;
@@ -292,9 +313,11 @@ namespace SiteServer.CMS.Tests.Core.Database
             Assert.False(updated);
         }
 
-        [Fact, TestPriority(3)]
+        [SkippableFact, TestPriority(3)]
         public void TestUpdateWithParameters()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var lastModified = _repository.GetValue<DateTime?>(_repository.Q
                 .Select(nameof(IDataInfo.LastModifiedDate)).Where("Id", 1));
             Assert.True(lastModified.HasValue);
@@ -327,9 +350,11 @@ namespace SiteServer.CMS.Tests.Core.Database
             Assert.True(updated == 0);
         }
 
-        [Fact, TestPriority(3)]
+        [SkippableFact, TestPriority(3)]
         public void TestUpdateAll()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var lastModified = _repository.GetValue<DateTime?>(_repository.Q
                 .Select(nameof(IDataInfo.LastModifiedDate))
                 .Where("Id", 1));
@@ -360,9 +385,11 @@ namespace SiteServer.CMS.Tests.Core.Database
             Assert.True(updatedCount == 0);
         }
 
-        [Fact, TestPriority(4)]
+        [SkippableFact, TestPriority(4)]
         public void TestDelete()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var deleted = _repository.Delete(1);
             Assert.True(deleted);
 
@@ -370,9 +397,11 @@ namespace SiteServer.CMS.Tests.Core.Database
             Assert.False(deleted);
         }
 
-        [Fact, TestPriority(5)]
+        [SkippableFact, TestPriority(5)]
         public void End()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             DatabaseApi.Instance.DropTable(_repository.TableName);
         }
     }

@@ -1,9 +1,11 @@
 ﻿using System.Linq;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Tests.Database.Mocks;
+using SiteServer.Utils;
 using Xunit;
 
-namespace SiteServer.CMS.Tests.Repositories
+namespace SiteServer.CMS.Tests.Database.Repositories
 {
     [TestCaseOrderer("SiteServer.CMS.Tests.PriorityOrderer", "SiteServer.CMS.Tests")]
     public class AccessTokenRepositoryTest: IClassFixture<EnvironmentFixture>
@@ -15,9 +17,11 @@ namespace SiteServer.CMS.Tests.Repositories
             Fixture = fixture;
         }
 
-        [Fact, TestPriority(0)]
+        [SkippableFact, TestPriority(0)]
         public void BasicTest()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var accessTokenInfo = new AccessTokenInfo();
 
             DataProvider.AccessToken.Insert(accessTokenInfo);
@@ -39,9 +43,11 @@ namespace SiteServer.CMS.Tests.Repositories
             Assert.True(deleted);
         }
 
-        [Fact, TestPriority(0)]
+        [SkippableFact, TestPriority(0)]
         public void IsTitleExists()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             const string testTitle = "IsTitleExists";
 
             var exists = DataProvider.AccessToken.IsTitleExists(testTitle);
@@ -62,9 +68,11 @@ namespace SiteServer.CMS.Tests.Repositories
             Assert.True(deleted);
         }
 
-        [Fact, TestPriority(0)]
+        [SkippableFact, TestPriority(0)]
         public void GetAccessTokenInfoList()
         {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
             var accessTokenInfo = new AccessTokenInfo
             {
                 Title = "title"

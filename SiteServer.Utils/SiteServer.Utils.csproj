@@ -197,6 +197,7 @@
     <Compile Include="StringUtils.cs" />
     <Compile Include="Tab.cs" />
     <Compile Include="TabCollection.cs" />
+    <Compile Include="TestEnv.cs" />
     <Compile Include="ThirdParty\Atom\Atom.AdditionalElements\DublinCore\DcElement.cs" />
     <Compile Include="ThirdParty\Atom\Atom.AdditionalElements\ScopedElement.cs" />
     <Compile Include="ThirdParty\Atom\Atom.AdditionalElements\ScopedElementCollection.cs" />

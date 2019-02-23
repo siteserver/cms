@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Web.Http;
 using SiteServer.API.Controllers.V1;
-using SiteServer.API.Tests.Utils;
 using Xunit;
 using Xunit.Abstractions;
 

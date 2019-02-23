@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using SiteServer.Utils;
 
-namespace SiteServer.API.Tests.Utils
+namespace SiteServer.API.Tests
 {
     public class EnvironmentFixture : IDisposable
     {
